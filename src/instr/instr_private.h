@@ -62,14 +62,14 @@ typedef enum {
 
 class Type {
 public:
-  char *id;
-  char *name;
-  char *color;
+  char* id_;
+  char* name_;
+  char* color_;
 
-  e_entity_types kind;
-  Type *father;
-  xbt_dict_t children;
-  xbt_dict_t values; //valid for all types except variable and container
+  e_entity_types kind_;
+  Type* father_;
+  xbt_dict_t children_;
+  xbt_dict_t values_; // valid for all types except variable and container
   Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind, Type* father);
   static Type* getOrNull(const char* name, Type* father);
   static Type* containerNew(const char* name, Type* father);
@@ -82,12 +82,12 @@ public:
 //--------------------------------------------------
 class Value {
 public:
-  char* id;
-  char* name;
-  char* color;
+  char* id_;
+  char* name_;
+  char* color_;
 
-  Type* father;
-  Value* ret;
+  Type* father_;
+  Value* ret_;
   Value(const char* name, const char* color, Type* father);
   ~Value();
   static Value* get_or_new(const char* name, const char* color, Type* father);
@@ -111,24 +111,24 @@ typedef enum {
 
 class s_container {
   public:
-  sg_netpoint_t netpoint;
-  char *name;     /* Unique name of this container */
-  char *id;       /* Unique id of this container */
-  Type* type;     /* Type of this container */
-  int level;      /* Level in the hierarchy, root level is 0 */
-  e_container_types kind; /* This container is of what kind */
-  s_container *father;
-  xbt_dict_t children;
+    sg_netpoint_t netpoint_;
+    char* name_;             /* Unique name of this container */
+    char* id_;               /* Unique id of this container */
+    Type* type_;             /* Type of this container */
+    int level_;              /* Level in the hierarchy, root level is 0 */
+    e_container_types kind_; /* This container is of what kind */
+    s_container* father_;
+    xbt_dict_t children_;
 };
 
 //--------------------------------------------------
 class PajeEvent {
   public:
-  double timestamp;
-  e_event_type event_type;
-  virtual void print() = 0;
-  void *data;
-  virtual ~PajeEvent();
+    double timestamp_;
+    e_event_type eventType_;
+    virtual void print() = 0;
+    void* data;
+    virtual ~PajeEvent();
 };
 
 //--------------------------------------------------

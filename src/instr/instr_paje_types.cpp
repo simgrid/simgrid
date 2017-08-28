@@ -27,20 +27,20 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
   }
 
-  this->name = xbt_strdup (typeNameBuff);
-  this->father = father;
-  this->kind = kind;
-  this->children = xbt_dict_new_homogeneous(nullptr);
-  this->values = xbt_dict_new_homogeneous(nullptr);
-  this->color = xbt_strdup (color);
+  this->name_     = xbt_strdup(typeNameBuff);
+  this->father_   = father;
+  this->kind_     = kind;
+  this->children_ = xbt_dict_new_homogeneous(nullptr);
+  this->values_   = xbt_dict_new_homogeneous(nullptr);
+  this->color_    = xbt_strdup(color);
 
   char str_id[INSTR_DEFAULT_STR_SIZE];
   snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
-  this->id = xbt_strdup (str_id);
+  this->id_ = xbt_strdup(str_id);
 
   if (father != nullptr){
-    xbt_dict_set (father->children, key, this, nullptr);
-    XBT_DEBUG("new type %s, child of %s", typeNameBuff, father->name);
+    xbt_dict_set(father->children_, key, this, nullptr);
+    XBT_DEBUG("new type %s, child of %s", typeNameBuff, father->name_);
   }
 }
 
@@ -49,26 +49,26 @@ void PJ_type_free(simgrid::instr::Type* type)
   simgrid::instr::Value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (type->values, cursor, value_name, val) {
-    XBT_DEBUG("free value %s, child of %s", val->name, val->father->name);
+  xbt_dict_foreach (type->values_, cursor, value_name, val) {
+    XBT_DEBUG("free value %s, child of %s", val->name_, val->father_->name_);
     xbt_free(val);
   }
-  xbt_dict_free (&type->values);
-  xbt_free (type->name);
-  xbt_free (type->id);
-  xbt_free (type->color);
-  xbt_dict_free (&type->children);
+  xbt_dict_free(&type->values_);
+  xbt_free(type->name_);
+  xbt_free(type->id_);
+  xbt_free(type->color_);
+  xbt_dict_free(&type->children_);
   xbt_free (type);
   type = nullptr;
 }
 
 void recursiveDestroyType(simgrid::instr::Type* type)
 {
-  XBT_DEBUG("recursiveDestroyType %s", type->name);
+  XBT_DEBUG("recursiveDestroyType %s", type->name_);
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child;
   char *child_name;
-  xbt_dict_foreach(type->children, cursor, child_name, child) {
+  xbt_dict_foreach (type->children_, cursor, child_name, child) {
     recursiveDestroyType (child);
   }
   PJ_type_free(type);
@@ -78,7 +78,7 @@ simgrid::instr::Type* PJ_type_get(const char* name, simgrid::instr::Type* father
 {
   simgrid::instr::Type* ret = simgrid::instr::Type::getOrNull(name, father);
   if (ret == nullptr){
-    THROWF (tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name);
+    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name_);
   }
   return ret;
 }
@@ -93,8 +93,8 @@ simgrid::instr::Type* simgrid::instr::Type::getOrNull(const char* name, simgrid:
   simgrid::instr::Type* child;
   char *child_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach(father->children, cursor, child_name, child) {
-    if (strcmp (child->name, name) == 0){
+  xbt_dict_foreach (father->children_, cursor, child_name, child) {
+    if (strcmp(child->name_, name) == 0) {
       if (ret != nullptr){
         THROWF (tracing_error, 0, "there are two children types with the same name?");
       }else{
@@ -115,7 +115,7 @@ simgrid::instr::Type* simgrid::instr::Type::containerNew(const char* name, simgr
   if (father == nullptr) {
     rootType = ret;
   } else {
-    XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+    XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
     DefineContainerEvent(ret);
   }
   return ret;
@@ -128,7 +128,7 @@ simgrid::instr::Type* simgrid::instr::Type::eventNew(const char* name, simgrid::
   }
 
   Type* ret = new Type (name, name, nullptr, TYPE_EVENT, father);
-  XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+  XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
   LogDefineEventType(ret);
   return ret;
 }
@@ -148,7 +148,7 @@ simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, const 
   }else{
     ret = new Type (name, name, color, TYPE_VARIABLE, father);
   }
-  XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+  XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
   LogVariableTypeDefinition (ret);
   return ret;
 }
@@ -162,10 +162,10 @@ simgrid::instr::Type* simgrid::instr::Type::linkNew(const char* name, Type* fath
   Type* ret = nullptr;
 
   char key[INSTR_DEFAULT_STR_SIZE];
-  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id, dest->id);
+  snprintf(key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id_, dest->id_);
   ret = new Type (name, key, nullptr, TYPE_LINK, father);
-  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id,
-            source->name, source->id, dest->name, dest->id);
+  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name_, ret->id_, father->name_, father->id_,
+            source->name_, source->id_, dest->name_, dest->id_);
   LogLinkTypeDefinition(ret, source, dest);
   return ret;
 }
@@ -179,7 +179,7 @@ simgrid::instr::Type* simgrid::instr::Type::stateNew(const char* name, Type* fat
   Type* ret = nullptr;
 
   ret = new Type (name, name, nullptr, TYPE_STATE, father);
-  XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
+  XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
   LogStateTypeDefinition(ret);
   return ret;
 }

@@ -50,55 +50,55 @@ container_t PJ_container_new(const char* name, simgrid::instr::e_container_types
   container_id++;
 
   container_t newContainer = xbt_new0(simgrid::instr::s_container, 1);
-  newContainer->name = xbt_strdup (name); // name of the container
-  newContainer->id = xbt_strdup (id_str); // id (or alias) of the container
-  newContainer->father = father;
+  newContainer->name_      = xbt_strdup(name);   // name of the container
+  newContainer->id_        = xbt_strdup(id_str); // id (or alias) of the container
+  newContainer->father_    = father;
   sg_host_t sg_host = sg_host_by_name(name);
 
   //Search for network_element_t
   switch (kind){
     case simgrid::instr::INSTR_HOST:
-      newContainer->netpoint = sg_host->pimpl_netpoint;
-      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
+      newContainer->netpoint_ = sg_host->pimpl_netpoint;
+      xbt_assert(newContainer->netpoint_, "Element '%s' not found", name);
       break;
     case simgrid::instr::INSTR_ROUTER:
-      newContainer->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
+      newContainer->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+      xbt_assert(newContainer->netpoint_, "Element '%s' not found", name);
       break;
     case simgrid::instr::INSTR_AS:
-      newContainer->netpoint = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(newContainer->netpoint, "Element '%s' not found", name);
+      newContainer->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+      xbt_assert(newContainer->netpoint_, "Element '%s' not found", name);
       break;
     default:
-      newContainer->netpoint = nullptr;
+      newContainer->netpoint_ = nullptr;
       break;
   }
 
   // level depends on level of father
-  if (newContainer->father){
-    newContainer->level = newContainer->father->level+1;
-    XBT_DEBUG("new container %s, child of %s", name, father->name);
+  if (newContainer->father_) {
+    newContainer->level_ = newContainer->father_->level_ + 1;
+    XBT_DEBUG("new container %s, child of %s", name, father->name_);
   }else{
-    newContainer->level = 0;
+    newContainer->level_ = 0;
   }
   // type definition (method depends on kind of this new container)
-  newContainer->kind = kind;
-  if (newContainer->kind == simgrid::instr::INSTR_AS) {
+  newContainer->kind_ = kind;
+  if (newContainer->kind_ == simgrid::instr::INSTR_AS) {
     //if this container is of an AS, its type name depends on its level
     char as_typename[INSTR_DEFAULT_STR_SIZE];
-    snprintf (as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", newContainer->level);
-    if (newContainer->father){
-      newContainer->type = simgrid::instr::Type::getOrNull(as_typename, newContainer->father->type);
-      if (newContainer->type == nullptr){
-        newContainer->type = simgrid::instr::Type::containerNew(as_typename, newContainer->father->type);
+    snprintf(as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", newContainer->level_);
+    if (newContainer->father_) {
+      newContainer->type_ = simgrid::instr::Type::getOrNull(as_typename, newContainer->father_->type_);
+      if (newContainer->type_ == nullptr) {
+        newContainer->type_ = simgrid::instr::Type::containerNew(as_typename, newContainer->father_->type_);
       }
     }else{
-      newContainer->type = simgrid::instr::Type::containerNew("0", nullptr);
+      newContainer->type_ = simgrid::instr::Type::containerNew("0", nullptr);
     }
   }else{
     //otherwise, the name is its kind
     char typeNameBuff[INSTR_DEFAULT_STR_SIZE];
-    switch (newContainer->kind){
+    switch (newContainer->kind_) {
       case simgrid::instr::INSTR_HOST:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "HOST");
         break;
@@ -124,31 +124,31 @@ container_t PJ_container_new(const char* name, simgrid::instr::e_container_types
         THROWF (tracing_error, 0, "new container kind is unknown.");
         break;
     }
-    simgrid::instr::Type* type = simgrid::instr::Type::getOrNull(typeNameBuff, newContainer->father->type);
+    simgrid::instr::Type* type = simgrid::instr::Type::getOrNull(typeNameBuff, newContainer->father_->type_);
     if (type == nullptr){
-      newContainer->type = simgrid::instr::Type::containerNew(typeNameBuff, newContainer->father->type);
+      newContainer->type_ = simgrid::instr::Type::containerNew(typeNameBuff, newContainer->father_->type_);
     }else{
-      newContainer->type = type;
+      newContainer->type_ = type;
     }
   }
-  newContainer->children = xbt_dict_new_homogeneous(nullptr);
-  if (newContainer->father){
-    xbt_dict_set(newContainer->father->children, newContainer->name, newContainer, nullptr);
+  newContainer->children_ = xbt_dict_new_homogeneous(nullptr);
+  if (newContainer->father_) {
+    xbt_dict_set(newContainer->father_->children_, newContainer->name_, newContainer, nullptr);
     LogContainerCreation(newContainer);
   }
 
   //register all kinds by name
-  if (xbt_dict_get_or_null(allContainers, newContainer->name) != nullptr){
-    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", newContainer->name);
+  if (xbt_dict_get_or_null(allContainers, newContainer->name_) != nullptr) {
+    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", newContainer->name_);
   }
 
-  xbt_dict_set (allContainers, newContainer->name, newContainer, nullptr);
-  XBT_DEBUG("Add container name '%s'",newContainer->name);
+  xbt_dict_set(allContainers, newContainer->name_, newContainer, nullptr);
+  XBT_DEBUG("Add container name '%s'", newContainer->name_);
 
   //register NODE types for triva configuration
-  if (newContainer->kind == simgrid::instr::INSTR_HOST || newContainer->kind == simgrid::instr::INSTR_LINK ||
-      newContainer->kind == simgrid::instr::INSTR_ROUTER) {
-    trivaNodeTypes.insert(newContainer->type->name);
+  if (newContainer->kind_ == simgrid::instr::INSTR_HOST || newContainer->kind_ == simgrid::instr::INSTR_LINK ||
+      newContainer->kind_ == simgrid::instr::INSTR_ROUTER) {
+    trivaNodeTypes.insert(newContainer->type_->name_);
   }
   return newContainer;
 }
@@ -178,12 +178,10 @@ void PJ_container_remove_from_parent (container_t child)
     THROWF (tracing_error, 0, "can't remove from parent with a nullptr child");
   }
 
-  container_t parent = child->father;
+  container_t parent = child->father_;
   if (parent){
-    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ",
-        child->name,
-        parent->name);
-    xbt_dict_remove (parent->children, child->name);
+    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", child->name_, parent->name_);
+    xbt_dict_remove(parent->children_, child->name_);
   }
 }
 
@@ -192,7 +190,7 @@ void PJ_container_free (container_t container)
   if (container == nullptr){
     THROWF (tracing_error, 0, "trying to free a nullptr container");
   }
-  XBT_DEBUG("destroy container %s", container->name);
+  XBT_DEBUG("destroy container %s", container->name_);
 
   //obligation to dump previous events because they might
   //reference the container that is about to be destroyed
@@ -207,12 +205,12 @@ void PJ_container_free (container_t container)
   }
 
   //remove it from allContainers data structure
-  xbt_dict_remove (allContainers, container->name);
+  xbt_dict_remove(allContainers, container->name_);
 
   //free
-  xbt_free (container->name);
-  xbt_free (container->id);
-  xbt_dict_free (&container->children);
+  xbt_free(container->name_);
+  xbt_free(container->id_);
+  xbt_dict_free(&container->children_);
   xbt_free (container);
   container = nullptr;
 }
@@ -222,11 +220,11 @@ static void recursiveDestroyContainer (container_t container)
   if (container == nullptr){
     THROWF (tracing_error, 0, "trying to recursively destroy a nullptr container");
   }
-  XBT_DEBUG("recursiveDestroyContainer %s", container->name);
+  XBT_DEBUG("recursiveDestroyContainer %s", container->name_);
   xbt_dict_cursor_t cursor = nullptr;
   container_t child;
   char *child_name;
-  xbt_dict_foreach(container->children, cursor, child_name, child) {
+  xbt_dict_foreach (container->children_, cursor, child_name, child) {
     recursiveDestroyContainer (child);
   }
   PJ_container_free (container);

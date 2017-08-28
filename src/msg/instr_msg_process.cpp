@@ -94,7 +94,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
     simgrid::instr::Value* val    = simgrid::instr::Value::get("suspend", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
@@ -107,7 +107,7 @@ void TRACE_msg_process_resume(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
 }
@@ -119,7 +119,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
     simgrid::instr::Value* val    = simgrid::instr::Value::get("sleep", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
@@ -132,7 +132,7 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
 }

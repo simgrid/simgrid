@@ -28,23 +28,23 @@ static const char *instr_node_name (xbt_node_t node)
 static container_t lowestCommonAncestor (container_t a1, container_t a2)
 {
   //this is only an optimization (since most of a1 and a2 share the same parent)
-  if (a1->father == a2->father)
-    return a1->father;
+  if (a1->father_ == a2->father_)
+    return a1->father_;
 
   //create an array with all ancestors of a1
   std::vector<container_t> ancestors_a1;
-  container_t p = a1->father;
+  container_t p = a1->father_;
   while (p){
     ancestors_a1.push_back(p);
-    p = p->father;
+    p = p->father_;
   }
 
   //create an array with all ancestors of a2
   std::vector<container_t> ancestors_a2;
-  p = a2->father;
+  p = a2->father_;
   while (p){
     ancestors_a2.push_back(p);
-    p = p->father;
+    p = p->father_;
   }
 
   //find the lowest ancestor
@@ -68,7 +68,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
 static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 {
   //ignore loopback
-  if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0){
+  if (strcmp(src->name_, "__loopback__") == 0 || strcmp(dst->name_, "__loopback__") == 0) {
     XBT_DEBUG ("  linkContainers: ignoring loopback link");
     return;
   }
@@ -83,14 +83,14 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
     //check if we already register this pair (we only need one direction)
     char aux1[INSTR_DEFAULT_STR_SIZE];
     char aux2[INSTR_DEFAULT_STR_SIZE];
-    snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", src->name, dst->name);
-    snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", dst->name, src->name);
+    snprintf(aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", src->name_, dst->name_);
+    snprintf(aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", dst->name_, src->name_);
     if (xbt_dict_get_or_null (filter, aux1)){
-      XBT_DEBUG ("  linkContainers: already registered %s <-> %s (1)", src->name, dst->name);
+      XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->name_, dst->name_);
       return;
     }
     if (xbt_dict_get_or_null (filter, aux2)){
-      XBT_DEBUG ("  linkContainers: already registered %s <-> %s (2)", dst->name, src->name);
+      XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->name_, src->name_);
       return;
     }
 
@@ -101,17 +101,15 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
-  snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s%s-%s%s",
-            father->type->name,
-            src->type->name, src->type->id,
-            dst->type->name, dst->type->id);
-  simgrid::instr::Type* link_type = simgrid::instr::Type::getOrNull(link_typename, father->type);
+  snprintf(link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s%s-%s%s", father->type_->name_, src->type_->name_,
+           src->type_->id_, dst->type_->name_, dst->type_->id_);
+  simgrid::instr::Type* link_type = simgrid::instr::Type::getOrNull(link_typename, father->type_);
   if (link_type == nullptr){
-    link_type = simgrid::instr::Type::linkNew(link_typename, father->type, src->type, dst->type);
+    link_type = simgrid::instr::Type::linkNew(link_typename, father->type_, src->type_, dst->type_);
   }
 
   //register EDGE types for triva configuration
-  trivaEdgeTypes.insert(link_type->name);
+  trivaEdgeTypes.insert(link_type->name_);
 
   //create the link
   static long long counter = 0;
@@ -123,7 +121,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
   new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), father, link_type, dst, "topology", key);
 
-  XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
+  XBT_DEBUG("  linkContainers %s <-> %s", src->name_, dst->name_);
 }
 
 static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container, xbt_dict_t filter)
@@ -136,7 +134,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
     for (auto const& nz_son : *netzone->getChildren()) {
-      container_t child_container = static_cast<container_t>(xbt_dict_get(container->children, nz_son->getCname()));
+      container_t child_container = static_cast<container_t>(xbt_dict_get(container->children_, nz_son->getCname()));
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
@@ -173,9 +171,9 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
-      simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", root->type);
+      simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", root->type_);
       if (mpi == nullptr){
-        mpi = simgrid::instr::Type::containerNew("MPI", root->type);
+        mpi = simgrid::instr::Type::containerNew("MPI", root->type_);
         if (not TRACE_smpi_is_grouped())
           simgrid::instr::Type::stateNew("MPI_STATE", mpi);
         simgrid::instr::Type::linkNew("MPI_LINK", PJ_type_get_root(), mpi, mpi);
@@ -214,21 +212,21 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   container_t container = PJ_container_new(link.name(), simgrid::instr::INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    simgrid::instr::Type* bandwidth = simgrid::instr::Type::getOrNull("bandwidth", container->type);
+    simgrid::instr::Type* bandwidth = simgrid::instr::Type::getOrNull("bandwidth", container->type_);
     if (bandwidth == nullptr) {
-      bandwidth = simgrid::instr::Type::variableNew("bandwidth", nullptr, container->type);
+      bandwidth = simgrid::instr::Type::variableNew("bandwidth", nullptr, container->type_);
     }
-    simgrid::instr::Type* latency = simgrid::instr::Type::getOrNull("latency", container->type);
+    simgrid::instr::Type* latency = simgrid::instr::Type::getOrNull("latency", container->type_);
     if (latency == nullptr) {
-      latency = simgrid::instr::Type::variableNew("latency", nullptr, container->type);
+      latency = simgrid::instr::Type::variableNew("latency", nullptr, container->type_);
     }
     new simgrid::instr::SetVariableEvent(0, container, bandwidth, bandwidth_value);
     new simgrid::instr::SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
-    simgrid::instr::Type* bandwidth_used = simgrid::instr::Type::getOrNull("bandwidth_used", container->type);
+    simgrid::instr::Type* bandwidth_used = simgrid::instr::Type::getOrNull("bandwidth_used", container->type_);
     if (bandwidth_used == nullptr) {
-      simgrid::instr::Type::variableNew("bandwidth_used", "0.5 0.5 0.5", container->type);
+      simgrid::instr::Type::variableNew("bandwidth_used", "0.5 0.5 0.5", container->type_);
     }
   }
 }
@@ -239,33 +237,33 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   container_t container = PJ_container_new(host.getCname(), simgrid::instr::INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    simgrid::instr::Type* speed = simgrid::instr::Type::getOrNull("power", container->type);
+    simgrid::instr::Type* speed = simgrid::instr::Type::getOrNull("power", container->type_);
     if (speed == nullptr){
-      speed = simgrid::instr::Type::variableNew("power", nullptr, container->type);
+      speed = simgrid::instr::Type::variableNew("power", nullptr, container->type_);
     }
 
     double current_speed_state = host.getSpeed();
     new simgrid::instr::SetVariableEvent(0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
-    simgrid::instr::Type* speed_used = simgrid::instr::Type::getOrNull("power_used", container->type);
+    simgrid::instr::Type* speed_used = simgrid::instr::Type::getOrNull("power_used", container->type_);
     if (speed_used == nullptr){
-      simgrid::instr::Type::variableNew("power_used", "0.5 0.5 0.5", container->type);
+      simgrid::instr::Type::variableNew("power_used", "0.5 0.5 0.5", container->type_);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", container->type);
+    simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", container->type_);
     if (mpi == nullptr){
-      mpi = simgrid::instr::Type::containerNew("MPI", container->type);
+      mpi = simgrid::instr::Type::containerNew("MPI", container->type_);
       simgrid::instr::Type::stateNew("MPI_STATE", mpi);
     }
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    simgrid::instr::Type* msg_process = simgrid::instr::Type::getOrNull("MSG_PROCESS", container->type);
+    simgrid::instr::Type* msg_process = simgrid::instr::Type::getOrNull("MSG_PROCESS", container->type_);
     if (msg_process == nullptr){
-      msg_process                 = simgrid::instr::Type::containerNew("MSG_PROCESS", container->type);
+      msg_process                 = simgrid::instr::Type::containerNew("MSG_PROCESS", container->type_);
       simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_PROCESS_STATE", msg_process);
       simgrid::instr::Value PJ_value("suspend", "1 0 1", state);
       simgrid::instr::Value::get_or_new("sleep", "1 1 0", state);
@@ -278,9 +276,9 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_vm_is_enabled()) {
-    simgrid::instr::Type* msg_vm = simgrid::instr::Type::getOrNull("MSG_VM", container->type);
+    simgrid::instr::Type* msg_vm = simgrid::instr::Type::getOrNull("MSG_VM", container->type_);
     if (msg_vm == nullptr){
-      msg_vm                      = simgrid::instr::Type::containerNew("MSG_VM", container->type);
+      msg_vm                      = simgrid::instr::Type::containerNew("MSG_VM", container->type_);
       simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_VM_STATE", msg_vm);
       simgrid::instr::Value PJ_value("suspend", "1 0 1", state);
       simgrid::instr::Value::get_or_new("sleep", "1 1 0", state);
@@ -336,17 +334,17 @@ void instr_routing_define_callbacks ()
  */
 static void recursiveNewVariableType(const char* new_typename, const char* color, simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name, "HOST")) {
+  if (not strcmp(root->name_, "HOST")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     simgrid::instr::Type::variableNew(tnstr, color, root);
   }
-  if (not strcmp(root->name, "MSG_VM")) {
+  if (not strcmp(root->name_, "MSG_VM")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     simgrid::instr::Type::variableNew(tnstr, color, root);
   }
-  if (not strcmp(root->name, "LINK")) {
+  if (not strcmp(root->name_, "LINK")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
     simgrid::instr::Type::variableNew(tnstr, color, root);
@@ -354,7 +352,7 @@ static void recursiveNewVariableType(const char* new_typename, const char* color
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child_type;
   char *name;
-  xbt_dict_foreach(root->children, cursor, name, child_type) {
+  xbt_dict_foreach (root->children_, cursor, name, child_type) {
     recursiveNewVariableType (new_typename, color, child_type);
   }
 }
@@ -367,13 +365,13 @@ void instr_new_variable_type (const char *new_typename, const char *color)
 static void recursiveNewUserVariableType(const char* father_type, const char* new_typename, const char* color,
                                          simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name, father_type)) {
+  if (not strcmp(root->name_, father_type)) {
     simgrid::instr::Type::variableNew(new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child_type;
   char *name;
-  xbt_dict_foreach(root->children, cursor, name, child_type) {
+  xbt_dict_foreach (root->children_, cursor, name, child_type) {
     recursiveNewUserVariableType (father_type, new_typename, color, child_type);
   }
 }
@@ -385,13 +383,13 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
 
 static void recursiveNewUserStateType(const char* father_type, const char* new_typename, simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name, father_type)) {
+  if (not strcmp(root->name_, father_type)) {
     simgrid::instr::Type::stateNew(new_typename, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child_type;
   char *name;
-  xbt_dict_foreach(root->children, cursor, name, child_type) {
+  xbt_dict_foreach (root->children_, cursor, name, child_type) {
     recursiveNewUserStateType (father_type, new_typename, child_type);
   }
 }
@@ -404,13 +402,13 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
 static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color,
                                               simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name, type_name)) {
+  if (not strcmp(root->name_, type_name)) {
     simgrid::instr::Value PJ_value(val, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child_type;
   char *name;
-  xbt_dict_foreach(root->children, cursor, name, child_type) {
+  xbt_dict_foreach (root->children_, cursor, name, child_type) {
     recursiveNewValueForUserStateType(type_name, val, color, child_type);
   }
 }
@@ -434,7 +432,7 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt
     //bottom-up recursion
     for (auto const& netzone_child : *netzone->getChildren()) {
       container_t child_container =
-          static_cast<container_t>(xbt_dict_get(container->children, netzone_child->getCname()));
+          static_cast<container_t>(xbt_dict_get(container->children_, netzone_child->getCname()));
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }

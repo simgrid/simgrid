@@ -283,7 +283,7 @@ static void instr_user_variable(double time, const char* resource, const char* v
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);
-      simgrid::instr::Type* type = PJ_type_get(variable, container->type);
+      simgrid::instr::Type* type = PJ_type_get(variable, container->type_);
       switch (what){
       case INSTR_US_SET:
         new simgrid::instr::SetVariableEvent(time, container, type, value);
@@ -946,7 +946,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
 void TRACE_host_set_state(const char* host, const char* state, const char* value_str)
 {
   container_t container = PJ_container_get(host);
-  simgrid::instr::Type* type = PJ_type_get(state, container->type);
+  simgrid::instr::Type* type = PJ_type_get(state, container->type_);
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(
       value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new simgrid::instr::SetStateEvent(MSG_get_clock(), container, type, val);
@@ -966,7 +966,7 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
 void TRACE_host_push_state(const char* host, const char* state, const char* value_str)
 {
   container_t container = PJ_container_get(host);
-  simgrid::instr::Type* type = PJ_type_get(state, container->type);
+  simgrid::instr::Type* type = PJ_type_get(state, container->type_);
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(
       value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new simgrid::instr::PushStateEvent(MSG_get_clock(), container, type, val);
@@ -985,7 +985,7 @@ void TRACE_host_push_state(const char* host, const char* state, const char* valu
 void TRACE_host_pop_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
-  simgrid::instr::Type* type = PJ_type_get(state, container->type);
+  simgrid::instr::Type* type = PJ_type_get(state, container->type_);
   new simgrid::instr::PopStateEvent(MSG_get_clock(), container, type);
 }
 

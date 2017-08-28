@@ -15,18 +15,18 @@ simgrid::instr::Value::Value(const char* name, const char* color, simgrid::instr
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
-  this->ret         = xbt_new0(Value, 1);
-  this->ret->name = xbt_strdup (name);
-  this->ret->father = father;
-  this->ret->color = xbt_strdup (color);
+  this->ret_          = xbt_new0(Value, 1);
+  this->ret_->name_   = xbt_strdup(name);
+  this->ret_->father_ = father;
+  this->ret_->color_  = xbt_strdup(color);
 
   char str_id[INSTR_DEFAULT_STR_SIZE];
   snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
-  this->ret->id = xbt_strdup (str_id);
+  this->ret_->id_ = xbt_strdup(str_id);
 
-  xbt_dict_set (father->values, name, ret, nullptr);
-  XBT_DEBUG("new value %s, child of %s", ret->name, ret->father->name);
-  LogEntityValue(this->ret);
+  xbt_dict_set(father->values_, name, ret_, nullptr);
+  XBT_DEBUG("new value %s, child of %s", ret_->name_, ret_->father_->name_);
+  LogEntityValue(this->ret_);
 };
 
 simgrid::instr::Value::~Value()
@@ -47,7 +47,7 @@ simgrid::instr::Value* simgrid::instr::Value::get_or_new(const char* name, const
   }
   catch(xbt_ex& e) {
     Value rett(name, color, father);
-    ret = rett.ret;
+    ret = rett.ret_;
   }
   return ret;
 }
@@ -58,11 +58,11 @@ simgrid::instr::Value* simgrid::instr::Value::get(const char* name, Type* father
     THROWF (tracing_error, 0, "can't get a value with a nullptr name (or a nullptr father)");
   }
 
-  if (father->kind == TYPE_VARIABLE)
-    THROWF(tracing_error, 0, "variables can't have different values (%s)", father->name);
-  Value* ret = (Value*)xbt_dict_get_or_null(father->values, name);
+  if (father->kind_ == TYPE_VARIABLE)
+    THROWF(tracing_error, 0, "variables can't have different values (%s)", father->name_);
+  Value* ret = (Value*)xbt_dict_get_or_null(father->values_, name);
   if (ret == nullptr) {
-    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name, father->name);
+    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name, father->name_);
   }
   return ret;
 }
