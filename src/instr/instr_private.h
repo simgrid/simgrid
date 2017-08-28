@@ -107,16 +107,16 @@ typedef enum {
 
 //--------------------------------------------------
 
-class s_container {
-  public:
-    sg_netpoint_t netpoint_;
-    char* name_;             /* Unique name of this container */
-    char* id_;               /* Unique id of this container */
-    Type* type_;             /* Type of this container */
-    int level_;              /* Level in the hierarchy, root level is 0 */
-    e_container_types kind_; /* This container is of what kind */
-    s_container* father_;
-    xbt_dict_t children_;
+class Container {
+public:
+  sg_netpoint_t netpoint_;
+  char* name_;             /* Unique name of this container */
+  char* id_;               /* Unique id of this container */
+  Type* type_;             /* Type of this container */
+  int level_;              /* Level in the hierarchy, root level is 0 */
+  e_container_types kind_; /* This container is of what kind */
+  Container* father_;
+  xbt_dict_t children_;
 };
 
 //--------------------------------------------------
@@ -151,24 +151,24 @@ public:
 
 class SetVariableEvent : public PajeEvent  {
   private:
-    s_container* container;
+    Container* container;
     Type* type;
     double value;
 
   public:
-    SetVariableEvent(double timestamp, s_container* container, Type* type, double value);
+    SetVariableEvent(double timestamp, Container* container, Type* type, double value);
     void print() override;
 };
 
 
 class AddVariableEvent:public PajeEvent {
   private:
-    s_container* container;
+    Container* container;
     Type* type;
     double value;
 
   public:
-    AddVariableEvent(double timestamp, s_container* container, Type* type, double value);
+    AddVariableEvent(double timestamp, Container* container, Type* type, double value);
     void print() override;
 };
 
@@ -177,33 +177,33 @@ class AddVariableEvent:public PajeEvent {
 
 class SubVariableEvent : public PajeEvent  {
   private:
-    s_container* container;
+    Container* container;
     Type* type;
     double value;
 
   public:
-    SubVariableEvent(double timestamp, s_container* container, Type* type, double value);
+    SubVariableEvent(double timestamp, Container* container, Type* type, double value);
     void print() override;
 };
 //--------------------------------------------------
 
 class SetStateEvent : public PajeEvent  {
   private:
-    s_container* container;
+    Container* container;
     Type* type;
     Value* val;
     const char* filename;
     int linenumber;
 
   public:
-    SetStateEvent(double timestamp, s_container* container, Type* type, Value* val);
+    SetStateEvent(double timestamp, Container* container, Type* type, Value* val);
     void print() override;
 };
 
 
 class PushStateEvent : public PajeEvent  {
   public:
-    s_container* container;
+    Container* container;
     Type* type;
     Value* val;
     int size;
@@ -212,55 +212,55 @@ class PushStateEvent : public PajeEvent  {
     void* extra_;
 
   public:
-    PushStateEvent(double timestamp, s_container* container, Type* type, Value* val);
-    PushStateEvent(double timestamp, s_container* container, Type* type, Value* val, void* extra);
+    PushStateEvent(double timestamp, Container* container, Type* type, Value* val);
+    PushStateEvent(double timestamp, Container* container, Type* type, Value* val, void* extra);
     void print() override;
 };
 
 class PopStateEvent : public PajeEvent  {
-  s_container* container;
+  Container* container;
   Type* type;
 
 public:
-  PopStateEvent(double timestamp, s_container* container, Type* type);
+  PopStateEvent(double timestamp, Container* container, Type* type);
   void print() override;
 };
 
 class ResetStateEvent : public PajeEvent  {
-  s_container* container;
+  Container* container;
   Type* type;
 
 public:
-  ResetStateEvent(double timestamp, s_container* container, Type* type);
+  ResetStateEvent(double timestamp, Container* container, Type* type);
   void print() override;
 };
 
 class StartLinkEvent : public PajeEvent  {
   public:
-    s_container* container;
+    Container* container;
     Type* type;
-    s_container* sourceContainer;
+    Container* sourceContainer;
     char* value;
     char* key;
     int size;
 
   public:
     ~StartLinkEvent();
-    StartLinkEvent(double timestamp, s_container* container, Type* type, s_container* sourceContainer,
-                   const char* value, const char* key);
-    StartLinkEvent(double timestamp, s_container* container, Type* type, s_container* sourceContainer,
-                   const char* value, const char* key, int size);
+    StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
+                   const char* key);
+    StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
+                   const char* key, int size);
     void print() override;
 };
 
 class EndLinkEvent : public PajeEvent  {
-  s_container* container;
+  Container* container;
   Type* type;
-  s_container* destContainer;
+  Container* destContainer;
   char *value;
   char *key;
   public:
-    EndLinkEvent(double timestamp, s_container* container, Type* type, s_container* destContainer, const char* value,
+    EndLinkEvent(double timestamp, Container* container, Type* type, Container* destContainer, const char* value,
                  const char* key);
     ~EndLinkEvent();
     void print() override;
@@ -269,17 +269,17 @@ class EndLinkEvent : public PajeEvent  {
 
 class NewEvent : public PajeEvent  {
   public:
-    s_container* container;
+    Container* container;
     Type* type;
     Value* val;
 
   public:
-    NewEvent(double timestamp, s_container* container, Type* type, Value* val);
+    NewEvent(double timestamp, Container* container, Type* type, Value* val);
     void print() override;
 };
 }
 } // namespace simgrid::instr
-typedef simgrid::instr::s_container* container_t;
+typedef simgrid::instr::Container* container_t;
 
 SG_BEGIN_DECL()
 

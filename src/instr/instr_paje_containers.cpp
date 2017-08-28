@@ -49,7 +49,7 @@ container_t PJ_container_new(const char* name, simgrid::instr::e_container_types
   snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id);
   container_id++;
 
-  container_t newContainer = xbt_new0(simgrid::instr::s_container, 1);
+  container_t newContainer = xbt_new0(simgrid::instr::Container, 1);
   newContainer->name_      = xbt_strdup(name);   // name of the container
   newContainer->id_        = xbt_strdup(id_str); // id (or alias) of the container
   newContainer->father_    = father;
