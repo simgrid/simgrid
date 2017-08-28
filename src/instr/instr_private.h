@@ -129,25 +129,6 @@ class PajeEvent {
 };
 
 //--------------------------------------------------
-
-class DefineVariableTypeEvent : public PajeEvent
-{
-  public:
-    Type* type;
-    DefineVariableTypeEvent(Type* type);
-    void print() override;
-};
-//--------------------------------------------------
-
-class DefineStateTypeEvent : public PajeEvent  {
-  Type* type;
-
-public:
-  DefineStateTypeEvent(Type* type);
-  void print() override;
-};
-
-
 class SetVariableEvent : public PajeEvent  {
   private:
     Container* container;
@@ -159,7 +140,6 @@ class SetVariableEvent : public PajeEvent  {
     void print() override;
 };
 
-
 class AddVariableEvent:public PajeEvent {
   private:
     Container* container;
@@ -170,7 +150,6 @@ class AddVariableEvent:public PajeEvent {
     AddVariableEvent(double timestamp, Container* container, Type* type, double value);
     void print() override;
 };
-
 //--------------------------------------------------
 
 
