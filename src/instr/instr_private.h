@@ -279,6 +279,9 @@ class NewEvent : public PajeEvent  {
     NewEvent(double timestamp, s_container* container, Type* type, Value* val);
     void print() override;
 };
+}
+} // namespace simgrid::instr
+typedef simgrid::instr::s_container* container_t;
 
 extern XBT_PRIVATE std::set<std::string> created_categories;
 extern XBT_PRIVATE std::set<std::string> declared_marks;
@@ -286,9 +289,6 @@ extern XBT_PRIVATE std::set<std::string> user_host_variables;
 extern XBT_PRIVATE std::set<std::string> user_vm_variables;
 extern XBT_PRIVATE std::set<std::string> user_link_variables;
 extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
-}
-} // namespace simgrid::instr
-typedef simgrid::instr::s_container* container_t;
 
 /* instr_paje_header.c */
 XBT_PRIVATE void TRACE_header(int basic, int size);
