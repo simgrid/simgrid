@@ -27,6 +27,8 @@ SG_BEGIN_DECL()
 #include "xbt/graph.h"
 #include "xbt/dict.h"
 
+namespace simgrid {
+namespace instr {
 typedef enum {
   PAJE_DefineContainerType,
   PAJE_DefineVariableType,
@@ -106,8 +108,6 @@ typedef enum {
 } e_container_types;
 
 //--------------------------------------------------
-class s_container;
-typedef s_container *container_t;
 
 class s_container {
   public:
@@ -153,22 +153,24 @@ public:
 
 class SetVariableEvent : public PajeEvent  {
   private:
-  container_t container;
-  Type* type;
-  double value;
+    s_container* container;
+    Type* type;
+    double value;
+
   public:
-    SetVariableEvent(double timestamp, container_t container, Type* type, double value);
+    SetVariableEvent(double timestamp, s_container* container, Type* type, double value);
     void print() override;
 };
 
 
 class AddVariableEvent:public PajeEvent {
   private:
-  container_t container;
-  Type* type;
-  double value;
+    s_container* container;
+    Type* type;
+    double value;
+
   public:
-    AddVariableEvent(double timestamp, container_t container, Type* type, double value);
+    AddVariableEvent(double timestamp, s_container* container, Type* type, double value);
     void print() override;
 };
 
@@ -177,86 +179,90 @@ class AddVariableEvent:public PajeEvent {
 
 class SubVariableEvent : public PajeEvent  {
   private:
-  container_t container;
-  Type* type;
-  double value;
+    s_container* container;
+    Type* type;
+    double value;
+
   public:
-    SubVariableEvent(double timestamp, container_t container, Type* type, double value);
+    SubVariableEvent(double timestamp, s_container* container, Type* type, double value);
     void print() override;
 };
 //--------------------------------------------------
 
 class SetStateEvent : public PajeEvent  {
   private:
-  container_t container;
-  Type* type;
-  Value* val;
-  const char* filename;
-  int linenumber;
+    s_container* container;
+    Type* type;
+    Value* val;
+    const char* filename;
+    int linenumber;
+
   public:
-    SetStateEvent(double timestamp, container_t container, Type* type, Value* val);
+    SetStateEvent(double timestamp, s_container* container, Type* type, Value* val);
     void print() override;
 };
 
 
 class PushStateEvent : public PajeEvent  {
   public:
-  container_t container;
-  Type* type;
-  Value* val;
-  int size;
-  const char* filename;
-  int linenumber;
-  void* extra_;
+    s_container* container;
+    Type* type;
+    Value* val;
+    int size;
+    const char* filename;
+    int linenumber;
+    void* extra_;
+
   public:
-    PushStateEvent(double timestamp, container_t container, Type* type, Value* val);
-    PushStateEvent(double timestamp, container_t container, Type* type, Value* val, void* extra);
+    PushStateEvent(double timestamp, s_container* container, Type* type, Value* val);
+    PushStateEvent(double timestamp, s_container* container, Type* type, Value* val, void* extra);
     void print() override;
 };
 
 class PopStateEvent : public PajeEvent  {
-  container_t container;
+  s_container* container;
   Type* type;
 
 public:
-  PopStateEvent(double timestamp, container_t container, Type* type);
+  PopStateEvent(double timestamp, s_container* container, Type* type);
   void print() override;
 };
 
 class ResetStateEvent : public PajeEvent  {
-  container_t container;
+  s_container* container;
   Type* type;
 
 public:
-  ResetStateEvent(double timestamp, container_t container, Type* type);
+  ResetStateEvent(double timestamp, s_container* container, Type* type);
   void print() override;
 };
 
 class StartLinkEvent : public PajeEvent  {
   public:
-  container_t container;
-  Type* type;
-  container_t sourceContainer;
-  char *value;
-  char *key;
-  int size;
+    s_container* container;
+    Type* type;
+    s_container* sourceContainer;
+    char* value;
+    char* key;
+    int size;
+
   public:
     ~StartLinkEvent();
-    StartLinkEvent(double timestamp, container_t container, Type* type, container_t sourceContainer, const char* value,
-                   const char* key);
-    StartLinkEvent(double timestamp, container_t container, Type* type, container_t sourceContainer, const char* value,
-                   const char* key, int size);
+    StartLinkEvent(double timestamp, s_container* container, Type* type, s_container* sourceContainer,
+                   const char* value, const char* key);
+    StartLinkEvent(double timestamp, s_container* container, Type* type, s_container* sourceContainer,
+                   const char* value, const char* key, int size);
     void print() override;
 };
 
 class EndLinkEvent : public PajeEvent  {
-  container_t container;
+  s_container* container;
   Type* type;
-  container_t destContainer;
+  s_container* destContainer;
   char *value;
   char *key;
   public:
-    EndLinkEvent(double timestamp, container_t container, Type* type, container_t destContainer, const char* value,
+    EndLinkEvent(double timestamp, s_container* container, Type* type, s_container* destContainer, const char* value,
                  const char* key);
     ~EndLinkEvent();
     void print() override;
@@ -265,14 +271,13 @@ class EndLinkEvent : public PajeEvent  {
 
 class NewEvent : public PajeEvent  {
   public:
-  container_t container;
-  Type* type;
-  Value* val;
+    s_container* container;
+    Type* type;
+    Value* val;
 
-public:
-  NewEvent(double timestamp, container_t container, Type* type, Value* val);
-  void print() override;
-
+  public:
+    NewEvent(double timestamp, s_container* container, Type* type, Value* val);
+    void print() override;
 };
 
 extern XBT_PRIVATE std::set<std::string> created_categories;
@@ -281,6 +286,9 @@ extern XBT_PRIVATE std::set<std::string> user_host_variables;
 extern XBT_PRIVATE std::set<std::string> user_vm_variables;
 extern XBT_PRIVATE std::set<std::string> user_link_variables;
 extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
+}
+} // namespace simgrid::instr
+typedef simgrid::instr::s_container* container_t;
 
 /* instr_paje_header.c */
 XBT_PRIVATE void TRACE_header(int basic, int size);
@@ -339,7 +347,7 @@ extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id ();
 XBT_PRIVATE void PJ_container_alloc ();
 XBT_PRIVATE void PJ_container_release ();
-XBT_PUBLIC(container_t) PJ_container_new (const char *name, e_container_types kind, container_t father);
+XBT_PUBLIC(container_t) PJ_container_new(const char* name, simgrid::instr::e_container_types kind, container_t father);
 XBT_PUBLIC(container_t) PJ_container_get (const char *name);
 XBT_PUBLIC(container_t) PJ_container_get_or_null (const char *name);
 XBT_PUBLIC(container_t) PJ_container_get_root ();
@@ -350,12 +358,12 @@ XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
 XBT_PRIVATE void PJ_type_release ();
-XBT_PUBLIC(Type*) PJ_type_get_root();
-XBT_PUBLIC(Type*) PJ_type_get(const char* name, Type* father);
-XBT_PRIVATE XBT_PRIVATE void PJ_type_free(Type* type);
+XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
+XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get(const char* name, simgrid::instr::Type* father);
+XBT_PRIVATE XBT_PRIVATE void PJ_type_free(simgrid::instr::Type* type);
 
 /* instr_config.c */
-XBT_PRIVATE void recursiveDestroyType(Type* type);
+XBT_PRIVATE void recursiveDestroyType(simgrid::instr::Type* type);
 
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
@@ -429,13 +437,13 @@ extern instr_fmt_type_t instr_fmt_type;
 
 SG_END_DECL()
 
-void DefineContainerEvent(Type* type);
-void LogVariableTypeDefinition(Type* type);
-void LogStateTypeDefinition(Type* type);
-void LogLinkTypeDefinition(Type* type, Type* source, Type* dest);
-void LogEntityValue(Value* val);
+void DefineContainerEvent(simgrid::instr::Type* type);
+void LogVariableTypeDefinition(simgrid::instr::Type* type);
+void LogStateTypeDefinition(simgrid::instr::Type* type);
+void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest);
+void LogEntityValue(simgrid::instr::Value* val);
 void LogContainerCreation (container_t container);
 void LogContainerDestruction (container_t container);
-void LogDefineEventType(Type* type);
+void LogDefineEventType(simgrid::instr::Type* type);
 
 #endif

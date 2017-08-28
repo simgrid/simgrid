@@ -54,7 +54,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
         smaller = action->getLastUpdate();
     }
     if (smaller > 0) {
-      TRACE_last_timestamp_to_dump = smaller;
+      simgrid::instr::TRACE_last_timestamp_to_dump = smaller;
     }
   }
 }
@@ -74,7 +74,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 
       TRACE_surf_host_set_utilization(cpu->cname(), action->getCategory(), lmm_variable_getvalue(action->getVariable()),
                                       now - delta, delta);
-      TRACE_last_timestamp_to_dump = now - delta;
+      simgrid::instr::TRACE_last_timestamp_to_dump = now - delta;
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);

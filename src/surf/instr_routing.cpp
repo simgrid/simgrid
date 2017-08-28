@@ -105,9 +105,9 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
             father->type->name,
             src->type->name, src->type->id,
             dst->type->name, dst->type->id);
-  Type* link_type = Type::getOrNull (link_typename, father->type);
+  simgrid::instr::Type* link_type = simgrid::instr::Type::getOrNull(link_typename, father->type);
   if (link_type == nullptr){
-    link_type = Type::linkNew (link_typename, father->type, src->type, dst->type);
+    link_type = simgrid::instr::Type::linkNew(link_typename, father->type, src->type, dst->type);
   }
 
   //register EDGE types for triva configuration
@@ -120,8 +120,8 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
   counter++;
 
-  new StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
-  new EndLinkEvent(SIMIX_get_clock(), father, link_type, dst, "topology", key);
+  new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
+  new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), father, link_type, dst, "topology", key);
 
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
@@ -169,16 +169,16 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 
   if (PJ_container_get_root() == nullptr){
     PJ_container_alloc ();
-    container_t root = PJ_container_new (id, INSTR_AS, nullptr);
+    container_t root = PJ_container_new(id, simgrid::instr::INSTR_AS, nullptr);
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
-      Type* mpi = Type::getOrNull ("MPI", root->type);
+      simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", root->type);
       if (mpi == nullptr){
-        mpi = Type::containerNew("MPI", root->type);
+        mpi = simgrid::instr::Type::containerNew("MPI", root->type);
         if (not TRACE_smpi_is_grouped())
-          Type::stateNew ("MPI_STATE", mpi);
-        Type::linkNew ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+          simgrid::instr::Type::stateNew("MPI_STATE", mpi);
+        simgrid::instr::Type::linkNew("MPI_LINK", PJ_type_get_root(), mpi, mpi);
       }
     }
 
@@ -190,7 +190,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 
   if (TRACE_needs_platform()){
     container_t father = currentContainer.back();
-    container_t container = PJ_container_new (id, INSTR_AS, father);
+    container_t container = PJ_container_new(id, simgrid::instr::INSTR_AS, father);
     currentContainer.push_back(container);
   }
 }
@@ -211,24 +211,24 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   double bandwidth_value = link.bandwidth();
   double latency_value   = link.latency();
 
-  container_t container = PJ_container_new(link.name(), INSTR_LINK, father);
+  container_t container = PJ_container_new(link.name(), simgrid::instr::INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    Type* bandwidth = Type::getOrNull("bandwidth", container->type);
+    simgrid::instr::Type* bandwidth = simgrid::instr::Type::getOrNull("bandwidth", container->type);
     if (bandwidth == nullptr) {
-      bandwidth = Type::variableNew("bandwidth", nullptr, container->type);
+      bandwidth = simgrid::instr::Type::variableNew("bandwidth", nullptr, container->type);
     }
-    Type* latency = Type::getOrNull("latency", container->type);
+    simgrid::instr::Type* latency = simgrid::instr::Type::getOrNull("latency", container->type);
     if (latency == nullptr) {
-      latency = Type::variableNew("latency", nullptr, container->type);
+      latency = simgrid::instr::Type::variableNew("latency", nullptr, container->type);
     }
-    new SetVariableEvent(0, container, bandwidth, bandwidth_value);
-    new SetVariableEvent(0, container, latency, latency_value);
+    new simgrid::instr::SetVariableEvent(0, container, bandwidth, bandwidth_value);
+    new simgrid::instr::SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
-    Type* bandwidth_used = Type::getOrNull("bandwidth_used", container->type);
+    simgrid::instr::Type* bandwidth_used = simgrid::instr::Type::getOrNull("bandwidth_used", container->type);
     if (bandwidth_used == nullptr) {
-      Type::variableNew("bandwidth_used", "0.5 0.5 0.5", container->type);
+      simgrid::instr::Type::variableNew("bandwidth_used", "0.5 0.5 0.5", container->type);
     }
   }
 }
@@ -236,59 +236,59 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t father = currentContainer.back();
-  container_t container = PJ_container_new(host.getCname(), INSTR_HOST, father);
+  container_t container = PJ_container_new(host.getCname(), simgrid::instr::INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    Type* speed = Type::getOrNull ("power", container->type);
+    simgrid::instr::Type* speed = simgrid::instr::Type::getOrNull("power", container->type);
     if (speed == nullptr){
-      speed = Type::variableNew ("power", nullptr, container->type);
+      speed = simgrid::instr::Type::variableNew("power", nullptr, container->type);
     }
 
     double current_speed_state = host.getSpeed();
-    new SetVariableEvent (0, container, speed, current_speed_state);
+    new simgrid::instr::SetVariableEvent(0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
-    Type* speed_used = Type::getOrNull ("power_used", container->type);
+    simgrid::instr::Type* speed_used = simgrid::instr::Type::getOrNull("power_used", container->type);
     if (speed_used == nullptr){
-      Type::variableNew ("power_used", "0.5 0.5 0.5", container->type);
+      simgrid::instr::Type::variableNew("power_used", "0.5 0.5 0.5", container->type);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    Type* mpi = Type::getOrNull ("MPI", container->type);
+    simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", container->type);
     if (mpi == nullptr){
-      mpi = Type::containerNew("MPI", container->type);
-      Type::stateNew ("MPI_STATE", mpi);
+      mpi = simgrid::instr::Type::containerNew("MPI", container->type);
+      simgrid::instr::Type::stateNew("MPI_STATE", mpi);
     }
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    Type* msg_process = Type::getOrNull ("MSG_PROCESS", container->type);
+    simgrid::instr::Type* msg_process = simgrid::instr::Type::getOrNull("MSG_PROCESS", container->type);
     if (msg_process == nullptr){
-      msg_process = Type::containerNew("MSG_PROCESS", container->type);
-      Type* state = Type::stateNew ("MSG_PROCESS_STATE", msg_process);
-      Value PJ_value("suspend", "1 0 1", state);
-      Value::get_or_new("sleep", "1 1 0", state);
-      Value::get_or_new("receive", "1 0 0", state);
-      Value::get_or_new("send", "0 0 1", state);
-      Value::get_or_new("task_execute", "0 1 1", state);
-      Type::linkNew ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
-      Type::linkNew ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
+      msg_process                 = simgrid::instr::Type::containerNew("MSG_PROCESS", container->type);
+      simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_PROCESS_STATE", msg_process);
+      simgrid::instr::Value PJ_value("suspend", "1 0 1", state);
+      simgrid::instr::Value::get_or_new("sleep", "1 1 0", state);
+      simgrid::instr::Value::get_or_new("receive", "1 0 0", state);
+      simgrid::instr::Value::get_or_new("send", "0 0 1", state);
+      simgrid::instr::Value::get_or_new("task_execute", "0 1 1", state);
+      simgrid::instr::Type::linkNew("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
+      simgrid::instr::Type::linkNew("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
     }
   }
 
   if (TRACE_msg_vm_is_enabled()) {
-    Type* msg_vm = Type::getOrNull ("MSG_VM", container->type);
+    simgrid::instr::Type* msg_vm = simgrid::instr::Type::getOrNull("MSG_VM", container->type);
     if (msg_vm == nullptr){
-      msg_vm = Type::containerNew("MSG_VM", container->type);
-      Type* state = Type::stateNew ("MSG_VM_STATE", msg_vm);
-      Value PJ_value("suspend", "1 0 1", state);
-      Value::get_or_new("sleep", "1 1 0", state);
-      Value::get_or_new("receive", "1 0 0", state);
-      Value::get_or_new("send", "0 0 1", state);
-      Value::get_or_new("task_execute", "0 1 1", state);
-      Type::linkNew ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
-      Type::linkNew ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      msg_vm                      = simgrid::instr::Type::containerNew("MSG_VM", container->type);
+      simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_VM_STATE", msg_vm);
+      simgrid::instr::Value PJ_value("suspend", "1 0 1", state);
+      simgrid::instr::Value::get_or_new("sleep", "1 1 0", state);
+      simgrid::instr::Value::get_or_new("receive", "1 0 0", state);
+      simgrid::instr::Value::get_or_new("send", "0 0 1", state);
+      simgrid::instr::Value::get_or_new("task_execute", "0 1 1", state);
+      simgrid::instr::Type::linkNew("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      simgrid::instr::Type::linkNew("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
     }
   }
 
@@ -300,7 +300,7 @@ static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
     return;
   if (TRACE_is_enabled() && TRACE_needs_platform()) {
     container_t father = currentContainer.back();
-    PJ_container_new(netpoint->cname(), INSTR_ROUTER, father);
+    PJ_container_new(netpoint->cname(), simgrid::instr::INSTR_ROUTER, father);
   }
 }
 
@@ -334,25 +334,25 @@ void instr_routing_define_callbacks ()
 /*
  * user categories support
  */
-static void recursiveNewVariableType (const char *new_typename, const char *color, Type* root)
+static void recursiveNewVariableType(const char* new_typename, const char* color, simgrid::instr::Type* root)
 {
   if (not strcmp(root->name, "HOST")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    Type::variableNew (tnstr, color, root);
+    simgrid::instr::Type::variableNew(tnstr, color, root);
   }
   if (not strcmp(root->name, "MSG_VM")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    Type::variableNew (tnstr, color, root);
+    simgrid::instr::Type::variableNew(tnstr, color, root);
   }
   if (not strcmp(root->name, "LINK")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
-    Type::variableNew (tnstr, color, root);
+    simgrid::instr::Type::variableNew(tnstr, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  Type* child_type;
+  simgrid::instr::Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewVariableType (new_typename, color, child_type);
@@ -364,13 +364,14 @@ void instr_new_variable_type (const char *new_typename, const char *color)
   recursiveNewVariableType (new_typename, color, PJ_type_get_root());
 }
 
-static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, Type* root)
+static void recursiveNewUserVariableType(const char* father_type, const char* new_typename, const char* color,
+                                         simgrid::instr::Type* root)
 {
   if (not strcmp(root->name, father_type)) {
-    Type::variableNew (new_typename, color, root);
+    simgrid::instr::Type::variableNew(new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  Type* child_type;
+  simgrid::instr::Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewUserVariableType (father_type, new_typename, color, child_type);
@@ -382,13 +383,13 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
   recursiveNewUserVariableType (father_type, new_typename, color, PJ_type_get_root());
 }
 
-static void recursiveNewUserStateType (const char *father_type, const char *new_typename, Type* root)
+static void recursiveNewUserStateType(const char* father_type, const char* new_typename, simgrid::instr::Type* root)
 {
   if (not strcmp(root->name, father_type)) {
-    Type::stateNew (new_typename, root);
+    simgrid::instr::Type::stateNew(new_typename, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  Type* child_type;
+  simgrid::instr::Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewUserStateType (father_type, new_typename, child_type);
@@ -400,13 +401,14 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
   recursiveNewUserStateType (father_type, new_typename, PJ_type_get_root());
 }
 
-static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color, Type* root)
+static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color,
+                                              simgrid::instr::Type* root)
 {
   if (not strcmp(root->name, type_name)) {
-    Value PJ_value(val, color, root);
+    simgrid::instr::Value PJ_value(val, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
-  Type* child_type;
+  simgrid::instr::Type* child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
     recursiveNewValueForUserStateType(type_name, val, color, child_type);

@@ -37,8 +37,8 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 
     //start link
     container_t msg = PJ_container_get (instr_process_id(process, str, len));
-    Type* type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
-    new StartLinkEvent (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    simgrid::instr::Type* type = PJ_type_get("MSG_PROCESS_LINK", PJ_type_get_root());
+    new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     //destroy existing container of this process
     TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process));
@@ -49,7 +49,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
     //end link
     msg = PJ_container_get(instr_process_id(process, str, len));
     type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
-    new EndLinkEvent (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 }
 
@@ -60,7 +60,8 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t host_container = PJ_container_get(host->getCname());
-    PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
+    PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), simgrid::instr::INSTR_MSG_PROCESS,
+                     host_container);
   }
 }
 
@@ -93,9 +94,9 @@ void TRACE_msg_process_suspend(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    Type* type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    Value* val                    = Value::get("suspend", type);
-    new PushStateEvent(MSG_get_clock(), process_container, type, val);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    simgrid::instr::Value* val    = simgrid::instr::Value::get("suspend", type);
+    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }
 
@@ -106,8 +107,8 @@ void TRACE_msg_process_resume(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    Type* type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new PopStateEvent (MSG_get_clock(), process_container, type);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
 }
 
@@ -118,9 +119,9 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    Type* type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    Value* val                    = Value::get("sleep", type);
-    new PushStateEvent(MSG_get_clock(), process_container, type, val);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    simgrid::instr::Value* val    = simgrid::instr::Value::get("sleep", type);
+    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }
 
@@ -131,7 +132,7 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    Type* type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new PopStateEvent (MSG_get_clock(), process_container, type);
+    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type);
+    new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
 }

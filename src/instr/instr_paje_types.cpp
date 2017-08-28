@@ -8,19 +8,20 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
-static Type* rootType = nullptr;        /* the root type */
+static simgrid::instr::Type* rootType = nullptr; /* the root type */
 
 void PJ_type_release ()
 {
   rootType = nullptr;
 }
 
-Type* PJ_type_get_root()
+simgrid::instr::Type* PJ_type_get_root()
 {
   return rootType;
 }
 
-Type::Type (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, Type* father)
+simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind,
+                           Type* father)
 {
   if (typeNameBuff == nullptr || key == nullptr){
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
@@ -43,9 +44,9 @@ Type::Type (const char *typeNameBuff, const char *key, const char *color, e_enti
   }
 }
 
-void PJ_type_free(Type* type)
+void PJ_type_free(simgrid::instr::Type* type)
 {
-  Value* val;
+  simgrid::instr::Value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach (type->values, cursor, value_name, val) {
@@ -61,11 +62,11 @@ void PJ_type_free(Type* type)
   type = nullptr;
 }
 
-void recursiveDestroyType(Type* type)
+void recursiveDestroyType(simgrid::instr::Type* type)
 {
   XBT_DEBUG("recursiveDestroyType %s", type->name);
   xbt_dict_cursor_t cursor = nullptr;
-  Type* child;
+  simgrid::instr::Type* child;
   char *child_name;
   xbt_dict_foreach(type->children, cursor, child_name, child) {
     recursiveDestroyType (child);
@@ -73,23 +74,23 @@ void recursiveDestroyType(Type* type)
   PJ_type_free(type);
 }
 
-Type* PJ_type_get(const char* name, Type* father)
+simgrid::instr::Type* PJ_type_get(const char* name, simgrid::instr::Type* father)
 {
-  Type* ret = Type::getOrNull (name, father);
+  simgrid::instr::Type* ret = simgrid::instr::Type::getOrNull(name, father);
   if (ret == nullptr){
     THROWF (tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;
 }
 
-Type* Type::getOrNull(const char* name, Type* father)
+simgrid::instr::Type* simgrid::instr::Type::getOrNull(const char* name, simgrid::instr::Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");
   }
 
-  Type* ret = nullptr;
-  Type* child;
+  simgrid::instr::Type* ret = nullptr;
+  simgrid::instr::Type* child;
   char *child_name;
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach(father->children, cursor, child_name, child) {
@@ -104,13 +105,13 @@ Type* Type::getOrNull(const char* name, Type* father)
   return ret;
 }
 
-Type* Type::containerNew(const char* name, Type* father)
+simgrid::instr::Type* simgrid::instr::Type::containerNew(const char* name, simgrid::instr::Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
 
-  Type* ret = new Type (name, name, nullptr, TYPE_CONTAINER, father);
+  simgrid::instr::Type* ret = new simgrid::instr::Type(name, name, nullptr, TYPE_CONTAINER, father);
   if (father == nullptr) {
     rootType = ret;
   } else {
@@ -120,7 +121,7 @@ Type* Type::containerNew(const char* name, Type* father)
   return ret;
 }
 
-Type* Type::eventNew(const char* name, Type* father)
+simgrid::instr::Type* simgrid::instr::Type::eventNew(const char* name, simgrid::instr::Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
@@ -132,7 +133,8 @@ Type* Type::eventNew(const char* name, Type* father)
   return ret;
 }
 
-Type* Type::variableNew(const char* name, const char* color, Type* father)
+simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, const char* color,
+                                                        simgrid::instr::Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
@@ -151,7 +153,7 @@ Type* Type::variableNew(const char* name, const char* color, Type* father)
   return ret;
 }
 
-Type* Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
+simgrid::instr::Type* simgrid::instr::Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
@@ -168,7 +170,7 @@ Type* Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
   return ret;
 }
 
-Type* Type::stateNew(const char* name, Type* father)
+simgrid::instr::Type* simgrid::instr::Type::stateNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");

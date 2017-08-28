@@ -63,7 +63,7 @@ static int trace_precision;
 static bool trace_configured = false;
 static bool trace_active     = false;
 
-static Type* rootType = nullptr;        /* the root type */
+static simgrid::instr::Type* rootType = nullptr; /* the root type */
 
 instr_fmt_type_t instr_fmt_type = instr_fmt_paje;
 
@@ -138,7 +138,7 @@ int TRACE_end()
     TRACE_generate_viva_cat_conf();
 
     /* dump trace buffer */
-    TRACE_last_timestamp_to_dump = surf_get_clock();
+    simgrid::instr::TRACE_last_timestamp_to_dump = surf_get_clock();
     TRACE_paje_dump_buffer(1);
 
     /* destroy all data structures of tracing (and free) */
@@ -480,9 +480,9 @@ static void output_types (const char *name, xbt_dynar_t types, FILE *file)
 
 static void output_categories(const char* name, FILE* file)
 {
-  unsigned int i = created_categories.size();
+  unsigned int i = simgrid::instr::created_categories.size();
   fprintf (file, "    values = (");
-  for (auto const& cat : created_categories) {
+  for (auto const& cat : simgrid::instr::created_categories) {
     --i;
     fprintf(file, "\"%s%s\"", name, cat.c_str());
     if (i > 0) {
@@ -560,7 +560,7 @@ static void generate_cat_configuration (const char *output, const char *name, in
 {
   if (output && strlen(output) > 0){
     //check if we do have categories declared
-    if (created_categories.empty()) {
+    if (simgrid::instr::created_categories.empty()) {
       XBT_INFO("No categories declared, ignoring generation of %s graph configuration", name);
       return;
     }

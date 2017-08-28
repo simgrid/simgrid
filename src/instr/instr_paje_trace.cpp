@@ -27,8 +27,8 @@ FILE *tracing_file = nullptr;
 static xbt_dict_t tracing_files = nullptr; // TI specific
 static double prefix=0.0; // TI specific
 
-std::vector<PajeEvent*> buffer;
-void buffer_debug(std::vector<PajeEvent*> *buf);
+std::vector<simgrid::instr::PajeEvent*> buffer;
+void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf);
 
 void dump_comment (const char *comment)
 {
@@ -74,7 +74,7 @@ void TRACE_paje_dump_buffer (int force)
     }
     buffer.clear();
   }else{
-    std::vector<PajeEvent*>::iterator i = buffer.begin();
+    std::vector<simgrid::instr::PajeEvent*>::iterator i = buffer.begin();
     for (auto const& event : buffer) {
       double head_timestamp = event->timestamp;
       if (head_timestamp > TRACE_last_timestamp_to_dump)
@@ -88,8 +88,9 @@ void TRACE_paje_dump_buffer (int force)
   XBT_DEBUG("%s: ends", __FUNCTION__);
 }
 
-void buffer_debug(std::vector<PajeEvent*> *buf);
-void buffer_debug(std::vector<PajeEvent*> *buf) {
+void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf);
+void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
+{
   return;
   XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
   for (auto const& event : *buf) {
@@ -109,7 +110,8 @@ static void print_row() {
   stream.clear();
 }
 
-static void print_timestamp(PajeEvent* event) {
+static void print_timestamp(simgrid::instr::PajeEvent* event)
+{
   stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
   if (event->timestamp < 1e-12)
@@ -119,7 +121,7 @@ static void print_timestamp(PajeEvent* event) {
 }
 
 /* internal do the instrumentation module */
-static void insert_into_buffer (PajeEvent* tbi)
+static void insert_into_buffer(simgrid::instr::PajeEvent* tbi)
 {
   if (TRACE_buffer() == 0){
     tbi->print ();
@@ -130,9 +132,9 @@ static void insert_into_buffer (PajeEvent* tbi)
 
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%zu)",
       __FUNCTION__, (int)tbi->event_type, tbi->timestamp, buffer.size());
-  std::vector<PajeEvent*>::reverse_iterator i;
+  std::vector<simgrid::instr::PajeEvent*>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
-    PajeEvent* e1 = *i;
+    simgrid::instr::PajeEvent* e1 = *i;
     XBT_DEBUG("compare to %p is of type %d; timestamp:%f", e1,
         (int)e1->event_type, e1->timestamp);
     if (e1->timestamp <= tbi->timestamp)
@@ -150,7 +152,7 @@ static void insert_into_buffer (PajeEvent* tbi)
   buffer_debug(&buffer);
 }
 
-PajeEvent:: ~PajeEvent()
+simgrid::instr::PajeEvent::~PajeEvent()
 {
   XBT_DEBUG("%s not implemented for %p: event_type=%d, timestamp=%f", __FUNCTION__,
       this, (int)event_type, timestamp);
@@ -192,14 +194,15 @@ void TRACE_paje_end() {
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void DefineContainerEvent(Type* type)
+void DefineContainerEvent(simgrid::instr::Type* type)
 {
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineContainerType);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineContainerType);
   //print it
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineContainerType, TRACE_precision(), 0.);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineContainerType,
+              TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_DefineContainerType;
+    stream << simgrid::instr::PAJE_DefineContainerType;
     stream << " " << type->id << " " << type->father->id << " " << type->name;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -210,20 +213,21 @@ void DefineContainerEvent(Type* type)
   //--
 }
 
-void LogVariableTypeDefinition(Type* type)
+void LogVariableTypeDefinition(simgrid::instr::Type* type)
 {
 
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineVariableType);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineVariableType);
 
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineVariableType, TRACE_precision(), 0.);
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_DefineVariableType;
-    stream << " " << type->id << " " << type->father->id << " " << type->name;
-    if (type->color)
-      stream << " \"" << type->color << "\"";
-    print_row();
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineVariableType,
+            TRACE_precision(), 0.);
+  stream << std::fixed << std::setprecision(TRACE_precision());
+  stream << simgrid::instr::PAJE_DefineVariableType;
+  stream << " " << type->id << " " << type->father->id << " " << type->name;
+  if (type->color)
+    stream << " \"" << type->color << "\"";
+  print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
   } else {
@@ -231,15 +235,16 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogStateTypeDefinition(Type* type)
+void LogStateTypeDefinition(simgrid::instr::Type* type)
 {
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineStateType, TRACE_precision(), 0.);
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_DefineStateType;
-    stream << " " << type->id << " " << type->father->id << " " << type->name;
-    print_row();
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineStateType, TRACE_precision(),
+            0.);
+  stream << std::fixed << std::setprecision(TRACE_precision());
+  stream << simgrid::instr::PAJE_DefineStateType;
+  stream << " " << type->id << " " << type->father->id << " " << type->name;
+  print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
   } else {
@@ -247,13 +252,14 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogDefineEventType(Type* type)
+void LogDefineEventType(simgrid::instr::Type* type)
 {
   //print it
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineEventType, TRACE_precision(), 0.);
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineEventType,
+              TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_DefineEventType;
+    stream << simgrid::instr::PAJE_DefineEventType;
     stream << " " << type->id << " " << type->father->id << " " << type->name;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -263,16 +269,17 @@ void LogDefineEventType(Type* type)
   }
 }
 
-void LogLinkTypeDefinition(Type* type, Type* source, Type* dest)
+void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest)
 {
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineLinkType);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineLinkType);
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineLinkType, TRACE_precision(), 0.);
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_DefineLinkType;
-    stream << " " << type->id << " " << type->father->id << " " << source->id << " " << dest->id << " " << type->name;
-    print_row();
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineLinkType, TRACE_precision(),
+            0.);
+  stream << std::fixed << std::setprecision(TRACE_precision());
+  stream << simgrid::instr::PAJE_DefineLinkType;
+  stream << " " << type->id << " " << type->father->id << " " << source->id << " " << dest->id << " " << type->name;
+  print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
   } else {
@@ -280,13 +287,13 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogEntityValue(Value* val)
+void LogEntityValue(simgrid::instr::Value* val)
 {
-  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, PAJE_DefineEntityValue);
+  XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineEntityValue);
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_DefineEntityValue;
+    stream << simgrid::instr::PAJE_DefineEntityValue;
     stream << " " << val->id << " " << val->father->id << " " << val->name;
     if (val->color)
       stream << " \"" << val->color << "\"";
@@ -301,13 +308,13 @@ if (instr_fmt_type == instr_fmt_paje) {
 
 void LogContainerCreation (container_t container)
 {
-  double timestamp                              = SIMIX_get_clock();
+  double timestamp = SIMIX_get_clock();
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, PAJE_CreateContainer,timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_CreateContainer, timestamp);
 
-if (instr_fmt_type == instr_fmt_paje) {
+  if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_CreateContainer;
+    stream << simgrid::instr::PAJE_CreateContainer;
     stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
     if (timestamp < 1e-12)
@@ -354,11 +361,11 @@ void LogContainerDestruction(container_t container)
 {
   double timestamp                               = SIMIX_get_clock();
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, PAJE_DestroyContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_DestroyContainer, timestamp);
 
-if (instr_fmt_type == instr_fmt_paje) {
+  if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << PAJE_DestroyContainer;
+    stream << simgrid::instr::PAJE_DestroyContainer;
     stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
     if (timestamp < 1e-12)
@@ -378,8 +385,7 @@ if (instr_fmt_type == instr_fmt_paje) {
         }
 }
 
-
-SetVariableEvent::SetVariableEvent (double timestamp, container_t container, Type* type, double value)
+simgrid::instr::SetVariableEvent::SetVariableEvent(double timestamp, container_t container, Type* type, double value)
 {
   this->event_type                         = PAJE_SetVariable;
   this->timestamp                          = timestamp;
@@ -392,7 +398,8 @@ SetVariableEvent::SetVariableEvent (double timestamp, container_t container, Typ
   insert_into_buffer (this);
 }
 
-void SetVariableEvent::print() {
+void simgrid::instr::SetVariableEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -407,7 +414,8 @@ void SetVariableEvent::print() {
   }
 }
 
-AddVariableEvent::AddVariableEvent (double timestamp, container_t container, Type* type, double value)
+simgrid::instr::AddVariableEvent::AddVariableEvent(double timestamp, container_t container, simgrid::instr::Type* type,
+                                                   double value)
 {
   this->event_type                         = PAJE_AddVariable;
   this->timestamp                          = timestamp;
@@ -420,7 +428,8 @@ AddVariableEvent::AddVariableEvent (double timestamp, container_t container, Typ
   insert_into_buffer (this);
 }
 
-void AddVariableEvent::print() {
+void simgrid::instr::AddVariableEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -435,7 +444,7 @@ void AddVariableEvent::print() {
   }
 }
 
-SubVariableEvent::SubVariableEvent (double timestamp, container_t container, Type* type, double value)
+simgrid::instr::SubVariableEvent::SubVariableEvent(double timestamp, container_t container, Type* type, double value)
 {
   this->event_type                         = PAJE_SubVariable;
   this->timestamp                          = timestamp;
@@ -448,7 +457,8 @@ SubVariableEvent::SubVariableEvent (double timestamp, container_t container, Typ
   insert_into_buffer (this);
 }
 
-void SubVariableEvent::print() {
+void simgrid::instr::SubVariableEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -463,7 +473,7 @@ void SubVariableEvent::print() {
   }
 }
 
-SetStateEvent::SetStateEvent(double timestamp, container_t container, Type* type, Value* val)
+simgrid::instr::SetStateEvent::SetStateEvent(double timestamp, container_t container, Type* type, Value* val)
 {
   this->event_type                      = PAJE_SetState;
   this->timestamp                       = timestamp;
@@ -484,7 +494,8 @@ SetStateEvent::SetStateEvent(double timestamp, container_t container, Type* type
   insert_into_buffer (this);
 }
 
-void SetStateEvent::print() {
+void simgrid::instr::SetStateEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -505,7 +516,8 @@ void SetStateEvent::print() {
   }
 }
 
-PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* val, void* extra)
+simgrid::instr::PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* val,
+                                               void* extra)
 {
   this->event_type                  = PAJE_PushState;
   this->timestamp                   = timestamp;
@@ -527,10 +539,11 @@ PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* ty
   insert_into_buffer (this);
 }
 
-PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* val)
+simgrid::instr::PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* val)
     : PushStateEvent(timestamp, container, type, val, nullptr)
 {}
-void PushStateEvent::print() {
+void simgrid::instr::PushStateEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -694,8 +707,7 @@ void PushStateEvent::print() {
   }
 }
 
-
-PopStateEvent::PopStateEvent (double timestamp, container_t container, Type* type)
+simgrid::instr::PopStateEvent::PopStateEvent(double timestamp, container_t container, Type* type)
 {
   this->event_type                      = PAJE_PopState;
   this->timestamp                       = timestamp;
@@ -707,7 +719,8 @@ PopStateEvent::PopStateEvent (double timestamp, container_t container, Type* typ
   insert_into_buffer (this);
 }
 
-void PopStateEvent::print() {
+void simgrid::instr::PopStateEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -722,7 +735,7 @@ void PopStateEvent::print() {
   }
 }
 
-ResetStateEvent::ResetStateEvent (double timestamp, container_t container, Type* type)
+simgrid::instr::ResetStateEvent::ResetStateEvent(double timestamp, container_t container, Type* type)
 {
   this->event_type                        = PAJE_ResetState;
   this->timestamp                         = timestamp;
@@ -735,7 +748,8 @@ ResetStateEvent::ResetStateEvent (double timestamp, container_t container, Type*
   delete[] this;
 }
 
-void ResetStateEvent::print() {
+void simgrid::instr::ResetStateEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -750,18 +764,19 @@ void ResetStateEvent::print() {
   }
 }
 
-StartLinkEvent::~StartLinkEvent()
+simgrid::instr::StartLinkEvent::~StartLinkEvent()
 {
   free(value);
   free(key);
 }
-StartLinkEvent::StartLinkEvent (double timestamp, container_t container,
-    Type* type, container_t sourceContainer, const char *value, const char *key)
-  : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
+simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t container, Type* type,
+                                               container_t sourceContainer, const char* value, const char* key)
+    : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
 {}
 
-StartLinkEvent::StartLinkEvent (double timestamp, container_t container, Type* type, container_t sourceContainer,
-                                const char *value, const char *key, int size)
+simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t container, Type* type,
+                                               container_t sourceContainer, const char* value, const char* key,
+                                               int size)
 {
   event_type                             = PAJE_StartLink;
   this->timestamp       = timestamp;
@@ -778,7 +793,8 @@ StartLinkEvent::StartLinkEvent (double timestamp, container_t container, Type* t
   insert_into_buffer (this);
 }
 
-void StartLinkEvent::print() {
+void simgrid::instr::StartLinkEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -798,8 +814,8 @@ void StartLinkEvent::print() {
   }
 }
 
-EndLinkEvent::EndLinkEvent (double timestamp, container_t container, Type* type, container_t destContainer,
-                      const char *value, const char *key)
+simgrid::instr::EndLinkEvent::EndLinkEvent(double timestamp, container_t container, Type* type,
+                                           container_t destContainer, const char* value, const char* key)
 {
   this->event_type                         = PAJE_EndLink;
   this->timestamp                          = timestamp;
@@ -814,12 +830,13 @@ EndLinkEvent::EndLinkEvent (double timestamp, container_t container, Type* type,
   insert_into_buffer (this);
 }
 
-EndLinkEvent::~EndLinkEvent()
+simgrid::instr::EndLinkEvent::~EndLinkEvent()
 {
   free(value);
   free(key);
 }
-void EndLinkEvent::print() {
+void simgrid::instr::EndLinkEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -835,7 +852,7 @@ void EndLinkEvent::print() {
   }
 }
 
-NewEvent::NewEvent(double timestamp, container_t container, Type* type, Value* val)
+simgrid::instr::NewEvent::NewEvent(double timestamp, container_t container, Type* type, Value* val)
 {
   this->event_type                      = PAJE_NewEvent;
   this->timestamp                       = timestamp;
@@ -848,7 +865,8 @@ NewEvent::NewEvent(double timestamp, container_t container, Type* type, Value* v
   insert_into_buffer (this);
 }
 
-void NewEvent::print () {
+void simgrid::instr::NewEvent::print()
+{
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event_type, TRACE_precision(), timestamp);
     stream << std::fixed << std::setprecision(TRACE_precision());

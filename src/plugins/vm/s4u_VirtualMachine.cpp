@@ -33,7 +33,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t host_container = PJ_container_get(pm->getCname());
-    PJ_container_new(name, INSTR_MSG_VM, host_container);
+    PJ_container_new(name, simgrid::instr::INSTR_MSG_VM, host_container);
   }
 }
 

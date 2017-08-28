@@ -13,8 +13,8 @@ void TRACE_surf_host_set_speed(double date, const char *resource, double speed)
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
     container_t container = PJ_container_get(resource);
-    Type* type = PJ_type_get ("power", container->type);
-    new SetVariableEvent(date, container, type, speed);
+    simgrid::instr::Type* type = PJ_type_get("power", container->type);
+    new simgrid::instr::SetVariableEvent(date, container, type, speed);
   }
 }
 
@@ -22,8 +22,8 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
     container_t container = PJ_container_get(resource);
-    Type* type = PJ_type_get ("bandwidth", container->type);
-    new SetVariableEvent(date, container, type, bandwidth);
+    simgrid::instr::Type* type = PJ_type_get("bandwidth", container->type);
+    new simgrid::instr::SetVariableEvent(date, container, type, bandwidth);
   }
 }
 

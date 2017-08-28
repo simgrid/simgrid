@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
 
-Value::Value(const char* name, const char* color, Type* father)
+simgrid::instr::Value::Value(const char* name, const char* color, simgrid::instr::Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
@@ -29,7 +29,7 @@ Value::Value(const char* name, const char* color, Type* father)
   LogEntityValue(this->ret);
 };
 
-Value::~Value()
+simgrid::instr::Value::~Value()
 {
   /* FIXME: this should be cleanable
   xbt_free(name);
@@ -38,7 +38,8 @@ Value::~Value()
   */
 }
 
-Value* Value::get_or_new(const char* name, const char* color, Type* father)
+simgrid::instr::Value* simgrid::instr::Value::get_or_new(const char* name, const char* color,
+                                                         simgrid::instr::Type* father)
 {
   Value* ret = 0;
   try {
@@ -51,7 +52,7 @@ Value* Value::get_or_new(const char* name, const char* color, Type* father)
   return ret;
 }
 
-Value* Value::get(const char* name, Type* father)
+simgrid::instr::Value* simgrid::instr::Value::get(const char* name, Type* father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't get a value with a nullptr name (or a nullptr father)");

@@ -28,17 +28,17 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
   // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
   if (platform_variables.find(key) == platform_variables.end()) {
     container_t container = PJ_container_get (resource);
-    Type* type = PJ_type_get (variable, container->type);
-    new SetVariableEvent (now, container, type, 0);
+    simgrid::instr::Type* type = PJ_type_get(variable, container->type);
+    new simgrid::instr::SetVariableEvent(now, container, type, 0);
     platform_variables[key] = std::string("");
   }
 }
 
-static void instr_event (double now, double delta, Type* variable, container_t resource, double value)
+static void instr_event(double now, double delta, simgrid::instr::Type* variable, container_t resource, double value)
 {
   __TRACE_surf_check_variable_set_to_zero(now, variable->name, resource->name);
-  new AddVariableEvent(now, resource, variable, value);
-  new SubVariableEvent(now + delta, resource, variable, value);
+  new simgrid::instr::AddVariableEvent(now, resource, variable, value);
+  new simgrid::instr::SubVariableEvent(now + delta, resource, variable, value);
 }
 
 /* TRACE_surf_link_set_utilization: entry point from SimGrid */
@@ -54,7 +54,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
     container_t container = PJ_container_get (resource);
-    Type* type = PJ_type_get ("bandwidth_used", container->type);
+    simgrid::instr::Type* type = PJ_type_get("bandwidth_used", container->type);
     instr_event (now, delta, type, container, value);
   }
 
@@ -67,7 +67,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
     snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", category);
     XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
     container_t container = PJ_container_get (resource);
-    Type* type = PJ_type_get (category_type, container->type);
+    simgrid::instr::Type* type = PJ_type_get(category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
 }
@@ -83,7 +83,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    Type* type = PJ_type_get ("power_used", container->type);
+    simgrid::instr::Type* type = PJ_type_get("power_used", container->type);
     instr_event (now, delta, type, container, value);
   }
 
@@ -95,7 +95,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
     char category_type[INSTR_DEFAULT_STR_SIZE];
     snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", category);
     XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
-    Type* type = PJ_type_get (category_type, container->type);
+    simgrid::instr::Type* type = PJ_type_get(category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
 }
