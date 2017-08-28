@@ -6,9 +6,11 @@ The S4U API is currently under heavy work, but will eventually
 deprecate the MSG and SimDag APIs. Everything that you can do in
 SimGrid will be possible in S4U. 
 
-@warning <b>S4U is not ready for public use yet</b>. You should not go
-	 that path unless you know what you are doing.  If unsure,
-	 proceed to @ref MSG_API instead.
+@warning <b>S4U is not as rock stable as the rest of SimGrid yet</b>. 
+	 You are really welcome to test it, but be warned that the API
+	 may change without notice between releases. This is however
+	 the way to go if you want to create a new long-term project.
+	 If you want to play safe, proceed to @ref MSG_API instead. 
 
 Unsurprisingly, the S4U interface matches the concepts presented in 
 @ref starting_components "the introduction". You should read this page

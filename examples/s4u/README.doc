@@ -1,9 +1,9 @@
 S4U (Simgrid for you) is the next interface of SimGrid, expected to be released with SimGrid 4.0.
 
-Even if it's in a very preliminary state so far, you are welcome to
-try it and report any interface glitches that you see. Be however
-warned that the interface will be modified until its final release. 
-You will have to adapt your code on the way.
+Even if it is not completely rock stable yet, it may well already fit
+your needs. You are welcome to try it and report any interface
+glitches that you see. Be however warned that the interface may change
+until its final release.  You will have to adapt your code on the way.
 
 This file follows the Doxygen syntax to be included in the
 documentation, but it should remain readable directly.
