@@ -125,7 +125,6 @@ class PajeEvent {
     double timestamp_;
     e_event_type eventType_;
     virtual void print() = 0;
-    void* data;
     virtual ~PajeEvent();
 };
 
