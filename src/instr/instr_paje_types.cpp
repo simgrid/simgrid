@@ -22,14 +22,13 @@ simgrid::instr::Type* PJ_type_get_root()
 
 simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind,
                            Type* father)
+    : kind_(kind), father_(father)
 {
   if (typeNameBuff == nullptr || key == nullptr){
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
   }
 
   this->name_     = xbt_strdup(typeNameBuff);
-  this->father_   = father;
-  this->kind_     = kind;
   this->children_ = xbt_dict_new_homogeneous(nullptr);
   this->values_   = xbt_dict_new_homogeneous(nullptr);
   this->color_    = xbt_strdup(color);

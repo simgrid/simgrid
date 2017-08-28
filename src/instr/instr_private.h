@@ -14,8 +14,6 @@
 #include "src/internal_config.h"
 #include <set>
 
-SG_BEGIN_DECL()
-
 /* Need to define function drand48 for Windows */
 /* FIXME: use _drand48() defined in src/surf/random_mgr.c instead */
 #ifdef _WIN32
@@ -282,6 +280,8 @@ class NewEvent : public PajeEvent  {
 }
 } // namespace simgrid::instr
 typedef simgrid::instr::s_container* container_t;
+
+SG_BEGIN_DECL()
 
 extern XBT_PRIVATE std::set<std::string> created_categories;
 extern XBT_PRIVATE std::set<std::string> declared_marks;
