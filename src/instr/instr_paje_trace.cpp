@@ -192,7 +192,7 @@ void TRACE_paje_end() {
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void DefineContainerEvent(simgrid::instr::Type* type)
+void LogContainerTypeDefinition(simgrid::instr::Type* type)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineContainerType);
   //print it

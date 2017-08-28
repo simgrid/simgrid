@@ -415,7 +415,7 @@ extern instr_fmt_type_t instr_fmt_type;
 
 SG_END_DECL()
 
-void DefineContainerEvent(simgrid::instr::Type* type);
+void LogContainerTypeDefinition(simgrid::instr::Type* type);
 void LogVariableTypeDefinition(simgrid::instr::Type* type);
 void LogStateTypeDefinition(simgrid::instr::Type* type);
 void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest);

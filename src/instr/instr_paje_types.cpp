@@ -115,7 +115,7 @@ simgrid::instr::Type* simgrid::instr::Type::containerNew(const char* name, simgr
     rootType = ret;
   } else {
     XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
-    DefineContainerEvent(ret);
+    LogContainerTypeDefinition(ret);
   }
   return ret;
 }
