@@ -143,7 +143,7 @@ namespace surf {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   NetPointNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetPointNs3>();
 
-  flowFromSock = xbt_dict_new_homogeneous([](void* p) { delete (SgFlow*)p; });
+  flowFromSock = xbt_dict_new_homogeneous([](void* p) { delete static_cast<SgFlow*>(p); });
   ns3_initialize(ns3_tcp_model.get().c_str());
 
   simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {
@@ -246,7 +246,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     xbt_dynar_pop(socket_to_destroy,&ns3Socket);
 
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
-      SgFlow *flow = (SgFlow*)xbt_dict_get (flowFromSock, ns3Socket);
+      SgFlow* flow = static_cast<SgFlow*>(xbt_dict_get(flowFromSock, ns3Socket));
       XBT_DEBUG ("Removing socket %p of action %p", ns3Socket, flow->action_);
     }
     xbt_dict_remove(flowFromSock, ns3Socket);

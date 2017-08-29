@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -36,7 +36,7 @@ struct _UPT_info {
 static inline
 pid_t _UPT_getpid(void* arg)
 {
-  struct _UPT_info* info = (_UPT_info*) arg;
+  struct _UPT_info* info = static_cast<_UPT_info*>(arg);
   return info->pid;
 }
 
