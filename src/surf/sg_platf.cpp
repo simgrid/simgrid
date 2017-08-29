@@ -274,7 +274,7 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty()) {
     std::string newid   = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
-    current_as->router_ = sg_platf_new_router(newid.c_str(), NULL);
+    current_as->router_ = sg_platf_new_router(newid, NULL);
   } else {
     current_as->router_ = sg_platf_new_router(cluster->router_id, NULL);
   }
