@@ -1,5 +1,4 @@
 p Test compute
-! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 ! timeout 5
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-shared --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning

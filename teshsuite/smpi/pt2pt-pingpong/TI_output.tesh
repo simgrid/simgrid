@@ -3,7 +3,6 @@ $ rm -rf ./out_in_ti.txt_files
 
 p Test output of time independent tracing
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
-! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 >

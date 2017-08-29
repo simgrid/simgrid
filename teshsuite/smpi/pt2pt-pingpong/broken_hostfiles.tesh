@@ -1,4 +1,3 @@
-! setenv LD_LIBRARY_PATH=../../lib
 ! expect return 1
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile_empty  -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
 > [smpirun] ** error: the hostfile '../hostfile_empty' is empty. Aborting.

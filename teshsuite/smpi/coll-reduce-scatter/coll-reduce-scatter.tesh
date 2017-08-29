@@ -1,5 +1,4 @@
 # Smpi reduce scatter collectives tests
-! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 
 p Test reduce_scatter

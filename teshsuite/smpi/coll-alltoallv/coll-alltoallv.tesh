@@ -1,5 +1,4 @@
 # Smpi Alltoall collectives tests
-! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 
 p Test all to all

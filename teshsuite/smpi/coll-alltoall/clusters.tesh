@@ -1,5 +1,4 @@
 # Smpi Alltoall on various cluster files, with several routings
-! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 
 p Test classic - backbone
