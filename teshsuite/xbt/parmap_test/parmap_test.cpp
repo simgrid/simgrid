@@ -83,6 +83,7 @@ static int test_parmap_extended(e_xbt_parmap_mode_t mode)
 int main(int argc, char** argv)
 {
   int status = 0;
+  xbt_log_control_set("parmap_test.fmt:[%c/%p]%e%m%n");
   MSG_init(&argc, argv);
 
   XBT_INFO("Basic testing posix");
