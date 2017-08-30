@@ -153,7 +153,10 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
       case 'm': {               /* user-provided message; LOG4J compliant */
         int sz;
         set_sz_from_precision();
-        int len = vsnprintf(p, sz, msg_fmt, ev->ap);
+        va_list ap;
+        va_copy(ap, ev->ap);
+        int len = vsnprintf(p, sz, msg_fmt, ap);
+        va_end(ap);
         check_overflow(MIN(sz, len));
         break;
       }
