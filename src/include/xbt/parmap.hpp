@@ -90,7 +90,6 @@ private:
      */
     virtual void worker_wait(unsigned) = 0;
 
-  protected:
     Parmap<T>& parmap;
   };
 
