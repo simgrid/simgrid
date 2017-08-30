@@ -45,11 +45,6 @@ static std::string parmap_mode_name(e_xbt_parmap_mode_t mode)
   return name;
 }
 
-static bool parmap_skip_mode(e_xbt_parmap_mode_t mode)
-{
-  return mode == XBT_PARMAP_FUTEX && not HAVE_FUTEX_H;
-}
-
 static unsigned fibonacci(unsigned n)
 {
   if (n < 2)
@@ -68,11 +63,11 @@ static void fun_big_comp(unsigned* arg)
   *arg = fibonacci(*arg % FIBO_MAX);
 }
 
-static void bench_parmap_full(int nthreads, e_xbt_parmap_mode_t mode)
+static void bench_parmap(int nthreads, e_xbt_parmap_mode_t mode, bool full_bench)
 {
   XBT_INFO("** mode = %s", parmap_mode_name(mode).c_str());
 
-  if (parmap_skip_mode(mode)) {
+  if (mode == XBT_PARMAP_FUTEX && not HAVE_FUTEX_H) {
     XBT_INFO("   not available");
     return;
   }
@@ -82,56 +77,32 @@ static void bench_parmap_full(int nthreads, e_xbt_parmap_mode_t mode)
   std::iota(begin(a), end(a), 0);
   std::iota(begin(data), end(data), &a[0]);
 
+  auto* parmap      = new simgrid::xbt::Parmap<unsigned*>(nthreads, mode);
   int i             = 0;
   double start_time = xbt_os_time();
   double elapsed_time;
   do {
-    {
-      simgrid::xbt::Parmap<unsigned*> parmap(nthreads, mode);
-      parmap.apply(fun_to_apply, data);
-    } // enclosing block to ensure that the parmap is destroyed here.
+    if (full_bench) {
+      delete parmap;
+      parmap = new simgrid::xbt::Parmap<unsigned*>(nthreads, mode);
+    }
+    parmap->apply(fun_to_apply, data);
     elapsed_time = xbt_os_time() - start_time;
     i++;
   } while (elapsed_time < TIMEOUT);
+  delete parmap;
 
   XBT_INFO("   ran %d times in %g seconds (%g/s)", i, elapsed_time, i / elapsed_time);
 }
 
-static void bench_parmap_apply(int nthreads, e_xbt_parmap_mode_t mode)
-{
-  XBT_INFO("** mode = %s", parmap_mode_name(mode).c_str());
-
-  if (parmap_skip_mode(mode)) {
-    XBT_INFO("   not available");
-    return;
-  }
-
-  std::vector<unsigned> a(ARRAY_SIZE);
-  std::vector<unsigned*> data(ARRAY_SIZE);
-  std::iota(begin(a), end(a), 0);
-  std::iota(begin(data), end(data), &a[0]);
-
-  simgrid::xbt::Parmap<unsigned*> parmap(nthreads, mode);
-  int i             = 0;
-  double start_time = xbt_os_time();
-  double elapsed_time;
-  do {
-    parmap.apply(fun_to_apply, data);
-    elapsed_time = xbt_os_time() - start_time;
-    i++;
-  } while (elapsed_time < TIMEOUT);
-
-  XBT_INFO("   ran %d times in %g seconds (%g/s)", i, elapsed_time, i / elapsed_time);
-}
-
-static void bench_all_modes(void (*bench_fun)(int, e_xbt_parmap_mode_t), int nthreads, unsigned modes)
+static void bench_all_modes(int nthreads, unsigned modes, bool full_bench)
 {
   std::vector<e_xbt_parmap_mode_t> all_modes = {XBT_PARMAP_POSIX, XBT_PARMAP_FUTEX, XBT_PARMAP_BUSY_WAIT,
                                                 XBT_PARMAP_DEFAULT};
 
   for (unsigned i = 0; i < all_modes.size(); i++) {
     if (1U << i & modes)
-      bench_fun(nthreads, all_modes[i]);
+      bench_parmap(nthreads, all_modes[i], full_bench);
   }
 }
 
@@ -163,21 +134,21 @@ int main(int argc, char* argv[])
   fun_to_apply = &fun_small_comp;
 
   XBT_INFO("Benchmark for parmap create+apply+destroy (small comp):");
-  bench_all_modes(bench_parmap_full, nthreads, modes);
+  bench_all_modes(nthreads, modes, true);
   XBT_INFO("%s", "");
 
   XBT_INFO("Benchmark for parmap apply only (small comp):");
-  bench_all_modes(bench_parmap_apply, nthreads, modes);
+  bench_all_modes(nthreads, modes, false);
   XBT_INFO("%s", "");
 
   fun_to_apply = &fun_big_comp;
 
   XBT_INFO("Benchmark for parmap create+apply+destroy (big comp):");
-  bench_all_modes(bench_parmap_full, nthreads, modes);
+  bench_all_modes(nthreads, modes, true);
   XBT_INFO("%s", "");
 
   XBT_INFO("Benchmark for parmap apply only (big comp):");
-  bench_all_modes(bench_parmap_apply, nthreads, modes);
+  bench_all_modes(nthreads, modes, false);
   XBT_INFO("%s", "");
 
   return EXIT_SUCCESS;
