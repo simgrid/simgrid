@@ -224,7 +224,7 @@ template <typename T> void Parmap<T>::apply(void (*fun)(T), const std::vector<T>
  */
 template <typename T> boost::optional<T> Parmap<T>::next()
 {
-  unsigned index = this->index++;
+  unsigned index = this->index.fetch_add(1, std::memory_order_relaxed);
   if (index < this->data->size())
     return (*this->data)[index];
   else
@@ -236,11 +236,11 @@ template <typename T> boost::optional<T> Parmap<T>::next()
  */
 template <typename T> void Parmap<T>::work()
 {
-  unsigned index = this->index++;
   unsigned length = this->data->size();
+  unsigned index  = this->index.fetch_add(1, std::memory_order_relaxed);
   while (index < length) {
     this->fun((*this->data)[index]);
-    index = this->index++;
+    index = this->index.fetch_add(1, std::memory_order_relaxed);
   }
 }
 
