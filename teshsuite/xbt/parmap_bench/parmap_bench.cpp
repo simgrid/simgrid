@@ -9,11 +9,11 @@
 #include <xbt/parmap.hpp>
 
 #include <cstdlib>
-#include <iomanip>
-#include <iostream>
 #include <numeric> // std::iota
 #include <string>
 #include <vector>
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_bench, "Bench for parmap");
 
 #define MODES_DEFAULT 0x7
 #define TIMEOUT 10.0
@@ -47,12 +47,7 @@ static std::string parmap_mode_name(e_xbt_parmap_mode_t mode)
 
 static bool parmap_skip_mode(e_xbt_parmap_mode_t mode)
 {
-  if (mode == XBT_PARMAP_FUTEX && not HAVE_FUTEX_H) {
-    std::cout << "not available\n";
-    return true;
-  } else {
-    return false;
-  }
+  return mode == XBT_PARMAP_FUTEX && not HAVE_FUTEX_H;
 }
 
 static unsigned fibonacci(unsigned n)
@@ -75,11 +70,12 @@ static void fun_big_comp(unsigned* arg)
 
 static void bench_parmap_full(int nthreads, e_xbt_parmap_mode_t mode)
 {
-  std::cout << "** mode = " << std::left << std::setw(15) << parmap_mode_name(mode) << " ";
-  std::cout.flush();
+  XBT_INFO("** mode = %s", parmap_mode_name(mode).c_str());
 
-  if (parmap_skip_mode(mode))
+  if (parmap_skip_mode(mode)) {
+    XBT_INFO("   not available");
     return;
+  }
 
   std::vector<unsigned> a(ARRAY_SIZE);
   std::vector<unsigned*> data(ARRAY_SIZE);
@@ -98,16 +94,17 @@ static void bench_parmap_full(int nthreads, e_xbt_parmap_mode_t mode)
     i++;
   } while (elapsed_time < TIMEOUT);
 
-  std::cout << "ran " << i << " times in " << elapsed_time << " seconds (" << (i / elapsed_time) << "/s)\n";
+  XBT_INFO("   ran %d times in %g seconds (%g/s)", i, elapsed_time, i / elapsed_time);
 }
 
 static void bench_parmap_apply(int nthreads, e_xbt_parmap_mode_t mode)
 {
-  std::cout << "** mode = " << std::left << std::setw(15) << parmap_mode_name(mode) << " ";
-  std::cout.flush();
+  XBT_INFO("** mode = %s", parmap_mode_name(mode).c_str());
 
-  if (parmap_skip_mode(mode))
+  if (parmap_skip_mode(mode)) {
+    XBT_INFO("   not available");
     return;
+  }
 
   std::vector<unsigned> a(ARRAY_SIZE);
   std::vector<unsigned*> data(ARRAY_SIZE);
@@ -124,7 +121,7 @@ static void bench_parmap_apply(int nthreads, e_xbt_parmap_mode_t mode)
     i++;
   } while (elapsed_time < TIMEOUT);
 
-  std::cout << "ran " << i << " times in " << elapsed_time << " seconds (" << (i / elapsed_time) << "/s)\n";
+  XBT_INFO("   ran %d times in %g seconds (%g/s)", i, elapsed_time, i / elapsed_time);
 }
 
 static void bench_all_modes(void (*bench_fun)(int, e_xbt_parmap_mode_t), int nthreads, unsigned modes)
@@ -143,44 +140,45 @@ int main(int argc, char* argv[])
   int nthreads;
   unsigned modes = MODES_DEFAULT;
 
+  xbt_log_control_set("parmap_bench.fmt:[%c/%p]%e%m%n");
   MSG_init(&argc, argv);
 
   if (argc != 2 && argc != 3) {
-    std::cerr << "Usage: " << argv[0] << " nthreads [modes]\n"
-              << "    nthreads - number of working threads\n"
-              << "    modes    - bitmask of modes to test\n";
+    XBT_INFO("Usage: %s nthreads [modes]", argv[0]);
+    XBT_INFO("    nthreads - number of working threads");
+    XBT_INFO("    modes    - bitmask of modes to test");
     return EXIT_FAILURE;
   }
   nthreads = atoi(argv[1]);
   if (nthreads < 1) {
-    std::cerr << "ERROR: invalid thread count: " << nthreads << "\n";
+    XBT_ERROR("Invalid thread count: %d", nthreads);
     return EXIT_FAILURE;
   }
   if (argc == 3)
     modes = strtol(argv[2], NULL, 0);
 
-  std::cout << "Parmap benchmark with " << nthreads << " workers (modes = " << std::hex << modes << std::dec
-            << ")...\n\n";
+  XBT_INFO("Parmap benchmark with %d workers (modes = %#x)...", nthreads, modes);
+  XBT_INFO("%s", "");
 
   fun_to_apply = &fun_small_comp;
 
-  std::cout << "Benchmark for parmap create+apply+destroy (small comp):\n";
+  XBT_INFO("Benchmark for parmap create+apply+destroy (small comp):");
   bench_all_modes(bench_parmap_full, nthreads, modes);
-  std::cout << std::endl;
+  XBT_INFO("%s", "");
 
-  std::cout << "Benchmark for parmap apply only (small comp):\n";
+  XBT_INFO("Benchmark for parmap apply only (small comp):");
   bench_all_modes(bench_parmap_apply, nthreads, modes);
-  std::cout << std::endl;
+  XBT_INFO("%s", "");
 
   fun_to_apply = &fun_big_comp;
 
-  std::cout << "Benchmark for parmap create+apply+destroy (big comp):\n";
+  XBT_INFO("Benchmark for parmap create+apply+destroy (big comp):");
   bench_all_modes(bench_parmap_full, nthreads, modes);
-  std::cout << std::endl;
+  XBT_INFO("%s", "");
 
-  std::cout << "Benchmark for parmap apply only (big comp):\n";
+  XBT_INFO("Benchmark for parmap apply only (big comp):");
   bench_all_modes(bench_parmap_apply, nthreads, modes);
-  std::cout << std::endl;
+  XBT_INFO("%s", "");
 
   return EXIT_SUCCESS;
 }
