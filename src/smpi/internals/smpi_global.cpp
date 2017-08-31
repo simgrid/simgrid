@@ -605,10 +605,11 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
         // Load the copy and resolve the entry point:
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
+        int saved_errno = errno;
         if (xbt_cfg_get_boolean("smpi/keep-temps") == false)
           unlink(target_executable.c_str());
         if (handle == nullptr)
-          xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), errno, strerror(errno));
+          xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno, strerror(saved_errno));
         smpi_entry_point_type entry_point = smpi_resolve_function(handle);
         if (not entry_point)
           xbt_die("Could not resolve entry point");
