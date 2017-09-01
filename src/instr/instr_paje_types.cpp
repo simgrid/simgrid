@@ -57,7 +57,7 @@ void PJ_type_free(simgrid::instr::Type* type)
   xbt_free(type->id_);
   xbt_free(type->color_);
   xbt_dict_free(&type->children_);
-  xbt_free (type);
+  delete type;
   type = nullptr;
 }
 
