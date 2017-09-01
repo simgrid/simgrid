@@ -57,7 +57,7 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF  \
 
 
 make -j$NUMPROC
-ctest -D ExperimentalTest -j$NUMPROC || true
+ctest --no-compress-output -D ExperimentalTest -j$NUMPROC || true
 
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
