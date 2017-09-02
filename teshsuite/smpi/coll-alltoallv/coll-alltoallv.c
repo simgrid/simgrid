@@ -68,6 +68,10 @@ int main(int argc, char **argv)
 
   /* Create the buffer */
   MPI_Comm_size(comm, &size);
+  if(size<=0){
+    printf("error : comm size <= 0, run with mpirun\n");
+    return -1;
+  }
   MPI_Comm_rank(comm, &rank);
   int* sbuf = (int *) xbt_malloc(size * size * sizeof(int));
   int* rbuf = (int *) xbt_malloc(size * size * sizeof(int));
