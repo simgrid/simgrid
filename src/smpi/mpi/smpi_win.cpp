@@ -413,7 +413,7 @@ int Win::compare_and_swap(void *origin_addr, void *compare_addr,
   }
 
   XBT_DEBUG("Entering MPI_Compare_and_swap with %d", target_rank);
-  MPI_Request req;
+  MPI_Request req = MPI_REQUEST_NULL;
   xbt_mutex_acquire(send_win->atomic_mut_);
   get(result_addr, 1, datatype, target_rank,
               target_disp, 1, datatype, &req);

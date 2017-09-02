@@ -64,7 +64,7 @@ int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount,
           ||nbytes > mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].max
       ) {
           tmp_buf = (char *)smpi_get_tmp_sendbuffer( comm_size * recvcount * recvtype_size );
-          mpi_errno = Datatype::copy((char *)recvbuf,
+          Datatype::copy((char *)recvbuf,
               comm_size*recvcount, recvtype,
               (char *)tmp_buf,
               comm_size*recvcount, recvtype);
@@ -622,11 +622,9 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
         {
             shmem_comm = comm->get_intra_comm();
             if (not is_contig || not is_homogeneous) {
-              mpi_errno = MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
+              MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
             } else {
-                mpi_errno =
-                    MPIR_Bcast_tune_inter_node_helper_MV2(buffer, count, datatype, root,
-                                                          comm);
+              MPIR_Bcast_tune_inter_node_helper_MV2(buffer, count, datatype, root, comm);
             }
 
             /* We are now done with the inter-node phase */
@@ -847,7 +845,7 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, i
       while (pof2 < comm_size) pof2 <<= 1;
       if (pof2 == comm_size && is_block_regular) {
           /* noncommutative, pof2 size, and block regular */
-          mpi_errno = MPIR_Reduce_scatter_non_comm_MV2(sendbuf, recvbuf,
+          MPIR_Reduce_scatter_non_comm_MV2(sendbuf, recvbuf,
               recvcnts, datatype,
               op, comm);
       }

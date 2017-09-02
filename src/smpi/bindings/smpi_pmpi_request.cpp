@@ -645,6 +645,9 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 {
   if (index == nullptr)
     return MPI_ERR_ARG;
+  
+  if (count <= 0)
+    return MPI_SUCCESS;
 
   smpi_bench_end();
   //save requests information for tracing
@@ -656,9 +659,9 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     MPI_Comm comm;
   } savedvalstype;
   savedvalstype* savedvals=nullptr;
-  if(count>0){
-    savedvals = xbt_new0(savedvalstype, count);
-  }
+
+  savedvals = xbt_new0(savedvalstype, count);
+
   for (int i = 0; i < count; i++) {
     MPI_Request req = requests[i];      //already received requests are no longer valid
     if (req) {
