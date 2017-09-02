@@ -52,7 +52,10 @@ static int calculate_num_nodes_up_to_level( int fanout, int level )
 {
     /* just use geometric progression formula for sum:
        a^0+a^1+...a^(n-1) = (a^n-1)/(a-1) */
-    return ((pown(fanout,level) - 1)/(fanout - 1));
+  if(fanout > 1)  
+   return ((pown(fanout,level) - 1)/(fanout - 1));
+  else
+   return 0; // is this right ?
 }
 
 /*
