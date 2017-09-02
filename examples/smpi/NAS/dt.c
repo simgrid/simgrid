@@ -240,7 +240,6 @@ static DGraph *buildWH(const char cls){
     AttachNode(dg,nd);
   }
   totComparators=0;
-  numPrevLayerNodes=numLayerNodes;
   while(numLayerNodes>maxInDeg){
     numLayerNodes=numLayerNodes/maxInDeg;
     if(numLayerNodes*maxInDeg<numPrevLayerNodes)
@@ -452,7 +451,6 @@ static Arr* WindowFilter(Arr *a, Arr* b,int w){
     }
     if(rmsm1<rms0) k=-1;
     if(k==0){
-      j=i+fielddim;
       a->val[i]=weight*b->val[i];
       a->val[i+1]=weight*b->val[i+1];
       a->val[i+2]=weight*b->val[i+2];
@@ -677,7 +675,7 @@ int main(int argc,char **argv ){
     if(my_rank==0)
     fprintf(stderr,"Not enough timers. Node timeing is off. \n");
   }
-  if(dg->numNodes>comm_size){
+  if(dg->numNodes && dg->numNodes>comm_size){
     if(my_rank==0){
     fprintf(stderr,"**  The number of MPI processes should not be less than \n");
     fprintf(stderr,"**  the number of nodes in the graph\n");

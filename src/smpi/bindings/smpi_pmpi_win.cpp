@@ -190,7 +190,8 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((not origin_datatype->is_valid()) || (not target_datatype->is_valid())) {
+  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
+            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else {
     int rank = smpi_process()->index();
@@ -224,7 +225,8 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((not origin_datatype->is_valid()) || (not target_datatype->is_valid())) {
+  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
+            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else if(request == nullptr){
     retval = MPI_ERR_REQUEST;
@@ -259,7 +261,8 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   } else if ((origin_count < 0 || target_count < 0) ||
             (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((not origin_datatype->is_valid()) || (not target_datatype->is_valid())) {
+  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
+            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else {
     int rank = smpi_process()->index();
@@ -295,7 +298,8 @@ int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   } else if ((origin_count < 0 || target_count < 0) ||
             (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((not origin_datatype->is_valid()) || (not target_datatype->is_valid())) {
+  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
+            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else if(request == nullptr){
     retval = MPI_ERR_REQUEST;
@@ -332,7 +336,8 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((not origin_datatype->is_valid()) || (not target_datatype->is_valid())) {
+  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
+            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -367,7 +372,8 @@ int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_d
   } else if ((origin_count < 0 || target_count < 0) ||
              (origin_addr==nullptr && origin_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((not origin_datatype->is_valid()) || (not target_datatype->is_valid())) {
+  } else if (((origin_datatype == MPI_DATATYPE_NULL) || (target_datatype == MPI_DATATYPE_NULL)) ||
+            ((not origin_datatype->is_valid()) || (not target_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -406,8 +412,8 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
              (origin_addr==nullptr && origin_count > 0 && op != MPI_NO_OP) ||
              (result_addr==nullptr && result_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((origin_datatype != MPI_DATATYPE_NULL && not origin_datatype->is_valid()) ||
-             (not target_datatype->is_valid()) || (not result_datatype->is_valid())) {
+  } else if (((target_datatype == MPI_DATATYPE_NULL) || (result_datatype == MPI_DATATYPE_NULL)) ||
+            (((origin_datatype != MPI_DATATYPE_NULL) && (not origin_datatype->is_valid())) || (not target_datatype->is_valid()) || (not result_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -447,8 +453,8 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
              (origin_addr==nullptr && origin_count > 0 && op != MPI_NO_OP) ||
              (result_addr==nullptr && result_count > 0)){
     retval = MPI_ERR_COUNT;
-  } else if ((origin_datatype != MPI_DATATYPE_NULL && not origin_datatype->is_valid()) ||
-             (not target_datatype->is_valid()) || (not result_datatype->is_valid())) {
+  } else if (((target_datatype == MPI_DATATYPE_NULL) || (result_datatype == MPI_DATATYPE_NULL)) ||
+            (((origin_datatype != MPI_DATATYPE_NULL) && (not origin_datatype->is_valid())) || (not target_datatype->is_valid()) || (not result_datatype->is_valid()))) {
     retval = MPI_ERR_TYPE;
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
@@ -490,7 +496,7 @@ int PMPI_Compare_and_swap(void *origin_addr, void *compare_addr,
     retval = MPI_ERR_ARG;
   } else if (origin_addr==nullptr || result_addr==nullptr || compare_addr==nullptr){
     retval = MPI_ERR_COUNT;
-  } else if (not datatype->is_valid()) {
+  } else if ((datatype == MPI_DATATYPE_NULL) || (not datatype->is_valid())) {
     retval = MPI_ERR_TYPE;
   } else {
     int rank = smpi_process()->index();

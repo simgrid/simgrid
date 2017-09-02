@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   if (maxlen > 1)
-    mult = size;
+    mult = maxlen > size ? size : maxlen;
   int* sb = (int *) xbt_malloc(size *maxlen * sizeof(int));
   int* rb = (int *) xbt_malloc(size *maxlen * sizeof(int));
 

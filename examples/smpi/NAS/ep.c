@@ -73,7 +73,6 @@ int main(int argc, char **argv) {
     fprintf(stdout," Number of random numbers generated: %s\n",size);
     fprintf(stdout," Number of active processes: %d\n",no_nodes);
   }
-  verified = FALSE;
 
   /* Compute the number of "batches" of random number pairs generated per processor. Adjust if the number of processors
    * does not evenly divide the total number  */
@@ -99,7 +98,6 @@ int main(int argc, char **argv) {
   for (i=0;i<2*nk;i++) {
     x[i] = -1e99;
   }
-  Mops = log(sqrt(abs(1)));
 
   /* Synchronize before placing time stamp */
   MPI_Barrier( MPI_COMM_WORLD );
@@ -147,12 +145,12 @@ int main(int argc, char **argv) {
     for (i=1;i<=100 && !stop;i++) {
       ik = kk / 2;
       if (2 * ik != kk)  {
-        t3 = randlc(&t1, &t2);
+        randlc(&t1, &t2);
       }
       if (ik==0)
         stop = TRUE;
       else {
-        t3 = randlc(&t2, &t2);
+        randlc(&t2, &t2);
         kk = ik;
       }
     }

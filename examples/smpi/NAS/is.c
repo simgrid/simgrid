@@ -124,7 +124,7 @@ static double  find_my_seed( int  kn,       /* my processor rank, 0<=kn<=num pro
                              double a )     /* Ran num gen mult, try 1220703125.00 */
 {
   long   i;
-  double t1,t2,t3,an;
+  double t1,t2,an;
   long   mq,nq,kk,ik;
 
   nq = nn / np;
@@ -145,13 +145,12 @@ static double  find_my_seed( int  kn,       /* my processor rank, 0<=kn<=num pro
   for( i=1; i<=100; i++ ){
     ik = kk / 2;
     if( 2 * ik !=  kk )
-      t3 = randlc( &t1, &t2 );
+      randlc( &t1, &t2 );
     if( ik == 0 )
       break;
-    t3 = randlc( &t2, &t2 );
+    randlc( &t2, &t2 );
     kk = ik;
   }
-  an=t3;//added to silence paranoid compilers
 
   return t1;
 }
