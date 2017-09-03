@@ -173,7 +173,7 @@ void MSG_vm_destroy(msg_vm_t vm)
   if (TRACE_msg_vm_is_enabled()) {
     container_t container = PJ_container_get(vm->getCname());
     PJ_container_remove_from_parent(container);
-    PJ_container_free(container);
+    delete container;
   }
 }
 
@@ -302,10 +302,11 @@ static int migration_rx_fun(int argc, char *argv[])
     // destroy existing container of this vm
     container_t existing_container = PJ_container_get(vm->getCname());
     PJ_container_remove_from_parent(existing_container);
-    PJ_container_free(existing_container);
+    delete existing_container;
 
     // create new container on the new_host location
-    PJ_container_new(vm->getCname(), simgrid::instr::INSTR_MSG_VM, PJ_container_get(ms->dst_pm->getCname()));
+    new simgrid::instr::Container(vm->getCname(), simgrid::instr::INSTR_MSG_VM,
+                                  PJ_container_get(ms->dst_pm->getCname()));
 
     // end link
     msg  = PJ_container_get(vm->getCname());

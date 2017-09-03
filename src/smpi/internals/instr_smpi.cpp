@@ -199,7 +199,7 @@ void TRACE_smpi_init(int rank)
 #if HAVE_PAPI
   container_t container =
 #endif
-      PJ_container_new(str, simgrid::instr::INSTR_SMPI, father);
+      new simgrid::instr::Container(str, simgrid::instr::INSTR_SMPI, father);
 #if HAVE_PAPI
   papi_counter_t counters = smpi_process()->papi_counters();
 
@@ -223,7 +223,7 @@ void TRACE_smpi_finalize(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   container_t container = PJ_container_get(smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
   PJ_container_remove_from_parent (container);
-  PJ_container_free (container);
+  delete container;
 }
 
 void TRACE_smpi_collective_in(int rank, const char *operation, instr_extra_data extra)

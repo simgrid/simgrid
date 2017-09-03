@@ -109,6 +109,9 @@ typedef enum {
 
 class Container {
 public:
+  Container(const char* name, simgrid::instr::e_container_types kind, Container* father);
+  virtual ~Container();
+
   sg_netpoint_t netpoint_;
   char* name_;             /* Unique name of this container */
   char* id_;               /* Unique id of this container */
@@ -325,12 +328,10 @@ extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id ();
 XBT_PRIVATE void PJ_container_alloc ();
 XBT_PRIVATE void PJ_container_release ();
-XBT_PUBLIC(container_t) PJ_container_new(const char* name, simgrid::instr::e_container_types kind, container_t father);
 XBT_PUBLIC(container_t) PJ_container_get (const char *name);
 XBT_PUBLIC(container_t) PJ_container_get_or_null (const char *name);
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
-XBT_PUBLIC(void) PJ_container_free (container_t container);
 XBT_PUBLIC(void) PJ_container_free_all (void);
 XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
