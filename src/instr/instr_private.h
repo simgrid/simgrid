@@ -116,7 +116,7 @@ public:
   char* name_;             /* Unique name of this container */
   char* id_;               /* Unique id of this container */
   Type* type_;             /* Type of this container */
-  int level_;              /* Level in the hierarchy, root level is 0 */
+  int level_ = 0;          /* Level in the hierarchy, root level is 0 */
   e_container_types kind_; /* This container is of what kind */
   Container* father_;
   xbt_dict_t children_;

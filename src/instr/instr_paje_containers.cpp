@@ -39,25 +39,18 @@ void PJ_container_set_root (container_t root)
 }
 
 simgrid::instr::Container::Container(const char* name, simgrid::instr::e_container_types kind, Container* father)
+    : name_(xbt_strdup(name)), father_(father)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a container with a nullptr name");
-  }
+  xbt_assert(name != nullptr, "Container name cannot be nullptr");
 
   static long long int container_id = 0;
-  char id_str[INSTR_DEFAULT_STR_SIZE];
-  snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id);
+  id_                               = bprintf("%lld", container_id); // id (or alias) of the container
   container_id++;
-
-  name_             = xbt_strdup(name);   // name of the container
-  id_               = xbt_strdup(id_str); // id (or alias) of the container
-  father_           = father;
-  sg_host_t sg_host = sg_host_by_name(name);
 
   //Search for network_element_t
   switch (kind){
     case simgrid::instr::INSTR_HOST:
-      this->netpoint_ = sg_host->pimpl_netpoint;
+      this->netpoint_ = sg_host_by_name(name)->pimpl_netpoint;
       xbt_assert(this->netpoint_, "Element '%s' not found", name);
       break;
     case simgrid::instr::INSTR_ROUTER:
@@ -73,13 +66,11 @@ simgrid::instr::Container::Container(const char* name, simgrid::instr::e_contain
       break;
   }
 
-  // level depends on level of father
-  if (this->father_) {
-    this->level_ = this->father_->level_ + 1;
+  if (father_) {
+    this->level_ = father_->level_ + 1;
     XBT_DEBUG("new container %s, child of %s", name, father->name_);
-  }else{
-    this->level_ = 0;
   }
+
   // type definition (method depends on kind of this new container)
   this->kind_ = kind;
   if (this->kind_ == simgrid::instr::INSTR_AS) {
