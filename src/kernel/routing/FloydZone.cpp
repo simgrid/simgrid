@@ -140,7 +140,7 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
       route->gw_dst   = gw_tmp;
     }
 
-    if (not route->gw_src && not route->gw_dst)
+    if (not route->gw_src || not route->gw_dst)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->name().c_str(), route->src->name().c_str());
     else
       XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name().c_str(), route->gw_src->name().c_str(),

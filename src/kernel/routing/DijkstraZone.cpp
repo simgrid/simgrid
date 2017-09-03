@@ -337,20 +337,23 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
 
   // Symmetrical YES
   if (route->symmetrical == true) {
-    if (not route->gw_dst && not route->gw_src)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
-    else
-      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,
-                route->gw_src->name().c_str());
 
     xbt_dynar_t nodes   = xbt_graph_get_nodes(routeGraph_);
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src->id(), xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst->id(), xbt_node_t);
     xbt_edge_t edge     = xbt_graph_get_edge(routeGraph_, node_e_v, node_s_v);
 
-    if (edge)
-      THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->name().c_str(), srcName,
+    if (not route->gw_dst || not route->gw_src){
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
+      if (edge)
+        THROWF(arg_error, 0, "Route from %s to %s already exists", dstName, srcName);
+    } else {
+      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,
+                route->gw_src->name().c_str());
+      if (edge)
+        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->name().c_str(), srcName,
              route->gw_src->name().c_str());
+    }
 
     if (route->gw_dst && route->gw_src) {
       NetPoint* gw_tmp = route->gw_src;

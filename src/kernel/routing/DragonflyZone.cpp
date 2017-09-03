@@ -364,8 +364,6 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
       route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
       if (latency)
         *latency += currentRouter->blackLinks_[targetCoords[1]]->latency();
-      currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
-                               targetCoords[1] * numBladesPerChassis_ + targetCoords[2]];
     }
   }
 

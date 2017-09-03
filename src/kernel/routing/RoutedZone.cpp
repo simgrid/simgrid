@@ -179,7 +179,7 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
   const char* srcName = src->cname();
   const char* dstName = dst->cname();
 
-  if (not route->gw_dst && not route->gw_src) {
+  if (not route->gw_dst || not route->gw_src) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
