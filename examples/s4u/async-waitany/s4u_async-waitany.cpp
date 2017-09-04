@@ -41,9 +41,12 @@ public:
 
   /* Here we are waiting for the completion of all communications */
   while (!comms.empty()) {
+    comm=comms.back();
     comms.pop_back();
+    comm->wait();
   }
   comms.clear();
+  comm = nullptr;
 
   /* Here we are waiting for the completion of all tasks */
   for (int i = 0; i < receivers_count; i++) {
@@ -53,6 +56,9 @@ public:
     comm = nullptr;
   }
 
+}
+void operator()()
+{
   XBT_INFO("Goodbye now!");
 }
 };
@@ -82,25 +88,27 @@ public:
     // returns the rank of the comm that just ended. Remove it.
     comm=comms.back();
     comms.pop_back();
-    // simgrid::s4u::this_actor::execute(comm);
+    comm->wait();
   }
   comms.clear();
   comm = nullptr;
-
+}
+void operator()()
+{
   /* Here we tell to sender that all tasks are done */
   simgrid::s4u::Mailbox::byName("finalize")->put(nullptr, 1);
   XBT_INFO("I'm done. See you!");
 }
+};
 
 int main(int argc, char *argv[])
 {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);  
 
+   e->registerFunction<sender>("sender");   
+   e->registerFunction<receiver>("receiver");  
+  
   e->loadDeployment(argv[2]); 
- 
-  e->registerFunction<sender>("sender");   
-  // e->registerFunction<receiver>("receiver");  
-
   e->run();
 
   delete e;
