@@ -59,6 +59,10 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 
+// Don't define ~xbt_ex() in ex.hpp.  It is defined here to ensure that there is an unique definition of xt_ex in
+// libsimgrid, but not in libsimgrid-java.  Otherwise, sone tests are broken (seen with clang/libc++ on freebsd).
+xbt_ex::~xbt_ex() = default;
+
 void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func)
 {
   xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func), message);

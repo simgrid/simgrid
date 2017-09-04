@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2015. The SimGrid Team.
+/* Copyright (c) 2005-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
@@ -79,7 +79,7 @@ struct XBT_PUBLIC() xbt_ex :
     simgrid::xbt::WithContextException(throwpoint, simgrid::xbt::backtrace())
   {}
 
-  ~xbt_ex() = default;
+  ~xbt_ex();
 
   /** Category (what went wrong) */
   xbt_errcat_t category = unknown_error;
