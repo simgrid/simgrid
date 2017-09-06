@@ -69,15 +69,12 @@ public:
     received = NULL;
     simgrid::s4u::CommPtr comm = mbox->get_async(&received);
     comm->wait();
-    if (strcmp(received, "finalize") == 0) {
-      delete received;
+    std::string* receivedStr = static_cast<std::string*>(received);
+    if (receivedStr->compare("finalize") == 0) {
+      delete receivedStr;
       break;
     }
 
-    XBT_INFO("Processing \"%s\"", received);
-    // MSG_task_execute(task);
-    XBT_INFO("\"%s\" done", recieved);
-    delete recieved;
   }
   XBT_INFO("I'm done. See you!");
 }
