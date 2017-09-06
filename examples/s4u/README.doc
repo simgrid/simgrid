@@ -14,6 +14,7 @@ documentation, but it should remain readable directly.
  @brief Find the S4U example fitting your needs in the archive.
 
   - @ref s4u_ex_basics
+  - @ref s4u_ex_async
   - @ref s4u_ex_actors
   - @ref s4u_ex_synchro
   - @ref s4u_ex_actions
@@ -36,6 +37,19 @@ documentation, but it should remain readable directly.
   - <b>Master Workers:</b> @ref examples/s4u/app-masterworker/s4u_app-masterworker.cpp \n
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
     processes. 
+    
+@section msg_ex_async Asynchronous communications
+
+ - <b>Waiting for all communications in a set</b>.
+   @ref examples/s4u/async-waitall/s4u_async-waitall.cpp\n
+   The @ref S4U_comm_waitall function is useful when you want to block
+   until all activities in a given set have completed.
+
+ - <b>Waiting for the first completed communication in a set</b>.
+   @ref examples/s4u/async-waitany/s4u_async-waitany.cpp\n
+   The @ref S4U_comm_waitany function is useful when you want to block
+   until one activity of the set completes, no matter which terminates
+   first.   
 
 @section s4u_ex_actors Acting on Actors
 
