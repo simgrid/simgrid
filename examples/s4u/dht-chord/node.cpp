@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -236,13 +236,13 @@ void Node::checkPredecessor()
   try {
     comm->wait(timeout);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
+    delete static_cast<ChordMessage*>(data);
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
       XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
       pred_id_ = -1;
     }
   }
-  delete message;
 }
 
 /* Asks its predecessor to a remote node
