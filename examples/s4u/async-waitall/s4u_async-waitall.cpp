@@ -11,15 +11,21 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitall, "Messages specific for this msg example");
 
 class sender {
+  long number_of_tasks             = 0; /* - Number of tasks      */
+  long receivers_count             = 0; /* - Number of workers    */
+
 public:
   explicit sender(std::vector<std::string> args)
 {
   xbt_assert(args.size()== 4, "This function expects 5 parameters from the XML deployment file");
-  long number_of_tasks = xbt_str_parse_int(args[0].c_str(), "Invalid amount of tasks: %s");
-  double task_comp_size = xbt_str_parse_double(args[1].c_str(), "Invalid computational size: %s");
-  double task_comm_size = xbt_str_parse_double(args[2].c_str(), "Invalid communication size: %s");
-  long receivers_count = xbt_str_parse_int(args[3].c_str(), "Invalid amount of receivers: %s");
+  number_of_tasks = std::stol(args[0]);
+  double task_comp_size = std::stod(args[1]);
+  double task_comm_size = std::stod(args[2]);
+  receivers_count = std::stol(args[3]);
 
+}
+void operator()()
+{
   simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName("receiver_mailbox");
   simgrid::s4u::CommPtr* comms = new simgrid::s4u::CommPtr[number_of_tasks + receivers_count] ;
 
@@ -34,9 +40,7 @@ public:
   for (int i = 0; i < receivers_count; i++) {
     char mailbox[80];
     snprintf(mailbox,79, "receiver-%ld", i % receivers_count);
-
     comms[i + number_of_tasks] = mbox->put_async((void*)"finalize", 42);
-    
     XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
   }
 
@@ -45,9 +49,6 @@ public:
     comms[i]->wait();
 
   delete [] comms;
-}
-void operator()()
-{
   XBT_INFO("Goodbye now!");
 }
 };
@@ -58,15 +59,19 @@ public:
 {
   xbt_assert(args.size() == 1,"This function expects 1 parameter from the XML deployment file");
   int id = xbt_str_parse_int(args[0].c_str(), "Any process of this example must have a numerical name, not %s");
-  void *received;
   char mailbox[80];
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName("receiver_mailbox");
   snprintf(mailbox,79, "receiver-%d", id);
 
   simgrid::s4u::this_actor::sleep_for(10.0);
+
+  XBT_INFO("I'm done. See you!");
+}
+void operator()()
+{
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName("receiver_mailbox");
   while (1) {
     XBT_INFO("Wait to receive a task");
-    received = NULL;
+    void *received = NULL;
     simgrid::s4u::CommPtr comm = mbox->get_async(&received);
     comm->wait();
     std::string* receivedStr = static_cast<std::string*>(received);
@@ -74,13 +79,10 @@ public:
       delete receivedStr;
       break;
     }
-
+    double *comp_size = static_cast<double*>(received);
+    /*  - Otherwise, process the task */
+    simgrid::s4u::this_actor::execute(*comp_size);
   }
-  XBT_INFO("I'm done. See you!");
-}
-void operator()()
-{
-  simgrid::s4u::Mailbox::byName("finalize")->put(nullptr, 1);
   XBT_INFO("I'm done. See you!");
 }
 };
