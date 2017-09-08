@@ -638,7 +638,7 @@ static void traverse(xbt_dict_t head)
     } else {
       xbt_test_log("Seen #%d:  %s", ++i, key);
     }
-    xbt_test_assert(not data || not strcmp(key, data), "Key(%s) != value(%s). Aborting", key, data);
+    xbt_test_assert(key && data && strcmp(key, data) == 0, "Key(%s) != value(%s). Aborting", key, data);
   }
 }
 
@@ -750,8 +750,7 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve and trave
   /* RETRIEVE */
   xbt_test_add("Search 123");
   char* data = (char*)xbt_dict_get(head, "123");
-  xbt_test_assert(data);
-  xbt_test_assert(not strcmp("123", data));
+  xbt_test_assert(data && strcmp("123", data) == 0);
 
   search_not_found(head, "Can't be found");
   search_not_found(head, "123 Can't be found");
@@ -864,7 +863,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "nullptr data management")
         xbt_test_log("Seen:  %s", key);
       }
 
-      if (not strcmp(key, "null"))
+      if (key && strcmp(key, "null") == 0)
         found = 1;
     }
     xbt_test_assert(found, "the key 'null', associated to nullptr is not found");
