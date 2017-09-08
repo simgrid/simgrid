@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 
-# Copyright (c) 2005-2012, 2014. The SimGrid Team. All rights reserved.
+# Copyright (c) 2005-2012, 2014-2017. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -126,6 +126,7 @@ sub process_one($) {
 	print OUT "#include <stdio.h>\n\n";
 	print OUT "#include \"xbt.h\"\n\n";
 	print OUT "extern xbt_test_unit_t _xbt_current_unit;\n\n";
+	print OUT "#define STRLEN 1024\n";
 	print OUT "/* SGU: BEGIN PROTOTYPES */\n";
 	print OUT "/* SGU: END PROTOTYPES */\n\n";
 	print OUT $GENERATED;
@@ -133,7 +134,7 @@ sub process_one($) {
 	print OUT <<EOF;
 int main(int argc, char *argv[]) {
   xbt_test_suite_t suite; 
-  char selection[1024];
+  char selection[STRLEN];
   int verbosity = 0;
   int i;
   int res;
@@ -148,12 +149,9 @@ int main(int argc, char *argv[]) {
     for (i=1;i<argc;i++) {
       if (!strncmp(argv[i],\"--tests=\",strlen(\"--tests=\"))) {
         char *p=strchr(argv[i],'=')+1;
-        if (selection[0] == '\\0') {
-          strncpy(selection,p,1024);
-        } else {
-          strncat(selection, \",\",1);
-          strncat(selection, p, 1023);
-        }
+        if (selection[0] != '\\0')
+          strncat(selection, \",\", STRLEN - 1 - strlen(selection));
+        strncat(selection, p, STRLEN - 1 - strlen(selection));
       } else if (!strcmp(argv[i], \"--verbose\")) {
         verbosity++;
       } else if (!strcmp(argv[i], \"--dump-only\")||

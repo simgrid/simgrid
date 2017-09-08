@@ -16,6 +16,8 @@
 #include "xbt/cunit.h"
 #include "xbt/dynar.h"
 
+#define STRLEN 1024
+
 /* collection of all suites */
 static xbt_dynar_t _xbt_test_suites = nullptr;
 /* global statistics */
@@ -454,15 +456,15 @@ static void apply_selection(char *selection)
   /* for the parsing */
   char *sel = selection;
   int done = 0;
-  char dir[1024];               /* the directive */
+  char dir[STRLEN]; /* the directive */
   /* iterators */
   unsigned int it_suite;
   xbt_test_suite_t suite;
   xbt_test_unit_t unit;
   unsigned int it_unit;
 
-  char suitename[512];
-  char unitname[512];
+  char suitename[STRLEN];
+  char unitname[STRLEN];
 
   if (not selection || selection[0] == '\0')
     return;
@@ -475,11 +477,10 @@ static void apply_selection(char *selection)
 
     char *p = strchr(sel, ',');
     if (p) {
-      strncpy(dir, sel, p - sel);
-      dir[p - sel] = '\0';
+      snprintf(dir, STRLEN, "%.*s", (int)(p - sel), sel);
       sel = p + 1;
     } else {
-      strncpy(dir, sel,1024);
+      snprintf(dir, STRLEN, "%s", sel);
       done = 1;
     }
 
@@ -494,11 +495,10 @@ static void apply_selection(char *selection)
 
     p = strchr(dir, ':');
     if (p) {
-      strncpy(unitname, p + 1,512);
-      strncpy(suitename, dir, p - dir);
-      suitename[p - dir] = '\0';
+      snprintf(suitename, STRLEN, "%.*s", (int)(p - dir), dir);
+      snprintf(unitname, STRLEN, "%s", p + 1);
     } else {
-      strncpy(suitename, dir,512);
+      snprintf(suitename, STRLEN, "%s", dir);
       unitname[0] = '\0';
     }
 
