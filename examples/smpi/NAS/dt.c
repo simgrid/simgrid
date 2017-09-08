@@ -666,7 +666,7 @@ int main(int argc,char **argv ){
     dg=buildBH(class);
   }else if(strncmp(argv[3],"WH",2)==0){
     dg=buildWH(class);
-  }else if(strncmp(argv[3],"SH",2)==0){
+  }else /* (strncmp(argv[3],"SH",2)==0) */ {
     dg=buildSH(class);
   }
 
