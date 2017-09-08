@@ -26,7 +26,7 @@ public:
 }
 void operator()()
 {
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName("receiver_mailbox");
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName("sender_mailbox");
   simgrid::s4u::CommPtr* comms = new simgrid::s4u::CommPtr[number_of_tasks + receivers_count] ;
 
   for (int i = 0; i < number_of_tasks; i++) {
