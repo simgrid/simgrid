@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -249,7 +249,7 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  std::vector<double> *spee
   return new CpuL07(this, host, speedPerPstate, core);
 }
 
-LinkImpl* NetworkL07Model::createLink(const char* name, double bandwidth, double latency,
+LinkImpl* NetworkL07Model::createLink(const std::string& name, double bandwidth, double latency,
                                       e_surf_link_sharing_policy_t policy)
 {
   return new LinkL07(this, name, bandwidth, latency, policy);
@@ -267,7 +267,7 @@ CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>
 
 CpuL07::~CpuL07()=default;
 
-LinkL07::LinkL07(NetworkL07Model* model, const char* name, double bandwidth, double latency,
+LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
                  e_surf_link_sharing_policy_t policy)
     : LinkImpl(model, name, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth))
 {

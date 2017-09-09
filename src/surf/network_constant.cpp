@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,12 +19,13 @@ void surf_network_model_init_Constant()
 
 namespace simgrid {
 namespace surf {
-LinkImpl* NetworkConstantModel::createLink(const char* name, double bw, double lat, e_surf_link_sharing_policy_t policy)
+LinkImpl* NetworkConstantModel::createLink(const std::string& name, double bw, double lat,
+                                           e_surf_link_sharing_policy_t policy)
 {
 
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')",
-          name);
+          name.c_str());
   return nullptr;
 }
 

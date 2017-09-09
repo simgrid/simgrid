@@ -38,7 +38,7 @@ public:
   NetworkCm02Model();
   explicit NetworkCm02Model(void (*solve_fun)(lmm_system_t self));
   virtual ~NetworkCm02Model() = default;
-  LinkImpl* createLink(const char* name, double bandwidth, double latency,
+  LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
@@ -51,7 +51,7 @@ public:
 
 class NetworkCm02Link : public LinkImpl {
 public:
-  NetworkCm02Link(NetworkCm02Model* model, const char* name, double bandwidth, double latency,
+  NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
                   e_surf_link_sharing_policy_t policy, lmm_system_t system);
   virtual ~NetworkCm02Link() = default;
   void apply_event(tmgr_trace_event_t event, double value) override;

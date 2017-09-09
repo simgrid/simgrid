@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,7 +29,8 @@ namespace simgrid {
       double nextOccuringEvent(double now) override;
       void updateActionsState(double now, double delta) override;
 
-      LinkImpl* createLink(const char* name, double bw, double lat, e_surf_link_sharing_policy_t policy) override;
+      LinkImpl* createLink(const std::string& name, double bw, double lat,
+                           e_surf_link_sharing_policy_t policy) override;
     };
 
     /**********

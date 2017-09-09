@@ -98,19 +98,18 @@ namespace simgrid {
      * Resource *
      ************/
 
-    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
+    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, lmm_constraint_t constraint)
         : Resource(model, name, constraint), piface_(this)
     {
 
-      if (strcmp(name,"__loopback__"))
-        xbt_assert(not LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
+      if (name != "__loopback__")
+        xbt_assert(not LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name.c_str());
 
       latency_.scale   = 1;
       bandwidth_.scale = 1;
 
       links->insert({name, this});
-      XBT_DEBUG("Create link '%s'",name);
-
+      XBT_DEBUG("Create link '%s'", name.c_str());
     }
 
     /** @brief use destroy() instead of this destructor */

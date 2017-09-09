@@ -161,7 +161,7 @@ void DragonflyZone::generateRouters()
   }
 }
 
-void DragonflyZone::createLink(std::string id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown)
+void DragonflyZone::createLink(const std::string& id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown)
 {
   *linkup   = nullptr;
   *linkdown = nullptr;

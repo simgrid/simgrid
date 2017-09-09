@@ -43,7 +43,7 @@ public:
    * @param latency The initial latency of the Link in seconds
    * @param policy The sharing policy of the Link
    */
-  virtual LinkImpl* createLink(const char* name, double bandwidth, double latency,
+  virtual LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                                e_surf_link_sharing_policy_t policy) = 0;
 
   /**
@@ -114,7 +114,7 @@ public:
  */
 class LinkImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 protected:
-  LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
+  LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, lmm_constraint_t constraint);
   ~LinkImpl() override;
 
 public:

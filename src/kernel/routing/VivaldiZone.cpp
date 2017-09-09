@@ -70,8 +70,8 @@ void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, s
 
   std::string link_up   = "link_" + netpoint->name() + "_UP";
   std::string link_down = "link_" + netpoint->name() + "_DOWN";
-  surf::LinkImpl* linkUp   = surf_network_model->createLink(link_up.c_str(), bw_out, 0, SURF_LINK_SHARED);
-  surf::LinkImpl* linkDown = surf_network_model->createLink(link_down.c_str(), bw_in, 0, SURF_LINK_SHARED);
+  surf::LinkImpl* linkUp   = surf_network_model->createLink(link_up, bw_out, 0, SURF_LINK_SHARED);
+  surf::LinkImpl* linkDown = surf_network_model->createLink(link_down, bw_in, 0, SURF_LINK_SHARED);
   privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 

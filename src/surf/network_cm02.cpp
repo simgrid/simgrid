@@ -165,7 +165,7 @@ NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self))
   maxminSystem_->solve_fun = specificSolveFun;
 }
 
-LinkImpl* NetworkCm02Model::createLink(const char* name, double bandwidth, double latency,
+LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth, double latency,
                                        e_surf_link_sharing_policy_t policy)
 {
   return new NetworkCm02Link(this, name, bandwidth, latency, policy, maxminSystem_);
@@ -358,7 +358,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 /************
  * Resource *
  ************/
-NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, double bandwidth, double latency,
+NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
                                  e_surf_link_sharing_policy_t policy, lmm_system_t system)
     : LinkImpl(model, name, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth))
 {

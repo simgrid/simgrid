@@ -549,7 +549,7 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 namespace simgrid {
 namespace surf {
 
-Resource::Resource(Model* model, const char* name, lmm_constraint_t constraint)
+Resource::Resource(Model* model, const std::string& name, lmm_constraint_t constraint)
     : name_(name), model_(model), constraint_(constraint)
 {}
 

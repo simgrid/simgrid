@@ -131,7 +131,7 @@ void sg_platf_new_link(LinkCreationArgs* link)
   }
   for (auto const& link_name : names) {
     simgrid::surf::LinkImpl* l =
-        surf_network_model->createLink(link_name.c_str(), link->bandwidth, link->latency, link->policy);
+        surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy);
 
     if (link->properties) {
       for (auto const& elm : *link->properties)

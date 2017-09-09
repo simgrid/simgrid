@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -68,7 +68,7 @@ public:
   void seal() override;
   void generateRouters();
   void generateLinks();
-  void createLink(std::string id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown);
+  void createLink(const std::string& id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown);
 
 private:
   void rankId_to_coords(int rankId, unsigned int (*coords)[4]);

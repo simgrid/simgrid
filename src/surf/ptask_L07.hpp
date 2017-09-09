@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -58,7 +58,7 @@ class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys);
   ~NetworkL07Model();
-  LinkImpl* createLink(const char* name, double bandwidth, double latency,
+  LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
 
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
@@ -84,7 +84,7 @@ protected:
 
 class LinkL07 : public LinkImpl {
 public:
-  LinkL07(NetworkL07Model* model, const char* name, double bandwidth, double latency,
+  LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
           e_surf_link_sharing_policy_t policy);
   ~LinkL07() override;
   bool isUsed() override;
