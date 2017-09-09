@@ -136,7 +136,6 @@ void sg_platf_new_link(LinkCreationArgs* link)
     if (link->properties) {
       for (auto const& elm : *link->properties)
         l->setProperty(elm.first, elm.second);
-      delete link->properties;
     }
 
     if (link->latency_trace)
@@ -146,6 +145,7 @@ void sg_platf_new_link(LinkCreationArgs* link)
     if (link->state_trace)
       l->setStateTrace(link->state_trace);
   }
+  delete link->properties;
 }
 
 void sg_platf_new_cluster(ClusterCreationArgs* cluster)
