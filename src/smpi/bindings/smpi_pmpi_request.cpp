@@ -613,8 +613,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else if (*request == MPI_REQUEST_NULL) {
     retval = MPI_SUCCESS;
   } else {
-
-    int rank = (request!=nullptr && (*request)->comm() != MPI_COMM_NULL) ? smpi_process()->index() : -1;
+    int rank = (*request)->comm() != MPI_COMM_NULL ? smpi_process()->index() : -1;
 
     int src_traced = (*request)->src();
     int dst_traced = (*request)->dst();
