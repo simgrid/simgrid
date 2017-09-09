@@ -31,8 +31,8 @@ Tracker::Tracker(std::vector<std::string> args)
 void Tracker::operator()()
 {
   simgrid::s4u::CommPtr comm = nullptr;
+  void* received;
   while (simgrid::s4u::Engine::getClock() < deadline) {
-    void* received;
     if (comm == nullptr)
       comm = mailbox->get_async(&received);
     if (comm->test()) {
