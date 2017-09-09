@@ -58,7 +58,6 @@ void PJ_type_free(simgrid::instr::Type* type)
   xbt_free(type->color_);
   xbt_dict_free(&type->children_);
   delete type;
-  type = nullptr;
 }
 
 void recursiveDestroyType(simgrid::instr::Type* type)
@@ -158,11 +157,9 @@ simgrid::instr::Type* simgrid::instr::Type::linkNew(const char* name, Type* fath
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
   }
 
-  Type* ret = nullptr;
-
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf(key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id_, dest->id_);
-  ret = new Type (name, key, nullptr, TYPE_LINK, father);
+  Type* ret = new Type(name, key, nullptr, TYPE_LINK, father);
   XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name_, ret->id_, father->name_, father->id_,
             source->name_, source->id_, dest->name_, dest->id_);
   LogLinkTypeDefinition(ret, source, dest);
@@ -175,9 +172,7 @@ simgrid::instr::Type* simgrid::instr::Type::stateNew(const char* name, Type* fat
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
   }
 
-  Type* ret = nullptr;
-
-  ret = new Type (name, name, nullptr, TYPE_STATE, father);
+  Type* ret = new Type(name, name, nullptr, TYPE_STATE, father);
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
   LogStateTypeDefinition(ret);
   return ret;
