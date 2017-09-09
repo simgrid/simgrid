@@ -259,7 +259,7 @@ void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t
 # endif
 #else
   // Do we need to do any fixup like this?
-  #error Target CPU type is not handled.
+# error Target CPU type is not handled.
 #endif
 }
 

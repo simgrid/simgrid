@@ -25,10 +25,10 @@
 #include "src/internal_config.h"
 #include <cstdio>
 #ifdef _WIN32
-#include <csignal> /* To silence MSVC on abort() */
+# include <csignal> /* To silence MSVC on abort() */
 #endif
 #if HAVE_UNISTD_H
-#  include <unistd.h>
+# include <unistd.h>
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
@@ -85,7 +85,7 @@ static void xbt_preinit()
 #elif HAVE_SYSCONF
   xbt_pagesize = sysconf(_SC_PAGESIZE);
 #else
-  #error Cannot get page size.
+# error Cannot get page size.
 #endif
 
   xbt_pagebits = log2(xbt_pagesize);

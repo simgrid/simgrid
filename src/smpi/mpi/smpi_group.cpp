@@ -127,10 +127,8 @@ int Group::incl(int n, int* ranks, MPI_Group* newgroup)
     *newgroup = MPI_GROUP_EMPTY;
   } else if (n == size_) {
     *newgroup = this;
-    if(this!= MPI_COMM_WORLD->group()
-              && this != MPI_COMM_SELF->group()
-              && this != MPI_GROUP_EMPTY)
-    this->ref();
+    if (this != MPI_COMM_WORLD->group() && this != MPI_COMM_SELF->group() && this != MPI_GROUP_EMPTY)
+      this->ref();
   } else {
     *newgroup = new Group(n);
     for (i = 0; i < n; i++) {

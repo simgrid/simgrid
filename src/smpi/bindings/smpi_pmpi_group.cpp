@@ -136,9 +136,8 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   } else {
     if (n == 0) {
       *newgroup = group;
-      if (group != MPI_COMM_WORLD->group()
-                && group != MPI_COMM_SELF->group() && group != MPI_GROUP_EMPTY)
-      group->ref();
+      if (group != MPI_COMM_WORLD->group() && group != MPI_COMM_SELF->group() && group != MPI_GROUP_EMPTY)
+        group->ref();
       return MPI_SUCCESS;
     } else if (n == group->size()) {
       *newgroup = MPI_GROUP_EMPTY;

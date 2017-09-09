@@ -508,8 +508,8 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
     if (flag) {
       finish_wait(request,status);
       nsleeps=1;//reset the number of sleeps we will do next time
-      if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & PERSISTENT)==0)
-      *request = MPI_REQUEST_NULL;
+      if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & PERSISTENT) == 0)
+        *request = MPI_REQUEST_NULL;
     } else if (xbt_cfg_get_boolean("smpi/grow-injected-times")){
       nsleeps++;
     }
@@ -885,7 +885,7 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
         status[index] = *pstat;
       }
      if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags_ & NON_PERSISTENT))
-     requests[index]=MPI_REQUEST_NULL;
+       requests[index] = MPI_REQUEST_NULL;
     }else{
       return MPI_UNDEFINED;
     }
