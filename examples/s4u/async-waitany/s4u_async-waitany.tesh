@@ -1,34 +1,27 @@
 #! ./tesh
 
-p Testing the MSG_comm_waitany function
+p Testing this_actor->wait_any()
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/async-waitany ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/async-waitany/async-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_0 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-1 Task_1 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_2 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-1 Task_3 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_4 comm_size 1000000.000000
-> [  0.000000] (1:sender@Tremblay) Send to receiver-1 Task_5 comm_size 1000000.000000
-> [ 10.000000] (2:receiver@Fafard) Wait to receive task 0
-> [ 10.000000] (2:receiver@Fafard) Wait to receive task 1
-> [ 10.000000] (2:receiver@Fafard) Wait to receive task 2
-> [ 10.000000] (3:receiver@Jupiter) Wait to receive task 0
-> [ 10.000000] (3:receiver@Jupiter) Wait to receive task 1
-> [ 10.000000] (3:receiver@Jupiter) Wait to receive task 2
-> [ 10.423774] (2:receiver@Fafard) Processing "Task_4"
-> [ 10.469435] (3:receiver@Jupiter) Processing "Task_3"
-> [ 11.079116] (2:receiver@Fafard) "Task_4" done
-> [ 11.079116] (2:receiver@Fafard) Processing "Task_0"
-> [ 11.124778] (3:receiver@Jupiter) "Task_3" done
-> [ 11.124778] (3:receiver@Jupiter) Processing "Task_1"
-> [ 11.734459] (2:receiver@Fafard) "Task_0" done
-> [ 11.734459] (2:receiver@Fafard) Processing "Task_2"
-> [ 11.780120] (3:receiver@Jupiter) "Task_1" done
-> [ 11.780120] (3:receiver@Jupiter) Processing "Task_5"
-> [ 12.389801] (2:receiver@Fafard) "Task_2" done
-> [ 12.415509] (2:receiver@Fafard) I'm done. See you!
-> [ 12.435462] (3:receiver@Jupiter) "Task_5" done
-> [ 12.454477] (0:maestro@) Simulation time 12.4545
-> [ 12.454477] (1:sender@Tremblay) Goodbye now!
-> [ 12.454477] (3:receiver@Jupiter) I'm done. See you!
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_async-waitany ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../s4u/async-waitany/s4u_async-waitany_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver-0'
+> [  0.000000] (2:receiver@Fafard) Wait for my first message
+> [  0.000000] (3:receiver@Jupiter) Wait for my first message
+> [  0.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 3' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 4' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 5' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Done dispatching all messages
+> [  0.158397] (2:receiver@Fafard) I got a 'Message 0'.
+> [  0.169155] (3:receiver@Jupiter) I got a 'Message 1'.
+> [  0.316794] (2:receiver@Fafard) I got a 'Message 2'.
+> [  0.338309] (3:receiver@Jupiter) I got a 'Message 3'.
+> [  0.475190] (2:receiver@Fafard) I got a 'Message 4'.
+> [  0.500898] (2:receiver@Fafard) I got a 'finalize'.
+> [  0.500898] (1:sender@Tremblay) Remove the 1th pending comm: it terminated earlier than another comm that was initiated first.
+> [  0.507464] (3:receiver@Jupiter) I got a 'Message 5'.
+> [  0.526478] (3:receiver@Jupiter) I got a 'finalize'.
+> [  0.526478] (1:sender@Tremblay) Goodbye now!

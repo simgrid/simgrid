@@ -1,118 +1,135 @@
-/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This example shows how to use simgrid::s4u::this_actor::wait_any() to wait for the first occurring event.
+ *
+ * As for the other asynchronous examples, the sender initiate all the messages it wants to send and
+ * pack the resulting simgrid::s4u::CommPtr objects in a vector. All messages thus occurs concurrently.
+ *
+ * The sender then loops until there is no ongoing communication. Using wait_any() ensures that the sender
+ * will notice events as soon as they occur even if it does not follow the order of the container.
+ *
+ * Here, finalize messages will terminate earlier because their size is 0, so they travel faster than the
+ * other messages of this application.  As expected, the trace shows that the finalize of worker 1 is
+ * processed before 'Message 5' that is sent to worker 0.
+ *
+ */
+
 #include "simgrid/s4u.hpp"
-#include "xbt/str.h"  
+#include "xbt/str.h"
 #include <cstdlib>
 #include <iostream>
-#include <vector>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitany, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitall, "Messages specific for this msg example");
 
 class sender {
-  long number_of_tasks             = 0; /* - Number of tasks      */
-  long receivers_count             = 0; /* - Number of workers    */
-  int diff_com                     = 0;
+  long messages_count;
+  long receivers_count;
+  double msg_size; /* in bytes */
 
 public:
   explicit sender(std::vector<std::string> args)
 {
-  xbt_assert(args.size()== 5, "This function expects 5 parameters from the XML deployment file");
-  number_of_tasks = std::stol(args[0]);
-  double task_comp_size = std::stod(args[1]);
-  double task_comm_size = std::stod(args[2]);
+  xbt_assert(args.size() == 4, "This function expects 4 parameters from the XML deployment file but got %zu",
+             args.size());
+  messages_count  = std::stol(args[1]);
+  msg_size        = std::stod(args[2]);
   receivers_count = std::stol(args[3]);
-  diff_com = std::stoi(args[4]);
 
 }
 void operator()()
 {
-  std::vector<simgrid::s4u::CommPtr> comms;
-  simgrid::s4u::CommPtr comm;
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName("receiver_mailbox");
-  /* First pack the communications in the dynar */
-  for (int i = 0; i < number_of_tasks; i++) {
-    double coef = (diff_com == 0) ? 1 : (i + 1);
-    char mailbox[80];
-    char taskname[80];
-    snprintf(mailbox,79, "receiver-%ld", (i % receivers_count));
-    snprintf(taskname,79, "Task_%d", i);
-    comm = mbox->put_async((void*)taskname, 42.0);
-    comms.push_back(comm);
-  }
+  std::vector<simgrid::s4u::CommPtr>* pending_comms = new std::vector<simgrid::s4u::CommPtr>();
 
-  /* Here we are waiting for the completion of all communications */
-  while (!comms.empty()) {
-    comm=comms.back();
-    comms.pop_back();
-    comm->wait();
-  }
-  comms.clear();
-  comm = nullptr;
+  /* Start dispatching all messages to receivers, in a round robin fashion */
+  for (int i = 0; i < messages_count; i++) {
 
-  /* Here we are waiting for the completion of all tasks */
+    std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
+    std::string msgName           = std::string("Message ") + std::to_string(i);
+    char* payload = xbt_strdup(msgName.c_str()); // copy the data we send: 'msgName' is not a stable storage location
+
+    XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
+    /* Create a communication representing the ongoing communication */
+    simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, msg_size);
+    /* Add this comm to the vector of all known comms */
+    pending_comms->push_back(comm);
+  }
+  /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
-    void* received = nullptr;
-    simgrid::s4u::CommPtr comm = mbox->get_async(&received);
-    comm->wait();
-    comm = nullptr;
+    std::string mbox_name         = std::string("receiver-") + std::to_string(i % receivers_count);
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mbox_name);
+    char* payload                 = xbt_strdup("finalize"); // Make a copy of the data we will send
+
+    simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, 0);
+    pending_comms->push_back(comm);
+    XBT_INFO("Send 'finalize' to 'receiver-%ld'", i % receivers_count);
   }
+  XBT_INFO("Done dispatching all messages");
+
+  /* Now that all message exchanges were initiated, wait for their completion
+   *
+   * This loop waits for first terminating message with wait_any() and remove it with erase(), until all comms are
+   * terminated
+   * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
+   * */
+  for (int i = 0; i < messages_count + receivers_count; i++) {
+    int changed_pos = simgrid::s4u::Comm::wait_any(pending_comms);
+    pending_comms->erase(pending_comms->begin() + changed_pos);
+    if (changed_pos != 0)
+      XBT_INFO("Remove the %dth pending comm: it terminated earlier than another comm that was initiated first.",
+               changed_pos);
+  }
+
   XBT_INFO("Goodbye now!");
+  delete pending_comms;
 }
 };
 
 class receiver {
-  int id                     = 0;
-  int task_amount            = 0;
+  simgrid::s4u::MailboxPtr mbox;
+  int message_count;
+
 public:
   explicit receiver(std::vector<std::string> args)
 {
-  xbt_assert(args.size() == 2, "This function expects 2 parameters from the XML deployment file");
-  id = std::stoi(args[0]);
-  task_amount = std::stoi(args[1]);
+  xbt_assert(args.size() == 3, "This function expects 2 parameters from the XML deployment file but got %zu",
+             args.size());
+  int id = xbt_str_parse_int(args[1].c_str(), "Any process of this example must have a numerical name, not %s");
+  std::string mbox_name = std::string("receiver-") + std::to_string(id);
+  mbox                  = simgrid::s4u::Mailbox::byName(mbox_name);
+  message_count         = xbt_str_parse_int(args[2].c_str(), "message_count parameter must be numerical but got '%s'");
 }
 void operator()()
 {
-  void *received; 
-  std::vector<simgrid::s4u::CommPtr> comms;
-  simgrid::s4u::CommPtr comm;
-  simgrid::s4u::MailboxPtr mbox;
-  
-  simgrid::s4u::this_actor::sleep_for(10.0);
-  for (int i = 0; i < task_amount; i++) {
-    XBT_INFO("Wait to receive task %d", i);
-    received = NULL;
-    comm = mbox->get_async(&received);
-    comms.push_back(comm);
+  XBT_INFO("Wait for my first message");
+  while (1) {
+    char* received = static_cast<char*>(mbox->get());
+    XBT_INFO("I got a '%s'.", received);
+    if (std::strcmp(received, "finalize") == 0) { /* If it's a finalize message, we're done */
+      xbt_free(received);
+      break;
+    }
+    /* Otherwise receiving the message was all we were supposed to do */
+    xbt_free(received);
   }
-
-  /* Here we are waiting for the receiving of all communications */
-  while (!comms.empty()) {
-    // returns the rank of the comm that just ended. Remove it.
-    comm=comms.back();
-    comms.pop_back();
-    comm->wait();
-  }
-  comms.clear();
-  comm = nullptr;
-  /* Here we tell to sender that all tasks are done */
-  simgrid::s4u::Mailbox::byName("finalize")->put(nullptr, 1);
-  XBT_INFO("I'm done. See you!");
 }
 };
 
 int main(int argc, char *argv[])
 {
-  simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);  
+  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
 
-   e->registerFunction<sender>("sender");   
-   e->registerFunction<receiver>("receiver");  
-  
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
+
+  e->registerFunction<sender>("sender");
+  e->registerFunction<receiver>("receiver");
+
+  e->loadPlatform(argv[1]);
   e->loadDeployment(argv[2]); 
   e->run();
 
-  delete e;
   return 0;
 }
