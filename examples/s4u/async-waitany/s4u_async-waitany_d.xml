@@ -10,10 +10,8 @@
   <!-- The receiver processes -->
   <actor host="Fafard" function="receiver">
     <argument value="0"/>       <!-- My name -->
-    <argument value="3"/>       <!-- Number of tasks -->
   </actor>
   <actor host="Jupiter" function="receiver">
     <argument value="1"/>       <!-- My name -->
-    <argument value="3"/>       <!-- Number of tasks -->
   </actor>
 </platform>

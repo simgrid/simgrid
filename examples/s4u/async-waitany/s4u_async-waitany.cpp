@@ -90,17 +90,15 @@ void operator()()
 
 class receiver {
   simgrid::s4u::MailboxPtr mbox;
-  int message_count;
 
 public:
   explicit receiver(std::vector<std::string> args)
 {
-  xbt_assert(args.size() == 3, "This function expects 2 parameters from the XML deployment file but got %zu",
+  xbt_assert(args.size() == 2, "This function expects 2 parameters from the XML deployment file but got %zu",
              args.size());
   int id = xbt_str_parse_int(args[1].c_str(), "Any process of this example must have a numerical name, not %s");
   std::string mbox_name = std::string("receiver-") + std::to_string(id);
   mbox                  = simgrid::s4u::Mailbox::byName(mbox_name);
-  message_count         = xbt_str_parse_int(args[2].c_str(), "message_count parameter must be numerical but got '%s'");
 }
 void operator()()
 {

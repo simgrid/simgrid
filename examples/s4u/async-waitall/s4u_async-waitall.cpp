@@ -29,7 +29,8 @@ class sender {
 public:
   explicit sender(std::vector<std::string> args)
 {
-  xbt_assert(args.size()== 4, "This function expects 5 parameters from the XML deployment file");
+  xbt_assert(args.size() == 4, "This function expects 4 parameters from the XML deployment file but got %zu",
+             args.size());
   messages_count  = std::stol(args[1]);
   msg_size        = std::stod(args[2]);
   receivers_count = std::stol(args[3]);
@@ -37,7 +38,7 @@ public:
 }
 void operator()()
 {
-  simgrid::s4u::CommPtr* comms = new simgrid::s4u::CommPtr[messages_count + receivers_count];
+  std::vector<simgrid::s4u::CommPtr>* pending_comms = new std::vector<simgrid::s4u::CommPtr>();
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
@@ -48,7 +49,10 @@ void operator()()
     char* payload = xbt_strdup(msgName.c_str()); // copy the data we send: 'msgName' is not a stable storage location
 
     XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
-    comms[i] = mbox->put_async((void*)payload, msg_size);
+    /* Create a communication representing the ongoing communication */
+    simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, msg_size);
+    /* Add this comm to the vector of all known comms */
+    pending_comms->push_back(comm);
   }
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
@@ -56,17 +60,18 @@ void operator()()
     simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mbox_name);
     char* payload                 = xbt_strdup("finalize"); // Make a copy of the data we will send
 
-    comms[i + messages_count] = mbox->put_async((void*)payload, 0);
+    simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, 0);
+    pending_comms->push_back(comm);
     XBT_INFO("Send 'finalize' to 'receiver-%ld'", i % receivers_count);
   }
   XBT_INFO("Done dispatching all messages");
 
   /* Now that all message exchanges were initiated, this loop waits for the termination of them all */
   for (int i = 0; i < messages_count + receivers_count; i++)
-    comms[i]->wait();
+    pending_comms->at(i)->wait();
 
-  delete [] comms;
   XBT_INFO("Goodbye now!");
+  delete pending_comms;
 }
 };
 
@@ -92,7 +97,7 @@ void operator()()
       xbt_free(received);
       break;
     }
-    /*  - Otherwise receiving the message was all we were supposed to do */
+    /* Otherwise receiving the message was all we were supposed to do */
     xbt_free(received);
   }
 }
