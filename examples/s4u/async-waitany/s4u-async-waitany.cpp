@@ -118,16 +118,15 @@ void operator()()
 
 int main(int argc, char *argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
-
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
-  e->registerFunction<sender>("sender");
-  e->registerFunction<receiver>("receiver");
+  simgrid::s4u::Engine e(&argc, argv);
+  e.registerFunction<sender>("sender");
+  e.registerFunction<receiver>("receiver");
 
-  e->loadPlatform(argv[1]);
-  e->loadDeployment(argv[2]);
-  e->run();
+  e.loadPlatform(argv[1]);
+  e.loadDeployment(argv[2]);
+  e.run();
 
   return 0;
 }
