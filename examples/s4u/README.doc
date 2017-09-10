@@ -42,12 +42,12 @@ documentation, but it should remain readable directly.
 
  - <b>Waiting for all communications in a set</b>.
    @ref examples/s4u/async-waitall/s4u_async-waitall.cpp\n
-   The @ref S4U_comm_waitall function is useful when you want to block
+   The @ref simgrid::s4u::Comm::wait_all() function is useful when you want to block
    until all activities in a given set have completed.
 
  - <b>Waiting for the first completed communication in a set</b>.
    @ref examples/s4u/async-waitany/s4u_async-waitany.cpp\n
-   The @ref S4U_comm_waitany function is useful when you want to block
+   The @ref simgrid::s4u::Comm::wait_any() function is useful when you want to block
    until one activity of the set completes, no matter which terminates
    first.   
 
