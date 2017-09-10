@@ -3,14 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to use asynchronous communications.
+/* This example shows how to block on the completion of a set of communications.
  *
- * The sender initiate all the messages it wants to send, and then block for their completion.
- * All messages thus occurs concurrently.
+ * As for the other asynchronous examples, the sender initiate all the messages it wants to send and
+ * pack the resulting simgrid::s4u::CommPtr objects in a vector. All messages thus occurs concurrently.
  *
- * On the receiver side, the reception is synchronous.
- *
- * TODO: this example is supposed to test the waitall function, but this is not ported to s4u yet.
+ * The sender then blocks until all ongoing communication terminate, using simgrid::s4u::Comm::wait_all()
  *
  */
 
@@ -66,9 +64,8 @@ void operator()()
   }
   XBT_INFO("Done dispatching all messages");
 
-  /* Now that all message exchanges were initiated, this loop waits for the termination of them all */
-  for (int i = 0; i < messages_count + receivers_count; i++)
-    pending_comms->at(i)->wait();
+  /* Now that all message exchanges were initiated, wait for their completion in one single call */
+  simgrid::s4u::Comm::wait_all(pending_comms);
 
   XBT_INFO("Goodbye now!");
   delete pending_comms;

@@ -31,8 +31,8 @@ public:
 
   virtual ~Comm();
 
-  /*! take a range of s4u::CommPtr (last excluded) and return when one of them is finished. The return value is an
-   * iterator on the finished Comms. */
+  /*! take a vector s4u::CommPtr and return when one of them is finished.
+   * The return value is the rank of the first finished CommPtr. */
   static int wait_any(std::vector<CommPtr> * comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static int wait_any_for(std::vector<CommPtr> * comms_in, double timeout)
@@ -54,6 +54,17 @@ public:
     xbt_dynar_free(&comms);
     return idx;
   }
+
+  /*! take a vector s4u::CommPtr and return when all of them is finished. */
+  static void wait_all(std::vector<CommPtr> * comms)
+  {
+    // TODO: this should be a simcall or something
+    // TODO: we are missing a version with timeout
+    for (CommPtr comm : *comms) {
+      comm->wait();
+    }
+  }
+
   /** Creates (but don't start) an async send to the mailbox @p dest */
   static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.")
       send_init(MailboxPtr dest)
