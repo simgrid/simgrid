@@ -424,6 +424,7 @@ if __name__ == '__main__':
            re.compile("Unable to clean temporary file C:.*"),
            re.compile(".*Configuration change: Set \'contexts/"),
            re.compile(".*Picked up JAVA_TOOL_OPTIONS.*"),
+           re.compile("Picked up _JAVA_OPTIONS: .*"),
 
            re.compile("==WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
            re.compile("False positive error reports may follow"),
