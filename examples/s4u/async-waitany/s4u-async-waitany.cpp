@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
   e->registerFunction<receiver>("receiver");
 
   e->loadPlatform(argv[1]);
-  e->loadDeployment(argv[2]); 
+  e->loadDeployment(argv[2]);
   e->run();
 
   return 0;
