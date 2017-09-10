@@ -3,12 +3,12 @@
 <platform version="4.1">
 <!-- Example file of how to use trace replay, with actions split in separate files, one per actor.
      Launch it like this:
-         ./actions-comm ../../platforms/platform.xml actions-comm_split_d.xml  -->
+         ./actions-comm ../../platforms/platform.xml actions-comm-split_d.xml  -->
 
   <actor host="Tremblay" function="p0">
-    <argument value="s4u_actions-comm_split_p0.txt"/>
+    <argument value="s4u-actions-comm-split-p0.txt"/>
   </actor>
   <actor host="Ruby"     function="p1">
-    <argument value="s4u_actions-comm_split_p1.txt"/>
+    <argument value="s4u-actions-comm-split-p1.txt"/>
   </actor>
 </platform>

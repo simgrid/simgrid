@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "s4u_tracker.hpp"
+#include "s4u-tracker.hpp"
 #include <xbt/RngStream.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_tracker, "Messages specific for the tracker");

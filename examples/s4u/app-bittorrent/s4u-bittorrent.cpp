@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "s4u_bittorrent.hpp"
-#include "s4u_peer.hpp"
-#include "s4u_tracker.hpp"
+#include "s4u-bittorrent.hpp"
+#include "s4u-peer.hpp"
+#include "s4u-tracker.hpp"
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostBittorrent> HostBittorrent::EXTENSION_ID;
 

@@ -6,8 +6,8 @@
 #include <climits>
 #include <xbt/ex.hpp>
 
-#include "s4u_peer.hpp"
-#include "s4u_tracker.hpp"
+#include "s4u-peer.hpp"
+#include "s4u-tracker.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_peer, "Messages specific for the peers");
 

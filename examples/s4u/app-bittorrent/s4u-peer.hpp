@@ -6,7 +6,7 @@
 
 #ifndef BITTORRENT_PEER_HPP
 #define BITTORRENT_PEER_HPP
-#include "s4u_bittorrent.hpp"
+#include "s4u-bittorrent.hpp"
 #include <set>
 #include <unordered_map>
 

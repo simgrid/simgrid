@@ -3,7 +3,7 @@
 p Testing a simple master/worker example application (mailbox version)
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_app-masterworker$EXEEXT ${srcdir:=.}/small_platform_with_routers.xml ${srcdir:=.}/../s4u/app-masterworker/s4u_app-masterworker_d.xml --cfg=network/crosstraffic:0 --trace "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-app-masterworker$EXEEXT ${srcdir:=.}/small_platform_with_routers.xml ${srcdir:=.}/../s4u/app-masterworker/s4u-app-masterworker_d.xml --cfg=network/crosstraffic:0 --trace "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (maestro@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000000] (master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (master@Tremblay) Sending "Task_0" (of 20) to mailbox "worker-0"

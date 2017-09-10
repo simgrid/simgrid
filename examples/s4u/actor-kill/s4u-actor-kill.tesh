@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_actor-kill ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-kill ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (killer@Tremblay) Hello!
 > [  0.000000] (victim@Fafard) Hello!
 > [  0.000000] (victim@Fafard) Suspending myself

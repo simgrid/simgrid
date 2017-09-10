@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "s4u_dht-chord.hpp"
+#include "s4u-dht-chord.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_chord, "Messages specific for this s4u example");
 simgrid::xbt::Extension<simgrid::s4u::Host, HostChord> HostChord::EXTENSION_ID;

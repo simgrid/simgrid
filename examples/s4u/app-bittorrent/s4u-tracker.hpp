@@ -7,7 +7,7 @@
 #ifndef BITTORRENT_TRACKER_HPP_
 #define BITTORRENT_TRACKER_HPP_
 
-#include "s4u_bittorrent.hpp"
+#include "s4u-bittorrent.hpp"
 #include <set>
 
 class TrackerQuery {

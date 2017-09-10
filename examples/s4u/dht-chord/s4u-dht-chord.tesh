@@ -3,7 +3,7 @@
 p Testing the Chord implementation with MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_dht-chord$EXEEXT -nb_bits=3 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../s4u/dht-chord/s4u_dht-chord_d.xml --log=s4u_chord.thres:verbose "--log=root.fmt:[%10.5r]%e(%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-dht-chord$EXEEXT -nb_bits=3 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../s4u/dht-chord/s4u-dht-chord_d.xml --log=s4u_chord.thres:verbose "--log=root.fmt:[%10.5r]%e(%P@%h)%e%m%n"
 > [   0.00000] (node@node-0.acme.org) My finger table:
 > [   0.00000] (node@node-0.acme.org) Start | Succ
 > [   0.00000] (node@node-0.acme.org)    3  |  42
