@@ -1,26 +1,21 @@
 #! ./tesh
-p Test1 MSG_comm_waitall() for sender
 
-! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/async-waitall ${srcdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/../msg/async-waitall/async-waitall_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_0
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_1
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 Task_2
-> [  0.000000] (1:sender@Tremblay) Send to receiver-0 finalize
-> [ 10.000000] (2:receiver@Ruby) Wait to receive a task
-> [ 10.004022] (2:receiver@Ruby) Received "Task_0"
-> [ 10.004022] (2:receiver@Ruby) Processing "Task_0"
-> [ 10.513732] (2:receiver@Ruby) "Task_0" done
-> [ 10.513732] (2:receiver@Ruby) Wait to receive a task
-> [ 10.517753] (2:receiver@Ruby) Received "Task_1"
-> [ 10.517753] (2:receiver@Ruby) Processing "Task_1"
-> [ 11.027463] (2:receiver@Ruby) "Task_1" done
-> [ 11.027463] (2:receiver@Ruby) Wait to receive a task
-> [ 11.031485] (2:receiver@Ruby) Received "Task_2"
-> [ 11.031485] (2:receiver@Ruby) Processing "Task_2"
-> [ 11.541195] (2:receiver@Ruby) "Task_2" done
-> [ 11.541195] (2:receiver@Ruby) Wait to receive a task
-> [ 11.543146] (0:maestro@) Simulation time 11.5431
-> [ 11.543146] (1:sender@Tremblay) Goodbye now!
-> [ 11.543146] (2:receiver@Ruby) Received "finalize"
-> [ 11.543146] (2:receiver@Ruby) I'm done. See you!
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_async-waitall ${srcdir:=.}/small_platform_fatpipe.xml ${srcdir:=.}/../s4u/async-waitall/s4u_async-waitall_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver-0'
+> [  0.000000] (2:receiver@Ruby) Wait for my first message
+> [  0.000000] (3:receiver@Perl) Wait for my first message
+> [  0.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 3' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Send 'Message 4' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-0'
+> [  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver-1'
+> [  0.000000] (1:sender@Tremblay) Done dispatching all messages
+> [  0.004022] (2:receiver@Ruby) I got a 'Message 0'.
+> [  0.004022] (3:receiver@Perl) I got a 'Message 1'.
+> [  0.008043] (2:receiver@Ruby) I got a 'Message 2'.
+> [  0.008043] (3:receiver@Perl) I got a 'Message 3'.
+> [  0.009995] (3:receiver@Perl) I got a 'finalize'.
+> [  0.012065] (2:receiver@Ruby) I got a 'Message 4'.
+> [  0.014016] (2:receiver@Ruby) I got a 'finalize'.
+> [  0.014016] (1:sender@Tremblay) Goodbye now!
