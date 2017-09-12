@@ -7,7 +7,7 @@
  * This was reported as bug #19893 on gforge.
  */
 
-package semaphoreGC;
+package semaphoregc;
 
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
@@ -37,7 +37,7 @@ public class SemaphoreGC {
   public static void main(String[] args) throws Exception {
     Msg.init(args);
     if (args.length < 1) {
-      Msg.info("Usage: java -cp simgrid.jar:. semaphoreGC.SemaphoreGC <deployment.xml>");
+      Msg.info("Usage: java -cp simgrid.jar:. semaphoregc.SemaphoreGC <deployment.xml>");
       System.exit(1);
     }
     Msg.createEnvironment(args[0]);
