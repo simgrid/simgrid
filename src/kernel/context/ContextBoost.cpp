@@ -127,9 +127,14 @@ void BoostContextFactory::run_all()
 
 // BoostContext
 
-void BoostContext::smx_ctx_boost_wrapper(std::intptr_t arg)
+void BoostContext::smx_ctx_boost_wrapper(BoostContext::ctx_arg_type arg)
 {
+#if BOOST_VERSION < 106100
   BoostContext* context = reinterpret_cast<BoostContext*>(arg);
+#else
+  static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
+  BoostContext* context                         = static_cast<BoostContext**>(arg.data)[1];
+#endif
   (*context)();
   context->stop();
 }
@@ -138,8 +143,12 @@ inline void BoostContext::smx_ctx_boost_jump_fcontext(BoostContext* from, BoostC
 {
 #if BOOST_VERSION < 105600
   boost::context::jump_fcontext(from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
-#else
+#elif BOOST_VERSION < 106100
   boost::context::jump_fcontext(&from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
+#else
+  BoostContext* ctx[2]                          = {from, to};
+  boost::context::detail::transfer_t arg        = boost::context::detail::jump_fcontext(to->fc_, ctx);
+  static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
 }
 
@@ -158,10 +167,11 @@ BoostContext::BoostContext(std::function<void()> code,
 #else
     void* stack = this->stack_;
 #endif
-    this->fc_ = boost::context::make_fcontext(
-                      stack,
-                      smx_context_usable_stack_size,
-                      smx_ctx_boost_wrapper);
+#if BOOST_VERSION < 106100
+    this->fc_ = boost::context::make_fcontext(stack, smx_context_usable_stack_size, smx_ctx_boost_wrapper);
+#else
+    this->fc_ = boost::context::detail::make_fcontext(stack, smx_context_usable_stack_size, smx_ctx_boost_wrapper);
+#endif
   } else {
 #if BOOST_VERSION < 105600
     this->fc_ = new boost::context::fcontext_t();

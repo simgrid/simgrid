@@ -7,7 +7,11 @@
 #define SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 
 #include <boost/version.hpp>
+#if BOOST_VERSION < 106100
 #include <boost/context/fcontext.hpp>
+#else
+#include <boost/context/detail/fcontext.hpp>
+#endif
 #include <functional>
 #include <vector>
 
@@ -38,10 +42,15 @@ protected: // static
 
 #if BOOST_VERSION < 105600
   boost::context::fcontext_t* fc_ = nullptr;
-#else
+  typedef intptr_t ctx_arg_type;
+#elif BOOST_VERSION < 106100
   boost::context::fcontext_t fc_;
+  typedef intptr_t ctx_arg_type;
+#else
+  boost::context::detail::fcontext_t fc_;
+  typedef boost::context::detail::transfer_t ctx_arg_type;
 #endif
-  static void smx_ctx_boost_wrapper(intptr_t);
+  static void smx_ctx_boost_wrapper(ctx_arg_type);
   static void smx_ctx_boost_jump_fcontext(BoostContext*, BoostContext*);
 
   void* stack_ = nullptr;
