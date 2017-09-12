@@ -10,10 +10,13 @@
 
 #include "src/instr/instr_private.h"
 
+#include <unordered_map>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
 static container_t rootContainer = nullptr;    /* the root container */
-static xbt_dict_t allContainers = nullptr;     /* all created containers indexed by name */
+static std::unordered_map<std::string, simgrid::instr::Container*>
+    allContainers;                              /* all created containers indexed by name */
 std::set<std::string> trivaNodeTypes;           /* all host types defined */
 std::set<std::string> trivaEdgeTypes;           /* all link types defined */
 
@@ -21,16 +24,6 @@ long long int instr_new_paje_id ()
 {
   static long long int type_id = 0;
   return type_id++;
-}
-
-void PJ_container_alloc ()
-{
-  allContainers = xbt_dict_new_homogeneous(nullptr);
-}
-
-void PJ_container_release ()
-{
-  xbt_dict_free (&allContainers);
 }
 
 void PJ_container_set_root (container_t root)
@@ -128,11 +121,11 @@ simgrid::instr::Container::Container(const char* name, simgrid::instr::e_contain
   }
 
   //register all kinds by name
-  if (xbt_dict_get_or_null(allContainers, this->name_) != nullptr) {
+  if (allContainers.find(this->name_) != allContainers.end()) {
     THROWF(tracing_error, 1, "container %s already present in allContainers data structure", this->name_);
   }
 
-  xbt_dict_set(allContainers, this->name_, this, nullptr);
+  allContainers.emplace(this->name_, this);
   XBT_DEBUG("Add container name '%s'", this->name_);
 
   //register NODE types for triva configuration
@@ -158,7 +151,7 @@ simgrid::instr::Container::~Container()
   }
 
   // remove it from allContainers data structure
-  xbt_dict_remove(allContainers, name_);
+  allContainers.erase(name_);
 
   // free
   xbt_free(name_);
@@ -166,7 +159,7 @@ simgrid::instr::Container::~Container()
   xbt_dict_free(&children_);
 }
 
-container_t PJ_container_get (const char *name)
+simgrid::instr::Container* PJ_container_get(const char* name)
 {
   container_t ret = PJ_container_get_or_null (name);
   if (ret == nullptr){
@@ -175,12 +168,14 @@ container_t PJ_container_get (const char *name)
   return ret;
 }
 
-container_t PJ_container_get_or_null (const char *name)
+simgrid::instr::Container* PJ_container_get_or_null(const char* name)
 {
-  return static_cast<container_t>(name != nullptr ? xbt_dict_get_or_null(allContainers, name) : nullptr);
+  if (allContainers.find(name) == allContainers.end())
+    return nullptr;
+  return allContainers.at(name);
 }
 
-container_t PJ_container_get_root ()
+simgrid::instr::Container* PJ_container_get_root()
 {
   return rootContainer;
 }
@@ -223,7 +218,7 @@ void PJ_container_free_all ()
   rootContainer = nullptr;
 
   //checks
-  if (not xbt_dict_is_empty(allContainers)) {
+  if (not allContainers.empty()) {
     THROWF(tracing_error, 0, "some containers still present even after destroying all of them");
   }
 }
