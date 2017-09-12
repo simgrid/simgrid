@@ -11,14 +11,14 @@ foreach(example semaphoreGC sleepHostOff)
   if(enable_java)
     add_custom_command(
       COMMENT "Building ${example}..."
-      OUTPUT  ${example}_compiled
+      OUTPUT  java-${example}_compiled
       DEPENDS ${sources} simgrid-java_jar ${SIMGRID_JAR}
       COMMAND ${JAVA_COMPILE} -classpath ${SIMGRID_JAR} -d ${CMAKE_CURRENT_BINARY_DIR} ${sources}
-      COMMAND ${CMAKE_COMMAND} -E remove ${example}/${example}_compiled
-      COMMAND ${CMAKE_COMMAND} -E touch ${example}/${example}_compiled
+      COMMAND ${CMAKE_COMMAND} -E remove ${example}/java-${example}_compiled
+      COMMAND ${CMAKE_COMMAND} -E touch ${example}/java-${example}_compiled
     )
-    add_custom_target(${example} ALL DEPENDS ${example}_compiled)
-    set_target_properties(${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+    add_custom_target(java-${example} ALL DEPENDS java-${example}_compiled)
+    set_target_properties(java-${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
   endif()
   set(examples_src ${examples_src} ${sources})
 endforeach()
