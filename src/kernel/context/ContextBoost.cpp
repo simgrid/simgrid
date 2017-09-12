@@ -127,11 +127,20 @@ void BoostContextFactory::run_all()
 
 // BoostContext
 
-static void smx_ctx_boost_wrapper(std::intptr_t arg)
+void BoostContext::smx_ctx_boost_wrapper(std::intptr_t arg)
 {
   BoostContext* context = reinterpret_cast<BoostContext*>(arg);
   (*context)();
   context->stop();
+}
+
+inline void BoostContext::smx_ctx_boost_jump_fcontext(BoostContext* from, BoostContext* to)
+{
+#if BOOST_VERSION < 105600
+  boost::context::jump_fcontext(from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
+#else
+  boost::context::jump_fcontext(&from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
+#endif
 }
 
 BoostContext::BoostContext(std::function<void()> code,
@@ -178,11 +187,7 @@ BoostContext::~BoostContext()
 void BoostContext::resume()
 {
   SIMIX_context_set_current(this);
-#if BOOST_VERSION < 105600
-  boost::context::jump_fcontext(maestro_context_->fc_, this->fc_, reinterpret_cast<intptr_t>(this));
-#else
-  boost::context::jump_fcontext(&maestro_context_->fc_, this->fc_, reinterpret_cast<intptr_t>(this));
-#endif
+  smx_ctx_boost_jump_fcontext(maestro_context_, this);
 }
 
 void BoostSerialContext::suspend()
@@ -202,11 +207,7 @@ void BoostSerialContext::suspend()
     next_context = static_cast<BoostSerialContext*>(maestro_context_);
   }
   SIMIX_context_set_current(static_cast<smx_context_t>(next_context));
-#if BOOST_VERSION < 105600
-  boost::context::jump_fcontext(this->fc_, next_context->fc_, reinterpret_cast<pintptr_t>(next_context));
-#else
-  boost::context::jump_fcontext(&this->fc_, next_context->fc_, reinterpret_cast<intptr_t>(next_context));
-#endif
+  smx_ctx_boost_jump_fcontext(this, next_context);
 }
 
 void BoostSerialContext::stop()
@@ -233,11 +234,7 @@ void BoostParallelContext::suspend()
   }
 
   SIMIX_context_set_current(static_cast<smx_context_t>(next_context));
-#if BOOST_VERSION < 105600
-  boost::context::jump_fcontext(this->fc_, next_context->fc_, reinterpret_cast<intptr_t>(next_context));
-#else
-  boost::context::jump_fcontext(&this->fc_, next_context->fc_, reinterpret_cast<intptr_t>(next_context));
-#endif
+  smx_ctx_boost_jump_fcontext(this, next_context);
 }
 
 void BoostParallelContext::stop()
@@ -255,11 +252,7 @@ void BoostParallelContext::resume()
   workers_context_[worker_id] = worker_context;
 
   SIMIX_context_set_current(this);
-#if BOOST_VERSION < 105600
-  boost::context::jump_fcontext(worker_context->fc_, this->fc_, reinterpret_cast<intptr_t>(this));
-#else
-  boost::context::jump_fcontext(&worker_context->fc_, this->fc_, reinterpret_cast<intptr_t>(this));
-#endif
+  smx_ctx_boost_jump_fcontext(worker_context, this);
 }
 
 #endif

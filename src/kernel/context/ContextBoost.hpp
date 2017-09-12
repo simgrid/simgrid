@@ -41,6 +41,9 @@ protected: // static
 #else
   boost::context::fcontext_t fc_;
 #endif
+  static void smx_ctx_boost_wrapper(intptr_t);
+  static void smx_ctx_boost_jump_fcontext(BoostContext*, BoostContext*);
+
   void* stack_ = nullptr;
 public:
   friend BoostContextFactory;
