@@ -12,12 +12,12 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostBittorrent> HostBittorrent::EXTE
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   /* Check the arguments */
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
 
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
 
   HostBittorrent::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostBittorrent>();
 
@@ -26,12 +26,11 @@ int main(int argc, char* argv[])
   for (auto const& host : list)
     host->extension_set(new HostBittorrent(host));
 
-  e->registerFunction<Tracker>("tracker");
-  e->registerFunction<Peer>("peer");
-  e->loadDeployment(argv[2]);
+  e.registerFunction<Tracker>("tracker");
+  e.registerFunction<Peer>("peer");
+  e.loadDeployment(argv[2]);
 
-  e->run();
+  e.run();
 
-  delete e;
   return 0;
 }

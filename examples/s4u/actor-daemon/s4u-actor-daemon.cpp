@@ -31,14 +31,12 @@ static void my_daemon()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
   simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Boivin"), worker);
   simgrid::s4u::Actor::createActor("daemon", simgrid::s4u::Host::by_name("Tremblay"), my_daemon);
 
-  e->run();
-
-  delete e;
+  e.run();
   return 0;
 }

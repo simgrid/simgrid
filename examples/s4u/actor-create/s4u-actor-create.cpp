@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -87,10 +87,10 @@ public:
 int main(int argc, char** argv)
 {
   /* When your program starts, you have to first start a new simulation engine, as follows */
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   /* Then you should load a platform file, describing your simulated platform */
-  e->loadPlatform("../../platforms/small_platform.xml");
+  e.loadPlatform("../../platforms/small_platform.xml");
 
   /* And now you have to ask SimGrid to actually start your actors.
    *
@@ -100,21 +100,19 @@ int main(int argc, char** argv)
   simgrid::s4u::Actor::createActor("sender1", simgrid::s4u::Host::by_name("Tremblay"), Sender());
 
   /* The second way is to first register your function, and then retrieve it */
-  e->registerFunction<Sender>("sender"); // The sender is passed as a template parameter here
+  e.registerFunction<Sender>("sender");  // The sender is passed as a template parameter here
   std::vector<std::string> args;         // Here we declare the parameter that the actor will get
   args.push_back("GloubiBoulga");        // Add a parameter to the set (we could have done it in the first approach too)
 
   simgrid::s4u::Actor::createActor("sender2", simgrid::s4u::Host::by_name("Jupiter"), "sender", args);
 
   /* The third way to start your actors is to use a deployment file. */
-  e->registerFunction<Receiver>("receiver");   // You first have to register the actor as with the second approach
-  e->loadDeployment("s4u-actor-create_d.xml"); // And then, you load the deployment file
+  e.registerFunction<Receiver>("receiver");   // You first have to register the actor as with the second approach
+  e.loadDeployment("s4u-actor-create_d.xml"); // And then, you load the deployment file
 
   /* Once every actors are started in the engine, the simulation can start */
-  e->run();
+  e.run();
 
   /* Once the simulation is done, the program is ended */
-  delete e;
-
   return 0;
 }

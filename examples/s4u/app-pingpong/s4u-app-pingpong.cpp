@@ -54,9 +54,9 @@ static void ponger(std::vector<std::string> args)
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
   std::vector<std::string> args;
   args.push_back("Jupiter");
   simgrid::s4u::Actor::createActor("pinger", simgrid::s4u::Host::by_name("Tremblay"), pinger, args);
@@ -66,10 +66,9 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Actor::createActor("ponger", simgrid::s4u::Host::by_name("Jupiter"), ponger, args);
 
-  e->run();
+  e.run();
 
-  XBT_INFO("Total simulation time: %.3f", e->getClock());
-  delete e;
+  XBT_INFO("Total simulation time: %.3f", e.getClock());
 
   return 0;
 }

@@ -102,7 +102,7 @@ public:
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   xbt_assert(argc > 3, "Usage: %s platform_file deployment_file [action_files]\n"
                        "\texample: %s platform.xml deployment.xml actions # if all actions are in the same file\n"
@@ -110,10 +110,10 @@ int main(int argc, char* argv[])
                        "\texample: %s platform.xml deployment.xml",
              argv[0], argv[0], argv[0]);
 
-  e->loadPlatform(argv[1]);
-  e->registerDefault(&simgrid::xbt::replay_runner);
-  e->registerFunction<Replayer>("p0");
-  e->loadDeployment(argv[2]);
+  e.loadPlatform(argv[1]);
+  e.registerDefault(&simgrid::xbt::replay_runner);
+  e.registerFunction<Replayer>("p0");
+  e.loadDeployment(argv[2]);
 
   /*   Action registration */
   xbt_replay_action_register("open", Replayer::open);
@@ -124,15 +124,14 @@ int main(int argc, char* argv[])
     simgrid::xbt::action_fs = new std::ifstream(argv[3], std::ifstream::in);
   }
 
-  e->run();
+  e.run();
 
   if (argv[3]) {
     delete simgrid::xbt::action_fs;
     simgrid::xbt::action_fs = nullptr;
   }
 
-  XBT_INFO("Simulation time %g", e->getClock());
+  XBT_INFO("Simulation time %g", e.getClock());
 
-  delete e;
   return 0;
 }

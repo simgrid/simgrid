@@ -66,16 +66,15 @@ static void dream_master()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  e->loadPlatform(argv[1]); /* - Load the platform description */
+  e.loadPlatform(argv[1]); /* - Load the platform description */
   std::vector<simgrid::s4u::Host*> list;
-  e->getHostList(&list);
+  e.getHostList(&list);
   simgrid::s4u::Actor::createActor("dream_master", list.front(), dream_master);
 
-  e->run(); /* - Run the simulation */
+  e.run(); /* - Run the simulation */
 
-  delete e;
   return 0;
 }

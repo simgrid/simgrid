@@ -41,7 +41,7 @@ static void chord_exit()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
                        "\tExample: %s ../msg_platform.xml chord.xml\n",
              argv[0], argv[0]);
@@ -63,19 +63,18 @@ int main(int argc, char* argv[])
     options++;
   }
 
-  e->loadPlatform(options[0]);
+  e.loadPlatform(options[0]);
 
   chord_init();
 
-  e->registerFunction<Node>("node");
-  e->loadDeployment(options[1]);
+  e.registerFunction<Node>("node");
+  e.loadDeployment(options[1]);
 
-  e->run();
+  e.run();
 
-  XBT_INFO("Simulated time: %g", e->getClock());
+  XBT_INFO("Simulated time: %g", e.getClock());
 
   chord_exit();
 
-  delete e;
   return 0;
 }

@@ -38,17 +38,16 @@ static void killer()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  e->loadPlatform(argv[1]); /* - Load the platform description */
+  e.loadPlatform(argv[1]); /* - Load the platform description */
   /* - Create and deploy killer process, that will create the victim process  */
   simgrid::s4u::Actor::createActor("killer", simgrid::s4u::Host::by_name("Tremblay"), killer);
 
-  e->run(); /* - Run the simulation */
+  e.run(); /* - Run the simulation */
 
-  XBT_INFO("Simulation time %g", e->getClock());
+  XBT_INFO("Simulation time %g", e.getClock());
 
-  delete e;
   return 0;
 }
