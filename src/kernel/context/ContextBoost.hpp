@@ -6,6 +6,8 @@
 #ifndef SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 #define SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 
+#include <boost/version.hpp>
+#include <boost/context/fcontext.hpp>
 #include <functional>
 #include <vector>
 
@@ -34,7 +36,7 @@ protected: // static
   static unsigned long process_index_;
   static BoostContext* maestro_context_;
 
-#if HAVE_BOOST_CONTEXTS == 1
+#if BOOST_VERSION < 105600
   boost::context::fcontext_t* fc_ = nullptr;
 #else
   boost::context::fcontext_t fc_;
