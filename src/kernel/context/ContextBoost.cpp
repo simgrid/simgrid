@@ -193,8 +193,8 @@ void BoostContext::resume()
 void BoostSerialContext::suspend()
 {
   /* determine the next context */
-  BoostSerialContext* next_context = nullptr;
-  unsigned long int i              = process_index_;
+  BoostSerialContext* next_context;
+  unsigned long int i = process_index_;
   process_index_++;
 
   if (i < simix_global->process_to_run.size()) {
