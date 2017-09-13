@@ -402,8 +402,8 @@ if __name__ == '__main__':
     group1.add_argument('teshfile', nargs='?', help='Name of teshfile, stdin if omitted')
     group1.add_argument('--cd', metavar='some/directory', help='ask tesh to switch the working directory before launching the tests')
     group1.add_argument('--setenv', metavar='var=value', action='append', help='set a specific environment variable')
-    group1.add_argument('--cfg', metavar='arg', help='add parameter --cfg=arg to each command line')
-    group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
+    group1.add_argument('--cfg', metavar='arg', action='append', help='add parameter --cfg=arg to each command line')
+    group1.add_argument('--log', metavar='arg', action='append', help='add parameter --log=arg to each command line')
     group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
     group1.add_argument('--keep', action='store_true', help='Keep the obtained output when it does not match the expected one')
@@ -449,9 +449,11 @@ if __name__ == '__main__':
             setenv(e)
 
     if options.cfg is not None:
-        TeshState().args_suffix += " --cfg="+options.cfg
+        for c in options.cfg:
+            TeshState().args_suffix += " --cfg=" + c
     if options.log is not None:
-        TeshState().args_suffix += " --log="+options.log
+        for l in options.log:
+            TeshState().args_suffix += " --log=" + l
 
     if options.wrapper is not None:
         TeshState().wrapper = options.wrapper
