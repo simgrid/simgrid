@@ -63,10 +63,9 @@ BoostContextFactory::BoostContextFactory()
   BoostContext::parallel_ = SIMIX_context_is_parallel();
   if (BoostContext::parallel_) {
 #if HAVE_THREAD_CONTEXTS
-    int nthreads = SIMIX_context_get_nthreads();
-    BoostContext::parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(nthreads, SIMIX_context_get_parallel_mode());
+    BoostContext::parmap_ = nullptr;
     BoostContext::workers_context_.clear();
-    BoostContext::workers_context_.resize(nthreads, nullptr);
+    BoostContext::workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
     BoostContext::maestro_context_ = nullptr;
     xbt_os_thread_key_create(&BoostContext::worker_id_key_);
 #else
@@ -78,10 +77,8 @@ BoostContextFactory::BoostContextFactory()
 BoostContextFactory::~BoostContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
-  if (BoostContext::parmap_) {
-    delete BoostContext::parmap_;
-    BoostContext::parmap_ = nullptr;
-  }
+  delete BoostContext::parmap_;
+  BoostContext::parmap_ = nullptr;
   BoostContext::workers_context_.clear();
 #endif
 }
@@ -106,6 +103,9 @@ void BoostContextFactory::run_all()
 #if HAVE_THREAD_CONTEXTS
   if (BoostContext::parallel_) {
     BoostContext::threads_working_ = 0;
+    if (not BoostContext::parmap_)
+      BoostContext::parmap_ =
+          new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
     BoostContext::parmap_->apply(
         [](smx_actor_t process) {
           BoostContext* context = static_cast<BoostContext*>(process->context);
