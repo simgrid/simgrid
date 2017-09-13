@@ -418,18 +418,18 @@ if __name__ == '__main__':
 
     if options.ignore_jenkins:
         print("Ignore all cruft seen on SimGrid's continous integration servers")
+        # Note: regexps should match at the beginning of lines
         TeshState().ignore_regexps_common = [
-           re.compile("^profiling:"),
-           re.compile(".*WARNING: ASan doesn\'t fully support"),
-           re.compile("Unable to clean temporary file C:.*"),
+           re.compile("profiling:"),
+           re.compile("Unable to clean temporary file C:"),
            re.compile(".*Configuration change: Set \'contexts/"),
-           re.compile(".*Picked up JAVA_TOOL_OPTIONS.*"),
-           re.compile("Picked up _JAVA_OPTIONS: .*"),
-
-           re.compile("==WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
+           re.compile("Picked up JAVA_TOOL_OPTIONS: "),
+           re.compile("Picked up _JAVA_OPTIONS: "),
+           re.compile("==[0-9]+== ?WARNING: ASan doesn\'t fully support"),
+           re.compile("==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
            re.compile("False positive error reports may follow"),
-           re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
-
+           re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail\\?id=189"),
+           re.compile("For details see https://github.com/google/sanitizers/issues/189"),
            re.compile("Python runtime initialized with LC_CTYPE=C .*"),
            ]
         TeshState().jenkins = True # This is a Jenkins build
