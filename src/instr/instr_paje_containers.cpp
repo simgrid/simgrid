@@ -121,11 +121,10 @@ simgrid::instr::Container::Container(const char* name, simgrid::instr::e_contain
   }
 
   //register all kinds by name
-  if (allContainers.find(this->name_) != allContainers.end()) {
+  if (not allContainers.emplace(this->name_, this).second) {
     THROWF(tracing_error, 1, "container %s already present in allContainers data structure", this->name_);
   }
 
-  allContainers.emplace(this->name_, this);
   XBT_DEBUG("Add container name '%s'", this->name_);
 
   //register NODE types for triva configuration
@@ -170,9 +169,8 @@ simgrid::instr::Container* PJ_container_get(const char* name)
 
 simgrid::instr::Container* PJ_container_get_or_null(const char* name)
 {
-  if (allContainers.find(name) == allContainers.end())
-    return nullptr;
-  return allContainers.at(name);
+  auto cont = allContainers.find(name);
+  return cont == allContainers.end() ? nullptr : cont->second;
 }
 
 simgrid::instr::Container* PJ_container_get_root()
