@@ -4,6 +4,7 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
   - Comm.detach(): start and forget about asynchronous emission
   - this_actor::send(mailbox) is now mailbox->put()
   - New: simgrid::s4u::Comm::wait_all()
+  - New: Host.execute() for remote executions.
 
  SURF
   - Unused option network/sender-gap is removed.

@@ -105,6 +105,13 @@ public:
   void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
   void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
 
+  /** Block the calling actor on an execution located on the called host
+   *
+   * It is not a problem if the actor is not located on the called host.
+   * The actor will not be migrated in this case. Such remote execution are easy in simulation.
+   */
+  void execute(double flops);
+
 private:
   simgrid::xbt::string name_ = "noname";
   std::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
