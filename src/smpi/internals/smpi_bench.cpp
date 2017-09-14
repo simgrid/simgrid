@@ -264,7 +264,8 @@ unsigned long long smpi_rastro_timestamp ()
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
-typedef struct {
+namespace {
+struct LocalData {
   double threshold; /* maximal stderr requested (if positive) */
   double relstderr; /* observed stderr so far */
   double mean;      /* mean of benched times, to be used if the block is disabled */
@@ -272,10 +273,13 @@ typedef struct {
   double sum_pow2;  /* sum of the square of the benched times (to compute the stderr) */
   int iters;        /* amount of requested iterations */
   int count;        /* amount of iterations done so far */
-  int benching;     /* 1: we are benchmarking; 0: we have enough data, no bench anymore */
-} local_data_t;
+  bool benching;    /* true: we are benchmarking; false: we have enough data, no bench anymore */
 
-std::unordered_map<std::string, local_data_t*> samples; /* Allocated on first use */
+  bool need_more_benchs() const;
+};
+}
+
+std::unordered_map<std::string, LocalData> samples;
 
 static std::string sample_location(int global, const char* file, int line)
 {
@@ -286,16 +290,13 @@ static std::string sample_location(int global, const char* file, int line)
   }
 }
 
-static int sample_enough_benchs(local_data_t *data) {
-  int res = data->count >= data->iters;
-  if (data->threshold>0.0) {
-    if (data->count <2)
-      res = 0; // not enough data
-    if (data->relstderr > data->threshold)
-      res = 0; // stderr too high yet
-  }
+bool LocalData::need_more_benchs() const
+{
+  bool res = (count < iters) || (threshold > 0.0 && (count < 2 ||          // not enough data
+                                                     relstderr > threshold // stderr too high yet
+                                                     ));
   XBT_DEBUG("%s (count:%d iter:%d stderr:%f thres:%f mean:%fs)",
-      (res?"enough benchs":"need more data"), data->count, data->iters, data->relstderr, data->threshold, data->mean);
+            (res ? "need more data" : "enough benchs"), count, iters, relstderr, threshold, mean);
   return res;
 }
 
@@ -306,35 +307,34 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process()->set_sampling(1);
 
-  auto ld = samples.find(loc);
-  local_data_t* data;
-  if (ld == samples.end()) {
-    xbt_assert(threshold>0 || iters>0,
-        "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
-    data            = static_cast<local_data_t*>(xbt_new(local_data_t, 1));
-    data->count = 0;
-    data->sum = 0.0;
-    data->sum_pow2 = 0.0;
-    data->iters = iters;
-    data->threshold = threshold;
-    data->benching = 1; // If we have no data, we need at least one
-    data->mean = 0;
-    samples[loc]    = data;
+  auto insert = samples.emplace(loc, LocalData{
+                                         threshold, // threshold
+                                         0.0,       // relstderr
+                                         0.0,       // mean
+                                         0.0,       // sum
+                                         0.0,       // sum_pow2
+                                         iters,     // iters
+                                         0,         // count
+                                         true       // benching (if we have no data, we need at least one)
+                                     });
+  LocalData& data = insert.first->second;
+  if (insert.second) {
     XBT_DEBUG("XXXXX First time ever on benched nest %s.", loc.c_str());
+    xbt_assert(threshold > 0 || iters > 0,
+        "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
   } else {
-    data = ld->second;
-    if (data->iters != iters || data->threshold != threshold) {
+    if (data.iters != iters || data.threshold != threshold) {
       XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. "
                 "How did you manage to give two numbers at the same line??",
-                loc.c_str(), data->iters, data->threshold, iters, threshold);
+                loc.c_str(), data.iters, data.threshold, iters, threshold);
       THROW_IMPOSSIBLE;
     }
 
     // if we already have some data, check whether sample_2 should get one more bench or whether it should emulate
     // the computation instead
-    data->benching = (sample_enough_benchs(data) == 0);
+    data.benching = data.need_more_benchs();
     XBT_DEBUG("XXXX Re-entering the benched nest %s. %s", loc.c_str(),
-              (data->benching ? "more benching needed" : "we have enough data, skip computes"));
+              (data.benching ? "more benching needed" : "we have enough data, skip computes"));
   }
 }
 
@@ -343,23 +343,24 @@ int smpi_sample_2(int global, const char *file, int line)
   std::string loc = sample_location(global, file, line);
   int res;
 
-  xbt_assert(not samples.empty(),
-             "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  local_data_t* data = samples.at(loc);
   XBT_DEBUG("sample2 %s", loc.c_str());
+  auto sample = samples.find(loc);
+  if (sample == samples.end())
+    xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+  LocalData& data = sample->second;
 
-  if (data->benching==1) {
+  if (data.benching) {
     // we need to run a new bench
     XBT_DEBUG("benchmarking: count:%d iter:%d stderr:%f thres:%f; mean:%f",
-        data->count, data->iters, data->relstderr, data->threshold, data->mean);
+              data.count, data.iters, data.relstderr, data.threshold, data.mean);
     res = 1;
   } else {
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
     //ran one bench and need to bail out now that our job is done). Just sleep instead
     XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f)."
               " apply the %fs delay instead",
-              data->count, data->iters, data->relstderr, data->threshold, data->mean);
-    smpi_execute(data->mean);
+              data.count, data.iters, data.relstderr, data.threshold, data.mean);
+    smpi_execute(data.mean);
     smpi_process()->set_sampling(0);
     res = 0; // prepare to capture future, unrelated computations
   }
@@ -371,34 +372,35 @@ void smpi_sample_3(int global, const char *file, int line)
 {
   std::string loc = sample_location(global, file, line);
 
-  xbt_assert(not samples.empty(),
-             "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  local_data_t* data = samples.at(loc);
   XBT_DEBUG("sample3 %s", loc.c_str());
+  auto sample = samples.find(loc);
+  if (sample == samples.end())
+    xbt_die("Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
+  LocalData& data = sample->second;
 
-  if (data->benching==0)
+  if (not data.benching)
     THROW_IMPOSSIBLE;
 
   // ok, benchmarking this loop is over
   xbt_os_threadtimer_stop(smpi_process()->timer());
 
   // update the stats
-  data->count++;
-  double sample = xbt_os_timer_elapsed(smpi_process()->timer());
-  data->sum += sample;
-  data->sum_pow2 += sample * sample;
-  double n = static_cast<double>(data->count);
-  data->mean = data->sum / n;
-  data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
-  if (sample_enough_benchs(data)==0) {
-    data->mean = sample; // Still in benching process; We want sample_2 to simulate the exact time of this loop
+  data.count++;
+  double period  = xbt_os_timer_elapsed(smpi_process()->timer());
+  data.sum      += period;
+  data.sum_pow2 += period * period;
+  double n       = static_cast<double>(data.count);
+  data.mean      = data.sum / n;
+  data.relstderr = sqrt((data.sum_pow2 / n - data.mean * data.mean) / n) / data.mean;
+  if (data.need_more_benchs()) {
+    data.mean = period; // Still in benching process; We want sample_2 to simulate the exact time of this loop
     // occurrence before leaving, not the mean over the history
   }
-  XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
-      data->mean, data->relstderr, sample);
+  XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)",
+            data.count, data.mean, data.relstderr, period);
 
   // That's enough for now, prevent sample_2 to run the same code over and over
-  data->benching = 0;
+  data.benching = false;
 }
 
 extern "C" { /** These functions will be called from the user code **/
@@ -432,6 +434,5 @@ void smpi_trace_set_call_location__(const char* file, int* line)
 
 void smpi_bench_destroy()
 {
-  for (auto const& elm : samples)
-    xbt_free(elm.second);
+  samples.clear();
 }
