@@ -193,7 +193,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     mark_color = white;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-  simgrid::instr::Value rett(mark_value, mark_color, type);
+  new simgrid::instr::Value(mark_value, mark_color, type);
 }
 
 /** \ingroup TRACE_mark

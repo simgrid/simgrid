@@ -33,9 +33,7 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char
   this->values_   = xbt_dict_new_homogeneous(nullptr);
   this->color_    = xbt_strdup(color);
 
-  char str_id[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
-  this->id_ = xbt_strdup(str_id);
+  this->id_ = bprintf("%lld", instr_new_paje_id());
 
   if (father != nullptr){
     xbt_dict_set(father->children_, key, this, nullptr);

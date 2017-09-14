@@ -264,7 +264,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     if (msg_process == nullptr){
       msg_process                 = simgrid::instr::Type::containerNew("MSG_PROCESS", container->type_);
       simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_PROCESS_STATE", msg_process);
-      simgrid::instr::Value PJ_value("suspend", "1 0 1", state);
+      new simgrid::instr::Value("suspend", "1 0 1", state);
       simgrid::instr::Value::get_or_new("sleep", "1 1 0", state);
       simgrid::instr::Value::get_or_new("receive", "1 0 0", state);
       simgrid::instr::Value::get_or_new("send", "0 0 1", state);
@@ -279,7 +279,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     if (msg_vm == nullptr){
       msg_vm                      = simgrid::instr::Type::containerNew("MSG_VM", container->type_);
       simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_VM_STATE", msg_vm);
-      simgrid::instr::Value PJ_value("suspend", "1 0 1", state);
+      new simgrid::instr::Value("suspend", "1 0 1", state);
       simgrid::instr::Value::get_or_new("sleep", "1 1 0", state);
       simgrid::instr::Value::get_or_new("receive", "1 0 0", state);
       simgrid::instr::Value::get_or_new("send", "0 0 1", state);
@@ -402,7 +402,7 @@ static void recursiveNewValueForUserStateType(const char* type_name, const char*
                                               simgrid::instr::Type* root)
 {
   if (not strcmp(root->name_, type_name)) {
-    simgrid::instr::Value PJ_value(val, color, root);
+    new simgrid::instr::Value(val, color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child_type;

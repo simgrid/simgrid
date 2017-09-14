@@ -15,18 +15,15 @@ simgrid::instr::Value::Value(const char* name, const char* color, simgrid::instr
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
-  this->ret_          = xbt_new0(Value, 1);
-  this->ret_->name_   = xbt_strdup(name);
-  this->ret_->father_ = father;
-  this->ret_->color_  = xbt_strdup(color);
+  this->name_   = xbt_strdup(name);
+  this->father_ = father;
+  this->color_  = xbt_strdup(color);
 
-  char str_id[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
-  this->ret_->id_ = xbt_strdup(str_id);
+  this->id_ = bprintf("%lld", instr_new_paje_id());
 
-  xbt_dict_set(father->values_, name, ret_, nullptr);
-  XBT_DEBUG("new value %s, child of %s", ret_->name_, ret_->father_->name_);
-  LogEntityValue(this->ret_);
+  xbt_dict_set(father->values_, name, this, nullptr);
+  XBT_DEBUG("new value %s, child of %s", name_, father_->name_);
+  LogEntityValue(this);
 };
 
 simgrid::instr::Value::~Value()
@@ -46,8 +43,7 @@ simgrid::instr::Value* simgrid::instr::Value::get_or_new(const char* name, const
     ret = Value::get(name, father);
   }
   catch(xbt_ex& e) {
-    Value rett(name, color, father);
-    ret = rett.ret_;
+    ret = new Value(name, color, father);
   }
   return ret;
 }
