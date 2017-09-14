@@ -28,11 +28,9 @@ simgrid::instr::Value::Value(const char* name, const char* color, simgrid::instr
 
 simgrid::instr::Value::~Value()
 {
-  /* FIXME: this should be cleanable
-  xbt_free(name);
-  xbt_free(color);
-  xbt_free(id);
-  */
+  xbt_free(name_);
+  xbt_free(color_);
+  xbt_free(id_);
 }
 
 simgrid::instr::Value* simgrid::instr::Value::get_or_new(const char* name, const char* color,
