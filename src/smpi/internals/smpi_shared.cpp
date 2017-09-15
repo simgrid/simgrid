@@ -73,21 +73,21 @@ public:
   }
 };
 
-typedef struct {
+struct shared_data_t {
   int fd    = -1;
   int count = 0;
-} shared_data_t;
+};
 
 std::unordered_map<smpi_source_location, shared_data_t, std::hash<std::string>> allocs;
 typedef decltype(allocs)::value_type shared_data_key_type;
 
-typedef struct {
+struct shared_metadata_t {
   size_t size;
   size_t allocated_size;
   void *allocated_ptr;
   std::vector<std::pair<size_t, size_t>> private_blocks;
   shared_data_key_type* data;
-} shared_metadata_t;
+};
 
 std::map<void*, shared_metadata_t> allocs_metadata;
 std::map<std::string, void*> calls;
