@@ -66,50 +66,20 @@ namespace{
  *  This information is used by SMPI_SHARED_MALLOC to allocate  some shared memory for all simulated processes.
  */
 
-class smpi_source_location {
+class smpi_source_location : public std::string {
 public:
-  smpi_source_location(const char* filename, int line)
-      : filename(xbt_strdup(filename)), filename_length(strlen(filename)), line(line)
+  smpi_source_location(const char* filename, int line) : std::string(std::string(filename) + ":" + std::to_string(line))
   {
-  }
-
-  /** Pointer to a static string containing the file name */
-  char* filename      = nullptr;
-  int filename_length = 0;
-  int line            = 0;
-
-  bool operator==(smpi_source_location const& that) const
-  {
-    return filename_length == that.filename_length && line == that.line &&
-           std::memcmp(filename, that.filename, filename_length) == 0;
-  }
-  bool operator!=(smpi_source_location const& that) const { return not(*this == that); }
-};
-}
-
-namespace std {
-
-template <> class hash<smpi_source_location> {
-public:
-  typedef smpi_source_location argument_type;
-  typedef std::size_t result_type;
-  result_type operator()(smpi_source_location const& loc) const
-  {
-    return xbt_str_hash_ext(loc.filename, loc.filename_length) ^
-           xbt_str_hash_ext((const char*)&loc.line, sizeof(loc.line));
   }
 };
-}
-
-namespace{
 
 typedef struct {
   int fd    = -1;
   int count = 0;
 } shared_data_t;
 
-std::unordered_map<smpi_source_location, shared_data_t> allocs;
-typedef std::unordered_map<smpi_source_location, shared_data_t>::value_type shared_data_key_type;
+std::unordered_map<smpi_source_location, shared_data_t, std::hash<std::string>> allocs;
+typedef decltype(allocs)::value_type shared_data_key_type;
 
 typedef struct {
   size_t size;
