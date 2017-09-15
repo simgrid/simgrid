@@ -274,7 +274,8 @@ public:
   }
 };
 
-struct LocalData {
+class LocalData {
+public:
   double threshold; /* maximal stderr requested (if positive) */
   double relstderr; /* observed stderr so far */
   double mean;      /* mean of benched times, to be used if the block is disabled */
