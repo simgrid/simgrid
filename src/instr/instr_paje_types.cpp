@@ -41,33 +41,25 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char
   }
 }
 
-void PJ_type_free(simgrid::instr::Type* type)
+simgrid::instr::Type::~Type()
 {
   simgrid::instr::Value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (type->values_, cursor, value_name, val) {
+  xbt_dict_foreach (values_, cursor, value_name, val) {
     XBT_DEBUG("free value %s, child of %s", val->name_, val->father_->name_);
-    xbt_free(val);
+    delete val;
   }
-  xbt_dict_free(&type->values_);
-  xbt_free(type->name_);
-  xbt_free(type->id_);
-  xbt_free(type->color_);
-  xbt_dict_free(&type->children_);
-  delete type;
-}
-
-void recursiveDestroyType(simgrid::instr::Type* type)
-{
-  XBT_DEBUG("recursiveDestroyType %s", type->name_);
-  xbt_dict_cursor_t cursor = nullptr;
+  xbt_dict_free(&values_);
   simgrid::instr::Type* child;
   char *child_name;
-  xbt_dict_foreach (type->children_, cursor, child_name, child) {
-    recursiveDestroyType (child);
+  xbt_dict_foreach (children_, cursor, child_name, child) {
+    delete child;
   }
-  PJ_type_free(type);
+  xbt_dict_free(&children_);
+  xbt_free(name_);
+  xbt_free(id_);
+  xbt_free(color_);
 }
 
 simgrid::instr::Type* PJ_type_get(const char* name, simgrid::instr::Type* father)

@@ -143,7 +143,7 @@ int TRACE_end()
 
     /* destroy all data structures of tracing (and free) */
     PJ_container_free_all();
-    recursiveDestroyType (PJ_type_get_root());
+    delete PJ_type_get_root();
     rootType = nullptr;
 
     /* close the trace files */
