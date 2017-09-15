@@ -17,7 +17,7 @@ static xbt_automaton_t parsed_automaton;
 char* state_id_src;
 
 static void new_state(char* id, int src){
-  char* saveptr; // for strtok_r()
+  char* saveptr = NULL; // for strtok_r()
   char* id_copy = xbt_strdup(id);
   char* first_part = strtok_r(id_copy, "_", &saveptr);
   int type = 0 ; // -1=initial state; 0=intermediate state; 1=final state

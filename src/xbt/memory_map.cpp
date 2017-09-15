@@ -193,7 +193,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     line[read - 1] = '\0';
 
     /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens for 6 fields */
-    char* saveptr; // for strtok_r()
+    char* saveptr = nullptr; // for strtok_r()
     char* lfields[6];
     lfields[0] = strtok_r(line, " ", &saveptr);
 

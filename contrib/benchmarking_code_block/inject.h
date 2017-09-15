@@ -66,7 +66,7 @@ static inline void xbt_inject_init(char *inputfile)
   if (fgets(line, 200, fpInput) == NULL)
     printf("Error input file is empty!"); // Skipping first row
   while (fgets(line, 200, fpInput) != NULL) {
-    char *saveptr; /* for strtok_r() */
+    char *saveptr = NULL; /* for strtok_r() */
     key = strtok_r(line, "\t", &saveptr);
 
     xbt_hist_t* data = xbt_dict_get_or_null(mydict, key);
@@ -119,7 +119,7 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
   }
 
   while (fgets(line, MAX_LINE_INJ, fpInput) != NULL) {
-    char *saveptr; /* for strtok_r() */
+    char *saveptr = NULL; /* for strtok_r() */
     key = strtok_r(line, "\t", &saveptr);
 
     xbt_hist_t* data = xbt_dict_get_or_null(mydict, key);
