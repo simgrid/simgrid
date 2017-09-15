@@ -522,7 +522,7 @@ void CommunicationDeterminismChecker::main()
       /* Check for deadlocks */
       if (mc_model_checker->checkDeadlock()) {
         MC_show_deadlock();
-        throw new simgrid::mc::DeadlockError();
+        throw simgrid::mc::DeadlockError();
       }
 
       while (not stack_.empty()) {
