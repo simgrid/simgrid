@@ -265,6 +265,15 @@ unsigned long long smpi_rastro_timestamp ()
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
 namespace {
+class SampleLocation : public std::string {
+public:
+  SampleLocation(bool global, const char* file, int line) : std::string(std::string(file) + ":" + std::to_string(line))
+  {
+    if (not global)
+      this->append(":" + std::to_string(smpi_process()->index()));
+  }
+};
+
 struct LocalData {
   double threshold; /* maximal stderr requested (if positive) */
   double relstderr; /* observed stderr so far */
@@ -279,16 +288,7 @@ struct LocalData {
 };
 }
 
-std::unordered_map<std::string, LocalData> samples;
-
-static std::string sample_location(int global, const char* file, int line)
-{
-  if (global) {
-    return std::string(file) + ":" + std::to_string(line);
-  } else {
-    return std::string(file) + ":" + std::to_string(line) + ":" + std::to_string(smpi_process()->index());
-  }
-}
+std::unordered_map<SampleLocation, LocalData, std::hash<std::string>> samples;
 
 bool LocalData::need_more_benchs() const
 {
@@ -302,7 +302,7 @@ bool LocalData::need_more_benchs() const
 
 void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
 {
-  std::string loc = sample_location(global, file, line);
+  SampleLocation loc(global, file, line);
 
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process()->set_sampling(1);
@@ -340,7 +340,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
 
 int smpi_sample_2(int global, const char *file, int line)
 {
-  std::string loc = sample_location(global, file, line);
+  SampleLocation loc(global, file, line);
   int res;
 
   XBT_DEBUG("sample2 %s", loc.c_str());
@@ -370,7 +370,7 @@ int smpi_sample_2(int global, const char *file, int line)
 
 void smpi_sample_3(int global, const char *file, int line)
 {
-  std::string loc = sample_location(global, file, line);
+  SampleLocation loc(global, file, line);
 
   XBT_DEBUG("sample3 %s", loc.c_str());
   auto sample = samples.find(loc);
