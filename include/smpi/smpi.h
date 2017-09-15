@@ -914,13 +914,11 @@ XBT_PUBLIC(void) smpi_trace_set_call_location_(const char *file, int* line);
 /** Fortran binding + -fsecond-underscore **/
 XBT_PUBLIC(void) smpi_trace_set_call_location__(const char *file, int* line);
 
-#define SMPI_SAMPLE_LOCAL(iters,thres) for(smpi_sample_1(0, __FILE__, __LINE__, iters, thres); \
-                                           smpi_sample_2(0, __FILE__, __LINE__);      \
-                                           smpi_sample_3(0, __FILE__, __LINE__))
-
-#define SMPI_SAMPLE_GLOBAL(iters,thres) for(smpi_sample_1(1, __FILE__, __LINE__, iters, thres); \
-                                            smpi_sample_2(1, __FILE__, __LINE__);      \
-                                            smpi_sample_3(1, __FILE__, __LINE__))
+#define SMPI_SAMPLE_LOOP(global, iters, thres)                                                                         \
+  for (smpi_sample_1(global, __FILE__, __LINE__, iters, thres); smpi_sample_2(global, __FILE__, __LINE__);             \
+       smpi_sample_3(global, __FILE__, __LINE__))
+#define SMPI_SAMPLE_LOCAL(iters, thres) SMPI_SAMPLE_LOOP(0, iters, thres)
+#define SMPI_SAMPLE_GLOBAL(iters, thres) SMPI_SAMPLE_LOOP(1, iters, thres)
 
 #define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
 #define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
