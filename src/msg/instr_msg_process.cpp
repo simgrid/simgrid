@@ -37,7 +37,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 
     //start link
     container_t msg = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type = PJ_type_get("MSG_PROCESS_LINK", PJ_type_get_root());
+    simgrid::instr::Type* type = PJ_type_get_root()->getChild("MSG_PROCESS_LINK");
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     //destroy existing container of this process
@@ -48,7 +48,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 
     //end link
     msg = PJ_container_get(instr_process_id(process, str, len));
-    type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
+    type = PJ_type_get_root()->getChild("MSG_PROCESS_LINK");
     new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 }
@@ -94,7 +94,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
+    simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = simgrid::instr::Value::get("suspend", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
@@ -107,7 +107,7 @@ void TRACE_msg_process_resume(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
+    simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
 }
@@ -119,7 +119,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
+    simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = simgrid::instr::Value::get("sleep", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
@@ -132,7 +132,7 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
-    simgrid::instr::Type* type    = PJ_type_get("MSG_PROCESS_STATE", process_container->type_);
+    simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
 }

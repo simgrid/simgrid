@@ -70,7 +70,9 @@ public:
   xbt_dict_t values_; // valid for all types except variable and container
   Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind, Type* father);
   ~Type();
+  Type* getChild(const char* name);
   Type* getChildOrNull(const char* name);
+
   static Type* containerNew(const char* name, Type* father);
   static Type* eventNew(const char* name, Type* father);
   static Type* variableNew(const char* name, const char* color, Type* father);
@@ -336,7 +338,6 @@ XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 /* instr_paje_types.c */
 XBT_PRIVATE void PJ_type_release ();
 XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
-XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get(const char* name, simgrid::instr::Type* father);
 
 /* instr_config.c */
 XBT_PRIVATE void TRACE_TI_start();

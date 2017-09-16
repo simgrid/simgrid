@@ -236,7 +236,7 @@ void TRACE_smpi_collective_in(int rank, const char *operation, instr_extra_data 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   const char *color = instr_find_color (operation);
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(operation, color, type);
   new simgrid::instr::PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
@@ -250,7 +250,7 @@ void TRACE_smpi_collective_out(int rank, const char *operation)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
 
   new simgrid::instr::PopStateEvent(SIMIX_get_clock(), container, type);
 }
@@ -264,7 +264,7 @@ void TRACE_smpi_computing_init(int rank)
  char str[INSTR_DEFAULT_STR_SIZE];
  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
  container_t container = PJ_container_get(str);
- simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+ simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
  const char* color     = instr_find_color("computing");
  new simgrid::instr::PushStateEvent(SIMIX_get_clock(), container, type,
                                     simgrid::instr::Value::get_or_new("computing", color, type));
@@ -281,7 +281,7 @@ void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("computing", nullptr, type);
   new simgrid::instr::PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
 }
@@ -293,7 +293,7 @@ void TRACE_smpi_computing_out(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   new simgrid::instr::PopStateEvent(SIMIX_get_clock(), container, type);
 }
 
@@ -306,7 +306,7 @@ void TRACE_smpi_sleeping_init(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   const char *color = instr_find_color ("sleeping");
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("sleeping", color, type);
   new simgrid::instr::PushStateEvent(SIMIX_get_clock(), container, type, val);
@@ -323,7 +323,7 @@ void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("sleeping", nullptr, type);
   new simgrid::instr::PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
 }
@@ -335,7 +335,7 @@ void TRACE_smpi_sleeping_out(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   new simgrid::instr::PopStateEvent(SIMIX_get_clock(), container, type);
 }
 
@@ -350,7 +350,7 @@ void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("test", nullptr, type);
   new simgrid::instr::PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
 }
@@ -362,7 +362,7 @@ void TRACE_smpi_testing_out(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   new simgrid::instr::PopStateEvent(SIMIX_get_clock(), container, type);
 }
 
@@ -376,7 +376,7 @@ void TRACE_smpi_ptp_in(int rank, const char *operation, instr_extra_data extra)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
   const char *color = instr_find_color (operation);
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(operation, color, type);
   new simgrid::instr::PushStateEvent(SIMIX_get_clock(), container, type, val, static_cast<void*>(extra));
@@ -390,7 +390,7 @@ void TRACE_smpi_ptp_out(int rank, int dst, const char *operation)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_STATE", container->type_);
+  simgrid::instr::Type* type = container->type_->getChild("MPI_STATE");
 
   new simgrid::instr::PopStateEvent(SIMIX_get_clock(), container, type);
 }
@@ -406,7 +406,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_LINK", PJ_type_get_root());
+  simgrid::instr::Type* type = PJ_type_get_root()->getChild("MPI_LINK");
   XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key, size);
 }
@@ -422,7 +422,7 @@ void TRACE_smpi_recv(int src, int dst, int tag)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
-  simgrid::instr::Type* type = PJ_type_get("MPI_LINK", PJ_type_get_root());
+  simgrid::instr::Type* type = PJ_type_get_root()->getChild("MPI_LINK");
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }

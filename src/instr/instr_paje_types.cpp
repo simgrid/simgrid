@@ -62,11 +62,11 @@ simgrid::instr::Type::~Type()
   xbt_free(color_);
 }
 
-simgrid::instr::Type* PJ_type_get(const char* name, simgrid::instr::Type* father)
+simgrid::instr::Type* simgrid::instr::Type::getChild(const char* name)
 {
-  simgrid::instr::Type* ret = father->getChildOrNull(name);
+  simgrid::instr::Type* ret = this->getChildOrNull(name);
   if (ret == nullptr)
-    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name_);
+    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name, this->name_);
   return ret;
 }
 
