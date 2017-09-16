@@ -336,7 +336,6 @@ XBT_PUBLIC(void) PJ_container_free_all (void);
 XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
-XBT_PRIVATE void PJ_type_release ();
 XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
 
 /* instr_config.c */

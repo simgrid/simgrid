@@ -10,11 +10,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event sy
 
 static simgrid::instr::Type* rootType = nullptr; /* the root type */
 
-void PJ_type_release ()
-{
-  rootType = nullptr;
-}
-
 simgrid::instr::Type* PJ_type_get_root()
 {
   return rootType;
