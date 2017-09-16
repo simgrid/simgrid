@@ -428,16 +428,10 @@ void SIMIX_process_detach()
   if (not context)
     xbt_die("Not a suitable context");
 
-  simix_global->cleanup_process_function(context->process());
-
-  // Let maestro ignore we are still alive:
-  // xbt_swag_remove(context->process(), simix_global->process_list);
-
-  // TODO, Remove from proces list:
-  //   xbt_swag_remove(process, sg_host_simix(host)->process_list);
-
+  auto process = context->process();
+  simix_global->cleanup_process_function(process);
   context->attach_stop();
-  // delete context;
+  delete process;
 }
 
 /**
