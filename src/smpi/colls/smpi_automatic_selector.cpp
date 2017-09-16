@@ -16,7 +16,7 @@
 
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    simgrid::instr::Type* type = simgrid::instr::Type::getOrNull(#cat, PJ_type_get_root());                            \
+    simgrid::instr::Type* type = PJ_type_get_root()->getChildOrNull(#cat);                                             \
     if (not type) {                                                                                                    \
       type = simgrid::instr::Type::eventNew(#cat, PJ_type_get_root());                                                 \
     }                                                                                                                  \

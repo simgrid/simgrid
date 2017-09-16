@@ -103,10 +103,9 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   char link_typename[INSTR_DEFAULT_STR_SIZE];
   snprintf(link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s%s-%s%s", father->type_->name_, src->type_->name_,
            src->type_->id_, dst->type_->name_, dst->type_->id_);
-  simgrid::instr::Type* link_type = simgrid::instr::Type::getOrNull(link_typename, father->type_);
-  if (link_type == nullptr){
+  simgrid::instr::Type* link_type = father->type_->getChildOrNull(link_typename);
+  if (link_type == nullptr)
     link_type = simgrid::instr::Type::linkNew(link_typename, father->type_, src->type_, dst->type_);
-  }
 
   //register EDGE types for triva configuration
   trivaEdgeTypes.insert(link_type->name_);
@@ -170,7 +169,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
-      simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", root->type_);
+      simgrid::instr::Type* mpi = root->type_->getChildOrNull("MPI");
       if (mpi == nullptr){
         mpi = simgrid::instr::Type::containerNew("MPI", root->type_);
         if (not TRACE_smpi_is_grouped())
@@ -211,22 +210,19 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   container_t container = new simgrid::instr::Container(link.name(), simgrid::instr::INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    simgrid::instr::Type* bandwidth = simgrid::instr::Type::getOrNull("bandwidth", container->type_);
-    if (bandwidth == nullptr) {
+    simgrid::instr::Type* bandwidth = container->type_->getChildOrNull("bandwidth");
+    if (bandwidth == nullptr)
       bandwidth = simgrid::instr::Type::variableNew("bandwidth", nullptr, container->type_);
-    }
-    simgrid::instr::Type* latency = simgrid::instr::Type::getOrNull("latency", container->type_);
-    if (latency == nullptr) {
+    simgrid::instr::Type* latency = container->type_->getChildOrNull("latency");
+    if (latency == nullptr)
       latency = simgrid::instr::Type::variableNew("latency", nullptr, container->type_);
-    }
     new simgrid::instr::SetVariableEvent(0, container, bandwidth, bandwidth_value);
     new simgrid::instr::SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
-    simgrid::instr::Type* bandwidth_used = simgrid::instr::Type::getOrNull("bandwidth_used", container->type_);
-    if (bandwidth_used == nullptr) {
+    simgrid::instr::Type* bandwidth_used = container->type_->getChildOrNull("bandwidth_used");
+    if (bandwidth_used == nullptr)
       simgrid::instr::Type::variableNew("bandwidth_used", "0.5 0.5 0.5", container->type_);
-    }
   }
 }
 
@@ -236,7 +232,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   container_t container = new simgrid::instr::Container(host.getCname(), simgrid::instr::INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    simgrid::instr::Type* speed = simgrid::instr::Type::getOrNull("power", container->type_);
+    simgrid::instr::Type* speed = container->type_->getChildOrNull("power");
     if (speed == nullptr){
       speed = simgrid::instr::Type::variableNew("power", nullptr, container->type_);
     }
@@ -245,14 +241,14 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     new simgrid::instr::SetVariableEvent(0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
-    simgrid::instr::Type* speed_used = simgrid::instr::Type::getOrNull("power_used", container->type_);
+    simgrid::instr::Type* speed_used = container->type_->getChildOrNull("power_used");
     if (speed_used == nullptr){
       simgrid::instr::Type::variableNew("power_used", "0.5 0.5 0.5", container->type_);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    simgrid::instr::Type* mpi = simgrid::instr::Type::getOrNull("MPI", container->type_);
+    simgrid::instr::Type* mpi = container->type_->getChildOrNull("MPI");
     if (mpi == nullptr){
       mpi = simgrid::instr::Type::containerNew("MPI", container->type_);
       simgrid::instr::Type::stateNew("MPI_STATE", mpi);
@@ -260,7 +256,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    simgrid::instr::Type* msg_process = simgrid::instr::Type::getOrNull("MSG_PROCESS", container->type_);
+    simgrid::instr::Type* msg_process = container->type_->getChildOrNull("MSG_PROCESS");
     if (msg_process == nullptr){
       msg_process                 = simgrid::instr::Type::containerNew("MSG_PROCESS", container->type_);
       simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_PROCESS_STATE", msg_process);
@@ -275,7 +271,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_vm_is_enabled()) {
-    simgrid::instr::Type* msg_vm = simgrid::instr::Type::getOrNull("MSG_VM", container->type_);
+    simgrid::instr::Type* msg_vm = container->type_->getChildOrNull("MSG_VM");
     if (msg_vm == nullptr){
       msg_vm                      = simgrid::instr::Type::containerNew("MSG_VM", container->type_);
       simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_VM_STATE", msg_vm);

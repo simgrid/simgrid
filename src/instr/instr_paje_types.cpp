@@ -64,28 +64,25 @@ simgrid::instr::Type::~Type()
 
 simgrid::instr::Type* PJ_type_get(const char* name, simgrid::instr::Type* father)
 {
-  simgrid::instr::Type* ret = simgrid::instr::Type::getOrNull(name, father);
-  if (ret == nullptr){
+  simgrid::instr::Type* ret = father->getChildOrNull(name);
+  if (ret == nullptr)
     THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name_);
-  }
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::getOrNull(const char* name, simgrid::instr::Type* father)
+simgrid::instr::Type* simgrid::instr::Type::getChildOrNull(const char* name)
 {
-  if (name == nullptr || father == nullptr){
-    THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");
-  }
+  xbt_assert(name != nullptr, "can't get type with a nullptr name");
 
   simgrid::instr::Type* ret = nullptr;
   simgrid::instr::Type* child;
   char *child_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (father->children_, cursor, child_name, child) {
+  xbt_dict_foreach (children_, cursor, child_name, child) {
     if (strcmp(child->name_, name) == 0) {
-      if (ret != nullptr){
+      if (ret != nullptr) {
         THROWF (tracing_error, 0, "there are two children types with the same name?");
-      }else{
+      } else {
         ret = child;
       }
     }

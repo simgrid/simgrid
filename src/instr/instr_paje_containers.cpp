@@ -71,7 +71,7 @@ simgrid::instr::Container::Container(const char* name, simgrid::instr::e_contain
     char as_typename[INSTR_DEFAULT_STR_SIZE];
     snprintf(as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", this->level_);
     if (this->father_) {
-      this->type_ = simgrid::instr::Type::getOrNull(as_typename, this->father_->type_);
+      this->type_ = this->father_->type_->getChildOrNull(as_typename);
       if (this->type_ == nullptr) {
         this->type_ = simgrid::instr::Type::containerNew(as_typename, this->father_->type_);
       }
@@ -107,7 +107,7 @@ simgrid::instr::Container::Container(const char* name, simgrid::instr::e_contain
         THROWF (tracing_error, 0, "new container kind is unknown.");
         break;
     }
-    simgrid::instr::Type* type = simgrid::instr::Type::getOrNull(typeNameBuff, this->father_->type_);
+    simgrid::instr::Type* type = this->father_->type_->getChildOrNull(typeNameBuff);
     if (type == nullptr){
       this->type_ = simgrid::instr::Type::containerNew(typeNameBuff, this->father_->type_);
     }else{
