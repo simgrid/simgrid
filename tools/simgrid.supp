@@ -18,8 +18,13 @@
 {
    Memory leak in cmake
    Memcheck:Leak
+   match-leak-kinds:reachable
    ...
-   obj:*/cmake
+   fun:_Znwm
+   fun:_ZN4Json5Value13nullSingletonEv
+   obj:*/libjsoncpp.so*
+   ...
+   fun:_dl_init
 }
 
 # There's a constant leak of 56 bytes in the depths of libc which
