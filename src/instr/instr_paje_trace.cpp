@@ -765,8 +765,8 @@ void simgrid::instr::ResetStateEvent::print()
 
 simgrid::instr::StartLinkEvent::~StartLinkEvent()
 {
-  free(value);
-  free(key);
+  free(value_);
+  free(key_);
 }
 simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t container, Type* type,
                                                container_t sourceContainer, const char* value, const char* key)
@@ -776,17 +776,17 @@ simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t con
 simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t container, Type* type,
                                                container_t sourceContainer, const char* value, const char* key,
                                                int size)
+    : container_(container)
+    , type_(type)
+    , sourceContainer_(sourceContainer)
+    , value_(xbt_strdup(value))
+    , key_(xbt_strdup(key))
+    , size_(size)
 {
   eventType_            = PAJE_StartLink;
   this->timestamp_      = timestamp;
-  this->type            = type;
-  this->container       = container;
-  this->sourceContainer = sourceContainer;
-  this->value           = xbt_strdup(value);
-  this->key             = xbt_strdup(key);
-  this->size            = size;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__, (int)eventType_, this->timestamp_, this->value);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__, (int)eventType_, this->timestamp_, this->value_);
 
   insert_into_buffer (this);
 }
@@ -798,11 +798,11 @@ void simgrid::instr::StartLinkEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << value;
-    stream << " " << sourceContainer->id_ << " " << key;
+    stream << " " << type_->id_ << " " << container_->id_ << " " << value_;
+    stream << " " << sourceContainer_->id_ << " " << key_;
 
     if (TRACE_display_sizes()) {
-      stream << " " << size;
+      stream << " " << size_;
     }
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {

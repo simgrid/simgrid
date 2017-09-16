@@ -219,21 +219,20 @@ public:
 };
 
 class StartLinkEvent : public PajeEvent  {
-  public:
-    Container* container;
-    Type* type;
-    Container* sourceContainer;
-    char* value;
-    char* key;
-    int size;
+  Container* container_;
+  Type* type_;
+  Container* sourceContainer_;
+  char* value_;
+  char* key_;
+  int size_;
 
-  public:
-    ~StartLinkEvent();
-    StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                   const char* key);
-    StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                   const char* key, int size);
-    void print() override;
+public:
+  ~StartLinkEvent();
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
+                 const char* key);
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
+                 const char* key, int size);
+  void print() override;
 };
 
 class EndLinkEvent : public PajeEvent  {
