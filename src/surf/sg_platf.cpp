@@ -446,6 +446,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
   std::vector<std::string> args(process->argv, process->argv + process->argc);
   std::function<void()> code = factory(std::move(args));
+  std::shared_ptr<std::map<std::string, std::string>> properties(process->properties);
 
   smx_process_arg_t arg = nullptr;
 
@@ -455,7 +456,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   arg->data = nullptr;
   arg->host = host;
   arg->kill_time = kill_time;
-  arg->properties = process->properties;
+  arg->properties = properties;
 
   host->extension<simgrid::simix::Host>()->boot_processes.push_back(arg);
 
@@ -467,12 +468,12 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->data = nullptr;
     arg->host = host;
     arg->kill_time = kill_time;
-    arg->properties = process->properties;
+    arg->properties = properties;
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->getCname(), start_time);
     SIMIX_timer_set(start_time, [arg, auto_restart]() {
       smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(arg->code), arg->data,
-                                                                arg->host, arg->properties, nullptr);
+                                                                arg->host, arg->properties.get(), nullptr);
       if (arg->kill_time >= 0)
         simcall_process_set_kill_time(actor, arg->kill_time);
       if (auto_restart)
@@ -483,7 +484,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->getCname());
 
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(code), nullptr, host,
-                                                              arg->properties, nullptr);
+                                                              arg->properties.get(), nullptr);
 
     /* The actor creation will fail if the host is currently dead, but that's fine */
     if (actor != nullptr) {
@@ -493,7 +494,6 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
         SIMIX_process_auto_restart_set(actor, auto_restart);
     }
   }
-  current_property_set = nullptr;
 }
 
 void sg_platf_new_peer(PeerCreationArgs* peer)

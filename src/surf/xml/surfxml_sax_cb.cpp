@@ -1026,9 +1026,11 @@ void ETag_surfxml_actor()
   s_sg_platf_process_cbarg_t actor;
   memset(&actor,0,sizeof(actor));
 
+  actor.properties     = current_property_set;
+  current_property_set = nullptr;
+
   actor.argc       = argc;
   actor.argv       = (const char **)argv;
-  actor.properties = current_property_set;
   actor.host       = A_surfxml_actor_host;
   actor.function   = A_surfxml_actor_function;
   actor.start_time = surf_parse_get_double(A_surfxml_actor_start___time);
@@ -1053,8 +1055,6 @@ void ETag_surfxml_actor()
     xbt_free(argv[i]);
   xbt_free(argv);
   argv = nullptr;
-
-  current_property_set = nullptr;
 }
 
 void STag_surfxml_argument(){

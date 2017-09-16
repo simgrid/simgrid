@@ -185,7 +185,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
 
   // start the new process
   ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
-                                                           arg.properties, nullptr);
+                                                           arg.properties.get(), nullptr);
   if (arg.kill_time >= 0)
     simcall_process_set_kill_time(actor, arg.kill_time);
   if (arg.auto_restart)

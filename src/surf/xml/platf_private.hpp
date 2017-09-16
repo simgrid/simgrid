@@ -1,6 +1,6 @@
 /* platf_private.h - Interface to the SimGrid platforms which visibility should be limited to this directory */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -190,9 +190,6 @@ public:
   std::string id;
   int routing;
 };
-
-/* The default current property receiver. Setup in the corresponding opening callbacks. */
-extern std::map<std::string, std::string>* current_property_set;
 
 /********** Routing **********/
 void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
