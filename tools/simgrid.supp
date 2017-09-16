@@ -86,7 +86,7 @@
 
 #SMPI leaks the dlopen handle used to load the program
 {
-   dlopen handle leaks (1/2)
+   dlopen handle leaks (1/3)
    Memcheck:Leak
    match-leak-kinds:reachable
    fun:malloc
@@ -95,10 +95,19 @@
 }
 
 {
-   dlopen handle leaks (2/2)
+   dlopen handle leaks (2/3)
    Memcheck:Leak
    match-leak-kinds:reachable
    fun:calloc
+   ...
+   fun:dlopen@@GLIBC_*
+}
+
+{
+   dlopen handle leaks (3/3)
+   Memcheck:Leak
+   match-leak-kinds:reachable
+   fun:realloc
    ...
    fun:dlopen@@GLIBC_*
 }
