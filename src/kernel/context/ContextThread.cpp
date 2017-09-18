@@ -179,6 +179,10 @@ void *ThreadContext::maestro_wrapper(void *param)
   // Tell main that we have finished:
   xbt_os_sem_release(context->end_);
 
+#ifndef WIN32
+  stack.ss_flags = SS_DISABLE;
+  sigaltstack(&stack, nullptr);
+#endif
   return nullptr;
 }
 
@@ -198,6 +202,11 @@ void ThreadContext::stop()
   // Signal to the maestro that it has finished:
   xbt_os_sem_release(this->end_);
 
+#ifndef WIN32
+  stack_t stack;
+  stack.ss_flags = SS_DISABLE;
+  sigaltstack(&stack, nullptr);
+#endif
   xbt_os_thread_exit(nullptr);
 }
 
