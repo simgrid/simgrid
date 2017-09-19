@@ -203,7 +203,9 @@ void ThreadContext::stop()
   xbt_os_sem_release(this->end_);
 
 #ifndef WIN32
-  stack_t stack  = {};
+  stack_t stack;
+  stack.ss_sp    = nullptr;
+  stack.ss_size  = 0;
   stack.ss_flags = SS_DISABLE;
   sigaltstack(&stack, nullptr);
 #endif
