@@ -677,10 +677,9 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
   simcall->issuer->waiting_synchro = sync;
 }
 
-static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* synchro)
+static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_actor_t process, smx_activity_t sleep_act)
 {
-  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(synchro);
-
+  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(sleep_act.get());
   if (sleep->surf_sleep) {
     sleep->surf_sleep->cancel();
 
@@ -700,7 +699,8 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* syn
     sleep->surf_sleep->unref();
     sleep->surf_sleep = nullptr;
   }
-  // intrusive_ptr_release(process); // FIXME: We are leaking here. See comment in SIMIX_process_join()
+  intrusive_ptr_release(process);
+  intrusive_ptr_release(sleep_act.get());
   return 0;
 }
 
@@ -708,18 +708,16 @@ smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, doubl
 {
   smx_activity_t res = issuer->sleep(timeout);
   intrusive_ptr_add_ref(res.get());
-  /* We are leaking the process here, but if we don't take the ref, we get a "use after free".
-   * The correct solution would be to derivate the type SynchroSleep into a SynchroProcessJoin,
-   * but the code is not clean enough for now for this.
-   * The C API should first be properly replaced with the C++ one, which is a fair amount of work.
-   */
   intrusive_ptr_add_ref(process);
   SIMIX_process_on_exit(process,
                         [](void*, void* arg) {
-                          return simgrid::simix::kernelImmediate(
-                              [&] { return SIMIX_process_join_finish(SMX_EXIT_SUCCESS, arg); });
+                          auto argp = static_cast<std::pair<smx_actor_t, smx_activity_t>*>(arg);
+                          int res   = simgrid::simix::kernelImmediate(
+                              [&] { return SIMIX_process_join_finish(SMX_EXIT_SUCCESS, argp->first, argp->second); });
+                          delete argp;
+                          return res;
                         },
-                        &*res);
+                        new std::pair<smx_actor_t, smx_activity_t>(process, res));
   return res;
 }
 
