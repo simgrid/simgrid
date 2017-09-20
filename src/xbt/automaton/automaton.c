@@ -395,7 +395,6 @@ void xbt_automaton_propositional_symbol_free_voidp(void *ps){
   xbt_automaton_propositional_symbol_t symbol = (xbt_automaton_propositional_symbol_t) * (void **) ps;
   if (symbol->free_function)
     symbol->free_function(symbol->data);
-  xbt_free(symbol->pred);
   xbt_automaton_propositional_symbol_free(symbol);
 }
 
