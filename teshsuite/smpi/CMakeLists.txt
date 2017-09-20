@@ -116,7 +116,7 @@ if(enable_smpi)
 
   # Extra pt2pt pingpong test: broken usage ti-tracing
   ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong broken_hostfiles.tesh)
-  ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong TI_output.tesh)
+  ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong/TI_output.tesh)
 
   # Simple privatization tests
   if(HAVE_PRIVATIZATION)
