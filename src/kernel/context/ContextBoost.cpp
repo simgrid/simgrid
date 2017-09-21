@@ -135,8 +135,13 @@ void BoostContext::smx_ctx_boost_wrapper(BoostContext::ctx_arg_type arg)
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
   BoostContext* context                         = static_cast<BoostContext**>(arg.data)[1];
 #endif
-  (*context)();
-  context->stop();
+  try {
+    (*context)();
+    context->stop();
+  } catch (StopRequest) {
+    XBT_DEBUG("Caught a StopRequest");
+  }
+  context->suspend();
 }
 
 inline void BoostContext::smx_ctx_boost_jump_fcontext(BoostContext* from, BoostContext* to)
@@ -223,7 +228,7 @@ void BoostSerialContext::suspend()
 void BoostSerialContext::stop()
 {
   BoostContext::stop();
-  this->suspend();
+  throw StopRequest();
 }
 
 // BoostParallelContext
@@ -250,7 +255,7 @@ void BoostParallelContext::suspend()
 void BoostParallelContext::stop()
 {
   BoostContext::stop();
-  this->suspend();
+  throw StopRequest();
 }
 
 void BoostParallelContext::resume()

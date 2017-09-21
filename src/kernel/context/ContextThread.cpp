@@ -151,9 +151,17 @@ void *ThreadContext::wrapper(void *param)
   if (smx_ctx_thread_sem)       /* parallel run */
     xbt_os_sem_acquire(smx_ctx_thread_sem);
 
-  (*context)();
-  context->stop();
+  try {
+    (*context)();
+    context->stop();
+  } catch (StopRequest) {
+    XBT_DEBUG("Caught a StopRequest");
+  }
 
+#ifndef WIN32
+  stack.ss_flags = SS_DISABLE;
+  sigaltstack(&stack, nullptr);
+#endif
   return nullptr;
 }
 
@@ -202,14 +210,7 @@ void ThreadContext::stop()
   // Signal to the maestro that it has finished:
   xbt_os_sem_release(this->end_);
 
-#ifndef WIN32
-  stack_t stack;
-  stack.ss_sp    = nullptr;
-  stack.ss_size  = 0;
-  stack.ss_flags = SS_DISABLE;
-  sigaltstack(&stack, nullptr);
-#endif
-  xbt_os_thread_exit(nullptr);
+  throw StopRequest();
 }
 
 void ThreadContext::suspend()

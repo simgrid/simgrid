@@ -247,8 +247,13 @@ static void smx_ctx_sysv_wrapper(int first, ...)
   }
   memcpy(&context, ctx_addr, sizeof(simgrid::kernel::context::UContext*));
 
-  (*context)();
-  context->stop();
+  try {
+    (*context)();
+    context->stop();
+  } catch (simgrid::kernel::context::Context::StopRequest) {
+    XBT_DEBUG("Caught a StopRequest");
+  }
+  context->suspend();
 }
 
 namespace simgrid {
@@ -258,7 +263,7 @@ namespace context {
 void SerialUContext::stop()
 {
   Context::stop();
-  this->suspend();
+  throw StopRequest();
 }
 
 void SerialUContext::suspend()
@@ -291,7 +296,7 @@ void SerialUContext::resume()
 void ParallelUContext::stop()
 {
   UContext::stop();
-  this->suspend();
+  throw StopRequest();
 }
 
 /** Run one particular simulated process on the current thread. */

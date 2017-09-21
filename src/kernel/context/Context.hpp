@@ -80,6 +80,8 @@ namespace context {
     void_pfn_smxprocess_t cleanup_func_ = nullptr;
     smx_actor_t process_ = nullptr;
   public:
+    class StopRequest {
+    };
     bool iwannadie;
 
     Context(std::function<void()> code,

@@ -291,8 +291,13 @@ RawContext* RawContextFactory::create_context(std::function<void()> code,
 void RawContext::wrapper(void* arg)
 {
   RawContext* context = static_cast<RawContext*>(arg);
-  (*context)();
-  context->stop();
+  try {
+    (*context)();
+    context->stop();
+  } catch (StopRequest) {
+    XBT_DEBUG("Caught a StopRequest");
+  }
+  context->suspend();
 }
 
 RawContext::RawContext(std::function<void()> code,
@@ -323,7 +328,7 @@ RawContext::~RawContext()
 void RawContext::stop()
 {
   Context::stop();
-  this->suspend();
+  throw StopRequest();
 }
 
 void RawContextFactory::run_all()
