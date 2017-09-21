@@ -230,6 +230,7 @@ int main(int argc, char *argv[])
   res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
+  xbt_dynar_free(&tests);
 
   return res != MSG_OK;
 }
