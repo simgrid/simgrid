@@ -763,11 +763,6 @@ void simgrid::instr::ResetStateEvent::print()
   }
 }
 
-simgrid::instr::StartLinkEvent::~StartLinkEvent()
-{
-  free(value_);
-  free(key_);
-}
 simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t container, Type* type,
                                                container_t sourceContainer, const char* value, const char* key)
     : StartLinkEvent(timestamp, container, type, sourceContainer, value, key, -1)
@@ -779,14 +774,14 @@ simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t con
     : container_(container)
     , type_(type)
     , sourceContainer_(sourceContainer)
-    , value_(xbt_strdup(value))
-    , key_(xbt_strdup(key))
+    , value_(value)
+    , key_(key)
     , size_(size)
 {
   eventType_            = PAJE_StartLink;
   this->timestamp_      = timestamp;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__, (int)eventType_, this->timestamp_, this->value_);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__, (int)eventType_, this->timestamp_, this->value_.c_str());
 
   insert_into_buffer (this);
 }

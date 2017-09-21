@@ -222,12 +222,11 @@ class StartLinkEvent : public PajeEvent  {
   Container* container_;
   Type* type_;
   Container* sourceContainer_;
-  char* value_;
-  char* key_;
+  std::string value_;
+  std::string key_;
   int size_;
 
 public:
-  ~StartLinkEvent();
   StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
                  const char* key);
   StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
