@@ -73,7 +73,7 @@ void smpi_get_executable_global_size()
 #endif
 #if __has_feature(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
 #include <sanitizer/asan_interface.h>
-void* safe_memcpy(void* dest, void* src, size_t n)
+static void* safe_memcpy(void* dest, void* src, size_t n)
 {
   char* psrc  = static_cast<char*>(src);
   char* pdest = static_cast<char*>(dest);
