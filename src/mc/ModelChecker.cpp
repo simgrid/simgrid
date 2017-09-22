@@ -147,7 +147,7 @@ void ModelChecker::shutdown()
   simgrid::mc::RemoteClient* process = &this->process();
   if (process->running()) {
     XBT_DEBUG("Killing process");
-    kill(process->pid(), SIGTERM);
+    kill(process->pid(), SIGKILL);
     process->terminate();
   }
 }
