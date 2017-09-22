@@ -68,10 +68,12 @@ void smpi_get_executable_global_size()
 }
 #endif
 
-#if !defined(__has_feature)
-#define __has_feature(x) 0
+#if defined(__has_feature)
+#define HAS_FEATURE(x) __has_feature(x)
+#else
+#define HAS_FEATURE(x) 0
 #endif
-#if __has_feature(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
+#if HAS_FEATURE(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
 #include <sanitizer/asan_interface.h>
 static void* safe_memcpy(void* dest, void* src, size_t n)
 {
