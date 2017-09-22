@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This example shows how to block until the completion of a communication.
+ */
+
  #include "simgrid/s4u.hpp"
  #include "xbt/str.h"
  #include <cstdlib>
@@ -12,27 +15,28 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this s4u exa
 
 /* Main function of the Sender process */
 class sender {
-  long messages_count;
-  long receivers_count;
-  double sleep_start_time; /* - start time */
-  double sleep_test_time;         /* - test time */
-  double msg_size;
+  long messages_count;             /* - number of tasks */
+  long receivers_count;            /* - number of receivers */
+  double sleep_start_time;         /* - start time */
+  double sleep_test_time;          /* - test time */
+  double msg_size;                 /* - computational cost */
   simgrid::s4u::MailboxPtr mbox;
   
 public:
   explicit sender(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 7, "The sender function expects 6 arguments from the XML deployment file");
-  messages_count = std::stol(args[1]);        /* - number of tasks */
-  msg_size = std::stod(args[2]); /* - computational cost */
+  messages_count = std::stol(args[1]);
+  msg_size = std::stod(args[2]); 
   double task_comm_size = std::stod(args[3]); /* - communication cost */
-  receivers_count = std::stol(args[4]);    /* - number of receivers */
-  double sleep_start_time = std::stod(args[5]); /* - start time */
-  double sleep_test_time = std::stod(args[6]);         /* - test time */
+  receivers_count = std::stol(args[4]);    
+  double sleep_start_time = std::stod(args[5]);
+  double sleep_test_time = std::stod(args[6]);
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
 }
 void operator()()
-{
+{ 
+  /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
     char mailbox[80];
     char taskname[80];
@@ -42,11 +46,11 @@ void operator()()
     snprintf(mailbox,79, "receiver-%ld", i % receivers_count);
     snprintf(taskname,79, "Task_%d", i);
     
-    /* Create a communication */
+    /* Create a communication representing the ongoing communication */
     simgrid::s4u::CommPtr comm = mbox->put_async((void*)mailbox, msg_size);
     XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
   }
-  
+  /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
     char mailbox[80];
     char* payload   = xbt_strdup("finalize"); 
@@ -62,18 +66,18 @@ void operator()()
 
 /* Receiver process expects 3 arguments: */
 class receiver {
-  int id;
-  double sleep_test_time;
-  double sleep_start_time;
+  int id;                   /* - unique id */
+  double sleep_start_time;  /* - start time */
+  double sleep_test_time;   /* - test time */
   simgrid::s4u::MailboxPtr mbox;
   
 public:
   explicit receiver(std::vector<std::string> args)
   {
     xbt_assert(args.size() == 4, "The relay_runner function does not accept any parameter from the XML deployment file");
-  id = std::stoi(args[1]);                                        /* - unique id */
-  sleep_start_time = std::stod(args[2]); /* - start time */
-  sleep_test_time = std::stod(args[3]);   /* - test time */
+  id = std::stoi(args[1]);
+  sleep_start_time = std::stod(args[2]); 
+  sleep_test_time = std::stod(args[3]);   
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
   std::string mbox_name = std::string("receiver-") + std::to_string(id);
   mbox = simgrid::s4u::Mailbox::byName(mbox_name);
