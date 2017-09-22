@@ -158,6 +158,11 @@ void *ThreadContext::wrapper(void *param)
     XBT_DEBUG("Caught a StopRequest");
   }
 
+  if (smx_ctx_thread_sem)
+    xbt_os_sem_release(smx_ctx_thread_sem);
+  // Signal to the maestro that it has finished:
+  xbt_os_sem_release(context->end_);
+
 #ifndef WIN32
   stack.ss_flags = SS_DISABLE;
   sigaltstack(&stack, nullptr);
@@ -204,12 +209,6 @@ void ThreadContext::start()
 void ThreadContext::stop()
 {
   Context::stop();
-  if (smx_ctx_thread_sem)
-    xbt_os_sem_release(smx_ctx_thread_sem);
-
-  // Signal to the maestro that it has finished:
-  xbt_os_sem_release(this->end_);
-
   throw StopRequest();
 }
 
