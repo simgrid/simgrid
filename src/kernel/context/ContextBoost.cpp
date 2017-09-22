@@ -30,7 +30,6 @@ public:
       void_pfn_smxprocess_t cleanup_func,
       smx_actor_t process)
     : BoostContext(std::move(code), cleanup_func, process) {}
-  void stop() override;
   void suspend() override;
 };
 
@@ -41,7 +40,6 @@ public:
       void_pfn_smxprocess_t cleanup_func,
       smx_actor_t process)
     : BoostContext(std::move(code), cleanup_func, process) {}
-  void stop() override;
   void suspend() override;
   void resume() override;
 };
@@ -137,8 +135,8 @@ void BoostContext::smx_ctx_boost_wrapper(BoostContext::ctx_arg_type arg)
 #endif
   try {
     (*context)();
-    context->stop();
-  } catch (const StopRequest&) {
+    context->Context::stop();
+  } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
   context->suspend();
@@ -199,6 +197,12 @@ BoostContext::~BoostContext()
 
 // BoostSerialContext
 
+void BoostContext::stop()
+{
+  Context::stop();
+  throw StopRequest();
+}
+
 void BoostContext::resume()
 {
   SIMIX_context_set_current(this);
@@ -225,12 +229,6 @@ void BoostSerialContext::suspend()
   smx_ctx_boost_jump_fcontext(this, next_context);
 }
 
-void BoostSerialContext::stop()
-{
-  BoostContext::stop();
-  throw StopRequest();
-}
-
 // BoostParallelContext
 
 #if HAVE_THREAD_CONTEXTS
@@ -250,12 +248,6 @@ void BoostParallelContext::suspend()
 
   SIMIX_context_set_current(static_cast<smx_context_t>(next_context));
   smx_ctx_boost_jump_fcontext(this, next_context);
-}
-
-void BoostParallelContext::stop()
-{
-  BoostContext::stop();
-  throw StopRequest();
 }
 
 void BoostParallelContext::resume()

@@ -81,6 +81,7 @@ public:
   UContext(std::function<void()>  code,
     void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   ~UContext() override;
+  void stop() override;
 };
 
 class SerialUContext : public UContext {
@@ -89,7 +90,6 @@ public:
       void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
     : UContext(std::move(code), cleanup_func, process)
   {}
-  void stop() override;
   void suspend() override;
   void resume();
 };
@@ -100,7 +100,6 @@ public:
       void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
     : UContext(std::move(code), cleanup_func, process)
   {}
-  void stop() override;
   void suspend() override;
   void resume();
 };
@@ -230,6 +229,11 @@ UContext::~UContext()
   SIMIX_context_stack_delete(this->stack_);
 }
 
+void UContext::stop()
+{
+  Context::stop();
+  throw StopRequest();
+}
 }}} // namespace simgrid::kernel::context
 
 static void smx_ctx_sysv_wrapper(int first, ...)
@@ -249,8 +253,8 @@ static void smx_ctx_sysv_wrapper(int first, ...)
 
   try {
     (*context)();
-    context->stop();
-  } catch (simgrid::kernel::context::Context::StopRequest) {
+    context->Context::stop();
+  } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
   context->suspend();
@@ -259,12 +263,6 @@ static void smx_ctx_sysv_wrapper(int first, ...)
 namespace simgrid {
 namespace kernel {
 namespace context {
-
-void SerialUContext::stop()
-{
-  Context::stop();
-  throw StopRequest();
-}
 
 void SerialUContext::suspend()
 {
@@ -291,12 +289,6 @@ void SerialUContext::resume()
 {
   SIMIX_context_set_current(this);
   swapcontext(&static_cast<SerialUContext*>(sysv_maestro_context)->uc_, &this->uc_);
-}
-
-void ParallelUContext::stop()
-{
-  UContext::stop();
-  throw StopRequest();
 }
 
 /** Run one particular simulated process on the current thread. */

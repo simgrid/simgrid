@@ -60,6 +60,7 @@ public:
           void_pfn_smxprocess_t cleanup_func,
           smx_actor_t process);
   ~BoostContext() override;
+  void stop() override;
   virtual void resume();
 private:
   static void wrapper(int first, ...);

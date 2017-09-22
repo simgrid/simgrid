@@ -153,8 +153,8 @@ void *ThreadContext::wrapper(void *param)
 
   try {
     (*context)();
-    context->stop();
-  } catch (StopRequest) {
+    context->Context::stop();
+  } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
 

@@ -293,8 +293,8 @@ void RawContext::wrapper(void* arg)
   RawContext* context = static_cast<RawContext*>(arg);
   try {
     (*context)();
-    context->stop();
-  } catch (StopRequest) {
+    context->Context::stop();
+  } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
   context->suspend();
