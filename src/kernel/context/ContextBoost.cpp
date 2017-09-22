@@ -138,7 +138,7 @@ void BoostContext::smx_ctx_boost_wrapper(BoostContext::ctx_arg_type arg)
   try {
     (*context)();
     context->stop();
-  } catch (StopRequest) {
+  } catch (const StopRequest&) {
     XBT_DEBUG("Caught a StopRequest");
   }
   context->suspend();
