@@ -140,7 +140,7 @@ Session* Session::fork(std::function<void()> code)
   // process:
   int res;
   int sockets[2];
-  res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
+  res = socketpair(AF_LOCAL, SOCK_SEQPACKET, 0, sockets);
   if (res == -1)
     throw simgrid::xbt::errno_error("Could not create socketpair");
 
