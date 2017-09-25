@@ -10,13 +10,21 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 xbt_dynar_t tests;
 int tasks_done = 0;
 
+static void task_cleanup_handler(void *task)
+{
+  MSG_task_destroy(task);
+}
+
 static int process_daemon(int argc, char *argv[])
 {
+  msg_process_t self = MSG_process_self();
   XBT_INFO("  Start daemon on %s (%f)", MSG_host_get_name(MSG_host_self()), MSG_host_get_speed(MSG_host_self()));
   for(;;){
     msg_task_t task = MSG_task_create("daemon", MSG_host_get_speed(MSG_host_self()), 0, NULL);
+    MSG_process_set_data(self, task);
     XBT_INFO("  Execute daemon");
     MSG_task_execute(task);
+    MSG_process_set_data(self, NULL);
     MSG_task_destroy(task);
     tasks_done ++;
   }
@@ -39,7 +47,7 @@ static int commTX(int argc, char *argv[])
   const char * mailbox = "comm";
   XBT_INFO("  Start TX");
   msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
-  MSG_task_isend(task, mailbox);
+  MSG_task_dsend(task, mailbox, task_cleanup_handler);
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
   MSG_process_sleep(30);
   XBT_INFO("  TX done");
@@ -54,6 +62,7 @@ static int commRX(int argc, char *argv[])
   msg_error_t error = MSG_task_receive(&(task), mailbox);
   if (error==MSG_OK) {
     XBT_INFO("  Receive message: %s", task->name);
+    MSG_task_destroy(task);
   } else if (error==MSG_HOST_FAILURE) {
     XBT_INFO("  Receive message: HOST_FAILURE");
   } else if (error==MSG_TRANSFER_FAILURE) {
@@ -167,6 +176,7 @@ static int test_launcher(int argc, char *argv[])
 
   test =6;
   if (xbt_dynar_search_or_negative(tests, &test)!=-1){
+    MSG_process_set_data_cleanup(NULL); /* FIXME: we are leaking here, but removing this line changes the test output */
     XBT_INFO("Test 6: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node");
 
     // Create VM0
@@ -225,6 +235,7 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);
 
+  MSG_process_set_data_cleanup(task_cleanup_handler);
   MSG_process_create("test_launcher", test_launcher, NULL, MSG_get_host_by_name("Tremblay"));
 
   res = MSG_main();
