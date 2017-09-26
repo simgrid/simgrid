@@ -1292,7 +1292,7 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 \subsection options_exception_cutpath Truncate local path from exception backtrace
 
 \verbatim
---cfg=exceptions/cutpath:1
+--cfg=exception/cutpath:1
 \endverbatim
 
 This configuration option is used to remove the path from the

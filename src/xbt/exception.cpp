@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2016. The SimGrid Team.
+/* Copyright (c) 2005-2017. The SimGrid Team.
  * All rights reserved. */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,6 +15,8 @@
 #include <mutex>
 
 #include <xbt/backtrace.hpp>
+#include <xbt/config.hpp>
+#include <xbt/ex.hpp>
 #include <xbt/exception.hpp>
 #include <xbt/log.h>
 #include <xbt/log.hpp>
@@ -47,7 +49,7 @@ void logException(
       XBT_LOG(prio, "%s %s: %s", context, name.get(), exception.what());
 
     // Do we have a backtrace?
-    if (with_context != nullptr) {
+    if (with_context != nullptr && not xbt_cfg_get_boolean("exception/cutpath")) {
       auto backtrace = simgrid::xbt::resolveBacktrace(
         with_context->backtrace().data(), with_context->backtrace().size());
       for (std::string const& s : backtrace)
@@ -76,6 +78,10 @@ void logException(
 
 static void showBacktrace(std::vector<xbt_backtrace_location_t>& bt)
 {
+  if (xbt_cfg_get_boolean("exception/cutpath")) {
+    XBT_LOG(xbt_log_priority_critical, "Display of current backtrace disabled by --cfg=exception/cutpath.");
+    return;
+  }
   std::vector<std::string> res = resolveBacktrace(&bt[0], bt.size());
   XBT_LOG(xbt_log_priority_critical, "Current backtrace:");
   for (std::string const& s : res)
