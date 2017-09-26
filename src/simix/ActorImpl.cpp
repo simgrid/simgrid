@@ -73,8 +73,10 @@ void SIMIX_process_cleanup(smx_actor_t process)
   SIMIX_process_on_exit_runall(process);
 
   /* Unregister from the kill timer if any */
-  if (process->kill_timer != nullptr)
+  if (process->kill_timer != nullptr) {
     SIMIX_timer_remove(process->kill_timer);
+    process->kill_timer = nullptr;
+  }
 
   xbt_os_mutex_acquire(simix_global->mutex);
 

@@ -575,7 +575,7 @@ smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
-  xbt_heap_rm_elm(simix_timers, timer, timer->getDate());
+  delete static_cast<smx_timer_t>(xbt_heap_rm_elm(simix_timers, timer, timer->getDate()));
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
