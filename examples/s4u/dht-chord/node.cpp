@@ -40,6 +40,11 @@ static int is_in_interval(int id, int start, int end)
   return i <= e;
 }
 
+void ChordMessage::destroy(void* message)
+{
+  delete static_cast<ChordMessage*>(message);
+}
+
 /* Initializes the current node as the first one of the system */
 Node::Node(std::vector<std::string> args)
 {
@@ -389,7 +394,7 @@ void Node::remoteNotify(int notify_id, int predecessor_candidate_id)
   // send a "Notify" request to notify_id
   XBT_DEBUG("Sending a 'Notify' request to %d", notify_id);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(notify_id));
-  mailbox->put_init(message, 10)->detach();
+  mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
 }
 
 /* This function is called periodically. It checks the immediate successor of the current node. */
@@ -429,14 +434,14 @@ void Node::handleMessage(ChordMessage* message)
       XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
                 message->issuer_host_name.c_str(), message->answer_to->getName(), message->request_id,
                 message->answer_id);
-      message->answer_to->put_init(message, 10)->detach();
+      message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     } else {
       // otherwise, forward the request to the closest preceding finger in my table
       int closest = closestPrecedingFinger(message->request_id);
       XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
           message->request_id, closest);
       simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(closest));
-      mailbox->put_init(message, 10)->detach();
+      mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
     }
     break;
 
@@ -446,7 +451,7 @@ void Node::handleMessage(ChordMessage* message)
     message->answer_id = pred_id_;
     XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
               message->issuer_host_name.c_str(), message->answer_to->getName(), message->answer_id);
-    message->answer_to->put_init(message, 10)->detach();
+    message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     break;
 
   case NOTIFY:
@@ -484,7 +489,7 @@ void Node::handleMessage(ChordMessage* message)
     message->type = PREDECESSOR_ALIVE_ANSWER;
     XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)", message->issuer_host_name.c_str(),
               message->answer_to->getName());
-    message->answer_to->put_init(message, 10)->detach();
+    message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     break;
 
   default:
