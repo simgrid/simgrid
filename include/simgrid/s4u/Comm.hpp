@@ -102,6 +102,12 @@ public:
 
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
   void detach();
+  /** Start the comm, and ignore its result. It can be completely forgotten after that. */
+  void detach(void (*cleanFunction)(void*))
+  {
+    cleanFunction_ = cleanFunction;
+    detach();
+  }
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   void setRate(double rate);
