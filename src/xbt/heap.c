@@ -158,18 +158,19 @@ void *xbt_heap_remove(xbt_heap_t H, int i)
 
   return xbt_heap_pop(H);
 }
+
 /** @brief Remove an arbitrary element from the heap
- *  @param H the heap we're working on
- *  @param content the object you want to add to the heap
- *  @param key the key associated to this object
+ *  \param H the heap we're working on
+ *  \param content the object you want to remove from the heap
+ *  \param key the key associated to this object
+ *  \return the removed element if found, NULL otherwise
  */
-void xbt_heap_rm_elm(xbt_heap_t H, void *content, double key) {
+void *xbt_heap_rm_elm(xbt_heap_t H, void *content, double key)
+{
   int i=0;
   while (i < H->count && (KEY(H, i) != key || CONTENT(H, i) != content))
     i++;
-  if (i == H->count)
-    return;
-  xbt_heap_remove(H,i);
+  return xbt_heap_remove(H, i);
 }
 
 /**
