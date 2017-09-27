@@ -102,10 +102,8 @@ struct HeapArea : public HeapLocation {
   int block = 0;
   int fragment = 0;
   HeapArea() {}
-  HeapArea(int block)
-    : valid(true), block(block) {}
-  HeapArea(int block, int fragment = 0)
-    : valid(true), block(block), fragment(fragment) {}
+  explicit HeapArea(int block) : valid(true), block(block) {}
+  HeapArea(int block, int fragment) : valid(true), block(block), fragment(fragment) {}
 };
 
 struct ProcessComparisonState {
