@@ -161,9 +161,12 @@ public:
       }
       now = simgrid::s4u::Engine::getClock();
     }
-    if (comm_receive != nullptr)
-      comm_receive->cancel();
-    delete static_cast<ChordMessage*>(data);
+    if (comm_receive != nullptr) {
+      if (comm_receive->test())
+        delete static_cast<ChordMessage*>(data);
+      else
+        comm_receive->cancel();
+    }
     // leave the ring
     leave();
   }
