@@ -159,12 +159,12 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 
 /* We are using the bottom of the stack to save some information, like the
  * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
- * size for the stack. */
+ * size for the stack. Round its value to a multiple of 16 (for stack alignment). */
 #if HAVE_VALGRIND_H
-# define smx_context_usable_stack_size                                  \
-  (smx_context_stack_size - sizeof(unsigned int)) /* for valgrind_stack_id */
+#define smx_context_usable_stack_size                                                                                  \
+  ((smx_context_stack_size - sizeof(unsigned int)) & ~0xf) /* for valgrind_stack_id */
 #else
-# define smx_context_usable_stack_size smx_context_stack_size
+#define smx_context_usable_stack_size (smx_context_stack_size & ~0xf)
 #endif
 
 /** @brief Executes all the processes to run (in parallel if possible). */

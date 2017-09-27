@@ -166,7 +166,7 @@ BoostContext::BoostContext(std::function<void()> code,
 // We need to pass the bottom of the stack to make_fcontext, depending on the stack direction it may be the lower
 // or higher address:
 #if PTH_STACKGROWTH == -1
-    void* stack = static_cast<char*>(this->stack_) + smx_context_usable_stack_size - 1;
+    void* stack = static_cast<char*>(this->stack_) + smx_context_usable_stack_size;
 #else
     void* stack = this->stack_;
 #endif
