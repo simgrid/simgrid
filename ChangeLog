@@ -1,7 +1,8 @@
 SimGrid (3.17) UNRELEASED (release target: September 22 2017)
 
  S4U
-  - Comm.detach(): start and forget about asynchronous emission
+  - Comm.detach(): start and forget about asynchronous emission. A cleanup
+    handler may be given to free resources if the comm cannot be completed.
   - this_actor::send(mailbox) is now mailbox->put()
   - New: simgrid::s4u::Comm::wait_all()
   - New: Host.execute() for remote executions.
@@ -12,6 +13,20 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
  MSG
   - Deprecate MSG_task_isend_with_matching(): This unused feature
     really complicates our internals. Will be removed in v3.20.
+
+ Simix
+  - Improved context termination.  It is now possible to free resources, even
+    when a process is forcibly killed.
+  - ContextBoost: add support for Boost versions above 1.61.
+
+ XBT
+ - Bring back run-time option --cfg=exception/cutpath to remove exception
+   backtraces.
+
+ Misc
+ - Fix lots of memory leaks.
+ - Removed header files obsolete since SimGrid 3.12: msg/datatypes.h, msg/msg.h,
+   simdag/datatypes.h, simdag/simdag.h.
 
 SimGrid (3.16) Released June 22. 2017.
 
