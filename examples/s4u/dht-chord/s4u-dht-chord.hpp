@@ -87,6 +87,7 @@ class Node {
 
 public:
   explicit Node(std::vector<std::string> args);
+  Node(const Node&) = delete;
   ~Node();
   void join(int known_id);
   void leave();
