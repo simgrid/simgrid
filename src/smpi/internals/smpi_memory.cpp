@@ -21,6 +21,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include "src/internal_config.h"
 #include "src/xbt/memory_map.hpp"
 
 #include "private.h"
@@ -68,14 +69,9 @@ void smpi_get_executable_global_size()
 }
 #endif
 
-#if defined(__has_feature)
-#define HAS_FEATURE(x) __has_feature(x)
-#else
-#define HAS_FEATURE(x) 0
-#endif
-#if HAS_FEATURE(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
+#if HAVE_SANITIZE_ADDRESS
 #include <sanitizer/asan_interface.h>
-static void* safe_memcpy(void* dest, void* src, size_t n)
+static void* asan_safe_memcpy(void* dest, void* src, size_t n)
 {
   char* psrc  = static_cast<char*>(src);
   char* pdest = static_cast<char*>(dest);
@@ -92,7 +88,7 @@ static void* safe_memcpy(void* dest, void* src, size_t n)
   return dest;
 }
 #else
-#define safe_memcpy(dest, src, n) memcpy(dest, src, n)
+#define asan_safe_memcpy(dest, src, n) memcpy(dest, src, n)
 #endif
 
 /** Map a given SMPI privatization segment (make a SMPI process active) */
@@ -117,7 +113,7 @@ void smpi_really_switch_data_segment(int dest)
 #if HAVE_PRIVATIZATION
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (int i=0; i< smpi_process_count(); i++){
-      safe_memcpy(smpi_privatization_regions[i].address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
+      asan_safe_memcpy(smpi_privatization_regions[i].address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
     }
   }
 
@@ -198,7 +194,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       xbt_die("Impossible to unlink temporary file for memory mapping");
 
     // initialize the values
-    safe_memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
+    asan_safe_memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
 
     // store the address of the mapping for further switches
     smpi_privatization_regions[i].file_descriptor = file_descriptor;

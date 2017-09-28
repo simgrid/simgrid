@@ -192,6 +192,12 @@ if(enable_address_sanitizer)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
     set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=address")
     set(TESH_OPTION --enable-sanitizers)
+    try_compile(HAVE_SANITIZE_ADDRESS ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_asan.cpp)
+    try_compile(HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_asan.cpp
+      COMPILE_DEFINITIONS -DCHECK_FIBER_SUPPORT)
+else()
+    set(HAVE_SANITIZE_ADDRESS FALSE CACHE INTERNAL "")
+    set(HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT FALSE CACHE INTERNAL "")
 endif()
 
 if(enable_thread_sanitizer)

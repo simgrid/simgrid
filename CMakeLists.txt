@@ -675,6 +675,11 @@ else()
   set(GIT_VERSION "none, release version")
 endif()
 
+### Setup gcc & clang flags
+if (NOT MSVC)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GCCFlags.cmake)
+endif()
+
 ### Generate the required headers and scripts
 #############################################
 
@@ -865,11 +870,6 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
-
-### Setup gcc & clang flags
-if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GCCFlags.cmake)
-endif()
 
 ### Make Libs
 if(NOT WIN32)
