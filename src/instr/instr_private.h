@@ -13,6 +13,7 @@
 #include "simgrid_config.h"
 #include "src/internal_config.h"
 #include <set>
+#include <string>
 
 /* Need to define function drand48 for Windows */
 /* FIXME: use _drand48() defined in src/surf/random_mgr.c instead */
