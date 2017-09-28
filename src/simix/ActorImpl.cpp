@@ -506,13 +506,6 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       xbt_die("Unknown type of activity");
     }
 
-    /*
-    switch (process->waiting_synchro->type) {
-    case SIMIX_SYNC_JOIN:
-      SIMIX_process_sleep_destroy(process->waiting_synchro);
-      break;
-    } */
-
     process->waiting_synchro = nullptr;
   }
   if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), process) ==
