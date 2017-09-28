@@ -18,6 +18,18 @@
 #include "src/internal_config.h"
 #include "src/kernel/context/ContextBoost.hpp"
 
+#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+#include <sanitizer/asan_interface.h>
+#define ASAN_EVAL(expr) (expr)
+#define ASAN_START_SWITCH(fake_stack_save, bottom, size) __sanitizer_start_switch_fiber(fake_stack_save, bottom, size)
+#define ASAN_FINISH_SWITCH(fake_stack_save, bottom_old, size_old)                                                      \
+  __sanitizer_finish_switch_fiber(fake_stack_save, bottom_old, size_old)
+#else
+#define ASAN_EVAL(expr) (void)0
+#define ASAN_START_SWITCH(fake_stack_save, bottom, size) (void)0
+#define ASAN_FINISH_SWITCH(fake_stack_save, bottom_old, size_old) (void)(fake_stack_save)
+#endif
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 namespace simgrid {
@@ -130,6 +142,8 @@ void BoostContext::smx_ctx_boost_wrapper(BoostContext::ctx_arg_type arg)
 #if BOOST_VERSION < 106100
   BoostContext* context = reinterpret_cast<BoostContext*>(arg);
 #else
+  ASAN_FINISH_SWITCH(nullptr, &static_cast<BoostContext**>(arg.data)[0]->asan_stack_,
+                     &static_cast<BoostContext**>(arg.data)[0]->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
   BoostContext* context                         = static_cast<BoostContext**>(arg.data)[1];
 #endif
@@ -139,6 +153,7 @@ void BoostContext::smx_ctx_boost_wrapper(BoostContext::ctx_arg_type arg)
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
+  ASAN_EVAL(context->asan_stop_ = true);
   context->suspend();
 }
 
@@ -149,8 +164,12 @@ inline void BoostContext::smx_ctx_boost_jump_fcontext(BoostContext* from, BoostC
 #elif BOOST_VERSION < 106100
   boost::context::jump_fcontext(&from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
 #else
-  BoostContext* ctx[2]                          = {from, to};
-  boost::context::detail::transfer_t arg        = boost::context::detail::jump_fcontext(to->fc_, ctx);
+  BoostContext* ctx[2] = {from, to};
+  void* fake_stack;
+  ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
+  boost::context::detail::transfer_t arg = boost::context::detail::jump_fcontext(to->fc_, ctx);
+  ASAN_FINISH_SWITCH(fake_stack, &static_cast<BoostContext**>(arg.data)[0]->asan_stack_,
+                     &static_cast<BoostContext**>(arg.data)[0]->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
 }
@@ -170,6 +189,7 @@ BoostContext::BoostContext(std::function<void()> code,
 #else
     void* stack = this->stack_;
 #endif
+    ASAN_EVAL(this->asan_stack_ = stack);
 #if BOOST_VERSION < 106100
     this->fc_ = boost::context::make_fcontext(stack, smx_context_usable_stack_size, smx_ctx_boost_wrapper);
 #else

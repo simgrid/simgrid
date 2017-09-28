@@ -53,6 +53,12 @@ protected: // static
   static void smx_ctx_boost_wrapper(ctx_arg_type);
   static void smx_ctx_boost_jump_fcontext(BoostContext*, BoostContext*);
 
+#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+  const void* asan_stack_ = nullptr;
+  size_t asan_stack_size_ = 0;
+  bool asan_stop_         = false;
+#endif
+
   void* stack_ = nullptr;
 public:
   friend BoostContextFactory;
