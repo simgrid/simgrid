@@ -672,47 +672,19 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
   simcall->issuer->waiting_synchro = sync;
 }
 
-static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_actor_t process, smx_activity_t sleep_act)
-{
-  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(sleep_act.get());
-  if (sleep->surf_sleep) {
-    sleep->surf_sleep->cancel();
-
-    while (not sleep->simcalls.empty()) {
-      smx_simcall_t simcall = sleep->simcalls.front();
-      sleep->simcalls.pop_front();
-      simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-      simcall->issuer->waiting_synchro = nullptr;
-      if (simcall->issuer->suspended) {
-        XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
-        simcall->issuer->suspended = 0;
-        simcall_HANDLER_process_suspend(simcall, simcall->issuer);
-      } else {
-        SIMIX_simcall_answer(simcall);
-      }
-    }
-    sleep->surf_sleep->unref();
-    sleep->surf_sleep = nullptr;
-  }
-  intrusive_ptr_release(process);
-  intrusive_ptr_release(sleep_act.get());
-  return 0;
-}
-
 smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout)
 {
   smx_activity_t res = issuer->sleep(timeout);
   intrusive_ptr_add_ref(res.get());
-  intrusive_ptr_add_ref(process);
   SIMIX_process_on_exit(process,
                         [](void*, void* arg) {
-                          auto argp = static_cast<std::pair<smx_actor_t, smx_activity_t>*>(arg);
-                          int res   = simgrid::simix::kernelImmediate(
-                              [&] { return SIMIX_process_join_finish(SMX_EXIT_SUCCESS, argp->first, argp->second); });
-                          delete argp;
-                          return res;
+                          auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
+                          if (sleep->surf_sleep)
+                            sleep->surf_sleep->finish(simgrid::surf::Action::State::done);
+                          intrusive_ptr_release(sleep);
+                          return 0;
                         },
-                        new std::pair<smx_actor_t, smx_activity_t>(process, res));
+                        res.get());
   return res;
 }
 
