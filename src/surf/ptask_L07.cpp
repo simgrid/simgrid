@@ -129,8 +129,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
 
     if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
         ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish();
-      action->setState(Action::State::done);
+      action->finish(Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
@@ -140,8 +139,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
         void *constraint_id = lmm_constraint_id(cnst);
         if (static_cast<simgrid::surf::Resource*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", action);
-          action->finish();
-          action->setState(Action::State::failed);
+          action->finish(Action::State::failed);
           break;
         }
         cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);

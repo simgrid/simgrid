@@ -237,8 +237,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     if(sgFlow->finished_){
       xbt_dynar_push(socket_to_destroy,&ns3Socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3Socket, action);
-      action->finish();
-      action->setState(Action::State::done);
+      action->finish(Action::State::done);
     }
   }
 
