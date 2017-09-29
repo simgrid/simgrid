@@ -6,7 +6,6 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 
-#include <exception>
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -81,7 +80,7 @@ namespace context {
     void_pfn_smxprocess_t cleanup_func_ = nullptr;
     smx_actor_t process_ = nullptr;
   public:
-    class StopRequest : public std::exception {
+    class StopRequest {
     };
     bool iwannadie;
 
