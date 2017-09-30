@@ -587,10 +587,6 @@ void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
 
   if (reset_pid > 0)
     simix_process_maxpid = reset_pid;
-
-  SIMIX_context_runall();
-
-  SIMIX_process_empty_trash();
 }
 
 void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
