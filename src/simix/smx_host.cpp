@@ -28,7 +28,7 @@ namespace simgrid {
 
     Host::~Host()
     {
-      /* Clean Simulator data */
+      /* All processes should be gone when the host is turned off (by the end of the simulation). */
       if (xbt_swag_size(process_list) != 0) {
         std::string msg     = std::string("Shutting down host, but it's not empty:");
         smx_actor_t process = nullptr;
@@ -81,7 +81,8 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
       smx_actor_t process = nullptr;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
-        XBT_DEBUG("Killing %s@%s on behalf of %s", process->cname(), process->host->getCname(), issuer->cname());
+        XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process->cname(),
+                  process->host->getCname(), issuer->cname());
       }
     }
   } else {

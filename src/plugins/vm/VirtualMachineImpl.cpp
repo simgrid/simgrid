@@ -44,6 +44,23 @@ std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
+static void hostStateChange(s4u::Host& host)
+{
+  if (host.isOff()) { // just turned off.
+    std::vector<s4u::VirtualMachine*> trash;
+    /* Find all VMs living on that host */
+    for (s4u::VirtualMachine* const& vm : VirtualMachineImpl::allVms_)
+      if (vm->getPm() == &host)
+        trash.push_back(vm);
+    for (s4u::VirtualMachine* vm : trash)
+      vm->pimpl_vm_->shutdown(SIMIX_process_self());
+  }
+}
+VMModel::VMModel()
+{
+  s4u::Host::onStateChange.connect(hostStateChange);
+}
+
 double VMModel::nextOccuringEvent(double now)
 {
   /* TODO: update action's cost with the total cost of processes on the VM. */
@@ -224,7 +241,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
         THROW_IMPOSSIBLE;
         break;
     }
-    XBT_VERB("Shuting down the VM %s even if it's not running but %s", piface_->getCname(), stateName);
+    XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->getCname(), stateName);
   }
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
@@ -233,7 +250,8 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
   smx_actor_t smx_process;
   smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("kill %s", smx_process->cname());
+    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process->cname(), smx_process->host->getCname(),
+              issuer->cname());
     SIMIX_process_kill(smx_process, issuer);
   }
 

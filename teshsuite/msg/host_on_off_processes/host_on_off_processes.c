@@ -12,7 +12,8 @@ int tasks_done = 0;
 
 static void task_cleanup_handler(void *task)
 {
-  MSG_task_destroy(task);
+  if (task)
+    MSG_task_destroy(task);
 }
 
 static int process_daemon(int argc, char *argv[])
@@ -171,7 +172,7 @@ static int test_launcher(int argc, char *argv[])
     MSG_process_sleep(10);
     XBT_INFO("  Turn Jupiter off");
     MSG_host_off(jupiter);
-    XBT_INFO("Test 5 seems ok, cool !(number of Process : %d, it should be 2", MSG_process_get_number());
+    XBT_INFO("Test 5 seems ok (number of Process: %d, it should be 2)", MSG_process_get_number());
   }
 
   test =6;
