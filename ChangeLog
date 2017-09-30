@@ -1,5 +1,12 @@
 SimGrid (3.17) UNRELEASED (release target: September 22 2017)
 
+ The Drained Leaks release: (almost) no known leaks despite the tests.
+
+ Even very long simulations will preserve your memory: our testsuite
+ stresses SimGrid for over 45mn on fast machines, and there is only
+ one single known leak, of about 4kb. 
+
+
  S4U
   - Comm.detach(): start and forget about asynchronous emission. A cleanup
     handler may be given to free resources if the comm cannot be completed.
@@ -24,9 +31,20 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
    backtraces.
 
  Misc
- - Fix lots of memory leaks.
- - Removed header files obsolete since SimGrid 3.12: msg/datatypes.h, msg/msg.h,
-   simdag/datatypes.h, simdag/simdag.h.
+ - Removed header files obsolete since SimGrid 3.12: 
+   msg/datatypes.h, msg/msg.h, simdag/datatypes.h, simdag/simdag.h.
+ - Fix many bugs:
+   - #3: SD_exit should be made optional
+   - #120: Memory leak when the processes are forcefully killed
+   - #159: Threading test regression in Actor refcounting
+   - #170: simgrid::s4u::Comm::wait_any() returns too many comms 
+   - #185: simgrid::s4u::Engine::instance()->shutdown() segfaults 
+   - #186: Actor::killAll() segfaults if some process is blocked on wait()
+   - #191: VM migration and pstate 
+   - #192: Updating the energy consumptions of all hosts crashes with VMs
+   - #195: All actors have PID=0 in the logs
+   - #204: Sometimes segfault with thread contexts and mmap privatization
+   - #222: Actor::kill() doesn't really kill and segfaults 
 
 SimGrid (3.16) Released June 22. 2017.
 
