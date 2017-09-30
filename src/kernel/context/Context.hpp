@@ -81,6 +81,11 @@ namespace context {
     smx_actor_t process_ = nullptr;
   public:
     class StopRequest {
+      /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
+       *
+       * Nope, Sonar, this should not inherit of std::exception.
+       * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
+       */
     };
     bool iwannadie;
 
