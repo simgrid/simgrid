@@ -7,8 +7,15 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_kill, "Messages specific for this s4u example");
 
+static int on_exit(void*, void*)
+{
+  XBT_INFO("I have been killed!");
+  return 0;
+}
+
 static void victim()
 {
+  simgrid::s4u::this_actor::onExit(on_exit, nullptr);
   XBT_INFO("Hello!");
   XBT_INFO("Suspending myself");
   simgrid::s4u::this_actor::suspend(); /* - Start by suspending itself */
@@ -24,11 +31,16 @@ static void killer()
       simgrid::s4u::Actor::createActor("victim", simgrid::s4u::Host::by_name("Fafard"), victim);
   simgrid::s4u::this_actor::sleep_for(10); /* - Wait for 10 seconds */
 
-  XBT_INFO("Resume process"); /* - Resume it from its suspended state */
+  XBT_INFO("Resume the victim"); /* - Resume it from its suspended state */
   poor_victim->resume();
+  simgrid::s4u::this_actor::sleep_for(2);
 
-  XBT_INFO("Kill process"); /* - and then kill it */
+  XBT_INFO("Kill the victim"); /* - and then kill it */
   poor_victim->kill();
+  simgrid::s4u::this_actor::sleep_for(1);
+
+  XBT_INFO("Killing everybody but myself");
+  simgrid::s4u::Actor::killAll();
 
   XBT_INFO("OK, goodbye now. I commit a suicide.");
   simgrid::s4u::this_actor::kill();
@@ -44,6 +56,10 @@ int main(int argc, char* argv[])
   e.loadPlatform(argv[1]); /* - Load the platform description */
   /* - Create and deploy killer process, that will create the victim process  */
   simgrid::s4u::Actor::createActor("killer", simgrid::s4u::Host::by_name("Tremblay"), killer);
+  simgrid::s4u::Actor::createActor("Alice", simgrid::s4u::Host::by_name("Jupiter"), victim);
+  simgrid::s4u::Actor::createActor("Bob", simgrid::s4u::Host::by_name("Ginette"), victim);
+  simgrid::s4u::Actor::createActor("Carol", simgrid::s4u::Host::by_name("Bourassa"), victim);
+  simgrid::s4u::Actor::createActor("Dave", simgrid::s4u::Host::by_name("Boivin"), victim);
 
   e.run(); /* - Run the simulation */
 
