@@ -502,7 +502,7 @@ void SIMIX_run()
     }
 
     time = SIMIX_timer_next();
-    if (time > -1.0 || simix_global->process_list.empty() == false) {
+    if (time > -1.0 || not simix_global->process_list.empty()) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
@@ -539,7 +539,7 @@ void SIMIX_run()
 
   } while (time > -1.0 || not simix_global->process_to_run.empty());
 
-  if (simix_global->process_list.size() != 0) {
+  if (not simix_global->process_list.empty()) {
 
     TRACE_end();
 
