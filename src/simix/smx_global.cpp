@@ -286,6 +286,8 @@ void SIMIX_clean()
   }
   /* Kill all processes (but maestro) */
   SIMIX_process_killall(simix_global->maestro_process, 1);
+  SIMIX_context_runall();
+  SIMIX_process_empty_trash();
 
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
