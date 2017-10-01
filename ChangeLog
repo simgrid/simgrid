@@ -45,6 +45,7 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
    - #195: All actors have PID=0 in the logs
    - #204: Sometimes segfault with thread contexts and mmap privatization
    - #222: Actor::kill() doesn't really kill and segfaults 
+   - #225: Actor::kill() doesn't really kill when victims are doing a join()
 
 SimGrid (3.16) Released June 22. 2017.
 
