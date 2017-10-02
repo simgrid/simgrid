@@ -82,53 +82,42 @@ void Comm::start() {
   }
   state_ = started;
 }
+
+/** @brief Block the calling actor until the communication is finished */
 void Comm::wait() {
-  xbt_assert(state_ == started || state_ == inited || state_ == finished);
-
-  if (state_ == finished)
-    return;
-
-  if (state_ == started)
-    simcall_comm_wait(pimpl_, -1/*timeout*/);
-  else { // state_ == inited. Save a simcall and do directly a blocking send/recv
-    if (srcBuff_ != nullptr) {
-      simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_,
-          srcBuff_, srcBuffSize_,
-          matchFunction_, copyDataFunction_,
-          userData_, -1 /*timeout*/);
-    } else {
-      simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
-          matchFunction_, copyDataFunction_,
-          userData_, -1/*timeout*/, rate_);
-    }
-  }
-  state_ = finished;
+  this->wait(-1);
 }
 
+/** @brief Block the calling actor until the communication is finished, or until timeout
+ *
+ * On timeout, an exception is thrown.
+ *
+ * @param timeout the amount of seconds to wait for the comm termination.
+ *                Negative values denote infinite wait times. 0 as a timeout returns immediately. */
 void Comm::wait(double timeout) {
-  xbt_assert(state_ == started || state_ == inited || state_ == finished);
+  switch (state_) {
+    case finished:
+      return;
 
-  if (state_ == finished)
-    return;
+    case inited: // It's not started yet. Do it in one simcall
+      if (srcBuff_ != nullptr) {
+        simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_, srcBuff_, srcBuffSize_, matchFunction_,
+                          copyDataFunction_, userData_, timeout);
+      } else { // Receiver
+        simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_, matchFunction_, copyDataFunction_,
+                          userData_, timeout, rate_);
+      }
+      state_ = finished;
+      return;
 
-  if (state_ == started) {
-    simcall_comm_wait(pimpl_, timeout);
-    state_ = finished;
-    return;
+    case started:
+      simcall_comm_wait(pimpl_, timeout);
+      state_ = finished;
+      return;
+
+    default:
+      THROW_IMPOSSIBLE;
   }
-
-  // It's not started yet. Do it in one simcall
-  if (srcBuff_ != nullptr) {
-    simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_,
-        srcBuff_, srcBuffSize_,
-        matchFunction_, copyDataFunction_,
-        userData_, timeout);
-  } else { // Receiver
-    simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
-        matchFunction_, copyDataFunction_,
-        userData_, timeout, rate_);
-  }
-  state_ = finished;
 }
 
 void Comm::detach()
