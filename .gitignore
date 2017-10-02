@@ -199,6 +199,7 @@ examples/s4u/app-bittorrent/s4u-bittorrent
 examples/s4u/app-masterworker/s4u-app-masterworker
 examples/s4u/app-pingpong/s4u-app-pingpong
 examples/s4u/app-token-ring/s4u-app-token-ring
+examples/s4u/async-wait/s4u-async-wait
 examples/s4u/async-waitall/s4u-async-waitall
 examples/s4u/async-waitany/s4u-async-waitany
 examples/s4u/basic/s4u-basic
