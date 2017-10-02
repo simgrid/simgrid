@@ -32,7 +32,6 @@ public:
   messages_count  = std::stol(args[1]);
   msg_size        = std::stod(args[2]);
   receivers_count = std::stol(args[3]);
-
 }
 void operator()()
 {

@@ -3,13 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to block until the completion of a communication.
+/* This example shows how to start many asynchronous communications,
+ * and block on them later.
  */
 
- #include "simgrid/s4u.hpp"
- #include "xbt/str.h"
- #include <cstdlib>
- #include <iostream>
+#include "simgrid/s4u.hpp"
+#include "xbt/str.h"
+#include <cstdlib>
+#include <iostream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this s4u example");
 
@@ -17,48 +18,51 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this s4u exa
 class sender {
   long messages_count;             /* - number of tasks */
   long receivers_count;            /* - number of receivers */
-  double sleep_start_time;         /* - start time */
-  double sleep_test_time;          /* - test time */
-  double msg_size;                 /* - computational cost */
-  double task_comm_size;           /* - communication cost */
+  double msg_size;                 /* - communication cost in bytes */
   simgrid::s4u::MailboxPtr mbox;
   
 public:
   explicit sender(std::vector<std::string> args)
 {
-  xbt_assert(args.size() == 7, "The sender function expects 6 arguments from the XML deployment file");
+  xbt_assert(args.size() == 4, "The sender function expects 3 arguments from the XML deployment file");
   messages_count = std::stol(args[1]);
-  msg_size = std::stod(args[2]); 
-  task_comm_size = std::stod(args[3]); 
-  receivers_count = std::stol(args[4]);    
-  double sleep_start_time = std::stod(args[5]);
-  double sleep_test_time = std::stod(args[6]);
-  XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
+  msg_size        = std::stod(args[2]);
+  receivers_count = std::stol(args[3]);
 }
 void operator()()
 {
+  std::vector<simgrid::s4u::CommPtr>* pending_comms = new std::vector<simgrid::s4u::CommPtr>();
+
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
-    char mailbox[80];
-    char taskname[80];
     
     std::string mbox_name = std::string("receiver-") + std::to_string(i % receivers_count);
     mbox = simgrid::s4u::Mailbox::byName(mbox_name);
-    snprintf(mailbox,79, "receiver-%ld", i % receivers_count);
-    snprintf(taskname,79, "Task_%d", i);
     
     /* Create a communication representing the ongoing communication */
-    simgrid::s4u::CommPtr comm = mbox->put_async((void*)mailbox, msg_size);
+    std::string msgName = std::string("Message ") + std::to_string(i);
+    char* payload = xbt_strdup(msgName.c_str()); // copy the data we send: 'msgName' is not a stable storage location
+
+    simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, msg_size);
     XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
-    comm->wait(task_comm_size);
+    pending_comms->push_back(comm);
   }
-  /* Start sending messages to let the workers know that they should stop */
+
+  /* Now that all comms are in flight, wait for all of them (one after the other) */
+  for (int i = 0; i < messages_count; i++) {
+    while (not pending_comms->empty()) {
+      simgrid::s4u::CommPtr comm = pending_comms->back();
+      comm->wait();              // we could provide a timeout as a parameter
+      pending_comms->pop_back(); // remove it from the list
+    }
+  }
+
+  /* Start sending messages to let the workers know that they should stop (in a synchronous way) */
   for (int i = 0; i < receivers_count; i++) {
     char mailbox[80];
     char* payload   = xbt_strdup("finalize"); 
     snprintf(mailbox, 79, "receiver-%d", i);
-    simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, 0);
-    comm->wait(task_comm_size);
+    mbox->put((void*)payload, 0); // instantaneous message (payload size is 0) sent in a synchronous way (with put)
     XBT_INFO("Send to receiver-%d finalize", i);
   }
 
@@ -67,32 +71,23 @@ void operator()()
 }
 };
 
-/* Receiver process expects 3 arguments: */
+/* Receiver process expects 1 arguments: its ID */
 class receiver {
-  int id;                   /* - unique id */
-  double sleep_start_time;  /* - start time */
-  double sleep_test_time;   /* - test time */
   simgrid::s4u::MailboxPtr mbox;
   
 public:
   explicit receiver(std::vector<std::string> args)
   {
-  xbt_assert(args.size() == 4, "The relay_runner function does not accept any parameter from the XML deployment file");
-  id = std::stoi(args[1]);
-  sleep_start_time = std::stod(args[2]); 
-  sleep_test_time = std::stod(args[3]);   
-  XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
-  std::string mbox_name = std::string("receiver-") + std::to_string(id);
-  mbox = simgrid::s4u::Mailbox::byName(mbox_name);
+    xbt_assert(args.size() == 2, "The receiver function takes a unique parameter from the XML deployment file");
+    std::string mbox_name = std::string("receiver-") + args[1];
+    mbox                  = simgrid::s4u::Mailbox::byName(mbox_name);
 }
 
 void operator()()
 {
-  char mailbox[80];
-  snprintf(mailbox,79, "receiver-%d", id);
   while (1) {
-    char* received = static_cast<char*>(mbox->get());
     XBT_INFO("Wait to receive a task");
+    char* received = static_cast<char*>(mbox->get());
     XBT_INFO("I got a '%s'.", received);
     if (std::strcmp(received, "finalize") == 0) { /* If it's a finalize message, we're done */
       xbt_free(received);
@@ -104,16 +99,16 @@ void operator()()
 
 int main(int argc, char *argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
-  
-    xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
-  
-    e->registerFunction<sender>("sender");
-    e->registerFunction<receiver>("receiver");
-  
-    e->loadPlatform(argv[1]);
-    e->loadDeployment(argv[2]);
-    e->run();
-  
-    return 0;
+  simgrid::s4u::Engine e(&argc, argv);
+
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
+
+  e.registerFunction<sender>("sender");
+  e.registerFunction<receiver>("receiver");
+
+  e.loadPlatform(argv[1]);
+  e.loadDeployment(argv[2]);
+  e.run();
+
+  return 0;
 }
