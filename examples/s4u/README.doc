@@ -40,6 +40,13 @@ documentation, but it should remain readable directly.
     
 @section msg_ex_async Asynchronous communications
 
+ - <b>Basic asynchronous communications</b>. 
+   @ref examples/s4u/async-wait/s4u-async-wait.cpp \n
+   Illustrates how to have non-blocking communications, that are
+   communications running in the background leaving the process free
+   to do something else during their completion. The main functions
+   involved are @ref put_async and @ref get.
+
  - <b>Waiting for all communications in a set</b>.
    @ref examples/s4u/async-waitall/s4u-async-waitall.cpp\n
    The @ref simgrid::s4u::Comm::wait_all() function is useful when you want to block

@@ -1,7 +1,7 @@
 foreach (example actions-comm actions-storage 
                  actor-create actor-daemon actor-kill actor-migration actor-suspend 
                  app-masterworker app-pingpong app-token-ring
-		 async-waitany async-waitall
+		 async-wait async-waitany async-waitall
 		 plugin-hostload io mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -32,6 +32,7 @@ endforeach()
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh         PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split_d.xml
@@ -42,6 +43,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/s4u-app-masterworker_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml                PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split-p1.txt
@@ -52,7 +54,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
 foreach(example actions-comm actions-storage 
                 actor-create actor-daemon actor-kill actor-migration actor-suspend
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
-		async-waitall async-waitany
+		async-wait async-waitall async-waitany
 		dht-chord plugin-hostload io mutex)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u-${example}.tesh)
 endforeach()
