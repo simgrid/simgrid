@@ -1089,30 +1089,8 @@ test_sg
 tools/tesh/tesh
 unit_tmgr
 #########################################
-## touched files to track the dependencies of java examples
-examples/java/app/bittorrent/java-app-bittorrent_compiled
-examples/java/app/centralizedmutex/java-app-centralizedmutex_compiled
-examples/java/app/masterworker/java-app-masterworker_compiled
-examples/java/app/pingpong/java-app-pingpong_compiled
-examples/java/app/tokenring/java-app-tokenring_compiled
-examples/java/async/yield/java-async-yield_compiled
-examples/java/async/dsend/java-async-dsend_compiled
-examples/java/async/waitall/java-async-waitall_compiled
-examples/java/dht/chord/java-dht-chord_compiled
-examples/java/dht/kademlia/java-dht-kademlia_compiled
-examples/java/cloud/masterworker/java-cloud-masterworker_compiled
-examples/java/cloud/migration/java-cloud-migration_compiled
-examples/java/energy/consumption/java-energy-consumption_compiled
-examples/java/energy/pstate/java-energy-pstate_compiled
-examples/java/energy/vm/java-energy-vm_compiled
-examples/java/io/file/java-io-file_compiled
-examples/java/io/storage/java-io-storage_compiled
-examples/java/process/kill/java-process-kill_compiled
-examples/java/process/migration/java-process-migration_compiled
-examples/java/process/suspend/java-process-suspend_compiled
-examples/java/process/startkilltime/java-process-startkilltime_compiled
-examples/java/task/priority/java-task-priority_compiled
-examples/java/trace/pingpong/java-trace-pingpong_compiled
+## files touched to track the dependencies of java examples
+examples/java/*/*/*_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
