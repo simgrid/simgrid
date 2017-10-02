@@ -20,6 +20,7 @@ class sender {
   double sleep_start_time;         /* - start time */
   double sleep_test_time;          /* - test time */
   double msg_size;                 /* - computational cost */
+  double task_comm_size;           /* - communication cost */
   simgrid::s4u::MailboxPtr mbox;
   
 public:
@@ -28,14 +29,14 @@ public:
   xbt_assert(args.size() == 7, "The sender function expects 6 arguments from the XML deployment file");
   messages_count = std::stol(args[1]);
   msg_size = std::stod(args[2]); 
-  double task_comm_size = std::stod(args[3]); /* - communication cost */
+  task_comm_size = std::stod(args[3]); 
   receivers_count = std::stol(args[4]);    
   double sleep_start_time = std::stod(args[5]);
   double sleep_test_time = std::stod(args[6]);
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time, sleep_test_time);
 }
 void operator()()
-{ 
+{
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (int i = 0; i < messages_count; i++) {
     char mailbox[80];
@@ -49,6 +50,7 @@ void operator()()
     /* Create a communication representing the ongoing communication */
     simgrid::s4u::CommPtr comm = mbox->put_async((void*)mailbox, msg_size);
     XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
+    comm->wait(task_comm_size);
   }
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
@@ -56,6 +58,7 @@ void operator()()
     char* payload   = xbt_strdup("finalize"); 
     snprintf(mailbox, 79, "receiver-%d", i);
     simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, 0);
+    comm->wait(task_comm_size);
     XBT_INFO("Send to receiver-%d finalize", i);
   }
 
@@ -74,7 +77,7 @@ class receiver {
 public:
   explicit receiver(std::vector<std::string> args)
   {
-    xbt_assert(args.size() == 4, "The relay_runner function does not accept any parameter from the XML deployment file");
+  xbt_assert(args.size() == 4, "The relay_runner function does not accept any parameter from the XML deployment file");
   id = std::stoi(args[1]);
   sleep_start_time = std::stod(args[2]); 
   sleep_test_time = std::stod(args[3]);   
@@ -95,8 +98,6 @@ void operator()()
       xbt_free(received);
       break;
     }
-    /* Otherwise receiving the message was all we were supposed to do */
-    xbt_free(received);
   }
 }
 };
