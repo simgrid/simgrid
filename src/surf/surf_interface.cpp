@@ -634,8 +634,10 @@ Action::~Action() {
   xbt_free(category_);
 }
 
-void Action::finish() {
+void Action::finish(Action::State state)
+{
   finishTime_ = surf_get_clock();
+  setState(state);
 }
 
 Action::State Action::getState()
@@ -880,8 +882,7 @@ void Action::updateRemainingLazy(double now)
     //FIXME: duplicated code
     if (((remains_ <= 0) && (lmm_get_variable_weight(getVariable()) > 0)) ||
         ((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0))) {
-      finish();
-      setState(Action::State::done);
+      finish(Action::State::done);
       heapRemove(getModel()->getActionHeap());
     }
   }

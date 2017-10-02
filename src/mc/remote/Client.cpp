@@ -61,7 +61,7 @@ Client* Client::initialize()
   socklen_t socklen = sizeof(type);
   if (getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &socklen) != 0)
     xbt_die("Could not check socket type");
-  if (type != SOCK_DGRAM)
+  if (type != SOCK_SEQPACKET)
     xbt_die("Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 

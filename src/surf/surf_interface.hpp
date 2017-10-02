@@ -118,8 +118,12 @@ public:
   /** @brief Destructor */
   virtual ~Action();
 
-  /** @brief Mark that the action is now finished */
-  void finish();
+  /**
+   * @brief Mark that the action is now finished
+   *
+   * @param state the new [state](\ref simgrid::surf::Action::State) of the current Action
+   */
+  void finish(Action::State state);
 
   /** @brief Get the [state](\ref simgrid::surf::Action::State) of the current Action */
   Action::State getState(); /**< get the state*/

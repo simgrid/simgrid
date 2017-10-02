@@ -6,6 +6,12 @@
 #ifndef SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 #define SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 
+#include <boost/version.hpp>
+#if BOOST_VERSION < 106100
+#include <boost/context/fcontext.hpp>
+#else
+#include <boost/context/detail/fcontext.hpp>
+#endif
 #include <functional>
 #include <vector>
 
@@ -34,11 +40,25 @@ protected: // static
   static unsigned long process_index_;
   static BoostContext* maestro_context_;
 
-#if HAVE_BOOST_CONTEXTS == 1
+#if BOOST_VERSION < 105600
   boost::context::fcontext_t* fc_ = nullptr;
-#else
+  typedef intptr_t ctx_arg_type;
+#elif BOOST_VERSION < 106100
   boost::context::fcontext_t fc_;
+  typedef intptr_t ctx_arg_type;
+#else
+  boost::context::detail::fcontext_t fc_;
+  typedef boost::context::detail::transfer_t ctx_arg_type;
 #endif
+  static void smx_ctx_boost_wrapper(ctx_arg_type);
+  static void smx_ctx_boost_jump_fcontext(BoostContext*, BoostContext*);
+
+#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+  const void* asan_stack_ = nullptr;
+  size_t asan_stack_size_ = 0;
+  bool asan_stop_         = false;
+#endif
+
   void* stack_ = nullptr;
 public:
   friend BoostContextFactory;
@@ -46,6 +66,7 @@ public:
           void_pfn_smxprocess_t cleanup_func,
           smx_actor_t process);
   ~BoostContext() override;
+  void stop() override;
   virtual void resume();
 private:
   static void wrapper(int first, ...);

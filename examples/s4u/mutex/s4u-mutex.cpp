@@ -60,11 +60,10 @@ static void master()
 
 int main(int argc, char **argv)
 {
-  simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
-  e->loadPlatform("../../platforms/two_hosts.xml");
+  simgrid::s4u::Engine e(&argc, argv);
+  e.loadPlatform("../../platforms/two_hosts.xml");
   simgrid::s4u::Actor::createActor("main", simgrid::s4u::Host::by_name("Tremblay"), master);
-  e->run();
+  e.run();
 
-  delete e;
   return 0;
 }

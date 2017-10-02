@@ -86,7 +86,7 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
     fprintf(stderr, "Access violation detected.\n"
                     "This probably comes from a programming error in your code, or from a stack\n"
                     "overflow. If you are certain of your code, try increasing the stack size\n"
-                    "   --cfg=contexts/stack-size=XXX (current size is %d KiB).\n"
+                    "   --cfg=contexts/stack-size=XXX (current size is %u KiB).\n"
                     "\n"
                     "If it does not help, this may have one of the following causes:\n"
                     "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
@@ -286,6 +286,8 @@ void SIMIX_clean()
   }
   /* Kill all processes (but maestro) */
   SIMIX_process_killall(simix_global->maestro_process, 1);
+  SIMIX_context_runall();
+  SIMIX_process_empty_trash();
 
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
@@ -502,7 +504,7 @@ void SIMIX_run()
     }
 
     time = SIMIX_timer_next();
-    if (time > -1.0 || simix_global->process_list.empty() == false) {
+    if (time > -1.0 || not simix_global->process_list.empty()) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
@@ -539,7 +541,7 @@ void SIMIX_run()
 
   } while (time > -1.0 || not simix_global->process_to_run.empty());
 
-  if (simix_global->process_list.size() != 0) {
+  if (not simix_global->process_list.empty()) {
 
     TRACE_end();
 
@@ -575,7 +577,7 @@ smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
-  xbt_heap_rm_elm(simix_timers, timer, timer->getDate());
+  delete static_cast<smx_timer_t>(xbt_heap_rm_elm(simix_timers, timer, timer->getDate()));
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */

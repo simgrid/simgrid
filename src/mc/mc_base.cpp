@@ -97,14 +97,9 @@ bool actor_is_enabled(smx_actor_t actor)
     }
 
     case SIMCALL_COMM_WAITANY: {
-      xbt_dynar_t comms;
-      simgrid::kernel::activity::CommImpl* act =
-          static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
-
-      comms = simcall_comm_waitany__get__comms(req);
-
+      xbt_dynar_t comms = simcall_comm_waitany__get__comms(req);
       for (unsigned int index = 0; index < comms->used; ++index) {
-        act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::CommImpl*);
+        simgrid::kernel::activity::CommImpl* act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::CommImpl*);
         if (act->src_proc && act->dst_proc)
           return true;
       }

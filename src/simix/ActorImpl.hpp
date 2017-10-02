@@ -29,7 +29,7 @@ public:
   void *data            = nullptr;
   sg_host_t host        = nullptr;
   double kill_time      = 0.0;
-  std::map<std::string, std::string>* properties = nullptr;
+  std::shared_ptr<std::map<std::string, std::string>> properties;
   bool auto_restart     = false;
 };
 

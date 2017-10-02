@@ -28,7 +28,6 @@ set(umpire_tests_passing
   no-error-wait-any_src3
   no-error-wait-any_src4
   no-error-waitany-any_src
-  partial-recv
   sendrecv-deadlock
   send-recv-ok
   irecv-isend-ok
@@ -37,6 +36,7 @@ set(umpire_tests_passing
 
 set(umpire_tests_passing_broken
   irecv-isend-ok2
+  partial-recv
   )
 
 # These are supposed to deadlock but ISP does not find deadlock

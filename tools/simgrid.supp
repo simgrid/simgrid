@@ -18,8 +18,13 @@
 {
    Memory leak in cmake
    Memcheck:Leak
+   match-leak-kinds:reachable
    ...
-   obj:cmake
+   fun:_Znwm
+   fun:_ZN4Json5Value13nullSingletonEv
+   obj:*/libjsoncpp.so*
+   ...
+   fun:_dl_init
 }
 
 # There's a constant leak of 56 bytes in the depths of libc which
@@ -81,7 +86,7 @@
 
 #SMPI leaks the dlopen handle used to load the program
 {
-   dlopen handle leaks (1/2)
+   dlopen handle leaks (1/3)
    Memcheck:Leak
    match-leak-kinds:reachable
    fun:malloc
@@ -90,10 +95,19 @@
 }
 
 {
-   dlopen handle leaks (2/2)
+   dlopen handle leaks (2/3)
    Memcheck:Leak
    match-leak-kinds:reachable
    fun:calloc
+   ...
+   fun:dlopen@@GLIBC_*
+}
+
+{
+   dlopen handle leaks (3/3)
+   Memcheck:Leak
+   match-leak-kinds:reachable
+   fun:realloc
    ...
    fun:dlopen@@GLIBC_*
 }

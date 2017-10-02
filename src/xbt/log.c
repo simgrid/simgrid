@@ -355,44 +355,47 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   xbt_assert(ev->priority < sizeof(xbt_log_priority_names), "Priority %d is greater than the biggest allowed value",
              ev->priority);
 
-  do {
+  while (1) {
     xbt_log_appender_t appender = cat->appender;
 
-    if (!appender)
-      continue;                 /* No appender, try next */
+    if (appender != NULL) {
+      xbt_assert(cat->layout, "No valid layout for the appender of category %s", cat->name);
 
-    xbt_assert(cat->layout, "No valid layout for the appender of category %s", cat->name);
+      /* First, try with a static buffer */
+      int done = 0;
+      if (XBT_LOG_STATIC_BUFFER_SIZE) {
+        char buff[XBT_LOG_STATIC_BUFFER_SIZE];
+        ev->buffer      = buff;
+        ev->buffer_size = sizeof buff;
+        va_start(ev->ap, fmt);
+        done = cat->layout->do_layout(cat->layout, ev, fmt);
+        va_end(ev->ap);
+        if (done)
+          appender->do_append(appender, buff);
+      }
 
-    /* First, try with a static buffer */
-    if (XBT_LOG_STATIC_BUFFER_SIZE) {
-      char buff[XBT_LOG_STATIC_BUFFER_SIZE];
-      ev->buffer = buff;
-      ev->buffer_size = sizeof buff;
-      va_start(ev->ap, fmt);
-      int done = cat->layout->do_layout(cat->layout, ev, fmt);
-      va_end(ev->ap);
-      if (done) {
-        appender->do_append(appender, buff);
-        continue;               /* Ok, that worked: go next */
+      if (!done) {
+        /* The static buffer was too small, use a dynamically expanded one */
+        ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
+        ev->buffer      = xbt_malloc(ev->buffer_size);
+        while (1) {
+          va_start(ev->ap, fmt);
+          done = cat->layout->do_layout(cat->layout, ev, fmt);
+          va_end(ev->ap);
+          if (done)
+            break; /* Got it */
+          ev->buffer_size *= 2;
+          ev->buffer = xbt_realloc(ev->buffer, ev->buffer_size);
+        }
+        appender->do_append(appender, ev->buffer);
+        xbt_free(ev->buffer);
       }
     }
 
-    /* The static buffer was too small, use a dynamically expanded one */
-    ev->buffer_size = XBT_LOG_DYNAMIC_BUFFER_SIZE;
-    ev->buffer = xbt_malloc(ev->buffer_size);
-    while (1) {
-      va_start(ev->ap, fmt);
-      int done = cat->layout->do_layout(cat->layout, ev, fmt);
-      va_end(ev->ap);
-      if (done)
-        break;                  /* Got it */
-      ev->buffer_size *= 2;
-      ev->buffer = xbt_realloc(ev->buffer, ev->buffer_size);
-    }
-    appender->do_append(appender, ev->buffer);
-    xbt_free(ev->buffer);
-
-  } while (cat->additivity && (cat = cat->parent, 1));
+    if (!cat->additivity)
+      break;
+    cat = cat->parent;
+  }
 }
 
 #undef XBT_LOG_DYNAMIC_BUFFER_SIZE

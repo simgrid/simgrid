@@ -204,8 +204,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
         // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
       action->setRemains(0);
-      action->finish();
-      action->setState(Action::State::done);
+      action->finish(Action::State::done);
       action->heapRemove(actionHeap_);
     }
   }
@@ -259,8 +258,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 
     if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
         ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish();
-      action->setState(Action::State::done);
+      action->finish(Action::State::done);
     }
   }
 }
@@ -492,8 +490,7 @@ void NetworkCm02Action::updateRemainingLazy(double now)
 
   if ((remains_ <= 0 && (lmm_get_variable_weight(getVariable()) > 0)) ||
       ((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0))) {
-    finish();
-    setState(Action::State::done);
+    finish(Action::State::done);
     heapRemove(getModel()->getActionHeap());
   }
 

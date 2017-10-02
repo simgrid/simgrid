@@ -183,7 +183,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   if (not mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
-  simgrid::instr::Type* type = PJ_type_get(mark_type, PJ_type_get_root());
+  simgrid::instr::Type* type = PJ_type_get_root()->getChild(mark_type);
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
@@ -193,7 +193,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     mark_color = white;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-  simgrid::instr::Value rett(mark_value, mark_color, type);
+  new simgrid::instr::Value(mark_value, mark_color, type);
 }
 
 /** \ingroup TRACE_mark
@@ -239,7 +239,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   //check if mark_type is already declared
-  simgrid::instr::Type* type = PJ_type_get(mark_type, PJ_type_get_root());
+  simgrid::instr::Type* type = PJ_type_get_root()->getChild(mark_type);
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
@@ -283,7 +283,7 @@ static void instr_user_variable(double time, const char* resource, const char* v
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);
-      simgrid::instr::Type* type = PJ_type_get(variable, container->type_);
+      simgrid::instr::Type* type = container->type_->getChild(variable);
       switch (what){
       case INSTR_US_SET:
         new simgrid::instr::SetVariableEvent(time, container, type, value);
@@ -946,7 +946,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
 void TRACE_host_set_state(const char* host, const char* state, const char* value_str)
 {
   container_t container = PJ_container_get(host);
-  simgrid::instr::Type* type = PJ_type_get(state, container->type_);
+  simgrid::instr::Type* type = container->type_->getChild(state);
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(
       value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new simgrid::instr::SetStateEvent(MSG_get_clock(), container, type, val);
@@ -966,7 +966,7 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
 void TRACE_host_push_state(const char* host, const char* state, const char* value_str)
 {
   container_t container = PJ_container_get(host);
-  simgrid::instr::Type* type = PJ_type_get(state, container->type_);
+  simgrid::instr::Type* type = container->type_->getChild(state);
   simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(
       value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new simgrid::instr::PushStateEvent(MSG_get_clock(), container, type, val);
@@ -985,7 +985,7 @@ void TRACE_host_push_state(const char* host, const char* state, const char* valu
 void TRACE_host_pop_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
-  simgrid::instr::Type* type = PJ_type_get(state, container->type_);
+  simgrid::instr::Type* type = container->type_->getChild(state);
   new simgrid::instr::PopStateEvent(MSG_get_clock(), container, type);
 }
 

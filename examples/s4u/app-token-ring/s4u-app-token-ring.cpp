@@ -55,22 +55,21 @@ public:
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
 
-  XBT_INFO("Number of hosts '%zu'", e->getHostCount());
+  XBT_INFO("Number of hosts '%zu'", e.getHostCount());
   int id = 0;
   std::vector<simgrid::s4u::Host*> list;
-  e->getHostList(&list);
+  e.getHostList(&list);
   for (auto const& host : list) {
     /* - Give a unique rank to each host and create a @ref relay_runner process on each */
     simgrid::s4u::Actor::createActor((std::to_string(id)).c_str(), host, RelayRunner());
     id++;
   }
-  e->run();
-  XBT_INFO("Simulation time %g", e->getClock());
+  e.run();
+  XBT_INFO("Simulation time %g", e.getClock());
 
-  delete e;
   return 0;
 }

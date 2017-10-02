@@ -121,6 +121,7 @@ protected:
  */
 class VMModel : public surf::HostModel {
 public:
+  VMModel();
   void ignoreEmptyVmInPmLMM() override{};
 
   double nextOccuringEvent(double now) override;

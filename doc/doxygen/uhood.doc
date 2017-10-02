@@ -208,7 +208,7 @@ The current implementation of the model-checker uses two distinct processes:
  - it spaws a child process for the SimGrid simulator/maestro and the simulated
    processes.
 
-They communicate using a `AF_UNIX` `SOCK_DGRAM` socket and exchange messages
+They communicate using a `AF_UNIX` `SOCK_SEQPACKET` socket and exchange messages
 defined in `mc_protocol.h`. The `SIMGRID_MC_SOCKET_FD` environment variable it
 set to the file descriptor of this socket in the child process.
 

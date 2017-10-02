@@ -73,8 +73,10 @@ void SIMIX_process_cleanup(smx_actor_t process)
   SIMIX_process_on_exit_runall(process);
 
   /* Unregister from the kill timer if any */
-  if (process->kill_timer != nullptr)
+  if (process->kill_timer != nullptr) {
     SIMIX_timer_remove(process->kill_timer);
+    process->kill_timer = nullptr;
+  }
 
   xbt_os_mutex_acquire(simix_global->mutex);
 
@@ -185,7 +187,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
 
   // start the new process
   ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
-                                                           arg.properties, nullptr);
+                                                           arg.properties.get(), nullptr);
   if (arg.kill_time >= 0)
     simcall_process_set_kill_time(actor, arg.kill_time);
   if (arg.auto_restart)
@@ -428,16 +430,10 @@ void SIMIX_process_detach()
   if (not context)
     xbt_die("Not a suitable context");
 
-  simix_global->cleanup_process_function(context->process());
-
-  // Let maestro ignore we are still alive:
-  // xbt_swag_remove(context->process(), simix_global->process_list);
-
-  // TODO, Remove from proces list:
-  //   xbt_swag_remove(process, sg_host_simix(host)->process_list);
-
+  auto process = context->process();
+  simix_global->cleanup_process_function(process);
   context->attach_stop();
-  // delete context;
+  delete process;
 }
 
 /**
@@ -509,13 +505,6 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
     } else {
       xbt_die("Unknown type of activity");
     }
-
-    /*
-    switch (process->waiting_synchro->type) {
-    case SIMIX_SYNC_JOIN:
-      SIMIX_process_sleep_destroy(process->waiting_synchro);
-      break;
-    } */
 
     process->waiting_synchro = nullptr;
   }
@@ -598,10 +587,6 @@ void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
 
   if (reset_pid > 0)
     simix_process_maxpid = reset_pid;
-
-  SIMIX_context_runall();
-
-  SIMIX_process_empty_trash();
 }
 
 void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
@@ -683,49 +668,19 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
   simcall->issuer->waiting_synchro = sync;
 }
 
-static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* synchro)
-{
-  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(synchro);
-
-  if (sleep->surf_sleep) {
-    sleep->surf_sleep->cancel();
-
-    while (not sleep->simcalls.empty()) {
-      smx_simcall_t simcall = sleep->simcalls.front();
-      sleep->simcalls.pop_front();
-      simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-      simcall->issuer->waiting_synchro = nullptr;
-      if (simcall->issuer->suspended) {
-        XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
-        simcall->issuer->suspended = 0;
-        simcall_HANDLER_process_suspend(simcall, simcall->issuer);
-      } else {
-        SIMIX_simcall_answer(simcall);
-      }
-    }
-    sleep->surf_sleep->unref();
-    sleep->surf_sleep = nullptr;
-  }
-  // intrusive_ptr_release(process); // FIXME: We are leaking here. See comment in SIMIX_process_join()
-  return 0;
-}
-
 smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout)
 {
   smx_activity_t res = issuer->sleep(timeout);
   intrusive_ptr_add_ref(res.get());
-  /* We are leaking the process here, but if we don't take the ref, we get a "use after free".
-   * The correct solution would be to derivate the type SynchroSleep into a SynchroProcessJoin,
-   * but the code is not clean enough for now for this.
-   * The C API should first be properly replaced with the C++ one, which is a fair amount of work.
-   */
-  intrusive_ptr_add_ref(process);
   SIMIX_process_on_exit(process,
                         [](void*, void* arg) {
-                          return simgrid::simix::kernelImmediate(
-                              [&] { return SIMIX_process_join_finish(SMX_EXIT_SUCCESS, arg); });
+                          auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
+                          if (sleep->surf_sleep)
+                            sleep->surf_sleep->finish(simgrid::surf::Action::State::done);
+                          intrusive_ptr_release(sleep);
+                          return 0;
                         },
-                        &*res);
+                        res.get());
   return res;
 }
 
@@ -834,8 +789,8 @@ void SIMIX_process_on_exit_runall(smx_actor_t process) {
   smx_process_exit_status_t exit_status = (process->context->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not process->on_exit.empty()) {
     s_smx_process_exit_fun_t exit_fun = process->on_exit.back();
-    (exit_fun.fun)((void*)exit_status, exit_fun.arg);
     process->on_exit.pop_back();
+    (exit_fun.fun)((void*)exit_status, exit_fun.arg);
   }
 }
 

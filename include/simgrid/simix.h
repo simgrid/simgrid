@@ -65,9 +65,9 @@ typedef enum {
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_actor_t);
 
-extern int smx_context_stack_size;
+extern unsigned smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
-extern int smx_context_guard_size;
+extern unsigned smx_context_guard_size;
 extern int smx_context_guard_size_was_set;
 
 SG_BEGIN_DECL()

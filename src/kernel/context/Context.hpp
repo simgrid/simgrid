@@ -80,6 +80,13 @@ namespace context {
     void_pfn_smxprocess_t cleanup_func_ = nullptr;
     smx_actor_t process_ = nullptr;
   public:
+    class StopRequest {
+      /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
+       *
+       * Nope, Sonar, this should not inherit of std::exception.
+       * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
+       */
+    };
     bool iwannadie;
 
     Context(std::function<void()> code,
@@ -156,12 +163,12 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 
 /* We are using the bottom of the stack to save some information, like the
  * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
- * size for the stack. */
+ * size for the stack. Round its value to a multiple of 16 (asan wants the stacks to be aligned this way). */
 #if HAVE_VALGRIND_H
-# define smx_context_usable_stack_size                                  \
-  (smx_context_stack_size - sizeof(unsigned int)) /* for valgrind_stack_id */
+#define smx_context_usable_stack_size                                                                                  \
+  ((smx_context_stack_size - sizeof(unsigned int)) & ~0xf) /* for valgrind_stack_id */
 #else
-# define smx_context_usable_stack_size smx_context_stack_size
+#define smx_context_usable_stack_size (smx_context_stack_size & ~0xf)
 #endif
 
 /** @brief Executes all the processes to run (in parallel if possible). */

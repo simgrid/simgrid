@@ -13,6 +13,7 @@
 #include "simgrid_config.h"
 #include "src/internal_config.h"
 #include <set>
+#include <string>
 
 /* Need to define function drand48 for Windows */
 /* FIXME: use _drand48() defined in src/surf/random_mgr.c instead */
@@ -69,7 +70,10 @@ public:
   xbt_dict_t children_;
   xbt_dict_t values_; // valid for all types except variable and container
   Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind, Type* father);
-  static Type* getOrNull(const char* name, Type* father);
+  ~Type();
+  Type* getChild(const char* name);
+  Type* getChildOrNull(const char* name);
+
   static Type* containerNew(const char* name, Type* father);
   static Type* eventNew(const char* name, Type* father);
   static Type* variableNew(const char* name, const char* color, Type* father);
@@ -85,7 +89,6 @@ public:
   char* color_;
 
   Type* father_;
-  Value* ret_;
   Value(const char* name, const char* color, Type* father);
   ~Value();
   static Value* get_or_new(const char* name, const char* color, Type* father);
@@ -217,21 +220,19 @@ public:
 };
 
 class StartLinkEvent : public PajeEvent  {
-  public:
-    Container* container;
-    Type* type;
-    Container* sourceContainer;
-    char* value;
-    char* key;
-    int size;
+  Container* container_;
+  Type* type_;
+  Container* sourceContainer_;
+  std::string value_;
+  std::string key_;
+  int size_;
 
-  public:
-    ~StartLinkEvent();
-    StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                   const char* key);
-    StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                   const char* key, int size);
-    void print() override;
+public:
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
+                 const char* key);
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
+                 const char* key, int size);
+  void print() override;
 };
 
 class EndLinkEvent : public PajeEvent  {
@@ -326,24 +327,17 @@ XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
 extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id ();
-XBT_PRIVATE void PJ_container_alloc ();
-XBT_PRIVATE void PJ_container_release ();
 XBT_PUBLIC(container_t) PJ_container_get (const char *name);
-XBT_PUBLIC(container_t) PJ_container_get_or_null (const char *name);
+XBT_PUBLIC(simgrid::instr::Container*) PJ_container_get_or_null(const char* name);
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
 XBT_PUBLIC(void) PJ_container_free_all (void);
 XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
-XBT_PRIVATE void PJ_type_release ();
 XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
-XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get(const char* name, simgrid::instr::Type* father);
-XBT_PRIVATE XBT_PRIVATE void PJ_type_free(simgrid::instr::Type* type);
 
 /* instr_config.c */
-XBT_PRIVATE void recursiveDestroyType(simgrid::instr::Type* type);
-
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -34,12 +34,11 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
                                       action->getLastUpdate(), now - action->getLastUpdate());
     }
 
-    action->finish();
+    action->finish(Action::State::done);
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
 
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
-    action->setState(Action::State::done);
   }
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
@@ -84,8 +83,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 
     if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
         ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish();
-      action->setState(Action::State::done);
+      action->finish(Action::State::done);
     }
   }
 }

@@ -69,6 +69,8 @@ public:
   }
 
   ~ChordMessage() = default;
+
+  static void destroy(void* message);
 };
 
 class Node {
@@ -85,6 +87,7 @@ class Node {
 
 public:
   explicit Node(std::vector<std::string> args);
+  Node(const Node&) = delete;
   ~Node();
   void join(int known_id);
   void leave();
@@ -159,8 +162,11 @@ public:
       }
       now = simgrid::s4u::Engine::getClock();
     }
-    if (data != nullptr) {
-      delete static_cast<ChordMessage*>(data);
+    if (comm_receive != nullptr) {
+      if (comm_receive->test())
+        delete static_cast<ChordMessage*>(data);
+      else
+        comm_receive->cancel();
     }
     // leave the ring
     leave();

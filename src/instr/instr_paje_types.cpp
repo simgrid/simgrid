@@ -10,11 +10,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event sy
 
 static simgrid::instr::Type* rootType = nullptr; /* the root type */
 
-void PJ_type_release ()
-{
-  rootType = nullptr;
-}
-
 simgrid::instr::Type* PJ_type_get_root()
 {
   return rootType;
@@ -33,9 +28,7 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char
   this->values_   = xbt_dict_new_homogeneous(nullptr);
   this->color_    = xbt_strdup(color);
 
-  char str_id[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
-  this->id_ = xbt_strdup(str_id);
+  this->id_ = bprintf("%lld", instr_new_paje_id());
 
   if (father != nullptr){
     xbt_dict_set(father->children_, key, this, nullptr);
@@ -43,59 +36,48 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char
   }
 }
 
-void PJ_type_free(simgrid::instr::Type* type)
+simgrid::instr::Type::~Type()
 {
   simgrid::instr::Value* val;
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (type->values_, cursor, value_name, val) {
+  xbt_dict_foreach (values_, cursor, value_name, val) {
     XBT_DEBUG("free value %s, child of %s", val->name_, val->father_->name_);
-    xbt_free(val);
+    delete val;
   }
-  xbt_dict_free(&type->values_);
-  xbt_free(type->name_);
-  xbt_free(type->id_);
-  xbt_free(type->color_);
-  xbt_dict_free(&type->children_);
-  delete type;
-}
-
-void recursiveDestroyType(simgrid::instr::Type* type)
-{
-  XBT_DEBUG("recursiveDestroyType %s", type->name_);
-  xbt_dict_cursor_t cursor = nullptr;
+  xbt_dict_free(&values_);
   simgrid::instr::Type* child;
   char *child_name;
-  xbt_dict_foreach (type->children_, cursor, child_name, child) {
-    recursiveDestroyType (child);
+  xbt_dict_foreach (children_, cursor, child_name, child) {
+    delete child;
   }
-  PJ_type_free(type);
+  xbt_dict_free(&children_);
+  xbt_free(name_);
+  xbt_free(id_);
+  xbt_free(color_);
 }
 
-simgrid::instr::Type* PJ_type_get(const char* name, simgrid::instr::Type* father)
+simgrid::instr::Type* simgrid::instr::Type::getChild(const char* name)
 {
-  simgrid::instr::Type* ret = simgrid::instr::Type::getOrNull(name, father);
-  if (ret == nullptr){
-    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name, father->name_);
-  }
+  simgrid::instr::Type* ret = this->getChildOrNull(name);
+  if (ret == nullptr)
+    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name, this->name_);
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::getOrNull(const char* name, simgrid::instr::Type* father)
+simgrid::instr::Type* simgrid::instr::Type::getChildOrNull(const char* name)
 {
-  if (name == nullptr || father == nullptr){
-    THROWF (tracing_error, 0, "can't get type with a nullptr name or from a nullptr father");
-  }
+  xbt_assert(name != nullptr, "can't get type with a nullptr name");
 
   simgrid::instr::Type* ret = nullptr;
   simgrid::instr::Type* child;
   char *child_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (father->children_, cursor, child_name, child) {
+  xbt_dict_foreach (children_, cursor, child_name, child) {
     if (strcmp(child->name_, name) == 0) {
-      if (ret != nullptr){
+      if (ret != nullptr) {
         THROWF (tracing_error, 0, "there are two children types with the same name?");
-      }else{
+      } else {
         ret = child;
       }
     }

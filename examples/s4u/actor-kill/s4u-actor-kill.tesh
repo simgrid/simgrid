@@ -2,9 +2,24 @@
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-kill ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (killer@Tremblay) Hello!
+> [  0.000000] (Alice@Jupiter) Hello!
+> [  0.000000] (Alice@Jupiter) Suspending myself
+> [  0.000000] (Bob@Ginette) Hello!
+> [  0.000000] (Bob@Ginette) Suspending myself
+> [  0.000000] (Carol@Bourassa) Hello!
+> [  0.000000] (Carol@Bourassa) Suspending myself
+> [  0.000000] (Dave@Boivin) Hello!
+> [  0.000000] (Dave@Boivin) Suspending myself
 > [  0.000000] (victim@Fafard) Hello!
 > [  0.000000] (victim@Fafard) Suspending myself
-> [ 10.000000] (killer@Tremblay) Resume process
-> [ 10.000000] (killer@Tremblay) Kill process
-> [ 10.000000] (killer@Tremblay) OK, goodbye now. I commit a suicide.
-> [ 10.000000] (maestro@) Simulation time 10
+> [ 10.000000] (killer@Tremblay) Resume the victim
+> [ 10.000000] (victim@Fafard) OK, OK. Let's work
+> [ 12.000000] (killer@Tremblay) Kill the victim
+> [ 12.000000] (victim@Fafard) I have been killed!
+> [ 13.000000] (killer@Tremblay) Killing everybody but myself
+> [ 13.000000] (Alice@Jupiter) I have been killed!
+> [ 13.000000] (Bob@Ginette) I have been killed!
+> [ 13.000000] (Carol@Bourassa) I have been killed!
+> [ 13.000000] (Dave@Boivin) I have been killed!
+> [ 13.000000] (killer@Tremblay) OK, goodbye now. I commit a suicide.
+> [ 13.000000] (maestro@) Simulation time 13

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2010, 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -69,17 +68,16 @@ static void execute_load_test()
 int main(int argc, char* argv[])
 {
   sg_host_load_plugin_init();
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
 
   simgrid::s4u::Actor::createActor("load_test", simgrid::s4u::Host::by_name("MyHost1"), execute_load_test);
 
-  e->run();
+  e.run();
 
   XBT_INFO("Total simulation time: %.2f", simgrid::s4u::Engine::getClock());
 
-  delete e;
   return 0;
 }

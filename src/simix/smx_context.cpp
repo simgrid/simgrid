@@ -79,9 +79,9 @@ static simgrid::config::Flag<std::string> context_factory_name(
   (std::string("Possible values: ")+contexts_list()).c_str(),
   context_factories[0].first);
 
-int smx_context_stack_size;
+unsigned smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
-int smx_context_guard_size;
+unsigned smx_context_guard_size;
 int smx_context_guard_size_was_set = 0;
 #if HAVE_THREAD_LOCAL_STORAGE
 static XBT_THREAD_LOCAL smx_context_t smx_current_context_parallel;

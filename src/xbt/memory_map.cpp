@@ -193,12 +193,13 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     line[read - 1] = '\0';
 
     /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens for 6 fields */
+    char* saveptr = nullptr; // for strtok_r()
     char* lfields[6];
-    lfields[0] = strtok(line, " ");
+    lfields[0] = strtok_r(line, " ", &saveptr);
 
     int i;
     for (i = 1; i < 6 && lfields[i - 1] != nullptr; i++) {
-      lfields[i] = std::strtok(nullptr, " ");
+      lfields[i] = strtok_r(nullptr, " ", &saveptr);
     }
 
     /* Check to see if we got the expected amount of columns */
@@ -207,7 +208,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
-    char *tok = std::strtok(lfields[0], "-");
+    char* tok = strtok_r(lfields[0], "-", &saveptr);
     if (tok == nullptr)
       xbt_die("Start and end address of the map are not concatenated by a hyphen (-). Recovery impossible.");
 
@@ -218,7 +219,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = std::strtok(nullptr, "-");
+    tok = strtok_r(nullptr, "-", &saveptr);
     if (tok == nullptr)
       xbt_abort();
 
@@ -268,7 +269,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       xbt_abort();
 
     /* Get the device major:minor bytes */
-    tok = std::strtok(lfields[3], ":");
+    tok = strtok_r(lfields[3], ":", &saveptr);
     if (tok == nullptr)
       xbt_abort();
 
@@ -277,7 +278,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = std::strtok(nullptr, ":");
+    tok = strtok_r(nullptr, ":", &saveptr);
     if (tok == nullptr)
       xbt_abort();
 

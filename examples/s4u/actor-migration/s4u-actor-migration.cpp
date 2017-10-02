@@ -58,9 +58,9 @@ static void policeman()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
-  e->loadPlatform(argv[1]); /* - Load the platform description */
+  e.loadPlatform(argv[1]); /* - Load the platform description */
 
   /* - Create and deploy the emigrant and policeman processes */
   simgrid::s4u::Actor::createActor("emigrant", simgrid::s4u::Host::by_name("Jacquelin"), emigrant);
@@ -68,10 +68,9 @@ int main(int argc, char* argv[])
 
   checkpoint     = simgrid::s4u::Mutex::createMutex(); /* - Initiate the mutex and conditions */
   identification = simgrid::s4u::ConditionVariable::createConditionVariable();
-  e->run();
+  e.run();
 
-  XBT_INFO("Simulation time %g", e->getClock());
+  XBT_INFO("Simulation time %g", e.getClock());
 
-  delete e;
   return 0;
 }

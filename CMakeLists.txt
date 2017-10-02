@@ -273,16 +273,8 @@ endif()
 find_package(Boost COMPONENTS context)
 set(Boost_FOUND 1) # This component is optional
 if(Boost_CONTEXT_FOUND)
-  if (Boost_VERSION LESS 105600)
-    message("Found Boost.Context API v1")
-    set(HAVE_BOOST_CONTEXTS 1)
-  elseif(Boost_VERSION LESS 106100)
-    message("Found Boost.Context API v2")
-    set(HAVE_BOOST_CONTEXTS 2)
-  else()
-    message("   WARNING : our implementation of Boost context factory is not compatible with Boost >=1.61 yet.")
-    set(HAVE_BOOST_CONTEXTS 0)
-  endif()
+  message("Found Boost.Context")
+  set(HAVE_BOOST_CONTEXTS 1)
 else()
   message ("   boost        : found.")
   message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
@@ -683,6 +675,11 @@ else()
   set(GIT_VERSION "none, release version")
 endif()
 
+### Setup gcc & clang flags
+if (NOT MSVC)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GCCFlags.cmake)
+endif()
+
 ### Generate the required headers and scripts
 #############################################
 
@@ -873,11 +870,6 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 ### Build some Maintainer files
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
-
-### Setup gcc & clang flags
-if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GCCFlags.cmake)
-endif()
 
 ### Make Libs
 if(NOT WIN32)

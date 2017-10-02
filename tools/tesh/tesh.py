@@ -402,8 +402,8 @@ if __name__ == '__main__':
     group1.add_argument('teshfile', nargs='?', help='Name of teshfile, stdin if omitted')
     group1.add_argument('--cd', metavar='some/directory', help='ask tesh to switch the working directory before launching the tests')
     group1.add_argument('--setenv', metavar='var=value', action='append', help='set a specific environment variable')
-    group1.add_argument('--cfg', metavar='arg', help='add parameter --cfg=arg to each command line')
-    group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
+    group1.add_argument('--cfg', metavar='arg', action='append', help='add parameter --cfg=arg to each command line')
+    group1.add_argument('--log', metavar='arg', action='append', help='add parameter --log=arg to each command line')
     group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
     group1.add_argument('--keep', action='store_true', help='Keep the obtained output when it does not match the expected one')
@@ -418,18 +418,18 @@ if __name__ == '__main__':
 
     if options.ignore_jenkins:
         print("Ignore all cruft seen on SimGrid's continous integration servers")
+        # Note: regexps should match at the beginning of lines
         TeshState().ignore_regexps_common = [
-           re.compile("^profiling:"),
-           re.compile(".*WARNING: ASan doesn\'t fully support"),
-           re.compile("Unable to clean temporary file C:.*"),
+           re.compile("profiling:"),
+           re.compile("Unable to clean temporary file C:"),
            re.compile(".*Configuration change: Set \'contexts/"),
-           re.compile(".*Picked up JAVA_TOOL_OPTIONS.*"),
-           re.compile("Picked up _JAVA_OPTIONS: .*"),
-
-           re.compile("==WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
+           re.compile("Picked up JAVA_TOOL_OPTIONS: "),
+           re.compile("Picked up _JAVA_OPTIONS: "),
+           re.compile("==[0-9]+== ?WARNING: ASan doesn\'t fully support"),
+           re.compile("==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
            re.compile("False positive error reports may follow"),
-           re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail?id=189"),
-
+           re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail\\?id=189"),
+           re.compile("For details see https://github.com/google/sanitizers/issues/189"),
            re.compile("Python runtime initialized with LC_CTYPE=C .*"),
            ]
         TeshState().jenkins = True # This is a Jenkins build
@@ -449,9 +449,11 @@ if __name__ == '__main__':
             setenv(e)
 
     if options.cfg is not None:
-        TeshState().args_suffix += " --cfg="+options.cfg
+        for c in options.cfg:
+            TeshState().args_suffix += " --cfg=" + c
     if options.log is not None:
-        TeshState().args_suffix += " --log="+options.log
+        for l in options.log:
+            TeshState().args_suffix += " --log=" + l
 
     if options.wrapper is not None:
         TeshState().wrapper = options.wrapper

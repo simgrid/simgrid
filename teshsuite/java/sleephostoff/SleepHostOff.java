@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package sleepHostOff;
+package sleephostoff;
 
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
@@ -55,7 +55,7 @@ public class SleepHostOff {
     Msg.init(args);
 
     if (args.length < 1) {
-      Msg.info("Usage: java -cp simgrid.jar:. sleepHostOff.SleepHostOff <platform.xml>");
+      Msg.info("Usage: java -cp simgrid.jar:. sleephostoff.SleepHostOff <platform.xml>");
       System.exit(1);
     }
 

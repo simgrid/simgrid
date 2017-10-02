@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -380,10 +380,9 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
   while ((xbt_heap_size(tiActionHeap_) > 0) && (xbt_heap_maxkey(tiActionHeap_) <= now)) {
     CpuTiAction *action = static_cast<CpuTiAction*>(xbt_heap_pop(tiActionHeap_));
     XBT_DEBUG("Action %p: finish", action);
-    action->finish();
+    action->finish(Action::State::done);
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
-    action->setState(Action::State::done);
     /* update remaining amount of all actions */
     action->cpu_->updateRemainingAmount(surf_get_clock());
   }
