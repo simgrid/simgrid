@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
+/* Copyright (c) 2006-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,7 +9,6 @@
 #include "src/surf/network_interface.hpp"
 #include "xbt/log.h"
 #include "xbt/misc.h"
-#include "xbt/str.h"
 #include <vector>
 
 #include "src/surf/xml/platf_private.hpp"

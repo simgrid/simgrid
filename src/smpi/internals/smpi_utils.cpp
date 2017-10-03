@@ -7,7 +7,6 @@
 #include "smpi/smpi_utils.hpp"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/str.h"
 #include <boost/tokenizer.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");

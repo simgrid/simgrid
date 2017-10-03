@@ -21,7 +21,6 @@
 #include <xbt/backtrace.hpp>
 #include "xbt/ex.h"
 #include "xbt/log.h"
-#include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
 #if SIMGRID_HAVE_MC

@@ -9,7 +9,6 @@
 #include "xbt/file.h" /* xbt_basename() */
 #include "xbt/log.h"
 #include "xbt/misc.h"
-#include "xbt/str.h"
 #include <map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");

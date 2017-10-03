@@ -18,7 +18,6 @@
  */
 
 #include "simgrid/s4u.hpp"
-#include "xbt/str.h"
 #include <cstdlib>
 #include <iostream>
 

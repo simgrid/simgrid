@@ -52,7 +52,6 @@
 #include "xbt/log.hpp"
 #include "xbt/backtrace.h"
 #include "xbt/backtrace.hpp"
-#include "xbt/str.h"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
 
 #include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */

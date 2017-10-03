@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,7 +6,6 @@
 
 #include "xbt/config.h"
 #include "xbt/log.h"
-#include <xbt/str.h>
 #include <xbt/sysdep.h>
 
 #include <mc/mc.h>

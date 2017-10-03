@@ -6,7 +6,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/str.h"
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
