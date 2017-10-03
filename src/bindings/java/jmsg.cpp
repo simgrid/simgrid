@@ -5,7 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
 #include <clocale>
+#include <string>
 
 #include "simgrid/msg.h"
 #include "simgrid/plugins/energy.h"
@@ -269,9 +271,9 @@ static int java_main(int argc, char *argv[])
   simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
 
   //Change the "." in class name for "/".
-  xbt_str_subst(argv[0],'.','/',0);
-  jclass class_Process = env->FindClass(argv[0]);
-  xbt_str_subst(argv[0],'/','.',0);
+  std::string arg0 = argv[0];
+  std::replace(begin(arg0), end(arg0), '.', '/');
+  jclass class_Process = env->FindClass(arg0.c_str());
   //Retrieve the methodID for the constructor
   xbt_assert((class_Process != nullptr), "Class not found (%s). The deployment file must use the fully qualified class name, including the package. The case is important.", argv[0]);
   jmethodID constructor_Process = env->GetMethodID(class_Process, "<init>", "(Lorg/simgrid/msg/Host;Ljava/lang/String;[Ljava/lang/String;)V");
