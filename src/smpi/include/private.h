@@ -82,8 +82,8 @@ XBT_PRIVATE void smpi_mpi_init();
 // utilities
 extern XBT_PRIVATE double smpi_cpu_threshold;
 extern XBT_PRIVATE double smpi_host_speed;
-extern XBT_PRIVATE char* smpi_start_data_exe; //start of the data+bss segment of the executable
-extern XBT_PRIVATE int smpi_size_data_exe; //size of the data+bss segment of the executable
+extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
+extern XBT_PRIVATE int smpi_data_exe_size;    // size of the data+bss segment of the executable
 
 typedef enum { shmalloc_none, shmalloc_local, shmalloc_global } shared_malloc_type;
 extern XBT_PRIVATE shared_malloc_type smpi_cfg_shared_malloc; // Whether to activate shared malloc

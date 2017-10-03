@@ -30,8 +30,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
 int smpi_loaded_page = -1;
-char* smpi_start_data_exe = nullptr;
-int smpi_size_data_exe = 0;
+char* smpi_data_exe_start = nullptr;
+int smpi_data_exe_size    = 0;
 int smpi_privatize_global_variables;
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
@@ -52,15 +52,15 @@ void smpi_get_executable_global_size()
 
     // File backed RW entry:
     if (i->pathname == full_name && (i->prot & PROT_RWX) == PROT_RW) {
-      smpi_start_data_exe = (char*) i->start_addr;
-      smpi_size_data_exe = i->end_addr - i->start_addr;
+      smpi_data_exe_start = (char*)i->start_addr;
+      smpi_data_exe_size  = i->end_addr - i->start_addr;
       ++i;
       /* Here we are making the assumption that a suitable empty region
          following the rw- area is the end of the data segment. It would
          be better to check with the size of the data segment. */
-      if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW
-          && (char*)i->start_addr ==  smpi_start_data_exe + smpi_size_data_exe) {
-        smpi_size_data_exe = (char*)i->end_addr - smpi_start_data_exe;
+      if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW &&
+          (char*)i->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
+        smpi_data_exe_size = (char*)i->end_addr - smpi_data_exe_start;
       }
       return;
     }
@@ -107,13 +107,13 @@ void smpi_switch_data_segment(int dest) {
  */
 void smpi_really_switch_data_segment(int dest)
 {
-  if(smpi_size_data_exe == 0)//no need to switch
+  if (smpi_data_exe_size == 0) // no need to switch
     return;
 
 #if HAVE_PRIVATIZATION
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (int i=0; i< smpi_process_count(); i++){
-      asan_safe_memcpy(smpi_privatization_regions[i].address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
+      asan_safe_memcpy(smpi_privatization_regions[i].address, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
     }
   }
 
@@ -121,8 +121,8 @@ void smpi_really_switch_data_segment(int dest)
   int current = smpi_privatization_regions[dest].file_descriptor;
   XBT_DEBUG("Switching data frame to the one of process %d", dest);
   void* tmp =
-      mmap(TOPAGE(smpi_start_data_exe), smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
-  if (tmp != TOPAGE(smpi_start_data_exe))
+      mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
+  if (tmp != TOPAGE(smpi_data_exe_start))
     xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = dest;
 #endif
@@ -140,9 +140,9 @@ void smpi_initialize_global_memory_segments()
 #if HAVE_PRIVATIZATION
   smpi_get_executable_global_size();
 
-  XBT_DEBUG ("bss+data segment found : size %d starting at %p", smpi_size_data_exe, smpi_start_data_exe );
+  XBT_DEBUG("bss+data segment found : size %d starting at %p", smpi_data_exe_size, smpi_data_exe_start);
 
-  if (smpi_size_data_exe == 0){//no need to switch
+  if (smpi_data_exe_size == 0) { // no need to switch
     smpi_privatize_global_variables=false;
     return;
   }
@@ -180,12 +180,12 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       xbt_die("Impossible to create temporary file for memory mapping: %s", strerror(errno));
     }
 
-    status = ftruncate(file_descriptor, smpi_size_data_exe);
+    status = ftruncate(file_descriptor, smpi_data_exe_size);
     if (status)
       xbt_die("Impossible to set the size of the temporary file for memory mapping");
 
     /* Ask for a free region */
-    address = mmap(nullptr, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
+    address = mmap(nullptr, smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
     if (address == MAP_FAILED)
       xbt_die("Couldn't find a free region for memory mapping");
 
@@ -194,7 +194,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       xbt_die("Impossible to unlink temporary file for memory mapping");
 
     // initialize the values
-    asan_safe_memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
+    asan_safe_memcpy(address, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
 
     // store the address of the mapping for further switches
     smpi_privatization_regions[i].file_descriptor = file_descriptor;
@@ -208,11 +208,11 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
 }
 
 void smpi_destroy_global_memory_segments(){
-  if (smpi_size_data_exe == 0)//no need to switch
+  if (smpi_data_exe_size == 0) // no need to switch
     return;
 #if HAVE_PRIVATIZATION
   for (int i=0; i< smpi_process_count(); i++) {
-    if (munmap(smpi_privatization_regions[i].address, smpi_size_data_exe) < 0)
+    if (munmap(smpi_privatization_regions[i].address, smpi_data_exe_size) < 0)
       XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatization_regions[i].file_descriptor, strerror(errno));
     close(smpi_privatization_regions[i].file_descriptor);
   }
