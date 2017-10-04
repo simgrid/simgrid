@@ -157,7 +157,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     retval = MPI_ERR_TAG;
   } else {
 
-    int rank = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int rank       = smpi_process()->index();
     int src_traced = comm->group()->index(src);
 
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
@@ -206,7 +206,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int rank = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int rank               = smpi_process()->index();
     int dst_traced = comm->group()->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISEND;
@@ -254,7 +254,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int rank = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int rank               = smpi_process()->index();
     int dst_traced = comm->group()->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISSEND;
@@ -301,7 +301,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int rank               = smpi_process()->index();
     int src_traced         = comm->group()->index(src);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_RECV;
@@ -351,7 +351,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
   } else if(tag < 0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int rank               = smpi_process()->index();
     int dst_traced         = comm->group()->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type            = TRACING_SEND;
@@ -397,7 +397,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int rank               = smpi_process()->index();
     int dst_traced         = comm->group()->index(dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type            = TRACING_SSEND;
@@ -448,7 +448,7 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     retval = MPI_ERR_TAG;
   } else {
 
-    int rank               = comm != MPI_COMM_NULL ? smpi_process()->index() : -1;
+    int rank               = smpi_process()->index();
     int dst_traced         = comm->group()->index(dst);
     int src_traced         = comm->group()->index(src);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
