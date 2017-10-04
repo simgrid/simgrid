@@ -391,6 +391,7 @@ static std::vector<char*> surf_parsed_filename_stack;
 
 void STag_surfxml_include()
 {
+  XBT_ERROR("<include> tag is deprecated, and will be removed in SimGrid v3.19. Please stop using it now (or tell us why you need it).");
   parse_after_config();
   XBT_DEBUG("STag_surfxml_include '%s'",A_surfxml_include_file);
   surf_parsed_filename_stack.push_back(surf_parsed_filename); // save old file name
