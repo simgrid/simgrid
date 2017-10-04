@@ -28,7 +28,7 @@
  */
 struct _UPT_info {
   pid_t pid;
-  // Other things;
+  // Other things...
 };
 
 /** Get the PID of a `libunwind-ptrace` context

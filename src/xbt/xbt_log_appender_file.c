@@ -1,6 +1,6 @@
 /* file_appender - a dumb log appender which simply prints to a file        */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -53,7 +53,6 @@ static void open_append2_file(xbt_log_append2_file_t data){
       fseek(data->file,0,SEEK_SET);
     }
   } else{
-    //printf("Splitting\n");
     //Split
     if(data->file)
       fclose(data->file);

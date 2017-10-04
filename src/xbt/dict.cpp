@@ -622,7 +622,6 @@ static void debugged_remove(xbt_dict_t head, const char* key)
 {
   xbt_test_add("Remove '%s'", key);
   xbt_dict_remove(head, key);
-  /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 }
 
 static void traverse(xbt_dict_t head)
@@ -766,8 +765,6 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve and trave
   xbt_test_add("Traverse the resulting dictionary");
   traverse(head);
 
-  /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
-
   xbt_test_add("Free the dictionary twice");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
@@ -895,7 +892,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     xbt_test_log("Fill the struct, count its elems and frees the structure");
     xbt_test_log("using 1000 elements with %d chars long randomized keys.", SIZEOFKEY);
     xbt_dict_t head = xbt_dict_new_homogeneous(free);
-    /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (int j = 0; j < 1000; j++) {
       char* data = nullptr;
       char* key  = (char*)xbt_malloc(SIZEOFKEY);
@@ -904,7 +900,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
         for (int k         = 0; k < SIZEOFKEY - 1; k++)
           key[k] = rand() % ('z' - 'a') + 'a';
         key[SIZEOFKEY - 1] = '\0';
-        /*      printf("[%d %s]\n",j,key); */
         data = (char*) xbt_dict_get_or_null(head, key);
       } while (data != nullptr);
 
@@ -914,7 +909,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
       count(head, j + 1);
     }
-    /*    xbt_dict_dump(head,(void (*)(void*))&printf); */
     traverse(head);
     xbt_dict_free(&head);
     xbt_dict_free(&head);
@@ -928,7 +922,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     snprintf(key,10, "%d", j);
     xbt_dict_set(head, key, key, nullptr);
   }
-  /*xbt_dict_dump(head,(void (*)(void*))&printf); */
 
   xbt_test_add("Count the elements (retrieving the key and data for each)");
   xbt_test_log("There is %d elements", countelems(head));
@@ -936,7 +929,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Search my %d elements 20 times", NB_ELM);
   char* key = (char*)xbt_malloc(10);
   for (int i = 0; i < 20; i++) {
-    /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (int j = 0; j < NB_ELM; j++) {
       snprintf(key,10, "%d", j);
       void* data = xbt_dict_get(head, key);

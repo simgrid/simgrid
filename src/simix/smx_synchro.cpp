@@ -79,7 +79,6 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 
     case SIMIX_FAILED:
         simcall->issuer->context->iwannadie = 1;
-//      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
       break;
 
     default:

@@ -173,7 +173,7 @@ void SD_init_nocheck(int *argc, char **argv)
  * Do --help on any simgrid binary to see the list of currently existing configuration variables, and
  * see Section @ref options.
  *
- * Example: SD_config("host/model","default");
+ * Example: SD_config("host/model","default")
  */
 void SD_config(const char *key, const char *value){
   xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");

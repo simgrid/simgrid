@@ -128,8 +128,6 @@ void smpi_bench_end()
     } else {
       for (unsigned int i = 0; i < counter_data.size(); i++) {
         counter_data[i].second += event_values[i];
-        // XBT_DEBUG("[%i] PAPI: Counter %s: Value is now %lli (got increment by %lli\n", smpi_process()->index(),
-        // counter_data[i].first.c_str(), counter_data[i].second, event_values[i]);
       }
     }
   }

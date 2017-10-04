@@ -64,8 +64,8 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
       linkDown = linkUp;
     }
     /*
-     * Add the link to its appropriate position;
-     * note that position rankId*(xbt_dynar_length(dimensions)+has_loopback?+has_limiter?)
+     * Add the link to its appropriate position.
+     * Note that position rankId*(xbt_dynar_length(dimensions)+has_loopback?+has_limiter?)
      * holds the link "rankId->rankId"
      */
     privateLinks_.insert({position + j, {linkUp, linkDown}});

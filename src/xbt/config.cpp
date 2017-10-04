@@ -519,7 +519,6 @@ void xbt_cfg_set_parse(const char *options)
       /* Pass the following blank chars */
       *(option++) = '\0';
       while (option - name < (len - 1) && (*option == ' ' || *option == '\n' || *option == '\t')) {
-        /*      fprintf(stderr,"Ignore a blank char.\n"); */
         option++;
       }
       if (option - name == len - 1)

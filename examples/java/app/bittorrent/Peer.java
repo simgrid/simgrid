@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2006-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -384,14 +384,12 @@ public class Peer extends Process {
     if (currentPieces.size() >= (Common.FILE_PIECES - pieces)) {
       return;
     }
-//    if (pieces < 3) {
-      do {
-        currentPiece = stream.randInt(0,Common.FILE_PIECES - 1);
-      } while (!(bitfield[currentPiece] == '0' && !currentPieces.contains(currentPiece)));
-//    }
-//    else {
-      //TODO trivial min algorithm.
-//    }
+
+    //TODO: trivial min algorithm when pieces >= 3
+    do {
+      currentPiece = stream.randInt(0,Common.FILE_PIECES - 1);
+    } while (!(bitfield[currentPiece] == '0' && !currentPieces.contains(currentPiece)));
+
     currentPieces.add(currentPiece);
     Msg.debug("New interested piece: " + currentPiece);
     assert currentPiece >= 0 && currentPiece < Common.FILE_PIECES;

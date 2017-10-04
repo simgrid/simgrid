@@ -332,7 +332,6 @@ public class Node extends Process {
   // Performs a find successor request to a random id.
   private void randomLookup() {
     int dest = 1337;
-    //Msg.info("Making a lookup request for id " + dest);
     findSuccessor(dest);
   }
 

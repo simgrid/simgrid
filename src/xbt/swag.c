@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -212,7 +212,6 @@ XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
 
   xbt_test_assert(xbt_swag_remove(NULL, setB) == NULL);
   xbt_test_assert(xbt_swag_remove(obj1, setB) == obj1);
-  /*  xbt_test_assert(xbt_swag_remove(obj2, setB) == obj2); */
 
   xbt_test_add("Traverse set A");
   xbt_swag_foreach(obj, setA) {

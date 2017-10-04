@@ -235,8 +235,6 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 
   case SIMCALL_COMM_IRECV: {
     size_t* remote_size = simcall_comm_irecv__get__dst_buff_size(req);
-
-    // size_t size = size_pointer ? *size_pointer : 0;
     size_t size = 0;
     if (remote_size)
       mc_model_checker->process().read_bytes(&size, sizeof(size),

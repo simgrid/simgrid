@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -41,8 +41,7 @@ std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
  * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system.
  * FIXME: add a configuration flag for this
  */
-// const double virt_overhead = 0.95;
-const double virt_overhead = 1;
+const double virt_overhead = 1; // 0.95
 
 static void hostStateChange(s4u::Host& host)
 {

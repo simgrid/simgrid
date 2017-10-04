@@ -251,9 +251,6 @@ void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t
   // We don't really need support for FR registers as they are caller saved
   // and probably never use those fields as libunwind-x86_64 does not read
   // FP registers from the unw_context_t
-  // but we fix the pointer in order to avoid dangling pointers:
-  // context->context_.uc_mcontext.fpregs = &(context->context.__fpregs_mem);
-
   // Let's ignore this and see what happens:
   this->unwindContext_.uc_mcontext.fpregs = nullptr;
 # endif

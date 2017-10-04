@@ -97,7 +97,6 @@ void RemoteClient::refresh_simix()
   static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*),
     "Bad size for simix_global");
 
-  // simix_global_p = REMOTE(simix_global.get());
   RemotePtr<simgrid::simix::Global> simix_global_p =
     this->read_variable<simgrid::simix::Global*>("simix_global");
 

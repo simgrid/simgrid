@@ -55,16 +55,6 @@ public class Master extends Process {
 			Msg.verb("Sleep long enough for everyone to be done with previous batch of work");
 			waitFor(1000*step - Msg.getClock());
 
-			/*    Msg.info("Add one more process per VM.");
-    for (int i = 0; i < vms.size(); i++) {
-      VM vm = vms.get(i);
-      Worker worker = new Worker(vm,i + vms.size());
-      worker.start();
-    }
-
-    workBatch(workersCount * 2);
-			 */
-
 			Msg.verb("Migrate everyone to "+hosts[3].getName());
 			for (VM vm : vms) {
 				Msg.verb("Migrate "+vm.getName()+" to "+hosts[3].getName());

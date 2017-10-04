@@ -441,7 +441,6 @@ int mmalloc_compare_heap(
         XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1, heapinfo1->busy_block.busy_size, addr_block1);
         i1 = state.heaplimit + 1;
         nb_diff1++;
-        //i1++;
       }
 
     } else {                    /* Fragmented block */
@@ -1339,40 +1338,34 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
 
     pointer_level++;
 
-      // Some cases are not handled here:
-      // * the pointers lead to different areas (one to the heap, the other to the RW segment ...);
-      // * a pointer leads to the read-only segment of the current object;
-      // * a pointer lead to a different ELF object.
+    // Some cases are not handled here:
+    // * the pointers lead to different areas (one to the heap, the other to the RW segment ...)
+    // * a pointer leads to the read-only segment of the current object
+    // * a pointer lead to a different ELF object
 
-      if (addr_pointed1 > process->heap_address
-          && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)) {
-        if (not(addr_pointed2 > process->heap_address && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
-          return 1;
-        // The pointers are both in the heap:
-        return simgrid::mc::compare_heap_area(state,
-          process_index, addr_pointed1, addr_pointed2, snapshot1,
-          snapshot2, nullptr, type->subtype, pointer_level);
-      }
+    if (addr_pointed1 > process->heap_address && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)) {
+      if (not(addr_pointed2 > process->heap_address && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
+        return 1;
+      // The pointers are both in the heap:
+      return simgrid::mc::compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1, snapshot2,
+                                            nullptr, type->subtype, pointer_level);
 
+    } else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
       // The pointers are both in the current object R/W segment:
-      else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
-        if (not region2->contain(simgrid::mc::remote(addr_pointed2)))
-          return 1;
-        if (not type->type_id)
-          return (addr_pointed1 != addr_pointed2);
-        else
-          return compare_areas_with_type(state, process_index,
-                                         addr_pointed1, snapshot1, region1,
-                                         addr_pointed2, snapshot2, region2,
-                                         type->subtype, pointer_level);
-      }
+      if (not region2->contain(simgrid::mc::remote(addr_pointed2)))
+        return 1;
+      if (not type->type_id)
+        return (addr_pointed1 != addr_pointed2);
+      else
+        return compare_areas_with_type(state, process_index, addr_pointed1, snapshot1, region1, addr_pointed2,
+                                       snapshot2, region2, type->subtype, pointer_level);
+    } else {
 
       // TODO, We do not handle very well the case where
       // it belongs to a different (non-heap) region from the current one.
 
-      else
-        return (addr_pointed1 != addr_pointed2);
-
+      return (addr_pointed1 != addr_pointed2);
+    }
     break;
   }
   case DW_TAG_structure_type:

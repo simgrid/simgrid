@@ -1,6 +1,6 @@
 /* ../../../smpi_script/bin/smpirun -hostfile hostfile_send_deterministic -platform ../../platforms/cluster.xml -np 3 --cfg=smpi/send-is-detached-thresh:0 gdb\ --args\ ./send_deterministic */
 
-/* Copyright (c) 2009-2015. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -33,15 +33,11 @@ int main(int argc, char **argv)
   }
 
   if (rank == 0) {
-    //printf("MPI_ISend / MPI_IRecv Test \n");
-
     for (int i = 0; i < size - 1; i++) {
       MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-      //printf("Message received from %d\n", recv_buff);
     }
   }else{
     MPI_Send(&rank, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);
-    //printf("Sent %d to rank 0\n", rank);
   }
 
   MPI_Finalize();

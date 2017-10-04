@@ -469,8 +469,6 @@ static void apply_selection(char *selection)
   if (not selection || selection[0] == '\0')
     return;
 
-  /*printf("Test selection: %s\n", selection); */
-
   /* First apply the selection */
   while (not done) {
     int enabling = 1;

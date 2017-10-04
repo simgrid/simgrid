@@ -1,6 +1,6 @@
 /* mallocator - recycle objects to avoid malloc() / free()                  */
 
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -154,8 +154,6 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     if (m->current_size <= 0) {
       /* No object is ready yet. Create a bunch of them to try to group the
        * mallocs on the same memory pages (to help the cache lines) */
-
-      /* XBT_DEBUG("Create a new object for mallocator %p (size:%d/%d)", m, m->current_size, m->max_size); */
       int i;
       int amount = MIN(m->max_size / 2, 1000);
       for (i = 0; i < amount; i++)
@@ -164,7 +162,6 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     }
 
     /* there is at least an available object, now */
-    /* XBT_DEBUG("Reuse an old object for mallocator %p (size:%d/%d)", m, m->current_size, m->max_size); */
     object = m->objects[--m->current_size];
     lock_release(m);
   } else {
@@ -202,14 +199,11 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object)
     lock_acquire(m);
     if (m->current_size < m->max_size) {
       /* there is enough place to push the object */
-      /* XBT_DEBUG("Store deleted object in mallocator %p for further use (size:%d/%d)",
-         m, m->current_size, m->max_size); */
       m->objects[m->current_size++] = object;
       lock_release(m);
     } else {
       lock_release(m);
       /* otherwise we don't have a choice, we must free the object */
-      /* XBT_DEBUG("Free deleted object: mallocator %p is full (size:%d/%d)", m, m->current_size, m->max_size); */
       m->free_f(object);
     }
   } else {

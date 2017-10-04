@@ -270,7 +270,7 @@ RawContextFactory::RawContextFactory()
     raw_workers_context = xbt_new(RawContext*, nthreads);
     raw_maestro_context = nullptr;
 #endif
-    // TODO, if(SIMIX_context_get_parallel_threshold() > 1) => choose dynamically
+    // TODO: choose dynamically when SIMIX_context_get_parallel_threshold() > 1
   }
 }
 

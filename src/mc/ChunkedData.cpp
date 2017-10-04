@@ -38,17 +38,15 @@ ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
       xbt_assert(simgrid::mc::mmu::split(page.address()).second == 0,
         "Not at the beginning of a page");
 
-        /* Adding another copy (and a syscall) will probably slow things a lot.
-           TODO, optimize this somehow (at least by grouping the syscalls)
-           if needed. Either:
-            - reduce the number of syscalls;
-            - let the application snapshot itself;
-            - move the segments in shared memory (this will break `fork` however).
-        */
+      /* Adding another copy (and a syscall) will probably slow things a lot.
+         TODO, optimize this somehow (at least by grouping the syscalls)
+         if needed. Either:
+         - reduce the number of syscalls
+         - let the application snapshot itself
+         - move the segments in shared memory (this will break `fork` however)
+      */
 
-        as.read_bytes(
-          buffer.data(), xbt_pagesize, page,
-          simgrid::mc::ProcessIndexDisabled);
+      as.read_bytes(buffer.data(), xbt_pagesize, page, simgrid::mc::ProcessIndexDisabled);
 
       pagenos_[i] = store_->store_page(buffer.data());
 

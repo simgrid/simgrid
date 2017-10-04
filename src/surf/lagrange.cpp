@@ -242,8 +242,6 @@ void lagrange_solve(lmm_system_t sys)
       if (var->bound >= 0) {
         XBT_DEBUG("Working on var (%p)", var);
         var->new_mu = new_mu(var);
-/*   dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error); */
-/*   XBT_DEBUG("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu)); */
         XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var, var->mu, var->new_mu);
         var->mu = var->new_mu;
 
@@ -259,8 +257,6 @@ void lagrange_solve(lmm_system_t sys)
       cnst = static_cast<lmm_constraint_t>(_cnst);
       XBT_DEBUG("Working on cnst (%p)", cnst);
       cnst->new_lambda = dichotomy(cnst->lambda, partial_diff_lambda, cnst, dichotomy_min_error);
-/*       dual_updated += (fabs(cnst->new_lambda-cnst->lambda)>dichotomy_min_error); */
-/*       XBT_DEBUG("dual_updated (%d) : %1.20f",dual_updated,fabs(cnst->new_lambda-cnst->lambda)); */
       XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
       cnst->lambda = cnst->new_lambda;
 
@@ -291,10 +287,6 @@ void lagrange_solve(lmm_system_t sys)
     if (not __check_feasible(cnst_list, var_list, 0))
       overall_modification = 1.0;
     XBT_DEBUG("Iteration %d: overall_modification : %f", iteration, overall_modification);
-    /*     if(not dual_updated) { */
-    /*       XBT_WARN("Could not improve the convergence at iteration %d. Drop it!",iteration); */
-    /*       break; */
-    /*     } */
   }
 
   __check_feasible(cnst_list, var_list, 1);
@@ -391,25 +383,20 @@ static double dichotomy(double init, double diff(double, void *), void *var_cnst
         min = middle;
         overall_error = max_diff - middle_diff;
         min_diff = middle_diff;
-/*   SHOW_EXPR(overall_error); */
       } else if (middle_diff > 0) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing max");
         max = middle;
         overall_error = max_diff - middle_diff;
         max_diff = middle_diff;
-/*   SHOW_EXPR(overall_error); */
       } else {
         overall_error = 0;
-/*   SHOW_EXPR(overall_error); */
       }
     } else if (fabs(min_diff) < 1e-20) {
       max = min;
       overall_error = 0;
-/*       SHOW_EXPR(overall_error); */
     } else if (fabs(max_diff) < 1e-20) {
       min = max;
       overall_error = 0;
-/*       SHOW_EXPR(overall_error); */
     } else if (min_diff > 0 && max_diff < 0) {
       XBT_CWARN(surf_lagrange_dichotomy, "The impossible happened, partial_diff(min) > 0 && partial_diff(max) < 0");
       xbt_abort();
@@ -541,7 +528,6 @@ double func_reno_fpi(lmm_variable_t var, double x)
             2.0 / (3.0 * var->sharing_weight * var->sharing_weight);
   if (res_fpi <= 0.0)
     return 0.0;
-/*   xbt_assert(res_fpi>0.0,"Don't call me with stupid values!"); */
   return sqrt(res_fpi);
 }
 

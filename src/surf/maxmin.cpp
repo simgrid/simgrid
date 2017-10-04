@@ -767,7 +767,6 @@ void lmm_solve(lmm_system_t sys)
   xbt_swag_foreach(_cnst, cnst_list) {
     lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
     xbt_swag_t elem_list  = &(cnst->enabled_element_set);
-    //XBT_DEBUG("Variable set : %d", xbt_swag_size(elem_list));
     xbt_swag_foreach(_elem, elem_list) {
       lmm_variable_t var = ((lmm_element_t)_elem)->variable;
       xbt_assert(var->sharing_weight > 0.0);
@@ -852,7 +851,6 @@ void lmm_solve(lmm_system_t sys)
         //If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is
         // saturated at each cycle)
         var->value = min_usage / var->sharing_weight;
-        // XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
         XBT_DEBUG("Setting var (%d) value to %f\n", var->id_int, var->value);
       } else {
          //If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
@@ -884,9 +882,6 @@ void lmm_solve(lmm_system_t sys)
               int index = (cnst->cnst_light-cnst_light_tab);
               XBT_DEBUG("index: %d \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f  ",
                          index,cnst_light_num, cnst->usage, cnst->remaining, cnst->bound);
-              //XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p "
-              //          "\t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ", index,cnst_light_num,
-              //          cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
               cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
               cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
               cnst_light_num--;
@@ -1045,7 +1040,6 @@ void lmm_enable_var(lmm_system_t sys, lmm_variable_t var){
   //When used within lmm_on_disabled_var, we would get an assertion fail, because transiently there can be variables
   // that are staged and could be activated.
   //Anyway, caller functions all call lmm_check_concurrency() in the end.
-  //  lmm_check_concurrency(sys);
 }
 
 void lmm_disable_var(lmm_system_t sys, lmm_variable_t var){
@@ -1114,7 +1108,6 @@ void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
   //We could get an assertion fail, because transiently there can be variables that are staged and could be activated.
   //And we need to go through all constraints of the disabled var before getting back a coherent state.
   //Anyway, caller functions all call lmm_check_concurrency() in the end.
-  //  lmm_check_concurrency(sys);
 }
 
 /* \brief update the weight of a variable, and enable/disable it.

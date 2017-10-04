@@ -167,7 +167,7 @@ int main(int argc, char **argv)
   unsigned int nb_var= TestClasses[testclass][1];
   unsigned int pw_base_limit= TestClasses[testclass][2];
   unsigned int pw_max_limit= TestClasses[testclass][3];
-  unsigned int max_share=2; //1<<(pw_base_limit/2+1);
+  unsigned int max_share    = 2; // 1<<(pw_base_limit/2+1)
 
   //If you want to test concurrency, you need nb_elem >> 2^pw_base_limit:
   unsigned int nb_elem= (1<<pw_base_limit)+(1<<(8*pw_max_limit/10));

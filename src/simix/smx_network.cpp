@@ -315,7 +315,8 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   /* otherwise set up a waiting timeout on the right side          */
   if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
-  } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
+  } else { /* we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host
+              fails */
     surf_action_t sleep = simcall->issuer->host->pimpl_cpu->sleep(timeout);
     sleep->setData(&*synchro);
 
@@ -546,7 +547,6 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_SRC_HOST_FAILURE:
           if (simcall->issuer == comm->src_proc)
             simcall->issuer->context->iwannadie = 1;
-          //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
           else
             SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
           break;
@@ -554,7 +554,6 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_DST_HOST_FAILURE:
           if (simcall->issuer == comm->dst_proc)
             simcall->issuer->context->iwannadie = 1;
-          //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
           else
             SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
           break;

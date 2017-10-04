@@ -729,7 +729,6 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 
   for (int cpt = 0; cpt < NB_ELEM; cpt++)
     *(int *) xbt_dynar_get_ptr(d, cpt) = cpt;
-  /*     xbt_dynar_set(d,cpt,&cpt); */
 
   for (int cpt = 0; cpt < NB_ELEM; cpt++)
     *(int *) xbt_dynar_get_ptr(d, cpt) = cpt;

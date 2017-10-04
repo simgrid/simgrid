@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -318,7 +318,6 @@ static int migration_rx_fun(int argc, char *argv[])
   std::string task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
   msg_task_t task       = MSG_task_create(task_name.c_str(), 0, 0, nullptr);
   msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
-  // xbt_assert(ret == MSG_OK);
   if(ret == MSG_HOST_FAILURE){
     // The DST has crashed, this is a problem has the VM since we are not sure whether SRC is considering that the VM
     // has been correctly migrated on the DST node
@@ -375,7 +374,6 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
 
     double clock = MSG_get_clock();
 
-    // total += calc_updated_pages(key, vm, dp, remaining, clock);
     total += get_computed(key, vm, dp, remaining, clock);
 
     dp->prev_remaining = remaining;
@@ -433,7 +431,6 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   if (vm->pimpl_vm_->dp_enabled) {
     double remaining = MSG_task_get_flops_amount(task);
     double clock = MSG_get_clock();
-    // double updated = calc_updated_pages(key, host, dp, remaining, clock);
     double updated = get_computed(key, vm, dp, remaining, clock); // was host instead of vm
 
     vm->pimpl_vm_->dp_updated_by_deleted_tasks += updated;
@@ -499,8 +496,6 @@ static sg_size_t get_updated_size(double computed, double dp_rate, double dp_cap
   double updated_size = computed * dp_rate;
   XBT_DEBUG("updated_size %f dp_rate %f", updated_size, dp_rate);
   if (updated_size > dp_cap) {
-    // XBT_INFO("mig-stage2.%d: %f bytes updated, but cap it with the working set size %f", stage2_round, updated_size,
-    //          dp_cap);
     updated_size = dp_cap;
   }
 

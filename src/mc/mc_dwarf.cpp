@@ -623,7 +623,7 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
 /** \brief Create a MC type object from a DIE
  *
  *  \param info current object info object
- *  \param DIE (for a given type);
+ *  \param DIE (for a given type)
  *  \param unit compilation unit of the current DIE
  *  \return MC representation of the type
  */
@@ -671,7 +671,7 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   if (type.type == DW_TAG_pointer_type)
     type.byte_size = sizeof(void*);
 
-  // Computation of the byte_size;
+  // Computation of the byte_size
   if (dwarf_hasattr_integrate(die, DW_AT_byte_size))
     type.byte_size = MC_dwarf_attr_integrate_uint(die, DW_AT_byte_size, 0);
   else if (type.type == DW_TAG_array_type
@@ -1189,8 +1189,8 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 
   // If there was no DWARF in the file, try to find it in a separate file.
   // Different methods might be used to store the DWARF informations:
-  //  * GNU NT_GNU_BUILD_ID;
-  //  * .gnu_debuglink.
+  //  * GNU NT_GNU_BUILD_ID
+  //  * .gnu_debuglink
   // See https://sourceware.org/gdb/onlinedocs/gdb/Separate-Debug-Files.html
   // for reference of what we are doing.
 

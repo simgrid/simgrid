@@ -28,7 +28,6 @@ public class XVM extends VM {
   public void setLoad(int load){  
     if (load >0) {
       this.setBound(this.getSpeed()*load/100);
-      //    this.getDaemon().setLoad(load);
       daemon.resume();
     } else{
       daemon.suspend();

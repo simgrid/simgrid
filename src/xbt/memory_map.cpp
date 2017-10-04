@@ -187,8 +187,6 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
      * 00602000-00603000 rw-p 00002000 00:28 1837264                            <complete-path-to-file>
      */
 
-    //fprintf(stderr,"%s", line);
-
     /* Wipeout the new line character */
     line[read - 1] = '\0';
 

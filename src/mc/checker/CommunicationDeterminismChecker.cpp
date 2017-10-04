@@ -390,7 +390,6 @@ void CommunicationDeterminismChecker::restoreState()
   /* Restore the initial state */
   simgrid::mc::session->restoreInitialState();
 
-  // int n = xbt_dynar_length(incomplete_communications_pattern);
   unsigned n = MC_smx_get_maxpid();
   assert(n == xbt_dynar_length(incomplete_communications_pattern));
   assert(n == xbt_dynar_length(initial_communications_pattern));
