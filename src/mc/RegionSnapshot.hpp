@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -161,16 +160,16 @@ public:
   RegionSnapshot(RegionSnapshot const&) = default;
   RegionSnapshot& operator=(RegionSnapshot const&) = default;
   RegionSnapshot(RegionSnapshot&& that)
+      : region_type_(that.region_type_)
+      , storage_type_(that.storage_type_)
+      , object_info_(that.object_info_)
+      , start_addr_(that.start_addr_)
+      , size_(that.size_)
+      , permanent_addr_(that.permanent_addr_)
+      , flat_data_(std::move(that.flat_data_))
+      , page_numbers_(std::move(that.page_numbers_))
+      , privatized_regions_(std::move(that.privatized_regions_))
   {
-    region_type_ = that.region_type_;
-    storage_type_ = that.storage_type_;
-    object_info_ = that.object_info_;
-    start_addr_ = that.start_addr_;
-    size_ = that.size_;
-    permanent_addr_ = that.permanent_addr_;
-    flat_data_ = std::move(that.flat_data_);
-    page_numbers_ = std::move(that.page_numbers_);
-    privatized_regions_ = std::move(that.privatized_regions_);
     that.clear();
   }
   RegionSnapshot& operator=(RegionSnapshot&& that)
