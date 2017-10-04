@@ -1,6 +1,6 @@
 /* str.h - XBT string related functions.                                    */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,21 +26,12 @@ SG_BEGIN_DECL()
  * @{
  */
 
-/* Trim related functions */
-XBT_PUBLIC(void) xbt_str_rtrim(char *s, const char *char_list);
-XBT_PUBLIC(void) xbt_str_ltrim(char *s, const char *char_list);
-XBT_PUBLIC(void) xbt_str_trim(char *s, const char *char_list);
-
 XBT_PUBLIC(xbt_dynar_t) xbt_str_split(const char *s, const char *sep);
 XBT_PUBLIC(xbt_dynar_t) xbt_str_split_quoted(const char *s);
 XBT_PUBLIC(xbt_dynar_t) xbt_str_split_quoted_in_place(char *s);
 
-XBT_PUBLIC(xbt_dynar_t) xbt_str_split_str(const char *s, const char *sep);
-
 XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join_array(const char *const *strs, const char *sep);
-
-XBT_PUBLIC(void) xbt_str_subst(char *str, char from, char to, int amount);
 
 XBT_PUBLIC(long int) xbt_str_parse_int(const char* str, const char* error_msg);
 XBT_PUBLIC(double) xbt_str_parse_double(const char* str, const char* error_msg);

@@ -1,6 +1,6 @@
 /* xbt_str.cpp - various helping functions to deal with strings               */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,134 +10,6 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/str.h"            /* headers of these functions */
-
-/**  @brief Strip whitespace (or other characters) from the end of a string.
- *
- * Strips the whitespaces from the end of s.
- * By default (when char_list=nullptr), these characters get stripped:
- *
- *  - " "    (ASCII 32  (0x20))  space.
- *  - "\t"    (ASCII 9  (0x09))  tab.
- *  - "\n"    (ASCII 10  (0x0A))  line feed.
- *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  nullptr.
- *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
- *
- * @param s The string to strip. Modified in place.
- * @param char_list A string which contains the characters you want to strip.
- */
-void xbt_str_rtrim(char *s, const char *char_list)
-{
-  char *cur = s;
-  const char *__char_list = " \t\n\r\x0B";
-  char white_char[256] = { 1, 0 };
-
-  if (not s)
-    return;
-
-  if (not char_list) {
-    while (*__char_list) {
-      white_char[(unsigned char) *__char_list++] = 1;
-    }
-  } else {
-    while (*char_list) {
-      white_char[(unsigned char) *char_list++] = 1;
-    }
-  }
-
-  while (*cur)
-    ++cur;
-
-  while ((cur >= s) && white_char[(unsigned char) *cur])
-    --cur;
-
-  *++cur = '\0';
-}
-
-/**  @brief Strip whitespace (or other characters) from the beginning of a string.
- *
- * Strips the whitespaces from the beginning of s.
- * By default (when char_list=nullptr), these characters get stripped:
- *
- *  - " "    (ASCII 32  (0x20))  space.
- *  - "\t"    (ASCII 9  (0x09))  tab.
- *  - "\n"    (ASCII 10  (0x0A))  line feed.
- *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  nullptr.
- *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
- *
- * @param s The string to strip. Modified in place.
- * @param char_list A string which contains the characters you want to strip.
- */
-void xbt_str_ltrim(char *s, const char *char_list)
-{
-  char *cur = s;
-  const char *__char_list = " \t\n\r\x0B";
-  char white_char[256] = { 1, 0 };
-
-  if (not s)
-    return;
-
-  if (not char_list) {
-    while (*__char_list) {
-      white_char[(unsigned char) *__char_list++] = 1;
-    }
-  } else {
-    while (*char_list) {
-      white_char[(unsigned char) *char_list++] = 1;
-    }
-  }
-
-  while (*cur && white_char[(unsigned char) *cur])
-    ++cur;
-
-  memmove(s, cur, strlen(cur) + 1);
-}
-
-/**  @brief Strip whitespace (or other characters) from the end and the beginning of a string.
- *
- * Strips the whitespaces from both the beginning and the end of s.
- * By default (when char_list=nullptr), these characters get stripped:
- *
- *  - " "    (ASCII 32  (0x20))  space.
- *  - "\t"    (ASCII 9  (0x09))  tab.
- *  - "\n"    (ASCII 10  (0x0A))  line feed.
- *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  nullptr.
- *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
- *
- * @param s The string to strip.
- * @param char_list A string which contains the characters you want to strip.
- */
-void xbt_str_trim(char *s, const char *char_list)
-{
-  if (not s)
-    return;
-
-  xbt_str_rtrim(s, char_list);
-  xbt_str_ltrim(s, char_list);
-}
-
-/** @brief Substitutes a char for another in a string
- *
- * @param str the string to modify
- * @param from char to search
- * @param to char to put instead
- * @param occurrence number of changes to do (=0 means all)
- */
-void xbt_str_subst(char *str, char from, char to, int occurence)
-{
-  char *p = str;
-  while (*p != '\0') {
-    if (*p == from) {
-      *p = to;
-      if (occurence == 1)
-        return;
-      occurence--;
-    }
-    p++;
-  }
-}
 
 /** @brief Splits a string into a dynar of strings
  *
@@ -193,52 +65,6 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
     p = ++q;
   }
 
-  return res;
-}
-
-/**
- * \brief This functions splits a string after using another string as separator
- * For example Anot not B!not C split after !! will return the dynar {A,B,C}
- * \return An array of dynars containing the string tokens
- */
-xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
-{
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-
-  const char* p = s;
-  const char* q = s;
-  int done      = 0;
-
-  if (s[0] == '\0')
-    return res;
-  if (sep[0] == '\0') {
-    s = xbt_strdup(s);
-    xbt_dynar_push(res, &s);
-    return res;
-  }
-
-  while (not done) {
-    char *to_push;
-    // get the start of the first occurrence of the substring
-    q = strstr(p, sep);
-    //if substring was not found add the entire string
-    if (nullptr == q) {
-      int v   = strlen(p);
-      to_push = (char*) xbt_malloc(v + 1);
-      memcpy(to_push, p, v);
-      to_push[v] = '\0';
-      xbt_dynar_push(res, &to_push);
-      done = 1;
-    } else {
-      //get the appearance
-      to_push = (char*) xbt_malloc(q - p + 1);
-      memcpy(to_push, p, q - p);
-      //add string terminator
-      to_push[q - p] = '\0';
-      xbt_dynar_push(res, &to_push);
-      p = q + strlen(sep);
-    }
-  }
   return res;
 }
 
@@ -495,26 +321,6 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_
   mytest("Mixed quotes", "\"toto' 'tutu\" tata", "toto' 'tutuXXXtata");
   mytest("Backslashed quotes", "\\'toto tutu\\' tata", "'totoXXXtutu'XXXtata");
   mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata", "toto 'tutuXXXtata");
-}
-
-#define mytest_str(name, input, separator, expected)                                                                   \
-  xbt_test_add(name);                                                                                                  \
-  d = xbt_str_split_str(input, separator);                                                                             \
-  s = xbt_str_join(d, "XXX");                                                                                          \
-  xbt_test_assert(not strcmp(s, expected), "Input (%s) leads to (%s) instead of (%s)", input, s, expected);            \
-  free(s);                                                                                                             \
-  xbt_dynar_free(&d);
-
-XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_split_str")
-{
-  xbt_dynar_t d;
-  char *s;
-
-  mytest_str("Empty string and separator", "", "", "");
-  mytest_str("Empty string", "", "##", "");
-  mytest_str("Empty separator", "toto", "", "toto");
-  mytest_str("String with no separator in it", "toto", "##", "toto");
-  mytest_str("Basic test", "toto##tutu", "##", "totoXXXtutu");
 }
 
 #define test_parse_error(function, name, variable, str)                 \
