@@ -32,6 +32,7 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
  - Removed unused functions:
    - xbt/str.h: xbt_str_split_str(), xbt_str_subst(), xbt_str_ltrim(),
        xbt_str_rtrim(), xbt_str_trim().
+   - xbt/xbt_os_thread.h: xbt_os_thread_cancel(), xbt_os_thread_detach().
 
  Misc
  - Removed header files obsolete since SimGrid 3.12:

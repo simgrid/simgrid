@@ -52,7 +52,6 @@ static xbt_os_mutex_t next_sem_ID_lock;
 
 typedef struct xbt_os_thread_ {
   pthread_t t;
-  int detached;
   char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
@@ -77,14 +76,6 @@ static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
   free(thread);
 }
 
-/* callback: termination */
-static void _os_thread_ex_terminate(xbt_ex_t * e)
-{
-  xbt_ex_display(e);
-  xbt_abort();
-  /* FIXME: there should be a configuration variable to choose to kill everyone or only this one */
-}
-
 void xbt_os_thread_mod_preinit(void)
 {
   if (thread_mod_inited)
@@ -95,7 +86,6 @@ void xbt_os_thread_mod_preinit(void)
 
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
   main_thread->name = NULL;
-  main_thread->detached = 0;
   main_thread->name = xbt_strdup("main");
   main_thread->param = NULL;
   main_thread->start_routine = NULL;
@@ -151,16 +141,12 @@ static void *wrapper_start_routine(void *s)
   int errcode = pthread_setspecific(xbt_self_thread_key, t);
   xbt_assert(errcode == 0, "pthread_setspecific failed for xbt_self_thread_key");
 
-  void *res = t->start_routine(t->param);
-  if (t->detached)
-    xbt_os_thread_free_thread_data(t);
-  return res;
+  return t->start_routine(t->param);
 }
 
 xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_routine, void *param, void *extra_data)
 {
   xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
-  res_thread->detached = 0;
   res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
@@ -276,21 +262,10 @@ void* xbt_os_thread_get_specific(xbt_os_thread_key_t key)
   return pthread_getspecific(key);
 }
 
-void xbt_os_thread_detach(xbt_os_thread_t thread)
-{
-  thread->detached = 1;
-  pthread_detach(thread->t);
-}
-
 #include <sched.h>
 void xbt_os_thread_yield(void)
 {
   sched_yield();
-}
-
-void xbt_os_thread_cancel(xbt_os_thread_t t)
-{
-  pthread_cancel(t->t);
 }
 
 /****** mutex related functions ******/
