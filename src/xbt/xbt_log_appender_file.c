@@ -15,25 +15,16 @@ static void append_file(xbt_log_appender_t this_, char *str) {
   fputs(str, (FILE *) this_->data);
 }
 
-static void smpi_append_file(xbt_log_appender_t this_, char *str) {
-  fputs(str, (FILE *) this_->data);
-}
-
 static void free_(xbt_log_appender_t this_) {
   if (this_->data != stderr)
     fclose(this_->data);
 }
 
-XBT_LOG_EXTERNAL_CATEGORY(smpi); // To detect if SMPI is inited
-
 xbt_log_appender_t xbt_log_appender_file_new(char *arg) {
 
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
-  if (_XBT_LOGV(smpi).initialized) // HACK to detect if we run in SMPI mode. Relies on MAIN__ source disposition
-    res->do_append = &smpi_append_file;
-  else
-    res->do_append = &append_file;
-  res->free_       = &free_;
+  res->do_append         = &append_file;
+  res->free_             = &free_;
   if (arg)
     res->data = (void *) fopen(arg, "w");
   else
@@ -93,10 +84,6 @@ static void append2_file(xbt_log_appender_t this_, char *str) {
    }
 }
 
-static void smpi_append2_file(xbt_log_appender_t this_, char *str) {
-  append2_file(this_,str);
-}
-
 static void free_append2_(xbt_log_appender_t this_) {
   FILE* f=((xbt_log_append2_file_t)(this_->data))->file;
   if (f)
@@ -109,11 +96,8 @@ static void free_append2_(xbt_log_appender_t this_) {
 //For split, replace %  in the file by the current count
 xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
 
-  xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
-  if (_XBT_LOGV(smpi).initialized) // HACK to detect if we run in SMPI mode. Relies on MAIN__ source disposition
-    res->do_append = &smpi_append2_file;
-  else
-    res->do_append            = &append2_file;
+  xbt_log_appender_t res      = xbt_new0(s_xbt_log_appender_t, 1);
+  res->do_append              = &append2_file;
   res->free_                  = &free_append2_;
   xbt_log_append2_file_t data = xbt_new0(struct xbt_log_append2_file_s, 1);
   xbt_assert(arg);
