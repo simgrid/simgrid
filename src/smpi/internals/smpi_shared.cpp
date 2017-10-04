@@ -232,8 +232,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
    * We cannot use a same file for the two type of calls, since the first one needs to be
    * opened in a hugetlbfs mount point whereas the second needs to be a "classical" file. */
   if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
-    const char *const array[] = {huge_page_mount_point, "simgrid-shmalloc-XXXXXX", nullptr};
-    char *huge_page_filename = xbt_str_join_array(array, "/");
+    char* huge_page_filename               = bprintf("%s/simgrid-shmalloc-XXXXXX", huge_page_mount_point);
     smpi_shared_malloc_bogusfile_huge_page = mkstemp(huge_page_filename);
     XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename);
     unlink(huge_page_filename);
