@@ -70,11 +70,12 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-struct HeapLocation {
+class HeapLocation {
+public:
   int block = 0;
   int fragment = 0;
 
-  HeapLocation() {}
+  HeapLocation() = default;
   HeapLocation(int block, int fragment = 0) : block(block), fragment(fragment) {}
 
   bool operator==(HeapLocation const& that) const
@@ -97,16 +98,16 @@ HeapLocationPair makeHeapLocationPair(int block1, int fragment1, int block2, int
   }};
 }
 
-struct HeapArea : public HeapLocation {
+class HeapArea : public HeapLocation {
+public:
   bool valid = false;
-  int block = 0;
-  int fragment = 0;
-  HeapArea() {}
+  HeapArea() = default;
   explicit HeapArea(int block) : valid(true), block(block) {}
   HeapArea(int block, int fragment) : valid(true), block(block), fragment(fragment) {}
 };
 
-struct ProcessComparisonState {
+class ProcessComparisonState {
+public:
   std::vector<simgrid::mc::IgnoredHeapRegion>* to_ignore = nullptr;
   std::vector<HeapArea> equals_to;
   std::vector<simgrid::mc::Type*> types;
@@ -123,8 +124,8 @@ namespace {
  */
 template<class X> struct hash : public std::hash<X> {};
 
-template<class X, class Y>
-struct hash<std::pair<X,Y>> {
+template <class X, class Y> class hash<std::pair<X, Y>> {
+public:
   std::size_t operator()(std::pair<X,Y>const& x) const
   {
     struct hash<X> h1;
@@ -135,8 +136,8 @@ struct hash<std::pair<X,Y>> {
 
 }
 
-
-struct StateComparator {
+class StateComparator {
+public:
   s_xbt_mheap_t std_heap_copy;
   std::size_t heaplimit;
   std::array<ProcessComparisonState, 2> processStates;
