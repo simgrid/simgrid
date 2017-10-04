@@ -383,26 +383,29 @@ void LivenessChecker::run()
     }
 
     std::shared_ptr<VisitedPair> reached_pair;
-    if (current_pair->automaton_state->type == 1 && not current_pair->exploration_started &&
-        (reached_pair = this->insertAcceptancePair(current_pair.get())) == nullptr) {
-      this->showAcceptanceCycle(current_pair->depth);
-      throw simgrid::mc::LivenessError();
+    if (current_pair->automaton_state->type == 1 && not current_pair->exploration_started) {
+      reached_pair = this->insertAcceptancePair(current_pair.get());
+      if (reached_pair == nullptr) {
+        this->showAcceptanceCycle(current_pair->depth);
+        throw simgrid::mc::LivenessError();
+      }
     }
 
     /* Pair already visited ? stop the exploration on the current path */
     int visited_num = -1;
-    if ((not current_pair->exploration_started) &&
-        (visited_num = this->insertVisitedPair(reached_pair, current_pair.get())) != -1) {
-      if (dot_output != nullptr){
-        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-          this->previousPair_, visited_num,
-          this->previousRequest_.c_str());
-        fflush(dot_output);
+    if (not current_pair->exploration_started) {
+      visited_num = this->insertVisitedPair(reached_pair, current_pair.get());
+      if (visited_num != -1) {
+        if (dot_output != nullptr) {
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", this->previousPair_, visited_num,
+                  this->previousRequest_.c_str());
+          fflush(dot_output);
+        }
+        XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
+        current_pair->requests = 0;
+        this->backtrack();
+        continue;
       }
-      XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
-      current_pair->requests = 0;
-      this->backtrack();
-      continue;
     }
 
     smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get());

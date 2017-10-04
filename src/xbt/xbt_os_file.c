@@ -1,6 +1,6 @@
 /* xbt_os_file.c -- portable interface to file-related functions            */
 
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -53,7 +53,9 @@ ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
     }
     (*buf)[i] = ch;
     i++;
-  } while (ch != '\n' && (ch = getc(stream)) != EOF);
+    if (ch == '\n')
+      break;
+  } while ((ch = getc(stream)) != EOF);
 
   if (i == *n) {
     *n += 1;

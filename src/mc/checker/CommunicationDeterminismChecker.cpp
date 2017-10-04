@@ -441,8 +441,12 @@ void CommunicationDeterminismChecker::main()
     /* Update statistics */
     mc_model_checker->visited_states++;
 
-    if (stack_.size() <= (std::size_t)_sg_mc_max_depth && (req = MC_state_get_request(state)) != nullptr &&
-        (visited_state == nullptr)) {
+    if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
+      req = MC_state_get_request(state);
+    else
+      req = nullptr;
+
+    if (req != nullptr && visited_state == nullptr) {
 
       int req_num = state->transition.argument;
 
@@ -480,9 +484,12 @@ void CommunicationDeterminismChecker::main()
        * with the initial pattern. */
       bool compare_snapshots = all_communications_are_finished() && this->initial_communications_pattern_done;
 
-      if (_sg_mc_max_visited_states == 0 ||
-          (visited_state = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), compare_snapshots)) ==
-              nullptr) {
+      if (_sg_mc_max_visited_states != 0)
+        visited_state = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), compare_snapshots);
+      else
+        visited_state = nullptr;
+
+      if (visited_state == nullptr) {
 
         /* Get enabled actors and insert them in the interleave set of the next state */
         for (auto& actor : mc_model_checker->process().actors())
