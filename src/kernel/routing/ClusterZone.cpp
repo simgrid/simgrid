@@ -61,14 +61,14 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   if (not dst->isRouter()) { // No specific link for router
 
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
-        privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
+        privateLinks_.at(dst->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0));
     if (info.second) { // link down
       route->link_list->push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }
     if (hasLimiter_) { // limiter for receiver
-      info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
+      info = privateLinks_.at(dst->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
       route->link_list->push_back(info.first);
     }
   }

@@ -180,12 +180,12 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
 
   if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
     current_as->linkCountPerNode_++;
-    current_as->hasLoopback_ = 1;
+    current_as->hasLoopback_ = true;
   }
 
   if(cluster->limiter_link > 0){
     current_as->linkCountPerNode_++;
-    current_as->hasLimiter_ = 1;
+    current_as->hasLimiter_ = true;
   }
 
   for (int const& i : *cluster->radicals) {
@@ -255,15 +255,16 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
       linkUp   = linkDown;
       current_as->privateLinks_.insert(
-          {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_, {linkUp, linkDown}});
+          {rankId * current_as->linkCountPerNode_ + (current_as->hasLoopback_ ? 1 : 0), {linkUp, linkDown}});
     }
 
     //call the cluster function that adds the others links
     if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
       static_cast<FatTreeZone*>(current_as)->addProcessingNode(i);
     } else {
-      current_as->create_links_for_node(cluster, i, rankId,
-          rankId*current_as->linkCountPerNode_ + current_as->hasLoopback_ + current_as->hasLimiter_ );
+      current_as->create_links_for_node(cluster, i, rankId, rankId * current_as->linkCountPerNode_ +
+                                                                (current_as->hasLoopback_ ? 1 : 0) +
+                                                                (current_as->hasLimiter_ ? 1 : 0));
     }
     rankId++;
   }

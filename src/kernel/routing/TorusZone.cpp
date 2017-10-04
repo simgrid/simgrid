@@ -179,7 +179,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info;
 
     if (hasLimiter_) { // limiter for sender
-      info = privateLinks_.at(nodeOffset + hasLoopback_);
+      info = privateLinks_.at(nodeOffset + (hasLoopback_ ? 1 : 0));
       route->link_list->push_back(info.first);
     }
 
