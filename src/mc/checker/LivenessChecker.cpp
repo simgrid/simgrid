@@ -392,9 +392,8 @@ void LivenessChecker::run()
     }
 
     /* Pair already visited ? stop the exploration on the current path */
-    int visited_num = -1;
     if (not current_pair->exploration_started) {
-      visited_num = this->insertVisitedPair(reached_pair, current_pair.get());
+      int visited_num = this->insertVisitedPair(reached_pair, current_pair.get());
       if (visited_num != -1) {
         if (dot_output != nullptr) {
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", this->previousPair_, visited_num,
