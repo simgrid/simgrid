@@ -378,16 +378,13 @@ static void handle_task(node_t node, msg_task_t task) {
       // add lower elements
       j = NAMESPACE_SIZE/2-1;
       for (i=NAMESPACE_SIZE/2-1; i>=0; i--) {
-        if (min<0) {
+        if (min < 0 || curr_namespace_set[j] > task_namespace_set[min]) {
           node->namespace_set[i] = curr_namespace_set[j];
           j--;
         } else if (curr_namespace_set[j] == task_namespace_set[min]) {
           node->namespace_set[i] = curr_namespace_set[j];
           j--;
           min--;
-        } else if (curr_namespace_set[j] > task_namespace_set[min]) {
-          node->namespace_set[i] = curr_namespace_set[j];
-          j--;
         } else {
           node->namespace_set[i] = task_namespace_set[min];
           min--;
@@ -401,19 +398,16 @@ static void handle_task(node_t node, msg_task_t task) {
          node->namespace_set[i] = curr_namespace_set[j];
          j++;
         } else if (max >= 0){
-          if (curr_namespace_set[j] == -1) {
+          if (curr_namespace_set[j] == -1 || curr_namespace_set[j] > task_namespace_set[max]) {
             node->namespace_set[i] = task_namespace_set[max];
             max++;
           } else if (curr_namespace_set[j] == task_namespace_set[max]) {
             node->namespace_set[i] = curr_namespace_set[j];
             j++;
             max++;
-          } else if (curr_namespace_set[j] < task_namespace_set[max]) {
+          } else {
             node->namespace_set[i] = curr_namespace_set[j];
             j++;
-          } else {
-            node->namespace_set[i] = task_namespace_set[max];
-            max++;
           }
         }
       }
