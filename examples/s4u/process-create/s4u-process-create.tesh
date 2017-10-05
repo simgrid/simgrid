@@ -1,0 +1,4 @@
+#! ./tesh
+
+p Start remote processes 
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-process-create$EXEEXT ${srcdir:=.}/small_platform.xml 
