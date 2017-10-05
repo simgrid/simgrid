@@ -57,7 +57,13 @@ documentation, but it should remain readable directly.
    @ref examples/s4u/async-waitany/s4u-async-waitany.cpp\n
    The @ref simgrid::s4u::Comm::wait_any() function is useful when you want to block
    until one activity of the set completes, no matter which terminates
-   first.   
+   first. 
+
+ @section msg_ex_process Acting on Processes
+
+  - <b>Creating processes</b>. 
+    @ref examples/s4u/process-create/s4u-process-create.cpp \n
+    Most processes are started from the deployment XML file.    
 
 @section s4u_ex_actors Acting on Actors
 
