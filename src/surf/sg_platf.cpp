@@ -236,7 +236,7 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
 
       auto as_cluster = static_cast<ClusterZone*>(current_as);
-      as_cluster->privateLinks_.insert({rankId * as_cluster->linkCountPerNode_, {linkUp, linkDown}});
+      as_cluster->privateLinks_.insert({as_cluster->nodePosition(rankId), {linkUp, linkDown}});
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -254,17 +254,14 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
       sg_platf_new_link(&link);
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
       linkUp   = linkDown;
-      current_as->privateLinks_.insert(
-          {rankId * current_as->linkCountPerNode_ + (current_as->hasLoopback_ ? 1 : 0), {linkUp, linkDown}});
+      current_as->privateLinks_.insert({current_as->nodePositionWithLoopback(rankId), {linkUp, linkDown}});
     }
 
     //call the cluster function that adds the others links
     if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
       static_cast<FatTreeZone*>(current_as)->addProcessingNode(i);
     } else {
-      current_as->create_links_for_node(cluster, i, rankId, rankId * current_as->linkCountPerNode_ +
-                                                                (current_as->hasLoopback_ ? 1 : 0) +
-                                                                (current_as->hasLimiter_ ? 1 : 0));
+      current_as->create_links_for_node(cluster, i, rankId, current_as->nodePositionWithLimiter(rankId));
     }
     rankId++;
   }

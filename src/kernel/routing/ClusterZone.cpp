@@ -29,7 +29,7 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   if ((src->id() == dst->id()) && hasLoopback_) {
     xbt_assert(not src->isRouter(), "Routing from a cluster private router to itself is meaningless");
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePosition(src->id()));
     route->link_list->push_back(info.first);
     if (lat)
       *lat += info.first->latency();
@@ -38,13 +38,11 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   if (not src->isRouter()) { // No private link for the private router
     if (hasLimiter_) { // limiter for sender
-      std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
-          privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
+      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(src->id()));
       route->link_list->push_back(info.first);
     }
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
-        privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLimiter(src->id()));
     if (info.first) { // link up
       route->link_list->push_back(info.first);
       if (lat)
@@ -60,15 +58,14 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   if (not dst->isRouter()) { // No specific link for router
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
-        privateLinks_.at(dst->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLimiter(dst->id()));
     if (info.second) { // link down
       route->link_list->push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }
     if (hasLimiter_) { // limiter for receiver
-      info = privateLinks_.at(dst->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
+      info = privateLinks_.at(nodePositionWithLoopback(dst->id()));
       route->link_list->push_back(info.first);
     }
   }

@@ -290,7 +290,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
            dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePosition(src->id()));
 
     route->link_list->push_back(info.first);
     if (latency)
@@ -318,8 +318,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
     *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
 
   if (hasLimiter_) { // limiter for sender
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
-        privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(src->id()));
     route->link_list->push_back(info.first);
   }
 
@@ -369,8 +368,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   }
 
   if (hasLimiter_) { // limiter for receiver
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info =
-        privateLinks_.at(dst->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(dst->id()));
     route->link_list->push_back(info.first);
   }
 

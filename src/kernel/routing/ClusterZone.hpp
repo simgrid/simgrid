@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -81,6 +81,10 @@ public:
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {linkUp, linkDown} */
   std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> privateLinks_;
+
+  int nodePosition(int id) { return id * linkCountPerNode_; }
+  int nodePositionWithLoopback(int id) { return nodePosition(id) + (hasLoopback_ ? 1 : 0); }
+  int nodePositionWithLimiter(int id) { return nodePositionWithLoopback(id) + (hasLimiter_ ? 1 : 0); }
 
   surf::LinkImpl* backbone_      = nullptr;
   void* loopback_                = nullptr;
