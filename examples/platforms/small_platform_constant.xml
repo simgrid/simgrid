@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4.1">
-  <zone id="zone0" routing="Full">
+  <zone id="zone0" routing="None">
     <host id="Tremblay" speed="98.095Mf"/>
     <host id="Jupiter" speed="76.296Mf"/>
     <host id="Fafard" speed="76.296Mf"/>
