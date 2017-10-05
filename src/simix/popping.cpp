@@ -24,12 +24,12 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
     XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall->call), (int)simcall->call,
         simcall->issuer->name.c_str(), simcall->issuer);
     simcall->issuer->simcall.call = SIMCALL_NONE;
+#if 0
     /* This check should be useless and slows everyone. Reactivate if you see something weird in process scheduling. */
-    if (0) {
-      if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), simcall->issuer) !=
-          end(simix_global->process_to_run))
-        DIE_IMPOSSIBLE;
-    }
+    if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), simcall->issuer) !=
+        end(simix_global->process_to_run))
+      DIE_IMPOSSIBLE;
+#endif
     simix_global->process_to_run.push_back(simcall->issuer);
   }
 }
