@@ -1126,6 +1126,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
   examples/platforms/small_platform.lua
+  examples/platforms/small_platform_constant.xml
   examples/platforms/small_platform_fatpipe.xml
   examples/platforms/small_platform_one_link_routes.xml
   examples/platforms/small_platform_with_failures.xml
