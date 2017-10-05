@@ -12,6 +12,8 @@
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "xbt/Extendable.hpp"
 
+#include <atomic>
+
 /**************** datatypes **********************************/
 /**************************** Host Extension *********************************/
 namespace simgrid {
@@ -90,7 +92,7 @@ public:
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   int debug_multiple_use;       /* whether we want an error message when reusing the same Task for 2 things */
-  unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
+  std::atomic_int_fast32_t sent_msg; /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
 } s_MSG_Global_t;
