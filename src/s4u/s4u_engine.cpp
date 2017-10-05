@@ -32,11 +32,11 @@ Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see
 
 Engine::Engine(int *argc, char **argv) {
   xbt_assert(s4u::Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
-  s4u::Engine::instance_ = this;
-  pimpl                  = new kernel::EngineImpl();
-
   TRACE_global_init();
   SIMIX_global_init(argc, argv);
+
+  pimpl                  = new kernel::EngineImpl();
+  s4u::Engine::instance_ = this;
 }
 
 Engine::~Engine()
@@ -54,6 +54,7 @@ Engine* Engine::getInstance()
 
 void Engine::shutdown() {
   delete s4u::Engine::instance_;
+  s4u::Engine::instance_ = nullptr;
 }
 
 double Engine::getClock()
