@@ -34,7 +34,6 @@ void simgrid::kernel::activity::SleepImpl::post()
     switch (surf_sleep->getState()) {
       case simgrid::surf::Action::State::failed:
         simcall->issuer->context->iwannadie = 1;
-        // SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         state = SIMIX_SRC_HOST_FAILURE;
         break;
 

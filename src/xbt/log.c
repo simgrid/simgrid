@@ -280,12 +280,6 @@ void xbt_log_init(int *argc, char **argv)
   unsigned help_requested = 0;  /* 1: logs; 2: categories */
   int j                   = 1;
 
-  /* uncomment to set the LOG category to debug directly */
-  if (0) {
-    _XBT_LOGV(log).threshold = xbt_log_priority_debug;
-  }
-  xbt_log_connect_categories();
-
   /* Set logs and init log submodule */
   for (int i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--log=", strlen("--log="))) {

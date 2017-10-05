@@ -95,8 +95,6 @@ double VMModel::nextOccuringEvent(double now)
                               ->value; // this is X1 in comment above, what this VM got in the sharing on the PM
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->pimpl_vm_->getPm()->getCname());
 
-    // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
-    // cpu_cas01->constraint->bound = solved_value;
     xbt_assert(cpu->model() == surf_cpu_model_vm);
     lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
     lmm_update_constraint_bound(vcpu_system, cpu->constraint(), virt_overhead * solved_value);

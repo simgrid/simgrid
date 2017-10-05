@@ -1221,11 +1221,11 @@ static void lmm_update_modified_set(lmm_system_t sys, lmm_constraint_t cnst)
  */
 static void lmm_remove_all_modified_set(lmm_system_t sys)
 {
-  //We cleverly un-flag all variables just by incrementing sys->visited_counter
-  //In effect, the var->visited value will no more be equal to sys->visited counter
-  //To be clean, when visited counter has wrapped around, we force these var->visited values so that variables that
-  //were in the modified a long (long long) time ago are not wrongly skipped here, which would lead to very nasty bugs
-  //(i.e. not readibily reproducible, and requiring a lot of run time before happening).
+  // We cleverly un-flag all variables just by incrementing sys->visited_counter
+  // In effect, the var->visited value will no more be equal to sys->visited counter
+  // To be clean, when visited counter has wrapped around, we force these var->visited values so that variables that
+  // were in the modified a long long time ago are not wrongly skipped here, which would lead to very nasty bugs
+  // (i.e. not readibily reproducible, and requiring a lot of run time before happening).
   if (++sys->visited_counter == 1) {
     /* the counter wrapped around, reset each variable->visited */
   void *_var;
