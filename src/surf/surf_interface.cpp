@@ -848,48 +848,5 @@ double Action::getRemainsNoUpdate()
   return remains_;
 }
 
-//FIXME split code in the right places
-void Action::updateRemainingLazy(double now)
-{
-  double delta = 0.0;
-
-  if (getModel() == surf_network_model) {
-    if (suspended_ != 0)
-      return;
-  } else {
-    xbt_assert(stateSet_ == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
-    xbt_assert(sharingWeight_ > 0, "You're updating an action that seems suspended.");
-  }
-
-  delta = now - lastUpdate_;
-
-  if (remains_ > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, remains_, lastUpdate_);
-    double_update(&remains_, lastValue_ * delta, sg_surf_precision*sg_maxmin_precision);
-
-    if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
-      simgrid::surf::Resource *cpu = static_cast<simgrid::surf::Resource*>(
-        lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->cname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
-    }
-    XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
-  }
-
-  if (getModel() == surf_network_model) {
-    if (maxDuration_ != NO_MAX_DURATION)
-      double_update(&maxDuration_, delta, sg_surf_precision);
-
-    //FIXME: duplicated code
-    if (((remains_ <= 0) && (lmm_get_variable_weight(getVariable()) > 0)) ||
-        ((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0))) {
-      finish(Action::State::done);
-      heapRemove(getModel()->getActionHeap());
-    }
-  }
-
-  lastUpdate_ = now;
-  lastValue_ = lmm_variable_getvalue(getVariable());
-}
-
 }
 }
