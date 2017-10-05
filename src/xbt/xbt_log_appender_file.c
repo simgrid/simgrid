@@ -7,9 +7,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
-#include "xbt/sysdep.h"
 #include "src/xbt/log_private.h"
+#include "xbt/sysdep.h"
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
 static void append_file(xbt_log_appender_t this_, char *str) {
   fputs(str, (FILE *) this_->data);
@@ -25,10 +27,13 @@ xbt_log_appender_t xbt_log_appender_file_new(char *arg) {
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
   res->do_append         = &append_file;
   res->free_             = &free_;
-  if (arg)
+  if (arg) {
     res->data = (void *) fopen(arg, "w");
-  else
+    if (res->data == NULL)
+      xbt_die("Cannot open file: %s: %s", arg, strerror(errno));
+  } else {
     res->data = (void *) stderr;
+  }
   return res;
 }
 
@@ -46,9 +51,11 @@ typedef struct xbt_log_append2_file_s* xbt_log_append2_file_t;
 static void open_append2_file(xbt_log_append2_file_t data){
   if(data->count<0) {
     //Roll
-    if(!data->file)
+    if (!data->file) {
       data->file= fopen(data->filename, "w");
-    else{
+      if (data->file == NULL)
+        xbt_die("Cannot open file: %s: %s", data->filename, strerror(errno));
+    } else {
       fputs(APPEND2_END_TOKEN_CLEAR,data->file);
       fseek(data->file,0,SEEK_SET);
     }
@@ -66,7 +73,9 @@ static void open_append2_file(xbt_log_append2_file_t data){
     snprintf(newname,511,"%s%i%s",pre,data->count,post);
     data->count++;
     data->file= fopen(newname, "w");
-    xbt_assert(data->file);
+    if (data->file == NULL)
+      xbt_die("Cannot open file: %s: %s", newname, strerror(errno));
+    xbt_free(pre);
   }
 }
 
@@ -83,10 +92,13 @@ static void append2_file(xbt_log_appender_t this_, char *str) {
    }
 }
 
-static void free_append2_(xbt_log_appender_t this_) {
-  FILE* f=((xbt_log_append2_file_t)(this_->data))->file;
-  if (f)
-    fclose(f);
+static void free_append2_(xbt_log_appender_t this_)
+{
+  xbt_log_append2_file_t data = this_->data;
+  if (data->file)
+    fclose(data->file);
+  xbt_free(data->filename);
+  xbt_free(data);
 }
 
 

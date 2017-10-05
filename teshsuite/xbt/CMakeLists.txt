@@ -31,8 +31,10 @@ foreach(x heap_bench log_large parallel_log_crashtest parmap_test) #mallocator p
   ADD_TESH(tesh-xbt-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/${x} ${x}.tesh)
 endforeach()
 
-if(NOT enable_debug)
-  ADD_TESH(tesh-xbt-log   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage_ndebug.tesh)
+if(enable_debug)
+  ADD_TESH(tesh-xbt-log --cd ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage/log_usage.tesh)
+else()
+  ADD_TESH(tesh-xbt-log --cd ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage/log_usage_ndebug.tesh)
 endif()
 
 if(HAVE_MMALLOC)

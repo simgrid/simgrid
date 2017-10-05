@@ -6,7 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt.h"
+#include <simgrid/msg.h>
+#include <xbt.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top, "Logging specific to this test");
 XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
@@ -23,7 +24,7 @@ static void dolog(const char *settings)
 
 int main(int argc, char **argv)
 {
-  xbt_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   dolog("");
   dolog(" ");
