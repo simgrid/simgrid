@@ -40,7 +40,7 @@ documentation, but it should remain readable directly.
     
 @section msg_ex_async Asynchronous communications
 
- - <b>Basic asynchronous communications</b>. 
+ - <b>Basic asynchronous and synchronous communications</b>. 
    @ref examples/s4u/async-wait/s4u-async-wait.cpp \n
    Illustrates how to have non-blocking communications, that are
    communications running in the background leaving the process free
@@ -58,6 +58,11 @@ documentation, but it should remain readable directly.
    The @ref simgrid::s4u::Comm::wait_any() function is useful when you want to block
    until one activity of the set completes, no matter which terminates
    first.   
+
+ - <b>Block and Release semaphore object</b>.
+   @ref examples/s4u/s4u-synchro-semaphore/s4u-synchro-semaphore.cpp\n
+   The @ref simcall_sem_acquire and @ref simcall_sem_release functions
+   are useful when you want to block and release semaphore object.   
 
 @section s4u_ex_actors Acting on Actors
 

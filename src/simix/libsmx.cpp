@@ -527,9 +527,19 @@ void simcall_cond_broadcast(smx_cond_t cond)
  * \ingroup simix_synchro_management
  *
  */
+ smx_sem_t simcall_sem_init(int initial_value)
+{
+  return simgrid::simix::kernelImmediate([initial_value] { return SIMIX_sem_init(initial_value); });
+}
+
 void simcall_sem_acquire(smx_sem_t sem)
 {
   simcall_BODY_sem_acquire(sem);
+}
+
+void simcall_sem_release(smx_sem_t sem)
+{
+  simgrid::simix::kernelImmediate([sem] { SIMIX_sem_release(sem); });
 }
 
 /**
