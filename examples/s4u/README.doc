@@ -25,6 +25,10 @@ documentation, but it should remain readable directly.
     @ref examples/s4u/actor-create/s4u-actor-create_d.xml \n
     Shows how to start your actors to populate your simulation.
 
+  - <b>Excute actors</b>. 
+    @ref examples/s4u/process-create/s4u-process-create.cpp \n
+    Most processes are started from the deployment XML file.     
+
   - <b>Ping Pong</b>: @ref examples/s4u/app-pingpong/s4u-app-pingpong.c\n
    It's hard to think of a simpler example: it is just sending one message back and forth.
    The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
@@ -57,7 +61,7 @@ documentation, but it should remain readable directly.
    @ref examples/s4u/async-waitany/s4u-async-waitany.cpp\n
    The @ref simgrid::s4u::Comm::wait_any() function is useful when you want to block
    until one activity of the set completes, no matter which terminates
-   first.   
+   first.    
 
 @section s4u_ex_actors Acting on Actors
 
