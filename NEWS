@@ -5,6 +5,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |___  |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|/_/
                (unreleased yet)
 
+The Drained Leaks release: (almost) no known leaks despite the tests.
+
+ * Many many internal cleanups (almost 700 commits since 3.16).
+ * The coverage of our tests is above 80%.
+ * All memleaks but one plugged; A dozen of bugs fixed.
+ * XBT: Further replace XBT with std::* constructs.
                     _               _____  _  __
 __   _____ _ __ ___(_) ___  _ __   |___ / / |/ /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | '_ \
