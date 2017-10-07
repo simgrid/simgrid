@@ -41,7 +41,8 @@ typedef std::vector<Dwarf_Op> DwarfExpression;
  *  the process memory, etc. All those informations are gathered in
  *  the evaluation context.
  */
-struct ExpressionContext {
+class ExpressionContext {
+public:
   ExpressionContext() :
     cursor(nullptr), frame_base(nullptr), address_space(nullptr),
     object_info(nullptr), process_index(simgrid::mc::ProcessIndexMissing) {}

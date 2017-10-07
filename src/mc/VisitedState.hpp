@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,7 +17,8 @@
 namespace simgrid {
 namespace mc {
 
-struct XBT_PRIVATE VisitedState {
+class XBT_PRIVATE VisitedState {
+public:
   std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
   std::size_t heap_bytes_used = 0;
   int actors_count            = 0;

@@ -96,30 +96,34 @@ static long int parseLong(const char* value)
 // ***** ConfigType *****
 
 /// A trait which define possible options types:
-template<class T> struct ConfigType;
+template <class T> class ConfigType;
 
-template<> struct ConfigType<int> {
+template <> class ConfigType<int> {
+public:
   static constexpr const char* type_name = "int";
   static inline double parse(const char* value)
   {
     return parseLong(value);
   }
 };
-template<> struct ConfigType<double> {
+template <> class ConfigType<double> {
+public:
   static constexpr const char* type_name = "double";
   static inline double parse(const char* value)
   {
     return parseDouble(value);
   }
 };
-template<> struct ConfigType<std::string> {
+template <> class ConfigType<std::string> {
+public:
   static constexpr const char* type_name = "string";
   static inline std::string parse(const char* value)
   {
     return std::string(value);
   }
 };
-template<> struct ConfigType<bool> {
+template <> class ConfigType<bool> {
+public:
   static constexpr const char* type_name = "boolean";
   static inline bool parse(const char* value)
   {

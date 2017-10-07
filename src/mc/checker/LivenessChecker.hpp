@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,7 +27,8 @@ SG_END_DECL()
 namespace simgrid {
 namespace mc {
 
-struct XBT_PRIVATE Pair {
+class XBT_PRIVATE Pair {
+public:
   int num = 0;
   bool search_cycle = false;
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
@@ -44,7 +45,8 @@ struct XBT_PRIVATE Pair {
   Pair& operator=(Pair const&) = delete;
 };
 
-struct XBT_PRIVATE VisitedPair {
+class XBT_PRIVATE VisitedPair {
+public:
   int num;
   int other_num = 0; /* Dot output for */
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */

@@ -22,7 +22,8 @@ enum class PatternCommunicationType {
   receive = 2,
 };
 
-struct PatternCommunication {
+class PatternCommunication {
+public:
   int num = 0;
   simgrid::kernel::activity::CommImpl* comm_addr;
   PatternCommunicationType type = PatternCommunicationType::send;
@@ -104,8 +105,8 @@ public:
 
 /* A node in the exploration graph (kind-of)
  */
-struct XBT_PRIVATE State {
-
+class XBT_PRIVATE State {
+public:
   /** Sequential state number (used for debugging) */
   int num = 0;
 
