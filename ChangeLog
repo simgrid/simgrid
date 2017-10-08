@@ -1,11 +1,10 @@
-SimGrid (3.17) UNRELEASED (release target: September 22 2017)
+SimGrid (3.17) Released October 8 2017
 
  The Drained Leaks release: (almost) no known leaks despite the tests.
 
  Even very long simulations will preserve your memory: our testsuite
  stresses SimGrid for over 45mn on fast machines for a coverage of
- over 80% of our codebase, and there is only one single known leak, of
- about 4kb.
+ over 80%, and there is only one single known leak, of about 4kb.
 
 
  S4U
@@ -51,6 +50,8 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
    - #204: Sometimes segfault with thread contexts and mmap privatization
    - #222: Actor::kill() doesn't really kill and segfaults
    - #225: Actor::kill() doesn't really kill when victims are doing a join()
+
+----------------------------------------------------------------------------
 
 SimGrid (3.16) Released June 22. 2017.
 
