@@ -66,8 +66,8 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-    if (((action->getRemainsNoUpdate() <= 0) ||
-         ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0)))) {
+    if ((action->getRemainsNoUpdate() <= 0) ||
+        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
       action->finish(Action::State::done);
     }
   }
