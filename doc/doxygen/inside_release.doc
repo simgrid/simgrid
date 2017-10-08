@@ -91,7 +91,7 @@ the settings icon of the release you want to change.
   - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
   - emacs org/site/documentation.org and edit the version links.
   - make -C org all sync
-  - git commit && git push
+  - git commit -a && git push
 - Announce the release
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
