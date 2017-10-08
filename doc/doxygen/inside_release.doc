@@ -8,6 +8,7 @@
 Please apply the following checklist before releasing.
 
 - Sources
+  - The external patches (Debian, etc) are integrated.
   - The version number is correctly marked in CMakeLists.txt, in macros
     SIMGRID_VERSION_MAJOR and friends. 
   - The "make distcheck" target works (testing that every files needed
@@ -33,7 +34,7 @@ This should be done from a clean git repository because some files are
 included through globbing. The best is to use a clean checkout:
 \verbatim
 cd /tmp
-git clone ~/Code/simgrid
+git clone --depth=1 ~/Code/simgrid
 cd simgrid
 cmake . && make dist
 \endverbatim
