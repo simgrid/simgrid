@@ -242,6 +242,7 @@ endif()
 if(WIN32)
   set(Boost_USE_STATIC_LIBS 1)
 endif()
+
 set(HAVE_PAPI 0)
 if(enable_smpi_papi)
   include(FindPAPI)
