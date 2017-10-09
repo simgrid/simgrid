@@ -38,7 +38,7 @@ documentation, but it should remain readable directly.
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
     processes. 
     
-@section msg_ex_async Asynchronous communications
+@section s4u_ex_async Asynchronous communications
 
  - <b>Basic asynchronous communications</b>. 
    @ref examples/s4u/async-wait/s4u-async-wait.cpp \n
@@ -78,6 +78,11 @@ documentation, but it should remain readable directly.
   - <b>Kill actors</b>.
     @ref examples/s4u/actor-kill/s4u-actor-kill.cpp \n
     Actors can forcefully stop other actors with the @ref kill method.
+
+  - <b>Controling the actor life cycle</b>.
+    @ref examples/s4u/actor-startkilltime/s4u-actor-startkilltime.cpp \n
+    You can specify a start time and a kill time in the deployment
+    file. See all *_d.xml files in this directory.    
 
   - <b>Migrating Actors</b>.
     @ref examples/s4u/actor-migration/s4u-actor-migration.cpp \n
