@@ -38,7 +38,6 @@ XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(std::string id, std::string 
 
 SG_END_DECL()
 
-#ifdef __cplusplus
 namespace simgrid {
 /** @brief Modeling of the availability profile (due to an external load) or the churn
  *
@@ -98,6 +97,5 @@ private:
 };
 
 }} // namespace simgrid::trace_mgr
-#endif /* C++ only */
 
 #endif /* SURF_TMGR_H */

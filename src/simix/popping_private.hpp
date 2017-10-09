@@ -70,8 +70,6 @@ XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);
 
 SG_END_DECL()
 
-#ifdef __cplusplus
-
 /* Defines the marshal/unmarshal functions for each type of parameters.
  *
  * They will be used in popping_accessors.hpp to define the functions allowing
@@ -223,8 +221,6 @@ void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A const&... a)
 
 }
 }
-
-#endif
 
 #include "popping_accessors.hpp"
 

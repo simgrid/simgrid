@@ -9,12 +9,9 @@
 #include "mc/mc.h"
 #include "xbt/automaton.h"
 
-#ifdef __cplusplus
 #include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"
-#endif
 
-#ifdef __cplusplus
 namespace simgrid {
 namespace mc {
 
@@ -28,7 +25,6 @@ struct DerefAndCompareByActorsCountAndUsedHeap {
 
 }
 }
-#endif
 
 SG_BEGIN_DECL()
 
@@ -49,8 +45,6 @@ XBT_PRIVATE void MC_show_deadlock(void);
 
 SG_END_DECL()
 
-#ifdef __cplusplus
-
 namespace simgrid {
 namespace mc {
 
@@ -65,7 +59,5 @@ extern XBT_PRIVATE xbt_automaton_t property_automaton;
 
 }
 }
-
-#endif
 
 #endif

@@ -150,8 +150,6 @@ static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
 
 }
 
-#ifdef __cplusplus
-
 namespace simgrid {
 namespace mc {
 
@@ -160,8 +158,6 @@ XBT_PRIVATE void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapsho
 
 }
 }
-
-#endif
 
 extern "C" {
 
