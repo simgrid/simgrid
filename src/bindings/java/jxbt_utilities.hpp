@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef JXBT_UTILITY_H
-#define JXBT_UTILITY_H
+#ifndef JXBT_UTILITIES_HPP
+#define JXBT_UTILITIES_HPP
 
 #include <jni.h>
 #include <stdint.h>

@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMIX_IO_PRIVATE_H
-#define SIMIX_IO_PRIVATE_H
+#ifndef SIMIX_IO_PRIVATE_HPP
+#define SIMIX_IO_PRIVATE_HPP
 
 #include <xbt/base.h>
 
 #include "simgrid/simix.h"
-#include "popping_private.h"
+#include "popping_private.hpp"
 
 XBT_PRIVATE smx_activity_t SIMIX_file_read(surf_file_t fd, sg_size_t size);
 XBT_PRIVATE smx_activity_t SIMIX_file_write(surf_file_t fd, sg_size_t size);

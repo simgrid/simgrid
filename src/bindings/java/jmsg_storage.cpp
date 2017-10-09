@@ -7,9 +7,9 @@
 
 #include "simgrid/msg.h"
 
-#include "jmsg.h"
+#include "jmsg.hpp"
 #include "jmsg_storage.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 

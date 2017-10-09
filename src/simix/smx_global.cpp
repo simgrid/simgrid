@@ -18,7 +18,7 @@
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf.hpp"
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 
 #include "mc/mc.h"
@@ -35,12 +35,12 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #endif
 
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_record.hpp"
 
 #if HAVE_SMPI
 #include "src/smpi/include/private.h"

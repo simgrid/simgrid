@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMIX_NETWORK_PRIVATE_H
-#define SIMIX_NETWORK_PRIVATE_H
+#ifndef SIMIX_NETWORK_PRIVATE_HPP
+#define SIMIX_NETWORK_PRIVATE_HPP
 
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"

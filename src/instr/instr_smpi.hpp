@@ -3,15 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef INSTR_SMPI_H_
-#define INSTR_SMPI_H_
+#ifndef INSTR_SMPI_HPP
+#define INSTR_SMPI_HPP
 
 #ifdef __cplusplus
 #include <string>
 #endif
 
 #include "smpi/smpi.h"
-#include "src/instr/instr_private.h"
+#include "src/instr/instr_private.hpp"
 
 SG_BEGIN_DECL()
 

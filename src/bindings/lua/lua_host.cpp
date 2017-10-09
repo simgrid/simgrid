@@ -5,7 +5,7 @@
 
 /* SimGrid Lua bindings                                                     */
 
-#include "lua_private.h"
+#include "lua_private.hpp"
 #include "simgrid/s4u/Host.hpp"
 extern "C" {
 #include <lauxlib.h>

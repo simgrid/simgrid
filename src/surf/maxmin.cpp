@@ -298,7 +298,7 @@ int lmm_constraint_sharing_policy(lmm_constraint_t cnst)
 }
 
 /* @brief Remove a constraint
- * Currently this is dead code, but it is exposed in maxmin.h
+ * Currently this is dead code, but it is exposed in maxmin.hpp
  * Apparently, this call was designed assuming that constraint would no more have elements in it.
  * If not the case, assertion will fail, and you need to add calls e.g. to lmm_shrink before effectively removing it.
  */

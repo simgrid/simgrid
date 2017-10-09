@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_status.hpp"
 

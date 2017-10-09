@@ -6,7 +6,7 @@
 /* Short or medium size message and power-of-two no. of processes. Use
  * recursive doubling algorithm */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 #include "smpi_status.hpp"
 
 namespace simgrid{

@@ -6,9 +6,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 
-#include "smpi_mvapich2_selector_stampede.h"
+#include "smpi_mvapich2_selector_stampede.hpp"
 
 namespace simgrid{
 namespace smpi{

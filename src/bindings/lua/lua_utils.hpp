@@ -5,8 +5,8 @@
 
 /* SimGrid Lua helper functions                                             */
 
-#ifndef LUA_UTILS_H
-#define LUA_UTILS_H
+#ifndef LUA_UTILS_HPP
+#define LUA_UTILS_HPP
 
 extern "C" {
 

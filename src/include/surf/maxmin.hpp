@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_MAXMIN_H
-#define SURF_MAXMIN_H
+#ifndef SURF_MAXMIN_HPP
+#define SURF_MAXMIN_HPP
 
 #include "src/internal_config.h"
 #include "xbt/misc.h"

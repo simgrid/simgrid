@@ -14,7 +14,7 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
-#include "src/simix/popping_private.h"
+#include "src/simix/popping_private.hpp"
 static inline int simcall_process_killall__get__reset_pid(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<int>(simcall->args[0]);

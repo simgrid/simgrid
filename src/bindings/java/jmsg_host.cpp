@@ -9,9 +9,9 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 
-#include "jmsg.h"
+#include "jmsg.hpp"
 #include "jmsg_host.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 #include "jmsg_storage.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);

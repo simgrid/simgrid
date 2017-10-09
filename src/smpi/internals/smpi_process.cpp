@@ -5,14 +5,13 @@
 
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
-#include "src/msg/msg_private.h"
-#include "src/simix/smx_private.h"
+#include "src/msg/msg_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include "private.h"
 #include "private.hpp"
 #include "smpi_process.hpp"
 #include "smpi_group.hpp"
 #include "smpi_comm.hpp"
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_SNAPSHOT_H
-#define SIMGRID_MC_SNAPSHOT_H
+#ifndef SIMGRID_MC_SNAPSHOT_HPP
+#define SIMGRID_MC_SNAPSHOT_HPP
 
 #include <vector>
 #include <set>
@@ -14,7 +14,7 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/RegionSnapshot.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_unw.hpp"
 
 SG_BEGIN_DECL()
 

@@ -19,14 +19,14 @@
 
 #include "src/internal_config.h"
 
-#include "src/mc/mc_request.h"
+#include "src/mc/mc_request.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 #include "src/smpi/include/private.hpp"
 
 // We won't need those once the separation MCer/MCed is complete:
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_smx.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 

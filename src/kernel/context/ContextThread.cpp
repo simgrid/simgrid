@@ -7,7 +7,7 @@
 #include <functional>
 
 #include "xbt/function_types.h"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "src/internal_config.h"           /* loads context system definitions */
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"

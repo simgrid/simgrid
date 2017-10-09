@@ -9,7 +9,7 @@
  * but this header must not be removed.
  */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 #include <cstdio>
 #include <cstdlib>
 

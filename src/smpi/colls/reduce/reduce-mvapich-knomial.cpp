@@ -38,7 +38,7 @@
  *
  */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 extern int mv2_reduce_intra_knomial_factor;
 extern int mv2_reduce_inter_knomial_factor;
 

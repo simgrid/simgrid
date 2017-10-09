@@ -9,10 +9,10 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 
-#include "jmsg_as.h"
+#include "jmsg_as.hpp"
 #include "jmsg_host.h"
-#include "jxbt_utilities.h"
-#include "jmsg.h"
+#include "jxbt_utilities.hpp"
+#include "jmsg.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 

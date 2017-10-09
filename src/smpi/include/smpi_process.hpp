@@ -7,7 +7,7 @@
 #ifndef SMPI_PROCESS_HPP
 #define SMPI_PROCESS_HPP
 
-#include "src/instr/instr_smpi.h"
+#include "src/instr/instr_smpi.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "xbt/synchro.h"
 

@@ -15,7 +15,7 @@
 #include "surf/surf.h"
 
 #include "src/surf/surf_interface.hpp"
-#include "smx_private.h"
+#include "smx_private.hpp"
 
 #include "src/kernel/activity/SynchroIo.hpp"
 

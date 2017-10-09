@@ -1,12 +1,12 @@
 /* Java bindings of the file API.                                           */
 
-/* Copyright (c) 2012-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "jmsg_file.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 
 SG_BEGIN_DECL()
 

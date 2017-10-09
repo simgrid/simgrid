@@ -6,7 +6,7 @@
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 

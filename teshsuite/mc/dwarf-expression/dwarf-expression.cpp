@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Type.hpp"

@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_SURF_PRIVATE_H
-#define SURF_SURF_PRIVATE_H
+#ifndef SURF_SURF_PRIVATE_HPP
+#define SURF_SURF_PRIVATE_HPP
 
 #include "surf/surf.h"
-#include "surf/maxmin.h"
+#include "surf/maxmin.hpp"
 #include "src/surf/trace_mgr.hpp"
 
 #define NO_MAX_DURATION -1.0

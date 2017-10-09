@@ -14,12 +14,12 @@
 #include <xbt/functional.hpp>
 
 #include "simgrid/simix.h"
-#include "src/instr/instr_private.h"
+#include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
-#include "src/simix/popping_private.h"
-#include "src/simix/smx_host_private.h"
-#include "src/simix/smx_io_private.h"
-#include "src/simix/smx_network_private.h"
+#include "src/simix/popping_private.hpp"
+#include "src/simix/smx_host_private.hpp"
+#include "src/simix/smx_io_private.hpp"
+#include "src/simix/smx_network_private.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 #include "surf/surf.h"
 #include "xbt/base.h"

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_LUA_H
-#define SIMGRID_LUA_H
+#ifndef SIMGRID_LUA_HPP
+#define SIMGRID_LUA_HPP
 
 extern "C" {
 #include <lua.h>

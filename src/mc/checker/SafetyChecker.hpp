@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2016. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,7 +15,7 @@
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_safety.h"
+#include "src/mc/mc_safety.hpp"
 
 namespace simgrid {
 namespace mc {

@@ -1,15 +1,15 @@
-/* Copyright (c) 2010-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* SimGrid Lua bindings                                                     */
 
-#ifndef LUA_PRIVATE_H
-#define LUA_PRIVATE_H
+#ifndef LUA_PRIVATE_HPP
+#define LUA_PRIVATE_HPP
 
 #include "simgrid/msg.h"
-#include "simgrid_lua.h"
+#include "simgrid_lua.hpp"
 
 extern "C" {
 

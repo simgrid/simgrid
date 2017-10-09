@@ -9,7 +9,7 @@
 #include "src/kernel/context/Context.hpp"
 
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/popping_private.h"
+#include "src/simix/popping_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);

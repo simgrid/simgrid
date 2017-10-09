@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SMPI_COLLS_PRIVATE_H
-#define SMPI_COLLS_PRIVATE_H
+#ifndef SMPI_COLLS_PRIVATE_HPP
+#define SMPI_COLLS_PRIVATE_HPP
 
 #include <math.h>
 #include "smpi/mpi.h"

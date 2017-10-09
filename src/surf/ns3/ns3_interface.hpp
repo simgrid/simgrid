@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef NS3_INTERFACE_H
-#define NS3_INTERFACE_H
+#ifndef NS3_INTERFACE_HPP
+#define NS3_INTERFACE_HPP
 
 #include "simgrid/s4u/Host.hpp"
 

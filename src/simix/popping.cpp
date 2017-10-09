@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "xbt/xbt_os_thread.h"
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 #endif
 
 #include "src/kernel/activity/CommImpl.hpp"

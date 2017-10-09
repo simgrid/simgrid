@@ -5,7 +5,7 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 
 #if SIMGRID_HAVE_LUA
 #include <lua.h>

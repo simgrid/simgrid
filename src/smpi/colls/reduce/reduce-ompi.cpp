@@ -19,8 +19,8 @@
  * Additional copyrights may follow
  */
 
-#include "../colls_private.h"
-#include "../coll_tuned_topo.h"
+#include "../colls_private.hpp"
+#include "../coll_tuned_topo.hpp"
 
 namespace simgrid{
 namespace smpi{

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_PRIVATE_H
-#define SIMGRID_MC_PRIVATE_H
+#ifndef SIMGRID_MC_PRIVATE_HPP
+#define SIMGRID_MC_PRIVATE_HPP
 
 #include "mc/mc.h"
 #include "xbt/automaton.h"

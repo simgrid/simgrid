@@ -14,11 +14,11 @@
 #include <simgrid/sg_config.h>
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_safety.h"
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_safety.hpp"
+#include "src/mc/mc_private.hpp"
 #endif
 
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_record.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc, "Configuration of the Model Checker");
 

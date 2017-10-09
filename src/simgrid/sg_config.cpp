@@ -13,7 +13,7 @@
 #include "xbt/mallocator.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
-#include "surf/maxmin.h"
+#include "surf/maxmin.hpp"
 #include "instr/instr_interface.h"
 #include "simgrid/simix.h"
 #include "simgrid/sg_config.h"

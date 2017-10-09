@@ -6,8 +6,8 @@
 #include <xbt/ex.hpp>
 
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/msg/msg_private.h"
-#include "src/simix/smx_private.h" /* MSG_task_listen looks inside the rdv directly. Not clean. */
+#include "src/msg/msg_private.hpp"
+#include "src/simix/smx_private.hpp" /* MSG_task_listen looks inside the rdv directly. Not clean. */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 

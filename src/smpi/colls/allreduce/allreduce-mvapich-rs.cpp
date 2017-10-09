@@ -21,7 +21,7 @@
  *
  */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
 int Coll_allreduce_mvapich2_rs::allreduce(void *sendbuf,

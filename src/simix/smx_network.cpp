@@ -16,7 +16,7 @@
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/mc/mc_replay.h"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 

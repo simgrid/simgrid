@@ -8,7 +8,7 @@
 
 #include "xbt/signal.hpp"
 
-#include "src/surf/surf_private.h"
+#include "src/surf/surf_private.hpp"
 #include "surf/surf.h"
 #include "xbt/str.h"
 

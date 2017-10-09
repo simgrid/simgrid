@@ -12,7 +12,7 @@
 #endif
 
 #include "mc/mc.h"
-#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_snapshot.hpp"
 
 #include "src/mc/ChunkedData.hpp"
 #include "src/mc/RegionSnapshot.hpp"

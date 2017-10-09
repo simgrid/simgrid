@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SG_POPPING_PRIVATE_H
-#define SG_POPPING_PRIVATE_H
+#ifndef SG_POPPING_PRIVATE_HPP
+#define SG_POPPING_PRIVATE_HPP
 
 #include <xbt/base.h>
 #include <simgrid/simix.h>
@@ -74,7 +74,7 @@ SG_END_DECL()
 
 /* Defines the marshal/unmarshal functions for each type of parameters.
  *
- * They will be used in popping_accessors.h to define the functions allowing
+ * They will be used in popping_accessors.hpp to define the functions allowing
  * to retrieve/set each parameter of each simcall.
  *
  * There is a unmarshal_raw() function, which is exactly similar to unmarshal()
@@ -226,6 +226,6 @@ void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A const&... a)
 
 #endif
 
-#include "popping_accessors.h"
+#include "popping_accessors.hpp"
 
 #endif

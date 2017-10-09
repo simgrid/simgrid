@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef NS3_SIM_H
-#define NS3_SIM_H
+#ifndef NS3_SIMULATOR_HPP
+#define NS3_SIMULATOR_HPP
 
 #include <cstdint>
 
-#include "ns3_interface.h"
+#include "ns3_interface.hpp"
 
 #include <ns3/csma-helper.h>
 #include <ns3/global-route-manager.h>

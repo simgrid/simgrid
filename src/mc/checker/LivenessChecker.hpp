@@ -17,7 +17,7 @@
 #include <simgrid_config.h>
 #include <xbt/base.h>
 #include <xbt/automaton.h>
-#include "src/mc/mc_state.h"
+#include "src/mc/mc_state.hpp"
 #include "src/mc/checker/Checker.hpp"
 
 SG_BEGIN_DECL()

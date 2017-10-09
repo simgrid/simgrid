@@ -1,9 +1,9 @@
-/* Copyright (c) 2004-2014. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 
 SG_BEGIN_DECL()
 

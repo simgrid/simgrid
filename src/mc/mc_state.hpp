@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_STATE_H
-#define SIMGRID_MC_STATE_H
+#ifndef SIMGRID_MC_STATE_HPP
+#define SIMGRID_MC_STATE_HPP
 
 #include <list>
 #include <memory>
 
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/Transition.hpp"
 
 namespace simgrid {

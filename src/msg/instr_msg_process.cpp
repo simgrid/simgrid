@@ -4,8 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Host.hpp"
-#include "src/instr/instr_private.h"
-#include "src/msg/msg_private.h"
+#include "src/instr/instr_private.hpp"
+#include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,7 +6,7 @@
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
-#include "src/instr/instr_smpi.h"
+#include "src/instr/instr_smpi.hpp"
 #include <unordered_map>
 #include <vector>
 #include "src/internal_config.h"

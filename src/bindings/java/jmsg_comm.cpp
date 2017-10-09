@@ -6,8 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "jmsg_comm.h"
-#include "jxbt_utilities.h"
-#include "jmsg.h"
+#include "jxbt_utilities.hpp"
+#include "jmsg.hpp"
 
 #include <simgrid/msg.h>
 #include <string>

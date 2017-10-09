@@ -20,13 +20,13 @@
 
 #include "mc/mc.h"
 
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/mc/remote/Client.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 

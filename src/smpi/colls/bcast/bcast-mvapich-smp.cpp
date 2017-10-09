@@ -34,8 +34,8 @@
  *  (C) 2001 by Argonne National Laboratory.
  *      See COPYRIGHT in top-level directory.
  */
-#include "../colls_private.h"
 
+#include "../colls_private.hpp"
 
 extern int (*MV2_Bcast_function) (void *buffer, int count, MPI_Datatype datatype,
                            int root, MPI_Comm comm_ptr);

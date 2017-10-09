@@ -21,7 +21,7 @@
 #ifndef MCA_COLL_TUNED_TOPO_H_HAS_BEEN_INCLUDED
 #define MCA_COLL_TUNED_TOPO_H_HAS_BEEN_INCLUDED
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 
 #define MAXTREEFANOUT 32
 

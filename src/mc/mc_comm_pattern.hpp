@@ -11,7 +11,7 @@
 #include "smpi/smpi.h"
 #include "xbt/dynar.h"
 
-#include "src/mc/mc_state.h"
+#include "src/mc/mc_state.hpp"
 
 namespace simgrid {
 namespace mc {

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef INSTR_PRIVATE_H_
-#define INSTR_PRIVATE_H_
+#ifndef INSTR_PRIVATE_HPP
+#define INSTR_PRIVATE_HPP
 
 #include <xbt/base.h>
 

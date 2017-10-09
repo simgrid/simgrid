@@ -30,14 +30,14 @@
 #endif
 
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/Frame.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_snapshot.hpp"
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/Type.hpp"
 

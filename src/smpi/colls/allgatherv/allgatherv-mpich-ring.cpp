@@ -10,7 +10,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 
 /*****************************************************************************
  * Function: allgather_mpich_ring

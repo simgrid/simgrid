@@ -11,7 +11,7 @@
 
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_xbt.hpp"
 
 using simgrid::mc::remote;

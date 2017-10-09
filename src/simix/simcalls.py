@@ -274,10 +274,10 @@ if __name__ == '__main__':
     #  sys.exit(1)
 
     #
-    # smx_popping_accessors.c
+    # popping_accessors.hpp
     #
-    fd = header('popping_accessors.h')
-    fd.write('#include "src/simix/popping_private.h"');
+    fd = header('popping_accessors.hpp')
+    fd.write('#include "src/simix/popping_private.hpp"');
     handle(fd, Simcall.accessors, simcalls, simcalls_dict)
     fd.write(
         "\n\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
@@ -306,7 +306,7 @@ if __name__ == '__main__':
 
     fd = header("popping_generated.cpp")
 
-    fd.write('#include "smx_private.h"\n')
+    fd.write('#include "smx_private.hpp"\n')
     fd.write('#include <xbt/base.h>\n')
     fd.write('#if SIMGRID_HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
@@ -359,7 +359,7 @@ if __name__ == '__main__':
     # smx_popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
-    fd.write('#include "smx_private.h"\n')
+    fd.write('#include "smx_private.hpp"\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <functional>\n')

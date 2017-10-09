@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file mc_record.h
+/** \file mc_record.hpp
  *
  *  This file contains the MC replay/record functionnality.
  *  A MC path may be recorded by using ``-cfg=model-check/record:1`'`.
@@ -14,8 +14,8 @@
  *  passed to the application (without the MC specific arguments).
  */
 
-#ifndef SIMGRID_MC_RECORD_H
-#define SIMGRID_MC_RECORD_H
+#ifndef SIMGRID_MC_RECORD_HPP
+#define SIMGRID_MC_RECORD_HPP
 
 #include "src/mc/Transition.hpp"
 #include "xbt/base.h"

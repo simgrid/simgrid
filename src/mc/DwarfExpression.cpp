@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,7 +10,7 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 #include "src/mc/LocationList.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/Frame.hpp"

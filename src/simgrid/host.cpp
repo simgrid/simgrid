@@ -12,7 +12,7 @@
 #include "xbt/dict.h"
 
 #include "src/kernel/routing/NetPoint.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 

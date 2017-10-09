@@ -5,10 +5,9 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_host_private.h"
-
+#include "src/simix/smx_host_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 

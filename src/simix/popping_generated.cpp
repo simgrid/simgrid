@@ -14,7 +14,7 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include <xbt/base.h>
 #if SIMGRID_HAVE_MC
 #include "src/mc/mc_forward.hpp"

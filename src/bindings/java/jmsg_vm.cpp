@@ -7,7 +7,7 @@
 
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/ex.hpp"
 

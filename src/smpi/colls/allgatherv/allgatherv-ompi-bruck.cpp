@@ -20,7 +20,7 @@
  * Additional copyrights may follow
  */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 /*
  * ompi_coll_tuned_allgatherv_intra_bruck
  *

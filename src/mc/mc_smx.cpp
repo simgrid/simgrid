@@ -5,7 +5,7 @@
 
 #include "simgrid/s4u/Host.hpp"
 
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/ModelChecker.hpp"
 
 using simgrid::mc::remote;

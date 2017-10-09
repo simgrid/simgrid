@@ -11,8 +11,8 @@
 
 #include <xbt/ex.hpp>
 
-#include "src/instr/instr_private.h"
-#include "src/msg/msg_private.h"
+#include "src/instr/instr_private.hpp"
+#include "src/msg/msg_private.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
 

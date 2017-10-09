@@ -16,8 +16,8 @@
 #include <simgrid/sg_config.h>
 
 #include "src/mc/Session.hpp"
-#include "src/mc/mc_state.h"
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_state.hpp"
+#include "src/mc/mc_private.hpp"
 #include "src/mc/checker/Checker.hpp"
 
 #include "src/smpi/include/private.hpp"

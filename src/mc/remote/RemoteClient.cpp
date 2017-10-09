@@ -31,9 +31,9 @@
 #include "xbt/log.h"
 #include <xbt/mmalloc.h>
 
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_unw.hpp"
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ObjectInformation.hpp"

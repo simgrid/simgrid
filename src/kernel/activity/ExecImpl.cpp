@@ -6,7 +6,7 @@
 #include "simgrid/s4u/Host.hpp"
 
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);

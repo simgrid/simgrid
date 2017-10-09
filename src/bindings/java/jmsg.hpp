@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef MSG4JAVA_H
-#define MSG4JAVA_H
+#ifndef JMSG_HPP
+#define JMSG_HPP
 #include <jni.h>
 #include <simgrid/msg.h>
 #include <unordered_map>

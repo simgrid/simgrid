@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "simgrid/s4u/Host.hpp"
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 #include <xbt/ex.hpp>
 

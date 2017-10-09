@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 
 #include "jmsg_rngstream.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 
 SG_BEGIN_DECL()
 
