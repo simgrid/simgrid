@@ -10,13 +10,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
 
-simgrid::instr::Value::Value(const char* name, const char* color, simgrid::instr::Type* father)
+simgrid::instr::Value::Value(const char* name, const char* color, simgrid::instr::Type* father) : father_(father)
 {
   if (name == nullptr || father == nullptr){
     THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
   this->name_   = xbt_strdup(name);
-  this->father_ = father;
   this->color_  = xbt_strdup(color);
 
   this->id_ = bprintf("%lld", instr_new_paje_id());

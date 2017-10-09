@@ -32,7 +32,7 @@ void PJ_container_set_root (container_t root)
 }
 
 simgrid::instr::Container::Container(const char* name, simgrid::instr::e_container_types kind, Container* father)
-    : name_(xbt_strdup(name)), father_(father)
+    : name_(xbt_strdup(name)), kind_(kind), father_(father)
 {
   xbt_assert(name != nullptr, "Container name cannot be nullptr");
 
@@ -65,7 +65,6 @@ simgrid::instr::Container::Container(const char* name, simgrid::instr::e_contain
   }
 
   // type definition (method depends on kind of this new container)
-  this->kind_ = kind;
   if (this->kind_ == simgrid::instr::INSTR_AS) {
     //if this container is of an AS, its type name depends on its level
     char as_typename[INSTR_DEFAULT_STR_SIZE];
@@ -78,7 +77,7 @@ simgrid::instr::Container::Container(const char* name, simgrid::instr::e_contain
     }else{
       this->type_ = simgrid::instr::Type::containerNew("0", nullptr);
     }
-  }else{
+  } else {
     //otherwise, the name is its kind
     char typeNameBuff[INSTR_DEFAULT_STR_SIZE];
     switch (this->kind_) {

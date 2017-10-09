@@ -175,7 +175,7 @@ class SetStateEvent : public PajeEvent  {
   private:
     Container* container;
     Type* type;
-    Value* val;
+    Value* value;
     const char* filename;
     int linenumber;
 
@@ -189,7 +189,7 @@ class PushStateEvent : public PajeEvent  {
   public:
     Container* container;
     Type* type;
-    Value* val;
+    Value* value;
     int size;
     const char* filename;
     int linenumber;
@@ -239,13 +239,14 @@ class EndLinkEvent : public PajeEvent  {
   Container* container;
   Type* type;
   Container* destContainer;
-  char *value;
-  char *key;
-  public:
-    EndLinkEvent(double timestamp, Container* container, Type* type, Container* destContainer, const char* value,
-                 const char* key);
-    ~EndLinkEvent();
-    void print() override;
+  std::string value;
+  std::string key;
+
+public:
+  EndLinkEvent(double timestamp, Container* container, Type* type, Container* destContainer, std::string value,
+               std::string key);
+  ~EndLinkEvent() = default;
+  void print() override;
 };
 
 
