@@ -1,9 +1,11 @@
-/* Copyright (c) 2005-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2005-2017. The SimGrid Team. All rights reserved.          */
 
 #ifndef XBT_BACKTRACE_H
 #define XBT_BACKTRACE_H
 
+#ifdef __cplusplus
 #include <cstddef>
+#endif
 
 #include <xbt/base.h>
 
