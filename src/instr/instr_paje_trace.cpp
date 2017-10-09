@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system")
 static std::stringstream stream;
 FILE *tracing_file = nullptr;
 
-static xbt_dict_t tracing_files = nullptr; // TI specific
+static std::map<container_t, FILE*> tracing_files; // TI specific
 static double prefix=0.0; // TI specific
 
 std::vector<simgrid::instr::PajeEvent*> buffer;
@@ -213,19 +213,18 @@ void LogContainerTypeDefinition(simgrid::instr::Type* type)
 
 void LogVariableTypeDefinition(simgrid::instr::Type* type)
 {
-
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineVariableType);
 
   //print it
-if (instr_fmt_type == instr_fmt_paje) {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineVariableType,
-            TRACE_precision(), 0.);
-  stream << std::fixed << std::setprecision(TRACE_precision());
-  stream << simgrid::instr::PAJE_DefineVariableType;
-  stream << " " << type->id_ << " " << type->father_->id_ << " " << type->name_;
-  if (type->color_)
-    stream << " \"" << type->color_ << "\"";
-  print_row();
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineVariableType,
+              TRACE_precision(), 0.);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << simgrid::instr::PAJE_DefineVariableType;
+    stream << " " << type->id_ << " " << type->father_->id_ << " " << type->name_;
+    if (type->color_)
+      stream << " \"" << type->color_ << "\"";
+    print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
   } else {
@@ -304,7 +303,6 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-
 void LogContainerCreation (container_t container)
 {
   double timestamp = SIMIX_get_clock();
@@ -328,8 +326,7 @@ void LogContainerCreation (container_t container)
     // if we are in the mode with only one file
     static FILE* ti_unique_file = nullptr;
 
-    if (tracing_files == nullptr) {
-      tracing_files = xbt_dict_new_homogeneous(nullptr);
+    if (tracing_files.empty()) {
       // generate unique run id with time
       prefix = xbt_os_time();
     }
@@ -350,7 +347,7 @@ void LogContainerCreation (container_t container)
       xbt_free(filename);
     }
 
-    xbt_dict_set(tracing_files, container->name_, (void*)ti_unique_file, nullptr);
+    tracing_files.insert({container, ti_unique_file});
   } else {
     THROW_IMPOSSIBLE;
   }
@@ -374,14 +371,14 @@ void LogContainerDestruction(container_t container)
     stream << " " << container->type_->id_ << " " << container->id_;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
-    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || xbt_dict_length(tracing_files) == 1) {
-      FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, container->name_);
+    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
+      FILE* f = tracing_files.at(container);
       fclose(f);
     }
-    xbt_dict_remove(tracing_files, container->name_);
-        } else {
-          THROW_IMPOSSIBLE;
-        }
+    tracing_files.erase(container);
+  } else {
+    THROW_IMPOSSIBLE;
+  }
 }
 
 simgrid::instr::SetVariableEvent::SetVariableEvent(double timestamp, container_t container, Type* type, double value)
@@ -574,7 +571,7 @@ void simgrid::instr::PushStateEvent::print()
     else
       process_id = xbt_strdup(container->name_ + 5);
 
-    FILE* trace_file = (FILE*)xbt_dict_get(tracing_files, container->name_);
+    FILE* trace_file = tracing_files.at(container);
 
     switch (extra->type) {
       case TRACING_INIT:
@@ -853,7 +850,6 @@ void simgrid::instr::NewEvent::print()
   }
 }
 
-
 void TRACE_TI_start()
 {
   char *filename = TRACE_get_filename();
@@ -872,9 +868,7 @@ void TRACE_TI_start()
 
 void TRACE_TI_end()
 {
-  xbt_dict_free(&tracing_files);
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
   XBT_DEBUG("Filename %s is closed", filename);
 }
-
