@@ -371,7 +371,7 @@ this generates a bunch of C++ files:
   responsible for wrapping the parameters in the `struct s_smx_simcall`;
   and wrapping out the result;
 
-* [accessors](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_accessors.h)
+* [accessors](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_accessors.hpp)
    to get/set values of of `struct s_smx_simcall`;
 
 * a simulation-kernel-side [big switch](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_generated.cpp#L106)

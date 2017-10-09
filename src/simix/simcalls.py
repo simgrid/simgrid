@@ -285,7 +285,7 @@ if __name__ == '__main__':
     fd.close()
 
     #
-    # smx_popping_enum.c
+    # popping_enum.h
     #
     fd = header("popping_enum.h")
     fd.write('/**\n')
@@ -301,7 +301,7 @@ if __name__ == '__main__':
     fd.close()
 
     #
-    # smx_popping_generated.cpp
+    # popping_generated.cpp
     #
 
     fd = header("popping_generated.cpp")
@@ -356,7 +356,7 @@ if __name__ == '__main__':
     fd.close()
 
     #
-    # smx_popping_bodies.cpp
+    # popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
     fd.write('#include "smx_private.hpp"\n')
