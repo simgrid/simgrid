@@ -8,7 +8,7 @@
 
 #include <math.h>
 #include "smpi/mpi.h"
-#include "private.h"
+#include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"

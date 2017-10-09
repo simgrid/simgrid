@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi/smpi.h"
-#include "private.h"
+#include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_topo.hpp"
 #include "xbt/sysdep.h"

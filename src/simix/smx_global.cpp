@@ -43,7 +43,6 @@
 #include "src/mc/mc_record.hpp"
 
 #if HAVE_SMPI
-#include "src/smpi/include/private.h"
 #include "src/smpi/include/private.hpp"
 #endif
 

@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_datatype_derived.hpp"

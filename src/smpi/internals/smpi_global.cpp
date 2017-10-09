@@ -11,7 +11,6 @@
 #include "src/surf/surf_interface.hpp"
 #include "SmpiHost.hpp"
 #include "xbt/config.hpp"
-#include "private.h"
 #include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"

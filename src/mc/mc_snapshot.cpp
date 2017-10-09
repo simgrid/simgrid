@@ -13,7 +13,7 @@
 #include "xbt/sysdep.h"
 
 #include "src/internal_config.h"
-#include "src/smpi/include/private.h"
+#include "src/smpi/include/private.hpp"
 
 #include "src/mc/mc_snapshot.hpp"
 #include "src/mc/mc_private.hpp"

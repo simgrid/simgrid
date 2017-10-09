@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license ,(GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "private.hpp"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)");

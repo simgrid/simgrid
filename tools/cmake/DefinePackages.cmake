@@ -34,7 +34,6 @@ set(EXTRA_DIST
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
-  src/smpi/include/private.h
   src/smpi/include/private.hpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp

@@ -9,7 +9,6 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.h"
 #include "SmpiHost.hpp"
-#include "private.h"
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"

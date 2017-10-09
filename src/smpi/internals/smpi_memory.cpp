@@ -24,7 +24,6 @@
 #include "src/internal_config.h"
 #include "src/xbt/memory_map.hpp"
 
-#include "private.h"
 #include "private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");

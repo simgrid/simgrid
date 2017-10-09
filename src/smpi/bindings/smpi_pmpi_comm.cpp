@@ -5,7 +5,7 @@
 
 #include <climits>
 
-#include "private.h"
+#include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_process.hpp"
 

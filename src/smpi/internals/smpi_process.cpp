@@ -7,7 +7,6 @@
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
-#include "private.h"
 #include "private.hpp"
 #include "smpi_process.hpp"
 #include "smpi_group.hpp"

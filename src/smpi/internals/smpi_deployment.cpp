@@ -6,7 +6,7 @@
 
 #include "simgrid/msg.h" /* barrier */
 #include "SmpiHost.hpp"
-#include "private.h"
+#include "private.hpp"
 #include "smpi_comm.hpp"
 #include <map>
 

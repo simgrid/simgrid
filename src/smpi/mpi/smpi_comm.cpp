@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_comm.hpp"
-#include "private.h"
 #include "private.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "smpi_coll.hpp"

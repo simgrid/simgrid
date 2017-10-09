@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stack>
-#include "private.h"
+#include "private.hpp"
 
 typedef struct s_smpi_static {
   void *ptr;
