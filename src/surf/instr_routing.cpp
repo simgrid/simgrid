@@ -68,7 +68,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
 static void linkContainers(container_t src, container_t dst, std::set<std::string>* filter)
 {
   //ignore loopback
-  if (strcmp(src->name_, "__loopback__") == 0 || strcmp(dst->name_, "__loopback__") == 0) {
+  if (src->name_ == "__loopback__" || dst->name_ == "__loopback__") {
     XBT_DEBUG ("  linkContainers: ignoring loopback link");
     return;
   }
@@ -80,14 +80,14 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   }
 
   // check if we already register this pair (we only need one direction)
-  std::string aux1 = std::string(src->name_) + dst->name_;
-  std::string aux2 = std::string(dst->name_) + src->name_;
+  std::string aux1 = src->name_ + dst->name_;
+  std::string aux2 = dst->name_ + src->name_;
   if (filter->find(aux1) != filter->end()) {
-    XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->name_, dst->name_);
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->name_.c_str(), dst->name_.c_str());
     return;
   }
   if (filter->find(aux2) != filter->end()) {
-    XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->name_, src->name_);
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->name_.c_str(), src->name_.c_str());
     return;
   }
 
@@ -116,7 +116,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
   new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), father, link_type, dst, "topology", key);
 
-  XBT_DEBUG("  linkContainers %s <-> %s", src->name_, dst->name_);
+  XBT_DEBUG("  linkContainers %s <-> %s", src->name_.c_str(), dst->name_.c_str());
 }
 
 static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container,
@@ -130,7 +130,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
     for (auto const& nz_son : *netzone->getChildren()) {
-      container_t child_container = static_cast<container_t>(xbt_dict_get(container->children_, nz_son->getCname()));
+      container_t child_container = container->children_.at(nz_son->getCname());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
@@ -281,7 +281,6 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
       simgrid::instr::Type::linkNew("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
     }
   }
-
 }
 
 static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
@@ -423,8 +422,7 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt
   if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
     for (auto const& netzone_child : *netzone->getChildren()) {
-      container_t child_container =
-          static_cast<container_t>(xbt_dict_get(container->children_, netzone_child->getCname()));
+      container_t child_container = container->children_.at(netzone_child->getCname());
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }

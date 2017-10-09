@@ -333,7 +333,7 @@ void LogContainerCreation (container_t container)
 
     if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
       char* folder_name = bprintf("%s_files", TRACE_get_filename());
-      char* filename    = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name_);
+      char* filename    = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name_.c_str());
 #ifdef WIN32
       _mkdir(folder_name);
 #else
@@ -566,10 +566,10 @@ void simgrid::instr::PushStateEvent::print()
 
     char* process_id = nullptr;
     // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-    if (strstr(container->name_, "rank-") == nullptr)
-      process_id = xbt_strdup(container->name_);
+    if (strstr(container->name_.c_str(), "rank-") == nullptr)
+      process_id = xbt_strdup(container->name_.c_str());
     else
-      process_id = xbt_strdup(container->name_ + 5);
+      process_id = xbt_strdup(container->name_.c_str() + 5);
 
     FILE* trace_file = tracing_files.at(container);
 

@@ -12,6 +12,7 @@
 #include "simgrid/instr.h"
 #include "simgrid_config.h"
 #include "src/internal_config.h"
+#include <map>
 #include <set>
 #include <string>
 
@@ -112,17 +113,17 @@ typedef enum {
 
 class Container {
 public:
-  Container(const char* name, simgrid::instr::e_container_types kind, Container* father);
+  Container(std::string name, simgrid::instr::e_container_types kind, Container* father);
   virtual ~Container();
 
   sg_netpoint_t netpoint_;
-  char* name_;             /* Unique name of this container */
-  char* id_;               /* Unique id of this container */
+  std::string name_;       /* Unique name of this container */
+  std::string id_;         /* Unique id of this container */
   Type* type_;             /* Type of this container */
   int level_ = 0;          /* Level in the hierarchy, root level is 0 */
   e_container_types kind_; /* This container is of what kind */
   Container* father_;
-  xbt_dict_t children_;
+  std::map<std::string, Container*> children_;
 };
 
 //--------------------------------------------------

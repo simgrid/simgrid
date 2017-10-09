@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorize
 static std::unordered_map<std::string, std::string> platform_variables;
 
 //used by all methods
-static void __TRACE_surf_check_variable_set_to_zero(double now, const char *variable, const char *resource)
+static void __TRACE_surf_check_variable_set_to_zero(double now, const char* variable, std::string resource)
 {
   /* To trace resource utilization, we use pajeAddVariable and pajeSubVariable only.
    * The Paje simulator needs a pajeSetVariable in the first place so it knows the initial value of all variables for
@@ -23,11 +23,11 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
    */
 
   // create a key considering the resource and variable
-  std::string key = std::string(resource) + variable;
+  std::string key = resource + variable;
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
   if (platform_variables.find(key) == platform_variables.end()) {
-    container_t container = PJ_container_get (resource);
+    container_t container      = PJ_container_get(resource.c_str());
     simgrid::instr::Type* type = container->type_->getChild(variable);
     new simgrid::instr::SetVariableEvent(now, container, type, 0);
     platform_variables[key] = std::string("");
