@@ -55,7 +55,7 @@ static void WriteUntilBufferFull(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
     uint32_t toWrite = std::min({flow->remaining_, sock->GetTxAvailable()});
     if (toWrite == 0) // buffer full
       return;
-    int amountSent   = sock->Send(0, toWrite, 0);
+    int amountSent = sock->Send(0, toWrite, 0);
 
     xbt_assert(amountSent > 0, "Since TxAvailable>0, amountSent should also >0");
     flow->bufferedBytes_ += amountSent;
@@ -113,19 +113,18 @@ void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number)
   sock->Connect(serverAddr);
   // tell the tcp implementation to call WriteUntilBufferFull again
   // if we blocked and new tx buffer space becomes available
-  sock->SetSendCallback (MakeCallback(&WriteUntilBufferFull));
+  sock->SetSendCallback(MakeCallback(&WriteUntilBufferFull));
   // Note when the send is over
   sock->SetRecvCallback(MakeCallback(&receive_callback));
   // Keep track of what was used (for the TRACING module)
   sock->SetDataSentCallback(MakeCallback(&datasent_callback));
   XBT_DEBUG("startFlow of F[%p, %p, %u] dest=%s port=%d", flow, flow->action_, flow->totalBytes_, to, port_number);
 
-  //WriteUntilBufferFull (sock, sock->GetTxAvailable ());
+  // WriteUntilBufferFull (sock, sock->GetTxAvailable ());
   /*
   sock->SetSendCallback(MakeCallback(&send_callback));
   sock->SetConnectCallback(MakeCallback(&succeededConnect_callback), MakeCallback(&failedConnect_callback));
   sock->SetCloseCallbacks(MakeCallback(&normalClose_callback), MakeCallback(&errorClose_callback));
   send_callback(sock, sock->GetTxAvailable ());
    */
-
 }

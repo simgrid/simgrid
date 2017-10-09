@@ -303,7 +303,7 @@ if(HAVE_MMALLOC)
 endif()
 
 set(NS3_SRC  src/surf/network_ns3.cpp
-             src/surf/ns3/ns3_simulator.cc )
+             src/surf/ns3/ns3_simulator.cpp )
 
 set(SURF_SRC
   src/kernel/routing/ClusterZone.cpp
