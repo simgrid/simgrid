@@ -222,8 +222,8 @@ std::vector<std::string> resolveBacktrace(
       int found = 0;
 
       /* let's look for the offset of this library in our addressing space */
-      char* maps_name = bprintf("/proc/%d/maps", (int) getpid());
-      FILE* maps = fopen(maps_name, "r");
+      std::string maps_name = std::string("/proc/") + std::to_string(getpid()) + "maps";
+      FILE* maps            = fopen(maps_name.c_str(), "r");
 
       unsigned long int addr = strtoul(addrs[i].c_str(), &p, 16);
       if (*p != '\0') {
@@ -254,7 +254,6 @@ std::vector<std::string> resolveBacktrace(
         }
       }
       fclose(maps);
-      free(maps_name);
       addrs[i].clear();
 
       if (not found) {
@@ -286,27 +285,26 @@ std::vector<std::string> resolveBacktrace(
           *p2 = '\0';
 
         /* Here we go, fire an addr2line up */
-        char* subcmd = bprintf("%s -f -e %s %s", ADDR2LINE, p, addrs[i].c_str());
+        std::string subcmd = std::string(ADDR2LINE) + " -f -e " + p + " " + addrs[i];
         free(p);
-        XBT_VERB("Fire a new command: '%s'", subcmd);
-        FILE* subpipe = popen(subcmd, "r");
+        XBT_VERB("Fire a new command: '%s'", subcmd.c_str());
+        FILE* subpipe = popen(subcmd.c_str(), "r");
         if (not subpipe) {
           xbt_die("Cannot fork addr2line to display the backtrace");
         }
         if (fgets(line_func, 1024, subpipe)) {
           line_func[strlen(line_func) - 1] = '\0';
         } else {
-          XBT_VERB("Cannot read result of subcommand %s", subcmd);
+          XBT_VERB("Cannot read result of subcommand %s", subcmd.c_str());
           strncpy(line_func, "???",3);
         }
         if (fgets(line_pos, 1024, subpipe)) {
           line_pos[strlen(line_pos) - 1] = '\0';
         } else {
-          XBT_VERB("Cannot read result of subcommand %s", subcmd);
+          XBT_VERB("Cannot read result of subcommand %s", subcmd.c_str());
           strncpy(line_pos, backtrace_syms[i],1024);
         }
         pclose(subpipe);
-        free(subcmd);
       }
 
       /* check whether the trick worked */
