@@ -65,7 +65,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   return p;
 }
 
-static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
+static void linkContainers(container_t src, container_t dst, std::set<std::string>* filter)
 {
   //ignore loopback
   if (strcmp(src->name_, "__loopback__") == 0 || strcmp(dst->name_, "__loopback__") == 0) {
@@ -79,25 +79,21 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
     xbt_die ("common father unknown, this is a tracing problem");
   }
 
-  if (filter != nullptr){
-    //check if we already register this pair (we only need one direction)
-    char aux1[INSTR_DEFAULT_STR_SIZE];
-    char aux2[INSTR_DEFAULT_STR_SIZE];
-    snprintf(aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", src->name_, dst->name_);
-    snprintf(aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", dst->name_, src->name_);
-    if (xbt_dict_get_or_null (filter, aux1)){
-      XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->name_, dst->name_);
-      return;
-    }
-    if (xbt_dict_get_or_null (filter, aux2)){
-      XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->name_, src->name_);
-      return;
-    }
-
-    //ok, not found, register it
-    xbt_dict_set (filter, aux1, xbt_strdup ("1"), nullptr);
-    xbt_dict_set (filter, aux2, xbt_strdup ("1"), nullptr);
+  // check if we already register this pair (we only need one direction)
+  std::string aux1 = std::string(src->name_) + dst->name_;
+  std::string aux2 = std::string(dst->name_) + src->name_;
+  if (filter->find(aux1) != filter->end()) {
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->name_, dst->name_);
+    return;
   }
+  if (filter->find(aux2) != filter->end()) {
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->name_, src->name_);
+    return;
+  }
+
+  // ok, not found, register it
+  filter->insert(aux1);
+  filter->insert(aux2);
 
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
@@ -123,7 +119,8 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   XBT_DEBUG("  linkContainers %s <-> %s", src->name_, dst->name_);
 }
 
-static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container,
+                                     std::set<std::string>* filter)
 {
   if (not TRACE_platform_topology()) {
     XBT_DEBUG("Graph extraction disabled by user.");
@@ -300,11 +297,11 @@ static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
 static void instr_routing_parse_end_platform ()
 {
   currentContainer.clear();
-  xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
+  std::set<std::string>* filter = new std::set<std::string>;
   XBT_DEBUG ("Starting graph extraction.");
   recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), PJ_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");
-  xbt_dict_free(&filter);
+  delete filter;
   platform_created = 1;
   TRACE_paje_dump_buffer(1);
 }
