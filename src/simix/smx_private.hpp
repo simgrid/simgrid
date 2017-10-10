@@ -8,7 +8,7 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/context/Context.hpp"
-#include <signal.h>
+#include <csignal>
 
 #include <map>
 #include <vector>

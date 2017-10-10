@@ -6,7 +6,7 @@
 #ifndef SMPI_COLLS_PRIVATE_HPP
 #define SMPI_COLLS_PRIVATE_HPP
 
-#include <math.h>
+#include <cmath>
 #include "smpi/mpi.h"
 #include "private.hpp"
 #include "smpi_coll.hpp"

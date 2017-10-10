@@ -10,7 +10,7 @@
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 #include "surf/datatypes.h"
-#include <math.h>
+#include <cmath>
 
 namespace simgrid {
 namespace surf {

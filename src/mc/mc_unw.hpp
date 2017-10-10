@@ -29,7 +29,7 @@
 #include "xbt/base.h"
 
 #include <libunwind.h>
-#include <stdio.h>
+#include <cstdio>
 #include <sys/types.h>
 
 namespace simgrid {

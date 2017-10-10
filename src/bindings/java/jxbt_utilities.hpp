@@ -9,7 +9,7 @@
 #define JXBT_UTILITIES_HPP
 
 #include <jni.h>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 extern "C" {
