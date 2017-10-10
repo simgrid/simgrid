@@ -179,7 +179,6 @@ public:
 
 class PushStateEvent : public PajeEvent {
   Value* value;
-  int size;
   const char* filename;
   int linenumber;
   void* extra_;
