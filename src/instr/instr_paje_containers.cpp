@@ -132,9 +132,12 @@ simgrid::instr::Container::Container(std::string name, simgrid::instr::e_contain
 simgrid::instr::Container::~Container()
 {
   XBT_DEBUG("destroy container %s", name_.c_str());
+  // Begin with destroying my own children
+  for (auto child : children_) {
+    delete child.second;
+  }
 
-  // obligation to dump previous events because they might
-  // reference the container that is about to be destroyed
+  // obligation to dump previous events because they might reference the container that is about to be destroyed
   TRACE_last_timestamp_to_dump = surf_get_clock();
   TRACE_paje_dump_buffer(1);
 
@@ -144,10 +147,8 @@ simgrid::instr::Container::~Container()
     LogContainerDestruction(this);
   }
 
-  // remove it from allContainers data structure
+  // remove me from the allContainers data structure
   allContainers.erase(name_);
-
-  // free
 }
 
 simgrid::instr::Container* PJ_container_get(const char* name)
@@ -180,32 +181,5 @@ void PJ_container_remove_from_parent (container_t child)
   if (parent){
     XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", child->name_.c_str(), parent->name_.c_str());
     parent->children_.erase(child->name_);
-  }
-}
-
-static void recursiveDestroyContainer (container_t container)
-{
-  if (container == nullptr){
-    THROWF (tracing_error, 0, "trying to recursively destroy a nullptr container");
-  }
-  XBT_DEBUG("recursiveDestroyContainer %s", container->name_.c_str());
-  for (auto child : container->children_) {
-    recursiveDestroyContainer(child.second);
-  }
-  delete container;
-}
-
-void PJ_container_free_all ()
-{
-  container_t root = PJ_container_get_root();
-  if (root == nullptr){
-    THROWF (tracing_error, 0, "trying to free all containers, but root is nullptr");
-  }
-  recursiveDestroyContainer (root);
-  rootContainer = nullptr;
-
-  //checks
-  if (not allContainers.empty()) {
-    THROWF(tracing_error, 0, "some containers still present even after destroying all of them");
   }
 }

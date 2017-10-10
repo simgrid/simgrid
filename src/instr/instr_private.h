@@ -96,7 +96,6 @@ public:
   static Value* get(const char* name, Type* father);
 };
 
-
 //--------------------------------------------------
 typedef enum {
   INSTR_HOST,
@@ -165,7 +164,6 @@ class SubVariableEvent : public PajeEvent  {
     Container* container;
     Type* type;
     double value;
-
   public:
     SubVariableEvent(double timestamp, Container* container, Type* type, double value);
     void print() override;
@@ -333,7 +331,6 @@ XBT_PUBLIC(container_t) PJ_container_get (const char *name);
 XBT_PUBLIC(simgrid::instr::Container*) PJ_container_get_or_null(const char* name);
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
-XBT_PUBLIC(void) PJ_container_free_all (void);
 XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */

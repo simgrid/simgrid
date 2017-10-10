@@ -142,7 +142,7 @@ int TRACE_end()
     TRACE_paje_dump_buffer(1);
 
     /* destroy all data structures of tracing (and free) */
-    PJ_container_free_all();
+    delete PJ_container_get_root();
     delete PJ_type_get_root();
     rootType = nullptr;
 
