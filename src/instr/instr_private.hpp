@@ -19,7 +19,7 @@
 /* Need to define function drand48 for Windows */
 /* FIXME: use _drand48() defined in src/surf/random_mgr.c instead */
 #ifdef _WIN32
-#  define drand48() (rand()/(RAND_MAX + 1.0))
+#define drand48() (rand() / (RAND_MAX + 1.0))
 #endif
 
 #define INSTR_DEFAULT_STR_SIZE 500
@@ -50,13 +50,7 @@ typedef enum {
   PAJE_NewEvent
 } e_event_type;
 
-typedef enum {
-  TYPE_VARIABLE,
-  TYPE_LINK,
-  TYPE_CONTAINER,
-  TYPE_STATE,
-  TYPE_EVENT
-} e_entity_types;
+typedef enum { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT } e_entity_types;
 
 //--------------------------------------------------
 
@@ -127,80 +121,79 @@ public:
 
 //--------------------------------------------------
 class PajeEvent {
-  public:
-    double timestamp_;
-    e_event_type eventType_;
-    virtual void print() = 0;
-    virtual ~PajeEvent();
+public:
+  double timestamp_;
+  e_event_type eventType_;
+  virtual void print() = 0;
+  virtual ~PajeEvent();
 };
 
 //--------------------------------------------------
-class SetVariableEvent : public PajeEvent  {
-  private:
-    Container* container;
-    Type* type;
-    double value;
+class SetVariableEvent : public PajeEvent {
+private:
+  Container* container;
+  Type* type;
+  double value;
 
-  public:
-    SetVariableEvent(double timestamp, Container* container, Type* type, double value);
-    void print() override;
+public:
+  SetVariableEvent(double timestamp, Container* container, Type* type, double value);
+  void print() override;
 };
 
-class AddVariableEvent:public PajeEvent {
-  private:
-    Container* container;
-    Type* type;
-    double value;
+class AddVariableEvent : public PajeEvent {
+private:
+  Container* container;
+  Type* type;
+  double value;
 
-  public:
-    AddVariableEvent(double timestamp, Container* container, Type* type, double value);
-    void print() override;
-};
-//--------------------------------------------------
-
-
-class SubVariableEvent : public PajeEvent  {
-  private:
-    Container* container;
-    Type* type;
-    double value;
-  public:
-    SubVariableEvent(double timestamp, Container* container, Type* type, double value);
-    void print() override;
+public:
+  AddVariableEvent(double timestamp, Container* container, Type* type, double value);
+  void print() override;
 };
 //--------------------------------------------------
 
-class SetStateEvent : public PajeEvent  {
-  private:
-    Container* container;
-    Type* type;
-    Value* value;
-    const char* filename;
-    int linenumber;
+class SubVariableEvent : public PajeEvent {
+private:
+  Container* container;
+  Type* type;
+  double value;
 
-  public:
-    SetStateEvent(double timestamp, Container* container, Type* type, Value* val);
-    void print() override;
+public:
+  SubVariableEvent(double timestamp, Container* container, Type* type, double value);
+  void print() override;
+};
+//--------------------------------------------------
+
+class SetStateEvent : public PajeEvent {
+private:
+  Container* container;
+  Type* type;
+  Value* value;
+  const char* filename;
+  int linenumber;
+
+public:
+  SetStateEvent(double timestamp, Container* container, Type* type, Value* val);
+  void print() override;
 };
 
+class PushStateEvent : public PajeEvent {
+public:
+  Container* container;
+  Type* type;
+  Value* value;
+  int size;
+  const char* filename;
+  int linenumber;
+  void* extra_;
 
-class PushStateEvent : public PajeEvent  {
-  public:
-    Container* container;
-    Type* type;
-    Value* value;
-    int size;
-    const char* filename;
-    int linenumber;
-    void* extra_;
-
-  public:
-    PushStateEvent(double timestamp, Container* container, Type* type, Value* val);
-    PushStateEvent(double timestamp, Container* container, Type* type, Value* val, void* extra);
-    void print() override;
+public:
+  PushStateEvent(double timestamp, Container* container, Type* type, Value* val);
+  PushStateEvent(double timestamp, Container* container, Type* type, Value* val, void* extra);
+  void print() override;
 };
 
-class PopStateEvent : public PajeEvent  {
+class PopStateEvent : public PajeEvent {
   Container* container;
   Type* type;
 
@@ -209,7 +202,7 @@ public:
   void print() override;
 };
 
-class ResetStateEvent : public PajeEvent  {
+class ResetStateEvent : public PajeEvent {
   Container* container;
   Type* type;
 
@@ -218,7 +211,7 @@ public:
   void print() override;
 };
 
-class StartLinkEvent : public PajeEvent  {
+class StartLinkEvent : public PajeEvent {
   Container* container_;
   Type* type_;
   Container* sourceContainer_;
@@ -234,7 +227,7 @@ public:
   void print() override;
 };
 
-class EndLinkEvent : public PajeEvent  {
+class EndLinkEvent : public PajeEvent {
   Container* container;
   Type* type;
   Container* destContainer;
@@ -248,16 +241,15 @@ public:
   void print() override;
 };
 
+class NewEvent : public PajeEvent {
+public:
+  Container* container;
+  Type* type;
+  Value* val;
 
-class NewEvent : public PajeEvent  {
-  public:
-    Container* container;
-    Type* type;
-    Value* val;
-
-  public:
-    NewEvent(double timestamp, Container* container, Type* type, Value* val);
-    void print() override;
+public:
+  NewEvent(double timestamp, Container* container, Type* type, Value* val);
+  void print() override;
 };
 }
 } // namespace simgrid::instr
@@ -278,36 +270,35 @@ XBT_PRIVATE void TRACE_header(int basic, int size);
 /* from paje.c */
 XBT_PRIVATE void TRACE_paje_start();
 XBT_PRIVATE void TRACE_paje_end();
-XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
-
+XBT_PRIVATE void TRACE_paje_dump_buffer(int force);
 
 /* from instr_config.c */
-XBT_PRIVATE bool TRACE_needs_platform ();
+XBT_PRIVATE bool TRACE_needs_platform();
 XBT_PRIVATE bool TRACE_is_enabled();
 XBT_PRIVATE bool TRACE_platform();
 XBT_PRIVATE bool TRACE_platform_topology();
 XBT_PRIVATE bool TRACE_is_configured();
-XBT_PRIVATE bool TRACE_categorized ();
-XBT_PRIVATE bool TRACE_uncategorized ();
+XBT_PRIVATE bool TRACE_categorized();
+XBT_PRIVATE bool TRACE_uncategorized();
 XBT_PRIVATE bool TRACE_msg_process_is_enabled();
 XBT_PRIVATE bool TRACE_msg_vm_is_enabled();
-XBT_PRIVATE bool TRACE_buffer ();
+XBT_PRIVATE bool TRACE_buffer();
 XBT_PRIVATE bool TRACE_disable_link();
 XBT_PRIVATE bool TRACE_disable_speed();
-XBT_PRIVATE bool TRACE_onelink_only ();
-XBT_PRIVATE bool TRACE_disable_destroy ();
-XBT_PRIVATE bool TRACE_basic ();
-XBT_PRIVATE bool TRACE_display_sizes ();
-XBT_PRIVATE char *TRACE_get_comment ();
-XBT_PRIVATE char *TRACE_get_comment_file ();
-XBT_PRIVATE int TRACE_precision ();
-XBT_PRIVATE char *TRACE_get_filename();
-XBT_PRIVATE char *TRACE_get_viva_uncat_conf ();
-XBT_PRIVATE char *TRACE_get_viva_cat_conf ();
-XBT_PRIVATE void TRACE_generate_viva_uncat_conf ();
-XBT_PRIVATE void TRACE_generate_viva_cat_conf ();
-XBT_PRIVATE void instr_pause_tracing ();
-XBT_PRIVATE void instr_resume_tracing ();
+XBT_PRIVATE bool TRACE_onelink_only();
+XBT_PRIVATE bool TRACE_disable_destroy();
+XBT_PRIVATE bool TRACE_basic();
+XBT_PRIVATE bool TRACE_display_sizes();
+XBT_PRIVATE char* TRACE_get_comment();
+XBT_PRIVATE char* TRACE_get_comment_file();
+XBT_PRIVATE int TRACE_precision();
+XBT_PRIVATE char* TRACE_get_filename();
+XBT_PRIVATE char* TRACE_get_viva_uncat_conf();
+XBT_PRIVATE char* TRACE_get_viva_cat_conf();
+XBT_PRIVATE void TRACE_generate_viva_uncat_conf();
+XBT_PRIVATE void TRACE_generate_viva_cat_conf();
+XBT_PRIVATE void instr_pause_tracing();
+XBT_PRIVATE void instr_resume_tracing();
 
 /* Public functions used in SMPI */
 XBT_PUBLIC(bool) TRACE_smpi_is_enabled();
@@ -317,17 +308,17 @@ XBT_PUBLIC(bool) TRACE_smpi_is_sleeping();
 XBT_PUBLIC(bool) TRACE_smpi_view_internals();
 
 /* from resource_utilization.c */
-XBT_PRIVATE void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now,
-                                     double delta);
-XBT_PRIVATE void TRACE_surf_link_set_utilization(const char *resource,const char *category, double value, double now,
-                                     double delta);
+XBT_PRIVATE void TRACE_surf_host_set_utilization(const char* resource, const char* category, double value, double now,
+                                                 double delta);
+XBT_PRIVATE void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now,
+                                                 double delta);
 XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 
 /* instr_paje.c */
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
 extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
-XBT_PRIVATE long long int instr_new_paje_id ();
-XBT_PUBLIC(container_t) PJ_container_get (const char *name);
+XBT_PRIVATE long long int instr_new_paje_id();
+XBT_PUBLIC(container_t) PJ_container_get(const char* name);
 XBT_PUBLIC(simgrid::instr::Container*) PJ_container_get_or_null(const char* name);
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
@@ -340,14 +331,14 @@ XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 
-XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
-XBT_PRIVATE void dump_comment_file (const char *filename);
-XBT_PRIVATE void dump_comment (const char *comment);
+XBT_PRIVATE void TRACE_paje_dump_buffer(int force);
+XBT_PRIVATE void dump_comment_file(const char* filename);
+XBT_PRIVATE void dump_comment(const char* comment);
 
 struct s_instr_extra_data;
-typedef struct s_instr_extra_data *instr_extra_data;
+typedef struct s_instr_extra_data* instr_extra_data;
 
-typedef enum{
+typedef enum {
   TRACING_INIT,
   TRACING_FINALIZE,
   TRACING_COMM_SIZE,
@@ -381,7 +372,7 @@ typedef enum{
   TRACING_SLEEPING,
   TRACING_SCAN,
   TRACING_EXSCAN
-} e_caller_type ;
+} e_caller_type;
 
 typedef struct s_instr_extra_data {
   e_caller_type type;
@@ -394,15 +385,16 @@ typedef struct s_instr_extra_data {
   int root;
   const char* datatype1;
   const char* datatype2;
-  int * sendcounts;
-  int * recvcounts;
+  int* sendcounts;
+  int* recvcounts;
   int num_processes;
 } s_instr_extra_data_t;
 
 /* Format of TRACING output.
  *   - paje is the regular format, that we all know
- *   - TI is a trick to reuse the tracing functions to generate a time independent trace during the execution. Such trace can easily be replayed with smpi_replay afterward.
- *     This trick should be removed and replaced by some code using the signal that we will create to cleanup the TRACING
+ *   - TI is a trick to reuse the tracing functions to generate a time independent trace during the execution. Such
+ *     trace can easily be replayed with smpi_replay afterward. This trick should be removed and replaced by some code
+ *     using the signal that we will create to cleanup the TRACING
  */
 typedef enum { instr_fmt_paje, instr_fmt_TI } instr_fmt_type_t;
 extern instr_fmt_type_t instr_fmt_type;
@@ -413,8 +405,8 @@ void LogVariableTypeDefinition(simgrid::instr::Type* type);
 void LogStateTypeDefinition(simgrid::instr::Type* type);
 void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest);
 void LogEntityValue(simgrid::instr::Value* val);
-void LogContainerCreation (container_t container);
-void LogContainerDestruction (container_t container);
+void LogContainerCreation(container_t container);
+void LogContainerDestruction(container_t container);
 void LogDefineEventType(simgrid::instr::Type* type);
 
 #endif

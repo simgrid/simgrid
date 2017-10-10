@@ -24,29 +24,27 @@ XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, mc
 
 static XBT_ALWAYS_INLINE void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
-  auto split = simgrid::mc::mmu::split(addr - region->start().address());
-  auto pageno = split.first;
-  auto offset = split.second;
+  auto split                = simgrid::mc::mmu::split(addr - region->start().address());
+  auto pageno               = split.first;
+  auto offset               = split.second;
   const void* snapshot_page = region->page_data().page(pageno);
-  return (char*) snapshot_page + offset;
+  return (char*)snapshot_page + offset;
 }
 
 static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int process_index)
 {
   switch (region->storage_type()) {
-  case simgrid::mc::StorageType::Flat:
-    {
-      uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
-      return (void *) ((uintptr_t) region->flat_data().get() + offset);
+    case simgrid::mc::StorageType::Flat: {
+      uintptr_t offset = (uintptr_t)addr - (uintptr_t)region->start().address();
+      return (void*)((uintptr_t)region->flat_data().get() + offset);
     }
-  case simgrid::mc::StorageType::Chunked:
-    return mc_translate_address_region_chunked(addr, region);
-  case simgrid::mc::StorageType::Privatized:
-    {
-    xbt_assert(process_index >= 0, "Missing process index for privatized region");
-    xbt_assert((size_t)process_index < region->privatized_data().size(), "Out of range process index");
-    simgrid::mc::RegionSnapshot& subregion = region->privatized_data()[process_index];
-    return mc_translate_address_region(addr, &subregion, process_index);
+    case simgrid::mc::StorageType::Chunked:
+      return mc_translate_address_region_chunked(addr, region);
+    case simgrid::mc::StorageType::Privatized: {
+      xbt_assert(process_index >= 0, "Missing process index for privatized region");
+      xbt_assert((size_t)process_index < region->privatized_data().size(), "Out of range process index");
+      simgrid::mc::RegionSnapshot& subregion = region->privatized_data()[process_index];
+      return mc_translate_address_region(addr, &subregion, process_index);
     }
     case simgrid::mc::StorageType::NoData:
     default:
@@ -70,7 +68,7 @@ typedef struct s_mc_snapshot_ignored_data {
   std::vector<char> data;
 } s_mc_snapshot_ignored_data_t;
 
-typedef struct s_fd_infos{
+typedef struct s_fd_infos {
   std::string filename;
   int number;
   off_t current_position;
@@ -90,12 +88,12 @@ typedef struct s_mc_stack_frame {
 } s_mc_stack_frame_t;
 typedef s_mc_stack_frame_t* mc_stack_frame_t;
 
-typedef struct s_local_variable{
+typedef struct s_local_variable {
   simgrid::mc::Frame* subprogram;
   unsigned long ip;
   std::string name;
   simgrid::mc::Type* type;
-  void *address;
+  void* address;
   int region;
 } s_local_variable_t;
 typedef s_local_variable_t* local_variable_t;
@@ -114,9 +112,8 @@ class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   Snapshot(RemoteClient* process, int num_state);
   ~Snapshot() = default;
-  const void* read_bytes(void* buffer, std::size_t size,
-    RemotePtr<void> address, int process_index = ProcessIndexAny,
-    ReadOptions options = ReadOptions::none()) const override;
+  const void* read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, int process_index = ProcessIndexAny,
+                         ReadOptions options = ReadOptions::none()) const override;
 
   // To be private
   int num_state;
@@ -131,7 +128,6 @@ public:
   std::vector<s_mc_snapshot_ignored_data> ignored_data;
   std::vector<s_fd_infos_t> current_fds;
 };
-
 }
 }
 
@@ -147,7 +143,6 @@ static XBT_ALWAYS_INLINE mc_mem_region_t mc_get_region_hinted(void* addr, simgri
 }
 
 static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
-
 }
 
 namespace simgrid {
@@ -155,7 +150,6 @@ namespace mc {
 
 XBT_PRIVATE std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state);
 XBT_PRIVATE void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot);
-
 }
 }
 
@@ -164,20 +158,17 @@ extern "C" {
 XBT_PRIVATE void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* start_addr,
                                                  simgrid::mc::ChunkedData const& pagenos);
 
-const void* MC_region_read_fragmented(
-  mc_mem_region_t region, void* target, const void* addr, std::size_t size);
+const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, const void* addr, std::size_t size);
 
-int MC_snapshot_region_memcmp(
-  const void* addr1, mc_mem_region_t region1,
-  const void* addr2, mc_mem_region_t region2, std::size_t size);
-XBT_PRIVATE int MC_snapshot_memcmp(
-  const void* addr1, simgrid::mc::Snapshot* snapshot1,
-  const void* addr2, simgrid::mc::Snapshot* snapshot2, int process_index, std::size_t size);
+int MC_snapshot_region_memcmp(const void* addr1, mc_mem_region_t region1, const void* addr2, mc_mem_region_t region2,
+                              std::size_t size);
+XBT_PRIVATE int MC_snapshot_memcmp(const void* addr1, simgrid::mc::Snapshot* snapshot1, const void* addr2,
+                                   simgrid::mc::Snapshot* snapshot2, int process_index, std::size_t size);
 
 static XBT_ALWAYS_INLINE const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
 {
-  if(snapshot==nullptr)
-      xbt_die("snapshot is nullptr");
+  if (snapshot == nullptr)
+    xbt_die("snapshot is nullptr");
   return mc_model_checker->process().get_heap()->breakval;
 }
 
@@ -199,37 +190,36 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
   xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
   switch (region->storage_type()) {
-  case simgrid::mc::StorageType::NoData:
-  default:
-    xbt_die("Storage type not supported");
+    case simgrid::mc::StorageType::NoData:
+    default:
+      xbt_die("Storage type not supported");
 
-  case simgrid::mc::StorageType::Flat:
-    return (char*) region->flat_data().get() + offset;
+    case simgrid::mc::StorageType::Flat:
+      return (char*)region->flat_data().get() + offset;
 
-  case simgrid::mc::StorageType::Chunked:
-    {
+    case simgrid::mc::StorageType::Chunked: {
       // Last byte of the region:
-      void* end = (char*) addr + size - 1;
-      if (simgrid::mc::mmu::sameChunk((std::uintptr_t) addr, (std::uintptr_t) end) ) {
+      void* end = (char*)addr + size - 1;
+      if (simgrid::mc::mmu::sameChunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
         // The memory is contained in a single page:
-        return mc_translate_address_region_chunked((uintptr_t) addr, region);
+        return mc_translate_address_region_chunked((uintptr_t)addr, region);
       } else {
         // The memory spans several pages:
         return MC_region_read_fragmented(region, target, addr, size);
       }
     }
 
-  // We currently do not pass the process_index to this function so we assume
-  // that the privatized region has been resolved in the callers:
-  case simgrid::mc::StorageType::Privatized:
-    xbt_die("Storage type not supported");
+    // We currently do not pass the process_index to this function so we assume
+    // that the privatized region has been resolved in the callers:
+    case simgrid::mc::StorageType::Privatized:
+      xbt_die("Storage type not supported");
   }
 }
 
 static XBT_ALWAYS_INLINE void* MC_region_read_pointer(mc_mem_region_t region, const void* addr)
 {
   void* res;
-  return *(void**) MC_region_read(region, &res, addr, sizeof(void*));
+  return *(void**)MC_region_read(region, &res, addr, sizeof(void*));
 }
 }
 

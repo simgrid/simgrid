@@ -37,7 +37,7 @@ public:
   xbt_dynar_t actors_vector = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
 #endif
   xbt_swag_t process_to_destroy = nullptr;
-  smx_actor_t maestro_process = nullptr;
+  smx_actor_t maestro_process   = nullptr;
 
   // Maps function names to actor code:
   std::unordered_map<std::string, simgrid::simix::ActorCodeFactory> registered_functions;
@@ -49,14 +49,13 @@ public:
   void_pfn_smxprocess_t kill_process_function = nullptr;
   /** Callback used when killing a SMX_process */
   void_pfn_smxprocess_t cleanup_process_function = nullptr;
-  xbt_os_mutex_t mutex = nullptr;
+  xbt_os_mutex_t mutex                           = nullptr;
 
   std::vector<simgrid::xbt::Task<void()>> tasks;
   std::vector<simgrid::xbt::Task<void()>> tasksTemp;
 
   std::vector<simgrid::simix::ActorImpl*> daemons;
 };
-
 }
 }
 
@@ -68,14 +67,15 @@ XBT_PUBLIC(void) SIMIX_clean();
 
 /******************************** Exceptions *********************************/
 /** @brief Ask to the provided simix process to raise the provided exception */
-#define SMX_EXCEPTION(issuer, cat, val, msg) \
-  if (1) { \
-  smx_actor_t _smx_throw_issuer = (issuer); /* evaluate only once */ \
-  xbt_ex e(XBT_THROW_POINT, msg); \
-  e.category = cat; \
-  e.value = val; \
-  _smx_throw_issuer->exception = std::make_exception_ptr(e); \
-  } else ((void)0)
+#define SMX_EXCEPTION(issuer, cat, val, msg)                                                                           \
+  if (1) {                                                                                                             \
+    smx_actor_t _smx_throw_issuer = (issuer); /* evaluate only once */                                                 \
+    xbt_ex e(XBT_THROW_POINT, msg);                                                                                    \
+    e.category                   = cat;                                                                                \
+    e.value                      = val;                                                                                \
+    _smx_throw_issuer->exception = std::make_exception_ptr(e);                                                         \
+  } else                                                                                                               \
+  ((void)0)
 }
 
 #endif

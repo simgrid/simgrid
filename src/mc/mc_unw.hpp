@@ -37,7 +37,6 @@ namespace unw {
 
 XBT_PRIVATE unw_addr_space_t create_addr_space();
 XBT_PRIVATE void* create_context(unw_addr_space_t as, pid_t pid);
-
 }
 }
 
@@ -57,30 +56,19 @@ public:
   unw_cursor_t cursor();
 
 private: // Methods and virtual table for libunwind
-  static int find_proc_info(unw_addr_space_t as,
-                unw_word_t ip, unw_proc_info_t *pip,
-                int need_unwind_info, void* arg) noexcept;
-  static void put_unwind_info(unw_addr_space_t as,
-                unw_proc_info_t *pip, void* arg) noexcept;
-  static int get_dyn_info_list_addr(unw_addr_space_t as,
-                unw_word_t *dilap, void* arg) noexcept;
-  static int access_mem(unw_addr_space_t as,
-                unw_word_t addr, unw_word_t *valp,
-                int write, void* arg) noexcept;
+  static int find_proc_info(unw_addr_space_t as, unw_word_t ip, unw_proc_info_t* pip, int need_unwind_info,
+                            void* arg) noexcept;
+  static void put_unwind_info(unw_addr_space_t as, unw_proc_info_t* pip, void* arg) noexcept;
+  static int get_dyn_info_list_addr(unw_addr_space_t as, unw_word_t* dilap, void* arg) noexcept;
+  static int access_mem(unw_addr_space_t as, unw_word_t addr, unw_word_t* valp, int write, void* arg) noexcept;
   static void* get_reg(unw_context_t* context, unw_regnum_t regnum) noexcept;
-  static int access_reg(unw_addr_space_t as,
-                unw_regnum_t regnum, unw_word_t *valp,
-                int write, void* arg) noexcept;
-  static int access_fpreg(unw_addr_space_t as,
-                unw_regnum_t regnum, unw_fpreg_t *fpvalp,
-                int write, void* arg) noexcept;
-  static int resume(unw_addr_space_t as,
-                unw_cursor_t *cp, void* arg) noexcept;
-  static int get_proc_name(unw_addr_space_t as,
-                unw_word_t addr, char *bufp,
-                size_t buf_len, unw_word_t *offp,
-                void* arg) noexcept;
+  static int access_reg(unw_addr_space_t as, unw_regnum_t regnum, unw_word_t* valp, int write, void* arg) noexcept;
+  static int access_fpreg(unw_addr_space_t as, unw_regnum_t regnum, unw_fpreg_t* fpvalp, int write, void* arg) noexcept;
+  static int resume(unw_addr_space_t as, unw_cursor_t* cp, void* arg) noexcept;
+  static int get_proc_name(unw_addr_space_t as, unw_word_t addr, char* bufp, size_t buf_len, unw_word_t* offp,
+                           void* arg) noexcept;
   static unw_accessors_t accessors;
+
 public:
   // Create a libunwind address space:
   static unw_addr_space_t createUnwindAddressSpace();
@@ -89,7 +77,6 @@ public:
 void MC_dump_stack_unw(FILE* file, unw_cursor_t cursor);
 void dumpStack(FILE* file, unw_cursor_t cursor);
 void dumpStack(FILE* file, pid_t pid);
-
 }
 }
 

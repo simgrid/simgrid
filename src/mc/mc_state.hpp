@@ -17,8 +17,8 @@ namespace simgrid {
 namespace mc {
 
 enum class PatternCommunicationType {
-  none = 0,
-  send = 1,
+  none    = 0,
+  send    = 1,
   receive = 2,
 };
 
@@ -27,37 +27,33 @@ public:
   int num = 0;
   simgrid::kernel::activity::CommImpl* comm_addr;
   PatternCommunicationType type = PatternCommunicationType::send;
-  unsigned long src_proc = 0;
-  unsigned long dst_proc = 0;
-  const char *src_host = nullptr;
-  const char *dst_host = nullptr;
+  unsigned long src_proc        = 0;
+  unsigned long dst_proc        = 0;
+  const char* src_host          = nullptr;
+  const char* dst_host          = nullptr;
   std::string rdv;
   std::vector<char> data;
-  int tag = 0;
+  int tag   = 0;
   int index = 0;
 
-  PatternCommunication()
-  {
-    std::memset(&comm_addr, 0, sizeof(comm_addr));
-  }
+  PatternCommunication() { std::memset(&comm_addr, 0, sizeof(comm_addr)); }
 
   PatternCommunication dup() const
   {
     simgrid::mc::PatternCommunication res;
     // num?
     res.comm_addr = this->comm_addr;
-    res.type = this->type;
+    res.type      = this->type;
     // src_proc?
     // dst_proc?
     res.dst_proc = this->dst_proc;
     res.dst_host = this->dst_host;
-    res.rdv = this->rdv;
-    res.data = this->data;
+    res.rdv      = this->rdv;
+    res.data     = this->data;
     // tag?
     res.index = this->index;
     return res;
   }
-
 };
 
 /* On every state, each process has an entry of the following type.
@@ -79,28 +75,22 @@ class ProcessState {
 
   /** Exploration control information */
   InterleavingType state = InterleavingType::disabled;
+
 public:
   /** Number of times that the process was considered to be executed */
   // TODO, make this private
   unsigned int times_considered = 0;
 
-  bool isDisabled() const {
-    return this->state == InterleavingType::disabled;
-  }
-  bool isDone() const {
-    return this->state == InterleavingType::done;
-  }
-  bool isTodo() const {
-    return this->state == InterleavingType::todo;
-  }
+  bool isDisabled() const { return this->state == InterleavingType::disabled; }
+  bool isDone() const { return this->state == InterleavingType::done; }
+  bool isTodo() const { return this->state == InterleavingType::todo; }
   /** Mark that we should try executing this process at some point in the future of the checker algorithm */
-  void consider() {
+  void consider()
+  {
     this->state            = InterleavingType::todo;
     this->times_considered = 0;
   }
-  void setDone() {
-    this->state = InterleavingType::done;
-  }
+  void setDone() { this->state = InterleavingType::done; }
 };
 
 /* A node in the exploration graph (kind-of)
@@ -141,7 +131,6 @@ public:
   void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->pid].consider(); }
   Transition getTransition() const;
 };
-
 }
 }
 

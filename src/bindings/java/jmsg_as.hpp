@@ -27,10 +27,10 @@ void jnetzone_unref(JNIEnv* env, jobject jnetzone);
 void jnetzone_bind(jobject jas, msg_netzone_t as, JNIEnv* env);
 simgrid::s4u::NetZone* jnetzone_get_native(JNIEnv* env, jobject jnetzone);
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv* env, jclass cls);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv* env, jobject jas);
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv* env, jobject jnetzone);
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jhost, jobject jname);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv* env, jobject jhost, jobject jname);
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv* env, jobject jnetzone);
 }
 #endif

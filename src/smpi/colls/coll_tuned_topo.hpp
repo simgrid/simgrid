@@ -25,46 +25,34 @@
 
 #define MAXTREEFANOUT 32
 
-#define COLL_TUNED_COMPUTED_SEGCOUNT(SEGSIZE, TYPELNG, SEGCOUNT)        \
-    if( ((SEGSIZE) >= (TYPELNG)) &&                                     \
-        ((SEGSIZE) < ((TYPELNG) * (SEGCOUNT))) ) {                      \
-        size_t residual;                                                \
-        (SEGCOUNT) = (int)((SEGSIZE) / (TYPELNG));                      \
-        residual = (SEGSIZE) - (SEGCOUNT) * (TYPELNG);                  \
-        if( residual > ((TYPELNG) >> 1) )                               \
-            (SEGCOUNT)++;                                               \
-    }                                                                   \
+#define COLL_TUNED_COMPUTED_SEGCOUNT(SEGSIZE, TYPELNG, SEGCOUNT)                                                       \
+  if (((SEGSIZE) >= (TYPELNG)) && ((SEGSIZE) < ((TYPELNG) * (SEGCOUNT)))) {                                            \
+    size_t residual;                                                                                                   \
+    (SEGCOUNT) = (int)((SEGSIZE) / (TYPELNG));                                                                         \
+    residual   = (SEGSIZE) - (SEGCOUNT) * (TYPELNG);                                                                   \
+    if (residual > ((TYPELNG) >> 1))                                                                                   \
+      (SEGCOUNT)++;                                                                                                    \
+  }
 
+typedef struct ompi_coll_tree_t {
+  int32_t tree_root;
+  int32_t tree_fanout;
+  int32_t tree_bmtree;
+  int32_t tree_prev;
+  int32_t tree_next[MAXTREEFANOUT];
+  int32_t tree_nextsize;
+} ompi_coll_tree_t;
 
-    typedef struct ompi_coll_tree_t {
-        int32_t tree_root;
-        int32_t tree_fanout;
-        int32_t tree_bmtree;
-        int32_t tree_prev;
-        int32_t tree_next[MAXTREEFANOUT];
-        int32_t tree_nextsize;
-    } ompi_coll_tree_t;
+ompi_coll_tree_t* ompi_coll_tuned_topo_build_tree(int fanout, MPI_Comm com, int root);
+ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bintree(MPI_Comm comm);
 
-    ompi_coll_tree_t*
-    ompi_coll_tuned_topo_build_tree( int fanout,
-                                     MPI_Comm com,
-                                     int root );
-    ompi_coll_tree_t*
-    ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm );
+ompi_coll_tree_t* ompi_coll_tuned_topo_build_bmtree(MPI_Comm comm, int root);
+ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int root);
+ompi_coll_tree_t* ompi_coll_tuned_topo_build_chain(int fanout, MPI_Comm com, int root);
 
-    ompi_coll_tree_t*
-    ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
-                                       int root );
-    ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int root);
-    ompi_coll_tree_t*
-    ompi_coll_tuned_topo_build_chain( int fanout,
-                                      MPI_Comm com,
-                                      int root );
+int ompi_coll_tuned_topo_destroy_tree(ompi_coll_tree_t** tree);
 
-    int ompi_coll_tuned_topo_destroy_tree( ompi_coll_tree_t** tree );
+/* debugging stuff, will be removed later */
+int ompi_coll_tuned_topo_dump_tree(ompi_coll_tree_t* tree, int rank);
 
-    /* debugging stuff, will be removed later */
-    int ompi_coll_tuned_topo_dump_tree (ompi_coll_tree_t* tree, int rank);
-
-#endif  /* MCA_COLL_TUNED_TOPO_H_HAS_BEEN_INCLUDED */
-
+#endif /* MCA_COLL_TUNED_TOPO_H_HAS_BEEN_INCLUDED */

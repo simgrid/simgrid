@@ -28,24 +28,21 @@ static int chunkSize()
 static XBT_ALWAYS_INLINE std::size_t chunkCount(std::size_t size)
 {
   size_t page_count = size >> xbt_pagebits;
-  if (size & (xbt_pagesize-1))
-    page_count ++;
+  if (size & (xbt_pagesize - 1))
+    page_count++;
   return page_count;
 }
 
 /** @brief Split into chunk number and remaining offset */
 static XBT_ALWAYS_INLINE std::pair<std::size_t, std::uintptr_t> split(std::uintptr_t offset)
 {
-  return {
-    offset >> xbt_pagebits,
-    offset & (xbt_pagesize-1)
-  };
+  return {offset >> xbt_pagebits, offset & (xbt_pagesize - 1)};
 }
 
 /** Merge chunk number and remaining offset info a global offset */
 static XBT_ALWAYS_INLINE std::uintptr_t join(std::size_t page, std::uintptr_t offset)
 {
-  return ((std::uintptr_t) page << xbt_pagebits) + offset;
+  return ((std::uintptr_t)page << xbt_pagebits) + offset;
 }
 
 static XBT_ALWAYS_INLINE std::uintptr_t join(std::pair<std::size_t, std::uintptr_t> value)
@@ -57,7 +54,6 @@ static XBT_ALWAYS_INLINE bool sameChunk(std::uintptr_t a, std::uintptr_t b)
 {
   return (a >> xbt_pagebits) == (b >> xbt_pagebits);
 }
-
 }
 }
 }

@@ -43,8 +43,10 @@ typedef struct smpi_trace_call_location {
   const char* previous_filename;
   int previous_linenumber;
 
-  std::string get_composed_key() {
-    return std::string(previous_filename) + ':' + std::to_string(previous_linenumber) + ':' + filename + ':' + std::to_string(linenumber);
+  std::string get_composed_key()
+  {
+    return std::string(previous_filename) + ':' + std::to_string(previous_linenumber) + ':' + filename + ':' +
+           std::to_string(linenumber);
   }
 
 } smpi_trace_call_location_t;

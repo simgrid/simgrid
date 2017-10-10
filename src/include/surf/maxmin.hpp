@@ -131,13 +131,13 @@ XBT_PUBLIC_DATA(double) sg_maxmin_precision;
 XBT_PUBLIC_DATA(double) sg_surf_precision;
 XBT_PUBLIC_DATA(int) sg_concurrency_limit;
 
-static inline void double_update(double *variable, double value, double precision)
+static inline void double_update(double* variable, double value, double precision)
 {
-  //printf("Updating %g -= %g +- %g\n",*variable,value,precision);
-  //xbt_assert(value==0  || value>precision);
-  //Check that precision is higher than the machine-dependent size of the mantissa. If not, brutal rounding  may happen,
-  //and the precision mechanism is not active...
-  //xbt_assert(*variable< (2<<DBL_MANT_DIG)*precision && FLT_RADIX==2);
+  // printf("Updating %g -= %g +- %g\n",*variable,value,precision);
+  // xbt_assert(value==0  || value>precision);
+  // Check that precision is higher than the machine-dependent size of the mantissa. If not, brutal rounding  may
+  // happen, and the precision mechanism is not active...
+  // xbt_assert(*variable< (2<<DBL_MANT_DIG)*precision && FLT_RADIX==2);
   *variable -= value;
   if (*variable < precision)
     *variable = 0.0;
@@ -174,7 +174,7 @@ XBT_PUBLIC(void) lmm_system_free(lmm_system_t sys);
  * @param id Data associated to the constraint (e.g.: a network link)
  * @param bound_value The bound value of the constraint
  */
-XBT_PUBLIC(lmm_constraint_t) lmm_constraint_new(lmm_system_t sys, void *id,double bound_value);
+XBT_PUBLIC(lmm_constraint_t) lmm_constraint_new(lmm_system_t sys, void* id, double bound_value);
 
 /**
  * @brief Share a constraint
@@ -332,7 +332,7 @@ XBT_PUBLIC(int) lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t
  * @param elem A element of constraint of the constraint or NULL
  * @return A variable associated to a constraint
  */
-XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys, lmm_constraint_t cnst, lmm_element_t * elem);
+XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys, lmm_constraint_t cnst, lmm_element_t* elem);
 
 /**
  * @brief Get a var associated to a constraint
@@ -344,8 +344,9 @@ XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys, lmm_constrain
  *
  * @return A variable associated to a constraint
  */
-XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst_safe(lmm_system_t sys, lmm_constraint_t cnst,
-                                     lmm_element_t * elem, lmm_element_t * nextelem, int * numelem);
+XBT_PUBLIC(lmm_variable_t)
+lmm_get_var_from_cnst_safe(lmm_system_t sys, lmm_constraint_t cnst, lmm_element_t* elem, lmm_element_t* nextelem,
+                           int* numelem);
 
 /**
  * @brief Get the first active constraint of a system
@@ -368,14 +369,14 @@ XBT_PUBLIC(lmm_constraint_t) lmm_get_next_active_constraint(lmm_system_t sys, lm
  * @param cnst A constraint
  * @return The data associated to the constraint
  */
-XBT_PUBLIC(void *) lmm_constraint_id(lmm_constraint_t cnst);
+XBT_PUBLIC(void*) lmm_constraint_id(lmm_constraint_t cnst);
 
 /**
  * @brief Get the data associated to a variable
  * @param var A variable
  * @return The data associated to the variable
  */
-XBT_PUBLIC(void *) lmm_variable_id(lmm_variable_t var);
+XBT_PUBLIC(void*) lmm_variable_id(lmm_variable_t var);
 
 /**
  * @brief Update the value of element linking the constraint and the variable
@@ -442,21 +443,22 @@ XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
 
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
-XBT_PUBLIC(void) lmm_set_default_protocol_function(double (*func_f)(lmm_variable_t var,double x),
-                                                   double (*func_fp)(lmm_variable_t var,double x),
-                                                   double (*func_fpi)(lmm_variable_t var,double x));
+XBT_PUBLIC(void)
+lmm_set_default_protocol_function(double (*func_f)(lmm_variable_t var, double x),
+                                  double (*func_fp)(lmm_variable_t var, double x),
+                                  double (*func_fpi)(lmm_variable_t var, double x));
 
-XBT_PUBLIC(double func_reno_f) (lmm_variable_t var, double x);
-XBT_PUBLIC(double func_reno_fp) (lmm_variable_t var, double x);
-XBT_PUBLIC(double func_reno_fpi) (lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno_f(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno_fp(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno_fpi(lmm_variable_t var, double x);
 
-XBT_PUBLIC(double func_reno2_f) (lmm_variable_t var, double x);
-XBT_PUBLIC(double func_reno2_fp) (lmm_variable_t var, double x);
-XBT_PUBLIC(double func_reno2_fpi) (lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno2_f(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno2_fp(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno2_fpi(lmm_variable_t var, double x);
 
-XBT_PUBLIC(double func_vegas_f) (lmm_variable_t var, double x);
-XBT_PUBLIC(double func_vegas_fp) (lmm_variable_t var, double x);
-XBT_PUBLIC(double func_vegas_fpi) (lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_vegas_f(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_vegas_fp(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_vegas_fpi(lmm_variable_t var, double x);
 
 /** @} */
 }

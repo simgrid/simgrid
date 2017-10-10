@@ -18,7 +18,6 @@ enum class ReductionMode {
 };
 
 extern XBT_PRIVATE simgrid::mc::ReductionMode reduction_mode;
-
 }
 }
 

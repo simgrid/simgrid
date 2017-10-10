@@ -20,23 +20,23 @@
 
 /** @brief Host datatype from SIMIX POV */
 namespace simgrid {
-  namespace simix {
-    class ProcessArg;
+namespace simix {
+class ProcessArg;
 
-    class Host {
-    public:
-      static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
+class Host {
+public:
+  static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
 
-      explicit Host();
-      virtual ~Host();
+  explicit Host();
+  virtual ~Host();
 
-      xbt_swag_t process_list;
-      std::vector<ProcessArg*> auto_restart_processes;
-      std::vector<ProcessArg*> boot_processes;
+  xbt_swag_t process_list;
+  std::vector<ProcessArg*> auto_restart_processes;
+  std::vector<ProcessArg*> boot_processes;
 
-      void turnOn();
-    };
-  }
+  void turnOn();
+};
+}
 }
 
 extern "C" {
@@ -48,7 +48,7 @@ XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 
 XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec);
 
-XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char *category);
+XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char* category);
 }
 
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
@@ -58,4 +58,3 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
                                double* bytes_amount, double rate, double timeout);
 
 #endif
-
