@@ -11,9 +11,9 @@
 #include <memory>
 #include <string>
 
+#include "src/mc/Session.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/Session.hpp"
 
 namespace simgrid {
 namespace mc {

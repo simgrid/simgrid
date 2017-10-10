@@ -9,9 +9,9 @@
 #include <list>
 #include <memory>
 
-#include "src/mc/mc_snapshot.hpp"
-#include "src/mc/mc_record.hpp"
 #include "src/mc/Transition.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_snapshot.hpp"
 
 namespace simgrid {
 namespace mc {

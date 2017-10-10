@@ -24,8 +24,8 @@
 
 #define INSTR_DEFAULT_STR_SIZE 500
 
-#include "xbt/graph.h"
 #include "xbt/dict.h"
+#include "xbt/graph.h"
 
 namespace simgrid {
 namespace instr {

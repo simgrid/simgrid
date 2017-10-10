@@ -3,20 +3,20 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
-#include "simgrid/s4u/Mailbox.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "src/msg/msg_private.hpp"
-#include "src/simix/smx_private.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "SmpiHost.hpp"
-#include "xbt/config.hpp"
+#include "mc/mc.h"
 #include "private.hpp"
+#include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_group.hpp"
 #include "smpi_info.hpp"
 #include "smpi_process.hpp"
+#include "src/msg/msg_private.hpp"
+#include "src/simix/smx_private.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "xbt/config.hpp"
 
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>

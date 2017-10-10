@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../colls_private.hpp"
 #include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
 
 #define MAXTREEFANOUT 32
 

@@ -15,10 +15,10 @@
 #include "src/internal_config.h"
 #include "src/smpi/include/private.hpp"
 
-#include "src/mc/mc_snapshot.hpp"
-#include "src/mc/mc_private.hpp"
-#include "src/mc/mc_mmu.hpp"
 #include "src/mc/PageStore.hpp"
+#include "src/mc/mc_mmu.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_snapshot.hpp"
 
 extern "C" {
 
@@ -201,9 +201,9 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 
 #include <sys/mman.h>
 
+#include "src/mc/mc_mmu.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_snapshot.hpp"
-#include "src/mc/mc_mmu.hpp"
 
 XBT_TEST_SUITE("mc_snapshot", "Snapshots");
 

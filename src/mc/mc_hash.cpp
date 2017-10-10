@@ -10,10 +10,10 @@
 
 #include "xbt/log.h"
 
-#include "src/mc/mc_private.hpp"
-#include "src/mc/mc_snapshot.hpp"
 #include "mc/datatypes.h"
 #include "src/mc/mc_hash.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_snapshot.hpp"
 #include <mc/mc.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");

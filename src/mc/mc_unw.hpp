@@ -28,8 +28,8 @@
 #include "src/mc/mc_forward.hpp"
 #include "xbt/base.h"
 
-#include <libunwind.h>
 #include <cstdio>
+#include <libunwind.h>
 #include <sys/types.h>
 
 namespace simgrid {

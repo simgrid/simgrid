@@ -10,11 +10,11 @@
 #include <map>
 #include <vector>
 
-#include <xbt/base.h>
 #include <xbt/Extendable.hpp>
+#include <xbt/base.h>
 
-#include "simgrid/simix.h"
 #include "popping_private.hpp"
+#include "simgrid/simix.h"
 
 #include "src/kernel/activity/ExecImpl.hpp"
 

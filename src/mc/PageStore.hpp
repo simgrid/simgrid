@@ -15,8 +15,8 @@
 
 #include "xbt/base.h"
 
-#include "src/mc/mc_mmu.hpp"
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_mmu.hpp"
 
 namespace simgrid {
 namespace mc {

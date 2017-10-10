@@ -6,22 +6,22 @@
 
 /* sg_config: configuration infrastructure for the simulation world       */
 
-#include "xbt/misc.h"
+#include "simgrid/sg_config.h"
+#include "instr/instr_interface.h"
+#include "mc/mc.h"
+#include "simgrid/instr.h"
+#include "simgrid/simix.h"
+#include "simgrid_config.h" /* what was compiled in? */
+#include "src/mc/mc_replay.h"
+#include "src/surf/surf_interface.hpp"
+#include "surf/maxmin.hpp"
+#include "surf/surf.h"
 #include "xbt/config.h"
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
+#include "xbt/misc.h"
 #include "xbt/sysdep.h"
-#include "surf/surf.h"
-#include "surf/maxmin.hpp"
-#include "instr/instr_interface.h"
-#include "simgrid/simix.h"
-#include "simgrid/sg_config.h"
-#include "simgrid_config.h" /* what was compiled in? */
-#include "mc/mc.h"
-#include "simgrid/instr.h"
-#include "src/mc/mc_replay.h"
-#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 

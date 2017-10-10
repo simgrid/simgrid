@@ -7,8 +7,8 @@
 
 #include "xbt/parmap.hpp"
 
-#include "src/simix/smx_private.hpp"
 #include "mc/mc.h"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 

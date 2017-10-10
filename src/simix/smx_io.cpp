@@ -14,8 +14,8 @@
 #include "src/surf/StorageImpl.hpp"
 #include "surf/surf.h"
 
-#include "src/surf/surf_interface.hpp"
 #include "smx_private.hpp"
+#include "src/surf/surf_interface.hpp"
 
 #include "src/kernel/activity/SynchroIo.hpp"
 

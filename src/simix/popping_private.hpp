@@ -6,8 +6,8 @@
 #ifndef SG_POPPING_PRIVATE_HPP
 #define SG_POPPING_PRIVATE_HPP
 
-#include <xbt/base.h>
 #include <simgrid/simix.h>
+#include <xbt/base.h>
 
 #include <src/kernel/activity/ActivityImpl.hpp>
 #include <src/kernel/activity/CommImpl.hpp>

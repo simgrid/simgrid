@@ -8,8 +8,8 @@
 #ifndef JXBT_UTILITIES_HPP
 #define JXBT_UTILITIES_HPP
 
-#include <jni.h>
 #include <cstdint>
+#include <jni.h>
 #include <string>
 
 extern "C" {

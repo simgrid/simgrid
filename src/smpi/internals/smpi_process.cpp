@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "smpi_process.hpp"
 #include "mc/mc.h"
+#include "private.hpp"
+#include "smpi_comm.hpp"
+#include "smpi_group.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
-#include "private.hpp"
-#include "smpi_process.hpp"
-#include "smpi_group.hpp"
-#include "smpi_comm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 

@@ -7,8 +7,8 @@
 
 #ifndef JMSG_AS_HPP
 #define JMSG_AS_HPP
-#include <jni.h>
 #include "simgrid/msg.h"
+#include <jni.h>
 
 extern "C" {
 

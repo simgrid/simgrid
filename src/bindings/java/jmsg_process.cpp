@@ -9,10 +9,10 @@
 
 #include "jmsg_process.h"
 
+#include "JavaContext.hpp"
 #include "jmsg.hpp"
 #include "jmsg_host.h"
 #include "jxbt_utilities.hpp"
-#include "JavaContext.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 

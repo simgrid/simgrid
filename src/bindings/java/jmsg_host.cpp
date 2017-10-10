@@ -11,8 +11,8 @@
 
 #include "jmsg.hpp"
 #include "jmsg_host.h"
-#include "jxbt_utilities.hpp"
 #include "jmsg_storage.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 

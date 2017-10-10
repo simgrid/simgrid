@@ -10,8 +10,8 @@
 #include "ns3/core-module.h"
 #include "ns3/node.h"
 
-#include "ns3/ns3_simulator.hpp"
 #include "network_ns3.hpp"
+#include "ns3/ns3_simulator.hpp"
 
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/routing/NetPoint.hpp"

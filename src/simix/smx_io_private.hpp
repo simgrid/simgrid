@@ -8,8 +8,8 @@
 
 #include <xbt/base.h>
 
-#include "simgrid/simix.h"
 #include "popping_private.hpp"
+#include "simgrid/simix.h"
 
 XBT_PRIVATE smx_activity_t SIMIX_file_read(surf_file_t fd, sg_size_t size);
 XBT_PRIVATE smx_activity_t SIMIX_file_write(surf_file_t fd, sg_size_t size);

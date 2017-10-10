@@ -19,8 +19,8 @@
  * Additional copyrights may follow
  */
 
-#include "colls_private.hpp"
 #include "coll_tuned_topo.hpp"
+#include "colls_private.hpp"
 /*
  * Some static helpers.
  */

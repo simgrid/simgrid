@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "smpi_win.hpp"
 #include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
@@ -11,7 +12,6 @@
 #include "smpi_keyvals.hpp"
 #include "smpi_process.hpp"
 #include "smpi_request.hpp"
-#include "smpi_win.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 

@@ -6,12 +6,12 @@
 #include <utility>
 #include <functional>
 
-#include "xbt/function_types.h"
+#include "src/internal_config.h" /* loads context system definitions */
 #include "src/simix/smx_private.hpp"
-#include "src/internal_config.h"           /* loads context system definitions */
+#include "src/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
+#include "xbt/function_types.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
-#include "src/xbt_modinter.h"       /* prototype of os thread module's init/exit in XBT */
 
 #include "src/kernel/context/ContextThread.hpp"
 

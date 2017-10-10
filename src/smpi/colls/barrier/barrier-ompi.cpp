@@ -20,8 +20,8 @@
  * Additional copyrights may follow
  */
 
-#include "../colls_private.hpp"
 #include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
 
 /*
  * Barrier is ment to be a synchronous operation, as some BTLs can mark

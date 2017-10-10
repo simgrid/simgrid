@@ -6,10 +6,10 @@
 #ifndef SIMGRID_MC_SNAPSHOT_HPP
 #define SIMGRID_MC_SNAPSHOT_HPP
 
-#include <vector>
+#include <memory>
 #include <set>
 #include <string>
-#include <memory>
+#include <vector>
 
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/RegionSnapshot.hpp"

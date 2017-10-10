@@ -16,10 +16,10 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 
+#include "smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf.hpp"
-#include "smx_private.hpp"
-#include "xbt/ex.h"             /* ex_backtrace_display */
+#include "xbt/ex.h" /* ex_backtrace_display */
 
 #include "mc/mc.h"
 #include "simgrid/sg_config.h"

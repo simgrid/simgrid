@@ -7,9 +7,9 @@
 #define SURF_MAXMIN_PRIVATE_H
 
 #include "surf/maxmin.hpp"
-#include "xbt/swag.h"
-#include "xbt/mallocator.h"
 #include "surf_interface.hpp"
+#include "xbt/mallocator.h"
+#include "xbt/swag.h"
 
 /** @ingroup SURF_lmm
  * @brief LMM element

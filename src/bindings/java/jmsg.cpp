@@ -17,13 +17,13 @@
 
 #include "src/simix/smx_private.hpp"
 
-#include "jmsg_process.h"
+#include "jmsg.hpp"
 #include "jmsg_as.hpp"
 #include "jmsg_host.h"
+#include "jmsg_process.h"
 #include "jmsg_storage.h"
 #include "jmsg_task.h"
 #include "jxbt_utilities.hpp"
-#include "jmsg.hpp"
 
 #include "JavaContext.hpp"
 

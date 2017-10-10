@@ -6,14 +6,14 @@
 #ifndef SMPI_COLLS_PRIVATE_HPP
 #define SMPI_COLLS_PRIVATE_HPP
 
-#include <cmath>
-#include "smpi/mpi.h"
 #include "private.hpp"
+#include "smpi/mpi.h"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_op.hpp"
 #include "smpi_request.hpp"
+#include <cmath>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_colls);
 

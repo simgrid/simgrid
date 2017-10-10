@@ -55,8 +55,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "../colls_private.hpp"
 #include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
 #define MAXTREEFANOUT 32
 namespace simgrid{
 namespace smpi{

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.hpp"
 #include "smpi_f2c.hpp"
+#include "private.hpp"
 #include "smpi_process.hpp"
 
 #include <cstdio>

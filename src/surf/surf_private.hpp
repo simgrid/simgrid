@@ -6,9 +6,9 @@
 #ifndef SURF_SURF_PRIVATE_HPP
 #define SURF_SURF_PRIVATE_HPP
 
-#include "surf/surf.h"
-#include "surf/maxmin.hpp"
 #include "src/surf/trace_mgr.hpp"
+#include "surf/maxmin.hpp"
+#include "surf/surf.h"
 
 #define NO_MAX_DURATION -1.0
 

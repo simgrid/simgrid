@@ -7,9 +7,9 @@
 #define SURF_MAXMIN_HPP
 
 #include "src/internal_config.h"
-#include "xbt/misc.h"
-#include "xbt/asserts.h"
 #include "surf/datatypes.h"
+#include "xbt/asserts.h"
+#include "xbt/misc.h"
 #include <cmath>
 
 namespace simgrid {

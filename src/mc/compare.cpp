@@ -28,17 +28,15 @@
 #include "src/smpi/include/private.hpp"
 #endif
 
+#include "src/mc/Frame.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Type.hpp"
+#include "src/mc/Variable.hpp"
+#include "src/mc/mc_dwarf.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_dwarf.hpp"
-#include "src/mc/Frame.hpp"
-#include "src/mc/ObjectInformation.hpp"
-#include "src/mc/Variable.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_snapshot.hpp"
-#include "src/mc/mc_dwarf.hpp"
-#include "src/mc/Type.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt, "Logging specific to mc_compare in mc");
 

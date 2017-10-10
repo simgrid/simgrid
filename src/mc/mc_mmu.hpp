@@ -7,6 +7,8 @@
 #define SIMGRID_MC_MMU_HPP
 
 #include "xbt/misc.h" // xbt_pagesize...
+#include <cstdint>
+#include <utility>
 
 namespace simgrid {
 namespace mc {

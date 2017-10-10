@@ -16,15 +16,13 @@
 #include <xbt/range.hpp>
 #include <xbt/sysdep.h>
 
+#include "simgrid/modelchecker.h"
+#include "simgrid/sg_config.h"
+#include "smx_private.hpp"
 #include "src/internal_config.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
-#include "smx_private.hpp"
-#include "simgrid/sg_config.h"
-#include "src/internal_config.h"
-#include "simgrid/modelchecker.h"
-
 
 #ifdef _WIN32
 #include <windows.h>

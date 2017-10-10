@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stack>
 #include "private.hpp"
+#include <stack>
 
 typedef struct s_smpi_static {
   void *ptr;
