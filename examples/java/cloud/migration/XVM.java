@@ -47,7 +47,7 @@ public class XVM extends VM {
   }
 
   public int getLoad(){
-    System.out.println("Remaining comp:" + this.daemon.getRemaining());
+    Msg.info("Remaining comp:" + this.daemon.getRemaining());
     return this.currentLoad;
   }
 

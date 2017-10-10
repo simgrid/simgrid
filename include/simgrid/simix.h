@@ -11,7 +11,10 @@
 #include "simgrid/host.h"
 #include "xbt/ex.h"
 #include "xbt/parmap.h"
+#ifdef __cplusplus
 #include <map>
+#endif
+
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
     @ingroup simix_host_management
@@ -138,9 +141,11 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
  */
 
 XBT_PUBLIC(void) SIMIX_maestro_create(void (*code)(void*), void* data);
+#ifdef __cplusplus
 XBT_PUBLIC(smx_actor_t)
 SIMIX_process_attach(const char* name, void* data, const char* hostname, std::map<std::string, std::string>* properties,
                      smx_actor_t parent_process);
+#endif
 XBT_PUBLIC(void) SIMIX_process_detach();
 
 /*********************************** Host *************************************/
@@ -195,9 +200,11 @@ XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 /**************************** Process simcalls ********************************/
 SG_BEGIN_DECL()
 /* Constructor and Destructor */
+#ifdef __cplusplus
 XBT_PUBLIC(smx_actor_t)
 simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc, char** argv,
                        std::map<std::string, std::string>* properties);
+#endif
 
 XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
 XBT_PUBLIC(void) SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char *msg);
@@ -219,6 +226,7 @@ SG_END_DECL()
 
 /************************** Comunication simcalls *****************************/
 
+#ifdef __cplusplus
 XBT_PUBLIC(void)
 simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                   size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -243,6 +251,7 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
 XBT_PUBLIC(smx_activity_t)
 simcall_comm_iprobe(smx_mailbox_t mbox, int type, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                     void* data);
+#endif
 XBT_PUBLIC(void) simcall_comm_cancel(smx_activity_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */

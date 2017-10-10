@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -37,7 +37,8 @@ namespace simgrid {
  * @endcode
  *
  */
-struct SimulationClock {
+class SimulationClock {
+public:
   using rep        = double;
   using period     = std::ratio<1>;
   using duration   = std::chrono::duration<rep, period>;

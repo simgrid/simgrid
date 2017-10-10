@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2007, 2012-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2006-2007, 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,6 +10,8 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.trace.Trace;
 
 public class Main  {
+  public static final String PM_STATE = "PM_STATE";
+
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
@@ -29,11 +31,11 @@ public class Main  {
     new Receiver ("Tremblay", "Receiver", null).start();
 
     /* Initialize some state for the hosts */
-    Trace.hostStateDeclare ("PM_STATE"); 
-    Trace.hostStateDeclareValue ("PM_STATE", "waitingPing", "0 0 1");
-    Trace.hostStateDeclareValue ("PM_STATE", "sendingPong", "0 1 0");
-    Trace.hostStateDeclareValue ("PM_STATE", "sendingPing", "0 1 1");
-    Trace.hostStateDeclareValue ("PM_STATE", "waitingPong", "1 0 0");
+    Trace.hostStateDeclare (PM_STATE);
+    Trace.hostStateDeclareValue (PM_STATE, "waitingPing", "0 0 1");
+    Trace.hostStateDeclareValue (PM_STATE, "sendingPong", "0 1 0");
+    Trace.hostStateDeclareValue (PM_STATE, "sendingPing", "0 1 1");
+    Trace.hostStateDeclareValue (PM_STATE, "waitingPong", "1 0 0");
 
     /*  execute the simulation. */
     Msg.run();
