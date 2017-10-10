@@ -19,8 +19,8 @@ smx_sem_t sem;
 static int peer(std::vector<std::string> args){
   int i = 0;
   double wait_time;
-
-  while(i < args.size()) {
+  unsigned int ite = args.size();
+  while(i < ite) {
     wait_time = std::stod(args[i]);
     i++;
     simgrid::s4u::this_actor::sleep_for(wait_time);
