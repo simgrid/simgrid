@@ -5,7 +5,7 @@
 
 #include "src/msg/msg_private.hpp"
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup msg_simulation
  * \brief An application deployer.
@@ -59,5 +59,4 @@ void MSG_set_function(const char *host_id, const char *function_name, xbt_dynar_
 {
   SIMIX_process_set_function(host_id, function_name, arguments, -1, -1);
 }
-
-SG_END_DECL()
+}

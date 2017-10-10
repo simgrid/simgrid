@@ -16,7 +16,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 jfieldID jprocess_field_Process_bind;
 jfieldID jprocess_field_Process_host;
@@ -289,5 +289,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , j
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls) {
   return (jint) MSG_process_get_number();
 }
-
-SG_END_DECL()
+}

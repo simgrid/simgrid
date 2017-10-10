@@ -11,7 +11,7 @@
 #include <simgrid/msg.h>
 #include <unordered_map>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
@@ -48,6 +48,5 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_critical(JNIEnv * env, jclass cl
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls, jstring jplatformFile);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jdeploymentFile);
-
-SG_END_DECL()
+}
 #endif

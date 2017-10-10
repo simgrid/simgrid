@@ -22,7 +22,7 @@ public:
   int node_num;
 };
 
-SG_BEGIN_DECL()
+extern "C" {
 
 XBT_PUBLIC(void) ns3_initialize(const char* TcpProtocol);
 XBT_PUBLIC(void)
@@ -32,7 +32,6 @@ XBT_PUBLIC(void) ns3_simulator(double maxSeconds);
 XBT_PUBLIC(void*) ns3_add_router(const char* id);
 XBT_PUBLIC(void) ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat);
 XBT_PUBLIC(void) ns3_add_cluster(const char* id, double bw, double lat);
-
-SG_END_DECL()
+}
 
 #endif

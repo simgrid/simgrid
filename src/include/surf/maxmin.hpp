@@ -153,7 +153,7 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @{ @ingroup SURF_lmm */
 /**
@@ -459,6 +459,6 @@ XBT_PUBLIC(double func_vegas_fp) (lmm_variable_t var, double x);
 XBT_PUBLIC(double func_vegas_fpi) (lmm_variable_t var, double x);
 
 /** @} */
-SG_END_DECL()
+}
 
 #endif

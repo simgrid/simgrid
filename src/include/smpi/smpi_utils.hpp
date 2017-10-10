@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <vector>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 // Methods used to parse and store the values for timing injections in smpi
 typedef struct s_smpi_factor *smpi_os_factor_t;
@@ -17,8 +17,7 @@ typedef struct s_smpi_factor{
   size_t factor=0;
   std::vector<double> values;
 } s_smpi_factor_t;
-
-SG_END_DECL()
+}
 
 XBT_PUBLIC(std::vector<s_smpi_factor_t>) parse_factor(const char *smpi_coef_string);
 

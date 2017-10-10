@@ -38,7 +38,7 @@
 #endif
 /* end of eclipse-mandated pimple */
 
-SG_BEGIN_DECL()
+extern "C" {
 
 int JAVA_HOST_LEVEL = -1;
 
@@ -243,8 +243,7 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jde
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
   sg_host_energy_plugin_init();
 }
-
-SG_END_DECL()
+} // extern "C"
 
 /** Run a Java org.simgrid.msg.Process
  *

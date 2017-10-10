@@ -13,7 +13,7 @@
 #include <unordered_map>
 #include <vector>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 #define PERSISTENT 0x1
 #define NON_PERSISTENT 0x2
@@ -413,8 +413,7 @@ typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 extern XBT_PRIVATE smpi_privatization_region_t smpi_privatization_regions;
 extern XBT_PRIVATE int smpi_loaded_page;
 extern XBT_PRIVATE int smpi_universe_size;
-
-SG_END_DECL()
+}
 
 /**
  * Get the address of the beginning of the memory page where addr is located.

@@ -14,7 +14,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jfieldID jsynchro_field_Mutex_bind;
 
@@ -94,5 +94,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * en
   sem = (msg_sem_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Semaphore_bind);
   MSG_sem_destroy(sem);
 }
-
-SG_END_DECL()
+}

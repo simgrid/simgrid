@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <string>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Search a class and throw an exception if not found */
 jclass jxbt_get_class(JNIEnv * env, const char *name);
@@ -73,6 +73,5 @@ void jxbt_throw_time_out_failure(JNIEnv* env, std::string details);
 void jxbt_throw_task_cancelled(JNIEnv* env, std::string details);
 /** Thrown when looking for a storage from name does not lead to anything */
 void jxbt_throw_storage_not_found(JNIEnv* env, std::string invalid_name);
-
-SG_END_DECL()
+}
 #endif

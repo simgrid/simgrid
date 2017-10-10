@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg, "MSG actions for trace driven simulation");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 void MSG_action_init()
 {
@@ -52,5 +52,4 @@ msg_error_t MSG_action_trace_run(char *path)
 
   return res;
 }
-
-SG_END_DECL()
+}

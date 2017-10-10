@@ -10,7 +10,7 @@
 #include "src/instr/instr_private.hpp"
 #include <string>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 XBT_PRIVATE void TRACE_internal_smpi_set_category(const char* category);
 XBT_PRIVATE const char* TRACE_internal_smpi_get_category();
@@ -48,7 +48,6 @@ typedef struct smpi_trace_call_location {
   }
 
 } smpi_trace_call_location_t;
-
-SG_END_DECL()
+}
 
 #endif

@@ -13,7 +13,7 @@
 #include <lualib.h>
 #endif
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /********************************* MSG **************************************/
 
@@ -76,5 +76,4 @@ void MSG_zone_get_hosts(msg_netzone_t netzone, xbt_dynar_t whereto)
   for (auto const& host : hosts)
     xbt_dynar_push(whereto, &host);
 }
-
-SG_END_DECL()
+}

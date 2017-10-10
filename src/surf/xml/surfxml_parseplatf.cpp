@@ -33,7 +33,7 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_bw;
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
-SG_BEGIN_DECL()
+extern "C" {
 void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect)
 {
   xbt_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
@@ -170,5 +170,4 @@ void parse_platform_file(const char *file)
       surf_parse_error(std::string("Parse error in ") + file);
   }
 }
-
-SG_END_DECL()
+}

@@ -34,7 +34,7 @@ std::set<SD_task_t>* simulate (double how_long);
 }
 }
 
-SG_BEGIN_DECL()
+extern "C" {
 extern XBT_PRIVATE simgrid::sd::Global *sd_global;
 
 /* Task */
@@ -71,5 +71,5 @@ XBT_PRIVATE void SD_task_run(SD_task_t task);
 XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
 XBT_PRIVATE const char *__get_state_name(e_SD_task_state_t state);
-SG_END_DECL()
+}
 #endif

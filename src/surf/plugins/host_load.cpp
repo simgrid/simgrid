@@ -139,7 +139,7 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
 }
 
 /* **************************** Public interface *************************** */
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup plugin_load
  * \brief Initializes the HostLoad plugin
@@ -185,5 +185,4 @@ void sg_host_load_reset(sg_host_t host)
 
   host->extension<HostLoad>()->reset();
 }
-
-SG_END_DECL()
+}

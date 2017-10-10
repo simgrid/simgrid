@@ -12,7 +12,7 @@
 
 #define NO_MAX_DURATION -1.0
 
-SG_BEGIN_DECL()
+extern "C" {
 
 extern XBT_PRIVATE const char *surf_action_state_names[6];
 
@@ -51,7 +51,6 @@ XBT_PRIVATE void parse_after_config();
 /* from surf_instr.c */
 void TRACE_surf_host_set_speed(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
-
-SG_END_DECL()
+}
 
 #endif

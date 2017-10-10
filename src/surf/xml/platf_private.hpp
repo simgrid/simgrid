@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-SG_BEGIN_DECL()
+extern "C" {
 #include "src/surf/xml/simgrid_dtd.h"
 
 #ifndef YY_TYPEDEF_YY_SIZE_T
@@ -237,8 +237,7 @@ XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
 XBT_PUBLIC(int) surf_parse_lex_destroy();
 
 XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
-
-SG_END_DECL()
+}
 
 namespace simgrid {
 namespace surf {

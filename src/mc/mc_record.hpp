@@ -39,8 +39,6 @@ XBT_PRIVATE void replay(const char* trace);
 }
 }
 
-SG_BEGIN_DECL()
-
 /** Whether the MC record mode is enabled
  *
  *  The behaviour is not changed. The only real difference is that
@@ -49,7 +47,5 @@ SG_BEGIN_DECL()
 #define MC_record_is_active() _sg_do_model_check_record
 
 // **** Data conversion
-
-SG_END_DECL()
 
 #endif

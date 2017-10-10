@@ -8,7 +8,7 @@
 #include "jmsg_file.h"
 #include "jxbt_utilities.hpp"
 
-SG_BEGIN_DECL()
+extern "C" {
 
 void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t fd) {
   env->SetLongField(jfile, jfile_field_bind, reinterpret_cast<std::intptr_t>(fd));
@@ -53,5 +53,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_File_close(JNIEnv *env, jobject jfil
   MSG_file_close(file);
   jfile_bind(env, jfile, nullptr);
 }
-
-SG_END_DECL()
+}

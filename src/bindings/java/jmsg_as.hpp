@@ -10,7 +10,7 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT
@@ -32,6 +32,5 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv* env, jobject jnetzone);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jhost, jobject jname);
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv* env, jobject jnetzone);
-
-SG_END_DECL()
+}
 #endif

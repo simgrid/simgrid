@@ -432,7 +432,7 @@ static void onSimulationEnd()
 }
 
 /* **************************** Public interface *************************** */
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup plugin_energy
  * \brief Enable host energy plugin
@@ -513,5 +513,4 @@ double sg_host_get_current_consumption(sg_host_t host)
   double cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->getSpeed();
   return host->extension<HostEnergy>()->getCurrentWattsValue(cpu_load);
 }
-
-SG_END_DECL()
+}

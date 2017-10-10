@@ -263,7 +263,7 @@ class NewEvent : public PajeEvent  {
 } // namespace simgrid::instr
 typedef simgrid::instr::Container* container_t;
 
-SG_BEGIN_DECL()
+extern "C" {
 
 extern XBT_PRIVATE std::set<std::string> created_categories;
 extern XBT_PRIVATE std::set<std::string> declared_marks;
@@ -406,8 +406,7 @@ typedef struct s_instr_extra_data {
  */
 typedef enum { instr_fmt_paje, instr_fmt_TI } instr_fmt_type_t;
 extern instr_fmt_type_t instr_fmt_type;
-
-SG_END_DECL()
+}
 
 void LogContainerTypeDefinition(simgrid::instr::Type* type);
 void LogVariableTypeDefinition(simgrid::instr::Type* type);

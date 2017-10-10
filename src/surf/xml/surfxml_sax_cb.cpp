@@ -17,7 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 int ETag_surfxml_include_state();
 
@@ -1124,5 +1124,4 @@ int surf_parse()
 {
   return surf_parse_lex();
 }
-
-SG_END_DECL()
+}

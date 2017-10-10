@@ -16,7 +16,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jmethodID jhost_method_Host_constructor;
 static jfieldID jhost_field_Host_bind;
@@ -374,5 +374,4 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, 
   msg_host_t host = jhost_get_native(env, jhost);
   return MSG_host_get_power_peak_at(host, pstate);
 }
-
-SG_END_DECL()
+}

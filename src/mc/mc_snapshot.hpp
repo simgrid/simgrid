@@ -16,7 +16,7 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_unw.hpp"
 
-SG_BEGIN_DECL()
+extern "C" {
 
 // ***** Snapshot region
 
@@ -231,7 +231,6 @@ static XBT_ALWAYS_INLINE void* MC_region_read_pointer(mc_mem_region_t region, co
   void* res;
   return *(void**) MC_region_read(region, &res, addr, sizeof(void*));
 }
-
-SG_END_DECL()
+}
 
 #endif

@@ -19,7 +19,7 @@
 #include "simgrid/host.h"
 #include "simgrid/simix.hpp"
 
-SG_BEGIN_DECL()
+extern "C" {
 
 struct dirty_page {
   double prev_clock;
@@ -830,5 +830,4 @@ void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
   simgrid::simix::kernelImmediate([vm, bound]() { vm->pimpl_vm_->setBound(bound); });
 }
-
-SG_END_DECL()
+}

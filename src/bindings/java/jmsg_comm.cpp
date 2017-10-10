@@ -14,7 +14,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jfieldID jcomm_field_Comm_bind;
 static jfieldID jcomm_field_Comm_finished;
@@ -166,5 +166,4 @@ JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls,
   xbt_dynar_free(&dyn);
   return rank;
 }
-
-SG_END_DECL()
+}

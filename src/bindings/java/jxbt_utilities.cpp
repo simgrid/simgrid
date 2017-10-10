@@ -10,7 +10,7 @@
 
 #include <cstdlib> /* abort */
 
-SG_BEGIN_DECL()
+extern "C" {
 
 jclass jxbt_get_class(JNIEnv * env, const char *name)
 {
@@ -211,5 +211,4 @@ void jxbt_throw_task_cancelled(JNIEnv* env, std::string details)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/TaskCancelledException", details);
 }
-
-SG_END_DECL()
+}

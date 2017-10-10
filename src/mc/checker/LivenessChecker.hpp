@@ -20,10 +20,6 @@
 #include "src/mc/mc_state.hpp"
 #include "src/mc/checker/Checker.hpp"
 
-SG_BEGIN_DECL()
-
-SG_END_DECL()
-
 namespace simgrid {
 namespace mc {
 

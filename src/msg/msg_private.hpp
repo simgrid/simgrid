@@ -98,7 +98,7 @@ typedef struct MSG_Global {
 } s_MSG_Global_t;
 typedef s_MSG_Global_t* MSG_Global_t;
 
-SG_BEGIN_DECL()
+extern "C" {
 
 XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
@@ -135,8 +135,7 @@ XBT_PRIVATE void TRACE_msg_process_suspend(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_resume(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
-
-SG_END_DECL()
+}
 
 inline void simdata_task::setUsed()
 {
