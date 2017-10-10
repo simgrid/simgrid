@@ -28,10 +28,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
-int smpi_loaded_page = -1;
+int smpi_loaded_page      = -1;
 char* smpi_data_exe_start = nullptr;
 int smpi_data_exe_size    = 0;
 int smpi_privatize_global_variables;
+static char* smpi_data_exe_copy;
+// static std::set smpi_privatization_regions;
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
 static const int PROT_RW  = (PROT_READ | PROT_WRITE );
@@ -110,10 +112,8 @@ void smpi_really_switch_data_segment(int dest)
     return;
 
 #if HAVE_PRIVATIZATION
-  if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
-    for (int i=0; i< smpi_process_count(); i++){
-      asan_safe_memcpy(smpi_privatization_regions[i].address, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
-    }
+  if (smpi_loaded_page == -1) { // initial switch, do the copy from the real page here
+    asan_safe_memcpy(smpi_data_exe_copy, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
   }
 
   // FIXME, cross-process support (mmap across process when necessary)
@@ -146,6 +146,8 @@ void smpi_initialize_global_memory_segments()
     return;
   }
 
+  smpi_data_exe_copy = (char*)malloc(smpi_data_exe_size);
+  asan_safe_memcpy(smpi_data_exe_copy, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
   smpi_privatization_regions = new s_smpi_privatization_region_t[smpi_process_count()];
 
   for (int i=0; i< smpi_process_count(); i++){
@@ -192,7 +194,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       xbt_die("Impossible to unlink temporary file for memory mapping");
 
     // initialize the values
-    asan_safe_memcpy(address, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
+    asan_safe_memcpy(address, smpi_data_exe_copy, smpi_data_exe_size);
 
     // store the address of the mapping for further switches
     smpi_privatization_regions[i].file_descriptor = file_descriptor;
