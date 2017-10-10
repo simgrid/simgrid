@@ -6,7 +6,7 @@
 
 #include "StorageImpl.hpp"
 
-#include "surf_private.h"
+#include "surf_private.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>

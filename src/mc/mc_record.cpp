@@ -18,20 +18,20 @@
 #include "simgrid/simix.h"
 
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.h"
-#include "src/mc/mc_record.h"
+#include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_private.hpp"
 
 #include "src/mc/mc_base.h"
 #include "src/mc/Transition.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_state.h"
-#include "src/mc/mc_smx.h"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_state.hpp"
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,

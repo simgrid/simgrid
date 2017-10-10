@@ -36,11 +36,9 @@ public:
 }
 }
 
-SG_BEGIN_DECL()
-
+extern "C" {
 typedef simgrid::jedule::Jedule *jedule_t;
-
-SG_END_DECL()
+}
 #endif
 
 #endif /* JEDULE_HPP_ */

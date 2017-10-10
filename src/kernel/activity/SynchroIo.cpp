@@ -1,10 +1,10 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/SynchroIo.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
 void simgrid::kernel::activity::IoImpl::suspend()

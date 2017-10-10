@@ -20,7 +20,7 @@
 
 #include "src/mc/PageStore.hpp"
 
-#include "src/mc/mc_mmu.h"
+#include "src/mc/mc_mmu.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc, "Logging specific to mc_page_snapshot");
 

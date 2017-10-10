@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 
 // This selector is based on information gathered on the Stampede cluster, with Intel MPI 4.1.3.049, and from the intel reference manual. The data was gathered launching runs with 1,2,4,8,16 processes per node.
 

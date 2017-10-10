@@ -26,8 +26,8 @@
 #include "src/mc/remote/Channel.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
-#include "src/simix/popping_private.h"
-#include "src/simix/smx_private.h"
+#include "src/simix/popping_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include <simgrid/simix.h>
 
 #include "src/xbt/memory_map.hpp"

@@ -8,33 +8,32 @@ set(EXTRA_DIST
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_utils.hpp
   src/include/surf/datatypes.h
-  src/include/surf/maxmin.h
+  src/include/surf/maxmin.hpp
   src/include/surf/surf.h
   src/include/xbt/parmap.hpp
-  src/mc/mc_mmu.h
-  src/mc/mc_record.h
+  src/mc/mc_mmu.hpp
+  src/mc/mc_record.hpp
   src/mc/PageStore.hpp
-  src/msg/msg_private.h
+  src/msg/msg_private.hpp
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
   src/simdag/simdag_private.hpp
   src/simix/simcalls.in
   src/simix/simcalls.py
-  src/simix/popping_private.h
+  src/simix/popping_private.hpp
   src/simix/popping_bodies.cpp
   src/simix/popping_generated.cpp
   src/simix/popping_enum.h
-  src/simix/popping_accessors.h
-  src/simix/smx_host_private.h
-  src/simix/smx_io_private.h
-  src/simix/smx_network_private.h
-  src/simix/smx_private.h
+  src/simix/popping_accessors.hpp
+  src/simix/smx_host_private.hpp
+  src/simix/smx_io_private.hpp
+  src/simix/smx_network_private.hpp
+  src/simix/smx_private.hpp
   src/simix/smx_synchro_private.hpp
-  src/smpi/colls/coll_tuned_topo.h
-  src/smpi/colls/colls_private.h
-  src/smpi/colls/smpi_mvapich2_selector_stampede.h
-  src/smpi/include/private.h
+  src/smpi/colls/coll_tuned_topo.hpp
+  src/smpi/colls/colls_private.hpp
+  src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
   src/smpi/include/private.hpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
@@ -46,8 +45,8 @@ set(EXTRA_DIST
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
-  src/surf/ns3/ns3_interface.h
-  src/surf/ns3/ns3_simulator.h
+  src/surf/ns3/ns3_interface.hpp
+  src/surf/ns3/ns3_simulator.hpp
   src/surf/trace_mgr_test.cpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
@@ -58,7 +57,7 @@ set(EXTRA_DIST
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
-  src/surf/surf_private.h
+  src/surf/surf_private.hpp
   src/surf/PropertyHolder.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
@@ -468,16 +467,16 @@ set(SIMDAG_SRC
   )
 
 set(BINDINGS_SRC
-  src/bindings/lua/lua_private.h
-  src/bindings/lua/lua_utils.h
-  src/bindings/lua/simgrid_lua.h
+  src/bindings/lua/lua_private.hpp
+  src/bindings/lua/lua_utils.hpp
+  src/bindings/lua/simgrid_lua.hpp
   )
 
 set(JMSG_C_SRC
   src/bindings/java/jmsg.cpp
-  src/bindings/java/jmsg.h
+  src/bindings/java/jmsg.hpp
   src/bindings/java/jmsg_as.cpp
-  src/bindings/java/jmsg_as.h
+  src/bindings/java/jmsg_as.hpp
   src/bindings/java/jmsg_comm.cpp
   src/bindings/java/jmsg_comm.h
   src/bindings/java/jmsg_file.cpp
@@ -495,7 +494,7 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_vm.cpp
   src/bindings/java/jmsg_vm.h
   src/bindings/java/jxbt_utilities.cpp
-  src/bindings/java/jxbt_utilities.h
+  src/bindings/java/jxbt_utilities.hpp
   src/bindings/java/JavaContext.cpp
   src/bindings/java/JavaContext.hpp
   src/bindings/java/jmsg_storage.cpp
@@ -553,8 +552,8 @@ set(TRACING_SRC
   src/instr/instr_paje_trace.cpp
   src/instr/instr_paje_types.cpp
   src/instr/instr_paje_values.cpp
-  src/instr/instr_private.h
-  src/instr/instr_smpi.h
+  src/instr/instr_private.hpp
+  src/instr/instr_smpi.hpp
   src/instr/instr_resource_utilization.cpp
   )
 
@@ -572,7 +571,7 @@ set(JEDULE_SRC
 set(MC_SRC_BASE
   src/mc/mc_base.cpp
   src/mc/mc_base.h
-  src/mc/mc_record.h
+  src/mc/mc_record.hpp
   src/mc/mc_replay.h
   src/mc/mc_record.cpp
   src/mc/mc_config.cpp
@@ -616,11 +615,11 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/Session.cpp
   src/mc/Session.hpp
-  src/mc/mc_unw.h
+  src/mc/mc_unw.hpp
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
   src/mc/mc_checkpoint.cpp
-  src/mc/mc_snapshot.h
+  src/mc/mc_snapshot.hpp
   src/mc/mc_snapshot.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.cpp
@@ -640,20 +639,20 @@ set(MC_SRC
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
-  src/mc/mc_private.h
-  src/mc/mc_request.h
+  src/mc/mc_private.hpp
+  src/mc/mc_request.hpp
   src/mc/mc_request.cpp
-  src/mc/mc_safety.h
-  src/mc/mc_state.h
+  src/mc/mc_safety.hpp
+  src/mc/mc_state.hpp
   src/mc/mc_state.cpp
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/mc_client_api.cpp
-  src/mc/mc_smx.h
+  src/mc/mc_smx.hpp
   src/mc/mc_smx.cpp
   src/mc/mc_xbt.hpp
   src/mc/mc_xbt.cpp
-  src/mc/mc_exit.h
+  src/mc/mc_exit.hpp
   src/mc/Transition.hpp
   )
 

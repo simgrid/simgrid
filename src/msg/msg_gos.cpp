@@ -6,12 +6,12 @@
 #include <xbt/ex.hpp>
 
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/msg/msg_private.h"
-#include "src/simix/smx_private.h" /* MSG_task_listen looks inside the rdv directly. Not clean. */
+#include "src/msg/msg_private.hpp"
+#include "src/simix/smx_private.hpp" /* MSG_task_listen looks inside the rdv directly. Not clean. */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
@@ -907,5 +907,4 @@ const char *MSG_task_get_category (msg_task_t task)
 {
   return task->category;
 }
-
-SG_END_DECL()
+}

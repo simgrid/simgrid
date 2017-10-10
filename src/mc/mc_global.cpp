@@ -31,17 +31,17 @@
 #if SIMGRID_HAVE_MC
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_safety.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_unw.hpp"
 #include <libunwind.h>
 #endif
 
 #include "src/mc/Transition.hpp"
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 

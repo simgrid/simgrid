@@ -7,7 +7,7 @@
 #include "simgrid/s4u/Storage.hpp"
 
 #include "src/kernel/EngineImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 #include "src/include/simgrid/sg_config.h"
 

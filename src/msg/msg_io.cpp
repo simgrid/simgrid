@@ -6,12 +6,12 @@
 #include "simgrid/s4u/File.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @addtogroup msg_file
  * (#msg_file_t) and the functions for managing it.
@@ -510,5 +510,4 @@ const char* MSG_storage_get_host(msg_storage_t storage)
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->getHost()->getCname();
 }
-
-SG_END_DECL()
+}

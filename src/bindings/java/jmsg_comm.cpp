@@ -6,15 +6,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "jmsg_comm.h"
-#include "jxbt_utilities.h"
-#include "jmsg.h"
+#include "jmsg.hpp"
+#include "jxbt_utilities.hpp"
 
 #include <simgrid/msg.h>
 #include <string>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jfieldID jcomm_field_Comm_bind;
 static jfieldID jcomm_field_Comm_finished;
@@ -166,5 +166,4 @@ JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls,
   xbt_dynar_free(&dyn);
   return rank;
 }
-
-SG_END_DECL()
+}

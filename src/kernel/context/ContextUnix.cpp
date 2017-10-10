@@ -10,7 +10,7 @@
 #include "mc/mc.h"
 #include "src/mc/mc_ignore.h"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "xbt/parmap.hpp"
 
 /** Many integers are needed to store a pointer

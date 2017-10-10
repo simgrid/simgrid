@@ -9,14 +9,14 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 
-#include "jmsg_as.h"
+#include "jmsg.hpp"
+#include "jmsg_as.hpp"
 #include "jmsg_host.h"
-#include "jxbt_utilities.h"
-#include "jmsg.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jmethodID jas_method_As_constructor;
 static jfieldID jas_field_As_bind;
@@ -155,5 +155,4 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   }
   return jtable;
 }
-
-SG_END_DECL()
+}

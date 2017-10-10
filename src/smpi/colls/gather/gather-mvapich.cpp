@@ -35,11 +35,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#include "../colls_private.h"
-
-
-
-
+#include "../colls_private.hpp"
 
 #define MPIR_Gather_MV2_Direct Coll_gather_ompi_basic_linear::gather
 #define MPIR_Gather_MV2_two_level_Direct Coll_gather_ompi_basic_linear::gather

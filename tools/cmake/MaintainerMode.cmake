@@ -16,7 +16,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp
 
       DEPENDS
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.py
@@ -32,11 +32,11 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp
       )
 
     SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-      "${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h;${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.h"
+      "${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h;${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp"
       )
   endif()
 endif()

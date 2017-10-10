@@ -7,13 +7,13 @@
 
 #include "simgrid/msg.h"
 
-#include "jmsg.h"
+#include "jmsg.hpp"
 #include "jmsg_storage.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jmethodID jstorage_method_Storage_constructor;
 static jfieldID jstorage_field_Storage_bind;
@@ -227,5 +227,4 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   xbt_dynar_free(&table);
   return jtable;
 }
-
-SG_END_DECL()
+}

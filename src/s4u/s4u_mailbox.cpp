@@ -5,9 +5,9 @@
 
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_network_private.h"
+#include "src/simix/smx_network_private.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);

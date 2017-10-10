@@ -16,26 +16,26 @@
 #endif
 
 #include "src/internal_config.h"
-#include "src/mc/mc_private.h"
-#include "src/smpi/include/private.h"
+#include "src/mc/mc_private.hpp"
+#include "src/smpi/include/private.hpp"
 #include "xbt/mmalloc.h"
 #include "xbt/module.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 #include <libunwind.h>
 #include <libelf.h>
 
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 #include <mc/mc.h>
 
 #include "src/mc/mc_hash.hpp"
-#include "src/mc/mc_mmu.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_mmu.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 #include "src/mc/RegionSnapshot.hpp"

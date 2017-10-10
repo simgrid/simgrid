@@ -8,7 +8,7 @@
 
 #include "surf/surf.h"
 
-#include "src/instr/instr_private.h"
+#include "src/instr/instr_private.hpp"
 
 #include <unordered_map>
 

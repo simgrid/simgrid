@@ -14,12 +14,12 @@
 #include <xbt/functional.hpp>
 
 #include "simgrid/simix.h"
-#include "src/instr/instr_private.h"
+#include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
-#include "src/simix/popping_private.h"
-#include "src/simix/smx_host_private.h"
-#include "src/simix/smx_io_private.h"
-#include "src/simix/smx_network_private.h"
+#include "src/simix/popping_private.hpp"
+#include "src/simix/smx_host_private.hpp"
+#include "src/simix/smx_io_private.hpp"
+#include "src/simix/smx_network_private.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 #include "surf/surf.h"
 #include "xbt/base.h"
@@ -148,8 +148,7 @@ XBT_PRIVATE ContextFactory* boost_factory();
 
 typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
 
-SG_BEGIN_DECL()
-
+extern "C" {
 
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
@@ -185,8 +184,7 @@ XBT_PRIVATE smx_context_t SIMIX_context_get_current();
 XBT_PUBLIC(int) SIMIX_process_get_maxpid();
 
 XBT_PRIVATE void SIMIX_post_create_environment();
-
-SG_END_DECL()
+}
 
 XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name);
 

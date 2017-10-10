@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,7 +7,7 @@
 #define SIMIX_ACTORIMPL_H
 
 #include "simgrid/s4u/Actor.hpp"
-#include "src/simix/popping_private.h"
+#include "src/simix/popping_private.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "xbt/swag.h"
 #include <list>
@@ -122,7 +122,7 @@ typedef simgrid::simix::ProcessArg *smx_process_arg_t;
 
 typedef simgrid::simix::ActorImpl* smx_actor_t;
 
-SG_BEGIN_DECL()
+extern "C" {
 
 XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
                                              std::map<std::string, std::string>* properties,
@@ -142,8 +142,7 @@ XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
 
 extern void (*SMPI_switch_data_segment)(int dest);
-
-SG_END_DECL()
+}
 
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
 XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);

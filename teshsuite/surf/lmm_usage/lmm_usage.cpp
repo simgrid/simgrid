@@ -8,7 +8,7 @@
 
 #include "simgrid/msg.h"
 #include "src/surf/surf_interface.hpp"
-#include "surf/maxmin.h"
+#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h"

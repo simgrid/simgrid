@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -64,9 +64,9 @@ protected:
 }
 } // namespace
 
-SG_BEGIN_DECL()
+extern "C" {
 XBT_PRIVATE xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name, xbt_dict_t nodes);
 XBT_PRIVATE xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
-SG_END_DECL()
+}
 
 #endif /* SIMGRID_ROUTING_GENERIC_HPP_ */

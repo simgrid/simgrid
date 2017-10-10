@@ -11,7 +11,7 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 
 /** \file

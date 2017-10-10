@@ -6,10 +6,10 @@
 #ifndef SURF_MAXMIN_PRIVATE_H
 #define SURF_MAXMIN_PRIVATE_H
 
-#include "surf/maxmin.h"
-#include "xbt/swag.h"
-#include "xbt/mallocator.h"
+#include "surf/maxmin.hpp"
 #include "surf_interface.hpp"
+#include "xbt/mallocator.h"
+#include "xbt/swag.h"
 
 /** @ingroup SURF_lmm
  * @brief LMM element

@@ -1,12 +1,12 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
-#include "src/instr/instr_private.h"
-#include "src/msg/msg_private.h"
+#include "src/instr/instr_private.hpp"
+#include "src/msg/msg_private.hpp"
 
 #include <atomic>
 

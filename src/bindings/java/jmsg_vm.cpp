@@ -7,13 +7,13 @@
 
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/ex.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 extern int JAVA_HOST_LEVEL;
 static jfieldID jvm_field_bind;
@@ -186,4 +186,4 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
 
   return static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
 }
-SG_END_DECL()
+}

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,10 +10,10 @@
 
 #include "xbt/log.h"
 
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_snapshot.h"
 #include "mc/datatypes.h"
 #include "src/mc/mc_hash.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_snapshot.hpp"
 #include <mc/mc.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");

@@ -5,7 +5,7 @@
 
 /* SimGrid Lua bindings                                                     */
 
-#include "lua_private.h"
+#include "lua_private.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -16,7 +16,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-#include "src/surf/surf_private.h"
+#include "src/surf/surf_private.hpp"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <simgrid/s4u/Host.hpp>

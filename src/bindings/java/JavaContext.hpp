@@ -12,10 +12,10 @@
 #include <jni.h>
 
 #include "simgrid/simix.h"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "xbt/xbt_os_thread.h"
 
-#include "jmsg.h"
+#include "jmsg.hpp"
 
 namespace simgrid {
 namespace kernel {

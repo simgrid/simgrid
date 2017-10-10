@@ -6,8 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "JavaContext.hpp"
-#include "jxbt_utilities.h"
-#include "src/simix/smx_private.h"
+#include "jxbt_utilities.hpp"
+#include "src/simix/smx_private.hpp"
 #include "xbt/ex.hpp"
 
 #include <functional>

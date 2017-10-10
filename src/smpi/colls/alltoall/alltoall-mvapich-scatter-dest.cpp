@@ -41,7 +41,7 @@
 //correct on stampede
 #define MV2_ALLTOALL_THROTTLE_FACTOR         4
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
 int Coll_alltoall_mvapich2_scatter_dest::alltoall(

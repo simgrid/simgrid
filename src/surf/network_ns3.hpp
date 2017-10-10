@@ -9,7 +9,7 @@
 #include "xbt/base.h"
 
 #include "network_interface.hpp"
-#include "src/surf/ns3/ns3_interface.h"
+#include "src/surf/ns3/ns3_interface.hpp"
 
 namespace simgrid {
 namespace surf {

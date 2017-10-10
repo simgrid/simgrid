@@ -1,12 +1,12 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.h"
-#include "src/simix/smx_private.h"
+#include "msg_private.hpp"
+#include "src/simix/smx_private.hpp"
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @addtogroup m_task_management
  *
@@ -304,5 +304,4 @@ void MSG_task_set_bound(msg_task_t task, double bound)
   if (task->simdata->compute)
     simcall_execution_set_bound(task->simdata->compute, task->simdata->bound);
 }
-
-SG_END_DECL()
+}

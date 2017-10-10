@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_comm.hpp"
-#include "private.h"
 #include "private.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "smpi_coll.hpp"
@@ -13,7 +12,7 @@
 #include "smpi_request.hpp"
 #include "smpi_status.hpp"
 #include "smpi_win.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include <algorithm>
 #include <climits>
 #include <vector>

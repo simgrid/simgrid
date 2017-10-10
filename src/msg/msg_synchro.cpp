@@ -6,8 +6,8 @@
 
 #include "xbt/ex.hpp"
 
-#include "msg_private.h"
-#include "src/simix/smx_private.h"
+#include "msg_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include "xbt/synchro.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (synchro)");

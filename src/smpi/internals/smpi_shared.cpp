@@ -36,7 +36,6 @@
 #include <map>
 #include <cstring>
 
-#include "private.h"
 #include "private.hpp"
 #include <cerrno>
 

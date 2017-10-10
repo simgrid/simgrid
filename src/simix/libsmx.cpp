@@ -5,7 +5,7 @@
 /*                                                                            */
 /* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,12 +19,12 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "simgrid/simix.hpp"
 #include "simgrid/simix/blocking_simcall.hpp"
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 #include "xbt/ex.h"
 #include "xbt/functional.hpp"
 

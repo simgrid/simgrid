@@ -7,7 +7,7 @@
 
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.h"
-#include "src/simix/smx_network_private.h"
+#include "src/simix/smx_network_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);

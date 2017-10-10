@@ -8,7 +8,7 @@
 
 #include <exception>
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 #include "smpi_process.hpp"
 
 

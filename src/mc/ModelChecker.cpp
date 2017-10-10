@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,9 +26,9 @@
 #include "src/mc/PageStore.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");

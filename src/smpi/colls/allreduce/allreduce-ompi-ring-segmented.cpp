@@ -153,7 +153,7 @@
         EARLY_BLOCK_COUNT = EARLY_BLOCK_COUNT + 1;                           \
     }                                                                        \
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 
 namespace simgrid{
 namespace smpi{

@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/instr/instr_private.hpp" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "xbt/log.h"
@@ -15,7 +15,7 @@
 
 #if SIMGRID_HAVE_LUA
 extern "C" {
-#include "src/bindings/lua/simgrid_lua.h"
+#include "src/bindings/lua/simgrid_lua.hpp"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */
@@ -33,7 +33,7 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_bw;
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
-SG_BEGIN_DECL()
+extern "C" {
 void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect)
 {
   xbt_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
@@ -170,5 +170,4 @@ void parse_platform_file(const char *file)
       surf_parse_error(std::string("Parse error in ") + file);
   }
 }
-
-SG_END_DECL()
+}

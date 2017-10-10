@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, 2014-2016. The SimGrid Team.
+/* Copyright (c) 2010-2012, 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -40,11 +40,9 @@ XBT_PUBLIC_CLASS Event{
 }
 }
 
-SG_BEGIN_DECL()
-
+extern "C" {
 typedef simgrid::jedule::Event * jed_event_t;
-
-SG_END_DECL()
+}
 
 #endif
 

@@ -5,12 +5,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "jxbt_utilities.hpp"
 #include "xbt/sysdep.h"
-#include "jxbt_utilities.h"
 
 #include <cstdlib> /* abort */
 
-SG_BEGIN_DECL()
+extern "C" {
 
 jclass jxbt_get_class(JNIEnv * env, const char *name)
 {
@@ -211,5 +211,4 @@ void jxbt_throw_task_cancelled(JNIEnv* env, std::string details)
 {
   jxbt_throw_by_name(env, "org/simgrid/msg/TaskCancelledException", details);
 }
-
-SG_END_DECL()
+}

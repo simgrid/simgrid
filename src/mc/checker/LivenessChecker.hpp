@@ -14,15 +14,11 @@
 #include <memory>
 #include <vector>
 
-#include <simgrid_config.h>
-#include <xbt/base.h>
-#include <xbt/automaton.h>
-#include "src/mc/mc_state.h"
 #include "src/mc/checker/Checker.hpp"
-
-SG_BEGIN_DECL()
-
-SG_END_DECL()
+#include "src/mc/mc_state.hpp"
+#include <simgrid_config.h>
+#include <xbt/automaton.h>
+#include <xbt/base.h>
 
 namespace simgrid {
 namespace mc {

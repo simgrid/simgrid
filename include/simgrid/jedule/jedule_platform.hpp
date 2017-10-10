@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, 2014-2016. The SimGrid Team.
+/* Copyright (c) 2010-2012, 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -50,12 +50,11 @@ public:
 
 }
 }
-SG_BEGIN_DECL()
+extern "C" {
 typedef simgrid::jedule::Container * jed_container_t;
 typedef simgrid::jedule::Subset * jed_subset_t;
 void get_resource_selection_by_hosts(std::vector<jed_subset_t>* subset_list, std::vector<sg_host_t> *host_list);
-
-SG_END_DECL()
+}
 
 #endif
 

@@ -15,8 +15,8 @@
 
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");

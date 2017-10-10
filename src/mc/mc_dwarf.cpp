@@ -25,8 +25,8 @@
 #include "xbt/sysdep.h"
 #include <simgrid_config.h>
 
-#include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
+#include "src/mc/mc_private.hpp"
 
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"

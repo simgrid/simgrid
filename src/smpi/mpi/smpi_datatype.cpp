@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/modelchecker.h"
-#include "private.h"
 #include "private.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"

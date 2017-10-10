@@ -7,8 +7,8 @@
 
 #include "src/include/mc/mc.h"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_xbt.hpp"
 
 using simgrid::mc::remote;

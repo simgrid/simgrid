@@ -11,7 +11,7 @@
 #include "xbt/sysdep.h"
 #include <vector>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Iterator within a trace */
 typedef struct tmgr_trace_event {
@@ -35,10 +35,8 @@ XBT_PUBLIC(void) tmgr_finalize();
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(std::string filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(std::string id, std::string input, double periodicity);
+}
 
-SG_END_DECL()
-
-#ifdef __cplusplus
 namespace simgrid {
 /** @brief Modeling of the availability profile (due to an external load) or the churn
  *
@@ -98,6 +96,5 @@ private:
 };
 
 }} // namespace simgrid::trace_mgr
-#endif /* C++ only */
 
 #endif /* SURF_TMGR_H */

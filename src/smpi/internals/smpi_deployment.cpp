@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h" /* barrier */
 #include "SmpiHost.hpp"
-#include "private.h"
+#include "private.hpp"
+#include "simgrid/msg.h" /* barrier */
 #include "smpi_comm.hpp"
 #include <map>
 

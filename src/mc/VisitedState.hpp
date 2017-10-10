@@ -11,8 +11,8 @@
 
 #include <memory>
 
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_state.h"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_state.hpp"
 
 namespace simgrid {
 namespace mc {

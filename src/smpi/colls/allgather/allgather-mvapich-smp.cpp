@@ -34,7 +34,7 @@
  *  (C) 2001 by Argonne National Laboratory.
  *      See COPYRIGHT in top-level directory.
  */
- #include "../colls_private.h"
+#include "../colls_private.hpp"
 namespace simgrid{
 namespace smpi{
 

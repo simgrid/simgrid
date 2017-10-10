@@ -41,8 +41,9 @@ class Simcall(object):
         if self.name not in self.simcalls_BODY:
             print ('# ERROR: No function calling simcall_BODY_%s' % self.name)
             print ('# Add something like this to libsmx.c:')
-            print ('%s simcall_%s(%s) {' % (self.res.rettype(), self.name, ', '.
+            print ('%s simcall_%s(%s)' % (self.res.rettype(), self.name, ', '.
                    join('%s %s' % (arg.rettype(), arg.name) for arg in self.args)))
+            print ('{')
             print ('  return simcall_BODY_%s(%s);' % (self.name, "..."))
             print ('}')
             return False
@@ -59,8 +60,9 @@ class Simcall(object):
             if self.name not in self.simcalls_PRE:
                 print ('# ERROR: No function called simcall_HANDLER_%s' % self.name)
                 print ('# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):')
-                print ('%s simcall_HANDLER_%s(smx_simcall_t simcall%s) {' % (self.res.rettype(), self.name, ''.
+                print ('%s simcall_HANDLER_%s(smx_simcall_t simcall%s)' % (self.res.rettype(), self.name, ''.
                        join(', %s %s' % (arg.rettype(), arg.name)for arg in self.args)))
+                print ('{')
                 print ('  // Your code handling the simcall')
                 print ('}')
                 return False
@@ -98,7 +100,7 @@ class Simcall(object):
             res.append('static inline void simcall_%s__set__%s(smx_simcall_t simcall, %s arg)' % (
                 self.name, arg.name, arg.rettype()))
             res.append('{')
-            res.append('    simgrid::simix::marshal<%s>(simcall->args[%i], arg);' % (arg.rettype(), i))
+            res.append('  simgrid::simix::marshal<%s>(simcall->args[%i], arg);' % (arg.rettype(), i))
             res.append('}')
 
         # Return value getter/setters
@@ -107,16 +109,16 @@ class Simcall(object):
             res.append(
                 'static inline %s simcall_%s__get__result(smx_simcall_t simcall)' % (self.res.rettype(), self.name))
             res.append('{')
-
-            res.append('    return simgrid::simix::unmarshal<%s>(simcall->result);' % self.res.rettype())
+            res.append('  return simgrid::simix::unmarshal<%s>(simcall->result);' % self.res.rettype())
+            res.append('}')
+            res.append('static inline %s simcall_%s__getraw__result(smx_simcall_t simcall)' % (rawtype, self.name))
+            res.append('{')
+            res.append('  return simgrid::simix::unmarshal_raw<%s>(simcall->result);' % rawtype)
             res.append('}')
             res.append(
-                'static inline %s simcall_%s__getraw__result(smx_simcall_t simcall){' % (rawtype, self.name))
-            res.append('    return simgrid::simix::unmarshal_raw<%s>(simcall->result);' % rawtype)
-            res.append('}')
-            res.append(
-                'static inline void simcall_%s__set__result(smx_simcall_t simcall, %s result){' % (self.name, self.res.rettype()))
-            res.append('    simgrid::simix::marshal<%s>(simcall->result, result);' % (self.res.rettype()))
+                'static inline void simcall_%s__set__result(smx_simcall_t simcall, %s result)' % (self.name, self.res.rettype()))
+            res.append('{')
+            res.append('  simgrid::simix::marshal<%s>(simcall->result, result);' % (self.res.rettype()))
             res.append('}')
         return '\n'.join(res)
 
@@ -132,36 +134,36 @@ class Simcall(object):
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))
         if self.call_kind == 'Func':
-            res.append("      simgrid::simix::marshal<%s>(simcall->result, %s);" % (self.res.rettype(), call))
+            res.append("  simgrid::simix::marshal<%s>(simcall->result, %s);" % (self.res.rettype(), call))
         else:
-            res.append("      " + call + ";");
+            res.append("  " + call + ";");
         if self.call_kind != 'Blck':
-            res.append('      SIMIX_simcall_answer(simcall);')
-        res.append('      break;')
+            res.append('  SIMIX_simcall_answer(simcall);')
+        res.append('  break;')
         res.append('')
         return '\n'.join(res)
 
     def body(self):
         res = ['']
         res.append(
-            'inline static %s simcall_BODY_%s(%s) {' % (self.res.rettype(),
+            'inline static %s simcall_BODY_%s(%s)' % (self.res.rettype(),
                                                         self.name,
                                                         ', '.join('%s %s' % (arg.rettype(), arg.name) for arg in self.args)))
-        res.append(
-            '    /* Go to that function to follow the code flow through the simcall barrier */')
+        res.append('{')
+        res.append('  if (0) /* Go to that function to follow the code flow through the simcall barrier */')
         if self.need_handler:
-            res.append('    if (0) simcall_HANDLER_%s(%s);' % (self.name,
-                                                               ', '.join(["&SIMIX_process_self()->simcall"] + [arg.name for arg in self.args])))
+            res.append('    simcall_HANDLER_%s(%s);' % (self.name,
+                                                        ', '.join(["&SIMIX_process_self()->simcall"] + [arg.name for arg in self.args])))
         else:
-            res.append('    if (0) SIMIX_%s(%s);' % (self.name,
+            res.append('    SIMIX_%s(%s);' % (self.name,
                                                      ', '.join(arg.name for arg in self.args)))
-        res.append('    return simcall<%s%s>(SIMCALL_%s%s);' % (
+        res.append('  return simcall<%s%s>(SIMCALL_%s%s);' % (
             self.res.rettype(),
             "".join([ ", " + arg.rettype() for i, arg in enumerate(self.args) ]),
             self.name.upper(),
             "".join([ ", " + arg.name for i, arg in enumerate(self.args) ])
             ));
-        res.append('  }')
+        res.append('}')
         return '\n'.join(res)
 
     def handler_prototype(self):
@@ -272,10 +274,10 @@ if __name__ == '__main__':
     #  sys.exit(1)
 
     #
-    # smx_popping_accessors.c
+    # popping_accessors.hpp
     #
-    fd = header('popping_accessors.h')
-    fd.write('#include "src/simix/popping_private.h"');
+    fd = header('popping_accessors.hpp')
+    fd.write('#include "src/simix/popping_private.hpp"');
     handle(fd, Simcall.accessors, simcalls, simcalls_dict)
     fd.write(
         "\n\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
@@ -283,7 +285,7 @@ if __name__ == '__main__':
     fd.close()
 
     #
-    # smx_popping_enum.c
+    # popping_enum.h
     #
     fd = header("popping_enum.h")
     fd.write('/**\n')
@@ -299,13 +301,13 @@ if __name__ == '__main__':
     fd.close()
 
     #
-    # smx_popping_generated.cpp
+    # popping_generated.cpp
     #
 
     fd = header("popping_generated.cpp")
 
+    fd.write('#include "smx_private.hpp"\n')
     fd.write('#include <xbt/base.h>\n')
-    fd.write('#include "smx_private.h"\n')
     fd.write('#if SIMGRID_HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
@@ -324,7 +326,7 @@ if __name__ == '__main__':
     fd.write('/** @private\n')
     fd.write(
         ' * @brief (in kernel mode) unpack the simcall and activate the handler\n')
-    fd.write(' * \n')
+    fd.write(' *\n')
     fd.write(' * This function is generated from src/simix/simcalls.in\n')
     fd.write(' */\n')
     fd.write(
@@ -354,13 +356,13 @@ if __name__ == '__main__':
     fd.close()
 
     #
-    # smx_popping_bodies.cpp
+    # popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
-    fd.write('#include <functional>\n')
-    fd.write('#include "smx_private.h"\n')
+    fd.write('#include "smx_private.hpp"\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
+    fd.write('#include <functional>\n')
     fd.write('#include <simgrid/simix.hpp>\n')
     fd.write("/** @cond */ // Please Doxygen, don't look at this\n")
     fd.write('''
@@ -380,5 +382,5 @@ inline static R simcall(e_smx_simcall_t call, T const&... t)
 }
 ''')
     handle(fd, Simcall.body, simcalls, simcalls_dict)
-    fd.write("/** @endcond */\n");
+    fd.write(" /** @endcond */\n");
     fd.close()

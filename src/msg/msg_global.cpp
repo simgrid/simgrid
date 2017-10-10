@@ -8,12 +8,12 @@
 
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 MSG_Global_t msg_global = nullptr;
 static void MSG_exit();
@@ -130,5 +130,4 @@ unsigned long int MSG_get_sent_msg()
 {
   return msg_global->sent_msg;
 }
-
-SG_END_DECL()
+}

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,9 +11,9 @@
 #include <memory>
 #include <string>
 
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_record.h"
 #include "src/mc/Session.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_record.hpp"
 
 namespace simgrid {
 namespace mc {

@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.h"
+#include "msg_private.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @addtogroup m_process_management
  *
@@ -138,8 +138,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   xbt_free(argv);
   return res;
 }
-
-SG_END_DECL()
+}
 
 msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
                                               std::map<std::string, std::string>* properties)
@@ -158,7 +157,7 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
   return process->ciface();
 }
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Become a process in the simulation
  *
@@ -524,5 +523,4 @@ XBT_PUBLIC(void) MSG_process_unref(msg_process_t process)
 {
   intrusive_ptr_release(process);
 }
-
-SG_END_DECL()
+}

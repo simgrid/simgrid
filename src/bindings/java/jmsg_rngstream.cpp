@@ -8,9 +8,9 @@
 #include "xbt/sysdep.h"
 
 #include "jmsg_rngstream.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 
-SG_BEGIN_DECL()
+extern "C" {
 
 jfieldID jrngstream_bind;
 
@@ -145,5 +145,4 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobje
 
   return (jint)RngStream_RandInt(rngstream, (int)i, (int)j);
 }
-
-SG_END_DECL()
+}
