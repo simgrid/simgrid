@@ -203,13 +203,13 @@ int smpi_usleep(useconds_t usecs)
 }
 
 #if _POSIX_TIMERS > 0
-int smpi_nanosleep(const struct timespec *tp, struct timespec * t)
+int smpi_nanosleep(const struct timespec* tp, struct timespec* /*t*/)
 {
   return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));
 }
 #endif
 
-int smpi_gettimeofday(struct timeval *tv, void* tz)
+int smpi_gettimeofday(struct timeval* tv, void* /*tz*/)
 {
   smpi_bench_end();
   double now = SIMIX_get_clock();
@@ -226,7 +226,7 @@ int smpi_gettimeofday(struct timeval *tv, void* tz)
 }
 
 #if _POSIX_TIMERS > 0
-int smpi_clock_gettime(clockid_t clk_id, struct timespec *tp)
+int smpi_clock_gettime(clockid_t /*clk_id*/, struct timespec* tp)
 {
   //there is only one time in SMPI, so clk_id is ignored.
   smpi_bench_end();
