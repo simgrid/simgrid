@@ -94,7 +94,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src           = simgrid::s4u::Storage::byName(fd->storageId);
   msg_host_t attached_host            = storage_src->getHost();
-  read_size                           = fd->read(size); // TODO re-add attached_host
+  read_size                           = fd->read(size);
 
   if (strcmp(attached_host->getCname(), MSG_host_self()->getCname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
@@ -158,7 +158,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     }
   }
   /* Write file on local or remote host */
-  sg_size_t write_size = fd->write(size); // TODO readd attached_host
+  sg_size_t write_size = fd->write(size);
 
   return write_size;
 }
@@ -175,6 +175,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
 {
   msg_file_t fd         = new simgrid::s4u::File(fullpath, MSG_host_self());
   fd->desc_id           = MSG_host_get_file_descriptor_id(MSG_host_self());
+  fd->setUserdata(data);
   return fd;
 }
 
