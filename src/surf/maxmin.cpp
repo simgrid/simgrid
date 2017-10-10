@@ -16,11 +16,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
-typedef struct s_dyn_light {
+struct s_dyn_light_t {
   int *data;
   int pos;
   int size;
-} s_dyn_light_t;
+};
 typedef s_dyn_light_t* dyn_light_t;
 
 double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */

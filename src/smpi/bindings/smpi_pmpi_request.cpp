@@ -650,13 +650,13 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 
   smpi_bench_end();
   //save requests information for tracing
-  typedef struct {
+  struct savedvalstype {
     int src;
     int dst;
     int recv;
     int tag;
     MPI_Comm comm;
-  } savedvalstype;
+  };
   savedvalstype* savedvals = xbt_new0(savedvalstype, count);
 
   for (int i = 0; i < count; i++) {
@@ -696,14 +696,14 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   smpi_bench_end();
   //save information from requests
-  typedef struct {
+  struct savedvalstype {
     int src;
     int dst;
     int recv;
     int tag;
     int valid;
     MPI_Comm comm;
-  } savedvalstype;
+  };
   savedvalstype* savedvals=xbt_new0(savedvalstype, count);
 
   for (int i = 0; i < count; i++) {

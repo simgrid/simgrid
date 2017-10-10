@@ -40,11 +40,12 @@ static int _xbt_test_suite_disabled = 0;
 xbt_test_unit_t _xbt_test_current_unit = nullptr;
 
 /* test suite test log */
-typedef struct s_xbt_test_log {
+struct s_xbt_test_log {
   char *text;
   const char *file;
   int line;
-} *xbt_test_log_t;
+};
+typedef s_xbt_test_log* xbt_test_log_t;
 
 static void xbt_test_log_dump(xbt_test_log_t log)
 {
@@ -55,7 +56,7 @@ static void xbt_test_log_dump(xbt_test_log_t log)
 }
 
 /* test suite test check */
-typedef struct s_xbt_test_test {
+struct s_xbt_test_test {
   char *title;
   int failed;
   int expected_failure;
@@ -63,7 +64,8 @@ typedef struct s_xbt_test_test {
   const char *file;
   int line;
   xbt_dynar_t logs;
-} *xbt_test_test_t;
+};
+typedef s_xbt_test_test* xbt_test_test_t;
 
 static void xbt_test_test_dump(xbt_test_test_t test)
 {
@@ -165,7 +167,7 @@ static void xbt_test_log_free(void *log)
 /** @brief create test suite */
 xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...)
 {
-  xbt_test_suite_t suite = xbt_new0(struct s_xbt_test_suite, 1);
+  xbt_test_suite_t suite = xbt_new0(s_xbt_test_suite, 1);
   va_list ap;
 
   if (_xbt_test_suites == nullptr)
@@ -231,7 +233,7 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
   xbt_assert(func);
   xbt_assert(fmt);
 
-  unit = xbt_new0(struct s_xbt_test_unit, 1);
+  unit = xbt_new0(s_xbt_test_unit, 1);
   va_start(ap, fmt);
   unit->title = bvprintf(fmt, ap);
   va_end(ap);
@@ -646,7 +648,7 @@ void _xbt_test_add(const char *file, int line, const char *fmt, ...)
   xbt_assert(unit);
 
   va_list ap;
-  xbt_test_test_t test = xbt_new0(struct s_xbt_test_test, 1);
+  xbt_test_test_t test = xbt_new0(s_xbt_test_test, 1);
   va_start(ap, fmt);
   test->title = bvprintf(fmt, ap);
   va_end(ap);
@@ -668,7 +670,7 @@ void _xbt_test_fail(const char *file, int line, const char *fmt, ...)
       "Test failed even before being declared (broken unit: %s)", unit->title);
 
   va_list ap;
-  xbt_test_log_t log = xbt_new(struct s_xbt_test_log, 1);
+  xbt_test_log_t log = xbt_new(s_xbt_test_log, 1);
   va_start(ap, fmt);
   log->text = bvprintf(fmt, ap);
   va_end(ap);
@@ -711,7 +713,7 @@ void _xbt_test_log(const char *file, int line, const char *fmt, ...)
       "Test logged into even before being declared (broken test unit: %s)", unit->title);
 
   va_list ap;
-  xbt_test_log_t log = xbt_new(struct s_xbt_test_log, 1);
+  xbt_test_log_t log = xbt_new(s_xbt_test_log, 1);
   va_start(ap, fmt);
   log->text = bvprintf(fmt, ap);
   va_end(ap);

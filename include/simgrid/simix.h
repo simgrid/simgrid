@@ -49,11 +49,11 @@ typedef enum {
 /**
  * \ingroup simix_synchro_management
  */
-typedef struct s_smx_cond *smx_cond_t;
+typedef struct s_smx_cond_t* smx_cond_t;
 /**
  * \ingroup simix_synchro_management
  */
-typedef struct s_smx_sem *smx_sem_t;
+typedef struct s_smx_sem_t* smx_sem_t;
 
 /* ****************************** Process *********************************** */
 
@@ -106,7 +106,7 @@ XBT_PUBLIC(void) SIMIX_run();
 XBT_PUBLIC(double) SIMIX_get_clock();
 
 /* Timer functions FIXME: should these be public? */
-typedef struct s_smx_timer* smx_timer_t;
+typedef struct s_smx_timer_t* smx_timer_t;
 
 XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, void (*function)(void*), void *arg);
 XBT_PUBLIC(void) SIMIX_timer_remove(smx_timer_t timer);

@@ -278,10 +278,8 @@ static bool valid_variable(simgrid::mc::Variable* var,
     return true;
 }
 
-static void fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           simgrid::mc::Frame* scope,
-                                           int process_index,
-                                           std::vector<s_local_variable>& result)
+static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::mc::Frame* scope, int process_index,
+                                        std::vector<s_local_variable_t>& result)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
@@ -335,10 +333,10 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
       stack_frame, &nested_scope, process_index, result);
 }
 
-static std::vector<s_local_variable> get_local_variables_values(
-  std::vector<s_mc_stack_frame_t>& stack_frames, int process_index)
+static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames,
+                                                                  int process_index)
 {
-  std::vector<s_local_variable> variables;
+  std::vector<s_local_variable_t> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
     fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
   return variables;

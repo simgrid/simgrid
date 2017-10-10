@@ -232,7 +232,7 @@ smx_cond_t SIMIX_cond_init()
 {
   XBT_IN("()");
   simgrid::simix::ActorImpl p;
-  smx_cond_t cond = new s_smx_cond();
+  smx_cond_t cond = new s_smx_cond_t();
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->refcount_ = 1;
   XBT_OUT();

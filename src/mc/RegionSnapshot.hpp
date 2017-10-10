@@ -276,6 +276,6 @@ simgrid::mc::RegionSnapshot region(
 }
 }
 
-typedef class simgrid::mc::RegionSnapshot s_mc_mem_region_t;
+typedef simgrid::mc::RegionSnapshot s_mc_mem_region_t;
 typedef s_mc_mem_region_t* mc_mem_region_t;
 #endif

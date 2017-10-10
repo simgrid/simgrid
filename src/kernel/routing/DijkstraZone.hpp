@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,21 +8,21 @@
 
 #include "src/kernel/routing/RoutedZone.hpp"
 
-typedef struct graph_node_data {
+struct s_graph_node_data_t {
   int id;
   int graph_id; /* used for caching internal graph id's */
-} s_graph_node_data_t;
+};
 typedef s_graph_node_data_t* graph_node_data_t;
 
-typedef struct graph_node_map_element {
+struct s_graph_node_map_element_t {
   xbt_node_t node;
-} s_graph_node_map_element_t;
+};
 typedef s_graph_node_map_element_t* graph_node_map_element_t;
 
-typedef struct route_cache_element {
+struct s_route_cache_element_t {
   int* pred_arr;
   int size;
-} s_route_cache_element_t;
+};
 typedef s_route_cache_element_t* route_cache_element_t;
 
 namespace simgrid {

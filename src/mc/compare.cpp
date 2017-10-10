@@ -128,8 +128,8 @@ template <class X, class Y> class hash<std::pair<X, Y>> {
 public:
   std::size_t operator()(std::pair<X,Y>const& x) const
   {
-    struct hash<X> h1;
-    struct hash<X> h2;
+    hash<X> h1;
+    hash<X> h2;
     return h1(x.first) ^ h2(x.second);
   }
 };

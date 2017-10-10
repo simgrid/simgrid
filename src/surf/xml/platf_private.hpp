@@ -23,12 +23,12 @@ extern "C" {
 typedef size_t yy_size_t;
 #endif
 
-typedef enum {
-  SURF_CLUSTER_DRAGONFLY=3,
-  SURF_CLUSTER_FAT_TREE=2,
-  SURF_CLUSTER_FLAT = 1,
-  SURF_CLUSTER_TORUS = 0
-} e_surf_cluster_topology_t;
+enum e_surf_cluster_topology_t {
+  SURF_CLUSTER_DRAGONFLY = 3,
+  SURF_CLUSTER_FAT_TREE  = 2,
+  SURF_CLUSTER_FLAT      = 1,
+  SURF_CLUSTER_TORUS     = 0
+};
 
 /* ***************************************** */
 /*
@@ -41,7 +41,7 @@ typedef enum {
  * used, instead of malloced structures.
  */
 
-typedef struct {
+struct s_sg_platf_host_cbarg_t {
   const char* id;
   std::vector<double> speed_per_pstate;
   int pstate;
@@ -50,7 +50,7 @@ typedef struct {
   tmgr_trace_t state_trace;
   const char* coord;
   std::map<std::string, std::string>* properties;
-} s_sg_platf_host_cbarg_t;
+};
 typedef s_sg_platf_host_cbarg_t* sg_platf_host_cbarg_t;
 
 class HostLinkCreationArgs {
@@ -83,15 +83,15 @@ public:
   tmgr_trace_t state_trace;
 };
 
-typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
-typedef struct s_sg_platf_route_cbarg {
+struct s_sg_platf_route_cbarg_t {
   bool symmetrical;
   sg_netpoint_t src;
   sg_netpoint_t dst;
   sg_netpoint_t gw_src;
   sg_netpoint_t gw_dst;
   std::vector<simgrid::surf::LinkImpl*>* link_list;
-} s_sg_platf_route_cbarg_t;
+};
+typedef s_sg_platf_route_cbarg_t* sg_platf_route_cbarg_t;
 
 class ClusterCreationArgs {
 public:
@@ -152,11 +152,11 @@ public:
   std::string name;
 };
 
-typedef struct s_sg_platf_prop_cbarg *sg_platf_prop_cbarg_t;
-typedef struct s_sg_platf_prop_cbarg {
+struct s_sg_platf_prop_cbarg_t {
   const char *id;
   const char *value;
-} s_sg_platf_prop_cbarg_t;
+};
+typedef s_sg_platf_prop_cbarg_t* sg_platf_prop_cbarg_t;
 
 class TraceCreationArgs {
 public:
@@ -173,8 +173,7 @@ public:
   std::string element;
 };
 
-typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
-typedef struct s_sg_platf_process_cbarg {
+struct s_sg_platf_process_cbarg_t {
   const char **argv;
   int argc;
   std::map<std::string, std::string>* properties;
@@ -183,7 +182,8 @@ typedef struct s_sg_platf_process_cbarg {
   double start_time;
   double kill_time;
   e_surf_process_on_failure_t on_failure;
-} s_sg_platf_process_cbarg_t;
+};
+typedef s_sg_platf_process_cbarg_t* sg_platf_process_cbarg_t;
 
 class ZoneCreationArgs {
 public:

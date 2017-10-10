@@ -19,14 +19,14 @@ extern XBT_PRIVATE const char* surf_action_state_names[6];
 /** @ingroup SURF_interface
  * @brief Possible update mechanisms
  */
-typedef enum {
+enum e_UM_t {
   UM_FULL,     /**< Full update mechanism: the remaining time of every action is recomputed at each step */
   UM_LAZY,     /**< Lazy update mechanism: only the modified actions get recomputed.
                     It may be slower than full if your system is tightly coupled to the point where every action
                     gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
                     a simple full update.  */
   UM_UNDEFINED /**< Mechanism not defined */
-} e_UM_t;
+};
 
 /* Generic functions common to all models */
 

@@ -409,13 +409,31 @@ Benchmark results on CRAY T3E
 #endif
 #endif
 
-typedef enum {MPIM_SHORT, MPIM_INT, MPIM_LONG, MPIM_UNSIGNED_SHORT,
-              MPIM_UNSIGNED, MPIM_UNSIGNED_LONG, MPIM_UNSIGNED_LONG_LONG, MPIM_FLOAT,
-              MPIM_DOUBLE, MPIM_BYTE} MPIM_Datatype;
+enum MPIM_Datatype {
+  MPIM_SHORT,
+  MPIM_INT,
+  MPIM_LONG,
+  MPIM_UNSIGNED_SHORT,
+  MPIM_UNSIGNED,
+  MPIM_UNSIGNED_LONG,
+  MPIM_UNSIGNED_LONG_LONG,
+  MPIM_FLOAT,
+  MPIM_DOUBLE,
+  MPIM_BYTE
+};
 
-typedef enum {MPIM_MAX, MPIM_MIN, MPIM_SUM, MPIM_PROD,
-              MPIM_LAND, MPIM_BAND, MPIM_LOR, MPIM_BOR,
-              MPIM_LXOR, MPIM_BXOR} MPIM_Op;
+enum MPIM_Op {
+  MPIM_MAX,
+  MPIM_MIN,
+  MPIM_SUM,
+  MPIM_PROD,
+  MPIM_LAND,
+  MPIM_BAND,
+  MPIM_LOR,
+  MPIM_BOR,
+  MPIM_LXOR,
+  MPIM_BXOR
+};
 #define MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_TYPE,TYPE)                   \
 static void MPI_I_do_op_TYPE(TYPE* b1,TYPE* b2,TYPE* rslt, int cnt,MPIM_Op op)\
 { int i;                                                               \

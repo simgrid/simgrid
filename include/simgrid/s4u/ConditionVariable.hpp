@@ -33,7 +33,7 @@ namespace s4u {
 XBT_PUBLIC_CLASS ConditionVariable
 {
 private:
-  friend s_smx_cond;
+  friend s_smx_cond_t;
   smx_cond_t cond_;
   explicit ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:

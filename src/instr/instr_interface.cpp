@@ -12,12 +12,7 @@
 #include "surf/surf.h"
 #include <algorithm>
 
-typedef enum {
-  INSTR_US_DECLARE,
-  INSTR_US_SET,
-  INSTR_US_ADD,
-  INSTR_US_SUB
-} InstrUserVariable;
+enum InstrUserVariable { INSTR_US_DECLARE, INSTR_US_SET, INSTR_US_ADD, INSTR_US_SUB };
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 

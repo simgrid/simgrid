@@ -14,13 +14,13 @@
 extern "C" {
 
 /* Iterator within a trace */
-typedef struct tmgr_trace_event {
+struct s_tmgr_trace_event_t {
   tmgr_trace_t trace;
   unsigned int idx;
   sg_resource_t resource;
   int free_me;
-} s_tmgr_trace_event_t;
-typedef struct tmgr_trace_event* tmgr_trace_event_t;
+};
+typedef s_tmgr_trace_event_t* tmgr_trace_event_t;
 
 /**
  * \brief Free a trace event structure

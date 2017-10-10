@@ -10,12 +10,12 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/forward.hpp"
 
-typedef enum {
+enum e_surf_vm_state_t {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */
   SURF_VM_STATE_RUNNING,
   SURF_VM_STATE_SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
   SURF_VM_STATE_DESTROYED
-} e_surf_vm_state_t;
+};
 
 namespace simgrid {
 namespace vm {

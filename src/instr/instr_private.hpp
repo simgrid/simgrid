@@ -29,7 +29,7 @@
 
 namespace simgrid {
 namespace instr {
-typedef enum {
+enum e_event_type {
   PAJE_DefineContainerType,
   PAJE_DefineVariableType,
   PAJE_DefineStateType,
@@ -48,9 +48,9 @@ typedef enum {
   PAJE_StartLink,
   PAJE_EndLink,
   PAJE_NewEvent
-} e_event_type;
+};
 
-typedef enum { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT } e_entity_types;
+enum e_entity_types { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT };
 
 //--------------------------------------------------
 
@@ -97,7 +97,7 @@ public:
 };
 
 //--------------------------------------------------
-typedef enum {
+enum e_container_types {
   INSTR_HOST,
   INSTR_LINK,
   INSTR_ROUTER,
@@ -106,7 +106,7 @@ typedef enum {
   INSTR_MSG_VM,
   INSTR_MSG_PROCESS,
   INSTR_MSG_TASK
-} e_container_types;
+};
 
 //--------------------------------------------------
 
@@ -318,10 +318,7 @@ XBT_PRIVATE void TRACE_paje_dump_buffer(int force);
 XBT_PRIVATE void dump_comment_file(const char* filename);
 XBT_PRIVATE void dump_comment(const char* comment);
 
-struct s_instr_extra_data;
-typedef struct s_instr_extra_data* instr_extra_data;
-
-typedef enum {
+enum e_caller_type {
   TRACING_INIT,
   TRACING_FINALIZE,
   TRACING_COMM_SIZE,
@@ -355,9 +352,9 @@ typedef enum {
   TRACING_SLEEPING,
   TRACING_SCAN,
   TRACING_EXSCAN
-} e_caller_type;
+};
 
-typedef struct s_instr_extra_data {
+struct s_instr_extra_data_t {
   e_caller_type type;
   int send_size;
   int recv_size;
@@ -371,7 +368,8 @@ typedef struct s_instr_extra_data {
   int* sendcounts;
   int* recvcounts;
   int num_processes;
-} s_instr_extra_data_t;
+};
+typedef s_instr_extra_data_t* instr_extra_data;
 
 /* Format of TRACING output.
  *   - paje is the regular format, that we all know
@@ -379,7 +377,7 @@ typedef struct s_instr_extra_data {
  *     trace can easily be replayed with smpi_replay afterward. This trick should be removed and replaced by some code
  *     using the signal that we will create to cleanup the TRACING
  */
-typedef enum { instr_fmt_paje, instr_fmt_TI } instr_fmt_type_t;
+enum instr_fmt_type_t { instr_fmt_paje, instr_fmt_TI };
 extern instr_fmt_type_t instr_fmt_type;
 }
 

@@ -18,7 +18,7 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
-void simdata_task::reportMultipleUse() const
+void s_simdata_task_t::reportMultipleUse() const
 {
   if (msg_global->debug_multiple_use){
     XBT_ERROR("This task is already used in there:");

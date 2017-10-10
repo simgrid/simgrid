@@ -35,15 +35,15 @@ extern XBT_PRIVATE xbt_dynar_t initial_communications_pattern;
  */
 extern XBT_PRIVATE xbt_dynar_t incomplete_communications_pattern;
 
-typedef enum {
+enum e_mc_call_type_t {
   MC_CALL_TYPE_NONE,
   MC_CALL_TYPE_SEND,
   MC_CALL_TYPE_RECV,
   MC_CALL_TYPE_WAIT,
   MC_CALL_TYPE_WAITANY,
-} e_mc_call_type_t;
+};
 
-typedef enum {
+enum e_mc_comm_pattern_difference_t {
   NONE_DIFF,
   TYPE_DIFF,
   RDV_DIFF,
@@ -52,7 +52,7 @@ typedef enum {
   DST_PROC_DIFF,
   DATA_SIZE_DIFF,
   DATA_DIFF,
-} e_mc_comm_pattern_difference_t;
+};
 
 static inline e_mc_call_type_t MC_get_call_type(smx_simcall_t req)
 {

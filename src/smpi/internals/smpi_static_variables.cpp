@@ -6,10 +6,10 @@
 #include "private.hpp"
 #include <stack>
 
-typedef struct s_smpi_static {
+struct s_smpi_static_t {
   void *ptr;
   void_f_pvoid_t free_fn;
-} s_smpi_static_t;
+};
 
 /**
  * \brief Holds a reference to all static variables that were registered

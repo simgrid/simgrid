@@ -116,7 +116,7 @@ struct s_mc_memory_map_re {
   regex_t version_re;
 };
 
-static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
+static char* get_lib_name(const char* pathname, s_mc_memory_map_re* res)
 {
   char* map_basename = xbt_basename(pathname);
 
@@ -227,7 +227,7 @@ void RemoteClient::init()
     xbt_die("No heap information in the target process");
   if (not std_heap_var->address)
     xbt_die("No constant address for this variable");
-  this->read_bytes(&this->heap_address, sizeof(struct mdesc*), remote(std_heap_var->address),
+  this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address),
                    simgrid::mc::ProcessIndexDisabled);
 
   this->smx_actors_infos.clear();
@@ -262,8 +262,7 @@ void RemoteClient::refresh_heap()
   // Read/dereference/refresh the std_heap pointer:
   if (not this->heap)
     this->heap = std::unique_ptr<s_xbt_mheap_t>(new s_xbt_mheap_t());
-  this->read_bytes(this->heap.get(), sizeof(struct mdesc), remote(this->heap_address),
-                   simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
   this->cache_flags_ |= RemoteClient::cache_heap;
 }
 
@@ -295,7 +294,7 @@ void RemoteClient::init_memory_map_info()
   this->binary_info     = nullptr;
   this->libsimgrid_info = nullptr;
 
-  struct s_mc_memory_map_re res;
+  s_mc_memory_map_re res;
 
   if (regcomp(&res.so_re, SO_RE, 0) || regcomp(&res.version_re, VERSION_RE, 0))
     xbt_die(".so regexp did not compile");

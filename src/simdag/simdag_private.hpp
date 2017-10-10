@@ -38,7 +38,7 @@ extern "C" {
 extern XBT_PRIVATE simgrid::sd::Global *sd_global;
 
 /* Task */
-typedef struct SD_task {
+struct s_SD_task_t {
   e_SD_task_state_t state;
   void *data;                   /* user data */
   char *name;
@@ -63,7 +63,7 @@ typedef struct SD_task {
   double *flops_amount;
   double *bytes_amount;
   double rate;
-} s_SD_task_t;
+};
 
 /* SimDag private functions */
 XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);

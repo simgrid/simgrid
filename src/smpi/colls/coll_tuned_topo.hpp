@@ -34,14 +34,14 @@
       (SEGCOUNT)++;                                                                                                    \
   }
 
-typedef struct ompi_coll_tree_t {
+struct ompi_coll_tree_t {
   int32_t tree_root;
   int32_t tree_fanout;
   int32_t tree_bmtree;
   int32_t tree_prev;
   int32_t tree_next[MAXTREEFANOUT];
   int32_t tree_nextsize;
-} ompi_coll_tree_t;
+};
 
 ompi_coll_tree_t* ompi_coll_tuned_topo_build_tree(int fanout, MPI_Comm com, int root);
 ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bintree(MPI_Comm comm);

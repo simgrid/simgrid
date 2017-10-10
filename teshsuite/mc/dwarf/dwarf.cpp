@@ -105,11 +105,13 @@ static simgrid::mc::Member* find_member(simgrid::mc::Type& type, const char* nam
 
 int some_local_variable = 0;
 
-typedef struct foo {int i;} s_foo;
+struct s_foo {
+  int i;
+};
 
 static void test_type_by_name(simgrid::mc::RemoteClient& process, s_foo my_foo)
 {
-  assert(process.binary_info->full_types_by_name.find("struct foo") != process.binary_info->full_types_by_name.end());
+  assert(process.binary_info->full_types_by_name.find("struct s_foo") != process.binary_info->full_types_by_name.end());
 }
 
 int main(int argc, char** argv)

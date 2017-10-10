@@ -11,25 +11,25 @@
 
 #include <unordered_map>
 
-typedef struct smpi_delete_fn{
+struct smpi_delete_fn {
   MPI_Comm_delete_attr_function          *comm_delete_fn;
   MPI_Type_delete_attr_function          *type_delete_fn;
   MPI_Win_delete_attr_function           *win_delete_fn;
-} smpi_delete_fn;
+};
 
-typedef struct smpi_copy_fn{
+struct smpi_copy_fn {
   MPI_Comm_copy_attr_function          *comm_copy_fn;
   MPI_Type_copy_attr_function          *type_copy_fn;
   MPI_Win_copy_attr_function           *win_copy_fn;
-} smpi_copy_fn;
+};
 
-typedef struct s_smpi_key_elem {
+struct s_smpi_key_elem_t {
   smpi_copy_fn copy_fn;
   smpi_delete_fn delete_fn;
   int refcount;
-} s_smpi_mpi_key_elem_t;
+};
 
-typedef struct s_smpi_key_elem *smpi_key_elem;
+typedef s_smpi_key_elem_t* smpi_key_elem;
 
 namespace simgrid{
 namespace smpi{
@@ -54,7 +54,7 @@ class Keyval{
 
 template <typename T> int Keyval::keyval_create(smpi_copy_fn copy_fn, smpi_delete_fn delete_fn, int* keyval, void* extra_state){
 
-  smpi_key_elem value = (smpi_key_elem) xbt_new0(s_smpi_mpi_key_elem_t,1);
+  smpi_key_elem value = (smpi_key_elem)xbt_new0(s_smpi_key_elem_t, 1);
 
   value->copy_fn=copy_fn;
   value->delete_fn=delete_fn;

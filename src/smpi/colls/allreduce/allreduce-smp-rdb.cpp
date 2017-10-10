@@ -49,7 +49,7 @@ int Coll_allreduce_smp_rdb::allreduce(void *send_buf, void *recv_buf, int count,
      MPI_User_function * uop = MPIR_Op_table[op % 16 - 1];
      #else
      MPI_User_function *uop;
-     struct MPIR_OP *op_ptr;
+     MPIR_OP *op_ptr;
      op_ptr = MPIR_ToPointer(op);
      uop  = op_ptr->op;
      #endif

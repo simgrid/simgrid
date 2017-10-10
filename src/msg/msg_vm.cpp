@@ -21,13 +21,12 @@
 
 extern "C" {
 
-struct dirty_page {
+struct s_dirty_page {
   double prev_clock;
   double prev_remaining;
   msg_task_t task;
 };
-typedef struct dirty_page s_dirty_page;
-typedef struct dirty_page* dirty_page_t;
+typedef s_dirty_page* dirty_page_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 
@@ -242,7 +241,7 @@ static int migration_rx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: rx_start");
 
   // The structure has been created in the do_migration function and should only be freed in the same place ;)
-  struct migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
+  migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
 
   bool received_finalize = false;
 
@@ -507,7 +506,7 @@ static int migration_tx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: tx_start");
 
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
-  migration_session *ms = static_cast<migration_session *>(MSG_process_get_data(MSG_process_self()));
+  migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
 
   double host_speed = ms->vm->pimpl_vm_->getPm()->getSpeed();
   s_vm_params_t params;
@@ -706,7 +705,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 
   vm->pimpl_vm_->isMigrating = true;
 
-  struct migration_session *ms = xbt_new(struct migration_session, 1);
+  migration_session* ms = xbt_new(migration_session, 1);
   ms->vm = vm;
   ms->src_pm = src_pm;
   ms->dst_pm = dst_pm;

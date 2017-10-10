@@ -36,7 +36,7 @@ struct _UPT_info {
 static inline
 pid_t _UPT_getpid(void* arg)
 {
-  struct _UPT_info* info = static_cast<_UPT_info*>(arg);
+  _UPT_info* info = static_cast<_UPT_info*>(arg);
   return info->pid;
 }
 

@@ -14,21 +14,21 @@
 #define INTEL_MAX_NB_NUMPROCS  12
 #define INTEL_MAX_NB_PPN  5  /* 1 2 4 8 16 ppn */
 
-typedef struct {
+struct intel_tuning_table_size_element {
   unsigned int max_size;
   int algo;
-} intel_tuning_table_size_element;
+};
 
-typedef struct {
+struct intel_tuning_table_numproc_element {
   int max_num_proc;
   int num_elems;
   intel_tuning_table_size_element elems[INTEL_MAX_NB_THRESHOLDS];
-} intel_tuning_table_numproc_element;
+};
 
-typedef struct {
+struct intel_tuning_table_element {
   int ppn;
   intel_tuning_table_numproc_element elems[INTEL_MAX_NB_NUMPROCS];
-} intel_tuning_table_element;
+};
 
 /*
 I_MPI_ADJUST_ALLREDUCE

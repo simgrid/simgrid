@@ -13,19 +13,19 @@
 
 XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
 
-typedef struct {
+struct mv2_alltoall_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Alltoall_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                   MPI_Datatype recvtype, MPI_Comm comm_ptr);
-} mv2_alltoall_tuning_element;
+};
 
-typedef struct {
+struct mv2_alltoall_tuning_table {
   int numproc;
   int size_table;
   mv2_alltoall_tuning_element algo_table[MV2_MAX_NB_THRESHOLDS];
   mv2_alltoall_tuning_element in_place_algo_table[MV2_MAX_NB_THRESHOLDS];
-} mv2_alltoall_tuning_table;
+};
 
 int (*MV2_Alltoall_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                              MPI_Datatype recvtype, MPI_Comm comm_ptr) = NULL;
@@ -331,19 +331,19 @@ static void init_mv2_alltoall_tables_stampede()
 
 /************ Allgather variables and initializers                        */
 
-typedef struct {
+struct mv2_allgather_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Allgatherction)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                                MPI_Datatype recvtype, MPI_Comm comm_ptr);
-} mv2_allgather_tuning_element;
+};
 
-typedef struct {
+struct mv2_allgather_tuning_table {
   int numproc;
   int two_level[MV2_MAX_NB_THRESHOLDS];
   int size_inter_table;
   mv2_allgather_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
-} mv2_allgather_tuning_table;
+};
 
 int (*MV2_Allgatherction)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                           MPI_Datatype recvtype, MPI_Comm comm);
@@ -567,20 +567,20 @@ static void init_mv2_allgather_tables_stampede()
 
 /************ Gather variables and initializers                        */
 
-typedef struct {
+struct mv2_gather_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Gather_function)(void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
                                 MPI_Datatype recvtype, int root, MPI_Comm comm_ptr);
-} mv2_gather_tuning_element;
+};
 
-typedef struct {
+struct mv2_gather_tuning_table {
   int numproc;
   int size_inter_table;
   mv2_gather_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
   mv2_gather_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
-} mv2_gather_tuning_table;
+};
 
 int mv2_size_gather_tuning_table                     = 7;
 mv2_gather_tuning_table* mv2_gather_thresholds_table = NULL;
@@ -659,18 +659,18 @@ static void init_mv2_gather_tables_stampede()
 
 /************ Allgatherv variables and initializers                        */
 
-typedef struct {
+struct mv2_allgatherv_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Allgatherv_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
                                     int* displs, MPI_Datatype recvtype, MPI_Comm commg);
-} mv2_allgatherv_tuning_element;
+};
 
-typedef struct {
+struct mv2_allgatherv_tuning_table {
   int numproc;
   int size_inter_table;
   mv2_allgatherv_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
-} mv2_allgatherv_tuning_table;
+};
 
 int (*MV2_Allgatherv_function)(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int* recvcounts,
                                int* displs, MPI_Datatype recvtype, MPI_Comm comm);
@@ -740,14 +740,14 @@ static void init_mv2_allgatherv_tables_stampede()
 
 /************ Allreduce variables and initializers                        */
 
-typedef struct {
+struct mv2_allreduce_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Allreducection)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                                MPI_Comm comm);
-} mv2_allreduce_tuning_element;
+};
 
-typedef struct {
+struct mv2_allreduce_tuning_table {
   int numproc;
   int mcast_enabled;
   int is_two_level_allreduce[MV2_MAX_NB_THRESHOLDS];
@@ -755,7 +755,7 @@ typedef struct {
   mv2_allreduce_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
   mv2_allreduce_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
-} mv2_allreduce_tuning_table;
+};
 
 int (*MV2_Allreducection)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op,
                           MPI_Comm comm) = NULL;
@@ -931,14 +931,14 @@ static void init_mv2_allreduce_tables_stampede()
          mv2_size_allreduce_tuning_table * sizeof(mv2_allreduce_tuning_table));
 }
 
-typedef struct {
+struct mv2_bcast_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Bcast_function)(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm_ptr);
   int zcpy_pipelined_knomial_factor;
-} mv2_bcast_tuning_element;
+};
 
-typedef struct {
+struct mv2_bcast_tuning_table {
   int numproc;
   int bcast_segment_size;
   int intra_node_knomial_factor;
@@ -948,7 +948,7 @@ typedef struct {
   mv2_bcast_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
   mv2_bcast_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
-} mv2_bcast_tuning_table;
+};
 
 int mv2_size_bcast_tuning_table                    = 0;
 mv2_bcast_tuning_table* mv2_bcast_thresholds_table = NULL;
@@ -1162,14 +1162,14 @@ static void init_mv2_bcast_tables_stampede()
 
 /************ Reduce variables and initializers                        */
 
-typedef struct {
+struct mv2_reduce_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Reduce_function)(void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                                 MPI_Comm comm_ptr);
-} mv2_reduce_tuning_element;
+};
 
-typedef struct {
+struct mv2_reduce_tuning_table {
   int numproc;
   int inter_k_degree;
   int intra_k_degree;
@@ -1178,7 +1178,7 @@ typedef struct {
   mv2_reduce_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
   mv2_reduce_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
-} mv2_reduce_tuning_table;
+};
 
 int mv2_size_reduce_tuning_table                     = 0;
 mv2_reduce_tuning_table* mv2_reduce_thresholds_table = NULL;
@@ -1396,18 +1396,18 @@ static void init_mv2_reduce_tables_stampede()
 
 /************ Reduce scatter variables and initializers                        */
 
-typedef struct {
+struct mv2_red_scat_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Red_scat_function)(void* sendbuf, void* recvbuf, int* recvcnts, MPI_Datatype datatype, MPI_Op op,
                                   MPI_Comm comm_ptr);
-} mv2_red_scat_tuning_element;
+};
 
-typedef struct {
+struct mv2_red_scat_tuning_table {
   int numproc;
   int size_inter_table;
   mv2_red_scat_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
-} mv2_red_scat_tuning_table;
+};
 
 int mv2_size_red_scat_tuning_table                       = 0;
 mv2_red_scat_tuning_table* mv2_red_scat_thresholds_table = NULL;
@@ -1490,20 +1490,20 @@ static void init_mv2_reduce_scatter_tables_stampede()
 
 /************ Scatter variables and initializers                        */
 
-typedef struct {
+struct mv2_scatter_tuning_element {
   int min;
   int max;
   int (*MV2_pt_Scatter_function)(void* sendbuf, int sendcnt, MPI_Datatype sendtype, void* recvbuf, int recvcnt,
                                  MPI_Datatype recvtype, int root, MPI_Comm comm);
-} mv2_scatter_tuning_element;
+};
 
-typedef struct {
+struct mv2_scatter_tuning_table {
   int numproc;
   int size_inter_table;
   mv2_scatter_tuning_element inter_leader[MV2_MAX_NB_THRESHOLDS];
   int size_intra_table;
   mv2_scatter_tuning_element intra_node[MV2_MAX_NB_THRESHOLDS];
-} mv2_scatter_tuning_table;
+};
 
 int* mv2_scatter_table_ppn_conf                         = NULL;
 int mv2_scatter_num_ppn_conf                            = 1;

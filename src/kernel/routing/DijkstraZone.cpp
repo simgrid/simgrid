@@ -87,12 +87,12 @@ void DijkstraZone::seal()
 
 xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
 {
-  graph_node_data_t data         = xbt_new0(struct graph_node_data, 1);
+  graph_node_data_t data = xbt_new0(s_graph_node_data_t, 1);
   data->id       = id;
   data->graph_id = graph_id;
 
   xbt_node_t node                = xbt_graph_new_node(routeGraph_, data);
-  graph_node_map_element_t elm   = xbt_new0(struct graph_node_map_element, 1);
+  graph_node_map_element_t elm   = xbt_new0(s_graph_node_map_element_t, 1);
   elm->node = node;
   xbt_dict_set_ext(graphNodeMap_, (char*)(&id), sizeof(int), (xbt_dictelm_t)elm, nullptr);
 
@@ -288,7 +288,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
 
   if (routeCache_ && elm == nullptr) {
     /* add to predecessor list of the current src-host to cache */
-    elm           = xbt_new0(struct route_cache_element, 1);
+    elm           = xbt_new0(s_route_cache_element_t, 1);
     elm->pred_arr = pred_arr;
     elm->size     = size;
     xbt_dict_set_ext(routeCache_, (char*)(&src_id), sizeof(int), (xbt_dictelm_t)elm, nullptr);

@@ -13,10 +13,10 @@
 #include <list>
 #include <map>
 
-typedef struct s_smx_process_exit_fun {
+struct s_smx_process_exit_fun_t {
   int_f_pvoid_pvoid_t fun;
   void *arg;
-} s_smx_process_exit_fun_t;
+};
 typedef s_smx_process_exit_fun_t* smx_process_exit_fun_t;
 
 namespace simgrid {
