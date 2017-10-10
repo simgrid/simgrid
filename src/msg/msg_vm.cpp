@@ -188,7 +188,7 @@ void MSG_vm_start(msg_vm_t vm)
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
     simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
-    simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("start", "0 0 1", type); // start is blue
+    simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("start", "0 0 1", type); // start is blue
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
 }
@@ -771,7 +771,7 @@ void MSG_vm_suspend(msg_vm_t vm)
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container = PJ_container_get(vm->getCname());
     simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
-    simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("suspend", "1 0 0", type); // suspend is red
+    simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("suspend", "1 0 0", type); // suspend is red
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
 }

@@ -95,7 +95,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
-    simgrid::instr::Value* val    = simgrid::instr::Value::get("suspend", type);
+    simgrid::instr::Value* val    = simgrid::instr::Value::byName("suspend", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }
@@ -120,7 +120,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
 
     container_t process_container = PJ_container_get (instr_process_id(process, str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
-    simgrid::instr::Value* val    = simgrid::instr::Value::get("sleep", type);
+    simgrid::instr::Value* val    = simgrid::instr::Value::byName("sleep", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
   }
 }

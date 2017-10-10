@@ -285,16 +285,16 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogEntityValue(simgrid::instr::Value* val)
+void simgrid::instr::Value::print()
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineEntityValue);
   //print it
 if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineEntityValue;
-    stream << " " << val->id_ << " " << val->father_->id_ << " " << val->name_;
-    if (val->color_)
-      stream << " \"" << val->color_ << "\"";
+    stream << " " << id_ << " " << father_->id_ << " " << name_;
+    if (isColored())
+      stream << " \"" << color_ << "\"";
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -490,7 +490,7 @@ void simgrid::instr::SetStateEvent::print()
     stream << (int)this->eventType_;
     print_timestamp(this);
     stream << " " << type->id_ << " " << container->id_;
-    stream << " " << value->id_;
+    stream << " " << value->getId();
 #if HAVE_SMPI
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
       stream << " \"" << filename << "\" " << linenumber;
@@ -535,7 +535,7 @@ void simgrid::instr::PushStateEvent::print()
     stream << (int)this->eventType_;
     print_timestamp(this);
     stream << " " << type->id_ << " " << container->id_;
-    stream << " " << value->id_;
+    stream << " " << value->getId();
 
     if (TRACE_display_sizes()) {
       stream << " ";
@@ -677,7 +677,7 @@ void simgrid::instr::PushStateEvent::print()
       case TRACING_SSEND:
       case TRACING_ISSEND:
       default:
-        XBT_WARN("Call from %s impossible to translate into replay command : Not implemented (yet)", value->name_);
+        XBT_WARN("Call from %s impossible to translate into replay command : Not implemented (yet)", value->getCname());
         break;
     }
 
@@ -841,7 +841,7 @@ void simgrid::instr::NewEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << val->id_;
+    stream << " " << type->id_ << " " << container->id_ << " " << val->getId();
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */

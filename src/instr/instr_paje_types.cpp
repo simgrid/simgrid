@@ -42,7 +42,7 @@ simgrid::instr::Type::~Type()
   char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
   xbt_dict_foreach (values_, cursor, value_name, val) {
-    XBT_DEBUG("free value %s, child of %s", val->name_, val->father_->name_);
+    XBT_DEBUG("free value %s, child of %s", val->getCname(), val->father_->name_);
     delete val;
   }
   xbt_dict_free(&values_);

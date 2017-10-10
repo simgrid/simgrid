@@ -78,16 +78,22 @@ public:
 
 //--------------------------------------------------
 class Value {
-public:
-  char* id_;
-  char* name_;
-  char* color_;
+private:
+  std::string name_;
+  std::string id_;
+  std::string color_;
 
+  explicit Value(std::string name, std::string color, Type* father);
+
+public:
+  ~Value() = default;
   Type* father_;
-  Value(const char* name, const char* color, Type* father);
-  ~Value();
-  static Value* get_or_new(const char* name, const char* color, Type* father);
-  static Value* get(const char* name, Type* father);
+  static Value* byNameOrCreate(std::string name, std::string color, Type* father);
+  static Value* byName(std::string name, Type* father);
+  const char* getCname() { return name_.c_str(); }
+  const char* getId() { return id_.c_str(); }
+  bool isColored() { return not color_.empty(); }
+  void print();
 };
 
 //--------------------------------------------------
@@ -404,7 +410,6 @@ void LogContainerTypeDefinition(simgrid::instr::Type* type);
 void LogVariableTypeDefinition(simgrid::instr::Type* type);
 void LogStateTypeDefinition(simgrid::instr::Type* type);
 void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest);
-void LogEntityValue(simgrid::instr::Value* val);
 void LogContainerCreation(container_t container);
 void LogContainerDestruction(container_t container);
 void LogDefineEventType(simgrid::instr::Type* type);

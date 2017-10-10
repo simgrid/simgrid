@@ -23,7 +23,7 @@
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
     simgrid::instr::Value* val =                                                                                       \
-        simgrid::instr::Value::get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);           \
+        simgrid::instr::Value::byNameOrCreate(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);       \
     new simgrid::instr::NewEvent(SIMIX_get_clock(), PJ_container_get(cont_name), type, val);                           \
   }
 

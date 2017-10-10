@@ -193,7 +193,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     mark_color = white;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-  new simgrid::instr::Value(mark_value, mark_color, type);
+  simgrid::instr::Value::byNameOrCreate(mark_value, mark_color, type);
 }
 
 /** \ingroup TRACE_mark
@@ -246,7 +246,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   new simgrid::instr::NewEvent(MSG_get_clock(), PJ_container_get_root(), type,
-                               simgrid::instr::Value::get(mark_value, type));
+                               simgrid::instr::Value::byName(mark_value, type));
 }
 
 /** \ingroup TRACE_mark
@@ -947,8 +947,8 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
 {
   container_t container = PJ_container_get(host);
   simgrid::instr::Type* type = container->type_->getChild(state);
-  simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(
-      value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
+  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(
+      value_str, "", type); /* if user didn't declare a value with a color, use no color */
   new simgrid::instr::SetStateEvent(MSG_get_clock(), container, type, val);
 }
 
@@ -967,8 +967,8 @@ void TRACE_host_push_state(const char* host, const char* state, const char* valu
 {
   container_t container = PJ_container_get(host);
   simgrid::instr::Type* type = container->type_->getChild(state);
-  simgrid::instr::Value* val = simgrid::instr::Value::get_or_new(
-      value_str, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
+  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(
+      value_str, "", type); /* if user didn't declare a value with a color, use no color */
   new simgrid::instr::PushStateEvent(MSG_get_clock(), container, type, val);
 }
 
