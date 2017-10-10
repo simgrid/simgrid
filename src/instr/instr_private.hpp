@@ -127,18 +127,21 @@ public:
 
 //--------------------------------------------------
 class PajeEvent {
+protected:
+  Container* container;
+  Type* type;
+
 public:
   double timestamp_;
   e_event_type eventType_;
+  PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType)
+      : container(container), type(type), timestamp_(timestamp), eventType_(eventType){};
   virtual void print() = 0;
   virtual ~PajeEvent();
 };
 
 //--------------------------------------------------
 class SetVariableEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   double value;
 
 public:
@@ -147,9 +150,6 @@ public:
 };
 
 class AddVariableEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   double value;
 
 public:
@@ -159,9 +159,6 @@ public:
 //--------------------------------------------------
 
 class SubVariableEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   double value;
 
 public:
@@ -171,9 +168,6 @@ public:
 //--------------------------------------------------
 
 class SetStateEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   Value* value;
   const char* filename;
   int linenumber;
@@ -184,9 +178,6 @@ public:
 };
 
 class PushStateEvent : public PajeEvent {
-public:
-  Container* container;
-  Type* type;
   Value* value;
   int size;
   const char* filename;
@@ -200,26 +191,18 @@ public:
 };
 
 class PopStateEvent : public PajeEvent {
-  Container* container;
-  Type* type;
-
 public:
   PopStateEvent(double timestamp, Container* container, Type* type);
   void print() override;
 };
 
 class ResetStateEvent : public PajeEvent {
-  Container* container;
-  Type* type;
-
 public:
   ResetStateEvent(double timestamp, Container* container, Type* type);
   void print() override;
 };
 
 class StartLinkEvent : public PajeEvent {
-  Container* container_;
-  Type* type_;
   Container* sourceContainer_;
   std::string value_;
   std::string key_;
@@ -234,8 +217,6 @@ public:
 };
 
 class EndLinkEvent : public PajeEvent {
-  Container* container;
-  Type* type;
   Container* destContainer;
   std::string value;
   std::string key;
@@ -248,9 +229,6 @@ public:
 };
 
 class NewEvent : public PajeEvent {
-public:
-  Container* container;
-  Type* type;
   Value* val;
 
 public:

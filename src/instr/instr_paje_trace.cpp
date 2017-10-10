@@ -382,13 +382,9 @@ void LogContainerDestruction(container_t container)
 }
 
 simgrid::instr::SetVariableEvent::SetVariableEvent(double timestamp, container_t container, Type* type, double value)
-    : container(container), type(type), value(value)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_SetVariable), value(value)
 {
-  this->eventType_ = PAJE_SetVariable;
-  this->timestamp_ = timestamp;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
-
   insert_into_buffer (this);
 }
 
@@ -410,13 +406,9 @@ void simgrid::instr::SetVariableEvent::print()
 
 simgrid::instr::AddVariableEvent::AddVariableEvent(double timestamp, container_t container, simgrid::instr::Type* type,
                                                    double value)
-    : container(container), type(type), value(value)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_AddVariable), value(value)
 {
-  this->eventType_ = PAJE_AddVariable;
-  this->timestamp_ = timestamp;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
-
   insert_into_buffer (this);
 }
 
@@ -437,13 +429,9 @@ void simgrid::instr::AddVariableEvent::print()
 }
 
 simgrid::instr::SubVariableEvent::SubVariableEvent(double timestamp, container_t container, Type* type, double value)
-    : container(container), type(type), value(value)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_SubVariable), value(value)
 {
-  this->eventType_ = PAJE_SubVariable;
-  this->timestamp_ = timestamp;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
-
   insert_into_buffer (this);
 }
 
@@ -464,11 +452,8 @@ void simgrid::instr::SubVariableEvent::print()
 }
 
 simgrid::instr::SetStateEvent::SetStateEvent(double timestamp, container_t container, Type* type, Value* value)
-    : container(container), type(type), value(value)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_SetState), value(value)
 {
-  this->eventType_                      = PAJE_SetState;
-  this->timestamp_                      = timestamp;
-
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
@@ -478,7 +463,6 @@ simgrid::instr::SetStateEvent::SetStateEvent(double timestamp, container_t conta
 #endif
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
-
   insert_into_buffer (this);
 }
 
@@ -506,11 +490,8 @@ void simgrid::instr::SetStateEvent::print()
 
 simgrid::instr::PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* value,
                                                void* extra)
-    : container(container), type(type), value(value), extra_(extra)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_PushState), value(value), extra_(extra)
 {
-  this->eventType_                  = PAJE_PushState;
-  this->timestamp_                  = timestamp;
-
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
@@ -694,13 +675,9 @@ void simgrid::instr::PushStateEvent::print()
 }
 
 simgrid::instr::PopStateEvent::PopStateEvent(double timestamp, container_t container, Type* type)
-    : container(container), type(type)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_PopState)
 {
-  this->eventType_ = PAJE_PopState;
-  this->timestamp_ = timestamp;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
-
   insert_into_buffer (this);
 }
 
@@ -721,13 +698,9 @@ void simgrid::instr::PopStateEvent::print()
 }
 
 simgrid::instr::ResetStateEvent::ResetStateEvent(double timestamp, container_t container, Type* type)
-    : container(container), type(type)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_ResetState)
 {
-  this->eventType_ = PAJE_ResetState;
-  this->timestamp_ = timestamp;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
-
   insert_into_buffer (this);
   delete[] this;
 }
@@ -756,18 +729,13 @@ simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t con
 simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t container, Type* type,
                                                container_t sourceContainer, const char* value, const char* key,
                                                int size)
-    : container_(container)
-    , type_(type)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_StartLink)
     , sourceContainer_(sourceContainer)
     , value_(value)
     , key_(key)
     , size_(size)
 {
-  eventType_            = PAJE_StartLink;
-  this->timestamp_      = timestamp;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__, (int)eventType_, this->timestamp_, this->value_.c_str());
-
   insert_into_buffer (this);
 }
 
@@ -778,7 +746,7 @@ void simgrid::instr::StartLinkEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type_->id_ << " " << container_->id_ << " " << value_;
+    stream << " " << type->id_ << " " << container->id_ << " " << value_;
     stream << " " << sourceContainer_->id_ << " " << key_;
 
     if (TRACE_display_sizes()) {
@@ -794,13 +762,12 @@ void simgrid::instr::StartLinkEvent::print()
 
 simgrid::instr::EndLinkEvent::EndLinkEvent(double timestamp, container_t container, Type* type,
                                            container_t destContainer, std::string value, std::string key)
-    : container(container), type(type), destContainer(destContainer), value(value), key(key)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_EndLink)
+    , destContainer(destContainer)
+    , value(value)
+    , key(key)
 {
-  this->eventType_    = PAJE_EndLink;
-  this->timestamp_    = timestamp;
-
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
-
   insert_into_buffer (this);
 }
 
@@ -822,11 +789,8 @@ void simgrid::instr::EndLinkEvent::print()
 }
 
 simgrid::instr::NewEvent::NewEvent(double timestamp, container_t container, Type* type, Value* val)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent)
 {
-  this->eventType_                      = PAJE_NewEvent;
-  this->timestamp_                      = timestamp;
-  this->type      = type;
-  this->container = container;
   this->val                             = val;
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
