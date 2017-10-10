@@ -33,6 +33,7 @@ char* smpi_data_exe_start = nullptr;
 int smpi_data_exe_size    = 0;
 int smpi_privatize_global_variables;
 static char* smpi_data_exe_copy;
+smpi_privatization_region_t smpi_privatization_regions;
 // static std::set smpi_privatization_regions;
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
