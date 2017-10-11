@@ -261,8 +261,10 @@ We have 2 interesting projects on Jenkins:
     is the main project, running the tests that we spoke about.\n It is
     configured (on Jenkins) to run the script <tt>tools/jenkins/build.sh</tt>
 \li <a href="https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/">SimGrid-DynamicAnalysis</a>
-    runs the tests both under valgrind to find the memory errors and
-    under gcovr to report the achieved test coverage.\n It is configured
+    should be called "nightly" because it does not only run dynamic
+    tests, but a whole bunch of long lasting tests: valgrind (memory
+    errors), gcovr (coverage), Sanitizers (bad pointer usage, threading
+    errors, use of unspecified C constructs) and the clang static analyzer.\n It is configured
     (on Jenkins) to run the script <tt>tools/jenkins/DynamicAnalysis.sh</tt>
 
 In each case, SimGrid gets built in
@@ -280,6 +282,31 @@ order to disable the "ModelChecker" build on host
 
 \verbatim
 (label=="small-netbsd-64-clang").implies(build_mode!="ModelChecker")
+\endverbatim
+
+Just for the record, the slaves were created from the available
+template with the following commands:
+\verbatim
+#debian/ubuntu
+apt-get install gcc g++ gfortran automake cmake libboost-dev openjdk-8-jdk openjdk-8-jre libxslt-dev libxml2-dev libevent-dev libunwind-dev libdw-dev htop git python3 xsltproc libboost-context-dev
+#for dynamicanalysis: 
+apt-get install jacoco libjacoco-java libns3-dev pcregrep gcovr ant lua5.3-dev sloccount
+
+#fedora
+dnf install libboost-devel openjdk-8-jdk openjdk-8-jre libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop lua5.3-devel
+
+#netbsd
+pkg_add cmake gcc7 boost boost-headers automake openjdk8 libxslt libxml2 libunwind git htop python36
+
+#opensuse
+zypper install cmake automake clang boost-devel java-1_8_0-openjdk-devel libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop binutils ggc7-fortran
+
+#freebsd
+pkg install boost-libs cmake openjdk8 automake libxslt libxml2 libunwind git htop python3  automake gcc6 flang elfutils libevent
+#+ clang-devel from ports
+
+#osx
+brew install cmake boost libunwind-headers libxslt git python3 
 \endverbatim
 
 \subsection inside_tests_travis Travis
