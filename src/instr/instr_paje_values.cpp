@@ -10,13 +10,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
 
-simgrid::instr::Value::Value(std::string name, std::string color, simgrid::instr::Type* father) : father_(father)
+simgrid::instr::Value::Value(std::string name, std::string color, simgrid::instr::Type* father)
+    : name_(name), color_(color), father_(father)
 {
   if (name.empty() || father == nullptr) {
     THROWF(tracing_error, 0, "can't create a value with no name (or a nullptr father)");
   }
-  this->name_  = name;
-  this->color_ = color;
   this->id_    = std::to_string(instr_new_paje_id());
 
   xbt_dict_set(father->values_, name.c_str(), this, nullptr);
