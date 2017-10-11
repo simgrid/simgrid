@@ -6,6 +6,7 @@
 
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
+#include <xbt/log.h>
 
 XBT_LOG_EXTERNAL_CATEGORY(smpi_datatype);
 

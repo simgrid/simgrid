@@ -181,7 +181,7 @@ int Coll_gather_ompi_binomial::gather(void* sbuf, int scount, MPI_Datatype sdtyp
       /* other non-leaf nodes */
       smpi_free_tmp_buffer(tempbuf);
     }
-    xbt_free(bmtree);
+    ompi_coll_tuned_topo_destroy_tree(&bmtree);
     return MPI_SUCCESS;
 
  err_hndl:
@@ -266,8 +266,8 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
          - Waitall for all the second segments to complete.
 */
       char* ptmp;
-      MPI_Request *reqs = NULL, first_segment_req;
-      reqs              = (MPI_Request*)calloc(size, sizeof(MPI_Request));
+      MPI_Request first_segment_req;
+      MPI_Request* reqs = new (std::nothrow) MPI_Request[size];
       if (NULL == reqs) {
         ret  = -1;
         line = __LINE__;
@@ -319,7 +319,7 @@ int Coll_gather_ompi_linear_sync::gather(void *sbuf, int scount,
         ret = Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
         if (ret != MPI_SUCCESS) { line = __LINE__; goto error_hndl; }
 
-        free(reqs);
+        delete[] reqs;
     }
 
     /* All done */

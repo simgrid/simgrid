@@ -7,7 +7,6 @@
 #define SMPI_KEYVALS_HPP_INCLUDED
 
 #include "smpi/smpi.h"
-#include "xbt/ex.hpp"
 
 #include <unordered_map>
 
@@ -54,7 +53,7 @@ class Keyval{
 
 template <typename T> int Keyval::keyval_create(smpi_copy_fn copy_fn, smpi_delete_fn delete_fn, int* keyval, void* extra_state){
 
-  smpi_key_elem value = (smpi_key_elem)xbt_new0(s_smpi_key_elem_t, 1);
+  smpi_key_elem value = new s_smpi_key_elem_t;
 
   value->copy_fn=copy_fn;
   value->delete_fn=delete_fn;
@@ -75,7 +74,7 @@ template <typename T> int Keyval::keyval_free(int* keyval){
   }
   if(elem->refcount==1){
     T::keyvals_.erase(*keyval);
-    xbt_free(elem);
+    delete elem;
   }else{
     elem->refcount--;
   }

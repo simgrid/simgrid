@@ -89,8 +89,6 @@ int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
 {
    int sendto, recvfrom, blockcount, i;
    unsigned int distance;
-   int *new_rcounts = NULL, *new_rdispls = NULL;
-   int *new_scounts = NULL, *new_sdispls = NULL;
    ptrdiff_t slb, rlb, sext, rext;
    char *tmpsend = NULL, *tmprecv = NULL;
    MPI_Datatype new_rdtype = MPI_DATATYPE_NULL, new_sdtype = MPI_DATATYPE_NULL;
@@ -126,10 +124,10 @@ int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
       - blockcount doubles until the last step when only the remaining data is
       exchanged.
    */
-   new_rcounts = (int*) calloc(4*size, sizeof(int));
-   new_rdispls = new_rcounts + size;
-   new_scounts = new_rdispls + size;
-   new_sdispls = new_scounts + size;
+   int* new_rcounts = new int[4 * size];
+   int* new_rdispls = new_rcounts + size;
+   int* new_scounts = new_rdispls + size;
+   int* new_sdispls = new_scounts + size;
 
    for (distance = 1; distance < size; distance<<=1) {
 
@@ -170,7 +168,7 @@ int Coll_allgatherv_ompi_bruck::allgatherv(void *sbuf, int scount,
 
    }
 
-   free(new_rcounts);
+   delete[] new_rcounts;
 
    return MPI_SUCCESS;
 

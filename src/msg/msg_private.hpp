@@ -28,11 +28,7 @@ public:
 /********************************* Task **************************************/
 
 struct s_simdata_task_t {
-  ~s_simdata_task_t()
-  {
-    /* parallel tasks only */
-    xbt_free(this->host_list);
-  }
+  ~s_simdata_task_t() { delete[] this->host_list; /* parallel tasks only */ }
   void setUsed();
   void setNotUsed() { this->isused = false; }
 

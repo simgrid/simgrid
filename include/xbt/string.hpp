@@ -14,10 +14,11 @@
 
 #if SIMGRID_HAVE_MC
 
-#include <stdexcept>
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
 #include <iterator>
+#include <stdexcept>
 
 #include <xbt/sysdep.h>
 
@@ -71,7 +72,7 @@ public:
   ~string()
   {
     if (string_data::data != &NUL)
-      std::free(string_data::data);
+      delete[] string_data::data;
   }
 
   // Ctors
@@ -82,8 +83,8 @@ public:
       string_data::data = const_cast<char*>(&NUL);
     } else {
       string_data::len = size;
-      string_data::data = static_cast<char*>(std::malloc(string_data::len + 1));
-      memcpy(string_data::data, s, string_data::len);
+      string_data::data = new char[string_data::len + 1];
+      std::copy_n(s, string_data::len, string_data::data);
       string_data::data[string_data::len] = '\0';
     }
   }
@@ -103,14 +104,14 @@ public:
   void assign(const char* s, size_t size)
   {
     if (string_data::data != &NUL) {
-      std::free(string_data::data);
+      delete[] string_data::data;
       string_data::data = nullptr;
       string_data::len = 0;
     }
     if (size != 0) {
       string_data::len = size;
-      string_data::data = (char*) std::malloc(string_data::len + 1);
-      std::memcpy(string_data::data, s, string_data::len);
+      string_data::data = new char[string_data::len + 1];
+      std::copy_n(s, string_data::len, string_data::data);
       string_data::data[string_data::len] = '\0';
     }
   }

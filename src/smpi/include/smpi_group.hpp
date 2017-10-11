@@ -8,6 +8,7 @@
 #define SMPI_GROUP_HPP_INCLUDED
 
 #include "smpi_f2c.hpp"
+#include <smpi/smpi.h>
 
 namespace simgrid{
 namespace smpi{

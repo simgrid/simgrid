@@ -478,10 +478,11 @@ void *MSG_storage_get_data(msg_storage_t storage)
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
   std::map<std::string, sg_size_t>* content = storage->getContent();
-  xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
+  xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
 
   for (auto const& entry : *content) {
-    sg_size_t* psize = static_cast<sg_size_t*>(malloc(sizeof(sg_size_t)));
+    sg_size_t* psize = new sg_size_t;
     *psize           = entry.second;
     xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);
   }

@@ -123,8 +123,8 @@ int MC_snapshot_region_memcmp(
   bool stack_alloc = size < 64;
   const bool region1_need_buffer = region1==nullptr || region1->storage_type()==simgrid::mc::StorageType::Flat;
   const bool region2_need_buffer = region2==nullptr || region2->storage_type()==simgrid::mc::StorageType::Flat;
-  void* buffer1a = region1_need_buffer ? nullptr : stack_alloc ? alloca(size) : malloc(size);
-  void* buffer2a = region2_need_buffer ? nullptr : stack_alloc ? alloca(size) : malloc(size);
+  void* buffer1a                 = region1_need_buffer ? nullptr : stack_alloc ? alloca(size) : ::operator new(size);
+  void* buffer2a                 = region2_need_buffer ? nullptr : stack_alloc ? alloca(size) : ::operator new(size);
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
   const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
   int res;
@@ -133,8 +133,8 @@ int MC_snapshot_region_memcmp(
   else
     res = memcmp(buffer1, buffer2, size);
   if (not stack_alloc) {
-    free(buffer1a);
-    free(buffer2a);
+    ::operator delete(buffer1a);
+    ::operator delete(buffer2a);
   }
   return res;
 }

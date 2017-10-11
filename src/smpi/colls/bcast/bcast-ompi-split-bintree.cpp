@@ -296,7 +296,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
                                             comm, MPI_STATUS_IGNORE);
         }
     }
-    xbt_free(tree);
+    ompi_coll_tuned_topo_destroy_tree(&tree);
     return (MPI_SUCCESS);
 
 

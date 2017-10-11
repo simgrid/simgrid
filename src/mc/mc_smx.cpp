@@ -66,7 +66,7 @@ static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* proc
   s_xbt_dynar_t dynar;
   process->read_bytes(&dynar, sizeof(dynar), remote_dynar);
 
-  smx_actor_t* data = (smx_actor_t*)malloc(dynar.elmsize * dynar.used);
+  smx_actor_t* data = static_cast<smx_actor_t*>(::operator new(dynar.elmsize * dynar.used));
   process->read_bytes(data, dynar.elmsize * dynar.used, dynar.data);
 
   // Load each element of the vector from the MCed process:
@@ -78,7 +78,7 @@ static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* proc
     process->read_bytes(&info.copy, sizeof(info.copy), remote(data[i]));
     target.push_back(std::move(info));
   }
-  free(data);
+  ::operator delete(data);
 }
 namespace simgrid {
 namespace mc {

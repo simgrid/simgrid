@@ -5,6 +5,7 @@
 
 #include "msg_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include <algorithm>
 
 extern "C" {
 
@@ -90,12 +91,11 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 
   /* Simulator Data specific to parallel tasks */
   simdata->host_nb = host_nb;
-  simdata->host_list = xbt_new0(sg_host_t, host_nb);
+  simdata->host_list             = new sg_host_t[host_nb];
   simdata->flops_parallel_amount = flops_amount;
   simdata->bytes_parallel_amount = bytes_amount;
 
-  for (int i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i];
+  std::copy_n(host_list, host_nb, simdata->host_list);
 
   return task;
 }
