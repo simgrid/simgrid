@@ -15,9 +15,9 @@ simgrid::instr::Type* PJ_type_get_root()
   return rootType;
 }
 
-simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind,
+simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, std::string color, e_entity_types kind,
                            Type* father)
-    : kind_(kind), father_(father)
+    : color_(color), kind_(kind), father_(father)
 {
   if (typeNameBuff == nullptr || key == nullptr){
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
@@ -25,8 +25,6 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char
 
   this->name_     = xbt_strdup(typeNameBuff);
   this->children_ = xbt_dict_new_homogeneous(nullptr);
-  this->values_   = xbt_dict_new_homogeneous(nullptr);
-  this->color_    = xbt_strdup(color);
 
   this->id_ = bprintf("%lld", instr_new_paje_id());
 
@@ -38,14 +36,11 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char
 
 simgrid::instr::Type::~Type()
 {
-  simgrid::instr::Value* val;
-  char *value_name;
   xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (values_, cursor, value_name, val) {
-    XBT_DEBUG("free value %s, child of %s", val->getCname(), val->father_->name_);
-    delete val;
+  for (auto elm : values_) {
+    XBT_DEBUG("free value %s, child of %s", elm.second->getCname(), elm.second->father_->name_);
+    delete elm.second;
   }
-  xbt_dict_free(&values_);
   simgrid::instr::Type* child;
   char *child_name;
   xbt_dict_foreach (children_, cursor, child_name, child) {
@@ -54,7 +49,6 @@ simgrid::instr::Type::~Type()
   xbt_dict_free(&children_);
   xbt_free(name_);
   xbt_free(id_);
-  xbt_free(color_);
 }
 
 simgrid::instr::Type* simgrid::instr::Type::getChild(const char* name)
@@ -91,7 +85,7 @@ simgrid::instr::Type* simgrid::instr::Type::containerNew(const char* name, simgr
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
   }
 
-  simgrid::instr::Type* ret = new simgrid::instr::Type(name, name, nullptr, TYPE_CONTAINER, father);
+  simgrid::instr::Type* ret = new simgrid::instr::Type(name, name, "", TYPE_CONTAINER, father);
   if (father == nullptr) {
     rootType = ret;
   } else {
@@ -107,13 +101,13 @@ simgrid::instr::Type* simgrid::instr::Type::eventNew(const char* name, simgrid::
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
   }
 
-  Type* ret = new Type (name, name, nullptr, TYPE_EVENT, father);
+  Type* ret = new Type(name, name, "", TYPE_EVENT, father);
   XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
   LogDefineEventType(ret);
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, const char* color,
+simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, std::string color,
                                                         simgrid::instr::Type* father)
 {
   if (name == nullptr){
@@ -122,7 +116,7 @@ simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, const 
 
   Type* ret = nullptr;
 
-  if (not color) {
+  if (color.empty()) {
     char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
     ret = new Type (name, name, white, TYPE_VARIABLE, father);
   }else{
@@ -141,7 +135,7 @@ simgrid::instr::Type* simgrid::instr::Type::linkNew(const char* name, Type* fath
 
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf(key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id_, dest->id_);
-  Type* ret = new Type(name, key, nullptr, TYPE_LINK, father);
+  Type* ret = new Type(name, key, "", TYPE_LINK, father);
   XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name_, ret->id_, father->name_, father->id_,
             source->name_, source->id_, dest->name_, dest->id_);
   LogLinkTypeDefinition(ret, source, dest);
@@ -154,7 +148,7 @@ simgrid::instr::Type* simgrid::instr::Type::stateNew(const char* name, Type* fat
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
   }
 
-  Type* ret = new Type(name, name, nullptr, TYPE_STATE, father);
+  Type* ret = new Type(name, name, "", TYPE_STATE, father);
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
   LogStateTypeDefinition(ret);
   return ret;

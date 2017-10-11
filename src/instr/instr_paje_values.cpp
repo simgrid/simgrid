@@ -18,7 +18,7 @@ simgrid::instr::Value::Value(std::string name, std::string color, simgrid::instr
   }
   this->id_    = std::to_string(instr_new_paje_id());
 
-  xbt_dict_set(father->values_, name.c_str(), this, nullptr);
+  father->values_.insert({name, this});
   XBT_DEBUG("new value %s, child of %s", name_.c_str(), father_->name_);
   print();
 };
@@ -29,8 +29,7 @@ simgrid::instr::Value* simgrid::instr::Value::byNameOrCreate(std::string name, s
   Value* ret = 0;
   try {
     ret = Value::byName(name, father);
-  }
-  catch(xbt_ex& e) {
+  } catch (xbt_ex& e) {
     ret = new Value(name, color, father);
   }
   return ret;
@@ -44,9 +43,9 @@ simgrid::instr::Value* simgrid::instr::Value::byName(std::string name, Type* fat
 
   if (father->kind_ == TYPE_VARIABLE)
     THROWF(tracing_error, 0, "variables can't have different values (%s)", father->name_);
-  Value* ret = (Value*)xbt_dict_get_or_null(father->values_, name.c_str());
-  if (ret == nullptr) {
+  auto ret = father->values_.find(name);
+  if (ret == father->values_.end()) {
     THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), father->name_);
   }
-  return ret;
+  return ret->second;
 }

@@ -208,7 +208,7 @@ void TRACE_smpi_init(int rank)
      * multiple times but only the last one would be used...
      */
     if (s_type::getOrNull(it.first.c_str(), container->type_) == nullptr) {
-      Type::variableNew(it.first.c_str(), nullptr, container->type_);
+      Type::variableNew(it.first.c_str(), "", container->type_);
     }
   }
 #endif

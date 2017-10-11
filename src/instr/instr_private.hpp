@@ -29,6 +29,9 @@
 
 namespace simgrid {
 namespace instr {
+
+class Value;
+
 enum e_event_type {
   PAJE_DefineContainerType,
   PAJE_DefineVariableType,
@@ -58,22 +61,23 @@ class Type {
 public:
   char* id_;
   char* name_;
-  char* color_;
+  std::string color_;
 
   e_entity_types kind_;
   Type* father_;
   xbt_dict_t children_;
-  xbt_dict_t values_; // valid for all types except variable and container
-  Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind, Type* father);
+  std::map<std::string, Value*> values_; // valid for all types except variable and container
+  Type(const char* typeNameBuff, const char* key, std::string color, e_entity_types kind, Type* father);
   ~Type();
   Type* getChild(const char* name);
   Type* getChildOrNull(const char* name);
 
   static Type* containerNew(const char* name, Type* father);
   static Type* eventNew(const char* name, Type* father);
-  static Type* variableNew(const char* name, const char* color, Type* father);
+  static Type* variableNew(const char* name, std::string color, Type* father);
   static Type* linkNew(const char* name, Type* father, Type* source, Type* dest);
   static Type* stateNew(const char* name, Type* father);
+  bool isColored() { return not color_.empty(); }
 };
 
 //--------------------------------------------------
@@ -138,6 +142,7 @@ public:
       : container(container), type(type), timestamp_(timestamp), eventType_(eventType){};
   virtual void print() = 0;
   virtual ~PajeEvent();
+  void insertIntoBuffer();
 };
 
 //--------------------------------------------------
@@ -208,10 +213,10 @@ class StartLinkEvent : public PajeEvent {
   int size_;
 
 public:
-  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                 const char* key);
-  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                 const char* key, int size);
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, std::string value,
+                 std::string key);
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, std::string value,
+                 std::string key, int size);
   void print() override;
 };
 

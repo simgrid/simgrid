@@ -209,10 +209,10 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::Type* bandwidth = container->type_->getChildOrNull("bandwidth");
     if (bandwidth == nullptr)
-      bandwidth = simgrid::instr::Type::variableNew("bandwidth", nullptr, container->type_);
+      bandwidth                   = simgrid::instr::Type::variableNew("bandwidth", "", container->type_);
     simgrid::instr::Type* latency = container->type_->getChildOrNull("latency");
     if (latency == nullptr)
-      latency = simgrid::instr::Type::variableNew("latency", nullptr, container->type_);
+      latency = simgrid::instr::Type::variableNew("latency", "", container->type_);
     new simgrid::instr::SetVariableEvent(0, container, bandwidth, bandwidth_value);
     new simgrid::instr::SetVariableEvent(0, container, latency, latency_value);
   }
@@ -231,7 +231,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::Type* speed = container->type_->getChildOrNull("power");
     if (speed == nullptr){
-      speed = simgrid::instr::Type::variableNew("power", nullptr, container->type_);
+      speed = simgrid::instr::Type::variableNew("power", "", container->type_);
     }
 
     double current_speed_state = host.getSpeed();
@@ -325,26 +325,27 @@ void instr_routing_define_callbacks ()
  */
 static void recursiveNewVariableType(const char* new_typename, const char* color, simgrid::instr::Type* root)
 {
+
   if (not strcmp(root->name_, "HOST")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    simgrid::instr::Type::variableNew(tnstr, color, root);
+    simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
   }
   if (not strcmp(root->name_, "MSG_VM")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    simgrid::instr::Type::variableNew(tnstr, color, root);
+    simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
   }
   if (not strcmp(root->name_, "LINK")) {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
-    simgrid::instr::Type::variableNew(tnstr, color, root);
+    simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child_type;
   char *name;
   xbt_dict_foreach (root->children_, cursor, name, child_type) {
-    recursiveNewVariableType (new_typename, color, child_type);
+    recursiveNewVariableType(new_typename, color == nullptr ? "" : color, child_type);
   }
 }
 
@@ -357,7 +358,7 @@ static void recursiveNewUserVariableType(const char* father_type, const char* ne
                                          simgrid::instr::Type* root)
 {
   if (not strcmp(root->name_, father_type)) {
-    simgrid::instr::Type::variableNew(new_typename, color, root);
+    simgrid::instr::Type::variableNew(new_typename, color == nullptr ? "" : color, root);
   }
   xbt_dict_cursor_t cursor = nullptr;
   simgrid::instr::Type* child_type;
