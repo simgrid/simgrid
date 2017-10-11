@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this msg example");
 
-static int my_onexit(smx_process_exit_status_t status, int* pid)
+static int my_onexit(smx_process_exit_status_t /*status*/, int* pid)
 {
   XBT_INFO("Process \"%d\" killed.", *pid);
   return 0;
