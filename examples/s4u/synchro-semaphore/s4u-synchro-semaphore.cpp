@@ -7,7 +7,6 @@
  #include "simgrid/s4u.hpp"
  #include "xbt/str.h"
  #include "simgrid/plugins/load.h"
- #include "src/simix/smx_private.h"
  #include "simgrid/simix.h"
  #include <cstdlib>
  #include <iostream>
