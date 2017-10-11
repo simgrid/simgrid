@@ -20,6 +20,7 @@
 #include "simgrid/s4u.hpp"
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitall, "Messages specific for this msg example");
 
@@ -46,11 +47,11 @@ public:
       std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
       simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
       std::string msgName           = std::string("Message ") + std::to_string(i);
-      char* payload = xbt_strdup(msgName.c_str()); // copy the data we send: 'msgName' is not a stable storage location
-
+      std::string* payload          = new std::string(msgName); // copy the data we send:
+                                                                // 'msgName' is not a stable storage location
       XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
       /* Create a communication representing the ongoing communication */
-      simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, msg_size);
+      simgrid::s4u::CommPtr comm = mbox->put_async(payload, msg_size);
       /* Add this comm to the vector of all known comms */
       pending_comms.push_back(comm);
     }
@@ -59,9 +60,9 @@ public:
     for (int i = 0; i < receivers_count; i++) {
       std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
       simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
-      char* payload                 = xbt_strdup("finalize"); // Make a copy of the data we will send
+      std::string* payload          = new std::string("finalize"); // Make a copy of the data we will send
 
-      simgrid::s4u::CommPtr comm = mbox->put_async((void*)payload, 0);
+      simgrid::s4u::CommPtr comm = mbox->put_async(payload, 0);
       pending_comms.push_back(comm);
       XBT_INFO("Send 'finalize' to 'receiver-%ld'", i % receivers_count);
     }
@@ -99,15 +100,12 @@ public:
   void operator()()
   {
     XBT_INFO("Wait for my first message");
-    while (1) {
-      char* received = static_cast<char*>(mbox->get());
-      XBT_INFO("I got a '%s'.", received);
-      if (std::strcmp(received, "finalize") == 0) { /* If it's a finalize message, we're done */
-        xbt_free(received);
-        break;
-      }
-      /* Otherwise receiving the message was all we were supposed to do */
-      xbt_free(received);
+    for (bool done = false; not done;) {
+      std::string* received = static_cast<std::string*>(mbox->get());
+      XBT_INFO("I got a '%s'.", received->c_str());
+      done = (*received == "finalize"); // If it's a finalize message, we're done
+      // Receiving the message was all we were supposed to do
+      delete received;
     }
   }
 };

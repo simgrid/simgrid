@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <string>
 #include <unordered_map>
 
 #include "simgrid/s4u.hpp"
@@ -63,9 +64,10 @@ public:
     file->move(newpath);
 
     // Test attaching some user data to the file
-    file->setUserdata(xbt_strdup("777"));
-    XBT_INFO("User data attached to the file: %s", static_cast<char*>(file->getUserdata()));
-    xbt_free(file->getUserdata());
+    file->setUserdata(new std::string("777"));
+    std::string* file_data = static_cast<std::string*>(file->getUserdata());
+    XBT_INFO("User data attached to the file: %s", file_data->c_str());
+    delete file_data;
 
     // Close the file
     delete file;
@@ -74,10 +76,10 @@ public:
     XBT_INFO("Get/set data for storage element: %s", storage->getName());
     XBT_INFO("    Uninitialized storage data: '%s'", static_cast<char*>(storage->getUserdata()));
 
-    storage->setUserdata(xbt_strdup("Some user data"));
-    XBT_INFO("    Set and get data: '%s'", static_cast<char*>(storage->getUserdata()));
-
-    xbt_free(storage->getUserdata());
+    storage->setUserdata(new std::string("Some user data"));
+    std::string* storage_data = static_cast<std::string*>(storage->getUserdata());
+    XBT_INFO("    Set and get data: '%s'", storage_data->c_str());
+    delete storage_data;
   }
 };
 
