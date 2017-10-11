@@ -5,6 +5,7 @@
 
 #include "smpi_group.hpp"
 #include "smpi_comm.hpp"
+#include <string>
 #include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
