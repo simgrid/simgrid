@@ -17,18 +17,15 @@ smx_sem_t sem;
 
 static int peer(std::vector<std::string> args){
   int i = 0;
-  double wait_time;
   unsigned int ite = args.size();
   while(i < ite) {
-    wait_time = std::stod(args[i]);
+    simgrid::s4u::this_actor::sleep_for(std::stod(args[i]));
     i++;
-    simgrid::s4u::this_actor::sleep_for(wait_time);
     XBT_INFO("Trying to acquire %d", i);
     simcall_sem_acquire(sem);
     XBT_INFO("Acquired %d", i);
-    wait_time = std::stod(args[i]);
+    simgrid::s4u::this_actor::sleep_for(std::stod(args[i]));
     i++;
-    simgrid::s4u::this_actor::sleep_for(wait_time);
     XBT_INFO("Releasing %d", i);
     simcall_sem_release(sem);
     XBT_INFO("Released %d", i);
