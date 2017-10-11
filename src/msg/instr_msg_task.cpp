@@ -52,7 +52,7 @@ void TRACE_msg_task_execute_start(msg_task_t task)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = simgrid::instr::Value::byName("task_execute", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
@@ -67,7 +67,7 @@ void TRACE_msg_task_execute_end(msg_task_t task)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
@@ -92,7 +92,7 @@ void TRACE_msg_task_get_start()
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = simgrid::instr::Value::byName("receive", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
@@ -107,7 +107,7 @@ void TRACE_msg_task_get_end(double start_time, msg_task_t task)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
 
@@ -127,7 +127,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = simgrid::instr::Value::byName("send", type);
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
@@ -149,7 +149,7 @@ void TRACE_msg_task_put_end()
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
     simgrid::instr::Type* type    = process_container->type_->getChild("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }

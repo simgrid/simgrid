@@ -15,8 +15,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
 static container_t rootContainer = nullptr;    /* the root container */
-static std::unordered_map<std::string, simgrid::instr::Container*>
-    allContainers;                              /* all created containers indexed by name */
+static std::unordered_map<std::string, container_t> allContainers; /* all created containers indexed by name */
 std::set<std::string> trivaNodeTypes;           /* all host types defined */
 std::set<std::string> trivaEdgeTypes;           /* all link types defined */
 
@@ -151,19 +150,19 @@ simgrid::instr::Container::~Container()
   allContainers.erase(name_);
 }
 
-simgrid::instr::Container* PJ_container_get(const char* name)
-{
-  container_t ret = PJ_container_get_or_null (name);
-  if (ret == nullptr){
-    THROWF(tracing_error, 1, "container with name %s not found", name);
-  }
-  return ret;
-}
-
-simgrid::instr::Container* PJ_container_get_or_null(const char* name)
+simgrid::instr::Container* simgrid::instr::Container::byNameOrNull(std::string name)
 {
   auto cont = allContainers.find(name);
   return cont == allContainers.end() ? nullptr : cont->second;
+}
+
+simgrid::instr::Container* simgrid::instr::Container::byName(std::string name)
+{
+  container_t ret = simgrid::instr::Container::byNameOrNull(name);
+  if (ret == nullptr)
+    THROWF(tracing_error, 1, "container with name %s not found", name.c_str());
+
+  return ret;
 }
 
 simgrid::instr::Container* PJ_container_get_root()

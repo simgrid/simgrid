@@ -170,7 +170,7 @@ void MSG_vm_destroy(msg_vm_t vm)
   simgrid::simix::kernelImmediate([vm]() { vm->destroy(); });
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t container = PJ_container_get(vm->getCname());
+    container_t container = simgrid::instr::Container::byName(vm->getName());
     PJ_container_remove_from_parent(container);
     delete container;
   }
@@ -185,7 +185,7 @@ void MSG_vm_start(msg_vm_t vm)
 {
   vm->start();
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
+    container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
     simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
     simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("start", "0 0 1", type); // start is blue
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
@@ -294,21 +294,21 @@ static int migration_rx_fun(int argc, char *argv[])
     counter++;
 
     // start link
-    container_t msg = PJ_container_get(vm->getCname());
+    container_t msg            = simgrid::instr::Container::byName(vm->getName());
     simgrid::instr::Type* type = PJ_type_get_root()->getChild("MSG_VM_LINK");
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     // destroy existing container of this vm
-    container_t existing_container = PJ_container_get(vm->getCname());
+    container_t existing_container = simgrid::instr::Container::byName(vm->getName());
     PJ_container_remove_from_parent(existing_container);
     delete existing_container;
 
     // create new container on the new_host location
     new simgrid::instr::Container(vm->getCname(), simgrid::instr::INSTR_MSG_VM,
-                                  PJ_container_get(ms->dst_pm->getCname()));
+                                  simgrid::instr::Container::byName(ms->dst_pm->getName()));
 
     // end link
-    msg  = PJ_container_get(vm->getCname());
+    msg  = simgrid::instr::Container::byName(vm->getName());
     type = PJ_type_get_root()->getChild("MSG_VM_LINK");
     new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
@@ -768,7 +768,7 @@ void MSG_vm_suspend(msg_vm_t vm)
   XBT_DEBUG("vm_suspend done");
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
+    container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
     simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
     simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("suspend", "1 0 0", type); // suspend is red
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
@@ -785,7 +785,7 @@ void MSG_vm_resume(msg_vm_t vm)
   vm->pimpl_vm_->resume();
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
+    container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
     simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), vm_container, type);
   }
