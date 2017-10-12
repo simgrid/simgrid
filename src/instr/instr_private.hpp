@@ -121,7 +121,7 @@ public:
   Container(std::string name, simgrid::instr::e_container_types kind, Container* father);
   virtual ~Container();
 
-  sg_netpoint_t netpoint_;
+  sg_netpoint_t netpoint_ = nullptr;
   std::string name_;       /* Unique name of this container */
   std::string id_;         /* Unique id of this container */
   Type* type_;             /* Type of this container */

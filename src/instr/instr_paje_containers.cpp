@@ -43,95 +43,71 @@ Container::Container(std::string name, e_container_types kind, Container* father
   id_                               = std::to_string(container_id); // id (or alias) of the container
   container_id++;
 
-  //Search for network_element_t
-  switch (kind){
-    case INSTR_HOST:
-      this->netpoint_ = sg_host_by_name(name.c_str())->pimpl_netpoint;
-      xbt_assert(this->netpoint_, "Element '%s' not found", name.c_str());
+  if (father_) {
+    level_ = father_->level_ + 1;
+    XBT_DEBUG("new container %s, child of %s", name.c_str(), father->name_.c_str());
+  }
+
+  // Search for network_element_t for AS, ROUTER and HOST
+  // Name the kind of container. For AS otherwise, the name depends on its level
+  std::string typeNameBuff;
+  switch (kind_) {
+    case INSTR_AS:
+      netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+      xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+      typeNameBuff = std::string("L") + std::to_string(level_);
       break;
     case INSTR_ROUTER:
-      this->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(this->netpoint_, "Element '%s' not found", name.c_str());
+      netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+      xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+      typeNameBuff = std::string("ROUTER");
       break;
-    case INSTR_AS:
-      this->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(this->netpoint_, "Element '%s' not found", name.c_str());
+    case INSTR_HOST:
+      netpoint_ = sg_host_by_name(name.c_str())->pimpl_netpoint;
+      xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+      typeNameBuff = std::string("HOST");
+      break;
+    case INSTR_LINK:
+      typeNameBuff = std::string("LINK");
+      break;
+    case INSTR_SMPI:
+      typeNameBuff = std::string("MPI");
+      break;
+    case INSTR_MSG_PROCESS:
+      typeNameBuff = std::string("MSG_PROCESS");
+      break;
+    case INSTR_MSG_VM:
+      typeNameBuff = std::string("MSG_VM");
+      break;
+    case INSTR_MSG_TASK:
+      typeNameBuff = std::string("MSG_TASK");
       break;
     default:
-      this->netpoint_ = nullptr;
+      THROWF(tracing_error, 0, "new container kind is unknown.");
       break;
   }
 
   if (father_) {
-    this->level_ = father_->level_ + 1;
-    XBT_DEBUG("new container %s, child of %s", name.c_str(), father->name_.c_str());
-  }
-
-  // type definition (method depends on kind of this new container)
-  if (this->kind_ == INSTR_AS) {
-    //if this container is of an AS, its type name depends on its level
-    char as_typename[INSTR_DEFAULT_STR_SIZE];
-    snprintf(as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", this->level_);
-    if (this->father_) {
-      this->type_ = this->father_->type_->getChildOrNull(as_typename);
-      if (this->type_ == nullptr) {
-        this->type_ = Type::containerNew(as_typename, this->father_->type_);
-      }
-    }else{
-      this->type_ = Type::containerNew("0", nullptr);
+    type_ = father_->type_->getChildOrNull(typeNameBuff);
+    if (type_ == nullptr) {
+      type_ = Type::containerNew(typeNameBuff.c_str(), father_->type_);
     }
-  } else {
-    //otherwise, the name is its kind
-    char typeNameBuff[INSTR_DEFAULT_STR_SIZE];
-    switch (this->kind_) {
-      case INSTR_HOST:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "HOST");
-        break;
-      case INSTR_LINK:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "LINK");
-        break;
-      case INSTR_ROUTER:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "ROUTER");
-        break;
-      case INSTR_SMPI:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MPI");
-        break;
-      case INSTR_MSG_PROCESS:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_PROCESS");
-        break;
-      case INSTR_MSG_VM:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_VM");
-        break;
-      case INSTR_MSG_TASK:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_TASK");
-        break;
-      default:
-        THROWF (tracing_error, 0, "new container kind is unknown.");
-        break;
-    }
-    Type* type = this->father_->type_->getChildOrNull(typeNameBuff);
-    if (type == nullptr){
-      this->type_ = Type::containerNew(typeNameBuff, this->father_->type_);
-    }else{
-      this->type_ = type;
-    }
-  }
-  if (this->father_) {
-    this->father_->children_.insert({this->name_, this});
+    father_->children_.insert({name_, this});
     LogContainerCreation(this);
+  } else if (kind_ == INSTR_AS) {
+    type_ = Type::containerNew("0", nullptr);
   }
 
   //register all kinds by name
-  if (not allContainers.emplace(this->name_, this).second) {
-    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", this->name_.c_str());
+  if (not allContainers.emplace(name_, this).second) {
+    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", name_.c_str());
   }
 
-  XBT_DEBUG("Add container name '%s'", this->name_.c_str());
+  XBT_DEBUG("Add container name '%s'", name_.c_str());
 
   //register NODE types for triva configuration
-  if (this->kind_ == INSTR_HOST || this->kind_ == INSTR_LINK || this->kind_ == INSTR_ROUTER) {
-    trivaNodeTypes.insert(this->type_->getName());
-  }
+  if (kind_ == INSTR_HOST || kind_ == INSTR_LINK || kind_ == INSTR_ROUTER)
+    trivaNodeTypes.insert(type_->getName());
 }
 
 Container::~Container()
