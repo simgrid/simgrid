@@ -5,13 +5,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt/ex.hpp>
-
 #include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
 
-simgrid::instr::Value::Value(std::string name, std::string color, simgrid::instr::Type* father)
-    : name_(name), color_(color), father_(father)
+namespace simgrid {
+namespace instr {
+
+Value::Value(std::string name, std::string color, Type* father) : name_(name), color_(color), father_(father)
 {
   if (name.empty() || father == nullptr) {
     THROWF(tracing_error, 0, "can't create a value with no name (or a nullptr father)");
@@ -23,10 +24,9 @@ simgrid::instr::Value::Value(std::string name, std::string color, simgrid::instr
   print();
 };
 
-simgrid::instr::Value* simgrid::instr::Value::byNameOrCreate(std::string name, std::string color,
-                                                             simgrid::instr::Type* father)
+Value* Value::byNameOrCreate(std::string name, std::string color, Type* father)
 {
-  Value* ret = 0;
+  Value* ret = nullptr;
   try {
     ret = Value::byName(name, father);
   } catch (xbt_ex& e) {
@@ -35,7 +35,7 @@ simgrid::instr::Value* simgrid::instr::Value::byNameOrCreate(std::string name, s
   return ret;
 }
 
-simgrid::instr::Value* simgrid::instr::Value::byName(std::string name, Type* father)
+Value* Value::byName(std::string name, Type* father)
 {
   if (name.empty() || father == nullptr) {
     THROWF(tracing_error, 0, "can't get a value with no name (or a nullptr father)");
@@ -48,4 +48,6 @@ simgrid::instr::Value* simgrid::instr::Value::byName(std::string name, Type* fat
     THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), father->getCname());
   }
   return ret->second;
+}
+}
 }

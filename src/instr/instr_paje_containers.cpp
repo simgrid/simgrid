@@ -5,9 +5,7 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-
 #include "surf/surf.h"
-
 #include "src/instr/instr_private.hpp"
 
 #include <unordered_map>
@@ -25,12 +23,20 @@ long long int instr_new_paje_id ()
   return type_id++;
 }
 
+container_t PJ_container_get_root()
+{
+  return rootContainer;
+}
+
 void PJ_container_set_root (container_t root)
 {
   rootContainer = root;
 }
 
-simgrid::instr::Container::Container(std::string name, simgrid::instr::e_container_types kind, Container* father)
+namespace simgrid {
+namespace instr {
+
+Container::Container(std::string name, e_container_types kind, Container* father)
     : name_(name), kind_(kind), father_(father)
 {
   static long long int container_id = 0;
@@ -39,15 +45,15 @@ simgrid::instr::Container::Container(std::string name, simgrid::instr::e_contain
 
   //Search for network_element_t
   switch (kind){
-    case simgrid::instr::INSTR_HOST:
+    case INSTR_HOST:
       this->netpoint_ = sg_host_by_name(name.c_str())->pimpl_netpoint;
       xbt_assert(this->netpoint_, "Element '%s' not found", name.c_str());
       break;
-    case simgrid::instr::INSTR_ROUTER:
+    case INSTR_ROUTER:
       this->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
       xbt_assert(this->netpoint_, "Element '%s' not found", name.c_str());
       break;
-    case simgrid::instr::INSTR_AS:
+    case INSTR_AS:
       this->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
       xbt_assert(this->netpoint_, "Element '%s' not found", name.c_str());
       break;
@@ -62,50 +68,50 @@ simgrid::instr::Container::Container(std::string name, simgrid::instr::e_contain
   }
 
   // type definition (method depends on kind of this new container)
-  if (this->kind_ == simgrid::instr::INSTR_AS) {
+  if (this->kind_ == INSTR_AS) {
     //if this container is of an AS, its type name depends on its level
     char as_typename[INSTR_DEFAULT_STR_SIZE];
     snprintf(as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", this->level_);
     if (this->father_) {
       this->type_ = this->father_->type_->getChildOrNull(as_typename);
       if (this->type_ == nullptr) {
-        this->type_ = simgrid::instr::Type::containerNew(as_typename, this->father_->type_);
+        this->type_ = Type::containerNew(as_typename, this->father_->type_);
       }
     }else{
-      this->type_ = simgrid::instr::Type::containerNew("0", nullptr);
+      this->type_ = Type::containerNew("0", nullptr);
     }
   } else {
     //otherwise, the name is its kind
     char typeNameBuff[INSTR_DEFAULT_STR_SIZE];
     switch (this->kind_) {
-      case simgrid::instr::INSTR_HOST:
+      case INSTR_HOST:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "HOST");
         break;
-      case simgrid::instr::INSTR_LINK:
+      case INSTR_LINK:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "LINK");
         break;
-      case simgrid::instr::INSTR_ROUTER:
+      case INSTR_ROUTER:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "ROUTER");
         break;
-      case simgrid::instr::INSTR_SMPI:
+      case INSTR_SMPI:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MPI");
         break;
-      case simgrid::instr::INSTR_MSG_PROCESS:
+      case INSTR_MSG_PROCESS:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_PROCESS");
         break;
-      case simgrid::instr::INSTR_MSG_VM:
+      case INSTR_MSG_VM:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_VM");
         break;
-      case simgrid::instr::INSTR_MSG_TASK:
+      case INSTR_MSG_TASK:
         snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_TASK");
         break;
       default:
         THROWF (tracing_error, 0, "new container kind is unknown.");
         break;
     }
-    simgrid::instr::Type* type = this->father_->type_->getChildOrNull(typeNameBuff);
+    Type* type = this->father_->type_->getChildOrNull(typeNameBuff);
     if (type == nullptr){
-      this->type_ = simgrid::instr::Type::containerNew(typeNameBuff, this->father_->type_);
+      this->type_ = Type::containerNew(typeNameBuff, this->father_->type_);
     }else{
       this->type_ = type;
     }
@@ -123,12 +129,12 @@ simgrid::instr::Container::Container(std::string name, simgrid::instr::e_contain
   XBT_DEBUG("Add container name '%s'", this->name_.c_str());
 
   //register NODE types for triva configuration
-  if (this->kind_ == simgrid::instr::INSTR_HOST || this->kind_ == simgrid::instr::INSTR_LINK ||
-      this->kind_ == simgrid::instr::INSTR_ROUTER) {
+  if (this->kind_ == INSTR_HOST || this->kind_ == INSTR_LINK || this->kind_ == INSTR_ROUTER) {
     trivaNodeTypes.insert(this->type_->getName());
   }
 }
-simgrid::instr::Container::~Container()
+
+Container::~Container()
 {
   XBT_DEBUG("destroy container %s", name_.c_str());
   // Begin with destroying my own children
@@ -150,24 +156,21 @@ simgrid::instr::Container::~Container()
   allContainers.erase(name_);
 }
 
-simgrid::instr::Container* simgrid::instr::Container::byNameOrNull(std::string name)
+Container* Container::byNameOrNull(std::string name)
 {
   auto cont = allContainers.find(name);
   return cont == allContainers.end() ? nullptr : cont->second;
 }
 
-simgrid::instr::Container* simgrid::instr::Container::byName(std::string name)
+Container* Container::byName(std::string name)
 {
-  container_t ret = simgrid::instr::Container::byNameOrNull(name);
+  Container* ret = Container::byNameOrNull(name);
   if (ret == nullptr)
     THROWF(tracing_error, 1, "container with name %s not found", name.c_str());
 
   return ret;
 }
-
-simgrid::instr::Container* PJ_container_get_root()
-{
-  return rootContainer;
+}
 }
 
 void PJ_container_remove_from_parent (container_t child)
