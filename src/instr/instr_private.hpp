@@ -12,6 +12,7 @@
 #include "simgrid/instr.h"
 #include "simgrid_config.h"
 #include "src/internal_config.h"
+#include "xbt/graph.h"
 #include <map>
 #include <set>
 #include <string>
@@ -23,9 +24,6 @@
 #endif
 
 #define INSTR_DEFAULT_STR_SIZE 500
-
-#include "xbt/dict.h"
-#include "xbt/graph.h"
 
 namespace simgrid {
 namespace instr {
@@ -132,6 +130,8 @@ public:
   static Container* byNameOrNull(std::string name);
   static Container* byName(std::string name);
   void removeFromParent();
+  void logCreation();
+  void logDestruction();
 };
 
 //--------------------------------------------------
@@ -392,8 +392,6 @@ void LogContainerTypeDefinition(simgrid::instr::Type* type);
 void LogVariableTypeDefinition(simgrid::instr::Type* type);
 void LogStateTypeDefinition(simgrid::instr::Type* type);
 void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest);
-void LogContainerCreation(container_t container);
-void LogContainerDestruction(container_t container);
 void LogDefineEventType(simgrid::instr::Type* type);
 
 #endif

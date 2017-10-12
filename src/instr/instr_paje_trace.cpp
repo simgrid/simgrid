@@ -14,18 +14,13 @@
 #include <sstream>
 #include <vector>
 #include <iomanip> /** std::setprecision **/
-#include <sys/stat.h>
-#ifdef WIN32
-#include <direct.h> // _mkdir
-#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
 static std::stringstream stream;
 FILE *tracing_file = nullptr;
 
-static std::map<container_t, FILE*> tracing_files; // TI specific
-static double prefix=0.0; // TI specific
+std::map<container_t, FILE*> tracing_files; // TI specific
 
 std::vector<simgrid::instr::PajeEvent*> buffer;
 void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf);
@@ -301,83 +296,6 @@ void simgrid::instr::Value::print()
   }
 }
 
-void LogContainerCreation (container_t container)
-{
-  double timestamp = SIMIX_get_clock();
-
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_CreateContainer, timestamp);
-
-  if (instr_fmt_type == instr_fmt_paje) {
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << simgrid::instr::PAJE_CreateContainer;
-    stream << " ";
-  /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
-    if (timestamp < 1e-12)
-      stream << 0;
-    else
-      stream << timestamp;
-    stream << " " << container->id_ << " " << container->type_->getId() << " " << container->father_->id_ << " \""
-           << container->name_ << "\"";
-
-    print_row();
-  } else if (instr_fmt_type == instr_fmt_TI) {
-    // if we are in the mode with only one file
-    static FILE* ti_unique_file = nullptr;
-
-    if (tracing_files.empty()) {
-      // generate unique run id with time
-      prefix = xbt_os_time();
-    }
-
-    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
-      char* folder_name = bprintf("%s_files", TRACE_get_filename());
-      char* filename    = bprintf("%s/%f_%s.txt", folder_name, prefix, container->name_.c_str());
-#ifdef WIN32
-      _mkdir(folder_name);
-#else
-      mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
-#endif
-      ti_unique_file = fopen(filename, "w");
-      xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
-      fprintf(tracing_file, "%s\n", filename);
-
-      xbt_free(folder_name);
-      xbt_free(filename);
-    }
-
-    tracing_files.insert({container, ti_unique_file});
-  } else {
-    THROW_IMPOSSIBLE;
-  }
-}
-
-void LogContainerDestruction(container_t container)
-{
-  double timestamp                               = SIMIX_get_clock();
-
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_DestroyContainer, timestamp);
-
-  if (instr_fmt_type == instr_fmt_paje) {
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << simgrid::instr::PAJE_DestroyContainer;
-    stream << " ";
-  /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
-    if (timestamp < 1e-12)
-        stream << 0;
-    else
-      stream << timestamp;
-    stream << " " << container->type_->getId() << " " << container->id_;
-    print_row();
-  } else if (instr_fmt_type == instr_fmt_TI) {
-    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
-      FILE* f = tracing_files.at(container);
-      fclose(f);
-    }
-    tracing_files.erase(container);
-  } else {
-    THROW_IMPOSSIBLE;
-  }
-}
 
 simgrid::instr::SetVariableEvent::SetVariableEvent(double timestamp, container_t container, Type* type, double value)
     : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_SetVariable), value(value)

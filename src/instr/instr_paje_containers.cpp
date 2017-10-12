@@ -5,12 +5,22 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "surf/surf.h"
 #include "src/instr/instr_private.hpp"
+#include "surf/surf.h"
+#include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h> // _mkdir
+#endif
 
+#include <iomanip> /** std::setprecision **/
+#include <sstream>
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
+
+extern FILE* tracing_file;
+extern std::map<container_t, FILE*> tracing_files; // TI specific
+double prefix = 0.0;                               // TI specific
 
 static container_t rootContainer = nullptr;    /* the root container */
 static std::unordered_map<std::string, container_t> allContainers; /* all created containers indexed by name */
@@ -93,7 +103,7 @@ Container::Container(std::string name, e_container_types kind, Container* father
       type_ = Type::containerNew(typeNameBuff.c_str(), father_->type_);
     }
     father_->children_.insert({name_, this});
-    LogContainerCreation(this);
+    logCreation();
   } else if (kind_ == INSTR_AS) {
     type_ = Type::containerNew("0", nullptr);
   }
@@ -125,7 +135,7 @@ Container::~Container()
   // trace my destruction
   if (not TRACE_disable_destroy() && this != PJ_container_get_root()) {
     // do not trace the container destruction if user requests or if the container is root
-    LogContainerDestruction(this);
+    logDestruction();
   }
 
   // remove me from the allContainers data structure
@@ -152,6 +162,90 @@ void Container::removeFromParent()
   if (father_) {
     XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", name_.c_str(), father_->name_.c_str());
     father_->children_.erase(name_);
+  }
+}
+
+void Container::logCreation()
+{
+  double timestamp = SIMIX_get_clock();
+  std::stringstream stream;
+
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_CreateContainer, timestamp);
+
+  if (instr_fmt_type == instr_fmt_paje) {
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << simgrid::instr::PAJE_CreateContainer;
+    stream << " ";
+    /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
+    if (timestamp < 1e-12)
+      stream << 0;
+    else
+      stream << timestamp;
+    stream << " " << id_ << " " << type_->getId() << " " << father_->id_ << " \"" << name_ << "\"" << std::endl;
+    fprintf(tracing_file, "%s", stream.str().c_str());
+    XBT_DEBUG("Dump %s", stream.str().c_str());
+    stream.str("");
+    stream.clear();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    // if we are in the mode with only one file
+    static FILE* ti_unique_file = nullptr;
+
+    if (tracing_files.empty()) {
+      // generate unique run id with time
+      prefix = xbt_os_time();
+    }
+
+    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
+      char* folder_name = bprintf("%s_files", TRACE_get_filename());
+      char* filename    = bprintf("%s/%f_%s.txt", folder_name, prefix, name_.c_str());
+#ifdef WIN32
+      _mkdir(folder_name);
+#else
+      mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
+      ti_unique_file = fopen(filename, "w");
+      xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
+      fprintf(tracing_file, "%s\n", filename);
+
+      xbt_free(folder_name);
+      xbt_free(filename);
+    }
+
+    tracing_files.insert({this, ti_unique_file});
+  } else {
+    THROW_IMPOSSIBLE;
+  }
+}
+
+void Container::logDestruction()
+{
+  std::stringstream stream;
+  double timestamp = SIMIX_get_clock();
+
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_DestroyContainer, timestamp);
+
+  if (instr_fmt_type == instr_fmt_paje) {
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << simgrid::instr::PAJE_DestroyContainer;
+    stream << " ";
+    /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
+    if (timestamp < 1e-12)
+      stream << 0;
+    else
+      stream << timestamp;
+    stream << " " << type_->getId() << " " << id_ << std::endl;
+    fprintf(tracing_file, "%s", stream.str().c_str());
+    XBT_DEBUG("Dump %s", stream.str().c_str());
+    stream.str("");
+    stream.clear();
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
+      FILE* f = tracing_files.at(this);
+      fclose(f);
+    }
+    tracing_files.erase(this);
+  } else {
+    THROW_IMPOSSIBLE;
   }
 }
 }
