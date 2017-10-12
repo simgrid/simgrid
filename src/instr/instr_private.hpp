@@ -129,8 +129,9 @@ public:
   e_container_types kind_; /* This container is of what kind */
   Container* father_;
   std::map<std::string, Container*> children_;
-  static simgrid::instr::Container* byNameOrNull(std::string name);
-  static simgrid::instr::Container* byName(std::string name);
+  static Container* byNameOrNull(std::string name);
+  static Container* byName(std::string name);
+  void removeFromParent();
 };
 
 //--------------------------------------------------
@@ -312,7 +313,6 @@ extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
-XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
 XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();

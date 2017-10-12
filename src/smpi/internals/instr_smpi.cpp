@@ -221,7 +221,7 @@ void TRACE_smpi_finalize(int rank)
 
   char str[INSTR_DEFAULT_STR_SIZE];
   container_t container = simgrid::instr::Container::byName(smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE));
-  PJ_container_remove_from_parent (container);
+  container->removeFromParent();
   delete container;
 }
 

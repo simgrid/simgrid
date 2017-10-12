@@ -74,7 +74,7 @@ void TRACE_msg_process_destroy (const char *process_name, int process_pid)
     container_t process =
         simgrid::instr::Container::byNameOrNull(instr_process_id_2(process_name, process_pid, str, len));
     if (process) {
-      PJ_container_remove_from_parent (process);
+      process->removeFromParent();
       delete process;
     }
   }

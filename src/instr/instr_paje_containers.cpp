@@ -170,18 +170,13 @@ Container* Container::byName(std::string name)
 
   return ret;
 }
-}
-}
 
-void PJ_container_remove_from_parent (container_t child)
+void Container::removeFromParent()
 {
-  if (child == nullptr){
-    THROWF (tracing_error, 0, "can't remove from parent with a nullptr child");
+  if (father_) {
+    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", name_.c_str(), father_->name_.c_str());
+    father_->children_.erase(name_);
   }
-
-  container_t parent = child->father_;
-  if (parent){
-    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", child->name_.c_str(), parent->name_.c_str());
-    parent->children_.erase(child->name_);
-  }
+}
+}
 }
