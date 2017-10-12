@@ -979,7 +979,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   const malloc_info* heapinfos1 = snapshot1->read(remote((const malloc_info**)heapinfo_address), process_index);
   const malloc_info* heapinfos2 = snapshot2->read(remote((const malloc_info**)heapinfo_address), process_index);
 
-  malloc_info heapinfo_temp1, heapinfo_temp2;
+  malloc_info heapinfo_temp1;
+  malloc_info heapinfo_temp2;
 
   simgrid::mc::HeapLocationPairs current;
   if (previous == nullptr) {
@@ -1469,7 +1470,8 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
   }
 
     unsigned int cursor = 0;
-    local_variable_t current_var1, current_var2;
+    local_variable_t current_var1;
+    local_variable_t current_var2;
     while (cursor < stack1->local_variables.size()) {
       current_var1 = &stack1->local_variables[cursor];
       current_var2 = &stack1->local_variables[cursor];
