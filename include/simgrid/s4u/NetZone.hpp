@@ -45,6 +45,7 @@ public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
   const char* getCname();
+  std::string getName() { return name_; }
   NetZone* getFather();
 
   std::vector<NetZone*>* getChildren();             // Sub netzones

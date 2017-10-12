@@ -186,7 +186,7 @@ void MSG_vm_start(msg_vm_t vm)
   vm->start();
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
+    simgrid::instr::Type* type = vm_container->type_->byName("MSG_VM_STATE");
     simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("start", "0 0 1", type); // start is blue
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
@@ -295,7 +295,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
     // start link
     container_t msg            = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::Type* type = PJ_type_get_root()->getChild("MSG_VM_LINK");
+    simgrid::instr::Type* type = PJ_type_get_root()->byName("MSG_VM_LINK");
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     // destroy existing container of this vm
@@ -309,7 +309,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
     // end link
     msg  = simgrid::instr::Container::byName(vm->getName());
-    type = PJ_type_get_root()->getChild("MSG_VM_LINK");
+    type = PJ_type_get_root()->byName("MSG_VM_LINK");
     new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 
@@ -769,7 +769,7 @@ void MSG_vm_suspend(msg_vm_t vm)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
+    simgrid::instr::Type* type = vm_container->type_->byName("MSG_VM_STATE");
     simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("suspend", "1 0 0", type); // suspend is red
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
@@ -786,7 +786,7 @@ void MSG_vm_resume(msg_vm_t vm)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
+    simgrid::instr::Type* type = vm_container->type_->byName("MSG_VM_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), vm_container, type);
   }
 }

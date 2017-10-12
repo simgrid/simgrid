@@ -67,7 +67,7 @@ public:
   std::map<std::string, Value*> values_; // valid for all types except variable and container
   Type(std::string name, const char* key, std::string color, e_entity_types kind, Type* father);
   ~Type();
-  Type* getChild(std::string name);
+  Type* byName(std::string name);
   Type* getChildOrNull(std::string name);
 
   static Type* containerNew(const char* name, Type* father);

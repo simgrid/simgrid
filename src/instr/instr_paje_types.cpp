@@ -15,14 +15,17 @@ simgrid::instr::Type* PJ_type_get_root()
   return rootType;
 }
 
-simgrid::instr::Type::Type(std::string name, const char* key, std::string color, e_entity_types kind, Type* father)
+namespace simgrid {
+namespace instr {
+
+Type::Type(std::string name, const char* key, std::string color, e_entity_types kind, Type* father)
     : name_(name), color_(color), kind_(kind), father_(father)
 {
   if (name.empty() || key == nullptr) {
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
   }
 
-  this->id_ = std::to_string(instr_new_paje_id());
+  id_ = std::to_string(instr_new_paje_id());
 
   if (father != nullptr){
     father->children_.insert({key, this});
@@ -30,7 +33,7 @@ simgrid::instr::Type::Type(std::string name, const char* key, std::string color,
   }
 }
 
-simgrid::instr::Type::~Type()
+Type::~Type()
 {
   for (auto elm : values_) {
     XBT_DEBUG("free value %s, child of %s", elm.second->getCname(), elm.second->father_->getCname());
@@ -41,19 +44,19 @@ simgrid::instr::Type::~Type()
   }
 }
 
-simgrid::instr::Type* simgrid::instr::Type::getChild(std::string name)
+Type* Type::byName(std::string name)
 {
-  simgrid::instr::Type* ret = this->getChildOrNull(name);
+  Type* ret = this->getChildOrNull(name);
   if (ret == nullptr)
     THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), getCname());
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::getChildOrNull(std::string name)
+Type* Type::getChildOrNull(std::string name)
 {
   xbt_assert(not name.empty(), "can't get type with a nullptr name");
 
-  simgrid::instr::Type* ret = nullptr;
+  Type* ret = nullptr;
   for (auto elm : children_) {
     if (elm.second->name_ == name) {
       if (ret != nullptr) {
@@ -66,7 +69,7 @@ simgrid::instr::Type* simgrid::instr::Type::getChildOrNull(std::string name)
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::containerNew(const char* name, simgrid::instr::Type* father)
+Type* simgrid::instr::Type::containerNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
@@ -83,7 +86,7 @@ simgrid::instr::Type* simgrid::instr::Type::containerNew(const char* name, simgr
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::eventNew(const char* name, simgrid::instr::Type* father)
+Type* Type::eventNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
@@ -95,8 +98,7 @@ simgrid::instr::Type* simgrid::instr::Type::eventNew(const char* name, simgrid::
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, std::string color,
-                                                        simgrid::instr::Type* father)
+Type* Type::variableNew(const char* name, std::string color, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
@@ -115,7 +117,7 @@ simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, std::s
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
+Type* Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
@@ -130,7 +132,7 @@ simgrid::instr::Type* simgrid::instr::Type::linkNew(const char* name, Type* fath
   return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::stateNew(const char* name, Type* father)
+Type* Type::stateNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
@@ -140,4 +142,6 @@ simgrid::instr::Type* simgrid::instr::Type::stateNew(const char* name, Type* fat
   XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), father->getCname(), father->getId());
   LogStateTypeDefinition(ret);
   return ret;
+}
+}
 }
