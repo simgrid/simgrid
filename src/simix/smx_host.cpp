@@ -10,6 +10,7 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/ex.hpp"
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
@@ -192,9 +193,8 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
       simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, nullptr));
 
   /* set surf's synchro */
-  sg_host_t *host_list_cpy = xbt_new0(sg_host_t, host_nb);
-  for (int i = 0; i < host_nb; i++)
-    host_list_cpy[i] = host_list[i];
+  sg_host_t* host_list_cpy = new sg_host_t[host_nb];
+  std::copy_n(host_list, host_nb, host_list_cpy);
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
   bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[0]));
