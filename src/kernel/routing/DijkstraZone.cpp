@@ -13,21 +13,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf
 
 /* Free functions */
 
-static void route_cache_elem_free(void* e)
-{
-  route_cache_element_t elm = (route_cache_element_t)e;
-  if (elm) {
-    xbt_free(elm->pred_arr);
-    xbt_free(elm);
-  }
-}
-
-static void graph_node_map_elem_free(void* e)
-{
-  graph_node_map_element_t elm = (graph_node_map_element_t)e;
-  xbt_free(elm);
-}
-
 static void graph_edge_data_free(void* e) // FIXME: useless code duplication
 {
   sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)e;
@@ -50,8 +35,6 @@ void DijkstraZone::seal()
   /* Create the topology graph */
   if (not routeGraph_)
     routeGraph_ = xbt_graph_new_graph(1, nullptr);
-  if (not graphNodeMap_)
-    graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
@@ -94,14 +77,15 @@ xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
   xbt_node_t node                = xbt_graph_new_node(routeGraph_, data);
   graph_node_map_element_t elm   = xbt_new0(s_graph_node_map_element_t, 1);
   elm->node = node;
-  xbt_dict_set_ext(graphNodeMap_, (char*)(&id), sizeof(int), (xbt_dictelm_t)elm, nullptr);
+  graphNodeMap_.insert({id, elm});
 
   return node;
 }
 
 graph_node_map_element_t DijkstraZone::nodeMapSearch(int id)
 {
-  return (graph_node_map_element_t)xbt_dict_get_or_null_ext(graphNodeMap_, (char*)(&id), sizeof(int));
+  auto ret = graphNodeMap_.find(id);
+  return ret == graphNodeMap_.end() ? nullptr : ret->second;
 }
 
 /* Parsing */
@@ -175,8 +159,9 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   }
 
   route_cache_element_t elm = nullptr;
-  if (routeCache_) { /* cache mode  */
-    elm = (route_cache_element_t)xbt_dict_get_or_null_ext(routeCache_, (char*)(&src_id), sizeof(int));
+  if (not routeCache_.empty()) { /* cache mode  */
+    auto it = routeCache_.find(src_id);
+    elm     = (it == routeCache_.end()) ? nullptr : it->second;
   }
 
   if (elm) { /* cached mode and cache hit */
@@ -286,31 +271,27 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     route->gw_dst = first_gw;
   }
 
-  if (routeCache_ && elm == nullptr) {
+  if (not routeCache_.empty() && elm == nullptr) {
     /* add to predecessor list of the current src-host to cache */
     elm           = xbt_new0(s_route_cache_element_t, 1);
     elm->pred_arr = pred_arr;
     elm->size     = size;
-    xbt_dict_set_ext(routeCache_, (char*)(&src_id), sizeof(int), (xbt_dictelm_t)elm, nullptr);
+    routeCache_.insert({src_id, elm});
   }
 
-  if (not routeCache_)
+  if (routeCache_.empty())
     xbt_free(pred_arr);
 }
 
 DijkstraZone::~DijkstraZone()
 {
   xbt_graph_free_graph(routeGraph_, &xbt_free_f, &graph_edge_data_free, &xbt_free_f);
-  xbt_dict_free(&graphNodeMap_);
-  xbt_dict_free(&routeCache_);
 }
 
 /* Creation routing model functions */
 
 DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : RoutedZone(father, name)
 {
-  if (cached)
-    routeCache_ = xbt_dict_new_homogeneous(&route_cache_elem_free);
 }
 
 void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
@@ -325,8 +306,6 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
   /* Create the topology graph */
   if (not routeGraph_)
     routeGraph_ = xbt_graph_new_graph(1, nullptr);
-  if (not graphNodeMap_)
-    graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* we don't check whether the route already exist, because the algorithm may find another path through some other
    * nodes */

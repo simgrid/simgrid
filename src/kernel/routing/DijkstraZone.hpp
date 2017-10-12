@@ -65,8 +65,8 @@ public:
   void addRoute(sg_platf_route_cbarg_t route) override;
 
   xbt_graph_t routeGraph_  = nullptr; /* xbt_graph */
-  xbt_dict_t graphNodeMap_ = nullptr; /* map */
-  xbt_dict_t routeCache_   = nullptr; /* use in cache mode */
+  std::map<int, graph_node_map_element_t> graphNodeMap_; /* map */
+  std::map<int, route_cache_element_t> routeCache_;      /* use in cache mode */
 };
 }
 }
