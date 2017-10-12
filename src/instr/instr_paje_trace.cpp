@@ -200,7 +200,7 @@ void LogContainerTypeDefinition(simgrid::instr::Type* type)
               TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineContainerType;
-    stream << " " << type->id_ << " " << type->father_->id_ << " " << type->name_;
+    stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -219,7 +219,7 @@ void LogVariableTypeDefinition(simgrid::instr::Type* type)
               TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineVariableType;
-    stream << " " << type->id_ << " " << type->father_->id_ << " " << type->name_;
+    stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
     if (type->isColored())
       stream << " \"" << type->color_ << "\"";
     print_row();
@@ -238,7 +238,7 @@ if (instr_fmt_type == instr_fmt_paje) {
             0.);
   stream << std::fixed << std::setprecision(TRACE_precision());
   stream << simgrid::instr::PAJE_DefineStateType;
-  stream << " " << type->id_ << " " << type->father_->id_ << " " << type->name_;
+  stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
   print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -255,7 +255,7 @@ void LogDefineEventType(simgrid::instr::Type* type)
               TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineEventType;
-    stream << " " << type->id_ << " " << type->father_->id_ << " " << type->name_;
+    stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -273,8 +273,8 @@ if (instr_fmt_type == instr_fmt_paje) {
             0.);
   stream << std::fixed << std::setprecision(TRACE_precision());
   stream << simgrid::instr::PAJE_DefineLinkType;
-  stream << " " << type->id_ << " " << type->father_->id_ << " " << source->id_ << " " << dest->id_ << " "
-         << type->name_;
+  stream << " " << type->getId() << " " << type->father_->getId() << " " << source->getId() << " " << dest->getId()
+         << " " << type->getName();
   print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -290,7 +290,7 @@ void simgrid::instr::Value::print()
   if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineEntityValue;
-    stream << " " << id_ << " " << father_->id_ << " " << name_;
+    stream << " " << id_ << " " << father_->getId() << " " << name_;
     if (isColored())
       stream << " \"" << color_ << "\"";
     print_row();
@@ -316,7 +316,7 @@ void LogContainerCreation (container_t container)
       stream << 0;
     else
       stream << timestamp;
-    stream << " " << container->id_ << " " << container->type_->id_ << " " << container->father_->id_ << " \""
+    stream << " " << container->id_ << " " << container->type_->getId() << " " << container->father_->id_ << " \""
            << container->name_ << "\"";
 
     print_row();
@@ -366,7 +366,7 @@ void LogContainerDestruction(container_t container)
         stream << 0;
     else
       stream << timestamp;
-    stream << " " << container->type_->id_ << " " << container->id_;
+    stream << " " << container->type_->getId() << " " << container->id_;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
@@ -393,7 +393,7 @@ void simgrid::instr::SetVariableEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << value;
+    stream << " " << type->getId() << " " << container->id_ << " " << value;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -417,7 +417,7 @@ void simgrid::instr::AddVariableEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << value;
+    stream << " " << type->getId() << " " << container->id_ << " " << value;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -440,7 +440,7 @@ void simgrid::instr::SubVariableEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << value;
+    stream << " " << type->getId() << " " << container->id_ << " " << value;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -471,7 +471,7 @@ void simgrid::instr::SetStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_;
+    stream << " " << type->getId() << " " << container->id_;
     stream << " " << value->getId();
 #if HAVE_SMPI
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
@@ -513,7 +513,7 @@ void simgrid::instr::PushStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_;
+    stream << " " << type->getId() << " " << container->id_;
     stream << " " << value->getId();
 
     if (TRACE_display_sizes()) {
@@ -686,7 +686,7 @@ void simgrid::instr::PopStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_;
+    stream << " " << type->getId() << " " << container->id_;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -710,7 +710,7 @@ void simgrid::instr::ResetStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_;
+    stream << " " << type->getId() << " " << container->id_;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -744,7 +744,7 @@ void simgrid::instr::StartLinkEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << value_;
+    stream << " " << type->getId() << " " << container->id_ << " " << value_;
     stream << " " << sourceContainer_->id_ << " " << key_;
 
     if (TRACE_display_sizes()) {
@@ -776,7 +776,7 @@ void simgrid::instr::EndLinkEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << value;
+    stream << " " << type->getId() << " " << container->id_ << " " << value;
     stream << " " << destContainer->id_ << " " << key;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -803,7 +803,7 @@ void simgrid::instr::NewEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->id_ << " " << container->id_ << " " << val->getId();
+    stream << " " << type->getId() << " " << container->id_ << " " << val->getId();
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */

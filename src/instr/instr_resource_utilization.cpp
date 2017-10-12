@@ -36,7 +36,7 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char* vari
 
 static void instr_event(double now, double delta, simgrid::instr::Type* variable, container_t resource, double value)
 {
-  __TRACE_surf_check_variable_set_to_zero(now, variable->name_, resource->name_);
+  __TRACE_surf_check_variable_set_to_zero(now, variable->getCname(), resource->name_);
   new simgrid::instr::AddVariableEvent(now, resource, variable, value);
   new simgrid::instr::SubVariableEvent(now + delta, resource, variable, value);
 }

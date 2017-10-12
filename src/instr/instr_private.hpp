@@ -58,31 +58,33 @@ enum e_entity_types { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE
 //--------------------------------------------------
 
 class Type {
-public:
-  char* id_;
-  char* name_;
-  std::string color_;
+  std::string id_;
+  std::string name_;
 
+public:
+  std::string color_;
   e_entity_types kind_;
   Type* father_;
   std::map<std::string, Type*> children_;
   std::map<std::string, Value*> values_; // valid for all types except variable and container
-  Type(const char* typeNameBuff, const char* key, std::string color, e_entity_types kind, Type* father);
+  Type(std::string name, const char* key, std::string color, e_entity_types kind, Type* father);
   ~Type();
-  Type* getChild(const char* name);
-  Type* getChildOrNull(const char* name);
+  Type* getChild(std::string name);
+  Type* getChildOrNull(std::string name);
 
   static Type* containerNew(const char* name, Type* father);
   static Type* eventNew(const char* name, Type* father);
   static Type* variableNew(const char* name, std::string color, Type* father);
   static Type* linkNew(const char* name, Type* father, Type* source, Type* dest);
   static Type* stateNew(const char* name, Type* father);
+  std::string getName() { return name_; }
+  const char* getCname() { return name_.c_str(); }
+  const char* getId() { return id_.c_str(); }
   bool isColored() { return not color_.empty(); }
 };
 
 //--------------------------------------------------
 class Value {
-private:
   std::string name_;
   std::string id_;
   std::string color_;

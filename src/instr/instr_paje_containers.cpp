@@ -125,7 +125,7 @@ simgrid::instr::Container::Container(std::string name, simgrid::instr::e_contain
   //register NODE types for triva configuration
   if (this->kind_ == simgrid::instr::INSTR_HOST || this->kind_ == simgrid::instr::INSTR_LINK ||
       this->kind_ == simgrid::instr::INSTR_ROUTER) {
-    trivaNodeTypes.insert(this->type_->name_);
+    trivaNodeTypes.insert(this->type_->getName());
   }
 }
 simgrid::instr::Container::~Container()

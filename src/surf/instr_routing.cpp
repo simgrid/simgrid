@@ -97,14 +97,14 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
 
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
-  snprintf(link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s%s-%s%s", father->type_->name_, src->type_->name_,
-           src->type_->id_, dst->type_->name_, dst->type_->id_);
+  snprintf(link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s%s-%s%s", father->type_->getCname(), src->type_->getCname(),
+           src->type_->getId(), dst->type_->getCname(), dst->type_->getId());
   simgrid::instr::Type* link_type = father->type_->getChildOrNull(link_typename);
   if (link_type == nullptr)
     link_type = simgrid::instr::Type::linkNew(link_typename, father->type_, src->type_, dst->type_);
 
   //register EDGE types for triva configuration
-  trivaEdgeTypes.insert(link_type->name_);
+  trivaEdgeTypes.insert(link_type->getName());
 
   //create the link
   static long long counter = 0;
@@ -325,17 +325,17 @@ void instr_routing_define_callbacks ()
 static void recursiveNewVariableType(const char* new_typename, const char* color, simgrid::instr::Type* root)
 {
 
-  if (not strcmp(root->name_, "HOST")) {
+  if (root->getName() == "HOST") {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
   }
-  if (not strcmp(root->name_, "MSG_VM")) {
+  if (root->getName() == "MSG_VM") {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
   }
-  if (not strcmp(root->name_, "LINK")) {
+  if (root->getName() == "LINK") {
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
     simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
@@ -353,7 +353,7 @@ void instr_new_variable_type (const char *new_typename, const char *color)
 static void recursiveNewUserVariableType(const char* father_type, const char* new_typename, const char* color,
                                          simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name_, father_type)) {
+  if (root->getName() == father_type) {
     simgrid::instr::Type::variableNew(new_typename, color == nullptr ? "" : color, root);
   }
   for (auto elm : root->children_)
@@ -367,7 +367,7 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
 
 static void recursiveNewUserStateType(const char* father_type, const char* new_typename, simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name_, father_type)) {
+  if (root->getName() == father_type) {
     simgrid::instr::Type::stateNew(new_typename, root);
   }
   for (auto elm : root->children_)
@@ -382,7 +382,7 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
 static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color,
                                               simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name_, type_name))
+  if (root->getName() == type_name)
     simgrid::instr::Value::byNameOrCreate(val, color, root);
 
   for (auto elm : root->children_)
