@@ -76,7 +76,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
   int host_count = static_cast<int>(env->GetArrayLength(jhosts));
 
   jdouble* jcomputeDurations = env->GetDoubleArrayElements(jcomputeDurations_arg, 0);
-  msg_host_t* hosts          = xbt_new0(msg_host_t, host_count);
+  msg_host_t* hosts          = new msg_host_t[host_count];
   double* computeDurations   = xbt_new0(double, host_count);
   for (int index = 0; index < host_count; index++) {
     jobject jhost           = env->GetObjectArrayElement(jhosts, index);
@@ -99,6 +99,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
 
   /* associate the java task object and the native task */
   jtask_bind(jtask, task, env);
+
+  delete[] hosts;
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv * env, jobject jtask)
@@ -303,8 +305,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass c
     return nullptr;
 
   //pointer to store the task object pointer.
-  msg_task_t *task = xbt_new(msg_task_t,1);
-  *task = nullptr;
+  msg_task_t* task = new msg_task_t(nullptr);
   /* There should be a cache here */
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
@@ -358,7 +359,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, j
     return nullptr;
 
   // pointer to store the task object pointer.
-  msg_task_t* task = xbt_new0(msg_task_t, 1);
+  msg_task_t* task = new msg_task_t(nullptr);
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
   if (not jcomm) {

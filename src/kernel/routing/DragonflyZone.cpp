@@ -25,8 +25,8 @@ DragonflyZone::~DragonflyZone()
 {
   if (this->routers_ != nullptr) {
     for (unsigned int i = 0; i < this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_; i++)
-      delete (routers_[i]);
-    xbt_free(routers_);
+      delete routers_[i];
+    delete[] routers_;
   }
 }
 
@@ -134,20 +134,15 @@ DragonflyRouter::DragonflyRouter(int group, int chassis, int blade) : group_(gro
 
 DragonflyRouter::~DragonflyRouter()
 {
-  if (this->myNodes_ != nullptr)
-    xbt_free(myNodes_);
-  if (this->greenLinks_ != nullptr)
-    xbt_free(greenLinks_);
-  if (this->blackLinks_ != nullptr)
-    xbt_free(blackLinks_);
-  if (this->blueLinks_ != nullptr)
-    xbt_free(blueLinks_);
+  delete[] myNodes_;
+  delete[] greenLinks_;
+  delete[] blackLinks_;
+  delete blueLinks_;
 }
 
 void DragonflyZone::generateRouters()
 {
-  this->routers_ = static_cast<DragonflyRouter**>(xbt_malloc0(this->numGroups_ * this->numChassisPerGroup_ *
-                                                              this->numBladesPerChassis_ * sizeof(DragonflyRouter*)));
+  this->routers_ = new DragonflyRouter*[this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_];
 
   for (unsigned int i = 0; i < this->numGroups_; i++) {
     for (unsigned int j = 0; j < this->numChassisPerGroup_; j++) {
@@ -201,12 +196,9 @@ void DragonflyZone::generateLinks()
   // Links from routers to their local nodes.
   for (unsigned int i = 0; i < numRouters; i++) {
     // allocate structures
-    this->routers_[i]->myNodes_ = static_cast<surf::LinkImpl**>(
-        xbt_malloc0(numLinksperLink_ * this->numNodesPerBlade_ * sizeof(surf::LinkImpl*)));
-    this->routers_[i]->greenLinks_ =
-        static_cast<surf::LinkImpl**>(xbt_malloc0(this->numBladesPerChassis_ * sizeof(surf::LinkImpl*)));
-    this->routers_[i]->blackLinks_ =
-        static_cast<surf::LinkImpl**>(xbt_malloc0(this->numChassisPerGroup_ * sizeof(surf::LinkImpl*)));
+    this->routers_[i]->myNodes_    = new surf::LinkImpl*[numLinksperLink_ * this->numNodesPerBlade_];
+    this->routers_[i]->greenLinks_ = new surf::LinkImpl*[this->numBladesPerChassis_];
+    this->routers_[i]->blackLinks_ = new surf::LinkImpl*[this->numChassisPerGroup_];
 
     for (unsigned int j = 0; j < numLinksperLink_ * this->numNodesPerBlade_; j += numLinksperLink_) {
       std::string id = "local_link_from_router_"+ std::to_string(i) + "_to_node_" +
@@ -264,8 +256,8 @@ void DragonflyZone::generateLinks()
     for (unsigned int j = i + 1; j < this->numGroups_; j++) {
       unsigned int routernumi                = i * numBladesPerChassis_ * numChassisPerGroup_ + j;
       unsigned int routernumj                = j * numBladesPerChassis_ * numChassisPerGroup_ + i;
-      this->routers_[routernumi]->blueLinks_ = static_cast<surf::LinkImpl**>(xbt_malloc0(sizeof(surf::LinkImpl*)));
-      this->routers_[routernumj]->blueLinks_ = static_cast<surf::LinkImpl**>(xbt_malloc0(sizeof(surf::LinkImpl*)));
+      this->routers_[routernumi]->blueLinks_ = new surf::LinkImpl*;
+      this->routers_[routernumj]->blueLinks_ = new surf::LinkImpl*;
       std::string id = "blue_link_between_group_"+ std::to_string(i) +"_and_" + std::to_string(j) +"_routers_" +
           std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" + std::to_string(uniqueId);
       this->createLink(id, this->numLinksBlue_, &linkup, &linkdown);

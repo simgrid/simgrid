@@ -84,12 +84,12 @@ public:
 };
 
 struct s_sg_platf_route_cbarg_t {
-  bool symmetrical;
-  sg_netpoint_t src;
-  sg_netpoint_t dst;
-  sg_netpoint_t gw_src;
-  sg_netpoint_t gw_dst;
-  std::vector<simgrid::surf::LinkImpl*>* link_list;
+  bool symmetrical                                 = false;
+  sg_netpoint_t src                                = nullptr;
+  sg_netpoint_t dst                                = nullptr;
+  sg_netpoint_t gw_src                             = nullptr;
+  sg_netpoint_t gw_dst                             = nullptr;
+  std::vector<simgrid::surf::LinkImpl*>* link_list = nullptr;
 };
 typedef s_sg_platf_route_cbarg_t* sg_platf_route_cbarg_t;
 

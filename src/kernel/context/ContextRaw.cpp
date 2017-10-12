@@ -267,7 +267,7 @@ RawContextFactory::RawContextFactory()
     xbt_os_thread_key_create(&raw_worker_id_key);
     // TODO, lazily init
     raw_parmap = nullptr;
-    raw_workers_context = xbt_new(RawContext*, nthreads);
+    raw_workers_context = new RawContext*[nthreads];
     raw_maestro_context = nullptr;
 #endif
     // TODO: choose dynamically when SIMIX_context_get_parallel_threshold() > 1
@@ -278,7 +278,7 @@ RawContextFactory::~RawContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
   delete raw_parmap;
-  xbt_free(raw_workers_context);
+  delete[] raw_workers_context;
 #endif
 }
 
@@ -408,7 +408,7 @@ void RawContext::suspend_parallel()
     XBT_DEBUG("No more processes to run");
     uintptr_t worker_id = (uintptr_t)
       xbt_os_thread_get_specific(raw_worker_id_key);
-    next_context = static_cast<RawContext*>(raw_workers_context[worker_id]);
+    next_context = raw_workers_context[worker_id];
     XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)",
         worker_id, raw_threads_working);
   }

@@ -18,7 +18,7 @@ void routing_route_free(sg_platf_route_cbarg_t route)
 {
   if (route) {
     delete route->link_list;
-    xbt_free(route);
+    delete route;
   }
 }
 
@@ -78,7 +78,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       if (my_src == my_dst)
         continue;
 
-      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+      sg_platf_route_cbarg_t route = new s_sg_platf_route_cbarg_t;
       route->link_list             = new std::vector<surf::LinkImpl*>();
 
       getLocalRoute(my_src, my_dst, route, nullptr);
@@ -119,7 +119,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       XBT_DEBUG("  %s -> %s", previous_name, current_name);
 
       delete route->link_list;
-      xbt_free(route);
+      delete route;
     }
   }
 }
@@ -132,7 +132,7 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
 {
   sg_platf_route_cbarg_t result;
 
-  result            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+  result            = new s_sg_platf_route_cbarg_t;
   result->link_list = new std::vector<surf::LinkImpl*>();
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,

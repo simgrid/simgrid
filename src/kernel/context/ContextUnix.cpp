@@ -130,7 +130,7 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory")
 #if HAVE_THREAD_CONTEXTS  /* To use parallel ucontexts a thread pool is needed */
     int nthreads = SIMIX_context_get_nthreads();
     sysv_parmap = nullptr;
-    sysv_workers_context = xbt_new(ParallelUContext*, nthreads);
+    sysv_workers_context = new ParallelUContext*[nthreads];
     sysv_maestro_context = nullptr;
     xbt_os_thread_key_create(&sysv_worker_id_key);
 #else
@@ -145,7 +145,7 @@ UContextFactory::~UContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
   delete sysv_parmap;
-  xbt_free(sysv_workers_context);
+  delete[] sysv_workers_context;
 #endif
 }
 

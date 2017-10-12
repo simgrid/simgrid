@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, job
   msg_task_t *task_received;
 
   task_received = (msg_task_t*)  (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_taskBind);
-  xbt_free(task_received);
+  delete task_received;
 
   comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   MSG_comm_destroy(comm);
@@ -123,7 +123,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
 static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT */ int *count)
 {
   *count = env->GetArrayLength(jcomms);
-  msg_comm_t* comms = xbt_new(msg_comm_t, *count);
+  msg_comm_t* comms = new msg_comm_t[*count];
 
   for (int i=0; i < *count; i++) {
      jobject jcomm = env->GetObjectArrayElement(jcomms, i);
@@ -148,7 +148,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls
     return;
 
   MSG_comm_waitall(comms, count, static_cast<double>(timeout));
-  xbt_free(comms);
+  delete[] comms;
 }
 JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls, jobjectArray jcomms)
 {
@@ -162,7 +162,7 @@ JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls,
   }
 
   int rank = MSG_comm_waitany(dyn);
-  xbt_free(comms);
+  delete[] comms;
   xbt_dynar_free(&dyn);
   return rank;
 }

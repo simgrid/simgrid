@@ -24,14 +24,14 @@ void FullZone::seal()
 
   /* Create table if needed */
   if (not routingTable_)
-    routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
+    routingTable_ = new sg_platf_route_cbarg_t[table_size * table_size]();
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(i, i);
       if (not e_route) {
-        e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+        e_route            = new s_sg_platf_route_cbarg_t;
         e_route->gw_src    = nullptr;
         e_route->gw_dst    = nullptr;
         e_route->link_list = new std::vector<surf::LinkImpl*>();
@@ -51,10 +51,10 @@ FullZone::~FullZone()
       for (unsigned int j = 0; j < table_size; j++) {
         if (TO_ROUTE_FULL(i, j)) {
           delete TO_ROUTE_FULL(i, j)->link_list;
-          xbt_free(TO_ROUTE_FULL(i, j));
+          delete TO_ROUTE_FULL(i, j);
         }
       }
-    xbt_free(routingTable_);
+    delete[] routingTable_;
   }
 }
 
@@ -85,7 +85,7 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
   unsigned int table_size = getTableSize();
 
   if (not routingTable_)
-    routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
+    routingTable_ = new sg_platf_route_cbarg_t[table_size * table_size]();
 
   /* Check that the route does not already exist */
   if (route->gw_dst) // inter-zone route (to adapt the error message, if any)
