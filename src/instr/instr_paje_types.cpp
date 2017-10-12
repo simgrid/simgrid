@@ -24,29 +24,23 @@ simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, std::strin
   }
 
   this->name_     = xbt_strdup(typeNameBuff);
-  this->children_ = xbt_dict_new_homogeneous(nullptr);
-
   this->id_ = bprintf("%lld", instr_new_paje_id());
 
   if (father != nullptr){
-    xbt_dict_set(father->children_, key, this, nullptr);
+    father->children_.insert({key, this});
     XBT_DEBUG("new type %s, child of %s", typeNameBuff, father->name_);
   }
 }
 
 simgrid::instr::Type::~Type()
 {
-  xbt_dict_cursor_t cursor = nullptr;
   for (auto elm : values_) {
     XBT_DEBUG("free value %s, child of %s", elm.second->getCname(), elm.second->father_->name_);
     delete elm.second;
   }
-  simgrid::instr::Type* child;
-  char *child_name;
-  xbt_dict_foreach (children_, cursor, child_name, child) {
-    delete child;
+  for (auto elm : children_) {
+    delete elm.second;
   }
-  xbt_dict_free(&children_);
   xbt_free(name_);
   xbt_free(id_);
 }
@@ -64,15 +58,12 @@ simgrid::instr::Type* simgrid::instr::Type::getChildOrNull(const char* name)
   xbt_assert(name != nullptr, "can't get type with a nullptr name");
 
   simgrid::instr::Type* ret = nullptr;
-  simgrid::instr::Type* child;
-  char *child_name;
-  xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (children_, cursor, child_name, child) {
-    if (strcmp(child->name_, name) == 0) {
+  for (auto elm : children_) {
+    if (strcmp(elm.second->name_, name) == 0) {
       if (ret != nullptr) {
         THROWF (tracing_error, 0, "there are two children types with the same name?");
       } else {
-        ret = child;
+        ret = elm.second;
       }
     }
   }

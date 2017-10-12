@@ -707,8 +707,8 @@ $ tail -n +3 procmig.trace
 > 16 0 17 0 topology 21 44
 > 15 0 17 0 topology 30 45
 > 16 0 17 0 topology 28 45
-> 1 20 13 bmigration_order "0.800026 0.545312 0.857926"
-> 1 21 1 pmigration_order "0.800026 0.545312 0.857926"
+> 1 20 1 pmigration_order "0.800026 0.545312 0.857926"
+> 1 21 13 bmigration_order "0.800026 0.545312 0.857926"
 > 6 0 32 4 3 "emigrant-1"
 > 6 0 33 4 1 "policeman-2"
 > 12 0 5 32 7
@@ -1309,8 +1309,8 @@ $ tail -n +3 procmig.trace
 > 16 0 17 0 topology 21 44
 > 15 0 17 0 topology 30 45
 > 16 0 17 0 topology 28 45
-> 1 20 13 bmigration_order "0.800026 0.545312 0.857926"
-> 1 21 1 pmigration_order "0.800026 0.545312 0.857926"
+> 1 20 1 pmigration_order "0.800026 0.545312 0.857926"
+> 1 21 13 bmigration_order "0.800026 0.545312 0.857926"
 > 6 0 32 4 3 "emigrant-1"
 > 6 0 33 4 1 "policeman-2"
 > 12 0 5 32 7
@@ -1900,8 +1900,8 @@ $ tail -n +3 simgrid.trace
 > 16 0 6 0 topology 21 44
 > 15 0 6 0 topology 30 45
 > 16 0 6 0 topology 28 45
-> 1 9 3 bmigration_order "0.800026 0.545312 0.857926"
-> 1 10 1 pmigration_order "0.800026 0.545312 0.857926"
+> 1 9 1 pmigration_order "0.800026 0.545312 0.857926"
+> 1 10 3 bmigration_order "0.800026 0.545312 0.857926"
 > 7 18.155073 3 16
 > 7 18.155073 3 14
 > 7 18.155073 3 19

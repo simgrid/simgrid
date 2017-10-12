@@ -65,7 +65,7 @@ public:
 
   e_entity_types kind_;
   Type* father_;
-  xbt_dict_t children_;
+  std::map<std::string, Type*> children_;
   std::map<std::string, Value*> values_; // valid for all types except variable and container
   Type(const char* typeNameBuff, const char* key, std::string color, e_entity_types kind, Type* father);
   ~Type();

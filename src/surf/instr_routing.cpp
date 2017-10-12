@@ -340,11 +340,8 @@ static void recursiveNewVariableType(const char* new_typename, const char* color
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
     simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
   }
-  xbt_dict_cursor_t cursor = nullptr;
-  simgrid::instr::Type* child_type;
-  char *name;
-  xbt_dict_foreach (root->children_, cursor, name, child_type) {
-    recursiveNewVariableType(new_typename, color == nullptr ? "" : color, child_type);
+  for (auto elm : root->children_) {
+    recursiveNewVariableType(new_typename, color == nullptr ? "" : color, elm.second);
   }
 }
 
@@ -359,12 +356,8 @@ static void recursiveNewUserVariableType(const char* father_type, const char* ne
   if (not strcmp(root->name_, father_type)) {
     simgrid::instr::Type::variableNew(new_typename, color == nullptr ? "" : color, root);
   }
-  xbt_dict_cursor_t cursor = nullptr;
-  simgrid::instr::Type* child_type;
-  char *name;
-  xbt_dict_foreach (root->children_, cursor, name, child_type) {
-    recursiveNewUserVariableType (father_type, new_typename, color, child_type);
-  }
+  for (auto elm : root->children_)
+    recursiveNewUserVariableType(father_type, new_typename, color, elm.second);
 }
 
 void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color)
@@ -377,12 +370,8 @@ static void recursiveNewUserStateType(const char* father_type, const char* new_t
   if (not strcmp(root->name_, father_type)) {
     simgrid::instr::Type::stateNew(new_typename, root);
   }
-  xbt_dict_cursor_t cursor = nullptr;
-  simgrid::instr::Type* child_type;
-  char *name;
-  xbt_dict_foreach (root->children_, cursor, name, child_type) {
-    recursiveNewUserStateType (father_type, new_typename, child_type);
-  }
+  for (auto elm : root->children_)
+    recursiveNewUserStateType(father_type, new_typename, elm.second);
 }
 
 void instr_new_user_state_type (const char *father_type, const char *new_typename)
@@ -393,15 +382,11 @@ void instr_new_user_state_type (const char *father_type, const char *new_typenam
 static void recursiveNewValueForUserStateType(const char* type_name, const char* val, const char* color,
                                               simgrid::instr::Type* root)
 {
-  if (not strcmp(root->name_, type_name)) {
+  if (not strcmp(root->name_, type_name))
     simgrid::instr::Value::byNameOrCreate(val, color, root);
-  }
-  xbt_dict_cursor_t cursor = nullptr;
-  simgrid::instr::Type* child_type;
-  char *name;
-  xbt_dict_foreach (root->children_, cursor, name, child_type) {
-    recursiveNewValueForUserStateType(type_name, val, color, child_type);
-  }
+
+  for (auto elm : root->children_)
+    recursiveNewValueForUserStateType(type_name, val, color, elm.second);
 }
 
 void instr_new_value_for_user_state_type (const char *type_name, const char *value, const char *color)
