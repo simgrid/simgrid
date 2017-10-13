@@ -405,7 +405,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
   container_t container      = simgrid::instr::Container::byName(str);
-  simgrid::instr::Type* type = PJ_type_get_root()->byName("MPI_LINK");
+  simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MPI_LINK");
   XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key, size);
 }
@@ -421,7 +421,7 @@ void TRACE_smpi_recv(int src, int dst, int tag)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
   container_t container      = simgrid::instr::Container::byName(str);
-  simgrid::instr::Type* type = PJ_type_get_root()->byName("MPI_LINK");
+  simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MPI_LINK");
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }

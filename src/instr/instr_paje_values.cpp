@@ -24,6 +24,11 @@ Value::Value(std::string name, std::string color, Type* father) : name_(name), c
   print();
 };
 
+Value::~Value()
+{
+  XBT_DEBUG("free value %s, child of %s", getCname(), father_->getCname());
+}
+
 Value* Value::byNameOrCreate(std::string name, std::string color, Type* father)
 {
   Value* ret = nullptr;

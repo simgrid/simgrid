@@ -143,7 +143,7 @@ int TRACE_end()
 
     /* destroy all data structures of tracing (and free) */
     delete PJ_container_get_root();
-    delete PJ_type_get_root();
+    delete simgrid::instr::Type::getRootType();
     rootType = nullptr;
 
     /* close the trace files */

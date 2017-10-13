@@ -91,14 +91,11 @@ Container::Container(std::string name, e_container_types kind, Container* father
   }
 
   if (father_) {
-    type_ = father_->type_->getChildOrNull(typeNameBuff);
-    if (type_ == nullptr) {
-      type_ = Type::containerNew(typeNameBuff.c_str(), father_->type_);
-    }
+    type_ = father_->type_->getOrCreateContainerType(typeNameBuff);
     father_->children_.insert({name_, this});
     logCreation();
   } else if (kind_ == INSTR_AS) {
-    type_ = Type::containerNew("0", nullptr);
+    type_ = Type::createRootType();
   }
 
   //register all kinds by name

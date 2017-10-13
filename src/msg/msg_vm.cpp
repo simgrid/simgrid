@@ -295,7 +295,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
     // start link
     container_t msg            = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::Type* type = PJ_type_get_root()->byName("MSG_VM_LINK");
+    simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MSG_VM_LINK");
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     // destroy existing container of this vm
@@ -309,7 +309,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
     // end link
     msg  = simgrid::instr::Container::byName(vm->getName());
-    type = PJ_type_get_root()->byName("MSG_VM_LINK");
+    type = simgrid::instr::Type::getRootType()->byName("MSG_VM_LINK");
     new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 

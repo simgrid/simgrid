@@ -113,7 +113,7 @@ void TRACE_msg_task_get_end(double start_time, msg_task_t task)
 
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);
-    type = PJ_type_get_root()->byName("MSG_PROCESS_TASK_LINK");
+    type = simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_TASK_LINK");
     new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
   }
 }
@@ -134,7 +134,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
 
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);
-    type = PJ_type_get_root()->byName("MSG_PROCESS_TASK_LINK");
+    type = simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_TASK_LINK");
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
   }
 

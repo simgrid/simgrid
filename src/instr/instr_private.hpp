@@ -79,10 +79,11 @@ public:
 
   Type* byName(std::string name);
 
-  Type* addEventType(std::string name);
-  Type* addLinkType(std::string name, Type* source, Type* dest);
-  Type* addStateType(std::string name);
-  Type* addVariableType(std::string name, std::string color);
+  Type* getOrCreateContainerType(std::string name);
+  Type* getOrCreateEventType(std::string name);
+  Type* getOrCreateLinkType(std::string name, Type* source, Type* dest);
+  Type* getOrCreateStateType(std::string name);
+  Type* getOrCreateVariableType(std::string name, std::string color);
 
   void logContainerTypeDefinition();
   void logVariableTypeDefinition();
@@ -90,8 +91,8 @@ public:
   void logLinkTypeDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest);
   void logDefineEventType();
 
-  Type* getChildOrNull(std::string name);
-  static Type* containerNew(const char* name, Type* father);
+  static Type* createRootType();
+  static Type* getRootType();
 };
 
 //--------------------------------------------------
@@ -99,12 +100,12 @@ class Value {
   std::string name_;
   std::string id_;
   std::string color_;
+  Type* father_;
 
   explicit Value(std::string name, std::string color, Type* father);
 
 public:
-  ~Value() = default;
-  Type* father_;
+  ~Value();
   static Value* byNameOrCreate(std::string name, std::string color, Type* father);
   static Value* byName(std::string name, Type* father);
   const char* getCname() { return name_.c_str(); }
@@ -128,12 +129,12 @@ enum e_container_types {
 class Container {
   e_container_types kind_; /* This container is of what kind */
   int level_ = 0;          /* Level in the hierarchy, root level is 0 */
+  sg_netpoint_t netpoint_ = nullptr;
 
 public:
   Container(std::string name, simgrid::instr::e_container_types kind, Container* father);
   virtual ~Container();
 
-  sg_netpoint_t netpoint_ = nullptr;
   std::string name_;       /* Unique name of this container */
   std::string id_;         /* Unique id of this container */
   Type* type_;             /* Type of this container */
@@ -324,9 +325,6 @@ extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
-
-/* instr_paje_types.c */
-XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
 
 /* instr_config.c */
 XBT_PRIVATE void TRACE_TI_start();

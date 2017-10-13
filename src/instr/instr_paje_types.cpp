@@ -10,11 +10,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event sy
 
 static simgrid::instr::Type* rootType = nullptr; /* the root type */
 
-simgrid::instr::Type* PJ_type_get_root()
-{
-  return rootType;
-}
-
 namespace simgrid {
 namespace instr {
 
@@ -22,7 +17,7 @@ Type::Type(std::string name, std::string alias, std::string color, e_entity_type
     : name_(name), color_(color), kind_(kind), father_(father)
 {
   if (name.empty() || alias.empty()) {
-    THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
+    THROWF(tracing_error, 0, "can't create a new type with no name or alias");
   }
 
   id_ = std::to_string(instr_new_paje_id());
@@ -35,27 +30,14 @@ Type::Type(std::string name, std::string alias, std::string color, e_entity_type
 
 Type::~Type()
 {
-  for (auto elm : values_) {
-    XBT_DEBUG("free value %s, child of %s", elm.second->getCname(), elm.second->father_->getCname());
+  for (auto elm : values_)
     delete elm.second;
-  }
-  for (auto elm : children_) {
+  for (auto elm : children_)
     delete elm.second;
-  }
 }
 
 Type* Type::byName(std::string name)
 {
-  Type* ret = this->getChildOrNull(name);
-  if (ret == nullptr)
-    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), getCname());
-  return ret;
-}
-
-Type* Type::getChildOrNull(std::string name)
-{
-  xbt_assert(not name.empty(), "can't get type with a nullptr name");
-
   Type* ret = nullptr;
   for (auto elm : children_) {
     if (elm.second->name_ == name) {
@@ -66,71 +48,86 @@ Type* Type::getChildOrNull(std::string name)
       }
     }
   }
+  if (ret == nullptr)
+    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), getCname());
   return ret;
 }
 
-Type* Type::containerNew(const char* name, Type* father)
+Type* Type::createRootType()
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
-  }
+  simgrid::instr::Type* ret = new simgrid::instr::Type("0", "0", "", TYPE_CONTAINER, nullptr);
+  rootType                  = ret;
+  return ret;
+}
 
-  simgrid::instr::Type* ret = new simgrid::instr::Type(name, name, "", TYPE_CONTAINER, father);
-  if (father == nullptr) {
-    rootType = ret;
-  } else {
-    XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), father->getCname(),
-              father->getId());
+Type* Type::getRootType()
+{
+  return rootType;
+}
+
+Type* Type::getOrCreateContainerType(std::string name)
+{
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new simgrid::instr::Type(name, name, "", TYPE_CONTAINER, this);
+    XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
     ret->logContainerTypeDefinition();
-  }
-  return ret;
+    return ret;
+  } else
+    return it->second;
 }
 
-Type* Type::addEventType(std::string name)
+Type* Type::getOrCreateEventType(std::string name)
 {
-  if (name.empty()) {
-    THROWF(tracing_error, 0, "can't create an event type with no name");
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, name, "", TYPE_EVENT, this);
+    XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+    ret->logDefineEventType();
+    return ret;
+  } else {
+    return it->second;
   }
-
-  Type* ret = new Type(name, name, "", TYPE_EVENT, this);
-  XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
-  ret->logDefineEventType();
-  return ret;
 }
 
-Type* Type::addVariableType(std::string name, std::string color)
+Type* Type::getOrCreateVariableType(std::string name, std::string color)
 {
-  if (name.empty())
-    THROWF(tracing_error, 0, "can't create a variable type with no name");
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, name, color.empty() ? "1 1 1" : color, TYPE_VARIABLE, this);
 
-  Type* ret = new Type(name, name, color.empty() ? "1 1 1" : color, TYPE_VARIABLE, this);
+    XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+    ret->logVariableTypeDefinition();
 
-  XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
-  ret->logVariableTypeDefinition();
-
-  return ret;
+    return ret;
+  } else
+    return it->second;
 }
 
-Type* Type::addLinkType(std::string name, Type* source, Type* dest)
+Type* Type::getOrCreateLinkType(std::string name, Type* source, Type* dest)
 {
-  if (name.empty()) {
-    THROWF(tracing_error, 0, "can't create a link type with no name");
-  }
-
   std::string alias = name + "-" + source->id_ + "-" + dest->id_;
-  Type* ret         = new Type(name, alias, "", TYPE_LINK, this);
-  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->getCname(), ret->getId(), getCname(), getId(),
-            source->getCname(), source->getId(), dest->getCname(), dest->getId());
-  ret->logLinkTypeDefinition(source, dest);
-  return ret;
+  auto it           = children_.find(alias);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, alias, "", TYPE_LINK, this);
+    XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->getCname(), ret->getId(), getCname(), getId(),
+              source->getCname(), source->getId(), dest->getCname(), dest->getId());
+    ret->logLinkTypeDefinition(source, dest);
+    return ret;
+  } else
+    return it->second;
 }
 
-Type* Type::addStateType(std::string name)
+Type* Type::getOrCreateStateType(std::string name)
 {
-  Type* ret = new Type(name, name, "", TYPE_STATE, this);
-  XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
-  ret->logStateTypeDefinition();
-  return ret;
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, name, "", TYPE_STATE, this);
+    XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+    ret->logStateTypeDefinition();
+    return ret;
+  } else
+    return it->second;
 }
 }
 }
