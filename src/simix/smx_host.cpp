@@ -192,10 +192,6 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
   simgrid::kernel::activity::ExecImplPtr exec =
       simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, nullptr));
 
-  /* set surf's synchro */
-  sg_host_t* host_list_cpy = new sg_host_t[host_nb];
-  std::copy_n(host_list, host_nb, host_list_cpy);
-
   /* Check that we are not mixing VMs and PMs in the parallel task */
   bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[0]));
   for (int i = 1; i < host_nb; i++) {
@@ -205,6 +201,9 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
 
   /* set surf's synchro */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
+    /* set surf's synchro */
+    sg_host_t* host_list_cpy = new sg_host_t[host_nb];
+    std::copy_n(host_list, host_nb, host_list_cpy);
     exec->surf_exec = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
     exec->surf_exec->setData(exec.get());
     if (timeout > 0) {
