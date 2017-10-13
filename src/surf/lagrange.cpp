@@ -37,7 +37,9 @@ static double partial_diff_lambda(double lambda, void *param_cnst);
 
 static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 {
-  void *_cnst, *_elem, *_var;
+  void* _cnst;
+  void* _elem;
+  void* _var;
   xbt_swag_t elem_list = nullptr;
   lmm_element_t elem = nullptr;
   lmm_constraint_t cnst = nullptr;
