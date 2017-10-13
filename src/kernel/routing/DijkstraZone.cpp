@@ -81,14 +81,12 @@ xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
   data->graph_id = graph_id;
 
   xbt_node_t node                = xbt_graph_new_node(routeGraph_, data);
-  graph_node_map_element_t elm   = new s_graph_node_map_element_t;
-  elm->node = node;
-  graphNodeMap_.insert({id, elm});
+  graphNodeMap_.emplace(id, node);
 
   return node;
 }
 
-graph_node_map_element_t DijkstraZone::nodeMapSearch(int id)
+xbt_node_t DijkstraZone::nodeMapSearch(int id)
 {
   auto ret = graphNodeMap_.find(id);
   return ret == graphNodeMap_.end() ? nullptr : ret->second;
@@ -102,14 +100,14 @@ void DijkstraZone::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_rou
   xbt_node_t src = nullptr;
   xbt_node_t dst = nullptr;
 
-  graph_node_map_element_t src_elm = nodeMapSearch(src_id);
-  graph_node_map_element_t dst_elm = nodeMapSearch(dst_id);
+  xbt_node_t src_elm = nodeMapSearch(src_id);
+  xbt_node_t dst_elm = nodeMapSearch(dst_id);
 
   if (src_elm)
-    src = src_elm->node;
+    src = src_elm;
 
   if (dst_elm)
-    dst = dst_elm->node;
+    dst = dst_elm;
 
   /* add nodes if they don't exist in the graph */
   if (src_id == dst_id && src == nullptr && dst == nullptr) {
@@ -139,11 +137,11 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
-  graph_node_map_element_t src_elm = nodeMapSearch(src_id);
-  graph_node_map_element_t dst_elm = nodeMapSearch(dst_id);
+  xbt_node_t src_elm = nodeMapSearch(src_id);
+  xbt_node_t dst_elm = nodeMapSearch(dst_id);
 
-  int src_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(src_elm->node))->graph_id;
-  int dst_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(dst_elm->node))->graph_id;
+  int src_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(src_elm))->graph_id;
+  int dst_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(dst_elm))->graph_id;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {

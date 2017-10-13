@@ -14,11 +14,6 @@ struct s_graph_node_data_t {
 };
 typedef s_graph_node_data_t* graph_node_data_t;
 
-struct s_graph_node_map_element_t {
-  xbt_node_t node;
-};
-typedef s_graph_node_map_element_t* graph_node_map_element_t;
-
 struct s_route_cache_element_t {
   int* pred_arr;
   int size;
@@ -48,7 +43,7 @@ public:
 
   ~DijkstraZone() override;
   xbt_node_t routeGraphNewNode(int id, int graph_id);
-  graph_node_map_element_t nodeMapSearch(int id);
+  xbt_node_t nodeMapSearch(int id);
   void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
   /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback
@@ -65,7 +60,7 @@ public:
   void addRoute(sg_platf_route_cbarg_t route) override;
 
   xbt_graph_t routeGraph_  = nullptr; /* xbt_graph */
-  std::map<int, graph_node_map_element_t> graphNodeMap_; /* map */
+  std::map<int, xbt_node_t> graphNodeMap_;               /* map */
   std::map<int, route_cache_element_t> routeCache_;      /* use in cache mode */
 };
 }
