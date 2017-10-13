@@ -532,13 +532,10 @@ static void MC_dwarf_fill_member_location(
                 (uint64_t) type->id, type->name.c_str());
       break;
     }
-  case simgrid::dwarf::FormClass::LocListPtr:
-    // Reference to a location list:
-    // TODO
-  case simgrid::dwarf::FormClass::Reference:
-    // It's supposed to be possible in DWARF2 but I couldn't find its semantic
-    // in the spec.
+
   default:
+    // includes FormClass::LocListPtr (reference to a location list: TODO) and FormClass::Reference (it's supposed to be
+    // possible in DWARF2 but I couldn't find its semantic in the spec)
     xbt_die("Can't handle form class (%d) / form 0x%x as DW_AT_member_location", (int)form_class, (unsigned)form);
   }
 
@@ -800,18 +797,16 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     int form = dwarf_whatform(&attr);
     simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
     switch (form_class) {
-    case simgrid::dwarf::FormClass::Constant:
-      {
+      case simgrid::dwarf::FormClass::Constant: {
         Dwarf_Word value;
         variable->start_scope =
             dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
         break;
       }
 
-    case simgrid::dwarf::FormClass::RangeListPtr:     // TODO
-    default:
-      xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s", (unsigned)form,
-              (unsigned)form_class, name == nullptr ? "?" : name);
+      default: // includes FormClass::RangeListPtr (TODO)
+        xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s", (unsigned)form,
+                (unsigned)form_class, name == nullptr ? "?" : name);
     }
   }
 

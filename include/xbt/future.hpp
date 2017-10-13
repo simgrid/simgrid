@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2016. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -123,9 +123,6 @@ public:
   T get()
   {
     switch (status_) {
-      case ResultStatus::invalid:
-      default:
-        throw std::logic_error("Invalid result");
       case ResultStatus::value: {
         T value = std::move(value_);
         value_.~T();
@@ -139,6 +136,8 @@ public:
         std::rethrow_exception(std::move(exception));
         break;
       }
+      default:
+        throw std::logic_error("Invalid result");
     }
   }
 private:

@@ -60,11 +60,6 @@ namespace mc {
 static void restore(mc_mem_region_t region)
 {
   switch(region->storage_type()) {
-  case simgrid::mc::StorageType::NoData:
-  default:
-    xbt_die("Storage type not supported");
-    break;
-
   case simgrid::mc::StorageType::Flat:
     mc_model_checker->process().write_bytes(region->flat_data().get(),
       region->size(), region->permanent_address());
@@ -77,6 +72,10 @@ static void restore(mc_mem_region_t region)
   case simgrid::mc::StorageType::Privatized:
     for (auto& p : region->privatized_data())
       restore(&p);
+    break;
+
+  default: // includes StorageType::NoData
+    xbt_die("Storage type not supported");
     break;
   }
 }

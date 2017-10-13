@@ -46,8 +46,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, mc_me
       simgrid::mc::RegionSnapshot& subregion = region->privatized_data()[process_index];
       return mc_translate_address_region(addr, &subregion, process_index);
     }
-    case simgrid::mc::StorageType::NoData:
-    default:
+    default: // includes StorageType::NoData
       xbt_die("Storage type not supported");
   }
 }
@@ -191,10 +190,6 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
   xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
   switch (region->storage_type()) {
-    case simgrid::mc::StorageType::NoData:
-    default:
-      xbt_die("Storage type not supported");
-
     case simgrid::mc::StorageType::Flat:
       return (char*)region->flat_data().get() + offset;
 
@@ -210,9 +205,9 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
       }
     }
 
-    // We currently do not pass the process_index to this function so we assume
-    // that the privatized region has been resolved in the callers:
-    case simgrid::mc::StorageType::Privatized:
+    default:
+      // includes StorageType::NoData and StorageType::Privatized (we currently do not pass the process_index to this
+      // function so we assume that the privatized region has been resolved in the callers)
       xbt_die("Storage type not supported");
   }
 }
