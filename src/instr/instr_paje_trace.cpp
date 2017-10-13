@@ -53,7 +53,7 @@ void dump_comment_file (const char *filename)
 
 double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
-void TRACE_paje_dump_buffer (int force)
+void TRACE_paje_dump_buffer(bool force)
 {
   if (not TRACE_is_enabled())
     return;

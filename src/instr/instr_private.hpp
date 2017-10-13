@@ -270,12 +270,11 @@ extern XBT_PRIVATE std::set<std::string> user_link_variables;
 extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 
 /* instr_paje_header.c */
-XBT_PRIVATE void TRACE_header(int basic, int size);
+XBT_PRIVATE void TRACE_header(bool basic, int size);
 
 /* from paje.c */
 XBT_PRIVATE void TRACE_paje_start();
 XBT_PRIVATE void TRACE_paje_end();
-XBT_PRIVATE void TRACE_paje_dump_buffer(int force);
 
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();
@@ -333,7 +332,7 @@ XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 
-XBT_PRIVATE void TRACE_paje_dump_buffer(int force);
+XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(const char* filename);
 XBT_PRIVATE void dump_comment(const char* comment);
 

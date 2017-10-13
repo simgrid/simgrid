@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_header, instr, "Paje tracing event sy
 
 extern FILE *tracing_file;
 
-static void TRACE_header_PajeDefineContainerType(int basic)
+static void TRACE_header_PajeDefineContainerType(bool basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineContainerType %d\n", simgrid::instr::PAJE_DefineContainerType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -24,7 +24,7 @@ static void TRACE_header_PajeDefineContainerType(int basic)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineVariableType(int basic)
+static void TRACE_header_PajeDefineVariableType(bool basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineVariableType %d\n", simgrid::instr::PAJE_DefineVariableType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -38,7 +38,7 @@ static void TRACE_header_PajeDefineVariableType(int basic)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineStateType(int basic)
+static void TRACE_header_PajeDefineStateType(bool basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineStateType %d\n", simgrid::instr::PAJE_DefineStateType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -51,7 +51,7 @@ static void TRACE_header_PajeDefineStateType(int basic)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineEventType(int basic)
+static void TRACE_header_PajeDefineEventType(bool basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineEventType %d\n", simgrid::instr::PAJE_DefineEventType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -64,7 +64,7 @@ static void TRACE_header_PajeDefineEventType(int basic)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineLinkType(int basic)
+static void TRACE_header_PajeDefineLinkType(bool basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineLinkType %d\n", simgrid::instr::PAJE_DefineLinkType);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -81,7 +81,7 @@ static void TRACE_header_PajeDefineLinkType(int basic)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeDefineEntityValue(int basic)
+static void TRACE_header_PajeDefineEntityValue(bool basic)
 {
   fprintf(tracing_file, "%%EventDef PajeDefineEntityValue %d\n", simgrid::instr::PAJE_DefineEntityValue);
   fprintf(tracing_file, "%%       Alias string\n");
@@ -185,7 +185,7 @@ static void TRACE_header_PajePopState()
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeResetState(int basic)
+static void TRACE_header_PajeResetState(bool basic)
 {
   if (basic)
     return;
@@ -197,7 +197,7 @@ static void TRACE_header_PajeResetState(int basic)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeStartLink (int basic, int size)
+static void TRACE_header_PajeStartLink(bool basic, int size)
 {
   fprintf(tracing_file, "%%EventDef PajeStartLink %d\n", simgrid::instr::PAJE_StartLink);
   fprintf(tracing_file, "%%       Time date\n");
@@ -214,7 +214,7 @@ static void TRACE_header_PajeStartLink (int basic, int size)
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-static void TRACE_header_PajeEndLink(int basic)
+static void TRACE_header_PajeEndLink(bool basic)
 {
   fprintf(tracing_file, "%%EventDef PajeEndLink %d\n", simgrid::instr::PAJE_EndLink);
   fprintf(tracing_file, "%%       Time date\n");
@@ -240,7 +240,7 @@ static void TRACE_header_PajeNewEvent()
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
-void TRACE_header(int basic, int size)
+void TRACE_header(bool basic, int size)
 {
   XBT_DEBUG ("Define paje header");
   TRACE_header_PajeDefineContainerType(basic);

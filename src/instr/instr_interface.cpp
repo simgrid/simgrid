@@ -183,9 +183,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
 
-  char white[INSTR_DEFAULT_STR_SIZE] = "1.0 1.0 1.0";
   if (not mark_color)
-    mark_color = white;
+    mark_color = "1.0 1.0 1.0" /*white*/;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
   simgrid::instr::Value::byNameOrCreate(mark_value, mark_color, type);
