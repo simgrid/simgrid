@@ -13,12 +13,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf
 
 /* Free functions */
 
+static void graph_node_data_free(void* n)
+{
+  graph_node_data_t data = static_cast<graph_node_data_t>(n);
+  delete data;
+}
+
 static void graph_edge_data_free(void* e) // FIXME: useless code duplication
 {
-  sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)e;
+  sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(e);
   if (e_route) {
     delete e_route->link_list;
-    xbt_free(e_route);
+    delete e_route;
   }
 }
 
@@ -51,7 +57,7 @@ void DijkstraZone::seal()
       }
 
       if (not found) {
-        sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+        sg_platf_route_cbarg_t e_route = new s_sg_platf_route_cbarg_t;
         e_route->link_list             = new std::vector<surf::LinkImpl*>();
         e_route->link_list->push_back(surf_network_model->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
@@ -63,26 +69,24 @@ void DijkstraZone::seal()
   xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   xbt_dynar_foreach (nodes, cursor, node) {
-    graph_node_data_t data = (graph_node_data_t)xbt_graph_node_get_data(node);
+    graph_node_data_t data = static_cast<graph_node_data_t>(xbt_graph_node_get_data(node));
     data->graph_id         = cursor;
   }
 }
 
 xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
 {
-  graph_node_data_t data = xbt_new0(s_graph_node_data_t, 1);
+  graph_node_data_t data = new s_graph_node_data_t;
   data->id       = id;
   data->graph_id = graph_id;
 
   xbt_node_t node                = xbt_graph_new_node(routeGraph_, data);
-  graph_node_map_element_t elm   = xbt_new0(s_graph_node_map_element_t, 1);
-  elm->node = node;
-  graphNodeMap_.insert({id, elm});
+  graphNodeMap_.emplace(id, node);
 
   return node;
 }
 
-graph_node_map_element_t DijkstraZone::nodeMapSearch(int id)
+xbt_node_t DijkstraZone::nodeMapSearch(int id)
 {
   auto ret = graphNodeMap_.find(id);
   return ret == graphNodeMap_.end() ? nullptr : ret->second;
@@ -96,14 +100,14 @@ void DijkstraZone::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_rou
   xbt_node_t src = nullptr;
   xbt_node_t dst = nullptr;
 
-  graph_node_map_element_t src_elm = nodeMapSearch(src_id);
-  graph_node_map_element_t dst_elm = nodeMapSearch(dst_id);
+  xbt_node_t src_elm = nodeMapSearch(src_id);
+  xbt_node_t dst_elm = nodeMapSearch(dst_id);
 
   if (src_elm)
-    src = src_elm->node;
+    src = src_elm;
 
   if (dst_elm)
-    dst = dst_elm->node;
+    dst = dst_elm;
 
   /* add nodes if they don't exist in the graph */
   if (src_id == dst_id && src == nullptr && dst == nullptr) {
@@ -128,16 +132,14 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   int src_id = src->id();
   int dst_id = dst->id();
 
-  int* pred_arr     = nullptr;
-  int size          = 0;
   xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
-  graph_node_map_element_t src_elm = nodeMapSearch(src_id);
-  graph_node_map_element_t dst_elm = nodeMapSearch(dst_id);
+  xbt_node_t src_elm = nodeMapSearch(src_id);
+  xbt_node_t dst_elm = nodeMapSearch(dst_id);
 
-  int src_node_id = ((graph_node_data_t)xbt_graph_node_get_data(src_elm->node))->graph_id;
-  int dst_node_id = ((graph_node_data_t)xbt_graph_node_get_data(dst_elm->node))->graph_id;
+  int src_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(src_elm))->graph_id;
+  int dst_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(dst_elm))->graph_id;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
@@ -149,7 +151,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
 
-    sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
+    sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
 
     for (auto const& link : *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
@@ -158,20 +160,14 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     }
   }
 
-  route_cache_element_t elm = nullptr;
-  if (not routeCache_.empty()) { /* cache mode  */
-    auto it = routeCache_.find(src_id);
-    elm     = (it == routeCache_.end()) ? nullptr : it->second;
-  }
+  auto elm                   = routeCache_.emplace(src_id, std::vector<int>());
+  std::vector<int>& pred_arr = elm.first->second;
 
-  if (elm) { /* cached mode and cache hit */
-    pred_arr = elm->pred_arr;
-  } else { /* not cached mode, or cache miss */
-
+  if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
     int nr_nodes      = xbt_dynar_length(nodes);
-    double* cost_arr  = xbt_new0(double, nr_nodes); /* link cost from src to other hosts */
-    pred_arr          = xbt_new0(int, nr_nodes);    /* predecessors in path from src */
-    xbt_heap_t pqueue = xbt_heap_new(nr_nodes, xbt_free_f);
+    std::vector<double> cost_arr(nr_nodes); /* link cost from src to other hosts */
+    pred_arr.resize(nr_nodes);              /* predecessors in path from src */
+    xbt_heap_t pqueue = xbt_heap_new(nr_nodes, nullptr);
 
     /* initialize */
     cost_arr[src_node_id] = 0.0;
@@ -184,8 +180,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
       pred_arr[i] = 0;
 
       /* initialize priority queue */
-      int* nodeid = xbt_new0(int, 1);
-      *nodeid     = i;
+      int* nodeid = new int(i);
       xbt_heap_push(pqueue, nodeid, cost_arr[i]);
     }
 
@@ -198,25 +193,22 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
 
       xbt_dynar_foreach (xbt_graph_node_get_outedges(v_node), cursor, edge) {
         xbt_node_t u_node                  = xbt_graph_edge_get_target(edge);
-        graph_node_data_t data             = (graph_node_data_t)xbt_graph_node_get_data(u_node);
+        graph_node_data_t data             = static_cast<graph_node_data_t>(xbt_graph_node_get_data(u_node));
         int u_id                           = data->graph_id;
-        sg_platf_route_cbarg_t tmp_e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
+        sg_platf_route_cbarg_t tmp_e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
         int cost_v_u                       = tmp_e_route->link_list->size(); /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
           cost_arr[u_id] = cost_v_u + cost_arr[*v_id];
-          int* nodeid    = xbt_new0(int, 1);
-          *nodeid        = u_id;
+          int* nodeid    = new int(u_id);
           xbt_heap_push(pqueue, nodeid, cost_arr[u_id]);
         }
       }
 
       /* free item popped from pqueue */
-      xbt_free(v_id);
+      delete v_id;
     }
-
-    xbt_free(cost_arr);
     xbt_heap_free(pqueue);
   }
 
@@ -233,7 +225,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
 
-    sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
+    sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
 
     NetPoint* prev_gw_src          = gw_src;
     gw_src                         = e_route->gw_src;
@@ -263,7 +255,6 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
       if (lat)
         *lat += static_cast<surf::LinkImpl*>(link)->latency();
     }
-    size++;
   }
 
   if (hierarchy_ == RoutingMode::recursive) {
@@ -271,26 +262,18 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     route->gw_dst = first_gw;
   }
 
-  if (not routeCache_.empty() && elm == nullptr) {
-    /* add to predecessor list of the current src-host to cache */
-    elm           = xbt_new0(s_route_cache_element_t, 1);
-    elm->pred_arr = pred_arr;
-    elm->size     = size;
-    routeCache_.insert({src_id, elm});
-  }
-
-  if (routeCache_.empty())
-    xbt_free(pred_arr);
+  if (not cached_)
+    routeCache_.clear();
 }
 
 DijkstraZone::~DijkstraZone()
 {
-  xbt_graph_free_graph(routeGraph_, &xbt_free_f, &graph_edge_data_free, &xbt_free_f);
+  xbt_graph_free_graph(routeGraph_, &graph_node_data_free, &graph_edge_data_free, nullptr);
 }
 
 /* Creation routing model functions */
 
-DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : RoutedZone(father, name)
+DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : RoutedZone(father, name), cached_(cached)
 {
 }
 

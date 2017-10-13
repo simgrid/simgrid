@@ -80,13 +80,16 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
       xbt_die("Cannot have a communication that is not a simple point-to-point in this model. You should consider "
           "using the ptask model");
     }
-  } else
+  } else {
     xbt_die(
         "This model only accepts one of the following. You should consider using the ptask model for the other cases.\n"
         " - execution with one host only and no communication\n"
         " - Self-comms with one host only\n"
         " - Communications with two hosts and no computation");
-  xbt_free(host_list);
+  }
+  delete[] host_list;
+  delete[] flops_amount;
+  delete[] bytes_amount;
   return action;
 }
 

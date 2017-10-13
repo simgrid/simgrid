@@ -600,10 +600,10 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(ZoneCreationArgs* zone)
       new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_Dijkstra:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 0);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, false);
       break;
     case A_surfxml_AS_routing_DijkstraCache:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 1);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, true);
       break;
     case A_surfxml_AS_routing_Floyd:
       new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id);

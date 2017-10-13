@@ -37,10 +37,10 @@ FloydZone::~FloydZone()
   for (unsigned int i = 0; i < table_size; i++)
     for (unsigned int j = 0; j < table_size; j++)
       routing_route_free(TO_FLOYD_LINK(i, j));
-  xbt_free(linkTable_);
+  delete[] linkTable_;
 
-  xbt_free(predecessorTable_);
-  xbt_free(costTable_);
+  delete[] predecessorTable_;
+  delete[] costTable_;
 }
 
 void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
@@ -93,9 +93,9 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
 
   if (not linkTable_) {
     /* Create Cost, Predecessor and Link tables */
-    costTable_        = xbt_new0(double, table_size* table_size);                  /* link cost from host to host */
-    predecessorTable_ = xbt_new0(int, table_size* table_size);                     /* predecessor host numbers */
-    linkTable_        = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size); /* actual link between src and dst */
+    costTable_        = new double[table_size * table_size];                 /* link cost from host to host */
+    predecessorTable_ = new int[table_size * table_size];                    /* predecessor host numbers */
+    linkTable_        = new sg_platf_route_cbarg_t[table_size * table_size]; /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
     for (unsigned int i = 0; i < table_size; i++)
@@ -160,9 +160,9 @@ void FloydZone::seal()
 
   if (not linkTable_) {
     /* Create Cost, Predecessor and Link tables */
-    costTable_        = xbt_new0(double, table_size* table_size);                  /* link cost from host to host */
-    predecessorTable_ = xbt_new0(int, table_size* table_size);                     /* predecessor host numbers */
-    linkTable_        = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size); /* actual link between src and dst */
+    costTable_        = new double[table_size * table_size];                 /* link cost from host to host */
+    predecessorTable_ = new int[table_size * table_size];                    /* predecessor host numbers */
+    linkTable_        = new sg_platf_route_cbarg_t[table_size * table_size]; /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
     for (unsigned int i = 0; i < table_size; i++)
@@ -178,7 +178,7 @@ void FloydZone::seal()
     for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (not e_route) {
-        e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+        e_route            = new s_sg_platf_route_cbarg_t;
         e_route->gw_src    = nullptr;
         e_route->gw_dst    = nullptr;
         e_route->link_list = new std::vector<surf::LinkImpl*>();
