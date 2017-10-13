@@ -44,7 +44,7 @@ private:
   void* data_ = nullptr;
   std::size_t size_;
   Type type_ = Type::Malloc;
-private:
+
   Buffer(std::size_t size, Type type = Type::Malloc);
   Buffer(void* data, std::size_t size, Type type = Type::Malloc) :
     data_(data), size_(size), type_(type) {}

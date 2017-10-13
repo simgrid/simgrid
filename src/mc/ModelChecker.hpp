@@ -43,7 +43,6 @@ class ModelChecker {
 public:
   std::shared_ptr<simgrid::mc::Snapshot> parent_snapshot_;
 
-public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
   explicit ModelChecker(std::unique_ptr<RemoteClient> process);
