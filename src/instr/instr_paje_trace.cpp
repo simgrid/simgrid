@@ -11,10 +11,6 @@
 #include "typeinfo"
 #include "xbt/virtu.h" /* sg_cmdline */
 
-#include <sstream>
-#include <vector>
-#include <iomanip> /** std::setprecision **/
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
 static std::stringstream stream;
@@ -186,7 +182,7 @@ void TRACE_paje_end() {
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-void LogContainerTypeDefinition(simgrid::instr::Type* type)
+void simgrid::instr::Type::logContainerTypeDefinition()
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineContainerType);
   //print it
@@ -195,7 +191,7 @@ void LogContainerTypeDefinition(simgrid::instr::Type* type)
               TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineContainerType;
-    stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
+    stream << " " << id_ << " " << father_->getId() << " " << name_;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -204,7 +200,7 @@ void LogContainerTypeDefinition(simgrid::instr::Type* type)
   }
 }
 
-void LogVariableTypeDefinition(simgrid::instr::Type* type)
+void simgrid::instr::Type::logVariableTypeDefinition()
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineVariableType);
 
@@ -214,9 +210,9 @@ void LogVariableTypeDefinition(simgrid::instr::Type* type)
               TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineVariableType;
-    stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
-    if (type->isColored())
-      stream << " \"" << type->color_ << "\"";
+    stream << " " << id_ << " " << father_->getId() << " " << name_;
+    if (isColored())
+      stream << " \"" << color_ << "\"";
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -225,16 +221,16 @@ void LogVariableTypeDefinition(simgrid::instr::Type* type)
   }
 }
 
-void LogStateTypeDefinition(simgrid::instr::Type* type)
+void simgrid::instr::Type::logStateTypeDefinition()
 {
   //print it
-if (instr_fmt_type == instr_fmt_paje) {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineStateType, TRACE_precision(),
-            0.);
-  stream << std::fixed << std::setprecision(TRACE_precision());
-  stream << simgrid::instr::PAJE_DefineStateType;
-  stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
-  print_row();
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineStateType,
+              TRACE_precision(), 0.);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << simgrid::instr::PAJE_DefineStateType;
+    stream << " " << id_ << " " << father_->getId() << " " << name_;
+    print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
   } else {
@@ -242,7 +238,7 @@ if (instr_fmt_type == instr_fmt_paje) {
   }
 }
 
-void LogDefineEventType(simgrid::instr::Type* type)
+void simgrid::instr::Type::logDefineEventType()
 {
   //print it
   if (instr_fmt_type == instr_fmt_paje) {
@@ -250,7 +246,7 @@ void LogDefineEventType(simgrid::instr::Type* type)
               TRACE_precision(), 0.);
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << simgrid::instr::PAJE_DefineEventType;
-    stream << " " << type->getId() << " " << type->father_->getId() << " " << type->getName();
+    stream << " " << id_ << " " << father_->getId() << " " << name_;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -259,18 +255,17 @@ void LogDefineEventType(simgrid::instr::Type* type)
   }
 }
 
-void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest)
+void simgrid::instr::Type::logLinkTypeDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, simgrid::instr::PAJE_DefineLinkType);
   //print it
-if (instr_fmt_type == instr_fmt_paje) {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineLinkType, TRACE_precision(),
-            0.);
-  stream << std::fixed << std::setprecision(TRACE_precision());
-  stream << simgrid::instr::PAJE_DefineLinkType;
-  stream << " " << type->getId() << " " << type->father_->getId() << " " << source->getId() << " " << dest->getId()
-         << " " << type->getName();
-  print_row();
+  if (instr_fmt_type == instr_fmt_paje) {
+    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, simgrid::instr::PAJE_DefineLinkType, TRACE_precision(),
+              0.);
+    stream << std::fixed << std::setprecision(TRACE_precision());
+    stream << simgrid::instr::PAJE_DefineLinkType;
+    stream << " " << id_ << " " << father_->getId() << " " << source->getId() << " " << dest->getId() << " " << name_;
+    print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
   } else {

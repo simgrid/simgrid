@@ -7,13 +7,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.h"
-#include <sys/stat.h>
-#ifdef WIN32
-#include <direct.h> // _mkdir
-#endif
-
-#include <iomanip> /** std::setprecision **/
-#include <sstream>
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
@@ -47,7 +40,7 @@ namespace simgrid {
 namespace instr {
 
 Container::Container(std::string name, e_container_types kind, Container* father)
-    : name_(name), kind_(kind), father_(father)
+    : kind_(kind), name_(name), father_(father)
 {
   static long long int container_id = 0;
   id_                               = std::to_string(container_id); // id (or alias) of the container

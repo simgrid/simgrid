@@ -13,13 +13,16 @@
 #include "simgrid_config.h"
 #include "src/internal_config.h"
 #include "xbt/graph.h"
+#include <iomanip> /** std::setprecision **/
 #include <map>
 #include <set>
+#include <sstream>
 #include <string>
-
+#include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h> // _mkdir
 /* Need to define function drand48 for Windows */
 /* FIXME: use _drand48() defined in src/surf/random_mgr.c instead */
-#ifdef _WIN32
 #define drand48() (rand() / (RAND_MAX + 1.0))
 #endif
 
@@ -51,34 +54,44 @@ enum e_event_type {
   PAJE_NewEvent
 };
 
-enum e_entity_types { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT };
-
 //--------------------------------------------------
+enum e_entity_types { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT };
 
 class Type {
   std::string id_;
   std::string name_;
-
-public:
   std::string color_;
   e_entity_types kind_;
   Type* father_;
+
+public:
   std::map<std::string, Type*> children_;
   std::map<std::string, Value*> values_; // valid for all types except variable and container
-  Type(std::string name, const char* key, std::string color, e_entity_types kind, Type* father);
-  ~Type();
-  Type* byName(std::string name);
-  Type* getChildOrNull(std::string name);
 
-  static Type* containerNew(const char* name, Type* father);
-  static Type* eventNew(const char* name, Type* father);
-  static Type* variableNew(const char* name, std::string color, Type* father);
-  static Type* linkNew(const char* name, Type* father, Type* source, Type* dest);
-  static Type* stateNew(const char* name, Type* father);
+  Type(std::string name, std::string alias, std::string color, e_entity_types kind, Type* father);
+  ~Type();
+
   std::string getName() { return name_; }
   const char* getCname() { return name_.c_str(); }
   const char* getId() { return id_.c_str(); }
+  e_entity_types getKind() { return kind_; }
   bool isColored() { return not color_.empty(); }
+
+  Type* byName(std::string name);
+
+  Type* addEventType(std::string name);
+  Type* addLinkType(std::string name, Type* source, Type* dest);
+  Type* addStateType(std::string name);
+  Type* addVariableType(std::string name, std::string color);
+
+  void logContainerTypeDefinition();
+  void logVariableTypeDefinition();
+  void logStateTypeDefinition();
+  void logLinkTypeDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest);
+  void logDefineEventType();
+
+  Type* getChildOrNull(std::string name);
+  static Type* containerNew(const char* name, Type* father);
 };
 
 //--------------------------------------------------
@@ -112,9 +125,10 @@ enum e_container_types {
   INSTR_MSG_TASK
 };
 
-//--------------------------------------------------
-
 class Container {
+  e_container_types kind_; /* This container is of what kind */
+  int level_ = 0;          /* Level in the hierarchy, root level is 0 */
+
 public:
   Container(std::string name, simgrid::instr::e_container_types kind, Container* father);
   virtual ~Container();
@@ -123,8 +137,6 @@ public:
   std::string name_;       /* Unique name of this container */
   std::string id_;         /* Unique id of this container */
   Type* type_;             /* Type of this container */
-  int level_ = 0;          /* Level in the hierarchy, root level is 0 */
-  e_container_types kind_; /* This container is of what kind */
   Container* father_;
   std::map<std::string, Container*> children_;
   static Container* byNameOrNull(std::string name);
@@ -387,11 +399,5 @@ typedef s_instr_extra_data_t* instr_extra_data;
 enum instr_fmt_type_t { instr_fmt_paje, instr_fmt_TI };
 extern instr_fmt_type_t instr_fmt_type;
 }
-
-void LogContainerTypeDefinition(simgrid::instr::Type* type);
-void LogVariableTypeDefinition(simgrid::instr::Type* type);
-void LogStateTypeDefinition(simgrid::instr::Type* type);
-void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest);
-void LogDefineEventType(simgrid::instr::Type* type);
 
 #endif

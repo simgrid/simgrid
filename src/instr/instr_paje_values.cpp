@@ -41,7 +41,7 @@ Value* Value::byName(std::string name, Type* father)
     THROWF(tracing_error, 0, "can't get a value with no name (or a nullptr father)");
   }
 
-  if (father->kind_ == TYPE_VARIABLE)
+  if (father->getKind() == TYPE_VARIABLE)
     THROWF(tracing_error, 0, "variables can't have different values (%s)", father->getCname());
   auto ret = father->values_.find(name);
   if (ret == father->values_.end()) {

@@ -18,7 +18,7 @@
   if (TRACE_is_enabled()) {                                                                                            \
     simgrid::instr::Type* type = PJ_type_get_root()->getChildOrNull(#cat);                                             \
     if (not type) {                                                                                                    \
-      type = simgrid::instr::Type::eventNew(#cat, PJ_type_get_root());                                                 \
+      type = PJ_type_get_root()->addEventType(#cat);                                                                   \
     }                                                                                                                  \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \

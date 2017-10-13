@@ -18,17 +18,17 @@ simgrid::instr::Type* PJ_type_get_root()
 namespace simgrid {
 namespace instr {
 
-Type::Type(std::string name, const char* key, std::string color, e_entity_types kind, Type* father)
+Type::Type(std::string name, std::string alias, std::string color, e_entity_types kind, Type* father)
     : name_(name), color_(color), kind_(kind), father_(father)
 {
-  if (name.empty() || key == nullptr) {
+  if (name.empty() || alias.empty()) {
     THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
   }
 
   id_ = std::to_string(instr_new_paje_id());
 
   if (father != nullptr){
-    father->children_.insert({key, this});
+    father->children_.insert({alias, this});
     XBT_DEBUG("new type %s, child of %s", name_.c_str(), father->getCname());
   }
 }
@@ -69,7 +69,7 @@ Type* Type::getChildOrNull(std::string name)
   return ret;
 }
 
-Type* simgrid::instr::Type::containerNew(const char* name, Type* father)
+Type* Type::containerNew(const char* name, Type* father)
 {
   if (name == nullptr){
     THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
@@ -81,66 +81,55 @@ Type* simgrid::instr::Type::containerNew(const char* name, Type* father)
   } else {
     XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), father->getCname(),
               father->getId());
-    LogContainerTypeDefinition(ret);
+    ret->logContainerTypeDefinition();
   }
   return ret;
 }
 
-Type* Type::eventNew(const char* name, Type* father)
+Type* Type::addEventType(std::string name)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
+  if (name.empty()) {
+    THROWF(tracing_error, 0, "can't create an event type with no name");
   }
 
-  Type* ret = new Type(name, name, "", TYPE_EVENT, father);
-  XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), father->getCname(), father->getId());
-  LogDefineEventType(ret);
+  Type* ret = new Type(name, name, "", TYPE_EVENT, this);
+  XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+  ret->logDefineEventType();
   return ret;
 }
 
-Type* Type::variableNew(const char* name, std::string color, Type* father)
+Type* Type::addVariableType(std::string name, std::string color)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
-  }
+  if (name.empty())
+    THROWF(tracing_error, 0, "can't create a variable type with no name");
 
-  Type* ret = nullptr;
+  Type* ret = new Type(name, name, color.empty() ? "1 1 1" : color, TYPE_VARIABLE, this);
 
-  if (color.empty()) {
-    char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
-    ret = new Type (name, name, white, TYPE_VARIABLE, father);
-  }else{
-    ret = new Type (name, name, color, TYPE_VARIABLE, father);
-  }
-  XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), father->getCname(), father->getId());
-  LogVariableTypeDefinition (ret);
+  XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+  ret->logVariableTypeDefinition();
+
   return ret;
 }
 
-Type* Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
+Type* Type::addLinkType(std::string name, Type* source, Type* dest)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
+  if (name.empty()) {
+    THROWF(tracing_error, 0, "can't create a link type with no name");
   }
 
-  char key[INSTR_DEFAULT_STR_SIZE];
-  snprintf(key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->getId(), dest->getId());
-  Type* ret = new Type(name, key, "", TYPE_LINK, father);
-  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->getCname(), ret->getId(), father->getCname(),
-            father->getId(), source->getCname(), source->getId(), dest->getCname(), dest->getId());
-  LogLinkTypeDefinition(ret, source, dest);
+  std::string alias = name + "-" + source->id_ + "-" + dest->id_;
+  Type* ret         = new Type(name, alias, "", TYPE_LINK, this);
+  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->getCname(), ret->getId(), getCname(), getId(),
+            source->getCname(), source->getId(), dest->getCname(), dest->getId());
+  ret->logLinkTypeDefinition(source, dest);
   return ret;
 }
 
-Type* Type::stateNew(const char* name, Type* father)
+Type* Type::addStateType(std::string name)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
-  }
-
-  Type* ret = new Type(name, name, "", TYPE_STATE, father);
-  XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), father->getCname(), father->getId());
-  LogStateTypeDefinition(ret);
+  Type* ret = new Type(name, name, "", TYPE_STATE, this);
+  XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+  ret->logStateTypeDefinition();
   return ret;
 }
 }

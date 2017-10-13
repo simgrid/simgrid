@@ -101,7 +101,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
            src->type_->getId(), dst->type_->getCname(), dst->type_->getId());
   simgrid::instr::Type* link_type = father->type_->getChildOrNull(link_typename);
   if (link_type == nullptr)
-    link_type = simgrid::instr::Type::linkNew(link_typename, father->type_, src->type_, dst->type_);
+    link_type = father->type_->addLinkType(link_typename, src->type_, dst->type_);
 
   //register EDGE types for triva configuration
   trivaEdgeTypes.insert(link_type->getName());
@@ -169,8 +169,8 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
       if (mpi == nullptr){
         mpi = simgrid::instr::Type::containerNew("MPI", root->type_);
         if (not TRACE_smpi_is_grouped())
-          simgrid::instr::Type::stateNew("MPI_STATE", mpi);
-        simgrid::instr::Type::linkNew("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+          mpi->addStateType("MPI_STATE");
+        PJ_type_get_root()->addLinkType("MPI_LINK", mpi, mpi);
       }
     }
 
@@ -208,17 +208,17 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::Type* bandwidth = container->type_->getChildOrNull("bandwidth");
     if (bandwidth == nullptr)
-      bandwidth                   = simgrid::instr::Type::variableNew("bandwidth", "", container->type_);
+      bandwidth                   = container->type_->addVariableType("bandwidth", "");
     simgrid::instr::Type* latency = container->type_->getChildOrNull("latency");
     if (latency == nullptr)
-      latency = simgrid::instr::Type::variableNew("latency", "", container->type_);
+      latency = container->type_->addVariableType("latency", "");
     new simgrid::instr::SetVariableEvent(0, container, bandwidth, bandwidth_value);
     new simgrid::instr::SetVariableEvent(0, container, latency, latency_value);
   }
   if (TRACE_uncategorized()) {
     simgrid::instr::Type* bandwidth_used = container->type_->getChildOrNull("bandwidth_used");
     if (bandwidth_used == nullptr)
-      simgrid::instr::Type::variableNew("bandwidth_used", "0.5 0.5 0.5", container->type_);
+      container->type_->addVariableType("bandwidth_used", "0.5 0.5 0.5");
   }
 }
 
@@ -230,7 +230,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::Type* speed = container->type_->getChildOrNull("power");
     if (speed == nullptr){
-      speed = simgrid::instr::Type::variableNew("power", "", container->type_);
+      speed = container->type_->addVariableType("power", "");
     }
 
     double current_speed_state = host.getSpeed();
@@ -239,7 +239,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_uncategorized()){
     simgrid::instr::Type* speed_used = container->type_->getChildOrNull("power_used");
     if (speed_used == nullptr){
-      simgrid::instr::Type::variableNew("power_used", "0.5 0.5 0.5", container->type_);
+      container->type_->addVariableType("power_used", "0.5 0.5 0.5");
     }
   }
 
@@ -247,7 +247,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     simgrid::instr::Type* mpi = container->type_->getChildOrNull("MPI");
     if (mpi == nullptr){
       mpi = simgrid::instr::Type::containerNew("MPI", container->type_);
-      simgrid::instr::Type::stateNew("MPI_STATE", mpi);
+      mpi->addStateType("MPI_STATE");
     }
   }
 
@@ -255,14 +255,14 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     simgrid::instr::Type* msg_process = container->type_->getChildOrNull("MSG_PROCESS");
     if (msg_process == nullptr){
       msg_process                 = simgrid::instr::Type::containerNew("MSG_PROCESS", container->type_);
-      simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_PROCESS_STATE", msg_process);
+      simgrid::instr::Type* state = msg_process->addStateType("MSG_PROCESS_STATE");
       simgrid::instr::Value::byNameOrCreate("suspend", "1 0 1", state);
       simgrid::instr::Value::byNameOrCreate("sleep", "1 1 0", state);
       simgrid::instr::Value::byNameOrCreate("receive", "1 0 0", state);
       simgrid::instr::Value::byNameOrCreate("send", "0 0 1", state);
       simgrid::instr::Value::byNameOrCreate("task_execute", "0 1 1", state);
-      simgrid::instr::Type::linkNew("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
-      simgrid::instr::Type::linkNew("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
+      PJ_type_get_root()->addLinkType("MSG_PROCESS_LINK", msg_process, msg_process);
+      PJ_type_get_root()->addLinkType("MSG_PROCESS_TASK_LINK", msg_process, msg_process);
     }
   }
 
@@ -270,14 +270,14 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     simgrid::instr::Type* msg_vm = container->type_->getChildOrNull("MSG_VM");
     if (msg_vm == nullptr){
       msg_vm                      = simgrid::instr::Type::containerNew("MSG_VM", container->type_);
-      simgrid::instr::Type* state = simgrid::instr::Type::stateNew("MSG_VM_STATE", msg_vm);
+      simgrid::instr::Type* state = msg_vm->addStateType("MSG_VM_STATE");
       simgrid::instr::Value::byNameOrCreate("suspend", "1 0 1", state);
       simgrid::instr::Value::byNameOrCreate("sleep", "1 1 0", state);
       simgrid::instr::Value::byNameOrCreate("receive", "1 0 0", state);
       simgrid::instr::Value::byNameOrCreate("send", "0 0 1", state);
       simgrid::instr::Value::byNameOrCreate("task_execute", "0 1 1", state);
-      simgrid::instr::Type::linkNew("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
-      simgrid::instr::Type::linkNew("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      PJ_type_get_root()->addLinkType("MSG_VM_LINK", msg_vm, msg_vm);
+      PJ_type_get_root()->addLinkType("MSG_VM_PROCESS_LINK", msg_vm, msg_vm);
     }
   }
 }
@@ -323,22 +323,12 @@ void instr_routing_define_callbacks ()
  */
 static void recursiveNewVariableType(const char* new_typename, const char* color, simgrid::instr::Type* root)
 {
+  if (root->getName() == "HOST" || root->getName() == "MSG_VM")
+    root->addVariableType(std::string("p") + new_typename, color == nullptr ? "" : color);
 
-  if (root->getName() == "HOST") {
-    char tnstr[INSTR_DEFAULT_STR_SIZE];
-    snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
-  }
-  if (root->getName() == "MSG_VM") {
-    char tnstr[INSTR_DEFAULT_STR_SIZE];
-    snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
-  }
-  if (root->getName() == "LINK") {
-    char tnstr[INSTR_DEFAULT_STR_SIZE];
-    snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
-    simgrid::instr::Type::variableNew(tnstr, color == nullptr ? "" : color, root);
-  }
+  if (root->getName() == "LINK")
+    root->addVariableType(std::string("b") + new_typename, color == nullptr ? "" : color);
+
   for (auto elm : root->children_) {
     recursiveNewVariableType(new_typename, color == nullptr ? "" : color, elm.second);
   }
@@ -353,7 +343,7 @@ static void recursiveNewUserVariableType(const char* father_type, const char* ne
                                          simgrid::instr::Type* root)
 {
   if (root->getName() == father_type) {
-    simgrid::instr::Type::variableNew(new_typename, color == nullptr ? "" : color, root);
+    root->addVariableType(new_typename, color == nullptr ? "" : color);
   }
   for (auto elm : root->children_)
     recursiveNewUserVariableType(father_type, new_typename, color, elm.second);
@@ -367,7 +357,7 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
 static void recursiveNewUserStateType(const char* father_type, const char* new_typename, simgrid::instr::Type* root)
 {
   if (root->getName() == father_type) {
-    simgrid::instr::Type::stateNew(new_typename, root);
+    root->addStateType(new_typename);
   }
   for (auto elm : root->children_)
     recursiveNewUserStateType(father_type, new_typename, elm.second);

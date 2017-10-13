@@ -148,7 +148,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  simgrid::instr::Type::eventNew(mark_type, PJ_type_get_root());
+  PJ_type_get_root()->addEventType(mark_type);
   declared_marks.insert(mark_type);
 }
 
