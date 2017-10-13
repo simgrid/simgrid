@@ -14,12 +14,6 @@ struct s_graph_node_data_t {
 };
 typedef s_graph_node_data_t* graph_node_data_t;
 
-struct s_route_cache_element_t {
-  int* pred_arr;
-  int size;
-};
-typedef s_route_cache_element_t* route_cache_element_t;
-
 namespace simgrid {
 namespace kernel {
 namespace routing {
@@ -60,8 +54,9 @@ public:
   void addRoute(sg_platf_route_cbarg_t route) override;
 
   xbt_graph_t routeGraph_  = nullptr; /* xbt_graph */
-  std::map<int, xbt_node_t> graphNodeMap_;               /* map */
-  std::map<int, route_cache_element_t> routeCache_;      /* use in cache mode */
+  std::map<int, xbt_node_t> graphNodeMap_;     /* map */
+  bool cached_;                                /* cache mode */
+  std::map<int, std::vector<int>> routeCache_; /* use in cache mode */
 };
 }
 }

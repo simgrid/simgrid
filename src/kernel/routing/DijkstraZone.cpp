@@ -132,8 +132,6 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
   int src_id = src->id();
   int dst_id = dst->id();
 
-  int* pred_arr     = nullptr;
-  int size          = 0;
   xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
@@ -162,19 +160,13 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     }
   }
 
-  route_cache_element_t elm = nullptr;
-  if (not routeCache_.empty()) { /* cache mode  */
-    auto it = routeCache_.find(src_id);
-    elm     = (it == routeCache_.end()) ? nullptr : it->second;
-  }
+  auto elm                   = routeCache_.emplace(src_id, std::vector<int>());
+  std::vector<int>& pred_arr = elm.first->second;
 
-  if (elm) { /* cached mode and cache hit */
-    pred_arr = elm->pred_arr;
-  } else { /* not cached mode, or cache miss */
-
+  if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
     int nr_nodes      = xbt_dynar_length(nodes);
-    double* cost_arr  = new double[nr_nodes]; /* link cost from src to other hosts */
-    pred_arr          = new int[nr_nodes];    /* predecessors in path from src */
+    std::vector<double> cost_arr(nr_nodes); /* link cost from src to other hosts */
+    pred_arr.resize(nr_nodes);              /* predecessors in path from src */
     xbt_heap_t pqueue = xbt_heap_new(nr_nodes, nullptr);
 
     /* initialize */
@@ -217,8 +209,6 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
       /* free item popped from pqueue */
       delete v_id;
     }
-
-    delete[] cost_arr;
     xbt_heap_free(pqueue);
   }
 
@@ -265,7 +255,6 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
       if (lat)
         *lat += static_cast<surf::LinkImpl*>(link)->latency();
     }
-    size++;
   }
 
   if (hierarchy_ == RoutingMode::recursive) {
@@ -273,16 +262,8 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     route->gw_dst = first_gw;
   }
 
-  if (not routeCache_.empty() && elm == nullptr) {
-    /* add to predecessor list of the current src-host to cache */
-    elm           = new s_route_cache_element_t;
-    elm->pred_arr = pred_arr;
-    elm->size     = size;
-    routeCache_.insert({src_id, elm});
-  }
-
-  if (routeCache_.empty())
-    delete[] pred_arr;
+  if (not cached_)
+    routeCache_.clear();
 }
 
 DijkstraZone::~DijkstraZone()
@@ -292,7 +273,7 @@ DijkstraZone::~DijkstraZone()
 
 /* Creation routing model functions */
 
-DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : RoutedZone(father, name)
+DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : RoutedZone(father, name), cached_(cached)
 {
 }
 
