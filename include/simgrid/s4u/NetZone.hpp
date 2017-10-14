@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -44,8 +44,10 @@ protected:
 public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
-  const char* getCname();
-  std::string getName() { return name_; }
+  /** @brief Retrieves the name of that netzone as a C++ string */
+  const std::string& getName() const { return name_; }
+  /** @brief Retrieves the name of that netzone as a C string */
+  const char* getCname() const;
   NetZone* getFather();
 
   std::vector<NetZone*>* getChildren();             // Sub netzones

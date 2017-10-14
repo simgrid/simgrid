@@ -63,7 +63,7 @@ std::vector<NetZone*>* NetZone::getChildren()
 {
   return children_;
 }
-const char* NetZone::getCname()
+const char* NetZone::getCname() const
 {
   return name_.c_str();
 }
