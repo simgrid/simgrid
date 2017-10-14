@@ -197,7 +197,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   double bandwidth_value = link.bandwidth();
   double latency_value   = link.latency();
 
-  container_t container = new simgrid::instr::Container(link.name(), simgrid::instr::INSTR_LINK, father);
+  container_t container = new simgrid::instr::Container(link.getCname(), simgrid::instr::INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::Type* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");

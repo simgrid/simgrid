@@ -10,6 +10,7 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
+#include <string>
 #include <unordered_map>
 
 /***********
@@ -36,8 +37,10 @@ public:
   /** @brief Retrieve a link from its name */
   static Link* byName(const char* name);
 
-  /** @brief Get da name */
-  const char* name();
+  /** @brief Retrieves the name of that link as a C++ string */
+  const std::string& getName() const;
+  /** @brief Retrieves the name of that link as a C string */
+  const char* getCname() const;
 
   /** @brief Get the bandwidth in bytes per second of current Link */
   double bandwidth();
