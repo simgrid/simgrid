@@ -9,6 +9,7 @@
 #include <string>
 
 #include <xbt/base.h>
+#include <xbt/string.hpp>
 
 #include <simgrid/s4u/forward.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -120,8 +121,10 @@ public:
   /** private function, do not use. FIXME: make me protected */
   kernel::activity::MailboxImpl* getImpl() { return pimpl_; }
 
-  /** Gets the name of that mailbox */
-  const char* getName();
+  /** @brief Retrieves the name of that mailbox as a C++ string */
+  const simgrid::xbt::string& getName() const;
+  /** @brief Retrieves the name of that mailbox as a C string */
+  const char* getCname() const;
 
   /** Retrieve the mailbox associated to the given C string */
   static MailboxPtr byName(const char *name);

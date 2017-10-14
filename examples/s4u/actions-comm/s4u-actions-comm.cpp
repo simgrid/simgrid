@@ -64,7 +64,7 @@ public:
     double clock                = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getName() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
-              simgrid::s4u::this_actor::getCname(), to->getName());
+              simgrid::s4u::this_actor::getCname(), to->getCname());
     to->put(payload, size);
     delete payload;
 
@@ -77,7 +77,7 @@ public:
     simgrid::s4u::MailboxPtr from =
         simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::getName());
 
-    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::getCname(), from->getName());
+    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::getCname(), from->getCname());
     from->get();
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
