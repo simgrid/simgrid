@@ -18,7 +18,7 @@ namespace s4u {
 
 const char* Mailbox::getName()
 {
-  return pimpl_->name_;
+  return pimpl_->name_.c_str();
 }
 
 MailboxPtr Mailbox::byName(const char*name)
