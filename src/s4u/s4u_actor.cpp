@@ -85,14 +85,14 @@ void Actor::daemonize()
   simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
 }
 
-const char* Actor::getCname()
+const simgrid::xbt::string& Actor::getName() const
 {
-  return this->pimpl_->name.c_str();
+  return this->pimpl_->getName();
 }
 
-simgrid::xbt::string Actor::getName()
+const char* Actor::getCname() const
 {
-  return this->pimpl_->name;
+  return this->pimpl_->getCname();
 }
 
 aid_t Actor::getPid()
@@ -269,7 +269,12 @@ aid_t getPpid()
 
 std::string getName()
 {
-  return SIMIX_process_self()->name;
+  return SIMIX_process_self()->getName();
+}
+
+const char* getCname()
+{
+  return SIMIX_process_self()->getCname();
 }
 
 Host* getHost()

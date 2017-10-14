@@ -197,10 +197,10 @@ public:
   /** This actor will be automatically terminated when the last non-daemon process finishes **/
   void daemonize();
 
-  /** Retrieves the name of that actor as a C string */
-  const char* getCname();
   /** Retrieves the name of that actor as a C++ string */
-  simgrid::xbt::string getName();
+  const simgrid::xbt::string& getName() const;
+  /** Retrieves the name of that actor as a C string */
+  const char* getCname() const;
   /** Retrieves the host on which that actor is running */
   s4u::Host* getHost();
   /** Retrieves the PID of that actor
@@ -339,6 +339,9 @@ XBT_PUBLIC(aid_t) getPpid();
 
 /** @brief Returns the name of the current actor. */
 XBT_PUBLIC(std::string) getName();
+
+/** @brief Returns the name of the current actor as a C string. */
+XBT_PUBLIC(const char*) getCname();
 
 /** @brief Returns the name of the host on which the process is running. */
 XBT_PUBLIC(Host*) getHost();

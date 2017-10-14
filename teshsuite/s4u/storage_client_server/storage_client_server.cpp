@@ -27,7 +27,7 @@ static sg_size_t write_local_file(const char* dest, sg_size_t file_size)
   simgrid::s4u::File* file = new simgrid::s4u::File(dest, nullptr);
   sg_size_t written        = file->write(file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1", written, file_size,
-           simgrid::s4u::Actor::self()->getName().c_str());
+           simgrid::s4u::Actor::self()->getCname());
   delete file;
   return written;
 }
@@ -38,7 +38,7 @@ static sg_size_t read_local_file(const char* src)
   sg_size_t file_size      = file->size();
   sg_size_t read           = file->read(file_size);
 
-  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getName().c_str(), read, src);
+  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getCname(), read, src);
   delete file;
 
   return read;
@@ -51,7 +51,7 @@ static void hsm_put(const char* remote_host, const char* src, const char* dest)
   sg_size_t read_size = read_local_file(src);
 
   // Send file
-  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getName().c_str(), read_size, remote_host);
+  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getCname(), read_size, remote_host);
   char* payload                    = bprintf("%s %llu", dest, read_size);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(remote_host);
   mailbox->put(payload, static_cast<double>(read_size));
