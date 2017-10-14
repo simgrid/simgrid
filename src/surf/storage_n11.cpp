@@ -89,8 +89,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->file_->incrPosition(current_progress);
       action->file_->setSize(action->file_->tell());
 
-      action->storage_->getContent()->erase(action->file_->cname());
-      action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
+      action->storage_->getContent()->erase(action->file_->getCname());
+      action->storage_->getContent()->insert({action->file_->getCname(), action->file_->size()});
     }
 
     if (action->getMaxDuration() > NO_MAX_DURATION)
