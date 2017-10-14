@@ -68,19 +68,21 @@ void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
 {
   /* Argument validity checks */
   if (e_route->gw_dst) {
-    XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", e_route->src->cname(), e_route->gw_src->cname(),
-              e_route->dst->cname(), e_route->gw_dst->cname());
+    XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", e_route->src->getCname(), e_route->gw_src->getCname(),
+              e_route->dst->getCname(), e_route->gw_dst->getCname());
     xbt_assert(not e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
-               e_route->src->cname(), e_route->gw_src->cname(), e_route->dst->cname(), e_route->gw_dst->cname());
+               e_route->src->getCname(), e_route->gw_src->getCname(), e_route->dst->getCname(),
+               e_route->gw_dst->getCname());
     xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
-               "The bypass route between %s@%s and %s@%s already exists.", e_route->src->cname(),
-               e_route->gw_src->cname(), e_route->dst->cname(), e_route->gw_dst->cname());
+               "The bypass route between %s@%s and %s@%s already exists.", e_route->src->getCname(),
+               e_route->gw_src->getCname(), e_route->dst->getCname(), e_route->gw_dst->getCname());
   } else {
-    XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->cname(), e_route->dst->cname());
+    XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->getCname(), e_route->dst->getCname());
     xbt_assert(not e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.",
-               e_route->src->cname(), e_route->dst->cname());
+               e_route->src->getCname(), e_route->dst->getCname());
     xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
-               "The bypass route between %s and %s already exists.", e_route->src->cname(), e_route->dst->cname());
+               "The bypass route between %s and %s already exists.", e_route->src->getCname(),
+               e_route->dst->getCname());
   }
 
   /* Build a copy that will be stored in the dict */
@@ -160,8 +162,8 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
   NetZoneImpl* src_as = src->netzone();
   NetZoneImpl* dst_as = dst->netzone();
 
-  xbt_assert(src_as, "Host %s must be in a netzone", src->cname());
-  xbt_assert(dst_as, "Host %s must be in a netzone", dst->cname());
+  xbt_assert(src_as, "Host %s must be in a netzone", src->getCname());
+  xbt_assert(dst_as, "Host %s must be in a netzone", dst->getCname());
 
   /* (2) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
@@ -218,7 +220,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
         if (latency)
           *latency += link->latency();
       }
-      XBT_DEBUG("Found a bypass route from '%s' to '%s' with %zu links", src->cname(), dst->cname(),
+      XBT_DEBUG("Found a bypass route from '%s' to '%s' with %zu links", src->getCname(), dst->getCname(),
                 bypassedRoute->links.size());
       return true;
     }
@@ -294,7 +296,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
   if (bypassedRoute) {
     XBT_DEBUG("Found a bypass route from '%s' to '%s' with %zu links. We may have to complete it with recursive "
               "calls to getRoute",
-              src->cname(), dst->cname(), bypassedRoute->links.size());
+              src->getCname(), dst->getCname(), bypassedRoute->links.size());
     if (src != key.first)
       getGlobalRoute(src, bypassedRoute->gw_src, links, latency);
     for (surf::LinkImpl* const& link : bypassedRoute->links) {
@@ -306,7 +308,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
       getGlobalRoute(bypassedRoute->gw_dst, dst, links, latency);
     return true;
   }
-  XBT_DEBUG("No bypass route from '%s' to '%s'.", src->cname(), dst->cname());
+  XBT_DEBUG("No bypass route from '%s' to '%s'.", src->getCname(), dst->getCname());
   return false;
 }
 
@@ -316,7 +318,7 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
   s_sg_platf_route_cbarg_t route;
   memset(&route, 0, sizeof(route));
 
-  XBT_DEBUG("Resolve route from '%s' to '%s'", src->cname(), dst->cname());
+  XBT_DEBUG("Resolve route from '%s' to '%s'", src->getCname(), dst->getCname());
 
   /* Find how src and dst are interconnected */
   NetZoneImpl *common_ancestor;
@@ -343,7 +345,7 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
   common_ancestor->getLocalRoute(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
   xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
-             src->cname(), dst->cname());
+             src->getCname(), dst->getCname());
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != route.gw_src)

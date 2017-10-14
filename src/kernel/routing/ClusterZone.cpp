@@ -22,7 +22,7 @@ ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father
 
 void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
-  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->cname(), src->id(), dst->cname(), dst->id());
+  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
   xbt_assert(not privateLinks_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
@@ -77,7 +77,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
              "Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
-  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->cname(), nodes);
+  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->getCname(), nodes);
 
   xbt_node_t backboneNode = nullptr;
   if (backbone_) {
@@ -87,7 +87,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
 
   for (auto const& src : getVertices()) {
     if (not src->isRouter()) {
-      xbt_node_t previous = new_xbt_graph_node(graph, src->cname(), nodes);
+      xbt_node_t previous = new_xbt_graph_node(graph, src->getCname(), nodes);
 
       std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
 

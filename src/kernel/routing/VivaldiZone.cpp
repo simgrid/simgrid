@@ -27,7 +27,7 @@ Coords::Coords(NetPoint* netpoint, std::string coordStr)
 
   std::vector<std::string> string_values;
   boost::split(string_values, coordStr, boost::is_any_of(" "));
-  xbt_assert(string_values.size() == 3, "Coordinates of %s must have 3 dimensions", netpoint->cname());
+  xbt_assert(string_values.size() == 3, "Coordinates of %s must have 3 dimensions", netpoint->getCname());
 
   for (auto const& str : string_values)
     try {
@@ -38,7 +38,7 @@ Coords::Coords(NetPoint* netpoint, std::string coordStr)
   coords.shrink_to_fit();
 
   netpoint->extension_set<Coords>(this);
-  XBT_DEBUG("Coords of %s %p: %s", netpoint->cname(), netpoint, coordStr.c_str());
+  XBT_DEBUG("Coords of %s %p: %s", netpoint->getCname(), netpoint, coordStr.c_str());
 }
 }; // namespace vivaldi
 
@@ -54,7 +54,7 @@ static std::vector<double>* getCoordsFromNetpoint(NetPoint* np)
 {
   simgrid::kernel::routing::vivaldi::Coords* coords = np->extension<simgrid::kernel::routing::vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
-             (np->isNetZone() ? "Netzone" : (np->isHost() ? "Host" : "Router")), np->cname(), np);
+             (np->isNetZone() ? "Netzone" : (np->isHost() ? "Host" : "Router")), np->getCname(), np);
   return &coords->coords;
 }
 
@@ -68,8 +68,8 @@ void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, s
 
   new simgrid::kernel::routing::vivaldi::Coords(netpoint, coord);
 
-  std::string link_up   = "link_" + netpoint->name() + "_UP";
-  std::string link_down = "link_" + netpoint->name() + "_DOWN";
+  std::string link_up      = "link_" + netpoint->getName() + "_UP";
+  std::string link_down    = "link_" + netpoint->getName() + "_DOWN";
   surf::LinkImpl* linkUp   = surf_network_model->createLink(link_up, bw_out, 0, SURF_LINK_SHARED);
   surf::LinkImpl* linkDown = surf_network_model->createLink(link_down, bw_in, 0, SURF_LINK_SHARED);
   privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
@@ -77,11 +77,11 @@ void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, s
 
 void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
-  XBT_DEBUG("vivaldi getLocalRoute from '%s'[%u] '%s'[%u]", src->cname(), src->id(), dst->cname(), dst->id());
+  XBT_DEBUG("vivaldi getLocalRoute from '%s'[%u] '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
 
   if (src->isNetZone()) {
-    std::string srcName = "router_" + src->name();
-    std::string dstName = "router_" + dst->name();
+    std::string srcName = "router_" + src->getName();
+    std::string dstName = "router_" + dst->getName();
     route->gw_src       = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(srcName.c_str());
     route->gw_dst       = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(dstName.c_str());
   }

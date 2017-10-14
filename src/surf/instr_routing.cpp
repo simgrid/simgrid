@@ -258,7 +258,7 @@ static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
     return;
   if (TRACE_is_enabled() && TRACE_needs_platform()) {
     container_t father = currentContainer.back();
-    new simgrid::instr::Container(netpoint->cname(), simgrid::instr::INSTR_ROUTER, father);
+    new simgrid::instr::Container(netpoint->getCname(), simgrid::instr::INSTR_ROUTER, father);
   }
 }
 

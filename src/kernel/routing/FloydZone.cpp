@@ -55,7 +55,7 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   do {
     int pred = TO_FLOYD_PRED(src->id(), cur);
     if (pred == -1)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
     route_stack.push_back(TO_FLOYD_LINK(pred, cur));
     cur = pred;
   } while (cur != src->id());
@@ -70,7 +70,7 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
     sg_platf_route_cbarg_t e_route = route_stack.back();
     route_stack.pop_back();
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
-        strcmp(prev_dst_gw->name().c_str(), e_route->gw_src->name().c_str())) {
+        prev_dst_gw->getCname() != e_route->gw_src->getCname()) {
       getGlobalRoute(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
 
@@ -110,12 +110,11 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
   if (route->gw_dst) // netzone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-               route->src->name().c_str(), route->gw_src->name().c_str(), route->dst->name().c_str(),
-               route->gw_dst->name().c_str());
+               route->src->getCname(), route->gw_src->getCname(), route->dst->getCname(), route->gw_dst->getCname());
   else
     xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
                "The route between %s and %s already exists (Rq: routes are symmetrical by default).",
-               route->src->name().c_str(), route->dst->name().c_str());
+               route->src->getCname(), route->dst->getCname());
 
   TO_FLOYD_LINK(route->src->id(), route->dst->id()) = newExtendedRoute(hierarchy_, route, 1);
   TO_FLOYD_PRED(route->src->id(), route->dst->id()) = route->src->id();
@@ -127,12 +126,11 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
       xbt_assert(
           nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          route->dst->name().c_str(), route->gw_dst->name().c_str(), route->src->name().c_str(),
-          route->gw_src->name().c_str());
+          route->dst->getCname(), route->gw_dst->getCname(), route->src->getCname(), route->gw_src->getCname());
     else
       xbt_assert(nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-                 route->dst->name().c_str(), route->src->name().c_str());
+                 route->dst->getCname(), route->src->getCname());
 
     if (route->gw_dst && route->gw_src) {
       NetPoint* gw_tmp = route->gw_src;
@@ -141,10 +139,10 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
     }
 
     if (not route->gw_src || not route->gw_dst)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->name().c_str(), route->src->name().c_str());
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->getCname(), route->src->getCname());
     else
-      XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name().c_str(), route->gw_src->name().c_str(),
-                route->src->name().c_str(), route->gw_dst->name().c_str());
+      XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", route->dst->getCname(), route->gw_src->getCname(),
+                route->src->getCname(), route->gw_dst->getCname());
 
     TO_FLOYD_LINK(route->dst->id(), route->src->id()) = newExtendedRoute(hierarchy_, route, 0);
     TO_FLOYD_PRED(route->dst->id(), route->src->id()) = route->dst->id();

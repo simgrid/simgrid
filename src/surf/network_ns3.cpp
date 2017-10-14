@@ -84,7 +84,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
   if (link_list->size() == 1) {
     simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
 
-    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->cname(), dst->cname(), link->cname(),
+    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->getCname(), dst->getCname(), link->cname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
 
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
@@ -95,8 +95,8 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     NetPointNs3* host_src = src->extension<NetPointNs3>();
     NetPointNs3* host_dst = dst->extension<NetPointNs3>();
 
-    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->cname());
-    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->cname());
+    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->getCname());
+    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->getCname());
 
     ns3_add_link(host_src, host_dst, link->bandwidth(), link->latency());
   } else {
@@ -108,7 +108,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                "of length 1.\n"
                "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
                "ignored.",
-               src->cname(), dst->cname(), link_list->size());
+               src->getCname(), dst->getCname(), link_list->size());
     warned_about_long_routes = true;
   }
 }
@@ -148,7 +148,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 
   simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {
     pt->extension_set<NetPointNs3>(new NetPointNs3());
-    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->cname(), pt->extension<NetPointNs3>()->node_num);
+    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->getCname(), pt->extension<NetPointNs3>()->node_num);
   });
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
   simgrid::s4u::onPlatformCreated.connect(&postparse_cb);
@@ -347,10 +347,10 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->cname());
+             dst->pimpl_netpoint->getCname());
   char* addr = IPV4addr.at(node2);
   xbt_assert(addr != nullptr, "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->cname());
+             dst->pimpl_netpoint->getCname());
 
   XBT_DEBUG("ns3_create_flow %u Bytes from %u to %u with Interface %s", TotalBytes, node1, node2, addr);
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));

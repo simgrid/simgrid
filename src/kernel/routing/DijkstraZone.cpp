@@ -149,7 +149,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     xbt_edge_t edge     = xbt_graph_get_edge(routeGraph_, node_s_v, node_e_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
 
     sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
 
@@ -223,7 +223,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     xbt_edge_t edge        = xbt_graph_get_edge(routeGraph_, node_pred_v, node_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
 
     sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
 
@@ -234,8 +234,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (hierarchy_ == RoutingMode::recursive && v != dst_node_id &&
-        strcmp(gw_dst->name().c_str(), prev_gw_src->name().c_str())) {
+    if (hierarchy_ == RoutingMode::recursive && v != dst_node_id && gw_dst->getName() != prev_gw_src->getName()) {
       std::vector<surf::LinkImpl*> e_route_as_to_as;
 
       NetPoint* gw_dst_net_elm      = nullptr;
@@ -281,8 +280,8 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
 {
   NetPoint* src       = route->src;
   NetPoint* dst       = route->dst;
-  const char* srcName = src->name().c_str();
-  const char* dstName = dst->name().c_str();
+  const char* srcName = src->getCname();
+  const char* dstName = dst->getCname();
 
   addRouteCheckParams(route);
 
@@ -310,11 +309,11 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
       if (edge)
         THROWF(arg_error, 0, "Route from %s to %s already exists", dstName, srcName);
     } else {
-      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,
-                route->gw_src->name().c_str());
+      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->getCname(), srcName,
+                route->gw_src->getCname());
       if (edge)
-        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->name().c_str(), srcName,
-             route->gw_src->name().c_str());
+        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->getCname(), srcName,
+               route->gw_src->getCname());
     }
 
     if (route->gw_dst && route->gw_src) {

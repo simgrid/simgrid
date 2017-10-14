@@ -83,7 +83,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       getLocalRoute(my_src, my_dst, route, nullptr);
 
-      XBT_DEBUG("get_route_and_latency %s -> %s", my_src->cname(), my_dst->cname());
+      XBT_DEBUG("get_route_and_latency %s -> %s", my_src->getCname(), my_dst->getCname());
 
       xbt_node_t current;
       xbt_node_t previous;
@@ -91,11 +91,11 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       const char *current_name;
 
       if (route->gw_src) {
-        previous      = new_xbt_graph_node(graph, route->gw_src->cname(), nodes);
-        previous_name = route->gw_src->cname();
+        previous      = new_xbt_graph_node(graph, route->gw_src->getCname(), nodes);
+        previous_name = route->gw_src->getCname();
       } else {
-        previous      = new_xbt_graph_node(graph, my_src->cname(), nodes);
-        previous_name = my_src->cname();
+        previous      = new_xbt_graph_node(graph, my_src->getCname(), nodes);
+        previous_name = my_src->getCname();
       }
 
       for (auto const& link : *route->link_list) {
@@ -109,11 +109,11 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       if (route->gw_dst) {
-        current      = new_xbt_graph_node(graph, route->gw_dst->cname(), nodes);
-        current_name = route->gw_dst->cname();
+        current      = new_xbt_graph_node(graph, route->gw_dst->getCname(), nodes);
+        current_name = route->gw_dst->getCname();
       } else {
-        current      = new_xbt_graph_node(graph, my_dst->cname(), nodes);
-        current_name = my_dst->cname();
+        current      = new_xbt_graph_node(graph, my_dst->getCname(), nodes);
+        current_name = my_dst->getCname();
       }
       new_xbt_graph_edge(graph, previous, current, edges);
       XBT_DEBUG("  %s -> %s", previous_name, current_name);
@@ -158,26 +158,26 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
 
 void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
 {
-  xbt_assert(src, "Cannot find a route from nullptr to %s", dst->cname());
-  xbt_assert(dst, "Cannot find a route from %s to nullptr", src->cname());
+  xbt_assert(src, "Cannot find a route from nullptr to %s", dst->getCname());
+  xbt_assert(dst, "Cannot find a route from %s to nullptr", src->getCname());
 
   NetZone* src_as = src->netzone();
   NetZone* dst_as = dst->netzone();
 
   xbt_assert(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same netzone as expected. Please report that bug.",
-             src->cname(), src_as->getCname(), dst->cname(), dst_as->getCname());
+             src->getCname(), src_as->getCname(), dst->getCname(), dst_as->getCname());
 
   xbt_assert(this == dst_as, "Internal error: route destination %s@%s is not in netzone %s as expected (route source: "
                              "%s@%s). Please report that bug.",
-             src->cname(), dst->cname(), src_as->getCname(), dst_as->getCname(), getCname());
+             src->getCname(), dst->getCname(), src_as->getCname(), dst_as->getCname(), getCname());
 }
 void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
 {
   NetPoint* src       = route->src;
   NetPoint* dst       = route->dst;
-  const char* srcName = src->cname();
-  const char* dstName = dst->cname();
+  const char* srcName = src->getCname();
+  const char* dstName = dst->getCname();
 
   if (not route->gw_dst || not route->gw_src) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
@@ -191,7 +191,8 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
                "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
                dstName);
   } else {
-    XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, route->gw_src->cname(), dstName, route->gw_dst->cname());
+    XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, route->gw_src->getCname(), dstName,
+              route->gw_dst->getCname());
     xbt_assert(src->isNetZone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
     xbt_assert(dst->isNetZone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
 
@@ -200,14 +201,15 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
     xbt_assert(route->gw_dst->isHost() || route->gw_dst->isRouter(),
                "When defining a NetzoneRoute, gw_dst must be an host or a router but '%s' is not.", dstName);
 
-    xbt_assert(route->gw_src != route->gw_dst, "Cannot define an NetzoneRoute from '%s' to itself", route->gw_src->cname());
+    xbt_assert(route->gw_src != route->gw_dst, "Cannot define an NetzoneRoute from '%s' to itself",
+               route->gw_src->getCname());
 
-    xbt_assert(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->cname(),
-               dstName, route->gw_dst->cname(), srcName);
-    xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->cname(),
-               dstName, route->gw_dst->cname(), dstName);
+    xbt_assert(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->getCname(),
+               dstName, route->gw_dst->getCname(), srcName);
+    xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->getCname(),
+               dstName, route->gw_dst->getCname(), dstName);
     xbt_assert(not route->link_list->empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName,
-               route->gw_src->cname(), dstName, route->gw_dst->cname());
+               route->gw_src->getCname(), dstName, route->gw_dst->getCname());
   }
 
   onRouteCreation(route->symmetrical, route->src, route->dst, route->gw_src, route->gw_dst, route->link_list);

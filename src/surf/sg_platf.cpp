@@ -676,7 +676,7 @@ void sg_platf_new_hostlink(HostLinkCreationArgs* hostlink)
   if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->cname(), netpoint->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->getCname(), netpoint->id());
   as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 

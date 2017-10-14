@@ -277,8 +277,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   if (dst->isRouter() || src->isRouter())
     return;
 
-  XBT_VERB("dragonfly getLocalRout from '%s'[%u] to '%s'[%u]", src->name().c_str(), src->id(), dst->name().c_str(),
-           dst->id());
+  XBT_VERB("dragonfly getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePosition(src->id()));
