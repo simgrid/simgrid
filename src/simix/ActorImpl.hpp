@@ -47,7 +47,8 @@ public:
   aid_t pid  = 0;
   aid_t ppid = -1;
   simgrid::xbt::string name;
-  const char* cname() { return name.c_str(); }
+  const simgrid::xbt::string& getName() const { return name; }
+  const char* getCname() const { return name.c_str(); }
   s4u::Host* host       = nullptr; /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 

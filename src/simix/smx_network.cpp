@@ -476,11 +476,11 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
       if (comm->src_proc->isSuspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->src_proc->cname(), comm->src_proc->host->getCname());
+                  comm->src_proc->getCname(), comm->src_proc->host->getCname());
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->dst_proc->cname(), comm->dst_proc->host->getCname());
+                  comm->dst_proc->getCname(), comm->dst_proc->host->getCname());
 
       comm->surf_comm->suspend();
     }
@@ -562,7 +562,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
                     "detached:%d",
                     synchro.get(), comm->src_proc ? comm->src_proc->host->getCname() : nullptr,
-                    comm->dst_proc ? comm->dst_proc->host->getCname() : nullptr, simcall->issuer->cname(),
+                    comm->dst_proc ? comm->dst_proc->host->getCname() : nullptr, simcall->issuer->getCname(),
                     simcall->issuer, comm->detached);
           if (comm->src_proc == simcall->issuer) {
             XBT_DEBUG("I'm source");

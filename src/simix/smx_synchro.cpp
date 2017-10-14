@@ -168,7 +168,7 @@ void MutexImpl::unlock(smx_actor_t issuer)
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != this->owner)
     THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%lu), not by you.",
-           this->owner->cname(), this->owner->pid);
+           this->owner->getCname(), this->owner->pid);
 
   if (xbt_swag_size(this->sleeping) > 0) {
     /*process to wake up */

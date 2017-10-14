@@ -169,7 +169,7 @@ void ActorImpl::daemonize()
 
 simgrid::s4u::Actor* ActorImpl::restart()
 {
-  XBT_DEBUG("Restarting process %s on %s", cname(), host->getCname());
+  XBT_DEBUG("Restarting process %s on %s", getCname(), host->getCname());
 
   // retrieve the arguments of the old process
   // FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
@@ -346,12 +346,12 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->getCname(), host->getCname());
   simix_global->process_to_run.push_back(process);
   intrusive_ptr_add_ref(process);
 
   /* Tracing the process creation */
-  TRACE_msg_process_create(process->cname(), process->pid, process->host);
+  TRACE_msg_process_create(process->getCname(), process->pid, process->host);
 
   return process;
 }
@@ -410,11 +410,11 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->getCname(), host->getCname());
   simix_global->process_to_run.push_back(process);
 
   /* Tracing the process creation */
-  TRACE_msg_process_create(process->cname(), process->pid, process->host);
+  TRACE_msg_process_create(process->getCname(), process->pid, process->host);
 
   auto context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context);
   if (not context)
@@ -464,7 +464,7 @@ void SIMIX_process_runall()
  */
 void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
-  XBT_DEBUG("Killing process %s@%s", process->cname(), process->host->getCname());
+  XBT_DEBUG("Killing process %s@%s", process->getCname(), process->host->getCname());
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -718,7 +718,7 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
  */
 void SIMIX_process_yield(smx_actor_t self)
 {
-  XBT_DEBUG("Yield actor '%s'", self->cname());
+  XBT_DEBUG("Yield actor '%s'", self->getCname());
 
   /* Go into sleep and return control to maestro */
   self->context->suspend();
@@ -738,11 +738,11 @@ void SIMIX_process_yield(smx_actor_t self)
     SIMIX_process_on_exit_runall(self);
     /* Add the process to the list of process to restart, only if the host is down */
     if (self->auto_restart && self->host->isOff()) {
-      SIMIX_host_add_auto_restart_process(self->host, self->cname(), self->code, self->userdata,
+      SIMIX_host_add_auto_restart_process(self->host, self->getCname(), self->code, self->userdata,
                                           SIMIX_timer_get_date(self->kill_timer), self->getProperties(),
                                           self->auto_restart);
     }
-    XBT_DEBUG("Process %s@%s is dead", self->cname(), self->host->getCname());
+    XBT_DEBUG("Process %s@%s is dead", self->getCname(), self->host->getCname());
     self->context->stop();
   }
 
