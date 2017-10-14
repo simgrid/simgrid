@@ -27,6 +27,8 @@ class MailboxImpl {
   }
 
 public:
+  const simgrid::xbt::string& getName() const { return name_; }
+  const char* getCname() const { return name_.c_str(); }
   static MailboxImpl* byNameOrNull(const char* name);
   static MailboxImpl* byNameOrCreate(const char* name);
   void setReceiver(s4u::ActorPtr actor);

@@ -73,14 +73,14 @@ void MailboxImpl::remove(smx_activity_t activity)
       boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(activity);
 
   xbt_assert(comm->mbox == this, "Comm %p is in mailbox %s, not mailbox %s", comm.get(),
-             (comm->mbox ? comm->mbox->name_.c_str() : "(null)"), this->name_.c_str());
+             (comm->mbox ? comm->mbox->getCname() : "(null)"), this->getCname());
   comm->mbox = nullptr;
   for (auto it = this->comm_queue.begin(); it != this->comm_queue.end(); it++)
     if (*it == comm) {
       this->comm_queue.erase(it);
       return;
     }
-  xbt_die("Comm %p not found in mailbox %s", comm.get(), this->name_.c_str());
+  xbt_die("Comm %p not found in mailbox %s", comm.get(), this->getCname());
 }
 }
 }
