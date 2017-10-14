@@ -358,7 +358,7 @@ msg_error_t MSG_file_rmove (msg_file_t file, msg_host_t host, const char* fullpa
 const char* MSG_storage_get_name(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->getName();
+  return storage->getCname();
 }
 
 /** \ingroup msg_storage_management

@@ -29,7 +29,10 @@ public:
   virtual ~Storage() = default;
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* byName(std::string name);
-  const char* getName();
+  /** @brief Retrieves the name of that storage as a C++ string */
+  std::string const& getName() const;
+  /** @brief Retrieves the name of that storage as a C string */
+  const char* getCname() const;
   const char* getType();
   Host* getHost();
   sg_size_t getSize(); /** Retrieve the total amount of space of this storage element */

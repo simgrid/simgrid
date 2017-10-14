@@ -126,7 +126,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
   for (auto const& elm : host->getMountedStorages()) {
     const char* mount_name = elm.first.c_str();
     sg_storage_t storage   = elm.second;
-    xbt_dict_set(res, mount_name, (void*)storage->getName(), nullptr);
+    xbt_dict_set(res, mount_name, (void*)storage->getCname(), nullptr);
   }
 
   return res;

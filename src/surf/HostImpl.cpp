@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -107,7 +107,7 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
   for (auto const& s : storage_)
     if (s.second->getHost() == piface_->getCname())
-      storages->push_back(s.second->piface_.getName());
+      storages->push_back(s.second->piface_.getCname());
 }
 
 }

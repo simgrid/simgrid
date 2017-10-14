@@ -12,7 +12,7 @@ static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
   std::map<std::string, std::string>* props = storage->getProperties();
   if (not props->empty()) {
-    XBT_INFO("\tProperties of mounted storage: %s", storage->getName());
+    XBT_INFO("\tProperties of mounted storage: %s", storage->getCname());
 
     for (auto const& elm : *props) {
       XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
@@ -60,7 +60,7 @@ static void hsm_put(const char* remote_host, const char* src, const char* dest)
 
 static void display_storage_content(simgrid::s4u::Storage* storage)
 {
-  XBT_INFO("Print the content of the storage element: %s", storage->getName());
+  XBT_INFO("Print the content of the storage element: %s", storage->getCname());
   std::map<std::string, sg_size_t>* content = storage->getContent();
   if (not content->empty()) {
     for (auto const& entry : *content)
@@ -108,7 +108,7 @@ static void storage_info(simgrid::s4u::Host* host)
   for (auto const& elm : host->getMountedStorages()) {
     const char* mount_name         = elm.first.c_str();
     simgrid::s4u::Storage* storage = elm.second;
-    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getName(), mount_name);
+    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getCname(), mount_name);
 
     sg_size_t free_size = storage->getSizeFree();
     sg_size_t used_size = storage->getSizeUsed();
@@ -117,7 +117,7 @@ static void storage_info(simgrid::s4u::Host* host)
     XBT_INFO("\t\tUsed size: %llu bytes", used_size);
 
     display_storage_properties(storage);
-    dump_storage_by_name(storage->getName());
+    dump_storage_by_name(storage->getCname());
   }
 }
 

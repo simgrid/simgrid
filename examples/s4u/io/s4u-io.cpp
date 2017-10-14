@@ -25,7 +25,7 @@ public:
       sg_size_t used_size = storage->getSizeUsed();
       sg_size_t size      = storage->getSize();
 
-      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getName(), mountpoint.c_str(), used_size,
+      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getCname(), mountpoint.c_str(), used_size,
                free_size, size);
     }
   }
@@ -73,7 +73,7 @@ public:
     delete file;
 
     // Now attach some user data to disk1
-    XBT_INFO("Get/set data for storage element: %s", storage->getName());
+    XBT_INFO("Get/set data for storage element: %s", storage->getCname());
     XBT_INFO("    Uninitialized storage data: '%s'", static_cast<char*>(storage->getUserdata()));
 
     storage->setUserdata(new std::string("Some user data"));
