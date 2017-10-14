@@ -184,7 +184,7 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
 
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
   if (info->name.empty()) {
-    simgrid::xbt::string_data string_data = (simgrid::xbt::string_data&)actor->name;
+    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name);
     info->name = process->read_string(remote(string_data.data), string_data.len);
   }
   return info->name.c_str();

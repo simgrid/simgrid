@@ -57,7 +57,6 @@ struct string_data {
 XBT_PUBLIC_CLASS string : private string_data {
   static const char NUL;
 public:
-
   // Types
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
@@ -165,6 +164,7 @@ public:
     return data()[i];
   }
   // Conversion
+  static string_data& to_string_data(string& s) { return s; }
   operator std::string() const { return std::string(this->c_str(), this->size()); }
 
   // Iterators
