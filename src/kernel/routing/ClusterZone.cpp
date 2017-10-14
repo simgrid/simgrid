@@ -81,7 +81,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
 
   xbt_node_t backboneNode = nullptr;
   if (backbone_) {
-    backboneNode = new_xbt_graph_node(graph, backbone_->cname(), nodes);
+    backboneNode = new_xbt_graph_node(graph, backbone_->getCname(), nodes);
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
@@ -92,7 +92,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
       std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
 
       if (info.first) { // link up
-        xbt_node_t current = new_xbt_graph_node(graph, info.first->cname(), nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.first->getCname(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {
@@ -103,7 +103,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
       }
 
       if (info.second) { // link down
-        xbt_node_t current = new_xbt_graph_node(graph, info.second->cname(), nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.second->getCname(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {

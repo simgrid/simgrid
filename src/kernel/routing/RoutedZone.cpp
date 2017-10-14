@@ -99,7 +99,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       for (auto const& link : *route->link_list) {
-        const char* link_name = link->cname();
+        const char* link_name = link->getCname();
         current               = new_xbt_graph_node(graph, link_name, nodes);
         current_name          = link_name;
         new_xbt_graph_edge(graph, previous, current, edges);

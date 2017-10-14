@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2011, 2013-2016. The SimGrid Team.
+/* Copyright (c) 2009-2011, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -179,7 +179,7 @@ CpuAction *CpuCas01::sleep(double duration)
   if (duration > 0)
     duration = MAX(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", cname(), duration);
+  XBT_IN("(%s,%g)", getCname(), duration);
   CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand

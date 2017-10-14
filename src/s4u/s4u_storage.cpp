@@ -32,7 +32,7 @@ Storage* Storage::byName(std::string name)
 
 const char* Storage::getName()
 {
-  return pimpl_->cname();
+  return pimpl_->getCname();
 }
 
 const char* Storage::getType()

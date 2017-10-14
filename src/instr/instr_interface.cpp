@@ -310,7 +310,7 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
   std::vector<simgrid::surf::LinkImpl*> route;
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(src_elm, dst_elm, &route, nullptr);
   for (auto const& link : route)
-    instr_user_variable(time, link->cname(), variable, father_type, value, what, nullptr, &user_link_variables);
+    instr_user_variable(time, link->getCname(), variable, father_type, value, what, nullptr, &user_link_variables);
 }
 
 /** \ingroup TRACE_API

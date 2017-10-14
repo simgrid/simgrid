@@ -186,7 +186,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
         NetworkCm02Link *link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
         double value = lmm_variable_getvalue(action->getVariable())*
             lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i);
-        TRACE_surf_link_set_utilization(link->cname(), action->getCategory(), value, action->getLastUpdate(),
+        TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), value, action->getLastUpdate(),
                                         now - action->getLastUpdate());
       }
     }
@@ -239,7 +239,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
 
           NetworkCm02Link* link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
-          TRACE_surf_link_set_utilization(link->cname(), action->getCategory(),
+          TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(),
                                           (lmm_variable_getvalue(action->getVariable()) *
                                            lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i)),
                                           action->getLastUpdate(), now - action->getLastUpdate());
@@ -417,7 +417,7 @@ void NetworkCm02Link::setBandwidth(double value)
 
   lmm_update_constraint_bound(model()->getMaxminSystem(), constraint(),
                               sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
-  TRACE_surf_link_set_bandwidth(surf_get_clock(), cname(), sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
+  TRACE_surf_link_set_bandwidth(surf_get_clock(), getCname(), sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
 
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);

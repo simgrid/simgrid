@@ -84,12 +84,11 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
   if (link_list->size() == 1) {
     simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
 
-    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->getCname(), dst->getCname(), link->cname(),
+    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->getCname(), dst->getCname(), link->getCname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
 
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
-    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->cname(), link->bandwidth(),
-        link->latency());
+    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->getCname(), link->bandwidth(), link->latency());
 
     // create link ns3
     NetPointNs3* host_src = src->extension<NetPointNs3>();
@@ -228,7 +227,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       action->src_->routeTo(action->dst_, &route, nullptr);
       for (auto const& link : route)
-        TRACE_surf_link_set_utilization(link->cname(), action->getCategory(), (data_delta_sent) / delta, now - delta,
+        TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), (data_delta_sent) / delta, now - delta,
                                         delta);
 
       action->lastSent_ = sgFlow->sentBytes_;

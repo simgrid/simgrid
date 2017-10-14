@@ -375,7 +375,9 @@ public:
   Model* model() const;
 
   /** @brief Get the name of the current Resource */
-  const char* cname() const;
+  const std::string& getName() const;
+  /** @brief Get the name of the current Resource */
+  const char* getCname() const;
 
   bool operator==(const Resource &other) const;
 
@@ -418,8 +420,8 @@ protected:
 namespace std {
 template <> class hash<simgrid::surf::Resource> {
 public:
-  std::size_t operator()(const simgrid::surf::Resource& r) const { return (std::size_t)xbt_str_hash(r.cname()); }
-  };
+  std::size_t operator()(const simgrid::surf::Resource& r) const { return (std::size_t)xbt_str_hash(r.getCname()); }
+};
 }
 
 #endif /* SURF_MODEL_H_ */

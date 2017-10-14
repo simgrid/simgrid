@@ -166,17 +166,17 @@ namespace simgrid {
     }
     void LinkImpl::setStateTrace(tmgr_trace_t trace)
     {
-      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", cname());
+      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", getCname());
       stateEvent_ = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", cname());
+      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", getCname());
       bandwidth_.event = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", cname());
+      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", getCname());
       latency_.event = future_evt_set->add_trace(trace, this);
     }
 

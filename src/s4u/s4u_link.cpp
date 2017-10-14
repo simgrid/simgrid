@@ -84,7 +84,7 @@ Link* Link::byName(const char* name)
 }
 const char* Link::name()
 {
-  return this->pimpl_->cname();
+  return this->pimpl_->getCname();
 }
 bool Link::isUsed()
 {
