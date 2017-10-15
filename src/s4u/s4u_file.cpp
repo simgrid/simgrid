@@ -11,6 +11,7 @@
 #include "simgrid/simix.hpp"
 #include "src/surf/FileImpl.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "simgrid/msg.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
 

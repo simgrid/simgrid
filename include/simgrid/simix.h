@@ -281,7 +281,9 @@ XBT_PUBLIC(void) simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, d
 XBT_PUBLIC(void) simcall_cond_broadcast(smx_cond_t cond);
 
 XBT_PUBLIC(void) SIMIX_sem_destroy(smx_sem_t sem);
+XBT_PUBLIC(smx_sem_t) simcall_sem_init(int initial_value);
 XBT_PUBLIC(void) simcall_sem_acquire(smx_sem_t sem);
+XBT_PUBLIC(void) simcall_sem_release(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
 
 /*****************************   File   **********************************/

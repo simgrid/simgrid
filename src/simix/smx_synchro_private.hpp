@@ -77,7 +77,7 @@ XBT_PRIVATE void SIMIX_cond_signal(smx_cond_t cond);
 XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t* cond);
 XBT_PRIVATE void intrusive_ptr_release(s_smx_cond_t* cond);
 
-XBT_PRIVATE XBT_PRIVATE smx_sem_t SIMIX_sem_init(unsigned int value);
+XBT_PRIVATE smx_sem_t SIMIX_sem_init(unsigned int value);
 XBT_PRIVATE void SIMIX_sem_release(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_would_block(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_get_capacity(smx_sem_t sem);

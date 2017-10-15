@@ -45,7 +45,7 @@ In addition to the fully documented example of @ref
 MSG_ex_asynchronous_communications, there are several other examples
 shipped in the archive:
   
- - <b>Basic asynchronous communications</b>. 
+ - <b>Basic asynchronous and synchronous communications</b>. 
    @ref examples/msg/async-wait/async-wait.c \n
    Illustrates how to have non-blocking communications, that are
    communications running in the background leaving the process free
@@ -58,11 +58,11 @@ shipped in the archive:
    The @ref MSG_comm_waitall function is useful when you want to block
    until all activities in a given set have completed.
    
- - <b>Waiting for the first completed communication in a set</b>.
-   @ref examples/msg/async-waitany/async-waitany.c\n
-   The @ref MSG_comm_waitany function is useful when you want to block
-   until one activity of the set completes, no matter which terminates
-   first.
+ - <b>Block and Release semaphore object</b>.
+   @ref examples/msg/synchro-semaphore/synchro-semaphore.c\n
+   The @ref MSG_sem_acquire and @ref MSG_sem_release functions
+   are useful when you want to block and release semaphore object.
+   
    
 @section msg_ex_process Acting on Processes
 
