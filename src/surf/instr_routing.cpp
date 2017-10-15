@@ -133,20 +133,17 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   }
 
   xbt_graph_t graph = xbt_graph_new_graph (0, nullptr);
-  xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);
-  xbt_dict_t edges = xbt_dict_new_homogeneous(nullptr);
-  xbt_edge_t edge = nullptr;
-
-  xbt_dict_cursor_t cursor = nullptr;
-  char *edge_name;
+  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
+  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
 
   static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->getGraph(graph, nodes, edges);
-  xbt_dict_foreach(edges,cursor,edge_name,edge) {
+  for (auto elm : *edges) {
+    xbt_edge_t edge = elm.second;
     linkContainers(simgrid::instr::Container::byName(static_cast<const char*>(edge->src->data)),
                    simgrid::instr::Container::byName(static_cast<const char*>(edge->dst->data)), filter);
   }
-  xbt_dict_free (&nodes);
-  xbt_dict_free (&edges);
+  delete nodes;
+  delete edges;
   xbt_graph_free_graph(graph, xbt_free_f, xbt_free_f, nullptr);
 }
 
@@ -360,7 +357,8 @@ int instr_platform_traced ()
 
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
 
-static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, sg_netzone_t netzone,
+static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                                        std::map<std::string, xbt_edge_t>* edges, sg_netzone_t netzone,
                                         container_t container)
 {
   if (not netzone->getChildren()->empty()) {
@@ -377,12 +375,12 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, xbt_dict_t nodes, xbt
 xbt_graph_t instr_routing_platform_graph ()
 {
   xbt_graph_t ret = xbt_graph_new_graph (0, nullptr);
-  xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);
-  xbt_dict_t edges = xbt_dict_new_homogeneous(nullptr);
+  std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
+  std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
   recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::getInstance()->getNetRoot(),
                               PJ_container_get_root());
-  xbt_dict_free (&nodes);
-  xbt_dict_free (&edges);
+  delete nodes;
+  delete edges;
   return ret;
 }
 

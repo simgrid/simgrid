@@ -31,34 +31,36 @@ static const char* instr_node_name(xbt_node_t node)
   return static_cast<const char*>(data);
 }
 
-xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name, xbt_dict_t nodes)
+xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name, std::map<std::string, xbt_node_t>* nodes)
 {
-  xbt_node_t ret = static_cast<xbt_node_t>(xbt_dict_get_or_null(nodes, name));
-  if (ret)
-    return ret;
 
-  ret = xbt_graph_new_node(graph, xbt_strdup(name));
-  xbt_dict_set(nodes, name, ret, nullptr);
-  return ret;
+  auto elm = nodes->find(name);
+  if (elm == nodes->end()) {
+    xbt_node_t ret = xbt_graph_new_node(graph, xbt_strdup(name));
+    nodes->insert({name, ret});
+    return ret;
+  } else
+    return elm->second;
 }
 
-xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges)
+xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, std::map<std::string, xbt_edge_t>* edges)
 {
   const char* sn = instr_node_name(s);
   const char* dn = instr_node_name(d);
   std::string name = std::string(sn) + dn;
 
-  xbt_edge_t ret = static_cast<xbt_edge_t>(xbt_dict_get_or_null(edges, name.c_str()));
-  if (ret == nullptr) {
+  auto elm = edges->find(name);
+  if (elm == edges->end()) {
     name = std::string(dn) + sn;
-    ret  = static_cast<xbt_edge_t>(xbt_dict_get_or_null(edges, name.c_str()));
+    elm  = edges->find(name);
   }
 
-  if (ret == nullptr) {
-    ret = xbt_graph_new_edge(graph, s, d, nullptr);
-    xbt_dict_set(edges, name.c_str(), ret, nullptr);
-  }
-  return ret;
+  if (elm == edges->end()) {
+    xbt_edge_t ret = xbt_graph_new_edge(graph, s, d, nullptr);
+    edges->insert({name, ret});
+    return ret;
+  } else
+    return elm->second;
 }
 
 namespace simgrid {
@@ -69,7 +71,8 @@ RoutedZone::RoutedZone(NetZone* father, std::string name) : NetZoneImpl(father, 
 {
 }
 
-void RoutedZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
+void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                          std::map<std::string, xbt_edge_t>* edges)
 {
   std::vector<kernel::routing::NetPoint*> vertices = getVertices();
 
