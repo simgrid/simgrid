@@ -48,8 +48,9 @@ Engine::~Engine()
 Engine* Engine::getInstance()
 {
   if (s4u::Engine::instance_ == nullptr)
-    new Engine(0,nullptr);
-  return s4u::Engine::instance_;
+    return new Engine(0, nullptr);
+  else
+    return s4u::Engine::instance_;
 }
 
 void Engine::shutdown() {
