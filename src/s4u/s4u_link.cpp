@@ -90,6 +90,10 @@ const char* Link::getCname() const
 {
   return this->pimpl_->getCname();
 }
+const char* Link::name()
+{
+  return getCname();
+}
 bool Link::isUsed()
 {
   return this->pimpl_->isUsed();

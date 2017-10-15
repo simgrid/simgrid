@@ -83,6 +83,8 @@ public:
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static simgrid::xbt::signal<void(surf::NetworkAction*)> onCommunicationStateChange;
+
+  const char* XBT_ATTRIB_DEPRECATED_v321("Use getCname(): v3.21 will turn this warning into an error.") name();
 };
 }
 }
