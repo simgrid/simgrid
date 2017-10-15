@@ -5,7 +5,7 @@
 
 #include "simgrid/s4u.hpp"
 
-static int executor(std::vector<std::string> args)
+static int executor(std::vector<std::string> /*args*/)
 {
   /* this_actor::execute() tells SimGrid to pause the calling actor
    * until its host has computed the amount of flops passed as a parameter */
