@@ -386,7 +386,7 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
   XBT_IN("(%u)",value);
   simgrid::simix::ActorImpl p;
 
-  smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
+  smx_sem_t sem = new s_smx_sem_t;
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   sem->value = value;
   XBT_OUT();
@@ -402,7 +402,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
     xbt_assert(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
     xbt_swag_free(sem->sleeping);
-    xbt_free(sem);
+    delete sem;
   }
   XBT_OUT();
 }

@@ -970,12 +970,12 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 void SD_task_schedulel(SD_task_t task, int count, ...)
 {
   va_list ap;
-  sg_host_t *list = xbt_new(sg_host_t, count);
+  sg_host_t* list = new sg_host_t[count];
   va_start(ap, count);
   for (int i=0; i<count; i++)
     list[i] = va_arg(ap, sg_host_t);
 
   va_end(ap);
   SD_task_schedulev(task, count, list);
-  xbt_free(list);
+  delete[] list;
 }
