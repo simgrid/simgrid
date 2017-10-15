@@ -2,6 +2,7 @@ foreach (example actions-comm actions-storage
                  actor-create actor-daemon actor-kill actor-migration actor-suspend 
                  app-masterworker app-pingpong app-token-ring
 		 async-wait async-waitany async-waitall
+     actor-execute 
 		 plugin-hostload io mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -34,7 +35,8 @@ set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh         PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/process-create/s4u-actor-execute.tesh         PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/s4u-actions-storage_d.xml
@@ -55,6 +57,7 @@ foreach(example actions-comm actions-storage
                 actor-create actor-daemon actor-kill actor-migration actor-suspend
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
 		async-wait async-waitall async-waitany
+    actor-execute 
 		dht-chord plugin-hostload io mutex)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u-${example}.tesh)
 endforeach()
