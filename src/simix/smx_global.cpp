@@ -264,6 +264,15 @@ void SIMIX_clean()
   if (smx_cleaned)
     return; // to avoid double cleaning by java and C
 
+  smx_cleaned = 1;
+  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
+  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
+    XBT_CRITICAL("   ");
+    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
+    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
+  }
+
 #if HAVE_SMPI
   if (SIMIX_process_count()>0){
     if(smpi_process()->initialized()){
@@ -275,14 +284,6 @@ void SIMIX_clean()
   }
 #endif
 
-  smx_cleaned = 1;
-  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
-    XBT_CRITICAL("   ");
-    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
-    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
-    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
-  }
   /* Kill all processes (but maestro) */
   SIMIX_process_killall(simix_global->maestro_process, 1);
   SIMIX_context_runall();
