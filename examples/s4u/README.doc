@@ -86,6 +86,11 @@ documentation, but it should remain readable directly.
     @ref examples/s4u/actor-kill/s4u-actor-kill.cpp \n
     Actors can forcefully stop other actors with the @ref kill method.
 
+  - <b>Controling the actor life cycle</b>.
+    @ref examples/s4u/actor-startkilltime/s4u-actor-startkilltime.cpp \n
+    You can specify a start time and a kill time in the deployment
+    file. See all *_d.xml files in this directory.    
+
   - <b>Migrating Actors</b>.
     @ref examples/s4u/actor-migration/s4u-actor-migration.cpp \n
     Actors can move or be moved from a host to another with the @ref migrate method.
