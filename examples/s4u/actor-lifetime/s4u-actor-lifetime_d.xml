@@ -1,0 +1,11 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+
+<!-- This shows how to use the start_time and kill_time attributes of <actors> -->
+
+<platform version="4.1">
+  <actor host="node-0.acme.org" function="sleeper"                              />
+  <actor host="node-0.acme.org" function="sleeper" start_time="2"               />
+  <actor host="node-1.acme.org" function="sleeper"                kill_time="3" />
+  <actor host="node-2.acme.org" function="sleeper" start_time="4" kill_time="7" />
+</platform>
