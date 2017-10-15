@@ -71,7 +71,8 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   }
 }
 
-void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
+void ClusterZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                           std::map<std::string, xbt_edge_t>* edges)
 {
   xbt_assert(router_,
              "Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
