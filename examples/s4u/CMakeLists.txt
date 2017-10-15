@@ -1,8 +1,7 @@
 foreach (example actions-comm actions-storage 
-                 actor-create actor-daemon actor-kill actor-migration actor-suspend 
+                 actor-create actor-daemon actor-execute actor-kill actor-migration actor-suspend 
                  app-masterworker app-pingpong app-token-ring
 		 async-wait async-waitany async-waitall
-     actor-execute 
 		 plugin-hostload io mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -54,10 +53,9 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
 foreach(example actions-comm actions-storage 
-                actor-create actor-daemon actor-kill actor-migration actor-suspend
+                actor-create actor-daemon actor-execute actor-kill actor-migration actor-suspend
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
 		async-wait async-waitall async-waitany
-    actor-execute 
 		dht-chord plugin-hostload io mutex)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u-${example}.tesh)
 endforeach()
