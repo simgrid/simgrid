@@ -35,7 +35,7 @@ set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/process-create/s4u-actor-execute.tesh         PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-execute/s4u-actor-execute.tesh         PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/s4u-actions-storage_d.xml

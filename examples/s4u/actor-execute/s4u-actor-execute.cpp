@@ -4,8 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
-#include <cstdlib>
-#include <iostream>
 
 static int executor(std::vector<std::string> args)
 {
