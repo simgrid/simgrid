@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2015. The SimGrid Team.
+/* Copyright (c) 2005-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /*  Copyright (c) 2002-2004 Ralf S. Engelschall <rse@engelschall.com>       */
@@ -49,30 +49,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/misc.h"
 #include "xbt/virtu.h"
-
-/*-*-* Emergency debuging: define this when the exceptions get crazy *-*-*/
-#undef __EX_MAYDAY
-#ifdef __EX_MAYDAY
-# include <stdio.h>
-#include <errno.h>
-#  define MAYDAY_SAVE(m)    printf("%d %s:%d save %p\n",                \
-                                   xbt_getpid(), __FILE__, __LINE__,    \
-                                   (m)->jb                              \
-                                  ),
-#  define MAYDAY_RESTORE(m) printf("%d %s:%d restore %p\n",             \
-                                   xbt_getpid(), __FILE__, __LINE__,    \
-                                   (m)->jb                              \
-                                  ),
-#  define MAYDAY_CATCH(e)   printf("%d %s:%d Catched '%s'\n",           \
-                                   xbt_getpid(), __FILE__, __LINE__,    \
-                                   (e).msg                              \
-          ),
-#else
-#  define MAYDAY_SAVE(m)
-#  define MAYDAY_RESTORE(m)
-#  define MAYDAY_CATCH(e)
-#endif
-/*-*-* end of debugging stuff *-*-*/
 
 /** @addtogroup XBT_ex_c
  *  @brief Exceptions support (C)
