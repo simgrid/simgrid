@@ -24,8 +24,6 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace dwarf {
 
-evaluation_error::~evaluation_error() noexcept(true) {}
-
 void execute(
   const Dwarf_Op* ops, std::size_t n,
   const ExpressionContext& context, ExpressionStack& stack)

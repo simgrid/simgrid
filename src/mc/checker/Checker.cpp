@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,23 +22,6 @@ Checker::Checker(Session& session) : session_(&session)
 }
 
 Checker::~Checker()
-{
-}
-
-// virtual
-RecordTrace Checker::getRecordTrace()
-{
-  return {};
-}
-
-// virtual
-std::vector<std::string> Checker::getTextualTrace()
-{
-  return {};
-}
-
-// virtual
-void Checker::logState()
 {
 }
 
