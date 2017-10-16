@@ -397,14 +397,19 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
  * infinite recursion, we can not use the standard logging macros in _xbt_log_cat_init(), and in all functions called
  * from it.
  *
- * To circumvent the problem, we define the macro_xbt_log_init() as (0) for the length of the affected functions, and
- * we do not forget to undefine it at the end!
+ * To circumvent the problem, we define the macro DISABLE_XBT_LOG_CAT_INIT() to hide the real _xbt_log_cat_init(). The
+ * macro has to be called at the beginning of the affected functions.
  */
+static int fake_xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority)
+{
+  return 0;
+}
+#define DISABLE_XBT_LOG_CAT_INIT()                                                                                     \
+  int (*_xbt_log_cat_init)(xbt_log_category_t, e_xbt_log_priority_t) = fake_xbt_log_cat_init;
 
 static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_t setting)
 {
-#define _xbt_log_cat_init(a, b) (0)
-
+  DISABLE_XBT_LOG_CAT_INIT();
   if (setting->thresh != xbt_log_priority_uninitialized) {
     xbt_log_threshold_set(category, setting->thresh);
 
@@ -431,7 +436,6 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_
     category->additivity = 0;
     XBT_DEBUG("Set %p as appender of category '%s'", setting->appender, category->name);
   }
-#undef _xbt_log_cat_init
 }
 
 /*
@@ -440,8 +444,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_
  */
 int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority)
 {
-#define _xbt_log_cat_init(a, b) (0)
-
+  DISABLE_XBT_LOG_CAT_INIT();
   if (log_cat_init_mutex != NULL)
     xbt_os_mutex_acquire(log_cat_init_mutex);
 
@@ -519,8 +522,6 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   if (log_cat_init_mutex != NULL)
     xbt_os_mutex_release(log_cat_init_mutex);
   return priority >= category->threshold;
-
-#undef _xbt_log_cat_init
 }
 
 void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
@@ -779,7 +780,7 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
 
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
 {
-#define _xbt_log_cat_init(a, b) (0)
+  DISABLE_XBT_LOG_CAT_INIT();
   if (!cat->appender) {
     XBT_VERB ("No appender to category %s. Setting the file appender as default", cat->name);
     xbt_log_appender_set(cat, xbt_log_appender_file_new(NULL));
@@ -792,7 +793,6 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
   }
   cat->layout = lay;
   xbt_log_additivity_set(cat, 0);
-#undef _xbt_log_cat_init
 }
 
 void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
