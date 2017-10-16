@@ -336,7 +336,7 @@ void xbt_log_postexit(void)
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
 
- /* Size of the static string in which we  build the log string */
+/* Size of the static string in which we build the log string */
 #define XBT_LOG_STATIC_BUFFER_SIZE 2048
 /* Minimum size of the dynamic string in which we build the log string
    (should be greater than XBT_LOG_STATIC_BUFFER_SIZE) */
@@ -390,9 +390,6 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
     cat = cat->parent;
   }
 }
-
-#undef XBT_LOG_DYNAMIC_BUFFER_SIZE
-#undef XBT_LOG_STATIC_BUFFER_SIZE
 
 /* NOTE:
  *
