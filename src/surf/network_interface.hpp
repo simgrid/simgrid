@@ -208,10 +208,10 @@ public:
   void setState(simgrid::surf::Action::State state) override;
   virtual std::list<LinkImpl*> links();
 
-  double latency_;
-  double latCurrent_;
-  double weight_;
-  double rate_;
+  double latency_    = {};
+  double latCurrent_ = {};
+  double weight_     = {};
+  double rate_       = {};
 };
 }
 }
