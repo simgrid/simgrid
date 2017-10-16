@@ -21,7 +21,7 @@ public:
   explicit sleeper(std::vector<std::string> /*args*/)
   {
     XBT_INFO("Hello! I go to sleep.");
-    simcall_process_on_exit(SIMIX_process_self(), my_onexit, NULL);
+    simgrid::s4u::this_actor::onExit(my_onexit, NULL);
 
     simgrid::s4u::this_actor::sleep_for(10);
   }
