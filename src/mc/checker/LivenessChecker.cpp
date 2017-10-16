@@ -76,6 +76,7 @@ static bool evaluate_label(xbt_automaton_exp_label_t l, std::vector<int> const& 
           return values[cursor] != 0;
       }
       xbt_die("Missing predicate");
+      break;
     }
   case xbt_automaton_exp_label::AUT_ONE:
     return true;

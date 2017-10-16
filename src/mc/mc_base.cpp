@@ -111,8 +111,7 @@ bool actor_is_enabled(smx_actor_t actor)
 
       if (mutex->owner == nullptr)
         return true;
-      else
-        return mutex->owner->pid == req->issuer->pid;
+      return mutex->owner->pid == req->issuer->pid;
     }
 
     case SIMCALL_SEM_ACQUIRE: {

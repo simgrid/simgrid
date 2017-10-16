@@ -199,10 +199,9 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
       if (simgrid::mc::mmu::sameChunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
         // The memory is contained in a single page:
         return mc_translate_address_region_chunked((uintptr_t)addr, region);
-      } else {
-        // The memory spans several pages:
-        return MC_region_read_fragmented(region, target, addr, size);
       }
+      // Otherwise, the memory spans several pages:
+      return MC_region_read_fragmented(region, target, addr, size);
     }
 
     default:
