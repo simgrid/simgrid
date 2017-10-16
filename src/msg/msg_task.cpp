@@ -50,7 +50,7 @@ void s_simdata_task_t::reportMultipleUse() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
-  msg_task_t task = xbt_new(s_msg_task_t, 1);
+  msg_task_t task        = new s_msg_task_t;
   simdata_task_t simdata = new s_simdata_task_t();
   task->simdata = simdata;
 
@@ -203,7 +203,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 
   /* free main structures */
   delete task->simdata;
-  xbt_free(task);
+  delete task;
 
   return MSG_OK;
 }

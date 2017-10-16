@@ -33,7 +33,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 static inline
 char** argvdup(int argc, char** argv)
 {
-  char** argv_copy = xbt_new(char*, argc+1);
+  char** argv_copy = new char*[argc + 1];
   std::memcpy(argv_copy, argv, sizeof(char*) * argc);
   argv_copy[argc] = nullptr;
   return argv_copy;
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
     std::unique_ptr<Session> session =
       std::unique_ptr<Session>(Session::spawnvp(argv_copy[1], argv_copy+1));
-    free(argv_copy);
+    delete[] argv_copy;
 
     simgrid::mc::session = session.get();
     std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*session);
