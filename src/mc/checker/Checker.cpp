@@ -21,9 +21,5 @@ Checker::Checker(Session& session) : session_(&session)
   mc_model_checker->setChecker(this);
 }
 
-Checker::~Checker()
-{
-}
-
 }
 }

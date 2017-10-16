@@ -40,7 +40,7 @@ public:
   Checker(Checker const&) = delete;
   Checker& operator=(Checker const&) = delete;
 
-  virtual ~Checker();
+  virtual ~Checker() = default;
 
   /** Main function of this algorithm */
   virtual void run() = 0;
