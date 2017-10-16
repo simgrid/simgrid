@@ -130,8 +130,8 @@ private:
     std::pair<void(whatever::*)(), whatever*> memberptr;
     char any1[sizeof(std::pair<void(*)(),void*>)];
     char any2[sizeof(std::pair<void(whatever::*)(), whatever*>)];
-    TaskUnion() {}
-    ~TaskUnion() {}
+    TaskUnion() { /* Nothing to do */}
+    ~TaskUnion() { /* Nothing to do */}
   };
 #endif
 
@@ -170,9 +170,8 @@ private:
   }
 
 public:
-
-  Task() {}
-  Task(std::nullptr_t) {}
+  Task() { /* Nothing to do */}
+  Task(std::nullptr_t) { /* Nothing to do */}
   ~Task()
   {
     this->clear();

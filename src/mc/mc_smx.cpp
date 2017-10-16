@@ -160,8 +160,8 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
   */
   union fake_host {
     simgrid::s4u::Host host;
-    fake_host() {}
-    ~fake_host() {}
+    fake_host() { /* Nothing to do*/}
+    ~fake_host() { /* Nothing to do*/}
   };
   fake_host foo;
   const size_t offset = (char*)&foo.host.getName() - (char*)&foo.host;
