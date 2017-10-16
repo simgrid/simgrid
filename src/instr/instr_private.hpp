@@ -331,8 +331,8 @@ XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 
 XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
-XBT_PRIVATE void dump_comment_file(const char* filename);
-XBT_PRIVATE void dump_comment(const char* comment);
+XBT_PRIVATE void dump_comment_file(std::string filename);
+XBT_PRIVATE void dump_comment(std::string comment);
 
 enum e_caller_type {
   TRACING_INIT,

@@ -10,6 +10,7 @@
 #include "src/smpi/include/private.hpp"
 #include "typeinfo"
 #include "xbt/virtu.h" /* sg_cmdline */
+#include <fstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
@@ -21,34 +22,30 @@ std::map<container_t, FILE*> tracing_files; // TI specific
 std::vector<simgrid::instr::PajeEvent*> buffer;
 void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf);
 
-void dump_comment (const char *comment)
+void dump_comment(std::string comment)
 {
-  if (not strlen(comment))
+  if (comment.empty())
     return;
-  fprintf (tracing_file, "# %s\n", comment);
+  fprintf(tracing_file, "# %s\n", comment.c_str());
 }
 
-void dump_comment_file (const char *filename)
+void dump_comment_file(std::string filename)
 {
-  if (not strlen(filename))
+  if (filename.empty())
     return;
-  FILE *file = fopen (filename, "r");
-  if (not file) {
-    THROWF (system_error, 1, "Comment file %s could not be opened for reading.", filename);
+  std::ifstream* fs = new std::ifstream();
+  fs->open(filename.c_str(), std::ifstream::in);
+
+  if (fs->fail()) {
+    THROWF(system_error, 1, "Comment file %s could not be opened for reading.", filename.c_str());
   }
-  while (not feof(file)) {
-    char c;
-    c = fgetc(file);
-    if (feof(file)) break;
+  while (not fs->eof()) {
+    std::string line;
     fprintf (tracing_file, "# ");
-    while (c != '\n'){
-      fprintf (tracing_file, "%c", c);
-      c = fgetc(file);
-      if (feof(file)) break;
-    }
-    fprintf (tracing_file, "\n");
+    std::getline(*fs, line);
+    fprintf(tracing_file, "%s", line.c_str());
   }
-  fclose(file);
+  fs->close();
 }
 
 double TRACE_last_timestamp_to_dump = 0;
