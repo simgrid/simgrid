@@ -64,8 +64,6 @@ XBT_PRIVATE void MC_automaton_load(const char *file);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init();  /* Initialize the memory subsystem */
-XBT_PUBLIC(void) MC_memory_exit();
-XBT_PUBLIC(void) MC_memory_init_server();
 
 SG_END_DECL()
 

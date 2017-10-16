@@ -99,6 +99,7 @@ static void* mm_fake_realloc(void *p, size_t s)
 
 static void mm_fake_free(void *p)
 {
+  // Nothing to do
 }
 
 /* Function signatures for the main malloc functions: */

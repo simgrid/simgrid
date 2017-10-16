@@ -136,7 +136,7 @@ public:
   size_t size() const   { return len; }
   size_t length() const { return len; }
   bool empty() const    { return len != 0; }
-  void shrink_to_fit() {}
+  void shrink_to_fit() { /* Being there, but doing nothing */}
 
   // Alement access
   char* data()              { return string_data::data; }

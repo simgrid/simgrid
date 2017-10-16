@@ -266,7 +266,6 @@ RecordTrace LivenessChecker::getRecordTrace() // override
 
 void LivenessChecker::logState() // override
 {
-  Checker::logState();
   XBT_INFO("Expanded pairs = %lu", expandedPairsCount_);
   XBT_INFO("Visited pairs = %lu", visitedPairsCount_);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);

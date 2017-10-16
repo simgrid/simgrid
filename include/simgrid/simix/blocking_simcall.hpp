@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -81,7 +81,7 @@ auto kernelSync(F code) -> decltype(code().get())
 template <class T>
 class Future {
 public:
-  Future() {}
+  Future() { /* Nothing to do*/}
   Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
 
   bool valid() const { return future_.valid(); }

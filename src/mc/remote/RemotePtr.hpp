@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -38,8 +38,8 @@ private:
   T buffer;
 
 public:
-  Remote() {}
-  ~Remote() {}
+  Remote() { /* Nothing to do */}
+  ~Remote() { /* Nothing to do */}
   Remote(T& p) { std::memcpy(&buffer, &p, sizeof(buffer)); }
   Remote(Remote const& that) { std::memcpy(&buffer, &that.buffer, sizeof(buffer)); }
   Remote& operator=(Remote const& that)

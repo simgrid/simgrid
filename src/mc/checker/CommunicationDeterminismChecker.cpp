@@ -316,7 +316,6 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
 
 void CommunicationDeterminismChecker::logState() // override
 {
-  Checker::logState();
   if (_sg_mc_comms_determinism && not this->recv_deterministic && this->send_deterministic) {
     XBT_INFO("******************************************************");
     XBT_INFO("**** Only-send-deterministic communication pattern ****");

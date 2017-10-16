@@ -86,10 +86,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass
   return (jdouble) MSG_get_clock();
 }
 
-static void __JAVA_host_priv_free(void *host)
-{
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
   int argc = 0;
@@ -124,7 +120,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
 
   MSG_init(&argc, argv);
 
-  JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(__JAVA_host_priv_free);
+  JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   for (int index = 0; index < argc - 1; index++) {
     env->SetObjectArrayElement(jargs, index, (jstring)env->NewStringUTF(argv[index + 1]));

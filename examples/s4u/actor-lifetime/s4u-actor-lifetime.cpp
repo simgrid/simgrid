@@ -8,7 +8,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this s4u example");
 
 /* Executed on process termination, to display a message helping to understand the output */
-static int my_onexit(void* ignored1, void* ignored2)
+static int my_onexit(void*, void*)
 {
   XBT_INFO("Exiting now (done sleeping or got killed).");
   return 0;
@@ -18,10 +18,10 @@ static int my_onexit(void* ignored1, void* ignored2)
 class sleeper {
 
 public:
-  explicit sleeper(std::vector<std::string> args)
+  explicit sleeper(std::vector<std::string> /*args*/)
   {
     XBT_INFO("Hello! I go to sleep.");
-    simcall_process_on_exit(SIMIX_process_self(), my_onexit, NULL);
+    simgrid::s4u::this_actor::onExit(my_onexit, NULL);
 
     simgrid::s4u::this_actor::sleep_for(10);
   }

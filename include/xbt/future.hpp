@@ -33,7 +33,7 @@ class Result {
     exception,
   };
 public:
-  Result() {}
+  Result() { /* Nothing to do */}
   ~Result() { this->reset(); }
 
   // Copy (if T is copyable) and move:
