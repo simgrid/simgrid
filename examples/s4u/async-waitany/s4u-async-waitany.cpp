@@ -100,10 +100,10 @@ public:
   void operator()()
   {
     XBT_INFO("Wait for my first message");
-    for (bool done = false; not done;) {
+    for (bool cont = true; cont;) {
       std::string* received = static_cast<std::string*>(mbox->get());
       XBT_INFO("I got a '%s'.", received->c_str());
-      done = (*received == "finalize"); // If it's a finalize message, we're done
+      cont = (*received != "finalize"); // If it's a finalize message, we're done
       // Receiving the message was all we were supposed to do
       delete received;
     }
