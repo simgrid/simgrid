@@ -941,8 +941,7 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
 {
   container_t container      = simgrid::instr::Container::byName(host);
   simgrid::instr::Type* type = container->type_->byName(state);
-  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(
-      value_str, "", type); /* if user didn't declare a value with a color, use no color */
+  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(value_str, "", type);
   new simgrid::instr::SetStateEvent(MSG_get_clock(), container, type, val);
 }
 
@@ -961,8 +960,7 @@ void TRACE_host_push_state(const char* host, const char* state, const char* valu
 {
   container_t container      = simgrid::instr::Container::byName(host);
   simgrid::instr::Type* type = container->type_->byName(state);
-  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(
-      value_str, "", type); /* if user didn't declare a value with a color, use no color */
+  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(value_str, "", type);
   new simgrid::instr::PushStateEvent(MSG_get_clock(), container, type, val);
 }
 

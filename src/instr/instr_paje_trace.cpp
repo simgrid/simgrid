@@ -76,7 +76,6 @@ void TRACE_paje_dump_buffer(bool force)
   XBT_DEBUG("%s: ends", __FUNCTION__);
 }
 
-void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf);
 void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
 {
   return;
@@ -288,7 +287,6 @@ void simgrid::instr::Value::print()
   }
 }
 
-
 simgrid::instr::SetVariableEvent::SetVariableEvent(double timestamp, container_t container, Type* type, double value)
     : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_SetVariable), value(value)
 {
@@ -416,6 +414,7 @@ simgrid::instr::PushStateEvent::PushStateEvent(double timestamp, container_t con
 simgrid::instr::PushStateEvent::PushStateEvent(double timestamp, container_t container, Type* type, Value* val)
     : PushStateEvent(timestamp, container, type, val, nullptr)
 {}
+
 void simgrid::instr::PushStateEvent::print()
 {
   if (instr_fmt_type == instr_fmt_paje) {
