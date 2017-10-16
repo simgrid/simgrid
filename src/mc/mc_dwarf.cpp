@@ -22,6 +22,7 @@
 
 #include "src/simgrid/util.hpp"
 #include "xbt/log.h"
+#include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 #include <simgrid_config.h>
 
@@ -654,10 +655,10 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name != nullptr) {
-    char* full_name = ns ? bprintf("%s%s::%s", prefix, ns, name) :
-      bprintf("%s%s", prefix, name);
-    type.name = std::string(full_name);
-    free(full_name);
+    if (ns)
+      type.name = simgrid::xbt::string_printf("%s%s::%s", prefix, ns, name);
+    else
+      type.name = simgrid::xbt::string_printf("%s%s", prefix, name);
   }
 
   type.type_id = MC_dwarf_at_type(die);
@@ -694,10 +695,8 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   case DW_TAG_union_type:
   case DW_TAG_class_type:
     MC_dwarf_add_members(info, die, unit, &type);
-    char *new_ns = ns == nullptr ? xbt_strdup(type.name.c_str())
-        : bprintf("%s::%s", ns, name);
-    MC_dwarf_handle_children(info, die, unit, frame, new_ns);
-    free(new_ns);
+    std::string new_ns = ns ? simgrid::xbt::string_printf("%s::%s", ns, name) : type.name;
+    MC_dwarf_handle_children(info, die, unit, frame, new_ns.c_str());
     break;
   }
 
