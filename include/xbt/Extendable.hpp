@@ -77,7 +77,7 @@ public:
      * an extension of B might need to have the extension of A around when executing
      * its cleanup function/destructor. */
     for (std::size_t i = extensions_.size(); i > 0; --i)
-      if (extensions_[i - 1] != nullptr)
+      if (extensions_[i - 1] != nullptr && deleters_[i - 1] != nullptr)
         deleters_[i - 1](extensions_[i - 1]);
   }
 
