@@ -95,7 +95,11 @@ static void initialize(xbt_mheap_t mdp)
   }
 }
 
-#define update_hook(a,offset) do { if (a) { a = ((char*)a +(offset));} }while(0)
+static inline void update_hook(void **a, size_t offset)
+{
+  if (*a)
+    *a = (char*)*a + offset;
+}
 
 /* Get neatly aligned memory from the low level layers, and register it
  * into the heap info table as necessary. */
@@ -124,13 +128,13 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     size_t offset=((char*)newinfo)-((char*)oldinfo);
 
     for (int i = 1 /*first element of heapinfo describes the mdesc area*/; i < mdp->heaplimit; i++) {
-      update_hook(newinfo[i].freehook.next,offset);
-      update_hook(newinfo[i].freehook.prev,offset);
+      update_hook(&newinfo[i].freehook.next, offset);
+      update_hook(&newinfo[i].freehook.prev, offset);
     }
     // also update the starting points of the swag
     for (int i = 0; i < BLOCKLOG; i++) {
-      update_hook(mdp->fraghead[i].head,offset);
-      update_hook(mdp->fraghead[i].tail,offset);
+      update_hook(&mdp->fraghead[i].head, offset);
+      update_hook(&mdp->fraghead[i].tail, offset);
     }
     mdp->heapinfo = newinfo;
 
@@ -152,7 +156,6 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
   mdp->heaplimit = BLOCK((char *) result + size);
   return (result);
 }
-#undef update_hook
 
 /* Allocate memory from the heap.  */
 void *mmalloc(xbt_mheap_t mdp, size_t size) {
