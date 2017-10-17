@@ -187,8 +187,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
   if (!(mdp->flags & MMALLOC_INITIALIZED))
     initialize(mdp);
 
-  mmalloc_paranoia(mdp);
-
   /* Determine the allocation policy based on the request size.  */
   if (size <= BLOCKSIZE / 2) {
     /* Small allocation to receive a fragment of a block.
