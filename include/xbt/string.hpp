@@ -55,7 +55,8 @@ struct string_data {
  *    does not use refcouting/COW but has a small string optimization.
  */
 XBT_PUBLIC_CLASS string : private string_data {
-  static const char NUL;
+  static char NUL;
+
 public:
   // Types
   typedef std::size_t size_type;
@@ -79,7 +80,7 @@ public:
   {
     if (size == 0) {
       string_data::len = 0;
-      string_data::data = const_cast<char*>(&NUL);
+      string_data::data = &NUL;
     } else {
       string_data::len = size;
       string_data::data = new char[string_data::len + 1];
@@ -87,7 +88,7 @@ public:
       string_data::data[string_data::len] = '\0';
     }
   }
-  string() : string (const_cast<char*>(&NUL), 0) {}
+  string() : string(&NUL, 0) {}
   string(const char* s) : string(s, strlen(s)) {}
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
@@ -95,7 +96,7 @@ public:
     string_data::len = s.string_data::len;
     string_data::data = s.string_data::data;
     s.string_data::len = 0;
-    s.string_data::data = const_cast<char*>(&NUL);
+    s.string_data::data = &NUL;
   }
   string(std::string const& s) : string(s.c_str(), s.size()) {}
 
@@ -180,7 +181,7 @@ public:
   void clear()
   {
     string_data::len = 0;
-    string_data::data = const_cast<char*>(&NUL);
+    string_data::data = &NUL;
   }
 
   bool equals(const char* data, std::size_t len) const
