@@ -48,7 +48,6 @@ template<class T>
 class Extendable {
 private:
   static std::vector<void(*)(void*)> deleters_;
-protected:
   std::vector<void*> extensions_;
 public:
   static size_t extension_create(void (*deleter)(void*))
