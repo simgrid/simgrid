@@ -27,7 +27,7 @@ std::vector<char*> IPV4addr;
  * Crude globals *
  *****************/
 
-extern xbt_dict_t flowFromSock;
+extern std::map<std::string, SgFlow*> flowFromSock;
 
 static ns3::InternetStackHelper stack;
 static ns3::NodeContainer nodes;
@@ -142,7 +142,6 @@ namespace surf {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   NetPointNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetPointNs3>();
 
-  flowFromSock = xbt_dict_new_homogeneous([](void* p) { delete static_cast<SgFlow*>(p); });
   ns3_initialize(ns3_tcp_model.get().c_str());
 
   simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {
@@ -162,7 +161,6 @@ NetworkNS3Model::~NetworkNS3Model() {
   for (auto const& addr : IPV4addr)
     free(addr);
   IPV4addr.clear();
-  xbt_dict_free(&flowFromSock);
 }
 
 LinkImpl* NetworkNS3Model::createLink(const std::string& name, double bandwidth, double latency,
@@ -200,7 +198,7 @@ double NetworkNS3Model::nextOccuringEvent(double now)
 
 void NetworkNS3Model::updateActionsState(double now, double delta)
 {
-  static xbt_dynar_t socket_to_destroy = xbt_dynar_new(sizeof(char*),nullptr);
+  static std::vector<std::string> socket_to_destroy;
 
   /* If there are no running flows, advance the NS3 simulator and return */
   if (getRunningActionSet()->empty()) {
@@ -211,10 +209,10 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     return;
   }
 
-  xbt_dict_cursor_t cursor = nullptr;
-  char *ns3Socket;
-  SgFlow *sgFlow;
-  xbt_dict_foreach(flowFromSock,cursor,ns3Socket,sgFlow){
+  std::string ns3Socket;
+  for (auto elm : flowFromSock) {
+    ns3Socket                 = elm.first;
+    SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
     action->setRemains(action->getCost() - sgFlow->sentBytes_);
@@ -234,20 +232,21 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     }
 
     if(sgFlow->finished_){
-      xbt_dynar_push(socket_to_destroy,&ns3Socket);
+      socket_to_destroy.push_back(ns3Socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3Socket, action);
       action->finish(Action::State::done);
     }
   }
 
-  while (not xbt_dynar_is_empty(socket_to_destroy)) {
-    xbt_dynar_pop(socket_to_destroy,&ns3Socket);
-
+  while (not socket_to_destroy.empty()) {
+    ns3Socket = socket_to_destroy.back();
+    socket_to_destroy.pop_back();
+    SgFlow* flow = flowFromSock.at(ns3Socket);
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
-      SgFlow* flow = static_cast<SgFlow*>(xbt_dict_get(flowFromSock, ns3Socket));
       XBT_DEBUG ("Removing socket %p of action %p", ns3Socket, flow->action_);
     }
-    xbt_dict_remove(flowFromSock, ns3Socket);
+    delete flow;
+    flowFromSock.erase(ns3Socket);
   }
 }
 
@@ -357,7 +356,7 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
 
-  xbt_dict_set(flowFromSock, transformSocketPtr(sock), new SgFlow(TotalBytes, action), nullptr);
+  flowFromSock.insert({transformSocketPtr(sock), new SgFlow(TotalBytes, action)});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
 

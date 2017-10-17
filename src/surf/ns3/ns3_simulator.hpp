@@ -33,14 +33,11 @@ public:
 
 void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number);
 
-static inline const char* transformSocketPtr(ns3::Ptr<ns3::Socket> localSocket)
+static inline std::string transformSocketPtr(ns3::Ptr<ns3::Socket> localSocket)
 {
-  static char key[24];
   std::stringstream sstream;
   sstream << localSocket;
-  snprintf(key, 24, "%s", sstream.str().c_str());
-
-  return key;
+  return sstream.str();
 }
 
 #endif

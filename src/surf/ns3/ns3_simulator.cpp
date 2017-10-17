@@ -4,13 +4,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/ns3/ns3_simulator.hpp"
-#include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
 #include <algorithm>
 
-xbt_dict_t flowFromSock = nullptr; // ns3::sock -> SgFlow
+std::map<std::string, SgFlow*> flowFromSock; // ns3::sock -> SgFlow
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
@@ -26,7 +25,8 @@ SgFlow::SgFlow(uint32_t totalBytes, simgrid::surf::NetworkNS3Action* action)
 
 static SgFlow* getFlowFromSocket(ns3::Ptr<ns3::Socket> socket)
 {
-  return (SgFlow*)xbt_dict_get_or_null(flowFromSock, transformSocketPtr(socket));
+  auto it = flowFromSock.find(transformSocketPtr(socket));
+  return (it == flowFromSock.end()) ? nullptr : it->second;
 }
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket)
