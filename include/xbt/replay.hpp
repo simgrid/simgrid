@@ -9,7 +9,7 @@
 #ifndef XBT_REPLAY_HPP
 #define XBT_REPLAY_HPP
 
-#include "xbt/dict.h"
+#include "xbt/misc.h" /* SG_BEGIN_DECL */
 #ifdef __cplusplus
 #include <fstream>
 #include <queue>
