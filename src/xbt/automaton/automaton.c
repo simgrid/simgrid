@@ -95,7 +95,9 @@ xbt_dynar_t xbt_automaton_get_transitions(xbt_automaton_t a){
   return a->transitions;
 }
 
-xbt_automaton_transition_t xbt_automaton_get_transition(xbt_automaton_t a, xbt_automaton_state_t src, xbt_automaton_state_t dst){
+xbt_automaton_transition_t xbt_automaton_get_transition(xbt_automaton_t XBT_ATTRIB_UNUSED a, xbt_automaton_state_t src,
+                                                        xbt_automaton_state_t dst)
+{
   xbt_automaton_transition_t transition;
   unsigned int cursor;
   xbt_dynar_foreach(src->out, cursor, transition){
