@@ -15,7 +15,7 @@
 
 /** Peer data */
 typedef struct s_peer {
-  char* id; // peer id
+  int id; // peer id
 
   unsigned int bitfield;              // list of pieces the peer has.
   unsigned long long bitfield_blocks; // list of blocks the peer has.
@@ -48,7 +48,7 @@ int get_peers_data(peer_t peer);
 void leech_loop(peer_t peer, double deadline);
 void seed_loop(peer_t peer, double deadline);
 
-peer_t peer_init(const char* id, int seed);
+peer_t peer_init(int id, int seed);
 void peer_free(peer_t peer);
 
 char* print_bitfield(unsigned int bitfield);

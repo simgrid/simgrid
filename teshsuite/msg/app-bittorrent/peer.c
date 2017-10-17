@@ -64,7 +64,7 @@ int peer(int argc, char* argv[])
   xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
 
   // Build peer object
-  peer_t peer = peer_init(argv[1], argc == 4 ? 1 : 0);
+  peer_t peer = peer_init(xbt_str_parse_int(argv[1], "Invalid ID: %s"), argc == 4 ? 1 : 0);
 
   // Retrieve deadline
   double deadline = xbt_str_parse_double(argv[2], "Invalid deadline: %s");
@@ -72,7 +72,7 @@ int peer(int argc, char* argv[])
 
   char* status = xbt_malloc0(FILE_PIECES + 1);
   get_status(&status, peer->bitfield);
-  XBT_INFO("Hi, I'm joining the network with id %d", atoi(peer->id));
+  XBT_INFO("Hi, I'm joining the network with id %d", peer->id);
   // Getting peer data from the tracker.
   if (get_peers_data(peer)) {
     XBT_DEBUG("Got %d peers from the tracker. Current status is: %s", xbt_dict_length(peer->peers), status);
@@ -135,7 +135,7 @@ void leech_loop(peer_t peer, double deadline)
     }
   }
   if (has_finished(peer->bitfield))
-    XBT_DEBUG("%s becomes a seeder", peer->id);
+    XBT_DEBUG("%d becomes a seeder", peer->id);
 }
 
 /** @brief Peer main loop when it is seeding
@@ -199,11 +199,11 @@ int get_peers_data(peer_t peer)
     if (status == MSG_OK) {
       tracker_task_data_t data = MSG_task_get_data(task_received);
       unsigned i;
-      const char* peer_id;
+      int peer_id;
       // Add the peers the tracker gave us to our peer list.
       xbt_dynar_foreach (data->peers, i, peer_id) {
-        if (!strcmp(peer_id, peer->id))
-          xbt_dict_set(peer->peers, peer_id, connection_new(peer_id), NULL);
+        if (peer_id != peer->id)
+          xbt_dict_set_ext(peer->peers, (char*)&peer_id, sizeof(int), connection_new(peer_id), NULL);
       }
       success = 1;
       // free the communication and the task
@@ -221,14 +221,14 @@ int get_peers_data(peer_t peer)
  *  @param id id of the peer to take in the network
  *  @param seed indicates if the peer is a seed.
  */
-peer_t peer_init(const char* id, int seed)
+peer_t peer_init(int id, int seed)
 {
   peer_t peer    = xbt_new(s_peer_t, 1);
-  peer->id       = xbt_strdup(id);
+  peer->id       = id;
   peer->hostname = MSG_host_get_name(MSG_host_self());
 
-  snprintf(peer->mailbox, MAILBOX_SIZE - 1, "%s", id);
-  snprintf(peer->mailbox_tracker, MAILBOX_SIZE - 1, "tracker_%s", id);
+  snprintf(peer->mailbox, MAILBOX_SIZE - 1, "%d", id);
+  snprintf(peer->mailbox_tracker, MAILBOX_SIZE - 1, "tracker_%d", id);
   peer->peers        = xbt_dict_new_homogeneous(NULL);
   peer->active_peers = xbt_dict_new_homogeneous(NULL);
 
@@ -264,7 +264,6 @@ void peer_free(peer_t peer)
   xbt_dict_free(&peer->peers);
   xbt_dict_free(&peer->active_peers);
   xbt_free(peer->pieces_count);
-  xbt_free(peer->id);
   xbt_free(peer);
 }
 
@@ -293,9 +292,9 @@ void update_active_peers_set(peer_t peer, connection_t remote_peer)
 {
   if ((remote_peer->interested != 0) && (remote_peer->choked_upload == 0)) {
     // add in the active peers set
-    xbt_dict_set(peer->active_peers, remote_peer->id, remote_peer, NULL);
-  } else if (xbt_dict_get_or_null(peer->active_peers, remote_peer->id)) {
-    xbt_dict_remove(peer->active_peers, remote_peer->id);
+    xbt_dict_set_ext(peer->active_peers, (char*)&remote_peer->id, sizeof(int), remote_peer, NULL);
+  } else if (xbt_dict_get_or_null_ext(peer->active_peers, (char*)&remote_peer->id, sizeof(int))) {
+    xbt_dict_remove_ext(peer->active_peers, (char*)&remote_peer->id, sizeof(int));
   }
 }
 
@@ -312,13 +311,13 @@ void handle_message(peer_t peer, msg_task_t task)
             message->issuer_host_name);
 
   connection_t remote_peer;
-  remote_peer = xbt_dict_get_or_null(peer->peers, message->peer_id);
+  remote_peer = xbt_dict_get_or_null_ext(peer->peers, (char*)&message->peer_id, sizeof(int));
 
   switch (message->type) {
     case MESSAGE_HANDSHAKE:
       // Check if the peer is in our connection list.
       if (remote_peer == 0) {
-        xbt_dict_set(peer->peers, message->peer_id, connection_new(message->peer_id), NULL);
+        xbt_dict_set_ext(peer->peers, (char*)&message->peer_id, sizeof(int), connection_new(message->peer_id), NULL);
         send_handshake(peer, message->mailbox);
       }
       // Send our bitfield to the peer
@@ -384,7 +383,7 @@ void handle_message(peer_t peer, msg_task_t task)
           send_piece(peer, message->mailbox, message->index, message->block_index, message->block_length);
         }
       } else {
-        XBT_DEBUG("\t for piece %s but he is choked.", message->peer_id);
+        XBT_DEBUG("\t for piece %d but he is choked.", message->peer_id);
       }
       break;
     case MESSAGE_PIECE:
@@ -580,7 +579,7 @@ void update_choked_peers(peer_t peer)
 {
   if (nb_interested_peers(peer) == 0)
     return;
-  XBT_DEBUG("(%s) update_choked peers %u active peers", peer->id, xbt_dict_size(peer->active_peers));
+  XBT_DEBUG("(%d) update_choked peers %u active peers", peer->id, xbt_dict_size(peer->active_peers));
   // update the current round
   peer->round = (peer->round + 1) % 3;
   char* key;
@@ -648,24 +647,24 @@ void update_choked_peers(peer_t peer)
   }
 
   if (peer_choosed != NULL)
-    XBT_DEBUG("(%s) update_choked peers unchoked (%s) ; int (%d) ; choked (%d) ", peer->id, peer_choosed->id,
+    XBT_DEBUG("(%d) update_choked peers unchoked (%d) ; int (%d) ; choked (%d) ", peer->id, peer_choosed->id,
               peer_choosed->interested, peer_choosed->choked_upload);
 
   if (peer_choked != peer_choosed) {
     if (peer_choked != NULL) {
       xbt_assert((!peer_choked->choked_upload), "Tries to choked a choked peer");
       peer_choked->choked_upload = 1;
-      xbt_assert(strcmp(key_choked, peer_choked->id));
+      xbt_assert((*((int*)key_choked) == peer_choked->id));
       update_active_peers_set(peer, peer_choked);
-      XBT_DEBUG("(%s) Sending a CHOKE to %s", peer->id, peer_choked->id);
+      XBT_DEBUG("(%d) Sending a CHOKE to %d", peer->id, peer_choked->id);
       send_choked(peer, peer_choked->mailbox);
     }
     if (peer_choosed != NULL) {
       xbt_assert((peer_choosed->choked_upload), "Tries to unchoked an unchoked peer");
       peer_choosed->choked_upload = 0;
-      xbt_dict_set(peer->active_peers, peer_choosed->id, peer_choosed, NULL);
+      xbt_dict_set_ext(peer->active_peers, (char*)&peer_choosed->id, sizeof(int), peer_choosed, NULL);
       peer_choosed->last_unchoke = MSG_get_clock();
-      XBT_DEBUG("(%s) Sending a UNCHOKE to %s", peer->id, peer_choosed->id);
+      XBT_DEBUG("(%d) Sending a UNCHOKE to %d", peer->id, peer_choosed->id);
       update_active_peers_set(peer, peer_choosed);
       send_unchoked(peer, peer_choosed->mailbox);
     }

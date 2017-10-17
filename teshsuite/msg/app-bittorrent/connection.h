@@ -9,7 +9,7 @@
 
 /**  Contains the connection data of a peer. */
 typedef struct s_connection {
-  char* id;              // Peer id
+  int id;                // Peer id
   unsigned int bitfield; // Fields
   char* mailbox;
   int messages_count;
@@ -27,7 +27,7 @@ typedef s_connection_t* connection_t;
 /** @brief Build a new connection object from the peer id.
  *  @param id id of the peer
  */
-connection_t connection_new(const char* id);
+connection_t connection_new(int id);
 /** @brief Add a new value to the peer speed average
  *  @param connection connection data
  *  @param speed speed to add to the speed average

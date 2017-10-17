@@ -26,7 +26,7 @@ int tracker(int argc, char* argv[])
 
   RngStream stream = (RngStream)MSG_host_get_data(MSG_host_self());
   // Building peers array
-  xbt_dynar_t peers_list = xbt_dynar_new(sizeof(const char*), NULL);
+  xbt_dynar_t peers_list = xbt_dynar_new(sizeof(int), NULL);
 
   XBT_INFO("Tracker launched.");
 
@@ -44,16 +44,16 @@ int tracker(int argc, char* argv[])
         tracker_task_data_t data = MSG_task_get_data(task_received);
         // Add the peer to our peer list.
         if (is_in_list(peers_list, data->peer_id) == 0) {
-          xbt_dynar_push(peers_list, &data->peer_id);
+          xbt_dynar_push_as(peers_list, int, data->peer_id);
         }
         // Sending peers to the peer
-        const char* next_peer;
+        int next_peer;
         int peers_length = xbt_dynar_length(peers_list);
         for (int i = 0; i < MAXIMUM_PEERS && i < peers_length; i++) {
           do {
-            xbt_dynar_get_cpy(peers_list, RngStream_RandInt(stream, 0, peers_length - 1), &next_peer);
+            next_peer = xbt_dynar_get_as(peers_list, RngStream_RandInt(stream, 0, peers_length - 1), int);
           } while (is_in_list(data->peers, next_peer));
-          xbt_dynar_push(data->peers, &next_peer);
+          xbt_dynar_push_as(data->peers, int, next_peer);
         }
         // setting the interval
         data->interval = TRACKER_QUERY_INTERVAL;
@@ -84,8 +84,8 @@ int tracker(int argc, char* argv[])
  * Build a new task for the tracker.
  * @param issuer_host_name Hostname of the issuer. For debugging purposes
  */
-tracker_task_data_t tracker_task_data_new(const char* issuer_host_name, const char* mailbox, const char* peer_id,
-                                          int uploaded, int downloaded, int left)
+tracker_task_data_t tracker_task_data_new(const char* issuer_host_name, const char* mailbox, int peer_id, int uploaded,
+                                          int downloaded, int left)
 {
   tracker_task_data_t task = xbt_new(s_tracker_task_data_t, 1);
 
@@ -97,7 +97,7 @@ tracker_task_data_t tracker_task_data_new(const char* issuer_host_name, const ch
   task->downloaded       = downloaded;
   task->left             = left;
 
-  task->peers = xbt_dynar_new(sizeof(const char*), NULL);
+  task->peers = xbt_dynar_new(sizeof(int), NULL);
 
   return task;
 }
@@ -119,7 +119,7 @@ static void task_free(void* data)
  */
 void tracker_task_data_free(tracker_task_data_t task)
 {
-  xbt_dynar_free_container(&task->peers);
+  xbt_dynar_free(&task->peers);
   xbt_free(task);
 }
 
@@ -128,7 +128,7 @@ void tracker_task_data_free(tracker_task_data_t task)
  * @param peers dynar containing the peers
  * @param id identifier of the peer to test
  */
-int is_in_list(xbt_dynar_t peers, const char* id)
+int is_in_list(xbt_dynar_t peers, int id)
 {
   return xbt_dynar_member(peers, &id);
 }

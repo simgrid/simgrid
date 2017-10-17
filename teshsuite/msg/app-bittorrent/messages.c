@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages, "Messages specific for the message fa
  * @param peer_id id of the issuer
  * @param size message size in bytes
  */
-msg_task_t task_message_new(e_message_type type, const char* issuer_host_name, const char* mailbox, const char* peer_id,
+msg_task_t task_message_new(e_message_type type, const char* issuer_host_name, const char* mailbox, int peer_id,
                             int size)
 {
   message_t message         = xbt_new(s_message_t, 1);
@@ -32,8 +32,8 @@ msg_task_t task_message_new(e_message_type type, const char* issuer_host_name, c
 }
 
 /** Builds a message containing an index. */
-msg_task_t task_message_index_new(e_message_type type, const char* issuer_host_name, const char* mailbox,
-                                  const char* peer_id, int index, int varsize)
+msg_task_t task_message_index_new(e_message_type type, const char* issuer_host_name, const char* mailbox, int peer_id,
+                                  int index, int varsize)
 {
   msg_task_t task   = task_message_new(type, issuer_host_name, mailbox, peer_id, task_message_size(type) + varsize);
   message_t message = MSG_task_get_data(task);
@@ -41,7 +41,7 @@ msg_task_t task_message_index_new(e_message_type type, const char* issuer_host_n
   return task;
 }
 
-msg_task_t task_message_bitfield_new(const char* issuer_host_name, const char* mailbox, const char* peer_id,
+msg_task_t task_message_bitfield_new(const char* issuer_host_name, const char* mailbox, int peer_id,
                                      unsigned int bitfield, int bitfield_size)
 {
   msg_task_t task = task_message_new(MESSAGE_BITFIELD, issuer_host_name, mailbox, peer_id,
@@ -51,7 +51,7 @@ msg_task_t task_message_bitfield_new(const char* issuer_host_name, const char* m
   return task;
 }
 
-msg_task_t task_message_request_new(const char* issuer_host_name, const char* mailbox, const char* peer_id, int index,
+msg_task_t task_message_request_new(const char* issuer_host_name, const char* mailbox, int peer_id, int index,
                                     int block_index, int block_length)
 {
   msg_task_t task       = task_message_index_new(MESSAGE_REQUEST, issuer_host_name, mailbox, peer_id, index, 0);
@@ -61,7 +61,7 @@ msg_task_t task_message_request_new(const char* issuer_host_name, const char* ma
   return task;
 }
 
-msg_task_t task_message_piece_new(const char* issuer_host_name, const char* mailbox, const char* peer_id, int index,
+msg_task_t task_message_piece_new(const char* issuer_host_name, const char* mailbox, int peer_id, int index,
                                   int block_index, int block_length, int block_size)
 {
   msg_task_t task =

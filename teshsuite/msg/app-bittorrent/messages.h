@@ -42,7 +42,7 @@ typedef struct s_message {
   e_message_type type;
   const char* mailbox;
   const char* issuer_host_name;
-  const char* peer_id;
+  int peer_id;
   unsigned int bitfield;
   int index;
   int block_index;
@@ -51,19 +51,19 @@ typedef struct s_message {
 typedef s_message_t* message_t;
 
 /** Builds a new value-less message */
-msg_task_t task_message_new(e_message_type type, const char* issuer_host_name, const char* mailbox, const char* peer_id,
+msg_task_t task_message_new(e_message_type type, const char* issuer_host_name, const char* mailbox, int peer_id,
                             int size);
 /** Builds a new "have/piece" message */
-msg_task_t task_message_index_new(e_message_type type, const char* issuer_host_name, const char* mailbox,
-                                  const char* peer_id, int index, int varsize);
+msg_task_t task_message_index_new(e_message_type type, const char* issuer_host_name, const char* mailbox, int peer_id,
+                                  int index, int varsize);
 /** Builds a new bitfield message */
-msg_task_t task_message_bitfield_new(const char* issuer_host_name, const char* mailbox, const char* peer_id,
+msg_task_t task_message_bitfield_new(const char* issuer_host_name, const char* mailbox, int peer_id,
                                      unsigned int bitfield, int bitfield_size);
 /** Builds a new "request" message */
-msg_task_t task_message_request_new(const char* issuer_host_name, const char* mailbox, const char* peer_id, int index,
+msg_task_t task_message_request_new(const char* issuer_host_name, const char* mailbox, int peer_id, int index,
                                     int block_index, int block_length);
 /** Build a new "piece" message */
-msg_task_t task_message_piece_new(const char* issuer_host_name, const char* mailbox, const char* peer_id, int index,
+msg_task_t task_message_piece_new(const char* issuer_host_name, const char* mailbox, int peer_id, int index,
                                   int block_index, int block_length, int block_size);
 /** Free a message task */
 void task_message_free(void*);
