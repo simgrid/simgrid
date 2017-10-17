@@ -9,8 +9,9 @@
 #ifndef XBT_STR_H
 #define XBT_STR_H
 
-#include "xbt/misc.h"
+#include "xbt/dict.h"
 #include "xbt/dynar.h"
+#include "xbt/misc.h"
 
 #include <stdarg.h>             /* va_* */
 #include <stdio.h>  /* FILE */
