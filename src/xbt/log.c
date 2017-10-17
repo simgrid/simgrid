@@ -400,7 +400,8 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
  * To circumvent the problem, we define the macro DISABLE_XBT_LOG_CAT_INIT() to hide the real _xbt_log_cat_init(). The
  * macro has to be called at the beginning of the affected functions.
  */
-static int fake_xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority)
+static int fake_xbt_log_cat_init(xbt_log_category_t XBT_ATTRIB_UNUSED category,
+                                 e_xbt_log_priority_t XBT_ATTRIB_UNUSED priority)
 {
   return 0;
 }
