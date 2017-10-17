@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -92,12 +92,12 @@ static void* mm_fake_calloc(size_t nmemb, size_t size)
   return mm_fake_malloc(n);
 }
 
-static void* mm_fake_realloc(void *p, size_t s)
+static void* mm_fake_realloc(void* XBT_ATTRIB_UNUSED p, size_t s)
 {
   return mm_fake_malloc(s);
 }
 
-static void mm_fake_free(void *p)
+static void mm_fake_free(void* XBT_ATTRIB_UNUSED p)
 {
   // Nothing to do
 }

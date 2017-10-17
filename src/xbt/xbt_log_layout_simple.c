@@ -23,7 +23,7 @@ static double simple_begin_of_time = -1;
   } else                                                                \
     return 0
 
-static int xbt_log_layout_simple_doit(xbt_log_layout_t l, xbt_log_event_t ev, const char *fmt)
+static int xbt_log_layout_simple_doit(xbt_log_layout_t XBT_ATTRIB_UNUSED l, xbt_log_event_t ev, const char* fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -70,7 +70,7 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
   return 1;
 }
 
-xbt_log_layout_t xbt_log_layout_simple_new(char *arg)
+xbt_log_layout_t xbt_log_layout_simple_new(char* XBT_ATTRIB_UNUSED arg)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout       = &xbt_log_layout_simple_doit;

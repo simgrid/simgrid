@@ -46,11 +46,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc, "MC process information");
 
 // ***** Helper stuff
 
-namespace simgrid {
-namespace mc {
-
 #define SO_RE "\\.so[\\.0-9]*$"
 #define VERSION_RE "-[\\.0-9-]*$"
+
+namespace simgrid {
+namespace mc {
 
 // List of library which memory segments are not considered:
 static const char* const filtered_libraries[] = {
