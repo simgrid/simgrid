@@ -3,9 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <string>
 #include <unordered_set>
 
 #include "xbt/config.hpp"
+#include "xbt/string.hpp"
 
 #include "ns3/core-module.h"
 #include "ns3/node.h"
@@ -21,7 +23,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 
-std::vector<char*> IPV4addr;
+std::vector<std::string> IPV4addr;
 
 /*****************
  * Crude globals *
@@ -158,8 +160,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
-  for (auto const& addr : IPV4addr)
-    free(addr);
   IPV4addr.clear();
 }
 
@@ -346,11 +346,11 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->getCname());
-  char* addr = IPV4addr.at(node2);
-  xbt_assert(addr != nullptr, "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+  std::string& addr = IPV4addr[node2];
+  xbt_assert(not addr.empty(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->getCname());
 
-  XBT_DEBUG("ns3_create_flow %u Bytes from %u to %u with Interface %s", TotalBytes, node1, node2, addr);
+  XBT_DEBUG("ns3_create_flow %u Bytes from %u to %u with Interface %s", TotalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
   sink.Install (dst_node);
 
@@ -360,7 +360,7 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
 
   sock->Bind(ns3::InetSocketAddress(port_number));
 
-  ns3::Simulator::ScheduleNow(&StartFlow, sock, addr, port_number);
+  ns3::Simulator::ScheduleNow(&StartFlow, sock, addr.c_str(), port_number);
 
   port_number++;
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
@@ -418,11 +418,10 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
   ns3::NetDeviceContainer devices = csma.Install(Nodes);
   XBT_DEBUG("Create CSMA");
 
-  char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
-  XBT_DEBUG("Assign IP Addresses %s to CSMA.",adr);
+  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+  XBT_DEBUG("Assign IP Addresses %s to CSMA.", addr.c_str());
   ns3::Ipv4AddressHelper ipv4;
-  ipv4.SetBase (adr, "255.255.0.0");
-  free(adr);
+  ipv4.SetBase(addr.c_str(), "255.255.0.0");
   interfaces.Add(ipv4.Assign (devices));
 
   if(number_of_links == 255){
@@ -435,11 +434,11 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
   XBT_DEBUG("Number of nodes in Cluster_nodes: %u", Cluster_nodes.GetN());
 }
 
-static char* transformIpv4Address (ns3::Ipv4Address from){
+static std::string transformIpv4Address(ns3::Ipv4Address from)
+{
   std::stringstream sstream;
   sstream << from ;
-  std::string s = sstream.str();
-  return bprintf("%s",s.c_str());
+  return sstream.str();
 }
 
 void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat) {
@@ -457,28 +456,26 @@ void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat) {
   pointToPoint.SetDeviceAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw*8)));// NS3 takes bps, but we provide Bps
   pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
 
-  char *filename = bprintf("link-%d-%d.tr", srcNum, dstNum);
+  std::string filename = simgrid::xbt::string_printf("link-%d-%d.tr", srcNum, dstNum);
   ns3::AsciiTraceHelper ascii;
-  pointToPoint.EnableAsciiAll (ascii.CreateFileStream (filename));
+  pointToPoint.EnableAsciiAll(ascii.CreateFileStream(filename));
   pointToPoint.EnablePcapAll ("tcp-bulk-send", false);
-  xbt_free(filename);
 
   ns3::NetDeviceContainer netA;
   netA.Add(pointToPoint.Install (a, b));
 
-  char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
-  address.SetBase (adr, "255.255.0.0");
-  XBT_DEBUG("\tInterface stack '%s'",adr);
-  free(adr);
+  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+  address.SetBase(addr.c_str(), "255.255.0.0");
+  XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
   interfaces.Add(address.Assign (netA));
 
   if (IPV4addr.size() <= (unsigned)srcNum)
-    IPV4addr.resize(srcNum + 1, nullptr);
-  IPV4addr.at(srcNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
+    IPV4addr.resize(srcNum + 1);
+  IPV4addr[srcNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
 
   if (IPV4addr.size() <= (unsigned)dstNum)
-    IPV4addr.resize(dstNum + 1, nullptr);
-  IPV4addr.at(dstNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
+    IPV4addr.resize(dstNum + 1);
+  IPV4addr[dstNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
