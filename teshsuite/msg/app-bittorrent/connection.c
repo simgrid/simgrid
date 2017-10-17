@@ -9,12 +9,12 @@
 #include <xbt/sysdep.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg_peers);
 
-connection_t connection_new(int id)
+connection_t connection_new(const char* id)
 {
   connection_t connection = xbt_new(s_connection_t, 1);
 
-  connection->id              = id;
-  connection->mailbox         = bprintf("%d", id);
+  connection->id              = xbt_strdup(id);
+  connection->mailbox         = xbt_strdup(id);
   connection->bitfield        = 0;
   connection->current_piece   = -1;
   connection->interested      = 0;
@@ -35,6 +35,7 @@ void connection_add_speed_value(connection_t connection, double speed)
 void connection_free(void* data)
 {
   connection_t co = (connection_t)data;
+  xbt_free(co->id);
   xbt_free(co->mailbox);
   xbt_free(co);
 }

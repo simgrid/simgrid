@@ -11,7 +11,6 @@
 
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
-#include "xbt/dict.h"
 
 #include <stdarg.h>             /* va_* */
 #include <stdio.h>  /* FILE */

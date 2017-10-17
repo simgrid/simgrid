@@ -24,7 +24,7 @@ typedef struct s_tracker_task_data {
   const char* mailbox;          // mailbox where the tracker should answer
   const char* issuer_host_name; // hostname, for debug purposes
   // Query data
-  int peer_id;    // peer id
+  const char* peer_id; // peer id
   int uploaded;   // how much the peer has already uploaded
   int downloaded; // how much the peer has downloaded
   int left;       // how much the peer has left
@@ -34,9 +34,9 @@ typedef struct s_tracker_task_data {
 } s_tracker_task_data_t;
 typedef s_tracker_task_data_t* tracker_task_data_t;
 
-tracker_task_data_t tracker_task_data_new(const char* issuer_host_name, const char* mailbox, int peer_id, int uploaded,
-                                          int downloaded, int left);
+tracker_task_data_t tracker_task_data_new(const char* issuer_host_name, const char* mailbox, const char* peer_id,
+                                          int uploaded, int downloaded, int left);
 void tracker_task_data_free(tracker_task_data_t task);
 
-int is_in_list(xbt_dynar_t peers, int id);
+int is_in_list(xbt_dynar_t peers, const char* id);
 #endif /* BITTORRENT_TRACKER_H */
