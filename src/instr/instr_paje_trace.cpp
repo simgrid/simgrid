@@ -454,10 +454,10 @@ void simgrid::instr::PushStateEvent::print()
 
     char* process_id = nullptr;
     // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-    if (strstr(container->name_.c_str(), "rank-") == nullptr)
-      process_id = xbt_strdup(container->name_.c_str());
+    if (container->getName().find("rank-") != 0)
+      process_id = xbt_strdup(container->getCname());
     else
-      process_id = xbt_strdup(container->name_.c_str() + 5);
+      process_id = xbt_strdup(container->getCname() + 5);
 
     FILE* trace_file = tracing_files.at(container);
 

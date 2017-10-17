@@ -68,7 +68,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
 static void linkContainers(container_t src, container_t dst, std::set<std::string>* filter)
 {
   //ignore loopback
-  if (src->name_ == "__loopback__" || dst->name_ == "__loopback__") {
+  if (src->getName() == "__loopback__" || dst->getName() == "__loopback__") {
     XBT_DEBUG ("  linkContainers: ignoring loopback link");
     return;
   }
@@ -80,14 +80,14 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   }
 
   // check if we already register this pair (we only need one direction)
-  std::string aux1 = src->name_ + dst->name_;
-  std::string aux2 = dst->name_ + src->name_;
+  std::string aux1 = src->getName() + dst->getName();
+  std::string aux2 = dst->getName() + src->getName();
   if (filter->find(aux1) != filter->end()) {
-    XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->name_.c_str(), dst->name_.c_str());
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->getCname(), dst->getCname());
     return;
   }
   if (filter->find(aux2) != filter->end()) {
-    XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->name_.c_str(), src->name_.c_str());
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->getCname(), src->getCname());
     return;
   }
 
@@ -113,7 +113,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
   new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), father, link_type, dst, "topology", key);
 
-  XBT_DEBUG("  linkContainers %s <-> %s", src->name_.c_str(), dst->name_.c_str());
+  XBT_DEBUG("  linkContainers %s <-> %s", src->getCname(), dst->getCname());
 }
 
 static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container,
@@ -189,18 +189,15 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 {
   if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
     return;
-  container_t father = currentContainer.back();
 
-  double bandwidth_value = link.bandwidth();
-  double latency_value   = link.latency();
-
-  container_t container = new simgrid::instr::Container(link.getCname(), simgrid::instr::INSTR_LINK, father);
+  container_t father    = currentContainer.back();
+  container_t container = new simgrid::instr::Container(link.getName(), simgrid::instr::INSTR_LINK, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::Type* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");
     simgrid::instr::Type* latency   = container->type_->getOrCreateVariableType("latency", "");
-    new simgrid::instr::SetVariableEvent(0, container, bandwidth, bandwidth_value);
-    new simgrid::instr::SetVariableEvent(0, container, latency, latency_value);
+    new simgrid::instr::SetVariableEvent(0, container, bandwidth, link.bandwidth());
+    new simgrid::instr::SetVariableEvent(0, container, latency, link.latency());
   }
   if (TRACE_uncategorized()) {
     container->type_->getOrCreateVariableType("bandwidth_used", "0.5 0.5 0.5");
@@ -210,14 +207,13 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t father = currentContainer.back();
-  container_t container = new simgrid::instr::Container(host.getCname(), simgrid::instr::INSTR_HOST, father);
+  container_t container = new simgrid::instr::Container(host.getName(), simgrid::instr::INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::Type* speed = container->type_->getOrCreateVariableType("power", "");
-
-    double current_speed_state = host.getSpeed();
-    new simgrid::instr::SetVariableEvent(0, container, speed, current_speed_state);
+    new simgrid::instr::SetVariableEvent(0, container, speed, host.getSpeed());
   }
+
   if (TRACE_uncategorized())
     container->type_->getOrCreateVariableType("power_used", "0.5 0.5 0.5");
 
@@ -253,10 +249,8 @@ static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
 {
   if (not netpoint->isRouter())
     return;
-  if (TRACE_is_enabled() && TRACE_needs_platform()) {
-    container_t father = currentContainer.back();
-    new simgrid::instr::Container(netpoint->getCname(), simgrid::instr::INSTR_ROUTER, father);
-  }
+  if (TRACE_is_enabled() && TRACE_needs_platform())
+    new simgrid::instr::Container(netpoint->getCname(), simgrid::instr::INSTR_ROUTER, currentContainer.back());
 }
 
 static void instr_routing_parse_end_platform ()
@@ -283,7 +277,7 @@ void instr_routing_define_callbacks ()
   }
   simgrid::s4u::NetZone::onCreation.connect(sg_instr_AS_begin);
   simgrid::s4u::NetZone::onSeal.connect(sg_instr_AS_end);
-  simgrid::kernel::routing::NetPoint::onCreation.connect(&sg_instr_new_router);
+  simgrid::kernel::routing::NetPoint::onCreation.connect(sg_instr_new_router);
 }
 /*
  * user categories support

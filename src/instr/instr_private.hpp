@@ -128,6 +128,7 @@ enum e_container_types {
 
 class Container {
   e_container_types kind_; /* This container is of what kind */
+  std::string name_;       /* Unique name of this container */
   int level_ = 0;          /* Level in the hierarchy, root level is 0 */
   sg_netpoint_t netpoint_ = nullptr;
 
@@ -135,13 +136,14 @@ public:
   Container(std::string name, simgrid::instr::e_container_types kind, Container* father);
   virtual ~Container();
 
-  std::string name_;       /* Unique name of this container */
   std::string id_;         /* Unique id of this container */
   Type* type_;             /* Type of this container */
   Container* father_;
   std::map<std::string, Container*> children_;
   static Container* byNameOrNull(std::string name);
   static Container* byName(std::string name);
+  std::string getName() { return name_; }
+  const char* getCname() { return name_.c_str(); }
   void removeFromParent();
   void logCreation();
   void logDestruction();
