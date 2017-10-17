@@ -14,11 +14,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
 extern "C" {
-# undef CLEANUP
-# include "dax_dtd.h"
-# define register /* g++ don't like register, so don't say it */
-# include "dax_dtd.c"
-# undef register
+#include "dax_dtd.h"
+#include "dax_dtd.c"
 }
 
 /* Ensure that transfer tasks have unique names even though a file is used several times */
