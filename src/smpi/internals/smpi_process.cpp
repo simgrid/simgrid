@@ -166,6 +166,16 @@ smpi_trace_call_location_t* Process::call_location()
   return &trace_call_loc_;
 }
 
+void Process::set_privatized_region(smpi_privatization_region_t region)
+{
+  privatized_region_ = region;
+}
+
+smpi_privatization_region_t Process::privatized_region()
+{
+  return privatized_region_;
+}
+
 int Process::index()
 {
   return index_;
