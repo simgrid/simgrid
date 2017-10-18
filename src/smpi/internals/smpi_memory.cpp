@@ -163,18 +163,18 @@ void smpi_initialize_global_memory_segments()
 // Initializes the memory mapping for a single process and returns the privatization region
 smpi_privatization_region_t smpi_init_global_memory_segment_process()
 {
-    int file_descriptor;
-    void* address = nullptr;
-    char path[24];
-    int status;
+  int file_descriptor;
+  void* address = nullptr;
+  char path[24];
+  int status;
 
-    do {
-      snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffffU);
-      file_descriptor = shm_open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
-    } while (file_descriptor == -1 && errno == EEXIST);
-    if (file_descriptor < 0) {
-      if (errno == EMFILE) {
-        xbt_die("Impossible to create temporary file for memory mapping: %s\n\
+  do {
+    snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand() % 0xffffffU);
+    file_descriptor = shm_open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+  } while (file_descriptor == -1 && errno == EEXIST);
+  if (file_descriptor < 0) {
+    if (errno == EMFILE) {
+      xbt_die("Impossible to create temporary file for memory mapping: %s\n\
 The open() system call failed with the EMFILE error code (too many files). \n\n\
 This means that you reached the system limits concerning the amount of files per process. \
 This is not a surprise if you are trying to virtualize many processes on top of SMPI. \
@@ -186,36 +186,36 @@ First, check what your limits are:\n\
   cat /proc/self/limits     # Displays any per-process limitation (including the one given above)\n\n\
 If one of these values is less than the amount of MPI processes that you try to run, then you got the explanation of this error. \
 Ask the Internet about tutorials on how to increase the files limit such as: https://rtcamp.com/tutorials/linux/increase-open-files-limit/",
-                strerror(errno));
-      }
-      xbt_die("Impossible to create temporary file for memory mapping: %s", strerror(errno));
+              strerror(errno));
     }
+    xbt_die("Impossible to create temporary file for memory mapping: %s", strerror(errno));
+  }
 
-    status = ftruncate(file_descriptor, smpi_data_exe_size);
-    if (status)
-      xbt_die("Impossible to set the size of the temporary file for memory mapping");
+  status = ftruncate(file_descriptor, smpi_data_exe_size);
+  if (status)
+    xbt_die("Impossible to set the size of the temporary file for memory mapping");
 
-    /* Ask for a free region */
-    address = mmap(nullptr, smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
-    if (address == MAP_FAILED)
-      xbt_die("Couldn't find a free region for memory mapping");
+  /* Ask for a free region */
+  address = mmap(nullptr, smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
+  if (address == MAP_FAILED)
+    xbt_die("Couldn't find a free region for memory mapping");
 
-    status = shm_unlink(path);
-    if (status)
-      xbt_die("Impossible to unlink temporary file for memory mapping");
+  status = shm_unlink(path);
+  if (status)
+    xbt_die("Impossible to unlink temporary file for memory mapping");
 
-    // initialize the values
-    asan_safe_memcpy(address, smpi_data_exe_copy, smpi_data_exe_size);
+  // initialize the values
+  asan_safe_memcpy(address, smpi_data_exe_copy, smpi_data_exe_size);
 
-    // store the address of the mapping for further switches
-    smpi_privatization_region_t tmp =
-        static_cast<smpi_privatization_region_t>(xbt_malloc(sizeof(struct s_smpi_privatization_region)));
-  
-    tmp->file_descriptor = file_descriptor;
-    tmp->address         = address;
-    smpi_privatization_regions.insert(tmp);
-  
-    return tmp;
+  // store the address of the mapping for further switches
+  smpi_privatization_region_t tmp =
+      static_cast<smpi_privatization_region_t>(new struct s_smpi_privatization_region_t);
+
+  tmp->file_descriptor = file_descriptor;
+  tmp->address         = address;
+  smpi_privatization_regions.insert(tmp);
+
+  return tmp;
 }
 
 void smpi_destroy_global_memory_segments(){
