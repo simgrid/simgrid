@@ -49,10 +49,7 @@ void TRACE_msg_task_execute_start(msg_task_t task)
   XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
     simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = state->getEntityValue("task_execute");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
@@ -64,10 +61,7 @@ void TRACE_msg_task_execute_end(msg_task_t task)
   XBT_DEBUG("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
     simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
@@ -89,10 +83,7 @@ void TRACE_msg_task_get_start()
   XBT_DEBUG("GET,in");
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
     simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = state->getEntityValue("receive");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
@@ -104,10 +95,7 @@ void TRACE_msg_task_get_end(double start_time, msg_task_t task)
   XBT_DEBUG("GET,out %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
     simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
 
@@ -124,10 +112,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
   XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
     simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = type->getEntityValue("send");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
@@ -146,10 +131,7 @@ void TRACE_msg_task_put_end()
   XBT_DEBUG("PUT,out");
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
     simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }

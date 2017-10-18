@@ -10,33 +10,20 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
-char *instr_process_id (msg_process_t proc, char *str, int len)
+std::string instr_process_id(msg_process_t proc)
 {
-  return instr_process_id_2(proc->getCname(), proc->getPid(), str, len);
+  return proc->getName() + "-" + std::to_string(proc->getPid());
 }
 
-char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len)
-{
-  snprintf (str, len, "%s-%d", process_name, process_pid);
-  return str;
-}
-
-/*
- * Instrumentation functions to trace MSG processes (msg_process_t)
- */
 void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 {
   if (TRACE_msg_process_is_enabled()){
     static long long int counter = 0;
 
-    char key[INSTR_DEFAULT_STR_SIZE];
-    snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
-
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
+    std::string key = std::to_string(counter++);
 
     //start link
-    container_t msg            = simgrid::instr::Container::byName(instr_process_id(process, str, len));
+    container_t msg            = simgrid::instr::Container::byName(instr_process_id(process));
     simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_LINK");
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
@@ -47,7 +34,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
     TRACE_msg_process_create (MSG_process_get_name (process), MSG_process_get_PID (process), new_host);
 
     //end link
-    msg  = simgrid::instr::Container::byName(instr_process_id(process, str, len));
+    msg  = simgrid::instr::Container::byName(instr_process_id(process));
     type = simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_LINK");
     new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
@@ -56,11 +43,8 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host)
 {
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
     container_t host_container = simgrid::instr::Container::byName(host->getName());
-    new simgrid::instr::Container(instr_process_id_2(process_name, process_pid, str, len),
+    new simgrid::instr::Container(std::string(process_name) + "-" + std::to_string(process_pid),
                                   simgrid::instr::INSTR_MSG_PROCESS, host_container);
   }
 }
@@ -68,11 +52,8 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
 void TRACE_msg_process_destroy (const char *process_name, int process_pid)
 {
   if (TRACE_msg_process_is_enabled()) {
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
     container_t process =
-        simgrid::instr::Container::byNameOrNull(instr_process_id_2(process_name, process_pid, str, len));
+        simgrid::instr::Container::byNameOrNull(std::string(process_name) + "-" + std::to_string(process_pid));
     if (process) {
       process->removeFromParent();
       delete process;
@@ -82,7 +63,7 @@ void TRACE_msg_process_destroy (const char *process_name, int process_pid)
 
 void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process)
 {
-  if (TRACE_msg_process_is_enabled() && status==SMX_EXIT_FAILURE){
+  if (TRACE_msg_process_is_enabled() && status == SMX_EXIT_FAILURE) {
     //kill means that this process no longer exists, let's destroy it
     TRACE_msg_process_destroy(process->getCname(), process->getPid());
   }
@@ -91,10 +72,7 @@ void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t proc
 void TRACE_msg_process_suspend(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process, str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
     simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = state->getEntityValue("suspend");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
@@ -104,10 +82,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
 void TRACE_msg_process_resume(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process, str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
     simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }
@@ -116,10 +91,7 @@ void TRACE_msg_process_resume(msg_process_t process)
 void TRACE_msg_process_sleep_in(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process, str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
     simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
     simgrid::instr::Value* val    = state->getEntityValue("sleep");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
@@ -129,10 +101,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
 void TRACE_msg_process_sleep_out(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process, str, len));
+    container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
     simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
   }

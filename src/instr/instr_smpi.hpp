@@ -10,6 +10,8 @@
 #include "src/instr/instr_private.hpp"
 #include <string>
 
+XBT_PRIVATE std::string smpi_container(int rank);
+
 extern "C" {
 
 XBT_PRIVATE void TRACE_internal_smpi_set_category(const char* category);
@@ -32,7 +34,6 @@ XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
 XBT_PRIVATE void TRACE_smpi_recv(int src, int dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(int rank);
 XBT_PRIVATE void TRACE_smpi_finalize(int rank);
-XBT_PRIVATE std::string smpi_container(int rank);
 
 XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype, int* known);
 

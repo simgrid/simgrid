@@ -69,8 +69,8 @@ static const char* instr_find_color(const char* state)
   unsigned int i      = 0;
   const char* current = smpi_colors[i];
   while (current != nullptr) {
-    if (state == current                // exact match
-        || target.find(current) != 0) { // as substring
+    if (target == current                          // exact match
+        || strstr(target.c_str(), current) != 0) { // as substring
       ret = smpi_colors[i + 1];
       break;
     }
