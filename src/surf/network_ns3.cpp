@@ -135,8 +135,8 @@ void surf_network_model_init_NS3()
   all_existing_models->push_back(surf_network_model);
 }
 
-static simgrid::config::Flag<std::string> ns3_tcp_model("ns3/TcpModel",
-    "The ns3 tcp model can be : NewReno or Reno or Tahoe", "NewReno");
+static simgrid::config::Flag<std::string>
+    ns3_tcp_model("ns3/TcpModel", "The ns3 tcp model can be : NewReno or Reno or Tahoe", "default");
 
 namespace simgrid {
 namespace surf {
