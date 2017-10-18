@@ -349,7 +349,8 @@ if __name__ == '__main__':
     fd.write('          sg_host_get_name(simcall->issuer->host)\n')
     fd.write('          );\n')
     fd.write('      break;\n')
-    fd.write('\n')
+    fd.write('    default:\n')
+    fd.write('      THROW_IMPOSSIBLE;\n')
     fd.write('  }\n')
     fd.write('}\n')
 

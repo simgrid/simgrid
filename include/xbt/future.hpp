@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <xbt/ex.h>
 
 namespace simgrid {
 namespace xbt {
@@ -53,6 +54,8 @@ public:
       case ResultStatus::exception:
         new (&exception_) T(that.exception);
         break;
+      default:
+        THROW_IMPOSSIBLE;
     }
     return *this;
   }
@@ -74,6 +77,8 @@ public:
         new (&exception_) T(std::move(that.exception));
         that.exception.~exception_ptr();
         break;
+      default:
+        THROW_IMPOSSIBLE;
     }
     that.status_ = ResultStatus::invalid;
     return *this;
@@ -94,6 +99,8 @@ public:
       case ResultStatus::exception:
         exception_.~exception_ptr();
         break;
+      default:
+        THROW_IMPOSSIBLE;
     }
     status_ = ResultStatus::invalid;
   }

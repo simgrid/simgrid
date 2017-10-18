@@ -818,6 +818,8 @@ void ETag_surfxml_zoneRoute()
   case A_surfxml_zoneRoute_symmetrical_NO:
     ASroute.symmetrical = false;
     break;
+  default:
+    THROW_IMPOSSIBLE;
   }
 
   sg_platf_new_route(&ASroute);

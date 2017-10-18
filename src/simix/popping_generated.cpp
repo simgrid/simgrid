@@ -231,6 +231,7 @@ case SIMCALL_RUN_BLOCKING:
           sg_host_get_name(simcall->issuer->host)
           );
       break;
-
+    default:
+      THROW_IMPOSSIBLE;
   }
 }

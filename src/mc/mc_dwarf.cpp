@@ -681,6 +681,10 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   }
 
   switch (type.type) {
+  default:
+    XBT_DEBUG("Unhandled type: %d (%s)", type.type, simgrid::dwarf::tagname(type.type));
+    break;
+
   case DW_TAG_array_type:
     type.element_count = MC_dwarf_array_element_count(die, unit);
     // TODO, handle DW_byte_stride and (not) DW_bit_stride

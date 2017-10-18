@@ -205,6 +205,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
   case simgrid::mc::RequestType::internal:
     use_remote_comm = false;
     break;
+  default:
+    THROW_IMPOSSIBLE;
   }
 
   const char* type = nullptr;

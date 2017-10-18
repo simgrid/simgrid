@@ -7,6 +7,9 @@
 
 #include "xbt/automaton.h"
 #include <stdio.h> /* printf */
+#include <xbt/log.h>
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_automaton, xbt, "Automaton");
 
 struct xbt_automaton_propositional_symbol{
   char* pred;
@@ -81,6 +84,12 @@ xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...){
   case 3 :
     p = va_arg(ap, char*);
     label->u.predicat = xbt_strdup(p);
+    break;
+  case 4:
+    break;
+  default:
+    XBT_DEBUG("Invalid type: %d", type);
+    xbt_free(label);
     break;
   }
   va_end(ap);
