@@ -25,6 +25,7 @@
 #include "src/xbt/memory_map.hpp"
 
 #include "private.hpp"
+#include "smpi_process.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
@@ -33,8 +34,11 @@ char* smpi_data_exe_start = nullptr;
 int smpi_data_exe_size    = 0;
 int smpi_privatize_global_variables;
 static char* smpi_data_exe_copy;
-smpi_privatization_region_t smpi_privatization_regions;
-// static std::set smpi_privatization_regions;
+
+// We keep a copy of all the privatization regions: We can then delete everything easily by iterating over this
+// collection and nothing can be leaked. We could also iterate over all actors but we would have to be diligent when two
+// actors use the same privatization region (so, smart pointers would have to be used etc.)
+static std::set<smpi_privatization_region_t> smpi_privatization_regions;
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
 static const int PROT_RW  = (PROT_READ | PROT_WRITE );
@@ -113,12 +117,9 @@ void smpi_really_switch_data_segment(int dest)
     return;
 
 #if HAVE_PRIVATIZATION
-  if (smpi_loaded_page == -1) { // initial switch, do the copy from the real page here
-    asan_safe_memcpy(smpi_data_exe_copy, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
-  }
-
   // FIXME, cross-process support (mmap across process when necessary)
-  int current = smpi_privatization_regions[dest].file_descriptor;
+  simgrid::smpi::Process* process = smpi_process_remote(dest);
+  int current                     = process->privatized_region()->file_descriptor;
   XBT_DEBUG("Switching data frame to the one of process %d", dest);
   void* tmp =
       mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
@@ -134,6 +135,8 @@ int smpi_is_privatization_file(char* file)
   return buffer_path.compare(0, std::string::npos, file, buffer_path.length()) == 0;
 }
 
+// TODO: cheinrich: The behavior changed; this now only makes a backup of the
+// data segment. I think the function should be renamed.
 void smpi_initialize_global_memory_segments()
 {
 #if HAVE_PRIVATIZATION
@@ -147,11 +150,19 @@ void smpi_initialize_global_memory_segments()
   }
 
   smpi_data_exe_copy = (char*)malloc(smpi_data_exe_size);
+  // Make a copy of the data segment. This clean copy is retained over the whole runtime
+  // of the simulation and can be used to initialize a dynamically added, new process.
   asan_safe_memcpy(smpi_data_exe_copy, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
-  smpi_privatization_regions = new s_smpi_privatization_region_t[smpi_process_count()];
+#else /* ! HAVE_PRIVATIZATION */
+  smpi_privatize_global_variables = false;
+  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
+  return;
+#endif
+}
 
-  for (int i=0; i< smpi_process_count(); i++){
-    // create SIMIX_process_count() mappings of this size with the same data inside
+// Initializes the memory mapping for a single process and returns the privatization region
+smpi_privatization_region_t smpi_init_global_memory_segment_process()
+{
     int file_descriptor;
     void* address = nullptr;
     char path[24];
@@ -197,26 +208,25 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
     asan_safe_memcpy(address, smpi_data_exe_copy, smpi_data_exe_size);
 
     // store the address of the mapping for further switches
-    smpi_privatization_regions[i].file_descriptor = file_descriptor;
-    smpi_privatization_regions[i].address         = address;
-  }
-#else /* ! HAVE_PRIVATIZATION */
-  smpi_privatize_global_variables = false;
-  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
-  return;
-#endif
+    smpi_privatization_region_t tmp =
+        static_cast<smpi_privatization_region_t>(xbt_malloc(sizeof(struct s_smpi_privatization_region)));
+  
+    tmp->file_descriptor = file_descriptor;
+    tmp->address         = address;
+    smpi_privatization_regions.insert(tmp);
+  
+    return tmp;
 }
 
 void smpi_destroy_global_memory_segments(){
   if (smpi_data_exe_size == 0) // no need to switch
     return;
 #if HAVE_PRIVATIZATION
-  for (int i=0; i< smpi_process_count(); i++) {
-    if (munmap(smpi_privatization_regions[i].address, smpi_data_exe_size) < 0)
-      XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatization_regions[i].file_descriptor, strerror(errno));
-    close(smpi_privatization_regions[i].file_descriptor);
+  for (auto& it : smpi_privatization_regions) {
+    if (munmap(it->address, smpi_data_exe_size) < 0)
+      XBT_WARN("Unmapping of fd %d failed: %s", it->file_descriptor, strerror(errno));
+    close(it->file_descriptor);
   }
-  delete[] smpi_privatization_regions;
 #endif
 }
 
