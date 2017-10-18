@@ -48,7 +48,7 @@ public:
     switch (that.status_) {
       case ResultStatus::invalid:
         break;
-      case ResultStatus::valid:
+      case ResultStatus::value:
         new (&value_) T(that.value);
         break;
       case ResultStatus::exception:
@@ -69,7 +69,7 @@ public:
     switch (that.status_) {
       case ResultStatus::invalid:
         break;
-      case ResultStatus::valid:
+      case ResultStatus::value:
         new (&value_) T(std::move(that.value));
         that.value.~T();
         break;
