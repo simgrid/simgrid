@@ -21,13 +21,12 @@
 
 extern "C" {
 
-struct dirty_page {
+struct s_dirty_page {
   double prev_clock;
   double prev_remaining;
   msg_task_t task;
 };
-typedef struct dirty_page s_dirty_page;
-typedef struct dirty_page* dirty_page_t;
+typedef s_dirty_page* dirty_page_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 
@@ -171,8 +170,8 @@ void MSG_vm_destroy(msg_vm_t vm)
   simgrid::simix::kernelImmediate([vm]() { vm->destroy(); });
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t container = PJ_container_get(vm->getCname());
-    PJ_container_remove_from_parent(container);
+    container_t container = simgrid::instr::Container::byName(vm->getName());
+    container->removeFromParent();
     delete container;
   }
 }
@@ -186,9 +185,9 @@ void MSG_vm_start(msg_vm_t vm)
 {
   vm->start();
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
-    simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
-    simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("start", "0 0 1", type); // start is blue
+    container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
+    simgrid::instr::Type* type = vm_container->type_->byName("MSG_VM_STATE");
+    simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("start", "0 0 1", type); // start is blue
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
 }
@@ -242,7 +241,7 @@ static int migration_rx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: rx_start");
 
   // The structure has been created in the do_migration function and should only be freed in the same place ;)
-  struct migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
+  migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
 
   bool received_finalize = false;
 
@@ -295,22 +294,22 @@ static int migration_rx_fun(int argc, char *argv[])
     counter++;
 
     // start link
-    container_t msg = PJ_container_get(vm->getCname());
-    simgrid::instr::Type* type = PJ_type_get_root()->getChild("MSG_VM_LINK");
+    container_t msg            = simgrid::instr::Container::byName(vm->getName());
+    simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MSG_VM_LINK");
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     // destroy existing container of this vm
-    container_t existing_container = PJ_container_get(vm->getCname());
-    PJ_container_remove_from_parent(existing_container);
+    container_t existing_container = simgrid::instr::Container::byName(vm->getName());
+    existing_container->removeFromParent();
     delete existing_container;
 
     // create new container on the new_host location
     new simgrid::instr::Container(vm->getCname(), simgrid::instr::INSTR_MSG_VM,
-                                  PJ_container_get(ms->dst_pm->getCname()));
+                                  simgrid::instr::Container::byName(ms->dst_pm->getName()));
 
     // end link
-    msg  = PJ_container_get(vm->getCname());
-    type = PJ_type_get_root()->getChild("MSG_VM_LINK");
+    msg  = simgrid::instr::Container::byName(vm->getName());
+    type = simgrid::instr::Type::getRootType()->byName("MSG_VM_LINK");
     new simgrid::instr::EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 
@@ -507,7 +506,7 @@ static int migration_tx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: tx_start");
 
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
-  migration_session *ms = static_cast<migration_session *>(MSG_process_get_data(MSG_process_self()));
+  migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
 
   double host_speed = ms->vm->pimpl_vm_->getPm()->getSpeed();
   s_vm_params_t params;
@@ -706,7 +705,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 
   vm->pimpl_vm_->isMigrating = true;
 
-  struct migration_session *ms = xbt_new(struct migration_session, 1);
+  migration_session* ms = xbt_new(migration_session, 1);
   ms->vm = vm;
   ms->src_pm = src_pm;
   ms->dst_pm = dst_pm;
@@ -769,9 +768,9 @@ void MSG_vm_suspend(msg_vm_t vm)
   XBT_DEBUG("vm_suspend done");
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
-    simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
-    simgrid::instr::Value* val = simgrid::instr::Value::get_or_new("suspend", "1 0 0", type); // suspend is red
+    container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
+    simgrid::instr::Type* type = vm_container->type_->byName("MSG_VM_STATE");
+    simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate("suspend", "1 0 0", type); // suspend is red
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, type, val);
   }
 }
@@ -786,8 +785,8 @@ void MSG_vm_resume(msg_vm_t vm)
   vm->pimpl_vm_->resume();
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container = PJ_container_get(vm->getCname());
-    simgrid::instr::Type* type = vm_container->type_->getChild("MSG_VM_STATE");
+    container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
+    simgrid::instr::Type* type = vm_container->type_->byName("MSG_VM_STATE");
     new simgrid::instr::PopStateEvent(MSG_get_clock(), vm_container, type);
   }
 }

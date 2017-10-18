@@ -162,7 +162,8 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
  *
  * If pthread_setaffinity_np is not usable on that (non-gnu) platform, this function does nothing.
  */
-int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
+int xbt_os_thread_bind(xbt_os_thread_t XBT_ATTRIB_UNUSED thread, int XBT_ATTRIB_UNUSED cpu)
+{
   int errcode = 0;
 #if HAVE_PTHREAD_SETAFFINITY
   pthread_t pthread = thread->t;

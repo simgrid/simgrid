@@ -94,8 +94,7 @@ void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
 
-  XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->name().c_str(), src->id(), dst->name().c_str(),
-           dst->id());
+  XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
 
   if (dst->isRouter() || src->isRouter())
     return;

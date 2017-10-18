@@ -12,8 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 void TRACE_surf_host_set_speed(double date, const char *resource, double speed)
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
-    container_t container = PJ_container_get(resource);
-    simgrid::instr::Type* type = container->type_->getChild("power");
+    container_t container      = simgrid::instr::Container::byName(resource);
+    simgrid::instr::Type* type = container->type_->byName("power");
     new simgrid::instr::SetVariableEvent(date, container, type, speed);
   }
 }
@@ -21,8 +21,8 @@ void TRACE_surf_host_set_speed(double date, const char *resource, double speed)
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth)
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
-    container_t container = PJ_container_get(resource);
-    simgrid::instr::Type* type = container->type_->getChild("bandwidth");
+    container_t container      = simgrid::instr::Container::byName(resource);
+    simgrid::instr::Type* type = container->type_->byName("bandwidth");
     new simgrid::instr::SetVariableEvent(date, container, type, bandwidth);
   }
 }

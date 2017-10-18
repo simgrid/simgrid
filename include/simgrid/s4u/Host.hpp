@@ -66,7 +66,9 @@ public:
   /** Retrieves the host on which the current actor is running */
   static s4u::Host* current();
 
+  /** Retrieves the name of that host as a C++ string */
   simgrid::xbt::string const& getName() const { return name_; }
+  /** Retrieves the name of that host as a C string */
   const char* getCname() const { return name_.c_str(); }
 
   void actorList(std::vector<ActorPtr> * whereto);

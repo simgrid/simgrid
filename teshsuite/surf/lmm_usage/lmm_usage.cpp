@@ -23,11 +23,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 /*  ==l1==  L2  ==L3==           */
 /*        ------                 */
 
-typedef enum {
-  MAXMIN,
-  LAGRANGE_RENO,
-  LAGRANGE_VEGAS
-} method_t;
+enum method_t { MAXMIN, LAGRANGE_RENO, LAGRANGE_VEGAS };
 
 static double dichotomy(double func(double), double min, double max, double min_error)
 {

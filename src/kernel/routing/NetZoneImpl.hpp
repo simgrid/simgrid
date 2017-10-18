@@ -89,7 +89,8 @@ public:
   static void getGlobalRoute(routing::NetPoint * src, routing::NetPoint * dst,
                              /* OUT */ std::vector<surf::LinkImpl*> * links, double* latency);
 
-  virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) = 0;
+  virtual void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t> * nodes,
+                        std::map<std::string, xbt_edge_t> * edges) = 0;
   enum class RoutingMode {
     unset = 0, /**< Undefined type                                   */
     base,      /**< Base case: use simple link lists for routing     */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,8 @@
 #define REQUEST_TAG 1
 #define RELEASE_TAG 2
 
-int r, cs;
+int r;
+int cs;
 
 int main(int argc, char **argv){
   int size;

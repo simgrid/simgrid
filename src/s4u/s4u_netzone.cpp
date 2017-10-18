@@ -63,7 +63,7 @@ std::vector<NetZone*>* NetZone::getChildren()
 {
   return children_;
 }
-const char* NetZone::getCname()
+const char* NetZone::getCname() const
 {
   return name_.c_str();
 }
@@ -75,7 +75,7 @@ NetZone* NetZone::getFather()
 void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
 {
   for (auto const& card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->getName());
     if (host != nullptr)
       whereto->push_back(host);
   }

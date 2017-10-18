@@ -3,8 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi_comm.hpp"
 #include "smpi_group.hpp"
+#include "smpi_comm.hpp"
+#include <string>
+#include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
 
@@ -224,7 +226,7 @@ int Group::excl(int n, int *ranks, MPI_Group * newgroup){
   int oldsize = size_;
   int newsize = oldsize - n;
   *newgroup = new  Group(newsize);
-  int* to_exclude=xbt_new0(int, size_);
+  int* to_exclude = new int[size_];
   for (int i     = 0; i < oldsize; i++)
     to_exclude[i]=0;
   for (int i            = 0; i < n; i++)
@@ -237,7 +239,7 @@ int Group::excl(int n, int *ranks, MPI_Group * newgroup){
       j++;
     }
   }
-  xbt_free(to_exclude);
+  delete[] to_exclude;
   return MPI_SUCCESS;
 
 }

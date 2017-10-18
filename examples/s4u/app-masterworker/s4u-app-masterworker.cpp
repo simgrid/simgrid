@@ -37,7 +37,7 @@ public:
 
       if (number_of_tasks < 10000 || i % 10000 == 0)
         XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", (std::string("Task_") + std::to_string(i)).c_str(),
-                 number_of_tasks, mailbox->getName());
+                 number_of_tasks, mailbox->getCname());
 
       /* - Send the computation amount to the @ref worker */
       mailbox->put(new double(comp_size), comm_size);

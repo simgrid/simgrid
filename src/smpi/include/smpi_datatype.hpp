@@ -30,47 +30,46 @@
 extern const MPI_Datatype MPI_PTR;
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
-typedef struct {
+struct float_int {
   float value;
   int index;
-} float_int;
-typedef struct {
+};
+struct float_float {
   float value;
   float index;
-} float_float;
-typedef struct {
+};
+struct long_long {
   long value;
   long index;
-} long_long;
-typedef struct {
+};
+struct double_double {
   double value;
   double index;
-} double_double;
-typedef struct {
+};
+struct long_int {
   long value;
   int index;
-} long_int;
-typedef struct {
+};
+struct double_int {
   double value;
   int index;
-} double_int;
-typedef struct {
+};
+struct short_int {
   short value;
   int index;
-} short_int;
-typedef struct {
+};
+struct int_int {
   int value;
   int index;
-} int_int;
-typedef struct {
+};
+struct long_double_int {
   long double value;
   int index;
-} long_double_int;
-typedef struct {
+};
+struct integer128_t {
   int64_t value;
   int64_t index;
-} integer128_t;
-
+};
 
 namespace simgrid{
 namespace smpi{

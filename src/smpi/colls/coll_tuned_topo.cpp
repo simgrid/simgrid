@@ -101,7 +101,7 @@ ompi_coll_tuned_topo_build_tree( int fanout,
     size = comm->size();
     rank = comm->rank();
 
-    tree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
+    tree = new ompi_coll_tree_t;
     if (not tree) {
       XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
       return NULL;
@@ -201,7 +201,7 @@ ompi_coll_tuned_topo_build_in_order_bintree( MPI_Comm comm )
     size = comm->size();
     rank = comm->rank();
 
-    tree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
+    tree = new ompi_coll_tree_t;
     if (not tree) {
       XBT_DEBUG("coll:tuned:topo_build_tree PANIC::out of memory");
       return NULL;
@@ -304,7 +304,7 @@ int ompi_coll_tuned_topo_destroy_tree( ompi_coll_tree_t** tree )
 
     ptr = *tree;
 
-    free (ptr);
+    delete ptr;
     *tree = NULL;   /* mark tree as gone */
 
     return MPI_SUCCESS;
@@ -345,7 +345,7 @@ ompi_coll_tuned_topo_build_bmtree( MPI_Comm comm,
 
     index = rank -root;
 
-    bmtree = (ompi_coll_tree_t*)malloc(sizeof(ompi_coll_tree_t));
+    bmtree = new ompi_coll_tree_t;
     if (not bmtree) {
       XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
       return NULL;
@@ -424,7 +424,7 @@ ompi_coll_tree_t* ompi_coll_tuned_topo_build_in_order_bmtree(MPI_Comm comm, int 
 
     vrank = (rank - root + size) % size;
 
-    bmtree = (ompi_coll_tree_t*)xbt_malloc(sizeof(ompi_coll_tree_t));
+    bmtree = new ompi_coll_tree_t;
     if (not bmtree) {
       XBT_DEBUG("coll:tuned:topo:build_bmtree PANIC out of memory");
       return NULL;
@@ -494,7 +494,7 @@ ompi_coll_tuned_topo_build_chain( int fanout,
     /*
      * Allocate space for topology arrays if needed
      */
-    chain = (ompi_coll_tree_t*)malloc( sizeof(ompi_coll_tree_t) );
+    chain = new ompi_coll_tree_t;
     if (not chain) {
       XBT_DEBUG("coll:tuned:topo:build_chain PANIC out of memory");
       fflush(stdout);

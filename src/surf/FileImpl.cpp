@@ -29,7 +29,7 @@ FileImpl::FileImpl(sg_storage_t st, std::string path, std::string mount) : path_
 
 Action* FileImpl::read(sg_size_t size)
 {
-  XBT_DEBUG("READ %s on disk '%s'", cname(), location_->cname());
+  XBT_DEBUG("READ %s on disk '%s'", getCname(), location_->getCname());
   if (current_position_ + size > size_) {
     if (current_position_ > size_) {
       size = 0;
@@ -45,7 +45,7 @@ Action* FileImpl::read(sg_size_t size)
 
 Action* FileImpl::write(sg_size_t size)
 {
-  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", cname(), location_->cname(), size, size_);
+  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getCname(), location_->getCname(), size, size_);
 
   StorageAction* action = location_->write(size);
   action->file_         = this;
@@ -79,10 +79,10 @@ int FileImpl::unlink()
 {
   /* Check if the file is on this storage */
   if (location_->getContent()->find(path_) == location_->getContent()->end()) {
-    XBT_WARN("File %s is not on disk %s. Impossible to unlink", cname(), location_->cname());
+    XBT_WARN("File %s is not on disk %s. Impossible to unlink", getCname(), location_->getCname());
     return -1;
   } else {
-    XBT_DEBUG("UNLINK %s on disk '%s'", cname(), location_->cname());
+    XBT_DEBUG("UNLINK %s on disk '%s'", getCname(), location_->getCname());
     location_->usedSize_ -= size_;
 
     // Remove the file from storage

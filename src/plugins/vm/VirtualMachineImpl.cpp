@@ -174,7 +174,7 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
   if (getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->getCname());
   if (issuer->host == piface_)
-    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->cname(), piface_->getCname());
+    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->getCname(), piface_->getCname());
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
   XBT_DEBUG("suspend VM(%s), where %d processes exist", piface_->getCname(), xbt_swag_size(process_list));
@@ -206,7 +206,7 @@ void VirtualMachineImpl::resume()
   smx_actor_t smx_process;
   smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("resume %s", smx_process->cname());
+    XBT_DEBUG("resume %s", smx_process->getCname());
     smx_process->resume();
   }
 
@@ -247,8 +247,8 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
   smx_actor_t smx_process;
   smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process->cname(), smx_process->host->getCname(),
-              issuer->cname());
+    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process->getCname(),
+              smx_process->host->getCname(), issuer->getCname());
     SIMIX_process_kill(smx_process, issuer);
   }
 

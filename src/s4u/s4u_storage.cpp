@@ -30,9 +30,14 @@ Storage* Storage::byName(std::string name)
   return &res->piface_;
 }
 
-const char* Storage::getName()
+const std::string& Storage::getName() const
 {
-  return pimpl_->cname();
+  return pimpl_->getName();
+}
+
+const char* Storage::getCname() const
+{
+  return pimpl_->getCname();
 }
 
 const char* Storage::getType()

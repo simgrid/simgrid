@@ -6,6 +6,7 @@
 #include "simgrid/s4u.hpp"
 #include "xbt/replay.hpp"
 #include "xbt/str.h"
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions, "Messages specific for this msg example");
 
@@ -59,13 +60,13 @@ public:
   static void send(const char* const* action)
   {
     double size                 = std::stod(action[3]);
-    char* payload               = xbt_strdup(action[3]);
+    std::string* payload        = new std::string(action[3]);
     double clock                = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getName() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
-              simgrid::s4u::this_actor::getName().c_str(), to->getName());
+              simgrid::s4u::this_actor::getCname(), to->getCname());
     to->put(payload, size);
-    xbt_free(payload);
+    delete payload;
 
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
@@ -76,8 +77,7 @@ public:
     simgrid::s4u::MailboxPtr from =
         simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::getName());
 
-    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::getName().c_str(),
-              from->getName());
+    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::getCname(), from->getCname());
     from->get();
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }

@@ -74,19 +74,24 @@ XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);
 XBT_PUBLIC(void) xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void *) xbt_dict_get(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void *) xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
-XBT_PUBLIC(char *) xbt_dict_get_key(xbt_dict_t dict, const void *data);
-XBT_PUBLIC(char *) xbt_dict_get_elm_key(xbt_dictelm_t elem);
+XBT_PUBLIC(char*) xbt_dict_get_key(xbt_dict_t dict, const void* data);
+XBT_PUBLIC(char*)
+XBT_ATTRIB_DEPRECATED_v321("xbt_dict is dying. v3.21 will turn this warning into an error.")
+    xbt_dict_get_elm_key(xbt_dictelm_t elem);
 XBT_PUBLIC(xbt_dictelm_t) xbt_dict_get_elm(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(xbt_dictelm_t) xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key);
 
 XBT_PUBLIC(void) xbt_dict_remove(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void) xbt_dict_reset(xbt_dict_t dict);
 XBT_PUBLIC(int) xbt_dict_length(xbt_dict_t dict);
-XBT_PUBLIC(void) xbt_dict_dump_output_string(void *s);
+XBT_PUBLIC(void)
+XBT_ATTRIB_DEPRECATED_v321("xbt_dict is dying. v3.21 will turn this warning into an error.")
+    xbt_dict_dump_output_string(void* s);
 XBT_PUBLIC(void) xbt_dict_dump(xbt_dict_t dict, void (*output) (void *));
-XBT_PUBLIC(void) xbt_dict_dump_sizes(xbt_dict_t dict);
+XBT_PUBLIC(void)
+XBT_ATTRIB_DEPRECATED_v321("xbt_dict is dying. v3.21 will turn this warning into an error.")
+    xbt_dict_dump_sizes(xbt_dict_t dict);
 XBT_PUBLIC(int) xbt_dict_is_empty(xbt_dict_t dict);
-
 
 /** @} */
 /** @defgroup XBT_dict_nnul Dictionaries with non-nul terminated keys
@@ -97,8 +102,8 @@ XBT_PUBLIC(int) xbt_dict_is_empty(xbt_dict_t dict);
  *  @{
  */
 XBT_PUBLIC(void) xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data, void_f_pvoid_t free_ctn);
-XBT_PUBLIC(void *) xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len);
-XBT_PUBLIC(void *) xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len);
+XBT_PUBLIC(void*) xbt_dict_get_ext(xbt_dict_t dict, const char* key, int key_len);
+XBT_PUBLIC(void*) xbt_dict_get_or_null_ext(xbt_dict_t dict, const char* key, int key_len);
 XBT_PUBLIC(void) xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len);
 
 struct s_xbt_dict_cursor {
@@ -141,10 +146,11 @@ XBT_PUBLIC(void) xbt_dict_cursor_free(xbt_dict_cursor_t * cursor);
 
 XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);
 
-xbt_dictelm_t xbt_dict_cursor_get_elm(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(char *) xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(void *) xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor);
-XBT_PUBLIC(void) xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor, void *data, void_f_pvoid_t free_ctn);
+XBT_PUBLIC(void)
+XBT_ATTRIB_DEPRECATED_v321("xbt_dict is dying. v3.21 will turn this warning into an error.")
+    xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor, void* data, void_f_pvoid_t free_ctn);
 
 XBT_PUBLIC(void) xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cursor);
 XBT_PUBLIC(void) xbt_dict_cursor_step(xbt_dict_cursor_t cursor);

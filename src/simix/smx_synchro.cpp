@@ -168,7 +168,7 @@ void MutexImpl::unlock(smx_actor_t issuer)
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != this->owner)
     THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%lu), not by you.",
-           this->owner->cname(), this->owner->pid);
+           this->owner->getCname(), this->owner->pid);
 
   if (xbt_swag_size(this->sleeping) > 0) {
     /*process to wake up */
@@ -232,7 +232,7 @@ smx_cond_t SIMIX_cond_init()
 {
   XBT_IN("()");
   simgrid::simix::ActorImpl p;
-  smx_cond_t cond = new s_smx_cond();
+  smx_cond_t cond = new s_smx_cond_t();
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->refcount_ = 1;
   XBT_OUT();
@@ -386,7 +386,7 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
   XBT_IN("(%u)",value);
   simgrid::simix::ActorImpl p;
 
-  smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
+  smx_sem_t sem = new s_smx_sem_t;
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   sem->value = value;
   XBT_OUT();
@@ -402,7 +402,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
     xbt_assert(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
     xbt_swag_free(sem->sleeping);
-    xbt_free(sem);
+    delete sem;
   }
   XBT_OUT();
 }

@@ -146,8 +146,7 @@ void smpi_initialize_global_memory_segments()
     return;
   }
 
-  smpi_privatization_regions = static_cast<smpi_privatization_region_t>(
-      xbt_malloc(smpi_process_count() * sizeof(struct s_smpi_privatization_region)));
+  smpi_privatization_regions = new s_smpi_privatization_region_t[smpi_process_count()];
 
   for (int i=0; i< smpi_process_count(); i++){
     // create SIMIX_process_count() mappings of this size with the same data inside
@@ -215,7 +214,7 @@ void smpi_destroy_global_memory_segments(){
       XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatization_regions[i].file_descriptor, strerror(errno));
     close(smpi_privatization_regions[i].file_descriptor);
   }
-  xbt_free(smpi_privatization_regions);
+  delete[] smpi_privatization_regions;
 #endif
 }
 

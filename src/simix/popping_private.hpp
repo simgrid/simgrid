@@ -52,8 +52,8 @@ struct s_smx_simcall {
   smx_actor_t issuer;
   smx_timer_t timer;
   int mc_value;
-  union u_smx_scalar args[11];
-  union u_smx_scalar result;
+  u_smx_scalar args[11];
+  u_smx_scalar result;
 };
 
 #define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall)->mc_value = (value))
@@ -186,6 +186,7 @@ template <class T> inline typename std::remove_reference<T>::type unmarshal_raw(
 
 template <std::size_t I> inline void marshalArgs(smx_simcall_t simcall)
 {
+  /* Nothing to do when no args */
 }
 
 template <std::size_t I, class A> inline void marshalArgs(smx_simcall_t simcall, A const& a)

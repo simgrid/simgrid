@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2016. The SimGrid Team.
+/* Copyright (c) 2006-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,6 +7,7 @@
 #include "simdag_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_interface.hpp"
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd, "Logging specific to SimDag (task)");
 
@@ -798,20 +799,16 @@ void SD_task_run(SD_task_t task)
 
   /* Copy the elements of the task into the action */
   int host_nb = task->allocation->size();
-  sg_host_t *hosts = xbt_new(sg_host_t, host_nb);
-  int i =0;
-  for (auto const& host : *task->allocation) {
-    hosts[i] = host;
-    i++;
-  }
+  sg_host_t* hosts = new sg_host_t[host_nb];
+  std::copy_n(task->allocation->begin(), host_nb, hosts);
 
-  double *flops_amount = xbt_new0(double, host_nb);
-  double *bytes_amount = xbt_new0(double, host_nb * host_nb);
+  double* flops_amount = new double[host_nb]();
+  double* bytes_amount = new double[host_nb * host_nb]();
 
   if(task->flops_amount)
-    memcpy(flops_amount, task->flops_amount, sizeof(double) * host_nb);
+    std::copy_n(task->flops_amount, host_nb, flops_amount);
   if(task->bytes_amount)
-    memcpy(bytes_amount, task->bytes_amount, sizeof(double) * host_nb * host_nb);
+    std::copy_n(task->bytes_amount, host_nb * host_nb, bytes_amount);
 
   task->surf_action = surf_host_model->executeParallelTask(host_nb, hosts, flops_amount, bytes_amount, task->rate);
 
@@ -973,12 +970,12 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 void SD_task_schedulel(SD_task_t task, int count, ...)
 {
   va_list ap;
-  sg_host_t *list = xbt_new(sg_host_t, count);
+  sg_host_t* list = new sg_host_t[count];
   va_start(ap, count);
   for (int i=0; i<count; i++)
     list[i] = va_arg(ap, sg_host_t);
 
   va_end(ap);
   SD_task_schedulev(task, count, list);
-  xbt_free(list);
+  delete[] list;
 }

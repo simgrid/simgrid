@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,27 +19,6 @@ Checker::Checker(Session& session) : session_(&session)
   xbt_assert(mc_model_checker);
   xbt_assert(mc_model_checker->getChecker() == nullptr);
   mc_model_checker->setChecker(this);
-}
-
-Checker::~Checker()
-{
-}
-
-// virtual
-RecordTrace Checker::getRecordTrace()
-{
-  return {};
-}
-
-// virtual
-std::vector<std::string> Checker::getTextualTrace()
-{
-  return {};
-}
-
-// virtual
-void Checker::logState()
-{
 }
 
 }

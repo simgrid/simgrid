@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -197,10 +197,10 @@ public:
   /** This actor will be automatically terminated when the last non-daemon process finishes **/
   void daemonize();
 
-  /** Retrieves the name of that actor as a C string */
-  const char* getCname();
   /** Retrieves the name of that actor as a C++ string */
-  simgrid::xbt::string getName();
+  const simgrid::xbt::string& getName() const;
+  /** Retrieves the name of that actor as a C string */
+  const char* getCname() const;
   /** Retrieves the host on which that actor is running */
   s4u::Host* getHost();
   /** Retrieves the PID of that actor
@@ -286,22 +286,22 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
 {
   auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
   this_actor::sleep_for(seconds.count());
-  }
-  template<class Duration>
-  inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
-  {
-    auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
-    this_actor::sleep_until(timeout_native.time_since_epoch().count());
-  }
+}
 
-  XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into an error.") inline void sleep(
-      double duration)
-  {
-    return sleep_for(duration);
-  }
+template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
+{
+  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
+  this_actor::sleep_until(timeout_native.time_since_epoch().count());
+}
 
-  /** Block the actor, computing the given amount of flops */
-  XBT_PUBLIC(void) execute(double flop);
+XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into an error.") inline void sleep(
+    double duration)
+{
+  return sleep_for(duration);
+}
+
+/** Block the actor, computing the given amount of flops */
+XBT_PUBLIC(void) execute(double flop);
 
   /** Block the actor, computing the given amount of flops and priority */
   XBT_PUBLIC(void) execute(double flop, double priority);
@@ -330,39 +330,42 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.")
       send(MailboxPtr chan, void* payload, double simulatedSize, double timeout); // 3.17
 
-  XBT_PUBLIC(CommPtr)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.")
-      isend(MailboxPtr chan, void* payload, double simulatedSize);
+XBT_PUBLIC(CommPtr)
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.")
+    isend(MailboxPtr chan, void* payload, double simulatedSize);
 
-  /** @brief Returns the actor ID of the current actor (same as pid). */
-  XBT_PUBLIC(aid_t) getPid();
+/** @brief Returns the actor ID of the current actor (same as pid). */
+XBT_PUBLIC(aid_t) getPid();
 
-  /** @brief Returns the ancestor's actor ID of the current actor (same as ppid). */
-  XBT_PUBLIC(aid_t) getPpid();
+/** @brief Returns the ancestor's actor ID of the current actor (same as ppid). */
+XBT_PUBLIC(aid_t) getPpid();
 
-  /** @brief Returns the name of the current actor. */
-  XBT_PUBLIC(std::string) getName();
+/** @brief Returns the name of the current actor. */
+XBT_PUBLIC(std::string) getName();
 
-  /** @brief Returns the name of the host on which the process is running. */
-  XBT_PUBLIC(Host*) getHost();
+/** @brief Returns the name of the current actor as a C string. */
+XBT_PUBLIC(const char*) getCname();
 
-  /** @brief Suspend the actor. */
-  XBT_PUBLIC(void) suspend();
+/** @brief Returns the name of the host on which the process is running. */
+XBT_PUBLIC(Host*) getHost();
 
-  /** @brief Resume the actor. */
-  XBT_PUBLIC(void) resume();
+/** @brief Suspend the actor. */
+XBT_PUBLIC(void) suspend();
 
-  XBT_PUBLIC(bool) isSuspended();
+/** @brief Resume the actor. */
+XBT_PUBLIC(void) resume();
 
-  /** @brief kill the actor. */
-  XBT_PUBLIC(void) kill();
+XBT_PUBLIC(bool) isSuspended();
 
-  /** @brief Add a function to the list of "on_exit" functions. */
-  XBT_PUBLIC(void) onExit(int_f_pvoid_pvoid_t fun, void* data);
+/** @brief kill the actor. */
+XBT_PUBLIC(void) kill();
 
-  /** @brief Migrate the actor to a new host. */
-  XBT_PUBLIC(void) migrate(Host* new_host);
-};
+/** @brief Add a function to the list of "on_exit" functions. */
+XBT_PUBLIC(void) onExit(int_f_pvoid_pvoid_t fun, void* data);
+
+/** @brief Migrate the actor to a new host. */
+XBT_PUBLIC(void) migrate(Host* new_host);
+}
 
 /** @} */
 

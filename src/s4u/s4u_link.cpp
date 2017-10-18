@@ -21,7 +21,7 @@ extern "C" {
 
 const char* sg_link_name(sg_link_t link)
 {
-  return link->name();
+  return link->getCname();
 }
 sg_link_t sg_link_by_name(const char* name)
 {
@@ -82,9 +82,17 @@ Link* Link::byName(const char* name)
     return nullptr;
   return &res->piface_;
 }
+const std::string& Link::getName() const
+{
+  return this->pimpl_->getName();
+}
+const char* Link::getCname() const
+{
+  return this->pimpl_->getCname();
+}
 const char* Link::name()
 {
-  return this->pimpl_->cname();
+  return getCname();
 }
 bool Link::isUsed()
 {

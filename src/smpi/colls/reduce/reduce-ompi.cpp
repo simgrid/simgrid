@@ -261,10 +261,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         else {
 
             int creq = 0;
-            MPI_Request* sreq = NULL;
-
-            sreq = (MPI_Request*) calloc( max_outstanding_reqs,
-                                              sizeof(MPI_Request ) );
+            MPI_Request* sreq = new (std::nothrow) MPI_Request[max_outstanding_reqs];
             if (NULL == sreq) { line = __LINE__; ret = -1; goto error_hndl; }
 
             /* post first group of requests */
@@ -303,10 +300,10 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                                          MPI_STATUSES_IGNORE );
 
             /* free requests */
-            free(sreq);
+            delete[] sreq;
         }
     }
-    free(tree);
+    ompi_coll_tuned_topo_destroy_tree(&tree);
     return MPI_SUCCESS;
 
  error_hndl:  /* error handler */

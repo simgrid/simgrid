@@ -3,9 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <string>
 #include <unordered_set>
 
 #include "xbt/config.hpp"
+#include "xbt/string.hpp"
 
 #include "ns3/core-module.h"
 #include "ns3/node.h"
@@ -21,13 +23,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 
-std::vector<char*> IPV4addr;
+std::vector<std::string> IPV4addr;
 
 /*****************
  * Crude globals *
  *****************/
 
-extern xbt_dict_t flowFromSock;
+extern std::map<std::string, SgFlow*> flowFromSock;
 
 static ns3::InternetStackHelper stack;
 static ns3::NodeContainer nodes;
@@ -84,19 +86,18 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
   if (link_list->size() == 1) {
     simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
 
-    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->cname(), dst->cname(), link->cname(),
+    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->getCname(), dst->getCname(), link->getCname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
 
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
-    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->cname(), link->bandwidth(),
-        link->latency());
+    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->getCname(), link->bandwidth(), link->latency());
 
     // create link ns3
     NetPointNs3* host_src = src->extension<NetPointNs3>();
     NetPointNs3* host_dst = dst->extension<NetPointNs3>();
 
-    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->cname());
-    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->cname());
+    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->getCname());
+    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->getCname());
 
     ns3_add_link(host_src, host_dst, link->bandwidth(), link->latency());
   } else {
@@ -108,7 +109,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                "of length 1.\n"
                "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
                "ignored.",
-               src->cname(), dst->cname(), link_list->size());
+               src->getCname(), dst->getCname(), link_list->size());
     warned_about_long_routes = true;
   }
 }
@@ -143,12 +144,11 @@ namespace surf {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   NetPointNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetPointNs3>();
 
-  flowFromSock = xbt_dict_new_homogeneous([](void* p) { delete static_cast<SgFlow*>(p); });
   ns3_initialize(ns3_tcp_model.get().c_str());
 
   simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {
     pt->extension_set<NetPointNs3>(new NetPointNs3());
-    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->cname(), pt->extension<NetPointNs3>()->node_num);
+    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->getCname(), pt->extension<NetPointNs3>()->node_num);
   });
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
   simgrid::s4u::onPlatformCreated.connect(&postparse_cb);
@@ -160,10 +160,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
-  for (auto const& addr : IPV4addr)
-    free(addr);
   IPV4addr.clear();
-  xbt_dict_free(&flowFromSock);
 }
 
 LinkImpl* NetworkNS3Model::createLink(const std::string& name, double bandwidth, double latency,
@@ -201,7 +198,7 @@ double NetworkNS3Model::nextOccuringEvent(double now)
 
 void NetworkNS3Model::updateActionsState(double now, double delta)
 {
-  static xbt_dynar_t socket_to_destroy = xbt_dynar_new(sizeof(char*),nullptr);
+  static std::vector<std::string> socket_to_destroy;
 
   /* If there are no running flows, advance the NS3 simulator and return */
   if (getRunningActionSet()->empty()) {
@@ -212,10 +209,10 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     return;
   }
 
-  xbt_dict_cursor_t cursor = nullptr;
-  char *ns3Socket;
-  SgFlow *sgFlow;
-  xbt_dict_foreach(flowFromSock,cursor,ns3Socket,sgFlow){
+  std::string ns3Socket;
+  for (auto elm : flowFromSock) {
+    ns3Socket                 = elm.first;
+    SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
     action->setRemains(action->getCost() - sgFlow->sentBytes_);
@@ -228,27 +225,28 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       action->src_->routeTo(action->dst_, &route, nullptr);
       for (auto const& link : route)
-        TRACE_surf_link_set_utilization(link->cname(), action->getCategory(), (data_delta_sent) / delta, now - delta,
+        TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), (data_delta_sent) / delta, now - delta,
                                         delta);
 
       action->lastSent_ = sgFlow->sentBytes_;
     }
 
     if(sgFlow->finished_){
-      xbt_dynar_push(socket_to_destroy,&ns3Socket);
+      socket_to_destroy.push_back(ns3Socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3Socket, action);
       action->finish(Action::State::done);
     }
   }
 
-  while (not xbt_dynar_is_empty(socket_to_destroy)) {
-    xbt_dynar_pop(socket_to_destroy,&ns3Socket);
-
+  while (not socket_to_destroy.empty()) {
+    ns3Socket = socket_to_destroy.back();
+    socket_to_destroy.pop_back();
+    SgFlow* flow = flowFromSock.at(ns3Socket);
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
-      SgFlow* flow = static_cast<SgFlow*>(xbt_dict_get(flowFromSock, ns3Socket));
       XBT_DEBUG ("Removing socket %p of action %p", ns3Socket, flow->action_);
     }
-    xbt_dict_remove(flowFromSock, ns3Socket);
+    delete flow;
+    flowFromSock.erase(ns3Socket);
   }
 }
 
@@ -347,22 +345,22 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
   ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->cname());
-  char* addr = IPV4addr.at(node2);
-  xbt_assert(addr != nullptr, "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->cname());
+             dst->pimpl_netpoint->getCname());
+  std::string& addr = IPV4addr[node2];
+  xbt_assert(not addr.empty(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+             dst->pimpl_netpoint->getCname());
 
-  XBT_DEBUG("ns3_create_flow %u Bytes from %u to %u with Interface %s", TotalBytes, node1, node2, addr);
+  XBT_DEBUG("ns3_create_flow %u Bytes from %u to %u with Interface %s", TotalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
   sink.Install (dst_node);
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
 
-  xbt_dict_set(flowFromSock, transformSocketPtr(sock), new SgFlow(TotalBytes, action), nullptr);
+  flowFromSock.insert({transformSocketPtr(sock), new SgFlow(TotalBytes, action)});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
 
-  ns3::Simulator::ScheduleNow(&StartFlow, sock, addr, port_number);
+  ns3::Simulator::ScheduleNow(&StartFlow, sock, addr.c_str(), port_number);
 
   port_number++;
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
@@ -420,11 +418,10 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
   ns3::NetDeviceContainer devices = csma.Install(Nodes);
   XBT_DEBUG("Create CSMA");
 
-  char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
-  XBT_DEBUG("Assign IP Addresses %s to CSMA.",adr);
+  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+  XBT_DEBUG("Assign IP Addresses %s to CSMA.", addr.c_str());
   ns3::Ipv4AddressHelper ipv4;
-  ipv4.SetBase (adr, "255.255.0.0");
-  free(adr);
+  ipv4.SetBase(addr.c_str(), "255.255.0.0");
   interfaces.Add(ipv4.Assign (devices));
 
   if(number_of_links == 255){
@@ -437,11 +434,11 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
   XBT_DEBUG("Number of nodes in Cluster_nodes: %u", Cluster_nodes.GetN());
 }
 
-static char* transformIpv4Address (ns3::Ipv4Address from){
+static std::string transformIpv4Address(ns3::Ipv4Address from)
+{
   std::stringstream sstream;
   sstream << from ;
-  std::string s = sstream.str();
-  return bprintf("%s",s.c_str());
+  return sstream.str();
 }
 
 void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat) {
@@ -459,28 +456,26 @@ void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat) {
   pointToPoint.SetDeviceAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw*8)));// NS3 takes bps, but we provide Bps
   pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
 
-  char *filename = bprintf("link-%d-%d.tr", srcNum, dstNum);
+  std::string filename = simgrid::xbt::string_printf("link-%d-%d.tr", srcNum, dstNum);
   ns3::AsciiTraceHelper ascii;
-  pointToPoint.EnableAsciiAll (ascii.CreateFileStream (filename));
+  pointToPoint.EnableAsciiAll(ascii.CreateFileStream(filename));
   pointToPoint.EnablePcapAll ("tcp-bulk-send", false);
-  xbt_free(filename);
 
   ns3::NetDeviceContainer netA;
   netA.Add(pointToPoint.Install (a, b));
 
-  char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
-  address.SetBase (adr, "255.255.0.0");
-  XBT_DEBUG("\tInterface stack '%s'",adr);
-  free(adr);
+  std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
+  address.SetBase(addr.c_str(), "255.255.0.0");
+  XBT_DEBUG("\tInterface stack '%s'", addr.c_str());
   interfaces.Add(address.Assign (netA));
 
   if (IPV4addr.size() <= (unsigned)srcNum)
-    IPV4addr.resize(srcNum + 1, nullptr);
-  IPV4addr.at(srcNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
+    IPV4addr.resize(srcNum + 1);
+  IPV4addr[srcNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 2));
 
   if (IPV4addr.size() <= (unsigned)dstNum)
-    IPV4addr.resize(dstNum + 1, nullptr);
-  IPV4addr.at(dstNum) = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
+    IPV4addr.resize(dstNum + 1);
+  IPV4addr[dstNum] = transformIpv4Address(interfaces.GetAddress(interfaces.GetN() - 1));
 
   if (number_of_links == 255){
     xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");

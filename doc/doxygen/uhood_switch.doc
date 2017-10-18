@@ -629,7 +629,7 @@ which can be exposed using the same API as `std::condition_variable`:
 @code{cpp}
 class ConditionVariable {
 private:
-  friend s_smx_cond;
+  friend s_smx_cond_t;
   smx_cond_t cond_;
   ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:

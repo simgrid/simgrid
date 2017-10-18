@@ -52,7 +52,8 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                          std::map<std::string, std::string>* properties, smx_actor_t parent_process)
+                                          std::map<std::string, std::string>* properties,
+                                          smx_actor_t /*parent_process*/)
 {
   msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
   return p == nullptr ? nullptr : p->getImpl();

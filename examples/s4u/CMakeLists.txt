@@ -1,5 +1,6 @@
 foreach (example actions-comm actions-storage 
-                 actor-create actor-daemon actor-kill actor-migration actor-suspend actor-priority
+                 actor-create actor-daemon actor-kill actor-migration actor-suspend
+                 actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority
                  app-masterworker app-pingpong app-token-ring
 		 async-wait async-waitany async-waitall
 		 plugin-hostload io mutex)
@@ -33,9 +34,12 @@ set(examples_src  ${examples_src}                                               
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-priority/s4u-actor-priority.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh         PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-execute/s4u-actor-execute.tesh       
+                  PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/s4u-actions-storage_d.xml
@@ -46,7 +50,9 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml                PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
+		  PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm.txt
@@ -54,7 +60,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
 foreach(example actions-comm actions-storage 
-                actor-create actor-daemon actor-kill actor-migration actor-suspend
+                actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
 		async-wait async-waitall async-waitany actor-priority
 		dht-chord plugin-hostload io mutex)

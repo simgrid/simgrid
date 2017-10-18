@@ -12,24 +12,28 @@
 #include "simgrid/instr.h"
 #include "simgrid_config.h"
 #include "src/internal_config.h"
+#include "xbt/graph.h"
+#include <iomanip> /** std::setprecision **/
 #include <map>
 #include <set>
+#include <sstream>
 #include <string>
-
+#include <sys/stat.h>
+#ifdef WIN32
+#include <direct.h> // _mkdir
 /* Need to define function drand48 for Windows */
 /* FIXME: use _drand48() defined in src/surf/random_mgr.c instead */
-#ifdef _WIN32
 #define drand48() (rand() / (RAND_MAX + 1.0))
 #endif
 
 #define INSTR_DEFAULT_STR_SIZE 500
 
-#include "xbt/dict.h"
-#include "xbt/graph.h"
-
 namespace simgrid {
 namespace instr {
-typedef enum {
+
+class Value;
+
+enum e_event_type {
   PAJE_DefineContainerType,
   PAJE_DefineVariableType,
   PAJE_DefineStateType,
@@ -48,50 +52,70 @@ typedef enum {
   PAJE_StartLink,
   PAJE_EndLink,
   PAJE_NewEvent
-} e_event_type;
-
-typedef enum { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT } e_entity_types;
+};
 
 //--------------------------------------------------
+enum e_entity_types { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT };
 
 class Type {
-public:
-  char* id_;
-  char* name_;
-  char* color_;
-
+  std::string id_;
+  std::string name_;
+  std::string color_;
   e_entity_types kind_;
   Type* father_;
-  xbt_dict_t children_;
-  xbt_dict_t values_; // valid for all types except variable and container
-  Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind, Type* father);
-  ~Type();
-  Type* getChild(const char* name);
-  Type* getChildOrNull(const char* name);
 
-  static Type* containerNew(const char* name, Type* father);
-  static Type* eventNew(const char* name, Type* father);
-  static Type* variableNew(const char* name, const char* color, Type* father);
-  static Type* linkNew(const char* name, Type* father, Type* source, Type* dest);
-  static Type* stateNew(const char* name, Type* father);
+public:
+  std::map<std::string, Type*> children_;
+  std::map<std::string, Value*> values_; // valid for all types except variable and container
+
+  Type(std::string name, std::string alias, std::string color, e_entity_types kind, Type* father);
+  ~Type();
+
+  std::string getName() { return name_; }
+  const char* getCname() { return name_.c_str(); }
+  const char* getId() { return id_.c_str(); }
+  e_entity_types getKind() { return kind_; }
+  bool isColored() { return not color_.empty(); }
+
+  Type* byName(std::string name);
+
+  Type* getOrCreateContainerType(std::string name);
+  Type* getOrCreateEventType(std::string name);
+  Type* getOrCreateLinkType(std::string name, Type* source, Type* dest);
+  Type* getOrCreateStateType(std::string name);
+  Type* getOrCreateVariableType(std::string name, std::string color);
+
+  void logContainerTypeDefinition();
+  void logVariableTypeDefinition();
+  void logStateTypeDefinition();
+  void logLinkTypeDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest);
+  void logDefineEventType();
+
+  static Type* createRootType();
+  static Type* getRootType();
 };
 
 //--------------------------------------------------
 class Value {
-public:
-  char* id_;
-  char* name_;
-  char* color_;
-
+  std::string name_;
+  std::string id_;
+  std::string color_;
   Type* father_;
-  Value(const char* name, const char* color, Type* father);
+
+  explicit Value(std::string name, std::string color, Type* father);
+
+public:
   ~Value();
-  static Value* get_or_new(const char* name, const char* color, Type* father);
-  static Value* get(const char* name, Type* father);
+  static Value* byNameOrCreate(std::string name, std::string color, Type* father);
+  static Value* byName(std::string name, Type* father);
+  const char* getCname() { return name_.c_str(); }
+  const char* getId() { return id_.c_str(); }
+  bool isColored() { return not color_.empty(); }
+  void print();
 };
 
 //--------------------------------------------------
-typedef enum {
+enum e_container_types {
   INSTR_HOST,
   INSTR_LINK,
   INSTR_ROUTER,
@@ -100,39 +124,47 @@ typedef enum {
   INSTR_MSG_VM,
   INSTR_MSG_PROCESS,
   INSTR_MSG_TASK
-} e_container_types;
-
-//--------------------------------------------------
+};
 
 class Container {
+  e_container_types kind_; /* This container is of what kind */
+  int level_ = 0;          /* Level in the hierarchy, root level is 0 */
+  sg_netpoint_t netpoint_ = nullptr;
+
 public:
   Container(std::string name, simgrid::instr::e_container_types kind, Container* father);
   virtual ~Container();
 
-  sg_netpoint_t netpoint_;
   std::string name_;       /* Unique name of this container */
   std::string id_;         /* Unique id of this container */
   Type* type_;             /* Type of this container */
-  int level_ = 0;          /* Level in the hierarchy, root level is 0 */
-  e_container_types kind_; /* This container is of what kind */
   Container* father_;
   std::map<std::string, Container*> children_;
+  static Container* byNameOrNull(std::string name);
+  static Container* byName(std::string name);
+  void removeFromParent();
+  void logCreation();
+  void logDestruction();
 };
 
 //--------------------------------------------------
 class PajeEvent {
+protected:
+  Container* container;
+  Type* type;
+
 public:
   double timestamp_;
   e_event_type eventType_;
+  PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType)
+      : container(container), type(type), timestamp_(timestamp), eventType_(eventType){};
   virtual void print() = 0;
   virtual ~PajeEvent();
+  void insertIntoBuffer();
 };
 
 //--------------------------------------------------
 class SetVariableEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   double value;
 
 public:
@@ -141,9 +173,6 @@ public:
 };
 
 class AddVariableEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   double value;
 
 public:
@@ -153,9 +182,6 @@ public:
 //--------------------------------------------------
 
 class SubVariableEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   double value;
 
 public:
@@ -165,9 +191,6 @@ public:
 //--------------------------------------------------
 
 class SetStateEvent : public PajeEvent {
-private:
-  Container* container;
-  Type* type;
   Value* value;
   const char* filename;
   int linenumber;
@@ -178,11 +201,7 @@ public:
 };
 
 class PushStateEvent : public PajeEvent {
-public:
-  Container* container;
-  Type* type;
   Value* value;
-  int size;
   const char* filename;
   int linenumber;
   void* extra_;
@@ -194,42 +213,32 @@ public:
 };
 
 class PopStateEvent : public PajeEvent {
-  Container* container;
-  Type* type;
-
 public:
   PopStateEvent(double timestamp, Container* container, Type* type);
   void print() override;
 };
 
 class ResetStateEvent : public PajeEvent {
-  Container* container;
-  Type* type;
-
 public:
   ResetStateEvent(double timestamp, Container* container, Type* type);
   void print() override;
 };
 
 class StartLinkEvent : public PajeEvent {
-  Container* container_;
-  Type* type_;
   Container* sourceContainer_;
   std::string value_;
   std::string key_;
   int size_;
 
 public:
-  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                 const char* key);
-  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, const char* value,
-                 const char* key, int size);
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, std::string value,
+                 std::string key);
+  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, std::string value,
+                 std::string key, int size);
   void print() override;
 };
 
 class EndLinkEvent : public PajeEvent {
-  Container* container;
-  Type* type;
   Container* destContainer;
   std::string value;
   std::string key;
@@ -242,9 +251,6 @@ public:
 };
 
 class NewEvent : public PajeEvent {
-public:
-  Container* container;
-  Type* type;
   Value* val;
 
 public:
@@ -265,12 +271,11 @@ extern XBT_PRIVATE std::set<std::string> user_link_variables;
 extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 
 /* instr_paje_header.c */
-XBT_PRIVATE void TRACE_header(int basic, int size);
+XBT_PRIVATE void TRACE_header(bool basic, int size);
 
 /* from paje.c */
 XBT_PRIVATE void TRACE_paje_start();
 XBT_PRIVATE void TRACE_paje_end();
-XBT_PRIVATE void TRACE_paje_dump_buffer(int force);
 
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();
@@ -318,27 +323,22 @@ XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
 extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
-XBT_PUBLIC(container_t) PJ_container_get(const char* name);
-XBT_PUBLIC(simgrid::instr::Container*) PJ_container_get_or_null(const char* name);
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
-XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
-
-/* instr_paje_types.c */
-XBT_PUBLIC(simgrid::instr::Type*) PJ_type_get_root();
+void instr_new_variable_type(std::string new_typename, const char* color);
+void instr_new_user_variable_type(std::string father_type, std::string new_typename, const char* color);
+void instr_new_user_state_type(std::string father_type, std::string new_typename);
+void instr_new_value_for_user_state_type(std::string new_typename, const char* value, const char* color);
 
 /* instr_config.c */
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 
-XBT_PRIVATE void TRACE_paje_dump_buffer(int force);
-XBT_PRIVATE void dump_comment_file(const char* filename);
-XBT_PRIVATE void dump_comment(const char* comment);
+XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
+XBT_PRIVATE void dump_comment_file(std::string filename);
+XBT_PRIVATE void dump_comment(std::string comment);
 
-struct s_instr_extra_data;
-typedef struct s_instr_extra_data* instr_extra_data;
-
-typedef enum {
+enum e_caller_type {
   TRACING_INIT,
   TRACING_FINALIZE,
   TRACING_COMM_SIZE,
@@ -372,9 +372,9 @@ typedef enum {
   TRACING_SLEEPING,
   TRACING_SCAN,
   TRACING_EXSCAN
-} e_caller_type;
+};
 
-typedef struct s_instr_extra_data {
+struct s_instr_extra_data_t {
   e_caller_type type;
   int send_size;
   int recv_size;
@@ -388,7 +388,8 @@ typedef struct s_instr_extra_data {
   int* sendcounts;
   int* recvcounts;
   int num_processes;
-} s_instr_extra_data_t;
+};
+typedef s_instr_extra_data_t* instr_extra_data;
 
 /* Format of TRACING output.
  *   - paje is the regular format, that we all know
@@ -396,17 +397,8 @@ typedef struct s_instr_extra_data {
  *     trace can easily be replayed with smpi_replay afterward. This trick should be removed and replaced by some code
  *     using the signal that we will create to cleanup the TRACING
  */
-typedef enum { instr_fmt_paje, instr_fmt_TI } instr_fmt_type_t;
+enum instr_fmt_type_t { instr_fmt_paje, instr_fmt_TI };
 extern instr_fmt_type_t instr_fmt_type;
 }
-
-void LogContainerTypeDefinition(simgrid::instr::Type* type);
-void LogVariableTypeDefinition(simgrid::instr::Type* type);
-void LogStateTypeDefinition(simgrid::instr::Type* type);
-void LogLinkTypeDefinition(simgrid::instr::Type* type, simgrid::instr::Type* source, simgrid::instr::Type* dest);
-void LogEntityValue(simgrid::instr::Value* val);
-void LogContainerCreation(container_t container);
-void LogContainerDestruction(container_t container);
-void LogDefineEventType(simgrid::instr::Type* type);
 
 #endif

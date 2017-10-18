@@ -128,8 +128,8 @@ template <class X, class Y> class hash<std::pair<X, Y>> {
 public:
   std::size_t operator()(std::pair<X,Y>const& x) const
   {
-    struct hash<X> h1;
-    struct hash<X> h2;
+    hash<X> h1;
+    hash<X> h2;
     return h1(x.first) ^ h2(x.second);
   }
 };
@@ -684,204 +684,179 @@ static int compare_heap_area_with_type(
   int area_size, int check_ignore,
   int pointer_level)
 {
-top:
+  do {
 
-  // HACK: This should not happen but in pratice, there are some
-  // DW_TAG_typedef without an associated DW_AT_type:
-  //<1><538832>: Abbrev Number: 111 (DW_TAG_typedef)
-  //    <538833>   DW_AT_name        : (indirect string, offset: 0x2292f3): gregset_t
-  //    <538837>   DW_AT_decl_file   : 98
-  //    <538838>   DW_AT_decl_line   : 37
-  if (type == nullptr)
-    return 0;
-
-  if (is_stack(real_area1) && is_stack(real_area2))
-    return 0;
-
-  if (check_ignore > 0) {
-    ssize_t ignore1 = heap_comparison_ignore_size(
-      state.processStates[0].to_ignore, real_area1);
-    if (ignore1 > 0
-        && heap_comparison_ignore_size(
-          state.processStates[1].to_ignore, real_area2) == ignore1)
+    // HACK: This should not happen but in pratice, there are some
+    // DW_TAG_typedef without an associated DW_AT_type:
+    //<1><538832>: Abbrev Number: 111 (DW_TAG_typedef)
+    //    <538833>   DW_AT_name        : (indirect string, offset: 0x2292f3): gregset_t
+    //    <538837>   DW_AT_decl_file   : 98
+    //    <538838>   DW_AT_decl_line   : 37
+    if (type == nullptr)
       return 0;
-  }
 
-  simgrid::mc::Type* subtype;
-  simgrid::mc::Type* subsubtype;
-  int res;
-  int elm_size;
-  const void* addr_pointed1;
-  const void* addr_pointed2;
+    if (is_stack(real_area1) && is_stack(real_area2))
+      return 0;
 
-  mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
-  mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
+    if (check_ignore > 0) {
+      ssize_t ignore1 = heap_comparison_ignore_size(state.processStates[0].to_ignore, real_area1);
+      if (ignore1 > 0 && heap_comparison_ignore_size(state.processStates[1].to_ignore, real_area2) == ignore1)
+        return 0;
+    }
 
-  switch (type->type) {
-  case DW_TAG_unspecified_type:
-    return 1;
+    simgrid::mc::Type* subtype;
+    simgrid::mc::Type* subsubtype;
+    int res;
+    int elm_size;
+    const void* addr_pointed1;
+    const void* addr_pointed2;
 
-  case DW_TAG_base_type:
-    if (not type->name.empty() && type->name == "char") { /* String, hence random (arbitrary ?) size */
-      if (real_area1 == real_area2)
-        return -1;
-      else
-        return MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0;
-    } else {
-      if (area_size != -1 && type->byte_size != area_size)
-        return -1;
-      else
+    mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
+    mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
+
+    switch (type->type) {
+      case DW_TAG_unspecified_type:
+        return 1;
+
+      case DW_TAG_base_type:
+        if (not type->name.empty() && type->name == "char") { /* String, hence random (arbitrary ?) size */
+          if (real_area1 == real_area2)
+            return -1;
+          else
+            return MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, area_size) != 0;
+        } else {
+          if (area_size != -1 && type->byte_size != area_size)
+            return -1;
+          else
+            return MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0;
+        }
+        break;
+
+      case DW_TAG_enumeration_type:
+        if (area_size != -1 && type->byte_size != area_size)
+          return -1;
         return MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0;
+
+      case DW_TAG_typedef:
+      case DW_TAG_const_type:
+      case DW_TAG_volatile_type:
+        // Poor man's TCO:
+        type = type->subtype;
+        continue; // restart
+
+      case DW_TAG_array_type:
+        subtype = type->subtype;
+        switch (subtype->type) {
+          case DW_TAG_unspecified_type:
+            return 1;
+
+          case DW_TAG_base_type:
+          case DW_TAG_enumeration_type:
+          case DW_TAG_pointer_type:
+          case DW_TAG_reference_type:
+          case DW_TAG_rvalue_reference_type:
+          case DW_TAG_structure_type:
+          case DW_TAG_class_type:
+          case DW_TAG_union_type:
+            if (subtype->full_type)
+              subtype = subtype->full_type;
+            elm_size  = subtype->byte_size;
+            break;
+          // TODO, just remove the type indirection?
+          case DW_TAG_const_type:
+          case DW_TAG_typedef:
+          case DW_TAG_volatile_type:
+            subsubtype = subtype->subtype;
+            if (subsubtype->full_type)
+              subsubtype = subsubtype->full_type;
+            elm_size     = subsubtype->byte_size;
+            break;
+          default:
+            return 0;
+            break;
+        }
+        for (int i = 0; i < type->element_count; i++) {
+          // TODO, add support for variable stride (DW_AT_byte_stride)
+          res = compare_heap_area_with_type(state, process_index, (char*)real_area1 + (i * elm_size),
+                                            (char*)real_area2 + (i * elm_size), snapshot1, snapshot2, previous,
+                                            type->subtype, subtype->byte_size, check_ignore, pointer_level);
+          if (res == 1)
+            return res;
+        }
+        return 0;
+
+      case DW_TAG_reference_type:
+      case DW_TAG_rvalue_reference_type:
+      case DW_TAG_pointer_type:
+        if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
+          addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
+          addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
+          return (addr_pointed1 != addr_pointed2);
+        }
+        pointer_level++;
+        if (pointer_level <= 1) {
+          addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
+          addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
+          if (addr_pointed1 > state.std_heap_copy.heapbase && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1) &&
+              addr_pointed2 > state.std_heap_copy.heapbase && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
+            return compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous,
+                                     type->subtype, pointer_level);
+          else
+            return (addr_pointed1 != addr_pointed2);
+        }
+        for (size_t i = 0; i < (area_size / sizeof(void*)); i++) {
+          addr_pointed1 = snapshot1->read(remote((void**)((char*)real_area1 + i * sizeof(void*))), process_index);
+          addr_pointed2 = snapshot2->read(remote((void**)((char*)real_area2 + i * sizeof(void*))), process_index);
+          if (addr_pointed1 > state.std_heap_copy.heapbase && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1) &&
+              addr_pointed2 > state.std_heap_copy.heapbase && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
+            res = compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1, snapshot2, previous,
+                                    type->subtype, pointer_level);
+          else
+            res = (addr_pointed1 != addr_pointed2);
+          if (res == 1)
+            return res;
+        }
+        return 0;
+
+      case DW_TAG_structure_type:
+      case DW_TAG_class_type:
+        if (type->full_type)
+          type = type->full_type;
+        if (area_size != -1 && type->byte_size != area_size) {
+          if (area_size <= type->byte_size || area_size % type->byte_size != 0)
+            return -1;
+          for (size_t i = 0; i < (size_t)(area_size / type->byte_size); i++) {
+            int res = compare_heap_area_with_type(state, process_index, (char*)real_area1 + i * type->byte_size,
+                                                  (char*)real_area2 + i * type->byte_size, snapshot1, snapshot2,
+                                                  previous, type, -1, check_ignore, 0);
+            if (res == 1)
+              return res;
+          }
+        } else {
+          for (simgrid::mc::Member& member : type->members) {
+            // TODO, optimize this? (for the offset case)
+            void* real_member1 = simgrid::dwarf::resolve_member(real_area1, type, &member,
+                                                                (simgrid::mc::AddressSpace*)snapshot1, process_index);
+            void* real_member2 = simgrid::dwarf::resolve_member(real_area2, type, &member,
+                                                                (simgrid::mc::AddressSpace*)snapshot2, process_index);
+            int res = compare_heap_area_with_type(state, process_index, real_member1, real_member2, snapshot1,
+                                                  snapshot2, previous, member.type, -1, check_ignore, 0);
+            if (res == 1)
+              return res;
+          }
+        }
+        return 0;
+
+      case DW_TAG_union_type:
+        return compare_heap_area_without_type(state, process_index, real_area1, real_area2, snapshot1, snapshot2,
+                                              previous, type->byte_size, check_ignore);
+
+      default:
+        return 0;
     }
-    break;
 
-  case DW_TAG_enumeration_type:
-    if (area_size != -1 && type->byte_size != area_size)
-      return -1;
-    return MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0;
-
-  case DW_TAG_typedef:
-  case DW_TAG_const_type:
-  case DW_TAG_volatile_type:
-    // Poor man's TCO:
-    type = type->subtype;
-    goto top;
-
-  case DW_TAG_array_type:
-    subtype = type->subtype;
-    switch (subtype->type) {
-    case DW_TAG_unspecified_type:
-      return 1;
-
-    case DW_TAG_base_type:
-    case DW_TAG_enumeration_type:
-    case DW_TAG_pointer_type:
-    case DW_TAG_reference_type:
-    case DW_TAG_rvalue_reference_type:
-    case DW_TAG_structure_type:
-    case DW_TAG_class_type:
-    case DW_TAG_union_type:
-      if (subtype->full_type)
-        subtype = subtype->full_type;
-      elm_size = subtype->byte_size;
-      break;
-      // TODO, just remove the type indirection?
-    case DW_TAG_const_type:
-    case DW_TAG_typedef:
-    case DW_TAG_volatile_type:
-      subsubtype = subtype->subtype;
-      if (subsubtype->full_type)
-        subsubtype = subsubtype->full_type;
-      elm_size = subsubtype->byte_size;
-      break;
-    default:
-      return 0;
-      break;
-    }
-    for (int i = 0; i < type->element_count; i++) {
-      // TODO, add support for variable stride (DW_AT_byte_stride)
-      res =
-          compare_heap_area_with_type(state, process_index,
-                                      (char *) real_area1 + (i * elm_size),
-                                      (char *) real_area2 + (i * elm_size),
-                                      snapshot1, snapshot2, previous,
-                                      type->subtype, subtype->byte_size,
-                                      check_ignore, pointer_level);
-      if (res == 1)
-        return res;
-    }
-    return 0;
-
-  case DW_TAG_reference_type:
-  case DW_TAG_rvalue_reference_type:
-  case DW_TAG_pointer_type:
-    if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
-      addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
-      addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
-      return (addr_pointed1 != addr_pointed2);
-    }
-    pointer_level++;
-    if (pointer_level <= 1) {
-      addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
-      addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
-      if (addr_pointed1 > state.std_heap_copy.heapbase
-          && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-          && addr_pointed2 > state.std_heap_copy.heapbase
-          && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
-        return compare_heap_area(state, process_index,
-            addr_pointed1, addr_pointed2, snapshot1,
-            snapshot2, previous, type->subtype,
-            pointer_level);
-      else
-        return (addr_pointed1 != addr_pointed2);
-    }
-    for (size_t i = 0; i < (area_size / sizeof(void *)); i++) {
-      addr_pointed1 = snapshot1->read(
-        remote((void**)((char*) real_area1 + i * sizeof(void *))),
-        process_index);
-      addr_pointed2 = snapshot2->read(
-        remote((void**)((char*) real_area2 + i * sizeof(void *))),
-        process_index);
-      if (addr_pointed1 > state.std_heap_copy.heapbase
-          && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-          && addr_pointed2 > state.std_heap_copy.heapbase
-          && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
-        res =
-            compare_heap_area(state, process_index,
-              addr_pointed1, addr_pointed2, snapshot1,
-              snapshot2, previous, type->subtype,
-              pointer_level);
-      else
-        res = (addr_pointed1 != addr_pointed2);
-      if (res == 1)
-        return res;
-    }
-    return 0;
-
-  case DW_TAG_structure_type:
-  case DW_TAG_class_type:
-    if (type->full_type)
-      type = type->full_type;
-    if (area_size != -1 && type->byte_size != area_size) {
-      if (area_size <= type->byte_size || area_size % type->byte_size != 0)
-        return -1;
-      for (size_t i = 0; i < (size_t)(area_size / type->byte_size); i++) {
-        int res = compare_heap_area_with_type(state, process_index,
-                    (char *) real_area1 + i * type->byte_size,
-                    (char *) real_area2 + i * type->byte_size,
-                    snapshot1, snapshot2, previous, type, -1,
-                    check_ignore, 0);
-        if (res == 1)
-          return res;
-      }
-    } else {
-      for (simgrid::mc::Member& member : type->members) {
-        // TODO, optimize this? (for the offset case)
-        void *real_member1 = simgrid::dwarf::resolve_member(
-          real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
-        void *real_member2 = simgrid::dwarf::resolve_member(
-            real_area2, type, &member, (simgrid::mc::AddressSpace*) snapshot2, process_index);
-        int res = compare_heap_area_with_type(
-                    state, process_index, real_member1, real_member2,
-                    snapshot1, snapshot2,
-                    previous, member.type, -1,
-                    check_ignore, 0);
-        if (res == 1)
-          return res;
-      }
-    }
-    return 0;
-
-  case DW_TAG_union_type:
-    return compare_heap_area_without_type(state, process_index, real_area1, real_area2,
-                                          snapshot1, snapshot2, previous,
-                                          type->byte_size, check_ignore);
-
-  default:
-    return 0;
-  }
-
-  xbt_die("Unreachable");
+    xbt_die("Unreachable");
+  } while (true);
 }
 
 /** Infer the type of a part of the block from the type of the block
@@ -979,7 +954,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   const malloc_info* heapinfos1 = snapshot1->read(remote((const malloc_info**)heapinfo_address), process_index);
   const malloc_info* heapinfos2 = snapshot2->read(remote((const malloc_info**)heapinfo_address), process_index);
 
-  malloc_info heapinfo_temp1, heapinfo_temp2;
+  malloc_info heapinfo_temp1;
+  malloc_info heapinfo_temp2;
 
   simgrid::mc::HeapLocationPairs current;
   if (previous == nullptr) {
@@ -1262,136 +1238,129 @@ static int compare_areas_with_type(simgrid::mc::StateComparator& state,
   int i;
   int res;
 
-  top:
-  switch (type->type) {
-  case DW_TAG_unspecified_type:
-    return 1;
-
-  case DW_TAG_base_type:
-  case DW_TAG_enumeration_type:
-  case DW_TAG_union_type:
-    return MC_snapshot_region_memcmp(real_area1, region1, real_area2, region2, type->byte_size) != 0;
-  case DW_TAG_typedef:
-  case DW_TAG_volatile_type:
-  case DW_TAG_const_type:
-    // Poor man's TCO:
-    type = type->subtype;
-    goto top;
-  case DW_TAG_array_type:
-    subtype = type->subtype;
-    switch (subtype->type) {
-    case DW_TAG_unspecified_type:
-      return 1;
-
-    case DW_TAG_base_type:
-    case DW_TAG_enumeration_type:
-    case DW_TAG_pointer_type:
-    case DW_TAG_reference_type:
-    case DW_TAG_rvalue_reference_type:
-    case DW_TAG_structure_type:
-    case DW_TAG_class_type:
-    case DW_TAG_union_type:
-      if (subtype->full_type)
-        subtype = subtype->full_type;
-      elm_size = subtype->byte_size;
-      break;
-    case DW_TAG_const_type:
-    case DW_TAG_typedef:
-    case DW_TAG_volatile_type:
-      subsubtype = subtype->subtype;
-      if (subsubtype->full_type)
-        subsubtype = subsubtype->full_type;
-      elm_size = subsubtype->byte_size;
-      break;
-    default:
-      return 0;
-      break;
-    }
-    for (i = 0; i < type->element_count; i++) {
-      size_t off = i * elm_size;
-      res = compare_areas_with_type(state, process_index,
-            (char*) real_area1 + off, snapshot1, region1,
-            (char*) real_area2 + off, snapshot2, region2,
-            type->subtype, pointer_level);
-      if (res == 1)
-        return res;
-    }
-    break;
-  case DW_TAG_pointer_type:
-  case DW_TAG_reference_type:
-  case DW_TAG_rvalue_reference_type:
-  {
-    void* addr_pointed1 = MC_region_read_pointer(region1, real_area1);
-    void* addr_pointed2 = MC_region_read_pointer(region2, real_area2);
-
-    if (type->subtype && type->subtype->type == DW_TAG_subroutine_type)
-      return (addr_pointed1 != addr_pointed2);
-    if (addr_pointed1 == nullptr && addr_pointed2 == nullptr)
-      return 0;
-    if (addr_pointed1 == nullptr || addr_pointed2 == nullptr)
-      return 1;
-    if (not state.compared_pointers.insert(std::make_pair(addr_pointed1, addr_pointed2)).second)
-      return 0;
-
-    pointer_level++;
-
-    // Some cases are not handled here:
-    // * the pointers lead to different areas (one to the heap, the other to the RW segment ...)
-    // * a pointer leads to the read-only segment of the current object
-    // * a pointer lead to a different ELF object
-
-    if (addr_pointed1 > process->heap_address && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)) {
-      if (not(addr_pointed2 > process->heap_address && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
+  do {
+    switch (type->type) {
+      case DW_TAG_unspecified_type:
         return 1;
-      // The pointers are both in the heap:
-      return simgrid::mc::compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1, snapshot2,
-                                            nullptr, type->subtype, pointer_level);
 
-    } else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
-      // The pointers are both in the current object R/W segment:
-      if (not region2->contain(simgrid::mc::remote(addr_pointed2)))
-        return 1;
-      if (not type->type_id)
-        return (addr_pointed1 != addr_pointed2);
-      else
-        return compare_areas_with_type(state, process_index, addr_pointed1, snapshot1, region1, addr_pointed2,
-                                       snapshot2, region2, type->subtype, pointer_level);
-    } else {
+      case DW_TAG_base_type:
+      case DW_TAG_enumeration_type:
+      case DW_TAG_union_type:
+        return MC_snapshot_region_memcmp(real_area1, region1, real_area2, region2, type->byte_size) != 0;
+      case DW_TAG_typedef:
+      case DW_TAG_volatile_type:
+      case DW_TAG_const_type:
+        // Poor man's TCO:
+        type = type->subtype;
+        continue; // restart
+      case DW_TAG_array_type:
+        subtype = type->subtype;
+        switch (subtype->type) {
+          case DW_TAG_unspecified_type:
+            return 1;
 
-      // TODO, We do not handle very well the case where
-      // it belongs to a different (non-heap) region from the current one.
+          case DW_TAG_base_type:
+          case DW_TAG_enumeration_type:
+          case DW_TAG_pointer_type:
+          case DW_TAG_reference_type:
+          case DW_TAG_rvalue_reference_type:
+          case DW_TAG_structure_type:
+          case DW_TAG_class_type:
+          case DW_TAG_union_type:
+            if (subtype->full_type)
+              subtype = subtype->full_type;
+            elm_size  = subtype->byte_size;
+            break;
+          case DW_TAG_const_type:
+          case DW_TAG_typedef:
+          case DW_TAG_volatile_type:
+            subsubtype = subtype->subtype;
+            if (subsubtype->full_type)
+              subsubtype = subsubtype->full_type;
+            elm_size     = subsubtype->byte_size;
+            break;
+          default:
+            return 0;
+            break;
+        }
+        for (i = 0; i < type->element_count; i++) {
+          size_t off = i * elm_size;
+          res        = compare_areas_with_type(state, process_index, (char*)real_area1 + off, snapshot1, region1,
+                                        (char*)real_area2 + off, snapshot2, region2, type->subtype, pointer_level);
+          if (res == 1)
+            return res;
+        }
+        break;
+      case DW_TAG_pointer_type:
+      case DW_TAG_reference_type:
+      case DW_TAG_rvalue_reference_type: {
+        void* addr_pointed1 = MC_region_read_pointer(region1, real_area1);
+        void* addr_pointed2 = MC_region_read_pointer(region2, real_area2);
 
-      return (addr_pointed1 != addr_pointed2);
+        if (type->subtype && type->subtype->type == DW_TAG_subroutine_type)
+          return (addr_pointed1 != addr_pointed2);
+        if (addr_pointed1 == nullptr && addr_pointed2 == nullptr)
+          return 0;
+        if (addr_pointed1 == nullptr || addr_pointed2 == nullptr)
+          return 1;
+        if (not state.compared_pointers.insert(std::make_pair(addr_pointed1, addr_pointed2)).second)
+          return 0;
+
+        pointer_level++;
+
+        // Some cases are not handled here:
+        // * the pointers lead to different areas (one to the heap, the other to the RW segment ...)
+        // * a pointer leads to the read-only segment of the current object
+        // * a pointer lead to a different ELF object
+
+        if (addr_pointed1 > process->heap_address && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)) {
+          if (not(addr_pointed2 > process->heap_address && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
+            return 1;
+          // The pointers are both in the heap:
+          return simgrid::mc::compare_heap_area(state, process_index, addr_pointed1, addr_pointed2, snapshot1,
+                                                snapshot2, nullptr, type->subtype, pointer_level);
+
+        } else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
+          // The pointers are both in the current object R/W segment:
+          if (not region2->contain(simgrid::mc::remote(addr_pointed2)))
+            return 1;
+          if (not type->type_id)
+            return (addr_pointed1 != addr_pointed2);
+          else
+            return compare_areas_with_type(state, process_index, addr_pointed1, snapshot1, region1, addr_pointed2,
+                                           snapshot2, region2, type->subtype, pointer_level);
+        } else {
+
+          // TODO, We do not handle very well the case where
+          // it belongs to a different (non-heap) region from the current one.
+
+          return (addr_pointed1 != addr_pointed2);
+        }
+        break;
+      }
+      case DW_TAG_structure_type:
+      case DW_TAG_class_type:
+        for (simgrid::mc::Member& member : type->members) {
+          void* member1 = simgrid::dwarf::resolve_member(real_area1, type, &member, snapshot1, process_index);
+          void* member2 = simgrid::dwarf::resolve_member(real_area2, type, &member, snapshot2, process_index);
+          mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
+          mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
+          res = compare_areas_with_type(state, process_index, member1, snapshot1, subregion1, member2, snapshot2,
+                                        subregion2, member.type, pointer_level);
+          if (res == 1)
+            return res;
+        }
+        break;
+      case DW_TAG_subroutine_type:
+        return -1;
+        break;
+      default:
+        XBT_VERB("Unknown case: %d", type->type);
+        break;
     }
-    break;
-  }
-  case DW_TAG_structure_type:
-  case DW_TAG_class_type:
-    for (simgrid::mc::Member& member : type->members) {
-      void *member1 = simgrid::dwarf::resolve_member(
-        real_area1, type, &member, snapshot1, process_index);
-      void *member2 = simgrid::dwarf::resolve_member(
-        real_area2, type, &member, snapshot2, process_index);
-      mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
-      mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
-      res =
-          compare_areas_with_type(state, process_index,
-                                  member1, snapshot1, subregion1,
-                                  member2, snapshot2, subregion2,
-                                  member.type, pointer_level);
-      if (res == 1)
-        return res;
-    }
-    break;
-  case DW_TAG_subroutine_type:
-    return -1;
-    break;
-  default:
-    XBT_VERB("Unknown case: %d", type->type);
-    break;
-  }
 
-  return 0;
+    return 0;
+  } while (true);
 }
 
 static int compare_global_variables(
@@ -1469,7 +1438,8 @@ static int compare_local_variables(simgrid::mc::StateComparator& state,
   }
 
     unsigned int cursor = 0;
-    local_variable_t current_var1, current_var2;
+    local_variable_t current_var1;
+    local_variable_t current_var2;
     while (cursor < stack1->local_variables.size()) {
       current_var1 = &stack1->local_variables[cursor];
       current_var2 = &stack1->local_variables[cursor];

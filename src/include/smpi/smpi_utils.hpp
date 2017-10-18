@@ -12,11 +12,11 @@
 extern "C" {
 
 // Methods used to parse and store the values for timing injections in smpi
-typedef struct s_smpi_factor *smpi_os_factor_t;
-typedef struct s_smpi_factor{
+struct s_smpi_factor_t {
   size_t factor=0;
   std::vector<double> values;
-} s_smpi_factor_t;
+};
+typedef s_smpi_factor_t* smpi_os_factor_t;
 }
 
 XBT_PUBLIC(std::vector<s_smpi_factor_t>) parse_factor(const char *smpi_coef_string);

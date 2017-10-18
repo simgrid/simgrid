@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +8,8 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /* Executed on process termination*/
-static int my_onexit(void* ignored1, void *ignored2) {
+static int my_onexit(void* XBT_ATTRIB_UNUSED ignored1, void* XBT_ATTRIB_UNUSED ignored2)
+{
   XBT_INFO("Exiting now (done sleeping or got killed)."); /* - Just display an informative message (see tesh file) */
   return 0;
 }

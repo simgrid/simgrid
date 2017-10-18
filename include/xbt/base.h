@@ -49,6 +49,7 @@
 #define XBT_ATTRIB_UNUSED  __attribute__((unused))
 #define XBT_ATTRIB_DEPRECATED_v319(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.19 */
 #define XBT_ATTRIB_DEPRECATED_v320(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.20 */
+#define XBT_ATTRIB_DEPRECATED_v321(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.21 */
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */

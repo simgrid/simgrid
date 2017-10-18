@@ -160,16 +160,11 @@ bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
     if (synchro1->src_buff == synchro2->src_buff
         && synchro1->dst_buff == synchro2->dst_buff)
       return false;
-    else if (synchro1->src_buff != nullptr
-        && synchro1->dst_buff != nullptr
-        && synchro2->src_buff != nullptr
-        && synchro2->dst_buff != nullptr
-        && synchro1->dst_buff != synchro2->src_buff
-        && synchro1->dst_buff != synchro2->dst_buff
-        && synchro2->dst_buff != synchro1->src_buff)
+    if (synchro1->src_buff != nullptr && synchro1->dst_buff != nullptr && synchro2->src_buff != nullptr &&
+        synchro2->dst_buff != nullptr && synchro1->dst_buff != synchro2->src_buff &&
+        synchro1->dst_buff != synchro2->dst_buff && synchro2->dst_buff != synchro1->src_buff)
       return false;
-    else
-      return true;
+    return true;
   default:
     return true;
   }

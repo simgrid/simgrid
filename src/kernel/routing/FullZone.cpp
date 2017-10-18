@@ -24,14 +24,14 @@ void FullZone::seal()
 
   /* Create table if needed */
   if (not routingTable_)
-    routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
+    routingTable_ = new sg_platf_route_cbarg_t[table_size * table_size]();
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(i, i);
       if (not e_route) {
-        e_route            = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+        e_route            = new s_sg_platf_route_cbarg_t;
         e_route->gw_src    = nullptr;
         e_route->gw_dst    = nullptr;
         e_route->link_list = new std::vector<surf::LinkImpl*>();
@@ -51,16 +51,16 @@ FullZone::~FullZone()
       for (unsigned int j = 0; j < table_size; j++) {
         if (TO_ROUTE_FULL(i, j)) {
           delete TO_ROUTE_FULL(i, j)->link_list;
-          xbt_free(TO_ROUTE_FULL(i, j));
+          delete TO_ROUTE_FULL(i, j);
         }
       }
-    xbt_free(routingTable_);
+    delete[] routingTable_;
   }
 }
 
 void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t res, double* lat)
 {
-  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->cname(), src->id(), dst->cname(), dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
 
   unsigned int table_size        = getTableSize();
   sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(src->id(), dst->id());
@@ -85,17 +85,17 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
   unsigned int table_size = getTableSize();
 
   if (not routingTable_)
-    routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
+    routingTable_ = new sg_platf_route_cbarg_t[table_size * table_size]();
 
   /* Check that the route does not already exist */
   if (route->gw_dst) // inter-zone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-               src->cname(), route->gw_src->cname(), dst->cname(), route->gw_dst->cname());
+               src->getCname(), route->gw_src->getCname(), dst->getCname(), route->gw_dst->getCname());
   else
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
-               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->cname(),
-               dst->cname());
+               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->getCname(),
+               dst->getCname());
 
   /* Add the route to the base */
   TO_ROUTE_FULL(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, true);
@@ -110,11 +110,11 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
       xbt_assert(
           nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          dst->cname(), route->gw_dst->cname(), src->cname(), route->gw_src->cname());
+          dst->getCname(), route->gw_dst->getCname(), src->getCname(), route->gw_src->getCname());
     else
       xbt_assert(nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-                 dst->cname(), src->cname());
+                 dst->getCname(), src->getCname());
 
     TO_ROUTE_FULL(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, false);
   }

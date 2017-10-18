@@ -128,13 +128,13 @@ void Peer::sendHandshakeToAllPeers()
 void Peer::sendMessage(simgrid::s4u::MailboxPtr mailbox, e_message_type type, uint64_t size)
 {
   const char* type_names[6] = {"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "CANCEL"};
-  XBT_DEBUG("Sending %s to %s", type_names[type], mailbox->getName());
+  XBT_DEBUG("Sending %s to %s", type_names[type], mailbox->getCname());
   mailbox->put_init(new Message(type, id, bitfield_, mailbox_), size)->detach();
 }
 
 void Peer::sendBitfield(simgrid::s4u::MailboxPtr mailbox)
 {
-  XBT_DEBUG("Sending a BITFIELD to %s", mailbox->getName());
+  XBT_DEBUG("Sending a BITFIELD to %s", mailbox->getCname());
   mailbox
       ->put_init(new Message(MESSAGE_BITFIELD, id, bitfield_, mailbox_),
                  MESSAGE_BITFIELD_SIZE + BITS_TO_BYTES(FILE_PIECES))
@@ -144,7 +144,7 @@ void Peer::sendBitfield(simgrid::s4u::MailboxPtr mailbox)
 void Peer::sendPiece(simgrid::s4u::MailboxPtr mailbox, unsigned int piece, int block_index, int block_length)
 {
   xbt_assert(not hasNotPiece(piece), "Tried to send a unavailable piece.");
-  XBT_DEBUG("Sending the PIECE %u (%d,%d) to %s", piece, block_index, block_length, mailbox->getName());
+  XBT_DEBUG("Sending the PIECE %u (%d,%d) to %s", piece, block_index, block_length, mailbox->getCname());
   mailbox->put_init(new Message(MESSAGE_PIECE, id, mailbox_, piece, block_index, block_length), BLOCK_SIZE)->detach();
 }
 
@@ -164,7 +164,7 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
   int block_index = getFirstMissingBlockFrom(piece);
   if (block_index != -1) {
     int block_length = MIN(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index);
-    XBT_DEBUG("Sending a REQUEST to %s for piece %u (%d,%d)", remote_peer->mailbox_->getName(), piece, block_index,
+    XBT_DEBUG("Sending a REQUEST to %s for piece %u (%d,%d)", remote_peer->mailbox_->getCname(), piece, block_index,
               block_length);
     remote_peer->mailbox_
         ->put_init(new Message(MESSAGE_REQUEST, id, mailbox_, piece, block_index, block_length), MESSAGE_REQUEST_SIZE)
@@ -233,7 +233,7 @@ void Peer::leech()
 
   /* Send a "handshake" message to all the peers it got (since it couldn't have gotten more than 50 peers) */
   sendHandshakeToAllPeers();
-  XBT_DEBUG("Starting main leech loop listening on mailbox: %s", mailbox_->getName());
+  XBT_DEBUG("Starting main leech loop listening on mailbox: %s", mailbox_->getCname());
 
   void* data = nullptr;
   while (simgrid::s4u::Engine::getClock() < deadline && countPieces(bitfield_) < FILE_PIECES) {
@@ -299,7 +299,7 @@ void Peer::handleMessage()
   const char* type_names[10] = {"HANDSHAKE", "CHOKE",    "UNCHOKE", "INTERESTED", "NOTINTERESTED",
                                 "HAVE",      "BITFIELD", "REQUEST", "PIECE",      "CANCEL"};
 
-  XBT_DEBUG("Received a %s message from %s", type_names[message->type], message->return_mailbox->getName());
+  XBT_DEBUG("Received a %s message from %s", type_names[message->type], message->return_mailbox->getCname());
 
   auto known_peer         = connected_peers.find(message->peer_id);
   Connection* remote_peer = (known_peer == connected_peers.end()) ? nullptr : known_peer->second;

@@ -165,10 +165,10 @@ private:
 /** @ingroup SURF_storage_interface
  * @brief The possible type of action for the storage component
  */
-typedef enum {
+enum e_surf_action_storage_type_t {
   READ = 0, /**< Read a file */
   WRITE     /**< Write in a file */
-} e_surf_action_storage_type_t;
+};
 
 /** @ingroup SURF_storage_interface
  * @brief SURF storage action interface class

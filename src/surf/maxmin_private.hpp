@@ -17,7 +17,7 @@
  * Basically, each variable will have a set of elements, one for each constraint where it is involved.
  * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or vice-versa list all constraints for a given variable.
  */
-typedef struct lmm_element {
+struct s_lmm_element_t {
   /* hookup to constraint */
   s_xbt_swag_hookup_t enabled_element_set_hookup;
   s_xbt_swag_hookup_t disabled_element_set_hookup;
@@ -30,14 +30,14 @@ typedef struct lmm_element {
   //   - if CPU, then probably 1.
   //   - If network, then 1 in forward direction and 0.05 backward for the ACKs
   double consumption_weight;
-} s_lmm_element_t;
+};
 #define make_elem_active(elem) xbt_swag_insert_at_head(elem,&(elem->constraint->active_element_set))
 #define make_elem_inactive(elem) xbt_swag_remove(elem,&(elem->constraint->active_element_set))
 
-typedef struct lmm_constraint_light {
+struct s_lmm_constraint_light_t {
   double remaining_over_usage;
   lmm_constraint_t cnst;
-} s_lmm_constraint_light_t;
+};
 
 /** @ingroup SURF_lmm
  * @brief LMM constraint
@@ -47,7 +47,7 @@ typedef struct lmm_constraint_light {
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero. LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
  *
  */
-typedef struct lmm_constraint {
+struct s_lmm_constraint_t {
   /* hookup to system */
   s_xbt_swag_hookup_t constraint_set_hookup;
   s_xbt_swag_hookup_t active_constraint_set_hookup;
@@ -71,14 +71,14 @@ typedef struct lmm_constraint {
   double lambda;
   double new_lambda;
   lmm_constraint_light_t cnst_light;
-} s_lmm_constraint_t;
+};
 
 /** @ingroup SURF_lmm
  * @brief LMM variable
  *
  * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as soon as possible we enable the variable with desired weight
  */
-typedef struct lmm_variable {
+struct s_lmm_variable_t {
   /* hookup to system */
   s_xbt_swag_hookup_t variable_set_hookup;
   s_xbt_swag_hookup_t saturated_variable_set_hookup;
@@ -103,16 +103,16 @@ typedef struct lmm_variable {
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
-  double (*func_f) (struct lmm_variable * var, double x);       /* (f)    */
-  double (*func_fp) (struct lmm_variable * var, double x);      /* (f')    */
-  double (*func_fpi) (struct lmm_variable * var, double x);     /* (f')^{-1}    */
+  double (*func_f)(s_lmm_variable_t* var, double x);   /* (f)    */
+  double (*func_fp)(s_lmm_variable_t* var, double x);  /* (f')    */
+  double (*func_fpi)(s_lmm_variable_t* var, double x); /* (f')^{-1}    */
   /* \end{For Lagrange only} */
-} s_lmm_variable_t;
+};
 
 /** @ingroup SURF_lmm
  * @brief LMM system
  */
-typedef struct lmm_system {
+struct s_lmm_system_t {
   int modified;
   bool selective_update_active;  /* flag to update partially the system only selecting changed portions */
   unsigned visited_counter;     /* used by lmm_update_modified_set  and lmm_remove_modified_set to cleverly (un-)flag the constraints (more details in these functions)*/
@@ -130,7 +130,7 @@ typedef struct lmm_system {
   xbt_mallocator_t variable_mallocator;
 
   void (*solve_fun)(lmm_system_t self);
-} s_lmm_system_t;
+};
 
 #define extract_variable(sys) xbt_swag_extract(&(sys->variable_set))
 #define extract_constraint(sys) xbt_swag_extract(&(sys->constraint_set))

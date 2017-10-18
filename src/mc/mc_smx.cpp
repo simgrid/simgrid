@@ -66,7 +66,7 @@ static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* proc
   s_xbt_dynar_t dynar;
   process->read_bytes(&dynar, sizeof(dynar), remote_dynar);
 
-  smx_actor_t* data = (smx_actor_t*)malloc(dynar.elmsize * dynar.used);
+  smx_actor_t* data = static_cast<smx_actor_t*>(::operator new(dynar.elmsize * dynar.used));
   process->read_bytes(data, dynar.elmsize * dynar.used, dynar.data);
 
   // Load each element of the vector from the MCed process:
@@ -78,7 +78,7 @@ static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* proc
     process->read_bytes(&info.copy, sizeof(info.copy), remote(data[i]));
     target.push_back(std::move(info));
   }
-  free(data);
+  ::operator delete(data);
 }
 namespace simgrid {
 namespace mc {
@@ -160,8 +160,8 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
   */
   union fake_host {
     simgrid::s4u::Host host;
-    fake_host() {}
-    ~fake_host() {}
+    fake_host() { /* Nothing to do*/}
+    ~fake_host() { /* Nothing to do*/}
   };
   fake_host foo;
   const size_t offset = (char*)&foo.host.getName() - (char*)&foo.host;
@@ -184,7 +184,7 @@ const char* MC_smx_actor_get_name(smx_actor_t actor)
 
   simgrid::mc::ActorInformation* info = actor_info_cast(actor);
   if (info->name.empty()) {
-    simgrid::xbt::string_data string_data = (simgrid::xbt::string_data&)actor->name;
+    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name);
     info->name = process->read_string(remote(string_data.data), string_data.len);
   }
   return info->name.c_str();

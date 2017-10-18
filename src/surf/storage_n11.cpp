@@ -20,8 +20,8 @@ static void check_disk_attachment()
   for (auto const& s : *simgrid::surf::StorageImpl::storagesMap()) {
     simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
     if (not host_elm)
-      surf_parse_error(std::string("Unable to attach storage ") + s.second->cname() + ": host " + s.second->getHost() +
-                       " does not exist.");
+      surf_parse_error(std::string("Unable to attach storage ") + s.second->getCname() + ": host " +
+                       s.second->getHost() + " does not exist.");
     else
       s.second->piface_.attached_to_ = sg_host_by_name(s.second->getHost().c_str());
   }
@@ -89,8 +89,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->file_->incrPosition(current_progress);
       action->file_->setSize(action->file_->tell());
 
-      action->storage_->getContent()->erase(action->file_->cname());
-      action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
+      action->storage_->getContent()->erase(action->file_->getCname());
+      action->storage_->getContent()->insert({action->file_->getCname(), action->file_->size()});
     }
 
     if (action->getMaxDuration() > NO_MAX_DURATION)
@@ -136,7 +136,7 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
                                    e_surf_action_storage_type_t type)
     : StorageAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0, 3), storage, type)
 {
-  XBT_IN("(%s,%g", storage->cname(), cost);
+  XBT_IN("(%s,%g", storage->getCname(), cost);
 
   // Must be less than the max bandwidth for all actions
   lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);

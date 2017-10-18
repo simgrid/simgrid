@@ -40,7 +40,7 @@ public:
   Checker(Checker const&) = delete;
   Checker& operator=(Checker const&) = delete;
 
-  virtual ~Checker();
+  virtual ~Checker() = default;
 
   /** Main function of this algorithm */
   virtual void run() = 0;
@@ -52,13 +52,13 @@ public:
   /** Show the current trace/stack
    *
    *  Could this be handled in the Session/ModelChecker instead? */
-  virtual RecordTrace getRecordTrace();
+  virtual RecordTrace getRecordTrace() = 0;
 
   /** Generate a textual execution trace of the simulated application */
-  virtual std::vector<std::string> getTextualTrace();
+  virtual std::vector<std::string> getTextualTrace() = 0;
 
   /** Log additional information about the state of the model-checker */
-  virtual void logState();
+  virtual void logState() = 0;
 
 protected:
   Session& getSession() { return *session_; }

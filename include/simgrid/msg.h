@@ -51,7 +51,7 @@ typedef sg_host_t msg_host_t;
 XBT_PUBLIC_DATA(int) sg_storage_max_file_descriptors;
 /* ******************************** Task ************************************ */
 
-typedef struct simdata_task *simdata_task_t;
+typedef struct s_simdata_task_t* simdata_task_t;
 
 typedef struct msg_task {
   char *name;                   /**< @brief task name if any */
@@ -449,7 +449,8 @@ XBT_PUBLIC(void) MSG_action_exit();
  *  @ingroup msg_synchro
  *  @hideinitializer
  */
-typedef struct s_smx_sem *msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be declared here
+typedef struct s_smx_sem_t* msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be
+                                       // declared here
 XBT_PUBLIC(msg_sem_t) MSG_sem_init(int initial_value);
 XBT_PUBLIC(void) MSG_sem_acquire(msg_sem_t sem);
 XBT_PUBLIC(msg_error_t) MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
@@ -464,7 +465,7 @@ XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
  */
 
 #define MSG_BARRIER_SERIAL_PROCESS -1
-typedef struct s_msg_bar* msg_bar_t;
+typedef struct s_msg_bar_t* msg_bar_t;
 XBT_PUBLIC(msg_bar_t) MSG_barrier_init( unsigned int count);
 XBT_PUBLIC(void) MSG_barrier_destroy(msg_bar_t bar);
 XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);

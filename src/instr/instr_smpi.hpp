@@ -36,7 +36,8 @@ XBT_PRIVATE char* smpi_container(int rank, char* container, int n);
 
 XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype, int* known);
 
-typedef struct smpi_trace_call_location {
+class smpi_trace_call_location_t {
+public:
   const char* filename;
   int linenumber;
 
@@ -48,8 +49,7 @@ typedef struct smpi_trace_call_location {
     return std::string(previous_filename) + ':' + std::to_string(previous_linenumber) + ':' + filename + ':' +
            std::to_string(linenumber);
   }
-
-} smpi_trace_call_location_t;
+};
 }
 
 #endif

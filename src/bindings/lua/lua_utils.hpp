@@ -17,11 +17,12 @@ extern "C" {
  *
  * This structure is used as the userdata parameter of lua_Writer.
  */
-typedef struct s_sglua_buffer {
+struct s_sglua_buffer_t {
   char* data;
   size_t size;
   size_t capacity;
-} s_sglua_buffer_t, *sglua_buffer_t;
+};
+typedef s_sglua_buffer_t* sglua_buffer_t;
 
 const char* sglua_tostring(lua_State* L, int index);
 const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index);

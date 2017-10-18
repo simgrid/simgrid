@@ -6,10 +6,10 @@
 #ifndef MAXMIN_DATATYPES_H
 #define MAXMIN_DATATYPES_H
 
-typedef struct lmm_element *lmm_element_t;
-typedef struct lmm_variable *lmm_variable_t;
-typedef struct lmm_constraint *lmm_constraint_t;
-typedef struct lmm_constraint_light *lmm_constraint_light_t;
-typedef struct lmm_system *lmm_system_t;
+typedef struct s_lmm_element_t* lmm_element_t;
+typedef struct s_lmm_variable_t* lmm_variable_t;
+typedef struct s_lmm_constraint_t* lmm_constraint_t;
+typedef struct s_lmm_constraint_light_t* lmm_constraint_light_t;
+typedef struct s_lmm_system_t* lmm_system_t;
 
 #endif

@@ -46,8 +46,7 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, mc_me
       simgrid::mc::RegionSnapshot& subregion = region->privatized_data()[process_index];
       return mc_translate_address_region(addr, &subregion, process_index);
     }
-    case simgrid::mc::StorageType::NoData:
-    default:
+    default: // includes StorageType::NoData
       xbt_die("Storage type not supported");
   }
 }
@@ -63,20 +62,20 @@ XBT_PRIVATE mc_mem_region_t mc_get_snapshot_region(const void* addr, const simgr
  *  Some parts of the snapshot are ignored by zeroing them out: the real
  *  values is stored here.
  * */
-typedef struct s_mc_snapshot_ignored_data {
+struct s_mc_snapshot_ignored_data_t {
   void* start;
   std::vector<char> data;
-} s_mc_snapshot_ignored_data_t;
+};
 
-typedef struct s_fd_infos {
+struct s_fd_infos_t {
   std::string filename;
   int number;
   off_t current_position;
   int flags;
-} s_fd_infos_t;
+};
 
 /** Information about a given stack frame */
-typedef struct s_mc_stack_frame {
+struct s_mc_stack_frame_t {
   /** Instruction pointer */
   unw_word_t ip;
   /** Stack pointer */
@@ -85,25 +84,26 @@ typedef struct s_mc_stack_frame {
   simgrid::mc::Frame* frame;
   std::string frame_name;
   unw_cursor_t unw_cursor;
-} s_mc_stack_frame_t;
+};
 typedef s_mc_stack_frame_t* mc_stack_frame_t;
 
-typedef struct s_local_variable {
+struct s_local_variable_t {
   simgrid::mc::Frame* subprogram;
   unsigned long ip;
   std::string name;
   simgrid::mc::Type* type;
   void* address;
   int region;
-} s_local_variable_t;
+};
 typedef s_local_variable_t* local_variable_t;
 
-typedef struct XBT_PRIVATE s_mc_snapshot_stack {
-  std::vector<s_local_variable> local_variables;
+struct XBT_PRIVATE s_mc_snapshot_stack_t {
+  std::vector<s_local_variable_t> local_variables;
   simgrid::mc::UnwindContext context;
   std::vector<s_mc_stack_frame_t> stack_frames;
   int process_index;
-} s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
+};
+typedef s_mc_snapshot_stack_t* mc_snapshot_stack_t;
 
 namespace simgrid {
 namespace mc {
@@ -125,7 +125,7 @@ public:
   std::vector<s_mc_snapshot_stack_t> stacks;
   std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore;
   std::uint64_t hash;
-  std::vector<s_mc_snapshot_ignored_data> ignored_data;
+  std::vector<s_mc_snapshot_ignored_data_t> ignored_data;
   std::vector<s_fd_infos_t> current_fds;
 };
 }
@@ -190,10 +190,6 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
   xbt_assert(region->contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
   switch (region->storage_type()) {
-    case simgrid::mc::StorageType::NoData:
-    default:
-      xbt_die("Storage type not supported");
-
     case simgrid::mc::StorageType::Flat:
       return (char*)region->flat_data().get() + offset;
 
@@ -203,15 +199,14 @@ static XBT_ALWAYS_INLINE const void* MC_region_read(mc_mem_region_t region, void
       if (simgrid::mc::mmu::sameChunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
         // The memory is contained in a single page:
         return mc_translate_address_region_chunked((uintptr_t)addr, region);
-      } else {
-        // The memory spans several pages:
-        return MC_region_read_fragmented(region, target, addr, size);
       }
+      // Otherwise, the memory spans several pages:
+      return MC_region_read_fragmented(region, target, addr, size);
     }
 
-    // We currently do not pass the process_index to this function so we assume
-    // that the privatized region has been resolved in the callers:
-    case simgrid::mc::StorageType::Privatized:
+    default:
+      // includes StorageType::NoData and StorageType::Privatized (we currently do not pass the process_index to this
+      // function so we assume that the privatized region has been resolved in the callers)
       xbt_die("Storage type not supported");
   }
 }

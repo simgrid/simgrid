@@ -48,8 +48,9 @@ Engine::~Engine()
 Engine* Engine::getInstance()
 {
   if (s4u::Engine::instance_ == nullptr)
-    new Engine(0,nullptr);
-  return s4u::Engine::instance_;
+    return new Engine(0, nullptr);
+  else
+    return s4u::Engine::instance_;
 }
 
 void Engine::shutdown() {
@@ -142,15 +143,15 @@ void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* l
 /** @brief Register a new netpoint to the system */
 void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
 {
-//  simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
-  pimpl->netpoints_[point->name()] = point;
-//  });
+  // simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
+  pimpl->netpoints_[point->getName()] = point;
+  // });
 }
 /** @brief Unregister a given netpoint */
 void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
 {
   simgrid::simix::kernelImmediate([this, point] {
-    pimpl->netpoints_.erase(point->name());
+    pimpl->netpoints_.erase(point->getName());
     delete point;
   });
 }

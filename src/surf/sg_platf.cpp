@@ -600,10 +600,10 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(ZoneCreationArgs* zone)
       new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_Dijkstra:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 0);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, false);
       break;
     case A_surfxml_AS_routing_DijkstraCache:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 1);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, true);
       break;
     case A_surfxml_AS_routing_Floyd:
       new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id);
@@ -676,7 +676,7 @@ void sg_platf_new_hostlink(HostLinkCreationArgs* hostlink)
   if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->cname(), netpoint->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->getCname(), netpoint->id());
   as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 

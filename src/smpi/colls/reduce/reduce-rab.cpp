@@ -409,13 +409,31 @@ Benchmark results on CRAY T3E
 #endif
 #endif
 
-typedef enum {MPIM_SHORT, MPIM_INT, MPIM_LONG, MPIM_UNSIGNED_SHORT,
-              MPIM_UNSIGNED, MPIM_UNSIGNED_LONG, MPIM_UNSIGNED_LONG_LONG, MPIM_FLOAT,
-              MPIM_DOUBLE, MPIM_BYTE} MPIM_Datatype;
+enum MPIM_Datatype {
+  MPIM_SHORT,
+  MPIM_INT,
+  MPIM_LONG,
+  MPIM_UNSIGNED_SHORT,
+  MPIM_UNSIGNED,
+  MPIM_UNSIGNED_LONG,
+  MPIM_UNSIGNED_LONG_LONG,
+  MPIM_FLOAT,
+  MPIM_DOUBLE,
+  MPIM_BYTE
+};
 
-typedef enum {MPIM_MAX, MPIM_MIN, MPIM_SUM, MPIM_PROD,
-              MPIM_LAND, MPIM_BAND, MPIM_LOR, MPIM_BOR,
-              MPIM_LXOR, MPIM_BXOR} MPIM_Op;
+enum MPIM_Op {
+  MPIM_MAX,
+  MPIM_MIN,
+  MPIM_SUM,
+  MPIM_PROD,
+  MPIM_LAND,
+  MPIM_BAND,
+  MPIM_LOR,
+  MPIM_BOR,
+  MPIM_LXOR,
+  MPIM_BXOR
+};
 #define MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_TYPE,TYPE)                   \
 static void MPI_I_do_op_TYPE(TYPE* b1,TYPE* b2,TYPE* rslt, int cnt,MPIM_Op op)\
 { int i;                                                               \
@@ -595,14 +613,14 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
     MPI_Type_extent(mpi_datatype, &typelng);
     scrlng  = typelng * count;
 #ifdef NO_CACHE_OPTIMIZATION
-    scr1buf = static_cast<char*>(xbt_malloc(scrlng));
-    scr2buf = static_cast<char*>(xbt_malloc(scrlng));
-    scr3buf = static_cast<char*>(xbt_malloc(scrlng));
+    scr1buf = new char[scrlng];
+    scr2buf = new char[scrlng];
+    scr3buf = new char[scrlng];
 #else
 #  ifdef SCR_LNG_OPTIM
     scrlng = SCR_LNG_OPTIM(scrlng);
 #  endif
-    scr2buf = static_cast<char*>(xbt_malloc(3*scrlng));   /* To test cache problems.     */
+    scr2buf = new char[3 * scrlng]; /* To test cache problems.     */
     scr1buf = scr2buf + 1*scrlng; /* scr1buf and scr3buf must not*/
     scr3buf = scr2buf + 2*scrlng; /* be used for malloc because  */
                                   /* they are interchanged below.*/
@@ -914,9 +932,11 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
     }
 
 #   ifdef NO_CACHE_TESTING
-     xbt_free(scr1buf); xbt_free(scr2buf); xbt_free(scr3buf);
+    delete[] scr1buf;
+    delete[] scr2buf;
+    delete[] scr3buf;
 #   else
-     xbt_free(scr2buf); /* scr1buf and scr3buf are part of scr2buf */
+    delete[] scr2buf;             /* scr1buf and scr3buf are part of scr2buf */
 #   endif
     return(MPI_SUCCESS);
   } /* new_prot */

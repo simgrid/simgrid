@@ -75,14 +75,16 @@ namespace mc {
 class PageStore {
 public: // Types
   typedef std::uint64_t hash_type;
-private: // Types
+
+private:
+  // Types
   // We are using a cheap hash to index a page.
   // We should expect collision and we need to associate multiple page indices
   // to the same hash.
   typedef std::unordered_set<std::size_t> page_set_type;
   typedef std::unordered_map<hash_type, page_set_type> pages_map_type;
 
-private: // Fields:
+  // Fields:
   /** First page */
   void* memory_;
   /** Number of available pages in virtual memory */
@@ -96,18 +98,19 @@ private: // Fields:
   /** Index from page hash to page index */
   pages_map_type hash_index_;
 
-private: // Methods
+  // Methods
   void resize(std::size_t size);
   std::size_t alloc_page();
   void remove_page(std::size_t pageno);
 
-public: // Constructors
+public:
+  // Constructors
   PageStore(PageStore const&) = delete;
   PageStore& operator=(PageStore const&) = delete;
   explicit PageStore(std::size_t size);
   ~PageStore();
 
-public: // Methods
+  // Methods
 
   /** @brief Decrement the reference count for a given page
    *
@@ -141,7 +144,7 @@ public: // Methods
    */
   const void* get_page(std::size_t pageno) const;
 
-public: // Debug/test methods
+  // Debug/test methods
 
   /** @brief Get the number of references for a page */
   std::size_t get_ref(std::size_t pageno);

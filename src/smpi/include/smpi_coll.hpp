@@ -82,12 +82,11 @@ static ret cat  (COLL_UNPAREN args); \
 namespace simgrid{
 namespace smpi{
 
-struct mpi_coll_description {
+struct s_mpi_coll_description_t {
   const char *name;
   const char *description;
   void *coll;
 };
-typedef struct mpi_coll_description  s_mpi_coll_description_t;
 
 class Colls{
   public:

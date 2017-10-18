@@ -53,15 +53,15 @@ std::unique_ptr<simgrid::simix::Global> simix_global;
 static xbt_heap_t simix_timers = nullptr;
 
 /** @brief Timer datatype */
-typedef class s_smx_timer {
+class s_smx_timer_t {
   double date = 0.0;
-  s_smx_timer() = default;
+  s_smx_timer_t() = default;
 
 public:
   simgrid::xbt::Task<void()> callback;
   double getDate() { return date; }
-  s_smx_timer(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
-} s_smx_timer_t;
+  s_smx_timer_t(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
+};
 
 void (*SMPI_switch_data_segment)(int) = nullptr;
 
@@ -235,8 +235,8 @@ void SIMIX_global_init(int *argc, char **argv)
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::StorageImpl* storage) {
-      sg_storage_t s = simgrid::s4u::Storage::byName(storage->cname());
-      xbt_assert(s != nullptr, "Storage not found for name %s", storage->cname());
+      sg_storage_t s = simgrid::s4u::Storage::byName(storage->getCname());
+      xbt_assert(s != nullptr, "Storage not found for name %s", storage->getCname());
     });
   }
 
@@ -264,6 +264,15 @@ void SIMIX_clean()
   if (smx_cleaned)
     return; // to avoid double cleaning by java and C
 
+  smx_cleaned = 1;
+  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
+  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
+    XBT_CRITICAL("   ");
+    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
+    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
+  }
+
 #if HAVE_SMPI
   if (SIMIX_process_count()>0){
     if(smpi_process()->initialized()){
@@ -275,14 +284,6 @@ void SIMIX_clean()
   }
 #endif
 
-  smx_cleaned = 1;
-  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
-    XBT_CRITICAL("   ");
-    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
-    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
-    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
-  }
   /* Kill all processes (but maestro) */
   SIMIX_process_killall(simix_global->maestro_process, 1);
   SIMIX_context_runall();
@@ -497,7 +498,7 @@ void SIMIX_run()
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == simix_global->daemons.size())
         for (auto const& dmon : simix_global->daemons) {
-          XBT_DEBUG("Kill %s", dmon->cname());
+          XBT_DEBUG("Kill %s", dmon->getCname());
           SIMIX_process_kill(dmon, simix_global->maestro_process);
         }
     }
@@ -653,11 +654,11 @@ void SIMIX_display_process_status()
         synchro_description = "I/O";
 
       XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
-               process->cname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),
+               process->getCname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),
                process->waiting_synchro->name.c_str(), (int)process->waiting_synchro->state);
     }
     else {
-      XBT_INFO("Process %lu (%s@%s)", process->pid, process->cname(), process->host->getCname());
+      XBT_INFO("Process %lu (%s@%s)", process->pid, process->getCname(), process->host->getCname());
     }
   }
 }

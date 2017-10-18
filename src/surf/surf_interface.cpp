@@ -577,7 +577,12 @@ Model* Resource::model() const
   return model_;
 }
 
-const char* Resource::cname() const
+const std::string& Resource::getName() const
+{
+  return name_;
+}
+
+const char* Resource::getCname() const
 {
   return name_.c_str();
 }

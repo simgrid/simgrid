@@ -16,11 +16,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
-typedef struct s_dyn_light {
+struct s_dyn_light_t {
   int *data;
   int pos;
   int size;
-} s_dyn_light_t;
+};
 typedef s_dyn_light_t* dyn_light_t;
 
 double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */
@@ -333,7 +333,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, dou
   lmm_variable_t var = (lmm_variable_t)xbt_mallocator_get(sys->variable_mallocator);
   var->id = id;
   var->id_int = Global_debug_id++;
-  var->cnsts = (s_lmm_element_t *) xbt_realloc(var->cnsts, number_of_constraints * sizeof(s_lmm_element_t));
+  var->cnsts = static_cast<s_lmm_element_t*>(xbt_realloc(var->cnsts, number_of_constraints * sizeof(s_lmm_element_t)));
   for (int i = 0; i < number_of_constraints; i++) {
     var->cnsts[i].enabled_element_set_hookup.next = nullptr;
     var->cnsts[i].enabled_element_set_hookup.prev = nullptr;
@@ -774,8 +774,8 @@ void lmm_solve(lmm_system_t sys)
     }
   }
 
-  s_lmm_constraint_light_t *cnst_light_tab =
-     (s_lmm_constraint_light_t *)xbt_malloc0(xbt_swag_size(cnst_list)*sizeof(s_lmm_constraint_light_t));
+  s_lmm_constraint_light_t* cnst_light_tab =
+      static_cast<s_lmm_constraint_light_t*>(xbt_malloc0(xbt_swag_size(cnst_list) * sizeof(s_lmm_constraint_light_t)));
   int cnst_light_num = 0;
   dyn_light_t saturated_constraint_set = xbt_new0(s_dyn_light_t,1);
   saturated_constraint_set->size = 5;

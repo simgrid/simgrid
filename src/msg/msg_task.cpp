@@ -5,6 +5,7 @@
 
 #include "msg_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include <algorithm>
 
 extern "C" {
 
@@ -18,7 +19,7 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
-void simdata_task::reportMultipleUse() const
+void s_simdata_task_t::reportMultipleUse() const
 {
   if (msg_global->debug_multiple_use){
     XBT_ERROR("This task is already used in there:");
@@ -49,7 +50,7 @@ void simdata_task::reportMultipleUse() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
-  msg_task_t task = xbt_new(s_msg_task_t, 1);
+  msg_task_t task        = new s_msg_task_t;
   simdata_task_t simdata = new s_simdata_task_t();
   task->simdata = simdata;
 
@@ -90,12 +91,16 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 
   /* Simulator Data specific to parallel tasks */
   simdata->host_nb = host_nb;
-  simdata->host_list = xbt_new0(sg_host_t, host_nb);
-  simdata->flops_parallel_amount = flops_amount;
-  simdata->bytes_parallel_amount = bytes_amount;
-
-  for (int i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i];
+  simdata->host_list             = new sg_host_t[host_nb];
+  std::copy_n(host_list, host_nb, simdata->host_list);
+  if (flops_amount != nullptr) {
+    simdata->flops_parallel_amount = new double[host_nb];
+    std::copy_n(flops_amount, host_nb, simdata->flops_parallel_amount);
+  }
+  if (bytes_amount != nullptr) {
+    simdata->bytes_parallel_amount = new double[host_nb * host_nb];
+    std::copy_n(bytes_amount, host_nb * host_nb, simdata->bytes_parallel_amount);
+  }
 
   return task;
 }
@@ -198,7 +203,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 
   /* free main structures */
   delete task->simdata;
-  xbt_free(task);
+  delete task;
 
   return MSG_OK;
 }

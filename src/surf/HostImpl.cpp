@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -80,13 +80,16 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
       xbt_die("Cannot have a communication that is not a simple point-to-point in this model. You should consider "
           "using the ptask model");
     }
-  } else
+  } else {
     xbt_die(
         "This model only accepts one of the following. You should consider using the ptask model for the other cases.\n"
         " - execution with one host only and no communication\n"
         " - Self-comms with one host only\n"
         " - Communications with two hosts and no computation");
-  xbt_free(host_list);
+  }
+  delete[] host_list;
+  delete[] flops_amount;
+  delete[] bytes_amount;
   return action;
 }
 
@@ -104,7 +107,7 @@ void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
 {
   for (auto const& s : storage_)
     if (s.second->getHost() == piface_->getCname())
-      storages->push_back(s.second->piface_.getName());
+      storages->push_back(s.second->piface_.getCname());
 }
 
 }

@@ -85,7 +85,7 @@ extern XBT_PRIVATE double smpi_host_speed;
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
 extern XBT_PRIVATE int smpi_data_exe_size;    // size of the data+bss segment of the executable
 
-typedef enum { shmalloc_none, shmalloc_local, shmalloc_global } shared_malloc_type;
+enum shared_malloc_type { shmalloc_none, shmalloc_local, shmalloc_global };
 extern XBT_PRIVATE shared_malloc_type smpi_cfg_shared_malloc; // Whether to activate shared malloc
 
 XBT_PRIVATE void smpi_switch_data_segment(int dest);
@@ -404,10 +404,10 @@ void mpi_file_write_(int* fh, void* buf, int* count, int* datatype, MPI_Status* 
 
 // TODO, make this static and expose it more cleanly
 
-typedef struct s_smpi_privatization_region {
+struct s_smpi_privatization_region_t {
   void* address;
   int file_descriptor;
-} s_smpi_privatization_region_t;
+};
 typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 
 extern XBT_PRIVATE smpi_privatization_region_t smpi_privatization_regions;
@@ -437,12 +437,12 @@ XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location();
 XBT_PUBLIC(smpi_trace_call_location_t*) smpi_trace_get_call_location();
 }
 
-typedef enum {
+enum smpi_priv_strategies {
   SMPI_PRIVATIZE_NONE    = 0,
   SMPI_PRIVATIZE_MMAP    = 1,
   SMPI_PRIVATIZE_DLOPEN  = 2,
   SMPI_PRIVATIZE_DEFAULT = SMPI_PRIVATIZE_MMAP
-} smpi_priv_strategies;
+};
 
 extern XBT_PRIVATE int smpi_privatize_global_variables;
 

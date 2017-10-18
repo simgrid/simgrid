@@ -59,7 +59,6 @@ public:
 class evaluation_error : std::runtime_error {
 public:
   evaluation_error(const char* what): std::runtime_error(what) {}
-  ~evaluation_error() noexcept(true);
 };
 
 /** A stack for evaluating a DWARF expression

@@ -47,6 +47,10 @@ using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc, "Logging specific to mc_checkpoint");
 
+#define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
+#define PROT_RW (PROT_READ | PROT_WRITE)
+#define PROT_RX (PROT_READ | PROT_EXEC)
+
 namespace simgrid {
 namespace mc {
 
@@ -60,11 +64,6 @@ namespace mc {
 static void restore(mc_mem_region_t region)
 {
   switch(region->storage_type()) {
-  case simgrid::mc::StorageType::NoData:
-  default:
-    xbt_die("Storage type not supported");
-    break;
-
   case simgrid::mc::StorageType::Flat:
     mc_model_checker->process().write_bytes(region->flat_data().get(),
       region->size(), region->permanent_address());
@@ -77,6 +76,10 @@ static void restore(mc_mem_region_t region)
   case simgrid::mc::StorageType::Privatized:
     for (auto& p : region->privatized_data())
       restore(&p);
+    break;
+
+  default: // includes StorageType::NoData
+    xbt_die("Storage type not supported");
     break;
   }
 }
@@ -174,10 +177,6 @@ static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::
 #endif
     snapshot->privatization_index = simgrid::mc::ProcessIndexMissing;
 }
-
-#define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
-#define PROT_RW (PROT_READ | PROT_WRITE)
-#define PROT_RX (PROT_READ | PROT_EXEC)
 
 /** \brief Fills the position of the segments (executable, read-only, read/write).
  * */
@@ -278,10 +277,8 @@ static bool valid_variable(simgrid::mc::Variable* var,
     return true;
 }
 
-static void fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           simgrid::mc::Frame* scope,
-                                           int process_index,
-                                           std::vector<s_local_variable>& result)
+static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::mc::Frame* scope, int process_index,
+                                        std::vector<s_local_variable_t>& result)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
@@ -335,10 +332,10 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
       stack_frame, &nested_scope, process_index, result);
 }
 
-static std::vector<s_local_variable> get_local_variables_values(
-  std::vector<s_mc_stack_frame_t>& stack_frames, int process_index)
+static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames,
+                                                                  int process_index)
 {
-  std::vector<s_local_variable> variables;
+  std::vector<s_local_variable_t> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
     fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
   return variables;

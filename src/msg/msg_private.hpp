@@ -27,11 +27,12 @@ public:
 }
 /********************************* Task **************************************/
 
-typedef struct simdata_task {
-  ~simdata_task()
+struct s_simdata_task_t {
+  ~s_simdata_task_t()
   {
     /* parallel tasks only */
-    xbt_free(this->host_list);
+    delete[] this->host_list;
+    /* flops_parallel_amount and bytes_parallel_amount are automatically deleted in ~L07Action */
   }
   void setUsed();
   void setNotUsed() { this->isused = false; }
@@ -57,7 +58,7 @@ typedef struct simdata_task {
 
 private:
   void reportMultipleUse() const;
-} s_simdata_task_t;
+};
 
 /******************************* Process *************************************/
 
@@ -85,12 +86,12 @@ public:
 }
 
 /************************** Global variables ********************************/
-typedef struct MSG_Global {
+struct s_MSG_Global_t {
   int debug_multiple_use;            /* whether we want an error message when reusing the same Task for 2 things */
   std::atomic_int_fast32_t sent_msg; /* Total amount of messages sent during the simulation */
   void (*task_copy_callback)(msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
-} s_MSG_Global_t;
+};
 typedef s_MSG_Global_t* MSG_Global_t;
 
 extern "C" {
@@ -132,7 +133,7 @@ XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process); // called fr
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
 }
 
-inline void simdata_task::setUsed()
+inline void s_simdata_task_t::setUsed()
 {
   if (this->isused)
     this->reportMultipleUse();

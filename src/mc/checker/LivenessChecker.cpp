@@ -76,6 +76,7 @@ static bool evaluate_label(xbt_automaton_exp_label_t l, std::vector<int> const& 
           return values[cursor] != 0;
       }
       xbt_die("Missing predicate");
+      break;
     }
   case xbt_automaton_exp_label::AUT_ONE:
     return true;
@@ -266,7 +267,6 @@ RecordTrace LivenessChecker::getRecordTrace() // override
 
 void LivenessChecker::logState() // override
 {
-  Checker::logState();
   XBT_INFO("Expanded pairs = %lu", expandedPairsCount_);
   XBT_INFO("Visited pairs = %lu", visitedPairsCount_);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);

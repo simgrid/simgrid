@@ -14,10 +14,11 @@
 
 #if SIMGRID_HAVE_MC
 
-#include <stdexcept>
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
 #include <iterator>
+#include <stdexcept>
 
 #include <xbt/sysdep.h>
 
@@ -56,7 +57,6 @@ struct string_data {
 XBT_PUBLIC_CLASS string : private string_data {
   static const char NUL;
 public:
-
   // Types
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
@@ -71,7 +71,7 @@ public:
   ~string()
   {
     if (string_data::data != &NUL)
-      std::free(string_data::data);
+      delete[] string_data::data;
   }
 
   // Ctors
@@ -82,8 +82,8 @@ public:
       string_data::data = const_cast<char*>(&NUL);
     } else {
       string_data::len = size;
-      string_data::data = static_cast<char*>(std::malloc(string_data::len + 1));
-      memcpy(string_data::data, s, string_data::len);
+      string_data::data = new char[string_data::len + 1];
+      std::copy_n(s, string_data::len, string_data::data);
       string_data::data[string_data::len] = '\0';
     }
   }
@@ -103,14 +103,14 @@ public:
   void assign(const char* s, size_t size)
   {
     if (string_data::data != &NUL) {
-      std::free(string_data::data);
+      delete[] string_data::data;
       string_data::data = nullptr;
       string_data::len = 0;
     }
     if (size != 0) {
       string_data::len = size;
-      string_data::data = (char*) std::malloc(string_data::len + 1);
-      std::memcpy(string_data::data, s, string_data::len);
+      string_data::data = new char[string_data::len + 1];
+      std::copy_n(s, string_data::len, string_data::data);
       string_data::data[string_data::len] = '\0';
     }
   }
@@ -136,7 +136,7 @@ public:
   size_t size() const   { return len; }
   size_t length() const { return len; }
   bool empty() const    { return len != 0; }
-  void shrink_to_fit() {}
+  void shrink_to_fit() { /* Being there, but doing nothing */}
 
   // Alement access
   char* data()              { return string_data::data; }
@@ -164,6 +164,7 @@ public:
     return data()[i];
   }
   // Conversion
+  static string_data& to_string_data(string& s) { return s; }
   operator std::string() const { return std::string(this->c_str(), this->size()); }
 
   // Iterators

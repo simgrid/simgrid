@@ -85,12 +85,12 @@ static void dump_platform()
   simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
   std::sort(netcardList.begin(), netcardList.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
-              return a->name() < b->name();
+              return a->getName() < b->getName();
             });
 
   for (auto const& srcCard : netcardList)
     if (srcCard->isRouter())
-      std::printf("  <router id=\"%s\"/>\n", srcCard->cname());
+      std::printf("  <router id=\"%s\"/>\n", srcCard->getCname());
 
   // Links
   unsigned int totalLinks    = sg_link_count();
@@ -103,7 +103,7 @@ static void dump_platform()
     simgrid::s4u::Link* link = links[i];
     std::printf("  <link id=\"");
 
-    std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->name(), link->bandwidth(), link->latency());
+    std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->getCname(), link->bandwidth(), link->latency());
     if (sg_link_is_shared(link)) {
       std::printf("/>\n");
     } else {
@@ -122,17 +122,17 @@ static void dump_platform()
       if (not route.empty()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->getCname(), host2->getCname());
         for (auto const& link : route)
-          std::printf("<link_ctn id=\"%s\"/>", link->cname());
+          std::printf("<link_ctn id=\"%s\"/>", link->getCname());
         std::printf("\n  </route>\n");
       }
     }
     for (auto const& netcardDst : netcardList) { // to router
       if (netcardDst->isRouter()) {
-        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->getCname(), netcardDst->cname());
+        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->getCname(), netcardDst->getCname());
         std::vector<simgrid::surf::LinkImpl*> route;
         simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(netcardSrc, netcardDst, &route, nullptr);
         for (auto const& link : route)
-          std::printf("<link_ctn id=\"%s\"/>", link->cname());
+          std::printf("<link_ctn id=\"%s\"/>", link->getCname());
         std::printf("\n  </route>\n");
       }
     }
@@ -142,22 +142,22 @@ static void dump_platform()
     if (value1->isRouter()) {
       for (auto const& value2 : netcardList) { // to router
         if (value2->isRouter()) {
-          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->cname(), value2->cname());
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->getCname(), value2->getCname());
           std::vector<simgrid::surf::LinkImpl*> route;
           simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, &route, nullptr);
           for (auto const& link : route)
-            std::printf("<link_ctn id=\"%s\"/>", link->cname());
+            std::printf("<link_ctn id=\"%s\"/>", link->getCname());
           std::printf("\n  </route>\n");
         }
       }
       for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
         simgrid::s4u::Host* host2 = hosts[it_dst];
-        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->cname(), host2->getCname());
+        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->getCname(), host2->getCname());
         std::vector<simgrid::surf::LinkImpl*> route;
         simgrid::kernel::routing::NetPoint* netcardDst = host2->pimpl_netpoint;
         simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, netcardDst, &route, nullptr);
         for (auto const& link : route)
-          std::printf("<link_ctn id=\"%s\"/>", link->cname());
+          std::printf("<link_ctn id=\"%s\"/>", link->getCname());
         std::printf("\n  </route>\n");
       }
     }

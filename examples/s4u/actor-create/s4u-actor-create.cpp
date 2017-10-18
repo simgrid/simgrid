@@ -18,6 +18,7 @@
  */
 
 #include <simgrid/s4u.hpp>
+#include <string>
 
 // This declares a logging channel so that XBT_INFO can be used later
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this example");
@@ -42,7 +43,7 @@ public:
     XBT_INFO("Hello s4u, I have something to send");
     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mb42");
 
-    mailbox->put(xbt_strdup(msg.c_str()), msg.size());
+    mailbox->put(new std::string(msg), msg.size());
     XBT_INFO("I'm done. See you.");
   }
 };
@@ -72,13 +73,13 @@ public:
   }
   void operator()()
   {
-    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->getName());
+    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->getCname());
 
-    char* msg1 = static_cast<char*>(mailbox->get());
-    char* msg2 = static_cast<char*>(mailbox->get());
-    XBT_INFO("I received '%s' and '%s'", msg1, msg2);
-    xbt_free(msg1);
-    xbt_free(msg2);
+    std::string* msg1 = static_cast<std::string*>(mailbox->get());
+    std::string* msg2 = static_cast<std::string*>(mailbox->get());
+    XBT_INFO("I received '%s' and '%s'", msg1->c_str(), msg2->c_str());
+    delete msg1;
+    delete msg2;
     XBT_INFO("I'm done. See you.");
   }
 };

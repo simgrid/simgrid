@@ -18,8 +18,8 @@ public:
   FileImpl(sg_storage_t st, std::string path, std::string mount);
   ~FileImpl() = default;
 
-  std::string name() { return path_; }
-  const char* cname() { return path_.c_str(); }
+  const std::string& getName() const { return path_; }
+  const char* getCname() const { return path_.c_str(); }
   const char* mount() { return mount_point_.c_str(); }
   sg_size_t size() { return size_; }
   void setSize(sg_size_t size) { size_ = size; }

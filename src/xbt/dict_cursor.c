@@ -1,6 +1,6 @@
 /* dict_cursor - iterators over dictionaries                               */
 
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,9 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict, "To traverse dictiona
 /* To traverse (simple) dicts                                               */
 /* Don't add or remove entries to the dict while traversing !!!             */
 /*###########################################################################*/
-
-#undef xbt_dict_CURSOR_DEBUG
-/*#define xbt_dict_CURSOR_DEBUG 1*/
 
 /** @brief Creator
  *  @param dict the dict

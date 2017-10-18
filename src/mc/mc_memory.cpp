@@ -26,9 +26,4 @@ void MC_memory_init()
     xbt_die("Model-checking support is not enabled: run with simgrid-mc.");
 }
 
-/* Finalize the memory subsystem */
-void MC_memory_exit()
-{
-}
-
 }

@@ -12,7 +12,7 @@ static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
   std::map<std::string, std::string>* props = storage->getProperties();
   if (not props->empty()) {
-    XBT_INFO("\tProperties of mounted storage: %s", storage->getName());
+    XBT_INFO("\tProperties of mounted storage: %s", storage->getCname());
 
     for (auto const& elm : *props) {
       XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
@@ -27,7 +27,7 @@ static sg_size_t write_local_file(const char* dest, sg_size_t file_size)
   simgrid::s4u::File* file = new simgrid::s4u::File(dest, nullptr);
   sg_size_t written        = file->write(file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1", written, file_size,
-           simgrid::s4u::Actor::self()->getName().c_str());
+           simgrid::s4u::Actor::self()->getCname());
   delete file;
   return written;
 }
@@ -38,7 +38,7 @@ static sg_size_t read_local_file(const char* src)
   sg_size_t file_size      = file->size();
   sg_size_t read           = file->read(file_size);
 
-  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getName().c_str(), read, src);
+  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getCname(), read, src);
   delete file;
 
   return read;
@@ -51,7 +51,7 @@ static void hsm_put(const char* remote_host, const char* src, const char* dest)
   sg_size_t read_size = read_local_file(src);
 
   // Send file
-  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getName().c_str(), read_size, remote_host);
+  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getCname(), read_size, remote_host);
   char* payload                    = bprintf("%s %llu", dest, read_size);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(remote_host);
   mailbox->put(payload, static_cast<double>(read_size));
@@ -60,7 +60,7 @@ static void hsm_put(const char* remote_host, const char* src, const char* dest)
 
 static void display_storage_content(simgrid::s4u::Storage* storage)
 {
-  XBT_INFO("Print the content of the storage element: %s", storage->getName());
+  XBT_INFO("Print the content of the storage element: %s", storage->getCname());
   std::map<std::string, sg_size_t>* content = storage->getContent();
   if (not content->empty()) {
     for (auto const& entry : *content)
@@ -108,7 +108,7 @@ static void storage_info(simgrid::s4u::Host* host)
   for (auto const& elm : host->getMountedStorages()) {
     const char* mount_name         = elm.first.c_str();
     simgrid::s4u::Storage* storage = elm.second;
-    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getName(), mount_name);
+    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getCname(), mount_name);
 
     sg_size_t free_size = storage->getSizeFree();
     sg_size_t used_size = storage->getSizeUsed();
@@ -117,7 +117,7 @@ static void storage_info(simgrid::s4u::Host* host)
     XBT_INFO("\t\tUsed size: %llu bytes", used_size);
 
     display_storage_properties(storage);
-    dump_storage_by_name(storage->getName());
+    dump_storage_by_name(storage->getCname());
   }
 }
 

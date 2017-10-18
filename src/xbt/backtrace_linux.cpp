@@ -38,10 +38,9 @@ struct trace_arg {
   int size;
 };
 
-static _Unwind_Reason_Code
-backtrace_helper (struct _Unwind_Context *ctx, void *a)
+static _Unwind_Reason_Code backtrace_helper(_Unwind_Context* ctx, void* a)
 {
-  struct trace_arg *arg = (struct trace_arg *) a;
+  trace_arg* arg = static_cast<trace_arg*>(a);
 
   /* We are first called with address in the __backtrace function.
      Skip it.  */

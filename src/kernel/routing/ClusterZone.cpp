@@ -22,7 +22,7 @@ ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father
 
 void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
-  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->cname(), src->id(), dst->cname(), dst->id());
+  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
   xbt_assert(not privateLinks_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
@@ -71,28 +71,29 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   }
 }
 
-void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
+void ClusterZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                           std::map<std::string, xbt_edge_t>* edges)
 {
   xbt_assert(router_,
              "Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
-  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->cname(), nodes);
+  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->getCname(), nodes);
 
   xbt_node_t backboneNode = nullptr;
   if (backbone_) {
-    backboneNode = new_xbt_graph_node(graph, backbone_->cname(), nodes);
+    backboneNode = new_xbt_graph_node(graph, backbone_->getCname(), nodes);
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
   for (auto const& src : getVertices()) {
     if (not src->isRouter()) {
-      xbt_node_t previous = new_xbt_graph_node(graph, src->cname(), nodes);
+      xbt_node_t previous = new_xbt_graph_node(graph, src->getCname(), nodes);
 
       std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
 
       if (info.first) { // link up
-        xbt_node_t current = new_xbt_graph_node(graph, info.first->cname(), nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.first->getCname(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {
@@ -103,7 +104,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges
       }
 
       if (info.second) { // link down
-        xbt_node_t current = new_xbt_graph_node(graph, info.second->cname(), nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.second->getCname(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {

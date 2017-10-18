@@ -10,152 +10,124 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event sy
 
 static simgrid::instr::Type* rootType = nullptr; /* the root type */
 
-simgrid::instr::Type* PJ_type_get_root()
+namespace simgrid {
+namespace instr {
+
+Type::Type(std::string name, std::string alias, std::string color, e_entity_types kind, Type* father)
+    : name_(name), color_(color), kind_(kind), father_(father)
+{
+  if (name.empty() || alias.empty()) {
+    THROWF(tracing_error, 0, "can't create a new type with no name or alias");
+  }
+
+  id_ = std::to_string(instr_new_paje_id());
+
+  if (father != nullptr){
+    father->children_.insert({alias, this});
+    XBT_DEBUG("new type %s, child of %s", name_.c_str(), father->getCname());
+  }
+}
+
+Type::~Type()
+{
+  for (auto elm : values_)
+    delete elm.second;
+  for (auto elm : children_)
+    delete elm.second;
+}
+
+Type* Type::byName(std::string name)
+{
+  Type* ret = nullptr;
+  for (auto elm : children_) {
+    if (elm.second->name_ == name) {
+      if (ret != nullptr) {
+        THROWF (tracing_error, 0, "there are two children types with the same name?");
+      } else {
+        ret = elm.second;
+      }
+    }
+  }
+  if (ret == nullptr)
+    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), getCname());
+  return ret;
+}
+
+Type* Type::createRootType()
+{
+  simgrid::instr::Type* ret = new simgrid::instr::Type("0", "0", "", TYPE_CONTAINER, nullptr);
+  rootType                  = ret;
+  return ret;
+}
+
+Type* Type::getRootType()
 {
   return rootType;
 }
 
-simgrid::instr::Type::Type(const char* typeNameBuff, const char* key, const char* color, e_entity_types kind,
-                           Type* father)
-    : kind_(kind), father_(father)
+Type* Type::getOrCreateContainerType(std::string name)
 {
-  if (typeNameBuff == nullptr || key == nullptr){
-    THROWF(tracing_error, 0, "can't create a new type with name or key equal nullptr");
-  }
-
-  this->name_     = xbt_strdup(typeNameBuff);
-  this->children_ = xbt_dict_new_homogeneous(nullptr);
-  this->values_   = xbt_dict_new_homogeneous(nullptr);
-  this->color_    = xbt_strdup(color);
-
-  this->id_ = bprintf("%lld", instr_new_paje_id());
-
-  if (father != nullptr){
-    xbt_dict_set(father->children_, key, this, nullptr);
-    XBT_DEBUG("new type %s, child of %s", typeNameBuff, father->name_);
-  }
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new simgrid::instr::Type(name, name, "", TYPE_CONTAINER, this);
+    XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+    ret->logContainerTypeDefinition();
+    return ret;
+  } else
+    return it->second;
 }
 
-simgrid::instr::Type::~Type()
+Type* Type::getOrCreateEventType(std::string name)
 {
-  simgrid::instr::Value* val;
-  char *value_name;
-  xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (values_, cursor, value_name, val) {
-    XBT_DEBUG("free value %s, child of %s", val->name_, val->father_->name_);
-    delete val;
-  }
-  xbt_dict_free(&values_);
-  simgrid::instr::Type* child;
-  char *child_name;
-  xbt_dict_foreach (children_, cursor, child_name, child) {
-    delete child;
-  }
-  xbt_dict_free(&children_);
-  xbt_free(name_);
-  xbt_free(id_);
-  xbt_free(color_);
-}
-
-simgrid::instr::Type* simgrid::instr::Type::getChild(const char* name)
-{
-  simgrid::instr::Type* ret = this->getChildOrNull(name);
-  if (ret == nullptr)
-    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name, this->name_);
-  return ret;
-}
-
-simgrid::instr::Type* simgrid::instr::Type::getChildOrNull(const char* name)
-{
-  xbt_assert(name != nullptr, "can't get type with a nullptr name");
-
-  simgrid::instr::Type* ret = nullptr;
-  simgrid::instr::Type* child;
-  char *child_name;
-  xbt_dict_cursor_t cursor = nullptr;
-  xbt_dict_foreach (children_, cursor, child_name, child) {
-    if (strcmp(child->name_, name) == 0) {
-      if (ret != nullptr) {
-        THROWF (tracing_error, 0, "there are two children types with the same name?");
-      } else {
-        ret = child;
-      }
-    }
-  }
-  return ret;
-}
-
-simgrid::instr::Type* simgrid::instr::Type::containerNew(const char* name, simgrid::instr::Type* father)
-{
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a container type with a nullptr name");
-  }
-
-  simgrid::instr::Type* ret = new simgrid::instr::Type(name, name, nullptr, TYPE_CONTAINER, father);
-  if (father == nullptr) {
-    rootType = ret;
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, name, "", TYPE_EVENT, this);
+    XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+    ret->logDefineEventType();
+    return ret;
   } else {
-    XBT_DEBUG("ContainerType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
-    LogContainerTypeDefinition(ret);
+    return it->second;
   }
-  return ret;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::eventNew(const char* name, simgrid::instr::Type* father)
+Type* Type::getOrCreateVariableType(std::string name, std::string color)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create an event type with a nullptr name");
-  }
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, name, color.empty() ? "1 1 1" : color, TYPE_VARIABLE, this);
 
-  Type* ret = new Type (name, name, nullptr, TYPE_EVENT, father);
-  XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
-  LogDefineEventType(ret);
-  return ret;
+    XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+    ret->logVariableTypeDefinition();
+
+    return ret;
+  } else
+    return it->second;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::variableNew(const char* name, const char* color,
-                                                        simgrid::instr::Type* father)
+Type* Type::getOrCreateLinkType(std::string name, Type* source, Type* dest)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a variable type with a nullptr name");
-  }
-
-  Type* ret = nullptr;
-
-  if (not color) {
-    char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
-    ret = new Type (name, name, white, TYPE_VARIABLE, father);
-  }else{
-    ret = new Type (name, name, color, TYPE_VARIABLE, father);
-  }
-  XBT_DEBUG("VariableType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
-  LogVariableTypeDefinition (ret);
-  return ret;
+  std::string alias = name + "-" + source->id_ + "-" + dest->id_;
+  auto it           = children_.find(alias);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, alias, "", TYPE_LINK, this);
+    XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->getCname(), ret->getId(), getCname(), getId(),
+              source->getCname(), source->getId(), dest->getCname(), dest->getId());
+    ret->logLinkTypeDefinition(source, dest);
+    return ret;
+  } else
+    return it->second;
 }
 
-simgrid::instr::Type* simgrid::instr::Type::linkNew(const char* name, Type* father, Type* source, Type* dest)
+Type* Type::getOrCreateStateType(std::string name)
 {
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a link type with a nullptr name");
-  }
-
-  char key[INSTR_DEFAULT_STR_SIZE];
-  snprintf(key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id_, dest->id_);
-  Type* ret = new Type(name, key, nullptr, TYPE_LINK, father);
-  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name_, ret->id_, father->name_, father->id_,
-            source->name_, source->id_, dest->name_, dest->id_);
-  LogLinkTypeDefinition(ret, source, dest);
-  return ret;
+  auto it = children_.find(name);
+  if (it == children_.end()) {
+    Type* ret = new Type(name, name, "", TYPE_STATE, this);
+    XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->getCname(), ret->getId(), getCname(), getId());
+    ret->logStateTypeDefinition();
+    return ret;
+  } else
+    return it->second;
 }
-
-simgrid::instr::Type* simgrid::instr::Type::stateNew(const char* name, Type* father)
-{
-  if (name == nullptr){
-    THROWF (tracing_error, 0, "can't create a state type with a nullptr name");
-  }
-
-  Type* ret = new Type(name, name, nullptr, TYPE_STATE, father);
-  XBT_DEBUG("StateType %s(%s), child of %s(%s)", ret->name_, ret->id_, father->name_, father->id_);
-  LogStateTypeDefinition(ret);
-  return ret;
+}
 }

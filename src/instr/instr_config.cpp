@@ -117,10 +117,10 @@ int TRACE_start()
     }
 
     /* activate trace */
-    if (trace_active == 1) {
+    if (trace_active) {
       THROWF(tracing_error, 0, "Tracing is already active");
     }
-    trace_active = 1;
+    trace_active = true;
     XBT_DEBUG("Tracing is on");
   }
   return 0;
@@ -139,11 +139,11 @@ int TRACE_end()
 
     /* dump trace buffer */
     TRACE_last_timestamp_to_dump = surf_get_clock();
-    TRACE_paje_dump_buffer(1);
+    TRACE_paje_dump_buffer(true);
 
     /* destroy all data structures of tracing (and free) */
     delete PJ_container_get_root();
-    delete PJ_type_get_root();
+    delete simgrid::instr::Type::getRootType();
     rootType = nullptr;
 
     /* close the trace files */
@@ -158,7 +158,7 @@ int TRACE_end()
     }
 
     /* de-activate trace */
-    trace_active = 0;
+    trace_active = false;
     XBT_DEBUG("Tracing is off");
     XBT_DEBUG("Tracing system is shutdown");
   }
@@ -303,11 +303,11 @@ char *TRACE_get_viva_cat_conf ()
 
 void TRACE_global_init()
 {
-  static int is_initialised = 0;
+  static bool is_initialised = false;
   if (is_initialised)
     return;
 
-  is_initialised = 1;
+  is_initialised = true;
   /* name of the tracefile */
   xbt_cfg_register_string (OPT_TRACING_FILENAME, "simgrid.trace", nullptr, "Trace file created by the instrumented SimGrid.");
   xbt_cfg_register_boolean(OPT_TRACING, "no", nullptr, "Enable Tracing.");
@@ -351,7 +351,7 @@ void TRACE_global_init()
   xbt_cfg_register_alias(OPT_TRACING_ONELINK_ONLY, "tracing/onelink_only");
 
   /* instrumentation can be considered configured now */
-  trace_configured = 1;
+  trace_configured = true;
 }
 
 static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
@@ -597,7 +597,7 @@ void instr_pause_tracing ()
   }else{
     XBT_DEBUG ("Tracing is being paused.");
   }
-  trace_enabled = 0;
+  trace_enabled = false;
   XBT_DEBUG ("Tracing is paused.");
 }
 
@@ -612,7 +612,7 @@ void instr_resume_tracing ()
   if (previous_trace_state != -1){
     trace_enabled = previous_trace_state;
   }else{
-    trace_enabled = 1;
+    trace_enabled = true;
   }
   XBT_DEBUG ("Tracing is resumed.");
   previous_trace_state = -1;

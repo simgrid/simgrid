@@ -30,8 +30,9 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->cname(), action->getCategory(), lmm_variable_getvalue(action->getVariable()),
-                                      action->getLastUpdate(), now - action->getLastUpdate());
+      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(),
+                                      lmm_variable_getvalue(action->getVariable()), action->getLastUpdate(),
+                                      now - action->getLastUpdate());
     }
 
     action->finish(Action::State::done);
@@ -71,8 +72,8 @@ void CpuModel::updateActionsStateFull(double now, double delta)
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
 
-      TRACE_surf_host_set_utilization(cpu->cname(), action->getCategory(), lmm_variable_getvalue(action->getVariable()),
-                                      now - delta, delta);
+      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(),
+                                      lmm_variable_getvalue(action->getVariable()), now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 
@@ -123,7 +124,7 @@ int Cpu::getNbPStates()
 void Cpu::setPState(int pstate_index)
 {
   xbt_assert(pstate_index <= static_cast<int>(speedPerPstate_.size()),
-             "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", cname(), pstate_index,
+             "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getCname(), pstate_index,
              static_cast<int>(speedPerPstate_.size()));
 
   double new_peak_speed = speedPerPstate_[pstate_index];
@@ -157,7 +158,7 @@ double Cpu::getAvailableSpeed()
 }
 
 void Cpu::onSpeedChange() {
-  TRACE_surf_host_set_speed(surf_get_clock(), cname(), coresAmount_ * speed_.scale * speed_.peak);
+  TRACE_surf_host_set_speed(surf_get_clock(), getCname(), coresAmount_ * speed_.scale * speed_.peak);
   s4u::Host::onSpeedChange(*host_);
 }
 
@@ -197,7 +198,7 @@ void CpuAction::updateRemainingLazy(double now)
 
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->cname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
+      TRACE_surf_host_set_utilization(cpu->getCname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
     }
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, remains_);
   }

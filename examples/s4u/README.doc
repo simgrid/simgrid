@@ -26,9 +26,9 @@ documentation, but it should remain readable directly.
     Shows how to start your actors to populate your simulation.
 
   - <b>Ping Pong</b>: @ref examples/s4u/app-pingpong/s4u-app-pingpong.c\n
-   It's hard to think of a simpler example: it is just sending one message back and forth.
-   The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
-   the simulators (as detailed in Section \ref options). 
+    This simple example just sends one message back and forth.
+    The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
+    the simulators (as detailed in Section \ref options). 
 
   - <b>Token ring:</b> @ref examples/s4u/app-token-ring/s4u-app-token-ring.cpp \n
     Shows how to implement a classical communication pattern, where a token is exchanged along a ring to reach every
@@ -38,7 +38,7 @@ documentation, but it should remain readable directly.
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
     processes. 
     
-@section msg_ex_async Asynchronous communications
+@section s4u_ex_async Asynchronous communications
 
  - <b>Basic asynchronous communications</b>. 
    @ref examples/s4u/async-wait/s4u-async-wait.cpp \n
@@ -57,13 +57,20 @@ documentation, but it should remain readable directly.
    @ref examples/s4u/async-waitany/s4u-async-waitany.cpp\n
    The @ref simgrid::s4u::Comm::wait_any() function is useful when you want to block
    until one activity of the set completes, no matter which terminates
-   first.   
+   first.    
 
 @section s4u_ex_actors Acting on Actors
 
   - <b>Creating actors</b>. 
     @ref examples/s4u/actor-create/s4u-actor-create.cpp \n
     Most actors are started from the deployment XML file, but they exist other methods.
+
+  - <b>Actors using CPU time</b>.
+    @ref examples/s4u/actor-execute/s4u-actor-execute.cpp \n
+    The computations done in your program are not reported to the
+    simulated world, unless you explicitely request the simulator to pause
+    the actor until a given amount of flops gets computed on its simulated
+    host.
 
   - <b>Daemonize actors</b>
     @ref examples/s4u/actor-daemon/s4u-actor-daemon.cpp \n
@@ -83,6 +90,12 @@ documentation, but it should remain readable directly.
   - <b>Kill actors</b>.
     @ref examples/s4u/actor-kill/s4u-actor-kill.cpp \n
     Actors can forcefully stop other actors with the @ref kill method.
+
+  - <b>Controling the actor life cycle from the XML</b>.
+    @ref examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp 
+    @ref examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml 
+    \n
+    You can specify a start time and a kill time in the deployment file.
 
   - <b>Migrating Actors</b>.
     @ref examples/s4u/actor-migration/s4u-actor-migration.cpp \n
@@ -129,7 +142,10 @@ also the tesh files in the example directories for details.
 @example examples/s4u/actor-create/s4u-actor-create.cpp
 @example examples/s4u/actor-create/s4u-actor-create_d.xml
 @example examples/s4u/actor-daemon/s4u-actor-daemon.cpp
+@example examples/s4u/actor-execute/s4u-actor-execute.cpp
 @example examples/s4u/actor-kill/s4u-actor-kill.cpp
+@example examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp 
+@example examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml 
 @example examples/s4u/actor-migration/s4u-actor-migration.cpp
 @example examples/s4u/actor-suspend/s4u-actor-suspend.cpp
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp

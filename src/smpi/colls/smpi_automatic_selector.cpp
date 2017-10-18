@@ -16,15 +16,13 @@
 
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    simgrid::instr::Type* type = PJ_type_get_root()->getChildOrNull(#cat);                                             \
-    if (not type) {                                                                                                    \
-      type = simgrid::instr::Type::eventNew(#cat, PJ_type_get_root());                                                 \
-    }                                                                                                                  \
+    simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->getOrCreateEventType(#cat);                      \
+                                                                                                                       \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
     simgrid::instr::Value* val =                                                                                       \
-        simgrid::instr::Value::get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);           \
-    new simgrid::instr::NewEvent(SIMIX_get_clock(), PJ_container_get(cont_name), type, val);                           \
+        simgrid::instr::Value::byNameOrCreate(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);       \
+    new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::byName(cont_name), type, val);          \
   }
 
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)                                                                    \

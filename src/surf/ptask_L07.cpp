@@ -186,7 +186,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
           latency = MAX(latency, lat);
 
           for (auto const& link : route)
-            affected_links.insert(link->cname());
+            affected_links.insert(link->getCname());
         }
       }
     }
@@ -226,14 +226,14 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
     this->setCost(1.0);
     this->setRemains(0.0);
   }
-  xbt_free(host_list);
+  delete[] host_list;
 }
 
 Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
-  sg_host_t*host_list = xbt_new0(sg_host_t, 2);
-  double *flops_amount = xbt_new0(double, 2);
-  double *bytes_amount = xbt_new0(double, 4);
+  sg_host_t* host_list = new sg_host_t[2]();
+  double* flops_amount = new double[2]();
+  double* bytes_amount = new double[4]();
 
   host_list[0]    = src;
   host_list[1]    = dst;
@@ -280,8 +280,8 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
 
 Action *CpuL07::execution_start(double size)
 {
-  sg_host_t*host_list = xbt_new0(sg_host_t, 1);
-  double *flops_amount = xbt_new0(double, 1);
+  sg_host_t* host_list = new sg_host_t[1]();
+  double* flops_amount = new double[1]();
 
   host_list[0] = getHost();
   flops_amount[0] = size;
@@ -325,7 +325,7 @@ bool LinkL07::isUsed(){
 
 void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
 {
-  XBT_DEBUG("Updating cpu %s (%p) with value %g", cname(), this, value);
+  XBT_DEBUG("Updating cpu %s (%p) with value %g", getCname(), this, value);
   if (triggered == speed_.event) {
     speed_.scale = value;
     onSpeedChange();
@@ -345,7 +345,7 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
 
 void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 {
-  XBT_DEBUG("Updating link %s (%p) with value=%f", cname(), this, value);
+  XBT_DEBUG("Updating link %s (%p) with value=%f", getCname(), this, value);
   if (triggered == bandwidth_.event) {
     setBandwidth(value);
     tmgr_trace_event_unref(&bandwidth_.event);
@@ -392,8 +392,8 @@ LinkL07::~LinkL07() = default;
 
 L07Action::~L07Action(){
   delete hostList_;
-  free(communicationAmount_);
-  free(computationAmount_);
+  delete[] communicationAmount_;
+  delete[] computationAmount_;
 }
 
 void L07Action::updateBound()

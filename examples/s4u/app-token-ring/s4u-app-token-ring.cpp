@@ -38,15 +38,15 @@ public:
 
     if (rank == 0) {
       /* The root process (rank 0) first sends the token then waits to receive it back */
-      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getName());
-      neighbor_mailbox->put(xbt_strdup("Token"), task_comm_size);
-      char* res = static_cast<char*>(my_mailbox->get());
-      XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
-      xbt_free(res);
+      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getCname());
+      std::string msg = "Token";
+      neighbor_mailbox->put(&msg, task_comm_size);
+      std::string* res = static_cast<std::string*>(my_mailbox->get());
+      XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
     } else {
-      char* res = static_cast<char*>(my_mailbox->get());
-      XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
-      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getName());
+      std::string* res = static_cast<std::string*>(my_mailbox->get());
+      XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
+      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getCname());
       neighbor_mailbox->put(res, task_comm_size);
     }
   }
