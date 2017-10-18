@@ -153,10 +153,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
   simgrid::s4u::onPlatformCreated.connect(&postparse_cb);
   simgrid::s4u::NetZone::onRouteCreation.connect(&routeCreation_cb);
-
-  LogComponentEnable("PacketSink", ns3::LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);
-  LogComponentEnable("UdpEchoServerApplication", ns3::LOG_LEVEL_INFO);
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
