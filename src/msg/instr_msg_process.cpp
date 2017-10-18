@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
 std::string instr_process_id(msg_process_t proc)
 {
-  return proc->getName() + "-" + std::to_string(proc->getPid());
+  return std::string(proc->getCname()) + "-" + std::to_string(proc->getPid());
 }
 
 void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
