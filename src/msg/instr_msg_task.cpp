@@ -53,9 +53,9 @@ void TRACE_msg_task_execute_start(msg_task_t task)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
-    simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
-    simgrid::instr::Value* val    = simgrid::instr::Value::byName("task_execute", type);
-    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
+    simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
+    simgrid::instr::Value* val    = state->getEntityValue("task_execute");
+    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
   }
 }
 
@@ -93,9 +93,9 @@ void TRACE_msg_task_get_start()
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
-    simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
-    simgrid::instr::Value* val    = simgrid::instr::Value::byName("receive", type);
-    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
+    simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
+    simgrid::instr::Value* val    = state->getEntityValue("receive");
+    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
   }
 }
 
@@ -129,7 +129,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
 
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self(), str, len));
     simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
-    simgrid::instr::Value* val    = simgrid::instr::Value::byName("send", type);
+    simgrid::instr::Value* val    = type->getEntityValue("send");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
 
     char key[INSTR_DEFAULT_STR_SIZE];

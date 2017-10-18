@@ -14,14 +14,7 @@ namespace instr {
 
 Value::Value(std::string name, std::string color, Type* father) : name_(name), color_(color), father_(father)
 {
-  if (name.empty() || father == nullptr) {
-    THROWF(tracing_error, 0, "can't create a value with no name (or a nullptr father)");
-  }
   this->id_    = std::to_string(instr_new_paje_id());
-
-  father->values_.insert({name, this});
-  XBT_DEBUG("new value %s, child of %s", name_.c_str(), father_->getCname());
-  print();
 };
 
 Value::~Value()
@@ -29,30 +22,5 @@ Value::~Value()
   XBT_DEBUG("free value %s, child of %s", getCname(), father_->getCname());
 }
 
-Value* Value::byNameOrCreate(std::string name, std::string color, Type* father)
-{
-  Value* ret = nullptr;
-  try {
-    ret = Value::byName(name, father);
-  } catch (xbt_ex& e) {
-    ret = new Value(name, color, father);
-  }
-  return ret;
-}
-
-Value* Value::byName(std::string name, Type* father)
-{
-  if (name.empty() || father == nullptr) {
-    THROWF(tracing_error, 0, "can't get a value with no name (or a nullptr father)");
-  }
-
-  if (father->getKind() == TYPE_VARIABLE)
-    THROWF(tracing_error, 0, "variables can't have different values (%s)", father->getCname());
-  auto ret = father->values_.find(name);
-  if (ret == father->values_.end()) {
-    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), father->getCname());
-  }
-  return ret->second;
-}
 }
 }

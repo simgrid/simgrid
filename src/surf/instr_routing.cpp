@@ -223,11 +223,11 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_msg_process_is_enabled()) {
     simgrid::instr::Type* msg_process = container->type_->getOrCreateContainerType("MSG_PROCESS");
     simgrid::instr::Type* state       = msg_process->getOrCreateStateType("MSG_PROCESS_STATE");
-    simgrid::instr::Value::byNameOrCreate("suspend", "1 0 1", state);
-    simgrid::instr::Value::byNameOrCreate("sleep", "1 1 0", state);
-    simgrid::instr::Value::byNameOrCreate("receive", "1 0 0", state);
-    simgrid::instr::Value::byNameOrCreate("send", "0 0 1", state);
-    simgrid::instr::Value::byNameOrCreate("task_execute", "0 1 1", state);
+    state->addEntityValue("suspend", "1 0 1");
+    state->addEntityValue("sleep", "1 1 0");
+    state->addEntityValue("receive", "1 0 0");
+    state->addEntityValue("send", "0 0 1");
+    state->addEntityValue("task_execute", "0 1 1");
     simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_PROCESS_LINK", msg_process, msg_process);
     simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_PROCESS_TASK_LINK", msg_process, msg_process);
   }
@@ -235,11 +235,11 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_msg_vm_is_enabled()) {
     simgrid::instr::Type* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
     simgrid::instr::Type* state  = msg_vm->getOrCreateStateType("MSG_VM_STATE");
-    simgrid::instr::Value::byNameOrCreate("suspend", "1 0 1", state);
-    simgrid::instr::Value::byNameOrCreate("sleep", "1 1 0", state);
-    simgrid::instr::Value::byNameOrCreate("receive", "1 0 0", state);
-    simgrid::instr::Value::byNameOrCreate("send", "0 0 1", state);
-    simgrid::instr::Value::byNameOrCreate("task_execute", "0 1 1", state);
+    state->addEntityValue("suspend", "1 0 1");
+    state->addEntityValue("sleep", "1 1 0");
+    state->addEntityValue("receive", "1 0 0");
+    state->addEntityValue("send", "0 0 1");
+    state->addEntityValue("task_execute", "0 1 1");
     simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_VM_LINK", msg_vm, msg_vm);
     simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_VM_PROCESS_LINK", msg_vm, msg_vm);
   }
@@ -333,7 +333,7 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
                                               simgrid::instr::Type* root)
 {
   if (root->getName() == type_name)
-    simgrid::instr::Value::byNameOrCreate(val, color, root);
+    root->addEntityValue(val, color);
 
   for (auto elm : root->children_)
     recursiveNewValueForUserStateType(type_name, val, color, elm.second);

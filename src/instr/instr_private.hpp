@@ -85,6 +85,10 @@ public:
   Type* getOrCreateStateType(std::string name);
   Type* getOrCreateVariableType(std::string name, std::string color);
 
+  void addEntityValue(std::string name, std::string color);
+  void addEntityValue(std::string name);
+  Value* getEntityValue(std::string name);
+
   void logContainerTypeDefinition();
   void logVariableTypeDefinition();
   void logStateTypeDefinition();
@@ -102,12 +106,9 @@ class Value {
   std::string color_;
   Type* father_;
 
-  explicit Value(std::string name, std::string color, Type* father);
-
 public:
+  explicit Value(std::string name, std::string color, Type* father);
   ~Value();
-  static Value* byNameOrCreate(std::string name, std::string color, Type* father);
-  static Value* byName(std::string name, Type* father);
   const char* getCname() { return name_.c_str(); }
   const char* getId() { return id_.c_str(); }
   bool isColored() { return not color_.empty(); }

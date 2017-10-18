@@ -53,6 +53,37 @@ Type* Type::byName(std::string name)
   return ret;
 }
 
+void Type::addEntityValue(std::string name)
+{
+  addEntityValue(name, "");
+}
+
+void Type::addEntityValue(std::string name, std::string color)
+{
+  if (name.empty()) {
+    THROWF(tracing_error, 0, "can't get a value with no name");
+  }
+  if (kind_ == TYPE_VARIABLE)
+    THROWF(tracing_error, 0, "variables can't have different values (%s)", getCname());
+
+  auto it = values_.find(name);
+  if (it == values_.end()) {
+    Value* new_val = new Value(name, color, this);
+    values_.insert({name, new_val});
+    XBT_DEBUG("new value %s, child of %s", name_.c_str(), getCname());
+    new_val->print();
+  }
+}
+
+Value* Type::getEntityValue(std::string name)
+{
+  auto ret = values_.find(name);
+  if (ret == values_.end()) {
+    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), getCname());
+  }
+  return ret->second;
+}
+
 Type* Type::createRootType()
 {
   simgrid::instr::Type* ret = new simgrid::instr::Type("0", "0", "", TYPE_CONTAINER, nullptr);

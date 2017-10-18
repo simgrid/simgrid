@@ -20,9 +20,9 @@
                                                                                                                        \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
-    simgrid::instr::Value* val =                                                                                       \
-        simgrid::instr::Value::byNameOrCreate(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);       \
-    new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::byName(cont_name), type, val);          \
+    type->addEntityValue(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                  \
+    new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::byName(cont_name), type,                \
+                                 type->getEntityValue(Colls::mpi_coll_##cat##_description[i].name));                   \
   }
 
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)                                                                    \

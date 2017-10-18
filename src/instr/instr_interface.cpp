@@ -187,7 +187,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     mark_color = "1.0 1.0 1.0" /*white*/;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-  simgrid::instr::Value::byNameOrCreate(mark_value, mark_color, type);
+  type->addEntityValue(mark_value, mark_color);
 }
 
 /** \ingroup TRACE_mark
@@ -239,8 +239,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   }
 
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-  new simgrid::instr::NewEvent(MSG_get_clock(), PJ_container_get_root(), type,
-                               simgrid::instr::Value::byName(mark_value, type));
+  new simgrid::instr::NewEvent(MSG_get_clock(), PJ_container_get_root(), type, type->getEntityValue(mark_value));
 }
 
 /** \ingroup TRACE_mark
@@ -937,12 +936,12 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  *
  *  \see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state, TRACE_host_reset_state
  */
-void TRACE_host_set_state(const char* host, const char* state, const char* value_str)
+void TRACE_host_set_state(const char* host, const char* state_name, const char* value_name)
 {
-  container_t container      = simgrid::instr::Container::byName(host);
-  simgrid::instr::Type* type = container->type_->byName(state);
-  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(value_str, "", type);
-  new simgrid::instr::SetStateEvent(MSG_get_clock(), container, type, val);
+  container_t container       = simgrid::instr::Container::byName(host);
+  simgrid::instr::Type* state = container->type_->byName(state_name);
+  state->addEntityValue(value_name);
+  new simgrid::instr::SetStateEvent(MSG_get_clock(), container, state, state->getEntityValue(value_name));
 }
 
 /** \ingroup TRACE_user_variables
@@ -956,12 +955,12 @@ void TRACE_host_set_state(const char* host, const char* state, const char* value
  *
  *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state, TRACE_host_reset_state
  */
-void TRACE_host_push_state(const char* host, const char* state, const char* value_str)
+void TRACE_host_push_state(const char* host, const char* state_name, const char* value_name)
 {
   container_t container      = simgrid::instr::Container::byName(host);
-  simgrid::instr::Type* type = container->type_->byName(state);
-  simgrid::instr::Value* val = simgrid::instr::Value::byNameOrCreate(value_str, "", type);
-  new simgrid::instr::PushStateEvent(MSG_get_clock(), container, type, val);
+  simgrid::instr::Type* state = container->type_->byName(state_name);
+  state->addEntityValue(value_name);
+  new simgrid::instr::PushStateEvent(MSG_get_clock(), container, state, state->getEntityValue(value_name));
 }
 
 /** \ingroup TRACE_user_variables
