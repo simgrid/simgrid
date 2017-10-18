@@ -189,7 +189,7 @@ XBT_TEST_UNIT("variables", test_variables, "variable value preservation")
 {
   xbt_ex_t ex;
   int r1;
-  int XBT_ATTRIB_UNUSED r2;
+  XBT_ATTRIB_UNUSED int r2;
   int v1;
   int v2;
 

@@ -92,12 +92,12 @@ static void* mm_fake_calloc(size_t nmemb, size_t size)
   return mm_fake_malloc(n);
 }
 
-static void* mm_fake_realloc(void* XBT_ATTRIB_UNUSED p, size_t s)
+static void* mm_fake_realloc(XBT_ATTRIB_UNUSED void* p, size_t s)
 {
   return mm_fake_malloc(s);
 }
 
-static void mm_fake_free(void* XBT_ATTRIB_UNUSED p)
+static void mm_fake_free(XBT_ATTRIB_UNUSED void* p)
 {
   // Nothing to do
 }
@@ -119,7 +119,7 @@ static int mm_initialized;
 
 /** Constructor functions used to initialize the malloc implementation
  */
-static void __attribute__((constructor(101))) mm_legacy_constructor()
+_XBT_GNUC_CONSTRUCTOR(101) static void mm_legacy_constructor()
 {
   if (mm_initialized)
     return;

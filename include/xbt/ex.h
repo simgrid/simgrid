@@ -92,7 +92,8 @@ XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
 typedef struct xbt_ex xbt_ex_t;
 
 /** Helper function used to throw exceptions in C */
-XBT_PUBLIC(void) _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func) XBT_ATTRIB_NORETURN;
+XBT_ATTRIB_NORETURN XBT_PUBLIC(void)
+    _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func);
 
 /** Builds and throws an exception
  *  @ingroup XBT_ex_c
