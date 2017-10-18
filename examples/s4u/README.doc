@@ -75,6 +75,11 @@ documentation, but it should remain readable directly.
     Actors can be suspended and resumed during their executions
     thanks to the @ref suspend and @ref resume methods.
 
+    - <b>Priority actors</b>.
+    @ref examples/s4u/actor-priority/s4u-actor-priority.cpp \n
+    Actors can be launched according their priorities thanks to the @ref
+     execution method.
+
   - <b>Kill actors</b>.
     @ref examples/s4u/actor-kill/s4u-actor-kill.cpp \n
     Actors can forcefully stop other actors with the @ref kill method.

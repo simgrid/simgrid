@@ -303,6 +303,9 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
   /** Block the actor, computing the given amount of flops */
   XBT_PUBLIC(void) execute(double flop);
 
+  /** Block the actor, computing the given amount of flops and priority */
+  XBT_PUBLIC(void) execute(double flop, double priority);
+
   /** Block the actor until it gets a message from the given mailbox.
    *
    * See \ref Comm for the full communication API (including non blocking communications).
