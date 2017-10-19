@@ -68,8 +68,6 @@ public:
   ~BoostContext() override;
   void stop() override;
   virtual void resume();
-private:
-  static void wrapper(int first, ...);
 };
 
 class BoostContextFactory : public ContextFactory {
