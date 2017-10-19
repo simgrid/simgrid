@@ -31,7 +31,8 @@ extern void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t);
 namespace simgrid{
 namespace smpi{
 
-Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
+Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags)
+    : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
 {
   void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.

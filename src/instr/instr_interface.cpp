@@ -87,18 +87,18 @@ void TRACE_category_with_color (const char *category, const char *color)
     created_categories.insert(category);
 
   //define final_color
-  char final_color[INSTR_DEFAULT_STR_SIZE];
+  std::string final_color;
   if (not color) {
     //generate a random color
     double red = drand48();
     double green = drand48();
     double blue = drand48();
-    snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%f %f %f", red, green, blue);
+    final_color  = std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue);
   }else{
-    snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%s", color);
+    final_color = std::string(color);
   }
 
-  XBT_DEBUG("CAT,declare %s, \"%s\" \"%s\"", category, color, final_color);
+  XBT_DEBUG("CAT,declare %s, \"%s\" \"%s\"", category, color, final_color.c_str());
 
   //define the type of this category on top of hosts and links
   instr_new_variable_type (category, final_color);
@@ -269,7 +269,7 @@ static void instr_user_variable(double time, const char* resource, const char* v
   if (what == INSTR_US_DECLARE){
     if (created == filter->end()) { // not declared yet
       filter->insert(variable);
-      instr_new_user_variable_type (father_type, variable, color);
+      instr_new_user_variable_type(father_type, variable, color == nullptr ? "" : color);
     }
   }else{
     if (created != filter->end()) { // declared, let's work

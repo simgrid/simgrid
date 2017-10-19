@@ -356,11 +356,10 @@ void TRACE_global_init()
 
 static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
 {
-  char str[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str, INSTR_DEFAULT_STR_SIZE, "--cfg=%s ", option);
+  std::string str = std::string("--cfg=") + option + " ";
 
-  int len = strlen (str);
-  printf ("%s%*.*s %s\n", str, 30-len, 30-len, "", desc);
+  int len = str.size();
+  printf("%s%*.*s %s\n", str.c_str(), 30 - len, 30 - len, "", desc);
   if (longdesc != nullptr && detailed){
     printf ("%s\n\n", longdesc);
   }

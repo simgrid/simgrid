@@ -26,8 +26,6 @@
 #define drand48() (rand() / (RAND_MAX + 1.0))
 #endif
 
-#define INSTR_DEFAULT_STR_SIZE 500
-
 namespace simgrid {
 namespace instr {
 
@@ -328,10 +326,10 @@ extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
 XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
-void instr_new_variable_type(std::string new_typename, const char* color);
-void instr_new_user_variable_type(std::string father_type, std::string new_typename, const char* color);
+void instr_new_variable_type(std::string new_typename, std::string color);
+void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color);
 void instr_new_user_state_type(std::string father_type, std::string new_typename);
-void instr_new_value_for_user_state_type(std::string new_typename, const char* value, const char* color);
+void instr_new_value_for_user_state_type(std::string new_typename, const char* value, std::string color);
 
 /* instr_config.c */
 XBT_PRIVATE void TRACE_TI_start();

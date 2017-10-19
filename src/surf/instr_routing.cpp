@@ -106,8 +106,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   //create the link
   static long long counter = 0;
 
-  char key[INSTR_DEFAULT_STR_SIZE];
-  snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
+  std::string key = std::to_string(counter);
   counter++;
 
   new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
@@ -282,35 +281,35 @@ void instr_routing_define_callbacks ()
 /*
  * user categories support
  */
-static void recursiveNewVariableType(std::string new_typename, const char* color, simgrid::instr::Type* root)
+static void recursiveNewVariableType(std::string new_typename, std::string color, simgrid::instr::Type* root)
 {
   if (root->getName() == "HOST" || root->getName() == "MSG_VM")
-    root->getOrCreateVariableType(std::string("p") + new_typename, color == nullptr ? "" : color);
+    root->getOrCreateVariableType(std::string("p") + new_typename, color);
 
   if (root->getName() == "LINK")
-    root->getOrCreateVariableType(std::string("b") + new_typename, color == nullptr ? "" : color);
+    root->getOrCreateVariableType(std::string("b") + new_typename, color);
 
   for (auto elm : root->children_) {
-    recursiveNewVariableType(new_typename, color == nullptr ? "" : color, elm.second);
+    recursiveNewVariableType(new_typename, color, elm.second);
   }
 }
 
-void instr_new_variable_type(std::string new_typename, const char* color)
+void instr_new_variable_type(std::string new_typename, std::string color)
 {
   recursiveNewVariableType(new_typename, color, simgrid::instr::Type::getRootType());
 }
 
-static void recursiveNewUserVariableType(std::string father_type, std::string new_typename, const char* color,
+static void recursiveNewUserVariableType(std::string father_type, std::string new_typename, std::string color,
                                          simgrid::instr::Type* root)
 {
   if (root->getName() == father_type) {
-    root->getOrCreateVariableType(new_typename, color == nullptr ? "" : color);
+    root->getOrCreateVariableType(new_typename, color);
   }
   for (auto elm : root->children_)
     recursiveNewUserVariableType(father_type, new_typename, color, elm.second);
 }
 
-void instr_new_user_variable_type(std::string father_type, std::string new_typename, const char* color)
+void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color)
 {
   recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Type::getRootType());
 }
@@ -329,7 +328,7 @@ void instr_new_user_state_type(std::string father_type, std::string new_typename
   recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Type::getRootType());
 }
 
-static void recursiveNewValueForUserStateType(std::string type_name, const char* val, const char* color,
+static void recursiveNewValueForUserStateType(std::string type_name, const char* val, std::string color,
                                               simgrid::instr::Type* root)
 {
   if (root->getName() == type_name)
@@ -339,7 +338,7 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
     recursiveNewValueForUserStateType(type_name, val, color, elm.second);
 }
 
-void instr_new_value_for_user_state_type(std::string type_name, const char* value, const char* color)
+void instr_new_value_for_user_state_type(std::string type_name, const char* value, std::string color)
 {
   recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Type::getRootType());
 }

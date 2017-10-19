@@ -289,8 +289,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
   if (TRACE_msg_vm_is_enabled()) {
     static long long int counter = 0;
-    char key[INSTR_DEFAULT_STR_SIZE];
-    snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter);
+    std::string key              = std::to_string(counter);
     counter++;
 
     // start link
