@@ -55,7 +55,8 @@ namespace context {
 
 #if HAVE_THREAD_CONTEXTS
 static simgrid::xbt::Parmap<smx_actor_t>* sysv_parmap;
-static simgrid::kernel::context::ParallelUContext** sysv_workers_context;   /* space to save the worker's context in each thread */
+static simgrid::kernel::context::UContext** sysv_workers_context; /* space to save the worker's context
+                                                                   * in each thread */
 static uintptr_t sysv_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t sysv_worker_id_key; /* thread-specific storage for the thread id */
 #endif
@@ -73,7 +74,7 @@ namespace kernel {
 namespace context {
 
 class UContext : public Context {
-protected:
+private:
   ucontext_t uc_;         /* the ucontext that executes the code */
   char *stack_ = nullptr; /* the thread stack */
 public:
@@ -82,6 +83,7 @@ public:
     void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   ~UContext() override;
   void stop() override;
+  static void swap(UContext* from, UContext* to) { swapcontext(&from->uc_, &to->uc_); }
 };
 
 class SerialUContext : public UContext {
@@ -130,7 +132,7 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory")
 #if HAVE_THREAD_CONTEXTS  /* To use parallel ucontexts a thread pool is needed */
     int nthreads = SIMIX_context_get_nthreads();
     sysv_parmap = nullptr;
-    sysv_workers_context = new ParallelUContext*[nthreads];
+    sysv_workers_context = new UContext*[nthreads];
     sysv_maestro_context = nullptr;
     xbt_os_thread_key_create(&sysv_worker_id_key);
 #else
@@ -267,20 +269,20 @@ namespace context {
 void SerialUContext::suspend()
 {
   /* determine the next context */
-  SerialUContext* next_context = nullptr;
+  UContext* next_context = nullptr;
   unsigned long int i = sysv_process_index++;
 
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<SerialUContext*>(simix_global->process_to_run[i]->context);
+    next_context = static_cast<UContext*>(simix_global->process_to_run[i]->context);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-    next_context = static_cast<SerialUContext*>(sysv_maestro_context);
+    next_context = sysv_maestro_context;
   }
   SIMIX_context_set_current(next_context);
-  swapcontext(&this->uc_, &next_context->uc_);
+  UContext::swap(this, next_context);
 }
 
 // UContextSerial
@@ -288,7 +290,7 @@ void SerialUContext::suspend()
 void SerialUContext::resume()
 {
   SIMIX_context_set_current(this);
-  swapcontext(&static_cast<SerialUContext*>(sysv_maestro_context)->uc_, &this->uc_);
+  UContext::swap(sysv_maestro_context, this);
 }
 
 /** Run one particular simulated process on the current thread. */
@@ -300,15 +302,13 @@ void ParallelUContext::resume()
   // Store the number of my containing body in os-thread-specific area :
   xbt_os_thread_set_specific(sysv_worker_id_key, (void*) worker_id);
   // Get my current soul:
-  ParallelUContext* worker_context = static_cast<ParallelUContext*>(SIMIX_context_self());
+  UContext* worker_context = static_cast<UContext*>(SIMIX_context_self());
   // Write down that this soul is hosted in that body (for now)
   sysv_workers_context[worker_id] = worker_context;
-  // Retrieve the system-level info that fuels this soul:
-  ucontext_t* worker_stack = &worker_context->uc_;
   // Write in simix that I switched my soul
   SIMIX_context_set_current(this);
    // Actually do that using the relevant library call:
-  swapcontext(worker_stack, &this->uc_);
+  UContext::swap(worker_context, this);
   // No body runs that soul anymore at this point.
   // Instead the current body took the soul of simulated process
   // The simulated process wakes back after the call to
@@ -339,11 +339,11 @@ void ParallelUContext::suspend()
   /* determine the next context */
   // Get the next soul to embody now:
   boost::optional<smx_actor_t> next_work = sysv_parmap->next();
-  ParallelUContext* next_context;
+  UContext* next_context;
   if (next_work) {
     // There is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelUContext*>(next_work.get()->context);
+    next_context = static_cast<UContext*>(next_work.get()->context);
   } else {
     // All processes were run, go to the barrier
     XBT_DEBUG("No more processes to run");
@@ -356,12 +356,9 @@ void ParallelUContext::suspend()
     // When given that soul, the body will wait for the next scheduling round
   }
 
-  // Will contain the next soul to run, either simulated or initial minion's one
-  ucontext_t* next_stack = &next_context->uc_;
-
   SIMIX_context_set_current(next_context);
-  // Get that next soul:
-  swapcontext(&this->uc_, next_stack);
+  // Get the next soul to run, either simulated or initial minion's one:
+  UContext::swap(this, next_context);
 #endif
 }
 
