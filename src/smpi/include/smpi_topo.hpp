@@ -17,8 +17,10 @@ namespace smpi{
 class Topo {
   public:
     virtual ~Topo()=default;
-  protected:
-  MPI_Comm comm_;
+    MPI_Comm getComm() const { return comm_; }
+    void setComm(MPI_Comm comm) { comm_ = comm; }
+  private:
+    MPI_Comm comm_;
 };
 
 

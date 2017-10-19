@@ -139,7 +139,7 @@ template<class T> class TypedConfigurationElement;
 // **** ConfigurationElement ****
 
 class ConfigurationElement {
-protected:
+private:
   std::string key;
   std::string desc;
   bool isdefault = true;
@@ -174,6 +174,7 @@ public:
   {
     dynamic_cast<TypedConfigurationElement<T>&>(*this).setDefaultValue(std::move(value));
   }
+  void unsetDefault() { isdefault = false; }
   bool isDefault() const { return isdefault; }
 
   std::string const& getDescription() const { return desc; }
@@ -208,7 +209,7 @@ public:
   void update()
   {
     if (old_callback)
-      this->old_callback(key.c_str());
+      this->old_callback(getKey().c_str());
     if (this->callback)
       this->callback(this->content);
   }
@@ -223,12 +224,12 @@ public:
 
   void setDefaultValue(T value)
   {
-    if (this->isdefault) {
+    if (this->isDefault()) {
       this->content = std::move(value);
       this->update();
     } else {
-      XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.", key.c_str(),
-                to_string(value).c_str());
+      XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.",
+                getKey().c_str(), to_string(value).c_str());
     }
   }
 };
@@ -243,7 +244,7 @@ template<class T>
 void TypedConfigurationElement<T>::setStringValue(const char* value) // override
 {
   this->content = ConfigType<T>::parse(value);
-  this->isdefault = false;
+  this->unsetDefault();
   this->update();
 }
 

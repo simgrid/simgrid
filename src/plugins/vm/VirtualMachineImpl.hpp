@@ -93,9 +93,6 @@ public:
   int dp_enabled                     = 0;
   double dp_updated_by_deleted_tasks = 0;
 
-protected:
-  simgrid::s4u::Host* hostPM_;
-
 public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
@@ -105,10 +102,9 @@ public:
   bool isMigrating = false;
 
 private:
+  simgrid::s4u::Host* hostPM_;
   s_vm_params_t params_;
   int coreAmount_;
-
-protected:
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
 };
 

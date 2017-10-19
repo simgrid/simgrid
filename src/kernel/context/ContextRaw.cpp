@@ -27,10 +27,11 @@ class RawContextFactory;
   * preserve the signal mask when switching. This saves a system call (at least on Linux) on each context switch.
   */
 class RawContext : public Context {
-protected:
+private:
   void* stack_ = nullptr;
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
+
 public:
   friend class RawContextFactory;
   RawContext(std::function<void()> code,
