@@ -90,6 +90,7 @@ xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...){
   default:
     XBT_DEBUG("Invalid type: %d", type);
     xbt_free(label);
+    label = NULL;
     break;
   }
   va_end(ap);
