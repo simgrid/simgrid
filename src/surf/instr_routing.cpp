@@ -153,7 +153,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 {
   std::string id = netzone.getName();
 
-  if (PJ_container_get_root() == nullptr){
+  if (simgrid::instr::Container::getRootContainer() == nullptr) {
     simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
 
     if (TRACE_smpi_is_enabled()) {
@@ -253,7 +253,8 @@ static void instr_routing_parse_end_platform ()
   currentContainer.clear();
   std::set<std::string>* filter = new std::set<std::string>;
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), PJ_container_get_root(), filter);
+  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(),
+                           simgrid::instr::Container::getRootContainer(), filter);
   XBT_DEBUG ("Graph extraction finished.");
   delete filter;
   platform_created = 1;
@@ -367,7 +368,7 @@ xbt_graph_t instr_routing_platform_graph ()
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
   recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::getInstance()->getNetRoot(),
-                              PJ_container_get_root());
+                              simgrid::instr::Container::getRootContainer());
   delete nodes;
   delete edges;
   return ret;

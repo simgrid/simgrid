@@ -26,18 +26,14 @@ long long int instr_new_paje_id ()
   return type_id++;
 }
 
-container_t PJ_container_get_root()
-{
-  return rootContainer;
-}
-
-void PJ_container_set_root (container_t root)
-{
-  rootContainer = root;
-}
 
 namespace simgrid {
 namespace instr {
+
+container_t Container::getRootContainer()
+{
+  return rootContainer;
+}
 
 NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father)
     : Container::Container(name, "", father)
@@ -50,7 +46,7 @@ NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZone
     logCreation();
   } else {
     type_ = Type::createRootType();
-    PJ_container_set_root(this);
+    rootContainer = this;
   }
 }
 
@@ -116,7 +112,7 @@ Container::~Container()
   TRACE_paje_dump_buffer(true);
 
   // trace my destruction
-  if (not TRACE_disable_destroy() && this != PJ_container_get_root()) {
+  if (not TRACE_disable_destroy() && this != Container::getRootContainer()) {
     // do not trace the container destruction if user requests or if the container is root
     logDestruction();
   }

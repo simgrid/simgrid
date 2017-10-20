@@ -132,6 +132,8 @@ public:
   void removeFromParent();
   void logCreation();
   void logDestruction();
+
+  static Container* getRootContainer();
 };
 
 class NetZoneContainer : public Container {
@@ -324,8 +326,6 @@ XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
 extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
-XBT_PUBLIC(container_t) PJ_container_get_root ();
-XBT_PUBLIC(void) PJ_container_set_root (container_t root);
 void instr_new_variable_type(std::string new_typename, std::string color);
 void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color);
 void instr_new_user_state_type(std::string father_type, std::string new_typename);

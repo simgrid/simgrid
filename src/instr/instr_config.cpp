@@ -142,7 +142,7 @@ int TRACE_end()
     TRACE_paje_dump_buffer(true);
 
     /* destroy all data structures of tracing (and free) */
-    delete PJ_container_get_root();
+    delete simgrid::instr::Container::getRootContainer();
     delete simgrid::instr::Type::getRootType();
     rootType = nullptr;
 

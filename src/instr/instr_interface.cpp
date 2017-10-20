@@ -238,7 +238,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   } else {
     XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-    new simgrid::instr::NewEvent(MSG_get_clock(), PJ_container_get_root(), type, type->getEntityValue(mark_value));
+    new simgrid::instr::NewEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), type,
+                                 type->getEntityValue(mark_value));
   }
 }
 
