@@ -303,8 +303,7 @@ static int migration_rx_fun(int argc, char *argv[])
     delete existing_container;
 
     // create new container on the new_host location
-    new simgrid::instr::Container(vm->getCname(), simgrid::instr::INSTR_MSG_VM,
-                                  simgrid::instr::Container::byName(ms->dst_pm->getName()));
+    new simgrid::instr::Container(vm->getCname(), "MSG_VM", simgrid::instr::Container::byName(ms->dst_pm->getName()));
 
     // end link
     msg  = simgrid::instr::Container::byName(vm->getName());

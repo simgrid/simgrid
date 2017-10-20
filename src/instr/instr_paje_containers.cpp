@@ -39,63 +39,56 @@ void PJ_container_set_root (container_t root)
 namespace simgrid {
 namespace instr {
 
-Container::Container(std::string name, e_container_types kind, Container* father)
-    : kind_(kind), name_(name), father_(father)
+NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father)
+    : Container::Container(name, "", father)
+{
+  netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+  xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+  if (father_) {
+    type_ = father_->type_->getOrCreateContainerType(std::string("L") + std::to_string(level));
+    father_->children_.insert({getName(), this});
+    logCreation();
+  } else {
+    type_ = Type::createRootType();
+    PJ_container_set_root(this);
+  }
+}
+
+RouterContainer::RouterContainer(std::string name, Container* father) : Container::Container(name, "ROUTER", father)
+{
+  xbt_assert(father, "Only the Root container has no father");
+
+  netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+  xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+
+  trivaNodeTypes.insert(type_->getName());
+}
+
+HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
+    : Container::Container(host.getCname(), "HOST", father)
+{
+  xbt_assert(father, "Only the Root container has no father");
+
+  netpoint_ = host.pimpl_netpoint;
+  xbt_assert(netpoint_, "Element '%s' not found", host.getCname());
+
+  trivaNodeTypes.insert(type_->getName());
+}
+
+Container::Container(std::string name, std::string type_name, Container* father) : name_(name), father_(father)
 {
   static long long int container_id = 0;
-  id_                               = std::to_string(container_id); // id (or alias) of the container
+  id_                               = container_id; // id (or alias) of the container
   container_id++;
 
   if (father_) {
-    level_ = father_->level_ + 1;
     XBT_DEBUG("new container %s, child of %s", name.c_str(), father->name_.c_str());
-  }
 
-  // Search for network_element_t for AS, ROUTER and HOST
-  // Name the kind of container. For AS otherwise, the name depends on its level
-  std::string typeNameBuff;
-  switch (kind_) {
-    case INSTR_AS:
-      netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
-      typeNameBuff = std::string("L") + std::to_string(level_);
-      break;
-    case INSTR_ROUTER:
-      netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
-      typeNameBuff = std::string("ROUTER");
-      break;
-    case INSTR_HOST:
-      netpoint_ = sg_host_by_name(name.c_str())->pimpl_netpoint;
-      xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
-      typeNameBuff = std::string("HOST");
-      break;
-    case INSTR_LINK:
-      typeNameBuff = std::string("LINK");
-      break;
-    case INSTR_SMPI:
-      typeNameBuff = std::string("MPI");
-      break;
-    case INSTR_MSG_PROCESS:
-      typeNameBuff = std::string("MSG_PROCESS");
-      break;
-    case INSTR_MSG_VM:
-      typeNameBuff = std::string("MSG_VM");
-      break;
-    case INSTR_MSG_TASK:
-      typeNameBuff = std::string("MSG_TASK");
-      break;
-    default:
-      THROWF(tracing_error, 0, "new container kind is unknown.");
-      break;
-  }
-
-  if (father_) {
-    type_ = father_->type_->getOrCreateContainerType(typeNameBuff);
-    father_->children_.insert({name_, this});
-    logCreation();
-  } else if (kind_ == INSTR_AS) {
-    type_ = Type::createRootType();
+    if (not type_name.empty()) {
+      type_ = father_->type_->getOrCreateContainerType(type_name);
+      father_->children_.insert({name_, this});
+      logCreation();
+    }
   }
 
   //register all kinds by name
@@ -106,7 +99,7 @@ Container::Container(std::string name, e_container_types kind, Container* father
   XBT_DEBUG("Add container name '%s'", name_.c_str());
 
   //register NODE types for triva configuration
-  if (kind_ == INSTR_HOST || kind_ == INSTR_LINK || kind_ == INSTR_ROUTER)
+  if (type_name == "LINK")
     trivaNodeTypes.insert(type_->getName());
 }
 

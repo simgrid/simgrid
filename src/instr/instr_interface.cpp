@@ -181,13 +181,13 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName(mark_type);
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
+  } else {
+    if (not mark_color)
+      mark_color = "1.0 1.0 1.0" /*white*/;
+
+    XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
+    type->addEntityValue(mark_value, mark_color);
   }
-
-  if (not mark_color)
-    mark_color = "1.0 1.0 1.0" /*white*/;
-
-  XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-  type->addEntityValue(mark_value, mark_color);
 }
 
 /** \ingroup TRACE_mark
@@ -236,10 +236,10 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName(mark_type);
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
+  } else {
+    XBT_DEBUG("MARK %s %s", mark_type, mark_value);
+    new simgrid::instr::NewEvent(MSG_get_clock(), PJ_container_get_root(), type, type->getEntityValue(mark_value));
   }
-
-  XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-  new simgrid::instr::NewEvent(MSG_get_clock(), PJ_container_get_root(), type, type->getEntityValue(mark_value));
 }
 
 /** \ingroup TRACE_mark

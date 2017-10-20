@@ -164,7 +164,7 @@ void TRACE_smpi_init(int rank)
 #if HAVE_PAPI
   container_t container =
 #endif
-      new simgrid::instr::Container(str, simgrid::instr::INSTR_SMPI, father);
+      new simgrid::instr::Container(str, "MPI", father);
 #if HAVE_PAPI
   papi_counter_t counters = smpi_process()->papi_counters();
 

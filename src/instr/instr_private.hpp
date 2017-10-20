@@ -97,7 +97,6 @@ public:
   static Type* getRootType();
 };
 
-//--------------------------------------------------
 class Value {
   std::string name_;
   std::string id_;
@@ -113,42 +112,43 @@ public:
   void print();
 };
 
-//--------------------------------------------------
-enum e_container_types {
-  INSTR_HOST,
-  INSTR_LINK,
-  INSTR_ROUTER,
-  INSTR_AS,
-  INSTR_SMPI,
-  INSTR_MSG_VM,
-  INSTR_MSG_PROCESS,
-  INSTR_MSG_TASK
-};
-
 class Container {
-  e_container_types kind_; /* This container is of what kind */
+  long long int id_;
   std::string name_;       /* Unique name of this container */
-  int level_ = 0;          /* Level in the hierarchy, root level is 0 */
-  sg_netpoint_t netpoint_ = nullptr;
-
 public:
-  Container(std::string name, simgrid::instr::e_container_types kind, Container* father);
+  Container(std::string name, std::string type_name, Container* father);
   virtual ~Container();
 
-  std::string id_;         /* Unique id of this container */
   Type* type_;             /* Type of this container */
   Container* father_;
   std::map<std::string, Container*> children_;
+  sg_netpoint_t netpoint_ = nullptr;
+
   static Container* byNameOrNull(std::string name);
   static Container* byName(std::string name);
   std::string getName() { return name_; }
   const char* getCname() { return name_.c_str(); }
+  long long int getId() { return id_; }
   void removeFromParent();
   void logCreation();
   void logDestruction();
 };
 
-//--------------------------------------------------
+class NetZoneContainer : public Container {
+public:
+  NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father);
+};
+
+class RouterContainer : public Container {
+public:
+  RouterContainer(std::string name, Container* father);
+};
+
+class HostContainer : public Container {
+public:
+  HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father);
+};
+
 class PajeEvent {
 protected:
   Container* container;

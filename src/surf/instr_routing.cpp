@@ -17,7 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
-static std::vector<container_t> currentContainer; /* push and pop, used only in creation */
+static std::vector<simgrid::instr::NetZoneContainer*> currentContainer; /* push and pop, used only in creation */
 
 static const char *instr_node_name (xbt_node_t node)
 {
@@ -154,8 +154,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
   std::string id = netzone.getName();
 
   if (PJ_container_get_root() == nullptr){
-    container_t root = new simgrid::instr::Container(id, simgrid::instr::INSTR_AS, nullptr);
-    PJ_container_set_root (root);
+    simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
 
     if (TRACE_smpi_is_enabled()) {
       simgrid::instr::Type* mpi = root->type_->getOrCreateContainerType("MPI");
@@ -171,8 +170,8 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
   }
 
   if (TRACE_needs_platform()){
-    container_t father = currentContainer.back();
-    container_t container = new simgrid::instr::Container(id, simgrid::instr::INSTR_AS, father);
+    simgrid::instr::NetZoneContainer* container =
+        new simgrid::instr::NetZoneContainer(id, currentContainer.size(), currentContainer.back());
     currentContainer.push_back(container);
   }
 }
@@ -190,7 +189,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
     return;
 
   container_t father    = currentContainer.back();
-  container_t container = new simgrid::instr::Container(link.getName(), simgrid::instr::INSTR_LINK, father);
+  container_t container = new simgrid::instr::Container(link.getName(), "LINK", father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::Type* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");
@@ -205,8 +204,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 
 static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
-  container_t father = currentContainer.back();
-  container_t container = new simgrid::instr::Container(host.getName(), simgrid::instr::INSTR_HOST, father);
+  container_t container = new simgrid::instr::HostContainer(host, currentContainer.back());
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::Type* speed = container->type_->getOrCreateVariableType("power", "");
@@ -246,10 +244,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
 
 static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
 {
-  if (not netpoint->isRouter())
-    return;
-  if (TRACE_is_enabled() && TRACE_needs_platform())
-    new simgrid::instr::Container(netpoint->getCname(), simgrid::instr::INSTR_ROUTER, currentContainer.back());
+  if (netpoint->isRouter() && TRACE_is_enabled() && TRACE_needs_platform())
+    new simgrid::instr::RouterContainer(netpoint->getCname(), currentContainer.back());
 }
 
 static void instr_routing_parse_end_platform ()

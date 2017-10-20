@@ -301,7 +301,7 @@ void simgrid::instr::SetVariableEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_ << " " << value;
+    stream << " " << type->getId() << " " << container->getId() << " " << value;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -325,7 +325,7 @@ void simgrid::instr::AddVariableEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_ << " " << value;
+    stream << " " << type->getId() << " " << container->getId() << " " << value;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -348,7 +348,7 @@ void simgrid::instr::SubVariableEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_ << " " << value;
+    stream << " " << type->getId() << " " << container->getId() << " " << value;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -379,7 +379,7 @@ void simgrid::instr::SetStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_;
+    stream << " " << type->getId() << " " << container->getId();
     stream << " " << value->getId();
 #if HAVE_SMPI
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
@@ -422,7 +422,7 @@ void simgrid::instr::PushStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_;
+    stream << " " << type->getId() << " " << container->getId();
     stream << " " << value->getId();
 
     if (TRACE_display_sizes()) {
@@ -595,7 +595,7 @@ void simgrid::instr::PopStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_;
+    stream << " " << type->getId() << " " << container->getId();
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -619,7 +619,7 @@ void simgrid::instr::ResetStateEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_;
+    stream << " " << type->getId() << " " << container->getId();
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -653,8 +653,8 @@ void simgrid::instr::StartLinkEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_ << " " << value_;
-    stream << " " << sourceContainer_->id_ << " " << key_;
+    stream << " " << type->getId() << " " << container->getId() << " " << value_;
+    stream << " " << sourceContainer_->getId() << " " << key_;
 
     if (TRACE_display_sizes()) {
       stream << " " << size_;
@@ -685,8 +685,8 @@ void simgrid::instr::EndLinkEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_ << " " << value;
-    stream << " " << destContainer->id_ << " " << key;
+    stream << " " << type->getId() << " " << container->getId() << " " << value;
+    stream << " " << destContainer->getId() << " " << key;
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */
@@ -712,7 +712,7 @@ void simgrid::instr::NewEvent::print()
     stream << std::fixed << std::setprecision(TRACE_precision());
     stream << (int)this->eventType_;
     print_timestamp(this);
-    stream << " " << type->getId() << " " << container->id_ << " " << val->getId();
+    stream << " " << type->getId() << " " << container->getId() << " " << val->getId();
     print_row();
   } else if (instr_fmt_type == instr_fmt_TI) {
     /* Nothing to do */

@@ -44,8 +44,8 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
 {
   if (TRACE_msg_process_is_enabled()){
     container_t host_container = simgrid::instr::Container::byName(host->getName());
-    new simgrid::instr::Container(std::string(process_name) + "-" + std::to_string(process_pid),
-                                  simgrid::instr::INSTR_MSG_PROCESS, host_container);
+    new simgrid::instr::Container(std::string(process_name) + "-" + std::to_string(process_pid), "MSG_PROCESS",
+                                  host_container);
   }
 }
 
