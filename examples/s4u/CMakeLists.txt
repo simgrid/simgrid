@@ -1,5 +1,4 @@
 foreach (example actions-comm actions-storage 
-                 actor-create actor-daemon actor-kill actor-migration actor-suspend
                  actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority
                  app-masterworker app-pingpong app-token-ring
 		 async-wait async-waitany async-waitall
