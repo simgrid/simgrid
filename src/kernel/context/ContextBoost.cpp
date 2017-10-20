@@ -34,10 +34,10 @@ BoostContextFactory::BoostContextFactory()
   BoostContext::setMaestro(nullptr);
   if (parallel_) {
 #if HAVE_THREAD_CONTEXTS
-    BoostContext::parmap_ = nullptr;
-    BoostContext::workers_context_.clear();
-    BoostContext::workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-    xbt_os_thread_key_create(&BoostContext::worker_id_key_);
+    ParallelBoostContext::parmap_ = nullptr;
+    ParallelBoostContext::workers_context_.clear();
+    ParallelBoostContext::workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
+    xbt_os_thread_key_create(&ParallelBoostContext::worker_id_key_);
 #else
     xbt_die("No thread support for parallel context execution");
 #endif
@@ -47,9 +47,9 @@ BoostContextFactory::BoostContextFactory()
 BoostContextFactory::~BoostContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
-  delete BoostContext::parmap_;
-  BoostContext::parmap_ = nullptr;
-  BoostContext::workers_context_.clear();
+  delete ParallelBoostContext::parmap_;
+  ParallelBoostContext::parmap_ = nullptr;
+  ParallelBoostContext::workers_context_.clear();
 #endif
 }
 
@@ -68,11 +68,11 @@ void BoostContextFactory::run_all()
 {
 #if HAVE_THREAD_CONTEXTS
   if (parallel_) {
-    BoostContext::threads_working_ = 0;
-    if (not BoostContext::parmap_)
-      BoostContext::parmap_ =
+    ParallelBoostContext::threads_working_ = 0;
+    if (not ParallelBoostContext::parmap_)
+      ParallelBoostContext::parmap_ =
           new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
-    BoostContext::parmap_->apply(
+    ParallelBoostContext::parmap_->apply(
         [](smx_actor_t process) {
           BoostContext* context = static_cast<BoostContext*>(process->context);
           return context->resume();
@@ -84,8 +84,8 @@ void BoostContextFactory::run_all()
 
   if (simix_global->process_to_run.empty())
     return;
-  smx_actor_t first_process    = simix_global->process_to_run.front();
-  BoostContext::process_index_ = 1;
+  smx_actor_t first_process          = simix_global->process_to_run.front();
+  SerialBoostContext::process_index_ = 1;
   /* execute the first process */
   static_cast<BoostContext*>(first_process->context)->resume();
 }
@@ -93,12 +93,7 @@ void BoostContextFactory::run_all()
 
 // BoostContext
 
-simgrid::xbt::Parmap<smx_actor_t>* BoostContext::parmap_ = nullptr;
-uintptr_t BoostContext::threads_working_                 = 0;
-xbt_os_thread_key_t BoostContext::worker_id_key_;
-unsigned long BoostContext::process_index_   = 0;
 BoostContext* BoostContext::maestro_context_ = nullptr;
-std::vector<BoostContext*> BoostContext::workers_context_;
 
 BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
     : Context(std::move(code), cleanup_func, process)
@@ -185,6 +180,8 @@ void BoostContext::stop()
 
 // SerialBoostContext
 
+unsigned long SerialBoostContext::process_index_;
+
 void SerialBoostContext::suspend()
 {
   /* determine the next context */
@@ -214,6 +211,11 @@ void SerialBoostContext::resume()
 // ParallelBoostContext
 
 #if HAVE_THREAD_CONTEXTS
+
+simgrid::xbt::Parmap<smx_actor_t>* ParallelBoostContext::parmap_ = nullptr;
+uintptr_t ParallelBoostContext::threads_working_                 = 0;
+xbt_os_thread_key_t ParallelBoostContext::worker_id_key_;
+std::vector<BoostContext*> ParallelBoostContext::workers_context_;
 
 void ParallelBoostContext::suspend()
 {

@@ -31,12 +31,19 @@ class BoostContextFactory;
 
 /** @brief Userspace context switching implementation based on Boost.Context */
 class BoostContext : public Context {
-protected: // static
-  static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
-  static std::vector<BoostContext*> workers_context_;
-  static uintptr_t threads_working_;
-  static xbt_os_thread_key_t worker_id_key_;
-  static unsigned long process_index_;
+public:
+  BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  ~BoostContext() override;
+  void stop() override;
+  virtual void resume() = 0;
+
+  static void swap(BoostContext* from, BoostContext* to);
+  static BoostContext* getMaestro() { return maestro_context_; }
+  static void setMaestro(BoostContext* maestro) { maestro_context_ = maestro; }
+
+private:
+  static BoostContext* maestro_context_;
+  void* stack_ = nullptr;
 
 #if BOOST_VERSION < 105600
   boost::context::fcontext_t* fc_ = nullptr;
@@ -48,32 +55,18 @@ protected: // static
   boost::context::detail::fcontext_t fc_;
   typedef boost::context::detail::transfer_t arg_type;
 #endif
-  static void wrapper(arg_type arg);
-  static void swap(BoostContext* from, BoostContext* to);
-
 #if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_ = nullptr;
   size_t asan_stack_size_ = 0;
   bool asan_stop_         = false;
 #endif
 
-  void* stack_ = nullptr;
-public:
-  BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
-  ~BoostContext() override;
-  void stop() override;
-  virtual void resume() = 0;
-
-  static BoostContext* getMaestro() { return maestro_context_; }
-  static void setMaestro(BoostContext* maestro) { maestro_context_ = maestro; }
-
-  friend BoostContextFactory;
-
-private:
-  static BoostContext* maestro_context_;
+  static void wrapper(arg_type arg);
 };
 
 class SerialBoostContext : public BoostContext {
+  friend BoostContextFactory;
+
 public:
   SerialBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
       : BoostContext(std::move(code), cleanup_func, process)
@@ -81,10 +74,15 @@ public:
   }
   void suspend() override;
   void resume() override;
+
+private:
+  static unsigned long process_index_;
 };
 
 #if HAVE_THREAD_CONTEXTS
 class ParallelBoostContext : public BoostContext {
+  friend BoostContextFactory;
+
 public:
   ParallelBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
       : BoostContext(std::move(code), cleanup_func, process)
@@ -92,6 +90,12 @@ public:
   }
   void suspend() override;
   void resume() override;
+
+private:
+  static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
+  static std::vector<BoostContext*> workers_context_;
+  static uintptr_t threads_working_;
+  static xbt_os_thread_key_t worker_id_key_;
 };
 #endif
 
