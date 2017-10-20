@@ -32,7 +32,6 @@ class BoostContextFactory;
 /** @brief Userspace context switching implementation based on Boost.Context */
 class BoostContext : public Context {
 protected: // static
-  static bool parallel_;
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<BoostContext*> workers_context_;
   static uintptr_t threads_working_;
@@ -97,6 +96,9 @@ public:
   ~BoostContextFactory() override;
   Context* create_context(std::function<void()> code, void_pfn_smxprocess_t, smx_actor_t process) override;
   void run_all() override;
+
+private:
+  bool parallel_;
 };
 
 }}} // namespace
