@@ -6,27 +6,27 @@
 #ifndef SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 #define SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 
-#include <boost/version.hpp>
-#if BOOST_VERSION < 106100
-#include <boost/context/fcontext.hpp>
-#else
-#include <boost/context/detail/fcontext.hpp>
-#endif
+#include <boost/context/all.hpp>
+
+#include <cstdint>
 #include <functional>
 #include <vector>
 
-#include <xbt/parmap.hpp>
-
 #include <simgrid/simix.hpp>
+#include <xbt/parmap.hpp>
+#include <xbt/xbt_os_thread.h>
 
+#include "Context.hpp"
+#include "src/internal_config.h"
+#include "src/simix/smx_private.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace context {
 
 class BoostContext;
-class BoostSerialContext;
-class BoostParallelContext;
+class SerialBoostContext;
+class ParallelBoostContext;
 class BoostContextFactory;
 
 /** @brief Userspace context switching implementation based on Boost.Context */
@@ -42,16 +42,16 @@ protected: // static
 
 #if BOOST_VERSION < 105600
   boost::context::fcontext_t* fc_ = nullptr;
-  typedef intptr_t ctx_arg_type;
+  typedef intptr_t arg_type;
 #elif BOOST_VERSION < 106100
   boost::context::fcontext_t fc_;
-  typedef intptr_t ctx_arg_type;
+  typedef intptr_t arg_type;
 #else
   boost::context::detail::fcontext_t fc_;
-  typedef boost::context::detail::transfer_t ctx_arg_type;
+  typedef boost::context::detail::transfer_t arg_type;
 #endif
-  static void smx_ctx_boost_wrapper(ctx_arg_type);
-  static void smx_ctx_boost_jump_fcontext(BoostContext*, BoostContext*);
+  static void wrapper(arg_type arg);
+  static void swap(BoostContext* from, BoostContext* to);
 
 #if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
   const void* asan_stack_ = nullptr;
@@ -61,25 +61,41 @@ protected: // static
 
   void* stack_ = nullptr;
 public:
-  friend BoostContextFactory;
-  BoostContext(std::function<void()> code,
-          void_pfn_smxprocess_t cleanup_func,
-          smx_actor_t process);
+  BoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   ~BoostContext() override;
   void stop() override;
-  virtual void resume();
+  virtual void resume() = 0;
+
+  friend BoostContextFactory;
 };
+
+class SerialBoostContext : public BoostContext {
+public:
+  SerialBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
+      : BoostContext(std::move(code), cleanup_func, process)
+  {
+  }
+  void suspend() override;
+  void resume() override;
+};
+
+#if HAVE_THREAD_CONTEXTS
+class ParallelBoostContext : public BoostContext {
+public:
+  ParallelBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
+      : BoostContext(std::move(code), cleanup_func, process)
+  {
+  }
+  void suspend() override;
+  void resume() override;
+};
+#endif
 
 class BoostContextFactory : public ContextFactory {
 public:
-  friend BoostContext;
-  friend BoostSerialContext;
-  friend BoostParallelContext;
-
   BoostContextFactory();
   ~BoostContextFactory() override;
-  Context* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t, smx_actor_t process) override;
+  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t, smx_actor_t process) override;
   void run_all() override;
 };
 
