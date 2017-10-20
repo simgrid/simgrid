@@ -302,6 +302,8 @@ XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into a
 
 /** Block the actor, computing the given amount of flops */
 XBT_PUBLIC(void) execute(double flop);
+/** Block the actor, computing the given amount of flops and priority */
+XBT_PUBLIC(void) execute(double flop, double priority);
 
 /** Block the actor until it gets a message from the given mailbox.
  *
