@@ -227,6 +227,12 @@ void execute(double flops)
   simcall_execution_wait(s);
 }
 
+void execute(double flops,double priority)
+{
+  smx_activity_t s = simcall_execution_start(nullptr,flops,1 / priority/*priority*/,0./*bound*/);
+  simcall_execution_wait(s);
+}
+
 void* recv(MailboxPtr chan) // deprecated
 {
   return chan->get();

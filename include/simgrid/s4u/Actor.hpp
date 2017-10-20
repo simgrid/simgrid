@@ -302,6 +302,9 @@ XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into a
 
 /** Block the actor, computing the given amount of flops */
 XBT_PUBLIC(void) execute(double flop);
+/** Block the actor, computing the given amount of flops at the given priority.
+ *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
+XBT_PUBLIC(void) execute(double flop, double priority);
 
 /** Block the actor until it gets a message from the given mailbox.
  *
@@ -326,10 +329,10 @@ XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning int
 XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC(CommPtr)
     isend(MailboxPtr chan, void* payload, double simulatedSize);
 
-/** @brief Returns the actor ID of the current actor (same as pid). */
+/** @brief Returns the actor ID of the current actor). */
 XBT_PUBLIC(aid_t) getPid();
 
-/** @brief Returns the ancestor's actor ID of the current actor (same as ppid). */
+/** @brief Returns the ancestor's actor ID of the current actor. */
 XBT_PUBLIC(aid_t) getPpid();
 
 /** @brief Returns the name of the current actor. */

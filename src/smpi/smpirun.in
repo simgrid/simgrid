@@ -521,7 +521,7 @@ pid=""
 # Keep temporary files on failures to help debugging
 #
 if [ ${status} -ne 0 ] ; then
-    if [ -z ${KEEP} ]; then
+    if [ -z "${KEEP}" ]; then
         echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
         if [ ${HOSTFILETMP} = 1 ] ; then
             echo "Generated hostfile ${HOSTFILE} kept."

@@ -124,8 +124,9 @@ int Cpu::getNbPStates()
 void Cpu::setPState(int pstate_index)
 {
   xbt_assert(pstate_index <= static_cast<int>(speedPerPstate_.size()),
-             "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getCname(), pstate_index,
-             static_cast<int>(speedPerPstate_.size()));
+             "Invalid parameters for CPU %s (pstate %d > length of pstates %d). Please fix your platform file, or your "
+             "call to change the pstate.",
+             getCname(), pstate_index, static_cast<int>(speedPerPstate_.size()));
 
   double new_peak_speed = speedPerPstate_[pstate_index];
   pstate_ = pstate_index;
