@@ -31,12 +31,12 @@ namespace context {
 BoostContextFactory::BoostContextFactory()
     : ContextFactory("BoostContextFactory"), parallel_(SIMIX_context_is_parallel())
 {
+  BoostContext::setMaestro(nullptr);
   if (parallel_) {
 #if HAVE_THREAD_CONTEXTS
     BoostContext::parmap_ = nullptr;
     BoostContext::workers_context_.clear();
     BoostContext::workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-    BoostContext::maestro_context_ = nullptr;
     xbt_os_thread_key_create(&BoostContext::worker_id_key_);
 #else
     xbt_die("No thread support for parallel context execution");
@@ -199,7 +199,7 @@ void SerialBoostContext::suspend()
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-    next_context = static_cast<SerialBoostContext*>(maestro_context_);
+    next_context = static_cast<SerialBoostContext*>(BoostContext::getMaestro());
   }
   SIMIX_context_set_current(static_cast<smx_context_t>(next_context));
   BoostContext::swap(this, next_context);
@@ -208,7 +208,7 @@ void SerialBoostContext::suspend()
 void SerialBoostContext::resume()
 {
   SIMIX_context_set_current(this);
-  BoostContext::swap(maestro_context_, this);
+  BoostContext::swap(BoostContext::getMaestro(), this);
 }
 
 // ParallelBoostContext

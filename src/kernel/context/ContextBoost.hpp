@@ -37,7 +37,6 @@ protected: // static
   static uintptr_t threads_working_;
   static xbt_os_thread_key_t worker_id_key_;
   static unsigned long process_index_;
-  static BoostContext* maestro_context_;
 
 #if BOOST_VERSION < 105600
   boost::context::fcontext_t* fc_ = nullptr;
@@ -65,7 +64,13 @@ public:
   void stop() override;
   virtual void resume() = 0;
 
+  static BoostContext* getMaestro() { return maestro_context_; }
+  static void setMaestro(BoostContext* maestro) { maestro_context_ = maestro; }
+
   friend BoostContextFactory;
+
+private:
+  static BoostContext* maestro_context_;
 };
 
 class SerialBoostContext : public BoostContext {
