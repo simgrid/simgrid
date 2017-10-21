@@ -6,7 +6,12 @@
 #ifndef SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 #define SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 
-#include <boost/context/all.hpp>
+#include <boost/version.hpp>
+#if BOOST_VERSION < 106100
+#include <boost/context/fcontext.hpp>
+#else
+#include <boost/context/detail/fcontext.hpp>
+#endif
 
 #include <cstdint>
 #include <functional>
