@@ -219,6 +219,7 @@ void ParallelBoostContext::finalize()
   delete parmap_;
   parmap_ = nullptr;
   workers_context_.clear();
+  xbt_os_thread_key_destroy(worker_id_key_);
 }
 
 void ParallelBoostContext::run_all()
