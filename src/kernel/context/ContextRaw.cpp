@@ -58,7 +58,6 @@ public:
     void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
   void run_all() override;
 private:
-  void run_all_adaptative();
   void run_all_serial();
   void run_all_parallel();
 };
@@ -446,22 +445,6 @@ void RawContext::resume_parallel()
 #else
   xbt_die("Parallel execution disabled");
 #endif
-}
-
-/** @brief Resumes all processes ready to run. */
-void RawContextFactory::run_all_adaptative()
-{
-  unsigned long nb_processes = simix_global->process_to_run.size();
-  if (SIMIX_context_is_parallel() &&
-      static_cast<unsigned long>(SIMIX_context_get_parallel_threshold()) < nb_processes) {
-    raw_context_parallel = true;
-    XBT_DEBUG("Runall // %lu", nb_processes);
-    this->run_all_parallel();
-  } else {
-    XBT_DEBUG("Runall serial %lu", nb_processes);
-    raw_context_parallel = false;
-    this->run_all_serial();
-  }
 }
 
 }}}
