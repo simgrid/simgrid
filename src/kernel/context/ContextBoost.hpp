@@ -24,11 +24,6 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-class BoostContext;
-class SerialBoostContext;
-class ParallelBoostContext;
-class BoostContextFactory;
-
 /** @brief Userspace context switching implementation based on Boost.Context */
 class BoostContext : public Context {
 public:
@@ -65,8 +60,6 @@ private:
 };
 
 class SerialBoostContext : public BoostContext {
-  friend BoostContextFactory;
-
 public:
   SerialBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
       : BoostContext(std::move(code), cleanup_func, process)
@@ -75,14 +68,14 @@ public:
   void suspend() override;
   void resume() override;
 
+  static void run_all();
+
 private:
   static unsigned long process_index_;
 };
 
 #if HAVE_THREAD_CONTEXTS
 class ParallelBoostContext : public BoostContext {
-  friend BoostContextFactory;
-
 public:
   ParallelBoostContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
       : BoostContext(std::move(code), cleanup_func, process)
@@ -91,9 +84,13 @@ public:
   void suspend() override;
   void resume() override;
 
+  static void initialize();
+  static void finalize();
+  static void run_all();
+
 private:
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
-  static std::vector<BoostContext*> workers_context_;
+  static std::vector<ParallelBoostContext*> workers_context_;
   static uintptr_t threads_working_;
   static xbt_os_thread_key_t worker_id_key_;
 };
