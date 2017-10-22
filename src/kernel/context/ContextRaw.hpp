@@ -6,7 +6,13 @@
 #ifndef SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 #define SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 
+#include <cstdint>
 #include <functional>
+#include <vector>
+
+#include <simgrid/simix.hpp>
+#include <xbt/parmap.hpp>
+#include <xbt/xbt_os_thread.h>
 
 #include "Context.hpp"
 #include "src/internal_config.h"
@@ -16,47 +22,77 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-class RawContext;
-class RawContextFactory;
-
 /** @brief Fast context switching inspired from SystemV ucontexts.
   *
   * The main difference to the System V context is that Raw Contexts are much faster because they don't
   * preserve the signal mask when switching. This saves a system call (at least on Linux) on each context switch.
   */
 class RawContext : public Context {
+public:
+  RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  ~RawContext() override;
+  void stop() override;
+  virtual void resume() = 0;
+
+  static void swap(RawContext* from, RawContext* to);
+  static RawContext* getMaestro() { return maestro_context_; }
+  static void setMaestro(RawContext* maestro) { maestro_context_ = maestro; }
+
 private:
+  static RawContext* maestro_context_;
   void* stack_ = nullptr;
   /** pointer to top the stack stack */
   void* stack_top_ = nullptr;
 
-public:
-  friend class RawContextFactory;
-  RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
-  ~RawContext() override;
-
   static void wrapper(void* arg);
-  void stop() override;
+};
+
+class SerialRawContext : public RawContext {
+public:
+  SerialRawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
+      : RawContext(std::move(code), cleanup_func, process)
+  {
+  }
   void suspend() override;
-  void resume();
+  void resume() override;
+
+  static void run_all();
 
 private:
-  void suspend_serial();
-  void suspend_parallel();
-  void resume_serial();
-  void resume_parallel();
+  static unsigned long process_index_;
 };
+
+#if HAVE_THREAD_CONTEXTS
+class ParallelRawContext : public RawContext {
+public:
+  ParallelRawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
+      : RawContext(std::move(code), cleanup_func, process)
+  {
+  }
+  void suspend() override;
+  void resume() override;
+
+  static void initialize();
+  static void finalize();
+  static void run_all();
+
+private:
+  static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
+  static std::vector<ParallelRawContext*> workers_context_;
+  static uintptr_t threads_working_;
+  static xbt_os_thread_key_t worker_id_key_;
+};
+#endif
 
 class RawContextFactory : public ContextFactory {
 public:
   RawContextFactory();
   ~RawContextFactory() override;
-  RawContext* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
+  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
   void run_all() override;
 
 private:
-  void run_all_serial();
-  void run_all_parallel();
+  bool parallel_;
 };
 }}} // namespace
 
