@@ -177,7 +177,7 @@ void SerialBoostContext::suspend()
     XBT_DEBUG("No more process to run");
     next_context = static_cast<SerialBoostContext*>(BoostContext::getMaestro());
   }
-  SIMIX_context_set_current(static_cast<smx_context_t>(next_context));
+  SIMIX_context_set_current(next_context);
   BoostContext::swap(this, next_context);
 }
 
@@ -225,12 +225,12 @@ void ParallelBoostContext::finalize()
 void ParallelBoostContext::run_all()
 {
   threads_working_ = 0;
-  if (not parmap_)
+  if (parmap_ == nullptr)
     parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
   parmap_->apply(
       [](smx_actor_t process) {
         ParallelBoostContext* context = static_cast<ParallelBoostContext*>(process->context);
-        return context->resume();
+        context->resume();
       },
       simix_global->process_to_run);
 }
@@ -258,7 +258,7 @@ void ParallelBoostContext::resume()
   xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
 
   ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(SIMIX_context_self());
-  workers_context_[worker_id] = worker_context;
+  workers_context_[worker_id]          = worker_context;
 
   SIMIX_context_set_current(this);
   BoostContext::swap(worker_context, this);

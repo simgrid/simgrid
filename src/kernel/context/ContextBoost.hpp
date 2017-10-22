@@ -105,13 +105,12 @@ class BoostContextFactory : public ContextFactory {
 public:
   BoostContextFactory();
   ~BoostContextFactory() override;
-  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t, smx_actor_t process) override;
+  Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
   void run_all() override;
 
 private:
   bool parallel_;
 };
-
 }}} // namespace
 
 #endif
