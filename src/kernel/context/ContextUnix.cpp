@@ -13,35 +13,6 @@
 #include "src/simix/smx_private.hpp"
 #include "xbt/parmap.hpp"
 
-/** Many integers are needed to store a pointer
- *
- * This is a bit paranoid about sizeof(smx_ctx_sysv_t) not being a multiple
- * of sizeof(int), but it doesn't harm. */
-#define CTX_ADDR_LEN                            \
-  (sizeof(void*) / sizeof(int) +       \
-   !!(sizeof(void*) % sizeof(int)))
-
-/** A better makecontext
- *
- * Makecontext expects integer arguments, we the context
- * variable is decomposed into a serie of integers and
- * each integer is passed as argument to makecontext. */
-static void simgrid_makecontext(ucontext_t* ucp, void (*func)(int first, ...), void* arg)
-{
-  int ctx_addr[CTX_ADDR_LEN];
-  memcpy(ctx_addr, &arg, sizeof(void*));
-  switch (CTX_ADDR_LEN) {
-  case 1:
-    makecontext(ucp, (void (*)())func, 1, ctx_addr[0]);
-    break;
-  case 2:
-    makecontext(ucp, (void (*)()) func, 2, ctx_addr[0], ctx_addr[1]);
-    break;
-  default:
-    xbt_die("Ucontexts are not supported on this arch yet (addr len = %zu/%zu = %zu)", sizeof(void*), sizeof(int), CTX_ADDR_LEN);
-  }
-}
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 namespace simgrid {
@@ -52,6 +23,26 @@ namespace context {
   class ParallelUContext;
   class UContextFactory;
 }}}
+
+/** Many integers are needed to store a pointer
+ *
+ * Support up to two ints. */
+constexpr int CTX_ADDR_LEN = 2;
+
+static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * sizeof(int),
+              "Ucontexts are not supported on this arch yet");
+
+/** A better makecontext
+ *
+ * Makecontext expects integer arguments, we the context
+ * variable is decomposed into a serie of integers and
+ * each integer is passed as argument to makecontext. */
+static void simgrid_makecontext(ucontext_t* ucp, void (*func)(int, int), simgrid::kernel::context::UContext* arg)
+{
+  int ctx_addr[CTX_ADDR_LEN]{};
+  memcpy(ctx_addr, &arg, sizeof arg);
+  makecontext(ucp, (void (*)())func, 2, ctx_addr[0], ctx_addr[1]);
+}
 
 #if HAVE_THREAD_CONTEXTS
 static simgrid::xbt::Parmap<smx_actor_t>* sysv_parmap;
@@ -67,7 +58,7 @@ static bool sysv_parallel;
 
 // The name of this function is currently hardcoded in the code (as string).
 // Do not change it without fixing those references as well.
-static void smx_ctx_sysv_wrapper(int first, ...);
+static void smx_ctx_sysv_wrapper(int, int);
 
 namespace simgrid {
 namespace kernel {
@@ -238,20 +229,12 @@ void UContext::stop()
 }
 }}} // namespace simgrid::kernel::context
 
-static void smx_ctx_sysv_wrapper(int first, ...)
+static void smx_ctx_sysv_wrapper(int i1, int i2)
 {
   // Rebuild the Context* pointer from the integers:
-  int ctx_addr[CTX_ADDR_LEN];
+  int ctx_addr[CTX_ADDR_LEN] = {i1, i2};
   simgrid::kernel::context::UContext* context;
-  ctx_addr[0] = first;
-  if (CTX_ADDR_LEN > 1) {
-    va_list ap;
-    va_start(ap, first);
-    for (unsigned i = 1; i < CTX_ADDR_LEN; i++)
-      ctx_addr[i] = va_arg(ap, int);
-    va_end(ap);
-  }
-  memcpy(&context, ctx_addr, sizeof(simgrid::kernel::context::UContext*));
+  memcpy(&context, ctx_addr, sizeof context);
 
   try {
     (*context)();
