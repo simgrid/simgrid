@@ -253,7 +253,8 @@ void SerialUContext::suspend()
 {
   /* determine the next context */
   UContext* next_context = nullptr;
-  unsigned long int i = sysv_process_index++;
+  unsigned long int i    = sysv_process_index;
+  sysv_process_index++;
 
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
