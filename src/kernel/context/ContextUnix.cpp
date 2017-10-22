@@ -5,24 +5,13 @@
 
 /* \file UContext.cpp Context switching with ucontexts from System V        */
 
-#include <ucontext.h>           /* context relative declarations */
+#include "ContextUnix.hpp"
 
 #include "mc/mc.h"
 #include "src/mc/mc_ignore.h"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.hpp"
-#include "xbt/parmap.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
-
-namespace simgrid {
-namespace kernel {
-namespace context {
-  class UContext;
-  class SerialUContext;
-  class ParallelUContext;
-  class UContextFactory;
-}}}
 
 /** Many integers are needed to store a pointer
  *
@@ -63,52 +52,6 @@ static void smx_ctx_sysv_wrapper(int, int);
 namespace simgrid {
 namespace kernel {
 namespace context {
-
-class UContext : public Context {
-private:
-  ucontext_t uc_;         /* the ucontext that executes the code */
-  char *stack_ = nullptr; /* the thread stack */
-public:
-  friend UContextFactory;
-  UContext(std::function<void()>  code,
-    void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
-  ~UContext() override;
-  void stop() override;
-  static void swap(UContext* from, UContext* to) { swapcontext(&from->uc_, &to->uc_); }
-};
-
-class SerialUContext : public UContext {
-public:
-  SerialUContext(std::function<void()>  code,
-      void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-    : UContext(std::move(code), cleanup_func, process)
-  {}
-  void suspend() override;
-  void resume();
-};
-
-class ParallelUContext : public UContext {
-public:
-  ParallelUContext(std::function<void()>  code,
-      void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
-    : UContext(std::move(code), cleanup_func, process)
-  {}
-  void suspend() override;
-  void resume();
-};
-
-class UContextFactory : public ContextFactory {
-public:
-  friend UContext;
-  friend SerialUContext;
-  friend ParallelUContext;
-
-  UContextFactory();
-  ~UContextFactory() override;
-  Context* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
-  void run_all() override;
-};
 
 XBT_PRIVATE ContextFactory* sysv_factory()
 {

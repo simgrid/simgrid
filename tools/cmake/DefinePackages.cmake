@@ -766,9 +766,11 @@ else() # NOT pthread
 endif()
 
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.cpp)
+  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.hpp
+                                src/kernel/context/ContextUnix.cpp)
 else() # NOT ucontext
-  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.cpp)
+  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
+                                src/kernel/context/ContextUnix.cpp)
 endif()
 
 ### Simgrid Lib sources
