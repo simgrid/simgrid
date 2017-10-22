@@ -3,72 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
-
-#include "xbt/parmap.hpp"
+#include "ContextRaw.hpp"
 
 #include "mc/mc.h"
-#include "src/simix/smx_private.hpp"
+#include "src/internal_config.h"
+#include "xbt/parmap.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
-
-// ***** Class definitions
-
-namespace simgrid {
-namespace kernel {
-namespace context {
-
-class RawContext;
-class RawContextFactory;
-
-/** @brief Fast context switching inspired from SystemV ucontexts.
-  *
-  * The main difference to the System V context is that Raw Contexts are much faster because they don't
-  * preserve the signal mask when switching. This saves a system call (at least on Linux) on each context switch.
-  */
-class RawContext : public Context {
-private:
-  void* stack_ = nullptr;
-  /** pointer to top the stack stack */
-  void* stack_top_ = nullptr;
-
-public:
-  friend class RawContextFactory;
-  RawContext(std::function<void()> code,
-          void_pfn_smxprocess_t cleanup_func,
-          smx_actor_t process);
-  ~RawContext() override;
-
-  static void wrapper(void* arg);
-  void stop() override;
-  void suspend() override;
-  void resume();
-private:
-  void suspend_serial();
-  void suspend_parallel();
-  void resume_serial();
-  void resume_parallel();
-};
-
-class RawContextFactory : public ContextFactory {
-public:
-  RawContextFactory();
-  ~RawContextFactory() override;
-  RawContext* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
-  void run_all() override;
-private:
-  void run_all_serial();
-  void run_all_parallel();
-};
-
-ContextFactory* raw_factory()
-{
-  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
-  return new RawContextFactory();
-}
-
-}}} // namespace
 
 // ***** Loads of static stuff
 
@@ -447,4 +388,9 @@ void RawContext::resume_parallel()
 #endif
 }
 
+ContextFactory* raw_factory()
+{
+  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
+  return new RawContextFactory();
+}
 }}}
