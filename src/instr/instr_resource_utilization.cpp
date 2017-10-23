@@ -5,13 +5,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.hpp"
+#include <set>
 #include <string>
-#include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
 //to check if variables were previously set to 0, otherwise paje won't simulate them
-static std::unordered_map<std::string, std::string> platform_variables;
+static std::set<std::string> platform_variables;
 
 static void instr_event(double now, double delta, simgrid::instr::Type* variable, container_t resource, double value)
 {
@@ -26,7 +26,7 @@ static void instr_event(double now, double delta, simgrid::instr::Type* variable
   // check if key exists: if it doesn't, set the variable to zero and mark this in the global map.
   if (platform_variables.find(key) == platform_variables.end()) {
     new simgrid::instr::SetVariableEvent(now, resource, variable, 0);
-    platform_variables[key] = std::string("");
+    platform_variables.insert(key);
   }
 
   new simgrid::instr::AddVariableEvent(now, resource, variable, value);
