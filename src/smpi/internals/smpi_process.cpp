@@ -280,7 +280,7 @@ void Process::init(int *argc, char ***argv){
     smx_actor_t proc = SIMIX_process_self();
     proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
-    int index = proc->pid - 1;
+    int index = proc->pid - 1; // The maestro process has always ID 0 but we don't need that process here
 
     if(index_to_process_data == nullptr){
       index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
