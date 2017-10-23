@@ -108,10 +108,7 @@ ThreadContext::ThreadContext(std::function<void()> code, void_pfn_smxprocess_t c
     /* create and start the process */
     /* NOTE: The first argument to xbt_os_thread_create used to be the process *
     * name, but now the name is stored at SIMIX level, so we pass a null  */
-    this->thread_ =
-      xbt_os_thread_create(nullptr,
-        maestro ? &ThreadContext::maestro_wrapper : &ThreadContext::wrapper,
-        this, this);
+    this->thread_ = xbt_os_thread_create(nullptr, ThreadContext::wrapper, this, this);
     /* wait the starting of the newly created process */
     xbt_os_sem_acquire(this->end_);
   }
@@ -144,48 +141,20 @@ void *ThreadContext::wrapper(void *param)
   stack.ss_flags = 0;
   sigaltstack(&stack, nullptr);
 #endif
-  /* Tell the maestro we are starting, and wait for its green light */
+  // Tell the caller (normally the maestro) we are starting, and wait for its green light
   xbt_os_sem_release(context->end_);
-
   context->start();
 
   try {
     (*context)();
-    context->Context::stop();
+    if (not context->is_maestro_) // really?
+      context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
+    xbt_assert(not context->is_maestro_, "I'm not supposed to be maestro here.");
   }
 
-  // Signal to the maestro that it has finished:
-  context->yield();
-
-#ifndef WIN32
-  stack.ss_flags = SS_DISABLE;
-  sigaltstack(&stack, nullptr);
-#endif
-  return nullptr;
-}
-
-void *ThreadContext::maestro_wrapper(void *param)
-{
-  ThreadContext* context = static_cast<ThreadContext*>(param);
-
-#ifndef WIN32
-  /* Install alternate signal stack, for SIGSEGV handler. */
-  stack_t stack;
-  stack.ss_sp = sigsegv_stack;
-  stack.ss_size = sizeof sigsegv_stack;
-  stack.ss_flags = 0;
-  sigaltstack(&stack, nullptr);
-#endif
-  /* Tell the caller we are starting */
-  xbt_os_sem_release(context->end_);
-
-  // Wait for the caller to give control back to us:
-  context->start();
-  (*context)();
-
-  // Tell main that we have finished:
+  // Signal to the caller (normally the maestro) that we have finished:
   context->yield();
 
 #ifndef WIN32

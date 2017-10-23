@@ -38,7 +38,6 @@ private:
   bool is_maestro_;
 
   static void* wrapper(void *param);
-  static void* maestro_wrapper(void *param);
 public:
   void start();
   void yield();
