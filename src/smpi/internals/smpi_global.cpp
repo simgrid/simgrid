@@ -662,9 +662,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
       "You may want to use sampling functions or trace replay to reduce this.");
     }
   }
-  int count = smpi_process_count();
   int ret   = 0;
-  for (int i = 0; i < count; i++) {
+  for (int i = 0, count = smpi_process_count(); i < count; i++) {
     if(process_data[i]->return_value()!=0){
       ret=process_data[i]->return_value();//return first non 0 value
       break;
