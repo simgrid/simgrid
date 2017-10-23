@@ -93,7 +93,6 @@ public:
   int dp_enabled                     = 0;
   double dp_updated_by_deleted_tasks = 0;
 
-public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<s4u::VirtualMachine*> allVms_;

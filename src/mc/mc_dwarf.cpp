@@ -799,17 +799,13 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     dwarf_attr(die, DW_AT_start_scope, &attr);
     int form = dwarf_whatform(&attr);
     simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
-    switch (form_class) {
-      case simgrid::dwarf::FormClass::Constant: {
-        Dwarf_Word value;
-        variable->start_scope =
-            dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
-        break;
-      }
-
-      default: // includes FormClass::RangeListPtr (TODO)
-        xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s", (unsigned)form,
-                (unsigned)form_class, name == nullptr ? "?" : name);
+    if (form_class == simgrid::dwarf::FormClass::Constant) {
+      Dwarf_Word value;
+      variable->start_scope = dwarf_formudata(&attr, &value) == 0 ? (size_t)value : 0;
+    } else {
+      // TODO: FormClass::RangeListPtr
+      xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s", (unsigned)form,
+              (unsigned)form_class, name == nullptr ? "?" : name);
     }
   }
 

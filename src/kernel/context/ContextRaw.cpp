@@ -3,89 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
-
-#include "xbt/parmap.hpp"
+#include "ContextRaw.hpp"
 
 #include "mc/mc.h"
-#include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-// ***** Class definitions
-
-namespace simgrid {
-namespace kernel {
-namespace context {
-
-class RawContext;
-class RawContextFactory;
-
-/** @brief Fast context switching inspired from SystemV ucontexts.
-  *
-  * The main difference to the System V context is that Raw Contexts are much faster because they don't
-  * preserve the signal mask when switching. This saves a system call (at least on Linux) on each context switch.
-  */
-class RawContext : public Context {
-private:
-  void* stack_ = nullptr;
-  /** pointer to top the stack stack */
-  void* stack_top_ = nullptr;
-
-public:
-  friend class RawContextFactory;
-  RawContext(std::function<void()> code,
-          void_pfn_smxprocess_t cleanup_func,
-          smx_actor_t process);
-  ~RawContext() override;
-
-  static void wrapper(void* arg);
-  void stop() override;
-  void suspend() override;
-  void resume();
-private:
-  void suspend_serial();
-  void suspend_parallel();
-  void resume_serial();
-  void resume_parallel();
-};
-
-class RawContextFactory : public ContextFactory {
-public:
-  RawContextFactory();
-  ~RawContextFactory() override;
-  RawContext* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
-  void run_all() override;
-private:
-  void run_all_adaptative();
-  void run_all_serial();
-  void run_all_parallel();
-};
-
-ContextFactory* raw_factory()
-{
-  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
-  return new RawContextFactory();
-}
-
-}}} // namespace
-
-// ***** Loads of static stuff
-
-#if HAVE_THREAD_CONTEXTS
-static simgrid::xbt::Parmap<smx_actor_t>* raw_parmap;
-static simgrid::kernel::context::RawContext** raw_workers_context;    /* space to save the worker context in each thread */
-static uintptr_t raw_threads_working;     /* number of threads that have started their work */
-static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
-#endif
-static unsigned long raw_process_index = 0;   /* index of the next process to run in the
-                                               * list of runnable processes */
-static simgrid::kernel::context::RawContext* raw_maestro_context;
-
-static bool raw_context_parallel = false;
-
-// ***** Raw context routines
+// Raw context routines
 
 typedef void (*rawctx_entry_point_t)(void *);
 
@@ -258,35 +182,71 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-RawContextFactory::RawContextFactory()
-  : ContextFactory("RawContextFactory")
+// RawContextFactory
+
+RawContextFactory::RawContextFactory() : ContextFactory("RawContextFactory"), parallel_(SIMIX_context_is_parallel())
 {
-  raw_context_parallel = SIMIX_context_is_parallel();
-  if (raw_context_parallel) {
+  RawContext::setMaestro(nullptr);
+  if (parallel_) {
 #if HAVE_THREAD_CONTEXTS
-    int nthreads = SIMIX_context_get_nthreads();
-    xbt_os_thread_key_create(&raw_worker_id_key);
-    // TODO, lazily init
-    raw_parmap = nullptr;
-    raw_workers_context = new RawContext*[nthreads];
-    raw_maestro_context = nullptr;
-#endif
     // TODO: choose dynamically when SIMIX_context_get_parallel_threshold() > 1
+    ParallelRawContext::initialize();
+#else
+    xbt_die("You asked for a parallel execution, but you don't have any threads.");
+#endif
   }
 }
 
 RawContextFactory::~RawContextFactory()
 {
 #if HAVE_THREAD_CONTEXTS
-  delete raw_parmap;
-  delete[] raw_workers_context;
+  if (parallel_)
+    ParallelRawContext::finalize();
 #endif
 }
 
-RawContext* RawContextFactory::create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_actor_t process)
+Context* RawContextFactory::create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
+                                           smx_actor_t process)
 {
-  return this->new_context<RawContext>(std::move(code), cleanup, process);
+#if HAVE_THREAD_CONTEXTS
+  if (parallel_)
+    return this->new_context<ParallelRawContext>(std::move(code), cleanup_func, process);
+#endif
+
+  return this->new_context<SerialRawContext>(std::move(code), cleanup_func, process);
+}
+
+void RawContextFactory::run_all()
+{
+#if HAVE_THREAD_CONTEXTS
+  if (parallel_)
+    ParallelRawContext::run_all();
+  else
+#endif
+    SerialRawContext::run_all();
+}
+
+// RawContext
+
+RawContext* RawContext::maestro_context_ = nullptr;
+
+RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process)
+    : Context(std::move(code), cleanup, process)
+{
+   if (has_code()) {
+     this->stack_ = SIMIX_context_stack_new();
+     this->stack_top_ = raw_makecontext(this->stack_, smx_context_usable_stack_size, RawContext::wrapper, this);
+   } else {
+     if (process != nullptr && maestro_context_ == nullptr)
+       maestro_context_ = this;
+     if (MC_is_active())
+       MC_ignore_heap(&maestro_context_->stack_top_, sizeof(maestro_context_->stack_top_));
+   }
+}
+
+RawContext::~RawContext()
+{
+  SIMIX_context_stack_delete(this->stack_);
 }
 
 void RawContext::wrapper(void* arg)
@@ -301,29 +261,9 @@ void RawContext::wrapper(void* arg)
   context->suspend();
 }
 
-RawContext::RawContext(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_actor_t process)
-  : Context(std::move(code), cleanup, process)
+inline void RawContext::swap(RawContext* from, RawContext* to)
 {
-   if (has_code()) {
-     this->stack_ = SIMIX_context_stack_new();
-     this->stack_top_ = raw_makecontext(this->stack_,
-                         smx_context_usable_stack_size,
-                         RawContext::wrapper,
-                         this);
-   } else {
-     if(process != nullptr && raw_maestro_context == nullptr)
-       raw_maestro_context = this;
-     if (MC_is_active())
-       MC_ignore_heap(
-         &raw_maestro_context->stack_top_,
-         sizeof(raw_maestro_context->stack_top_));
-   }
-}
-
-RawContext::~RawContext()
-{
-  SIMIX_context_stack_delete(this->stack_);
+  raw_swapcontext(&from->stack_top_, to->stack_top_);
 }
 
 void RawContext::stop()
@@ -332,136 +272,120 @@ void RawContext::stop()
   throw StopRequest();
 }
 
-void RawContextFactory::run_all()
-{
-  if (raw_context_parallel)
-    run_all_parallel();
-  else
-    run_all_serial();
-}
+// SerialRawContext
 
-void RawContextFactory::run_all_serial()
-{
-  if (simix_global->process_to_run.empty())
-    return;
+unsigned long SerialRawContext::process_index_; /* index of the next process to run in the list of runnable processes */
 
-  smx_actor_t first_process = simix_global->process_to_run.front();
-  raw_process_index = 1;
-  static_cast<RawContext*>(first_process->context)->resume_serial();
-}
-
-void RawContextFactory::run_all_parallel()
-{
-#if HAVE_THREAD_CONTEXTS
-  raw_threads_working = 0;
-  if (raw_parmap == nullptr)
-    raw_parmap = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
-  raw_parmap->apply(
-      [](smx_actor_t process) {
-        RawContext* context = static_cast<RawContext*>(process->context);
-        context->resume_parallel();
-      },
-      simix_global->process_to_run);
-#else
-  xbt_die("You asked for a parallel execution, but you don't have any threads.");
-#endif
-}
-
-void RawContext::suspend()
-{
-  if (raw_context_parallel)
-    RawContext::suspend_parallel();
-  else
-    RawContext::suspend_serial();
-}
-
-void RawContext::suspend_serial()
+void SerialRawContext::suspend()
 {
   /* determine the next context */
-  RawContext* next_context = nullptr;
-  unsigned long int i      = raw_process_index;
-  raw_process_index++;
+  SerialRawContext* next_context;
+  unsigned long int i = process_index_;
+  process_index_++;
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<RawContext*>(simix_global->process_to_run[i]->context);
+    next_context = static_cast<SerialRawContext*>(simix_global->process_to_run[i]->context);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
-    next_context = static_cast<RawContext*>(raw_maestro_context);
+    next_context = static_cast<SerialRawContext*>(RawContext::getMaestro());
   }
   SIMIX_context_set_current(next_context);
-  raw_swapcontext(&this->stack_top_, next_context->stack_top_);
+  RawContext::swap(this, next_context);
 }
 
-void RawContext::suspend_parallel()
+void SerialRawContext::resume()
 {
+  SIMIX_context_set_current(this);
+  RawContext::swap(RawContext::getMaestro(), this);
+}
+
+void SerialRawContext::run_all()
+{
+  if (simix_global->process_to_run.empty())
+    return;
+  smx_actor_t first_process = simix_global->process_to_run.front();
+  process_index_            = 1;
+  static_cast<SerialRawContext*>(first_process->context)->resume();
+}
+
+// ParallelRawContext
+
 #if HAVE_THREAD_CONTEXTS
+
+simgrid::xbt::Parmap<smx_actor_t>* ParallelRawContext::parmap_;
+uintptr_t ParallelRawContext::threads_working_;         /* number of threads that have started their work */
+xbt_os_thread_key_t ParallelRawContext::worker_id_key_; /* thread-specific storage for the thread id */
+std::vector<ParallelRawContext*> ParallelRawContext::workers_context_; /* space to save the worker context
+                                                                          in each thread */
+
+void ParallelRawContext::initialize()
+{
+  parmap_ = nullptr;
+  workers_context_.clear();
+  workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
+  xbt_os_thread_key_create(&worker_id_key_);
+}
+
+void ParallelRawContext::finalize()
+{
+  delete parmap_;
+  parmap_ = nullptr;
+  workers_context_.clear();
+  xbt_os_thread_key_destroy(worker_id_key_);
+}
+
+void ParallelRawContext::run_all()
+{
+  threads_working_ = 0;
+  if (parmap_ == nullptr)
+    parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
+  parmap_->apply(
+      [](smx_actor_t process) {
+        ParallelRawContext* context = static_cast<ParallelRawContext*>(process->context);
+        context->resume();
+      },
+      simix_global->process_to_run);
+}
+
+void ParallelRawContext::suspend()
+{
   /* determine the next context */
-  boost::optional<smx_actor_t> next_work = raw_parmap->next();
-  RawContext* next_context;
+  boost::optional<smx_actor_t> next_work = parmap_->next();
+  ParallelRawContext* next_context;
   if (next_work) {
     /* there is a next process to resume */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<RawContext*>(next_work.get()->context);
+    next_context = static_cast<ParallelRawContext*>(next_work.get()->context);
   } else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
-    uintptr_t worker_id = (uintptr_t)
-      xbt_os_thread_get_specific(raw_worker_id_key);
-    next_context = raw_workers_context[worker_id];
-    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)",
-        worker_id, raw_threads_working);
+    uintptr_t worker_id = reinterpret_cast<uintptr_t>(xbt_os_thread_get_specific(worker_id_key_));
+    next_context        = workers_context_[worker_id];
+    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)", worker_id, threads_working_);
   }
 
   SIMIX_context_set_current(next_context);
-  raw_swapcontext(&this->stack_top_, next_context->stack_top_);
-#endif
+  RawContext::swap(this, next_context);
 }
 
-void RawContext::resume()
+void ParallelRawContext::resume()
 {
-  if (raw_context_parallel)
-    resume_parallel();
-  else
-    resume_serial();
-}
-
-void RawContext::resume_serial()
-{
-  SIMIX_context_set_current(this);
-  raw_swapcontext(&raw_maestro_context->stack_top_, this->stack_top_);
-}
-
-void RawContext::resume_parallel()
-{
-#if HAVE_THREAD_CONTEXTS
-  uintptr_t worker_id = __sync_fetch_and_add(&raw_threads_working, 1);
-  xbt_os_thread_set_specific(raw_worker_id_key, (void*) worker_id);
-  RawContext* worker_context     = static_cast<RawContext*>(SIMIX_context_self());
-  raw_workers_context[worker_id] = worker_context;
+  uintptr_t worker_id = __sync_fetch_and_add(&threads_working_, 1);
+  xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
+  ParallelRawContext* worker_context = static_cast<ParallelRawContext*>(SIMIX_context_self());
+  workers_context_[worker_id]        = worker_context;
   XBT_DEBUG("Saving worker stack %zu", worker_id);
   SIMIX_context_set_current(this);
-  raw_swapcontext(&worker_context->stack_top_, this->stack_top_);
-#else
-  xbt_die("Parallel execution disabled");
+  RawContext::swap(worker_context, this);
+}
+
 #endif
-}
 
-/** @brief Resumes all processes ready to run. */
-void RawContextFactory::run_all_adaptative()
+ContextFactory* raw_factory()
 {
-  unsigned long nb_processes = simix_global->process_to_run.size();
-  if (SIMIX_context_is_parallel() &&
-      static_cast<unsigned long>(SIMIX_context_get_parallel_threshold()) < nb_processes) {
-    raw_context_parallel = true;
-    XBT_DEBUG("Runall // %lu", nb_processes);
-    this->run_all_parallel();
-  } else {
-    XBT_DEBUG("Runall serial %lu", nb_processes);
-    raw_context_parallel = false;
-    this->run_all_serial();
-  }
+  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
+  return new RawContextFactory();
 }
-
 }}}

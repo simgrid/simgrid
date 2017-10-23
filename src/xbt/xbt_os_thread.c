@@ -252,6 +252,12 @@ void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
   xbt_assert(errcode==0 , "pthread_key_create failed");
 }
 
+void xbt_os_thread_key_destroy(xbt_os_thread_key_t key)
+{
+  int errcode = pthread_key_delete(key);
+  xbt_assert(errcode == 0, "pthread_key_delete failed");
+}
+
 void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value)
 {
   int errcode = pthread_setspecific(key, value);
