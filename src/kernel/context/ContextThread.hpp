@@ -22,9 +22,7 @@ class ThreadContextFactory;
 class ThreadContext : public AttachContext {
 public:
   friend ThreadContextFactory;
-  ThreadContext(std::function<void()> code,
-          void_pfn_smxprocess_t cleanup_func,
-          smx_actor_t process, bool maestro =false);
+  ThreadContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process, bool maestro);
   ~ThreadContext() override;
   void stop() override;
   void suspend() override;
@@ -37,11 +35,13 @@ private:
   xbt_os_sem_t begin_ = nullptr;
   /** Semaphore used to schedule/unschedule */
   xbt_os_sem_t end_ = nullptr;
+  bool is_maestro_;
 
   static void* wrapper(void *param);
   static void* maestro_wrapper(void *param);
 public:
   void start();
+  void yield();
 };
 
 class ThreadContextFactory : public ContextFactory {
