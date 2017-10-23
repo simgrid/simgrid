@@ -686,7 +686,7 @@ void SMPI_init(){
   TRACE_smpi_alloc();
   simgrid::surf::surfExitCallbacks.connect(TRACE_smpi_release);
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
-    smpi_initialize_global_memory_segments();
+    smpi_backup_global_memory_segment();
 }
 
 void SMPI_finalize(){
