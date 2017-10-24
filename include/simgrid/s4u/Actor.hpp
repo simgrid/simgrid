@@ -218,6 +218,8 @@ public:
   /** Resume a suspended process by resuming the task on which it was waiting for the completion. */
   void resume();
 
+  void yield();
+
   /** Returns true if the process is suspended. */
   int isSuspended();
 
@@ -348,6 +350,8 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
 
   /** @brief Resume the actor. */
   XBT_PUBLIC(void) resume();
+
+  XBT_PUBLIC(void) yield();
 
   XBT_PUBLIC(bool) isSuspended();
 

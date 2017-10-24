@@ -28,8 +28,9 @@ public:
 }
 void operator()()
 {
+ simgrid::s4u::ActorPtr actor;
  for (int i = 0; i < number_of_yields; i++)
- simgrid::simix::kernelImmediate([] { /* do nothing*/ });
+ actor->yield();
  XBT_INFO("I yielded %ld times. Goodbye now!", number_of_yields);
 }
 };
