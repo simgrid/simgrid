@@ -327,9 +327,19 @@ std::vector<std::string> resolveBacktrace(
     addrs[i].clear();
 
     /* Mask the bottom of the stack */
-    if (not strncmp("main", line_func, strlen("main")) ||
-        not strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper")) ||
-        not strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper")))
+    const char* const breakers[] = {
+        "main",
+        "_ZN7simgrid6kernel7context13ThreadContext7wrapperE", // simgrid::kernel::context::ThreadContext::wrapper
+        "_ZN7simgrid6kernel7context8UContext7wrapperE"        // simgrid::kernel::context::UContext::wrapper
+    };
+    bool do_break = false;
+    for (const char* b : breakers) {
+      if (strncmp(b, line_func, strlen(b)) == 0) {
+        do_break = true;
+        break;
+      }
+    }
+    if (do_break)
       break;
   }
   pclose(pipe);
