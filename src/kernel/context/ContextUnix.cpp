@@ -103,7 +103,7 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
     this->uc_.uc_link = nullptr;
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(this->stack_);
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
-    UContext::makecontext(&this->uc_, UContext::wrapper, this);
+    UContext::make_ctx(&this->uc_, UContext::wrapper, this);
   } else {
     if (process != nullptr && maestro_context_ == nullptr)
       maestro_context_ = this;
@@ -131,11 +131,11 @@ void UContext::wrapper(int i1, int i2)
  * Makecontext expects integer arguments, we the context variable is decomposed into a serie of integers and each
  * integer is passed as argument to makecontext.
  */
-void UContext::makecontext(ucontext_t* ucp, void (*func)(int, int), UContext* arg)
+void UContext::make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg)
 {
   int ctx_addr[CTX_ADDR_LEN]{};
   memcpy(ctx_addr, &arg, sizeof arg);
-  ::makecontext(ucp, (void (*)())func, 2, ctx_addr[0], ctx_addr[1]);
+  makecontext(ucp, (void (*)())func, 2, ctx_addr[0], ctx_addr[1]);
 }
 
 void UContext::stop()

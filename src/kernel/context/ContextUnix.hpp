@@ -41,7 +41,7 @@ private:
   ucontext_t uc_;         /* the ucontext that executes the code */
 
   static void wrapper(int, int);
-  static void makecontext(ucontext_t* ucp, void (*func)(int, int), UContext* arg);
+  static void make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg);
 };
 
 class SerialUContext : public UContext {
