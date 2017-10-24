@@ -27,7 +27,7 @@ FILE *tracing_file = nullptr;
 static xbt_dict_t tracing_files = nullptr; // TI specific
 static double prefix=0.0; // TI specific
 
-static xbt_dynar_t state_tracker = nullptr; //TI specific
+static xbt_dict_t state_trackers = nullptr; //TI specific
 
 std::vector<PajeEvent*> buffer;
 void buffer_debug(std::vector<PajeEvent*> *buf);
@@ -351,6 +351,13 @@ if (instr_fmt_type == instr_fmt_paje) {
     }
 
     xbt_dict_set(tracing_files, container->name, (void*)ti_unique_file, nullptr);
+    
+    if (state_trackers == nullptr){
+      state_trackers = xbt_dict_new_homogeneous(nullptr);
+    }
+    xbt_dynar_t state_tracker = xbt_dynar_new(sizeof(instr_extra_data), nullptr);
+    xbt_dict_set(state_trackers, container->name, state_tracker , nullptr);
+    
   } else {
     THROW_IMPOSSIBLE;
   }
@@ -697,6 +704,7 @@ void PushStateEvent::print() {
     //current iteration (TRACING_ITERATION) ends. 
     // We will push the whole 'extra', because we need access to the printing
     // function when the state is popped.
+    xbt_dynar_t state_tracker = (xbt_dynar_t) xbt_dict_get(state_trackers, container->name);
     xbt_dynar_push(state_tracker, &extra);
 
     xbt_free(process_id);
@@ -732,12 +740,18 @@ void PopStateEvent::print() {
     char *process_id;
 
     instr_extra_data extra;
+    xbt_dynar_t state_tracker = (xbt_dynar_t) xbt_dict_get(state_trackers, container->name);
     xbt_dynar_pop(state_tracker, &extra);
     if(extra->type  == TRACING_CUSTOM){
       if (strstr(container->name, "rank-") == nullptr)
 	process_id = xbt_strdup(container->name);
       else
 	process_id = xbt_strdup(container->name + 5);
+      
+      if(extra->src != atoi(process_id)){
+        fprintf(stderr, "\nERROR! State tracker rank (%d), does not match container (%s).\n",
+               extra->src , process_id); fflush(stderr);
+      }
 
       FILE *trace_file = (FILE *)xbt_dict_get(tracing_files, container->name);
       if(extra->print_pop){
@@ -900,7 +914,6 @@ void TRACE_TI_start()
 {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
-  state_tracker = xbt_dynar_new(sizeof(instr_extra_data), NULL);
   if (tracing_file == nullptr)
     THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename);
 
@@ -915,8 +928,8 @@ void TRACE_TI_start()
 
 void TRACE_TI_end()
 {
+  xbt_dict_free(&state_trackers);
   xbt_dict_free(&tracing_files);
-  xbt_dynar_free(&state_tracker);
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
   XBT_DEBUG("Filename %s is closed", filename);
