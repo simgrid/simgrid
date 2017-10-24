@@ -6,6 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cerrno>
+#include <cstring>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -221,9 +223,12 @@ std::vector<std::string> resolveBacktrace(
       int found = 0;
 
       /* let's look for the offset of this library in our addressing space */
-      std::string maps_name = std::string("/proc/") + std::to_string(getpid()) + "maps";
+      std::string maps_name = std::string("/proc/") + std::to_string(getpid()) + "/maps";
       FILE* maps            = fopen(maps_name.c_str(), "r");
-
+      if (maps == nullptr) {
+        XBT_CRITICAL("fopen(\"%s\") failed: %s", maps_name.c_str(), strerror(errno));
+        continue;
+      }
       unsigned long int addr = strtoul(addrs[i].c_str(), &p, 16);
       if (*p != '\0') {
         XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)", addrs[i].c_str(), addr);
