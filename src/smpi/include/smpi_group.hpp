@@ -16,7 +16,11 @@ namespace smpi{
 class Group : public F2C{
   private:
     int size_;
-    int *rank_to_index_map_;
+    /* This is actually a map from int to int. We could use
+     * std::map here, but looking up a value there costs O(log(n)).
+     * For a vector, this costs O(1). We hence go with the vector.
+     */
+    std::vector<int> rank_to_index_map_;
     std::unordered_map<int, int> index_to_rank_map_;
     int refcount_;
   public:
