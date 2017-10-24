@@ -40,8 +40,8 @@ private:
 
   void start();                // match a call to release()
   void yield();                // match a call to yield()
-  virtual void start_hook() {} // called after start()
-  virtual void yield_hook() {} // called before yield()
+  virtual void start_hook() { /* empty placeholder, called after start() */}
+  virtual void yield_hook() { /* empty placeholder, called before yield() */}
 
   static void* wrapper(void *param);
 };
