@@ -191,12 +191,11 @@ void FloydZone::seal()
   for (unsigned int c = 0; c < table_size; c++) {
     for (unsigned int a = 0; a < table_size; a++) {
       for (unsigned int b = 0; b < table_size; b++) {
-        if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX) {
-          if (fabs(TO_FLOYD_COST(a, b) - DBL_MAX) < std::numeric_limits<double>::epsilon() ||
-              (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) < TO_FLOYD_COST(a, b))) {
-            TO_FLOYD_COST(a, b) = TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
-            TO_FLOYD_PRED(a, b) = TO_FLOYD_PRED(c, b);
-          }
+        if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX &&
+            (fabs(TO_FLOYD_COST(a, b) - DBL_MAX) < std::numeric_limits<double>::epsilon() ||
+             (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) < TO_FLOYD_COST(a, b)))) {
+          TO_FLOYD_COST(a, b) = TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
+          TO_FLOYD_PRED(a, b) = TO_FLOYD_PRED(c, b);
         }
       }
     }

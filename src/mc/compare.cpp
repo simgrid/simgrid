@@ -1031,14 +1031,12 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
       return 0;
     }
 
-    if (type_size != -1) {
-      if (type_size != (ssize_t) heapinfo1->busy_block.busy_size
-          && type_size != (ssize_t)   heapinfo2->busy_block.busy_size
-          && (type->name.empty() || type->name == "struct s_smx_context")) {
-        if (match_pairs)
-          state.match_equals(previous);
-        return -1;
-      }
+    if (type_size != -1 && type_size != (ssize_t)heapinfo1->busy_block.busy_size &&
+        type_size != (ssize_t)heapinfo2->busy_block.busy_size &&
+        (type->name.empty() || type->name == "struct s_smx_context")) {
+      if (match_pairs)
+        state.match_equals(previous);
+      return -1;
     }
 
     if (heapinfo1->busy_block.size != heapinfo2->busy_block.size)
@@ -1098,12 +1096,11 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     }
 
     // Check if the blocks are already matched together:
-    if (state.equals_to1_(block1, frag1).valid_ && state.equals_to2_(block2, frag2).valid_) {
-      if (offset1==offset2 && state.fragmentsEqual(block1, frag1, block2, frag2)) {
-        if (match_pairs)
-          state.match_equals(previous);
-        return 0;
-      }
+    if (state.equals_to1_(block1, frag1).valid_ && state.equals_to2_(block2, frag2).valid_ && offset1 == offset2 &&
+        state.fragmentsEqual(block1, frag1, block2, frag2)) {
+      if (match_pairs)
+        state.match_equals(previous);
+      return 0;
     }
     // Compare the size of both fragments:
     if (heapinfo1->busy_frag.frag_size[frag1] != heapinfo2->busy_frag.frag_size[frag2]) {
