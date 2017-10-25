@@ -125,7 +125,7 @@ public:
   std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern;
   std::vector<unsigned> communicationIndices;
 
-  State(unsigned long state_number);
+  explicit State(unsigned long state_number);
 
   std::size_t interleaveSize() const;
   void addInterleavingSet(smx_actor_t actor) { this->actorStates[actor->pid].consider(); }
