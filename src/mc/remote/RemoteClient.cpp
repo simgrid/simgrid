@@ -28,6 +28,7 @@
 #include <libunwind.h>
 
 #include "xbt/base.h"
+#include "xbt/file.hpp"
 #include "xbt/log.h"
 #include <xbt/mmalloc.h>
 
@@ -118,17 +119,13 @@ struct s_mc_memory_map_re {
 
 static char* get_lib_name(const char* pathname, s_mc_memory_map_re* res)
 {
-  char* map_basename = xbt_basename(pathname);
+  std::string map_basename = simgrid::xbt::Path(pathname).getBasename();
 
   regmatch_t match;
-  if (regexec(&res->so_re, map_basename, 1, &match, 0)) {
-    free(map_basename);
+  if (regexec(&res->so_re, map_basename.c_str(), 1, &match, 0))
     return nullptr;
-  }
 
-  char* libname = strndup(map_basename, match.rm_so);
-  free(map_basename);
-  map_basename = nullptr;
+  char* libname = strndup(map_basename.c_str(), match.rm_so);
 
   // Strip the version suffix:
   if (libname && not regexec(&res->version_re, libname, 1, &match, 0)) {

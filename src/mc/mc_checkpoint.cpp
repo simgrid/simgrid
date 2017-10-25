@@ -18,6 +18,7 @@
 #include "src/internal_config.h"
 #include "src/mc/mc_private.hpp"
 #include "src/smpi/include/private.hpp"
+#include "xbt/file.hpp"
 #include "xbt/mmalloc.h"
 #include "xbt/module.h"
 
@@ -185,18 +186,15 @@ void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
 {
-  char* name = xbt_basename(result->file_name.c_str());
+  std::string name = simgrid::xbt::Path(result->file_name).getBasename();
 
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty())
       continue;
-    char* map_basename = xbt_basename(maps[i].pathname.c_str());
-    if (strcmp(name, map_basename) != 0) {
-      free(map_basename);
+    std::string map_basename = simgrid::xbt::Path(maps[i].pathname).getBasename();
+    if (map_basename != name)
       continue;
-    }
-    free(map_basename);
 
     // This is the non-GNU_RELRO-part of the data segment:
     if (reg.prot == PROT_RW) {
@@ -250,8 +248,6 @@ void find_object_address(
     result->end = result->end_exec;
 
   xbt_assert(result->start_exec || result->start_rw || result->start_ro);
-
-  free(name);
 }
 
 /************************************* Take Snapshot ************************************/
@@ -522,12 +518,9 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 
     // If dot_output enabled, do not handle the corresponding file
     if (dot_output != nullptr) {
-      char* link_basename = xbt_basename(link);
-      if (strcmp(link_basename, _sg_mc_dot_output_file) == 0) {
-        free(link_basename);
+      std::string link_basename = simgrid::xbt::Path(link).getBasename();
+      if (link_basename == _sg_mc_dot_output_file)
         continue;
-      }
-      free(link_basename);
     }
 
     // This is probably a shared memory used by lttng-ust:
