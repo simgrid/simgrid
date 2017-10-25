@@ -8,24 +8,12 @@
 
 #include "xbt/file.hpp" /* this module */
 
-#include "xbt/file.h"
-#include "xbt/sysdep.h"
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
 #include <cstring>
 #include <libgen.h> /* POSIX dirname */
-
-/** @brief Returns the file component of a path (reimplementation of POSIX basename)
- *
- * The argument is never modified, and the returned value must be freed after use.
- */
-char *xbt_basename(const char *path)
-{
-  return xbt_strdup(simgrid::xbt::Path(path).getBasename().c_str());
-}
 
 std::string simgrid::xbt::Path::getDirname()
 {

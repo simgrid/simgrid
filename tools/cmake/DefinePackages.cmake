@@ -716,7 +716,6 @@ set(headers_to_install
   include/xbt/ex.hpp
   include/xbt/exception.hpp
   include/xbt/Extendable.hpp
-  include/xbt/file.h
   include/xbt/file.hpp
   include/xbt/functional.hpp
   include/xbt/function_types.h

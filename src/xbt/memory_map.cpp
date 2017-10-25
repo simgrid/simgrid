@@ -48,7 +48,6 @@
 
 #include <xbt/sysdep.h>
 #include <xbt/base.h>
-#include <xbt/file.h>
 #include <xbt/log.h>
 
 #include "memory_map.hpp"
