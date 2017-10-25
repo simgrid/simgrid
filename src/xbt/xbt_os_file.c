@@ -17,55 +17,6 @@
 
 #include "libgen.h" /* POSIX dirname */
 
-/** @brief Get a single line from the stream (reimplementation of the GNU getline)
- *
- * This is a reimplementation of the GNU getline function, so that our code don't depends on the GNU libc.
- *
- * xbt_getline() reads an entire line from stream, storing the address of the buffer containing the text into *buf.
- * The buffer is null-terminated and includes the newline character, if one was found.
- *
- * If *buf is NULL, then xbt_getline() will allocate a buffer for storing the  line, which should be freed by the user
- * program.
- *
- * Alternatively, before calling xbt_getline(), *buf can contain a pointer to a malloc()-allocated buffer *n bytes in
- * size. If the buffer is not large enough to hold the line, xbt_getline() resizes it with realloc(), updating
- * *buf and *n as necessary.
- *
- * In either case, on a successful call, *buf and *n will be updated to reflect the buffer address and allocated size
- * respectively.
- */
-ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
-{
-  int ch = getc(stream);
-  if (ferror(stream) || feof(stream))
-    return -1;
-
-  if (!*buf) {
-    *n = 512;
-    *buf = xbt_malloc(*n);
-  }
-
-  ssize_t i = 0;
-  do {
-    if (i == *n) {
-      *n += 512;
-      *buf = xbt_realloc(*buf, *n);
-    }
-    (*buf)[i] = ch;
-    i++;
-    if (ch == '\n')
-      break;
-  } while ((ch = getc(stream)) != EOF);
-
-  if (i == *n) {
-    *n += 1;
-    *buf = xbt_realloc(*buf, *n);
-  }
-  (*buf)[i] = '\0';
-
-  return i;
-}
-
 /** @brief Returns the directory component of a path (reimplementation of POSIX dirname)
  *
  * The argument is never modified, and the returned value must be freed after use.
