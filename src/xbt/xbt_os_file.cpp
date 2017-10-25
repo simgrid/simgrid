@@ -18,15 +18,6 @@
 #include <cstring>
 #include <libgen.h> /* POSIX dirname */
 
-/** @brief Returns the directory component of a path (reimplementation of POSIX dirname)
- *
- * The argument is never modified, and the returned value must be freed after use.
- */
-char *xbt_dirname(const char *path)
-{
-  return xbt_strdup(simgrid::xbt::Path(path).getDirname().c_str());
-}
-
 /** @brief Returns the file component of a path (reimplementation of POSIX basename)
  *
  * The argument is never modified, and the returned value must be freed after use.

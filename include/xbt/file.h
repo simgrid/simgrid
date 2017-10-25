@@ -14,12 +14,10 @@ SG_BEGIN_DECL()
 /** @defgroup XBT_file File manipulation functions
  *  @ingroup XBT_misc
  *
- * This module redefine some quite classical functions such as xbt_dirname() or xbt_basename() for the platforms
- * lacking them.
+ * This module redefine some quite classical functions such as xbt_basename() for the platforms lacking them.
  * @{
  */
-/* Our own implementation of dirname, that does not exist on windows */
-XBT_PUBLIC(char *) xbt_dirname(const char *path);
+/* Our own implementation of basename, that does not exist on windows */
 XBT_PUBLIC(char *) xbt_basename(const char *path);
 
 /**@}*/
