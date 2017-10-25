@@ -58,7 +58,7 @@ public:
 /** When an error happens in the execution of a DWARF expression */
 class evaluation_error : std::runtime_error {
 public:
-  evaluation_error(const char* what): std::runtime_error(what) {}
+  explicit evaluation_error(const char* what) : std::runtime_error(what) {}
 };
 
 /** A stack for evaluating a DWARF expression

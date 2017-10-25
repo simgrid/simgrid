@@ -288,7 +288,7 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.cpp
-  src/xbt/xbt_os_file.c
+  src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_synchro.cpp
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
@@ -716,7 +716,7 @@ set(headers_to_install
   include/xbt/ex.hpp
   include/xbt/exception.hpp
   include/xbt/Extendable.hpp
-  include/xbt/file.h
+  include/xbt/file.hpp
   include/xbt/functional.hpp
   include/xbt/function_types.h
   include/xbt/future.hpp
@@ -766,9 +766,11 @@ else() # NOT pthread
 endif()
 
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.cpp)
+  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.hpp
+                                src/kernel/context/ContextUnix.cpp)
 else() # NOT ucontext
-  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.cpp)
+  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
+                                src/kernel/context/ContextUnix.cpp)
 endif()
 
 ### Simgrid Lib sources

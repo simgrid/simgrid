@@ -6,6 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cerrno>
+#include <cstring>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -221,9 +223,12 @@ std::vector<std::string> resolveBacktrace(
       int found = 0;
 
       /* let's look for the offset of this library in our addressing space */
-      std::string maps_name = std::string("/proc/") + std::to_string(getpid()) + "maps";
+      std::string maps_name = std::string("/proc/") + std::to_string(getpid()) + "/maps";
       FILE* maps            = fopen(maps_name.c_str(), "r");
-
+      if (maps == nullptr) {
+        XBT_CRITICAL("fopen(\"%s\") failed: %s", maps_name.c_str(), strerror(errno));
+        continue;
+      }
       unsigned long int addr = strtoul(addrs[i].c_str(), &p, 16);
       if (*p != '\0') {
         XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)", addrs[i].c_str(), addr);
@@ -322,9 +327,19 @@ std::vector<std::string> resolveBacktrace(
     addrs[i].clear();
 
     /* Mask the bottom of the stack */
-    if (not strncmp("main", line_func, strlen("main")) ||
-        not strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper")) ||
-        not strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper")))
+    const char* const breakers[] = {
+        "main",
+        "_ZN7simgrid6kernel7context13ThreadContext7wrapperE", // simgrid::kernel::context::ThreadContext::wrapper
+        "_ZN7simgrid6kernel7context8UContext7wrapperE"        // simgrid::kernel::context::UContext::wrapper
+    };
+    bool do_break = false;
+    for (const char* b : breakers) {
+      if (strncmp(b, line_func, strlen(b)) == 0) {
+        do_break = true;
+        break;
+      }
+    }
+    if (do_break)
       break;
   }
   pclose(pipe);

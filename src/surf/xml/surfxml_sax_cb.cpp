@@ -7,7 +7,7 @@
 #include "simgrid/sg_config.h"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "xbt/file.h"
+#include "xbt/file.hpp"
 
 #include "src/surf/xml/platf_private.hpp"
 #include <boost/algorithm/string.hpp>
@@ -1069,9 +1069,8 @@ void surf_parse_open(const char *file)
   xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
 
   surf_parsed_filename = xbt_strdup(file);
-  char* dir            = xbt_dirname(file);
-  surf_path.push_back(std::string(dir));
-  xbt_free(dir);
+  std::string dir      = simgrid::xbt::Path(file).getDirname();
+  surf_path.push_back(dir);
 
   surf_file_to_parse = surf_fopen(file, "r");
   if (surf_file_to_parse == nullptr)

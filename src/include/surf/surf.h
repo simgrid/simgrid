@@ -26,7 +26,6 @@ class CpuModel;
 class HostModel;
 class NetworkModel;
 class StorageModel;
-class Resource;
 class NetworkCm02Link;
 class Action;
 }
@@ -37,7 +36,6 @@ typedef simgrid::surf::CpuModel surf_CpuModel;
 typedef simgrid::surf::HostModel surf_HostModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
 typedef simgrid::surf::StorageModel surf_StorageModel;
-typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::surf::Action surf_Action;
 
 #else
@@ -47,7 +45,6 @@ typedef struct surf_CpuModel surf_CpuModel;
 typedef struct surf_HostModel surf_HostModel;
 typedef struct surf_NetworkModel surf_NetworkModel;
 typedef struct surf_StorageModel surf_StorageModel;
-typedef struct surf_Resource surf_Resource;
 typedef struct surf_Action surf_Action;
 
 #endif

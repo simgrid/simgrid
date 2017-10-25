@@ -21,13 +21,6 @@ typedef struct s_dirty_page* dirty_page_t;
 namespace simgrid {
 namespace vm {
 
-/***********
- * Classes *
- ***********/
-
-class XBT_PRIVATE VMModel;
-XBT_PUBLIC_CLASS VirtualMachineImpl; // Made visible to the Java plugin
-
 /*************
  * Callbacks *
  *************/
@@ -114,7 +107,7 @@ private:
  * @brief SURF VM model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class VMModel : public surf::HostModel {
+class XBT_PRIVATE VMModel : public surf::HostModel {
 public:
   VMModel();
   void ignoreEmptyVmInPmLMM() override{};

@@ -776,7 +776,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
         variable->address = (void *) (base + offset);
       } else
         variable->location_list = {
-          simgrid::dwarf::DwarfExpression(expr, expr + len) };
+            simgrid::dwarf::LocationListEntry(simgrid::dwarf::DwarfExpression(expr, expr + len))};
 
       break;
     }

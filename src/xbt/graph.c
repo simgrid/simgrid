@@ -12,9 +12,9 @@
 #include "graph_private.h"
 #include "xbt/dict.h"
 #include "xbt/heap.h"
-#include "xbt/file.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_graph, xbt, "Graph");

@@ -37,7 +37,9 @@ public:
   LocationListEntry(DwarfExpression expression, range_type range)
     : expression_(std::move(expression)), range_(range)
   {}
-  LocationListEntry(DwarfExpression expression) : expression_(std::move(expression)), range_({0, UINT64_MAX}) {}
+  explicit LocationListEntry(DwarfExpression expression) : expression_(std::move(expression)), range_({0, UINT64_MAX})
+  {
+  }
 
   DwarfExpression& expression()
   {

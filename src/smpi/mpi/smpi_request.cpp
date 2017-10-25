@@ -692,12 +692,11 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     if (((req->flags_ & ACCUMULATE) != 0) ||
         (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
 
-      if (not smpi_process()->replaying()) {
-        if (smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_data_exe_start) &&
-            ((char*)req->old_buf_ < smpi_data_exe_start + smpi_data_exe_size)) {
-          XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
-          smpi_switch_data_segment(smpi_process()->index());
-        }
+      if (not smpi_process()->replaying() && smpi_privatize_global_variables != 0 &&
+          static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
+          static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
+        XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
+        smpi_switch_data_segment(smpi_process()->index());
       }
 
       if(datatype->flags() & DT_FLAG_DERIVED){

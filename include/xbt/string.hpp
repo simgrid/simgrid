@@ -98,7 +98,7 @@ public:
     s.string_data::len = 0;
     s.string_data::data = &NUL;
   }
-  string(std::string const& s) : string(s.c_str(), s.size()) {}
+  explicit string(std::string const& s) : string(s.c_str(), s.size()) {}
 
   // Assign
   void assign(const char* s, size_t size)

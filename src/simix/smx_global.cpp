@@ -66,7 +66,7 @@ public:
 void (*SMPI_switch_data_segment)(int) = nullptr;
 
 int _sg_do_verbose_exit = 1;
-static void inthandler(int ignored)
+static void inthandler(int)
 {
   if ( _sg_do_verbose_exit ) {
      XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option 'verbose-exit').");
@@ -79,7 +79,7 @@ static void inthandler(int ignored)
 }
 
 #ifndef _WIN32
-static void segvhandler(int signum, siginfo_t *siginfo, void *context)
+static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
 {
   if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
     fprintf(stderr, "Access violation detected.\n"

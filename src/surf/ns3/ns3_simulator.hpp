@@ -18,7 +18,7 @@
 #include <ns3/point-to-point-helper.h>
 #include <ns3/tcp-socket-factory.h>
 
-class SgFlow {
+class XBT_PRIVATE SgFlow {
 public:
   SgFlow(uint32_t totalBytes, simgrid::surf::NetworkNS3Action* action);
 

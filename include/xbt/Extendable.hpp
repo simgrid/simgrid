@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015, 2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,7 +22,7 @@ class Extension {
   static const std::size_t INVALID_ID = std::numeric_limits<std::size_t>::max();
   std::size_t id_;
   friend class Extendable<T>;
-  constexpr Extension(std::size_t id) : id_(id) {}
+  explicit constexpr Extension(std::size_t id) : id_(id) {}
 public:
   explicit constexpr Extension() : id_(INVALID_ID) {}
   std::size_t id() const { return id_; }
@@ -64,7 +64,7 @@ public:
   template<class U> static
   Extension<T,U> extension_create()
   {
-    return extension_create([](void* p){ delete static_cast<U*>(p); });
+    return Extension<T, U>(extension_create([](void* p) { delete static_cast<U*>(p); }));
   }
   Extendable() : extensions_(deleters_.size(), nullptr) {}
   ~Extendable()
