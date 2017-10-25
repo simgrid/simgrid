@@ -9,6 +9,8 @@
 #include "simgrid/simdag.h"
 #include "xbt/file.h"
 
+#include <stdio.h>
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this SimDag example");
 
 static int name_compare_hosts(const void *n1, const void *n2)
