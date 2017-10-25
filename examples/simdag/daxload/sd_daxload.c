@@ -7,9 +7,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/simdag.h"
-#include "xbt/file.h"
 
 #include <stdio.h>
+#include <string.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this SimDag example");
 
@@ -81,9 +81,8 @@ int main(int argc, char **argv)
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
   XBT_INFO("------------------- Produce the trace file---------------------------");
-  char * basename = xbt_basename(tracefilename);
-  XBT_INFO("Producing the trace of the run into %s", basename);
-  free(basename);
+  char* basename = strrchr(tracefilename, '/');
+  XBT_INFO("Producing the trace of the run into %s", basename ? basename + 1 : tracefilename);
   FILE *out = fopen(tracefilename, "w");
   xbt_assert(out, "Cannot write to %s", tracefilename);
   free(tracefilename);
