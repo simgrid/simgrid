@@ -7,16 +7,10 @@
 #define SURF_MAXMIN_HPP
 
 #include "src/internal_config.h"
-#include "surf/datatypes.h"
+#include "surf/surf.h"
 #include "xbt/asserts.h"
 #include "xbt/misc.h"
 #include <cmath>
-
-namespace simgrid {
-namespace surf {
-class Action;
-}
-}
 
 /** @addtogroup SURF_lmm
  * @details

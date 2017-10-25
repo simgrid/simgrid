@@ -38,8 +38,6 @@ namespace config {
 
 missing_key_error::~missing_key_error() = default;
 
-class Config;
-
 namespace {
 
 const char* true_values[] = {

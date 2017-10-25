@@ -16,12 +16,12 @@
 #include "popping_private.hpp"
 #include "simgrid/simix.h"
 
+#include "ActorImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 
 /** @brief Host datatype from SIMIX POV */
 namespace simgrid {
 namespace simix {
-class ProcessArg;
 
 class Host {
 public:

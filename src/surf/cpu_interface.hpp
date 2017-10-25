@@ -18,10 +18,6 @@
 namespace simgrid {
 namespace surf {
 
-class CpuModel;
-class Cpu;
-class CpuAction;
-
  /** @ingroup SURF_cpu_interface
  * @brief SURF cpu model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
