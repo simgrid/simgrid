@@ -9,6 +9,7 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    Storage::getCname() to get a char*.
 
  XBT
+ - Define class simgrid::xbt::Path to manage file names.
  - Removed unused functions:
    - xbt/file.h: xbt_getline()
 

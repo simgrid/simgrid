@@ -288,7 +288,7 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.cpp
-  src/xbt/xbt_os_file.c
+  src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_synchro.cpp
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
@@ -717,6 +717,7 @@ set(headers_to_install
   include/xbt/exception.hpp
   include/xbt/Extendable.hpp
   include/xbt/file.h
+  include/xbt/file.hpp
   include/xbt/functional.hpp
   include/xbt/function_types.h
   include/xbt/future.hpp
