@@ -233,8 +233,6 @@ int smpi_enabled() {
 
 void smpi_global_init()
 {
-  MPI_Group group;
-
   if (not MC_is_active()) {
     global_timer = xbt_os_timer_new();
     xbt_os_walltimer_start(global_timer);
@@ -343,6 +341,7 @@ void smpi_global_init()
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
+  MPI_Group group;
   if (smpirun) {
     group = new  simgrid::smpi::Group(process_count);
     MPI_COMM_WORLD = new  simgrid::smpi::Comm(group, nullptr);
