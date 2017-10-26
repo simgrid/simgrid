@@ -9,11 +9,16 @@
 /* At some point we should use https://github.com/google/googletest instead */
 
 #include "src/internal_config.h"
+#include <algorithm>
 #include <cstdio>
+#include <string>
+#include <vector>
 
+#include <xbt/cunit.h>
 #include <xbt/ex.hpp>
+#include <xbt/string.hpp>
+
 #include "xbt/sysdep.h"         /* bvprintf */
-#include "xbt/cunit.h"
 #include "xbt/dynar.h"
 
 #define STRLEN 1024
@@ -40,19 +45,22 @@ static int _xbt_test_suite_disabled = 0;
 xbt_test_unit_t _xbt_test_current_unit = nullptr;
 
 /* test suite test log */
-struct s_xbt_test_log {
-  char *text;
-  const char *file;
-  int line;
-};
-typedef s_xbt_test_log* xbt_test_log_t;
+class s_xbt_test_log {
+public:
+  s_xbt_test_log(std::string text, std::string file, int line)
+      : text_(std::move(text)), file_(std::move(file)), line_(line)
+  {
+  }
+  void dump() const;
 
-static void xbt_test_log_dump(xbt_test_log_t log)
+  std::string text_;
+  std::string file_;
+  int line_;
+};
+
+void s_xbt_test_log::dump() const
 {
-  if (log)
-    fprintf(stderr, "      log %p(%s:%d)=%s\n", log, log->file, log->line, log->text);
-  else
-    fprintf(stderr, "      log=nullptr\n");
+  fprintf(stderr, "      log %p(%s:%d)=%s\n", this, this->file_.c_str(), this->line_, this->text_.c_str());
 }
 
 /* test suite test check */
@@ -63,19 +71,17 @@ struct s_xbt_test_test {
   int ignored;
   const char *file;
   int line;
-  xbt_dynar_t logs;
+  std::vector<s_xbt_test_log> logs;
 };
 typedef s_xbt_test_test* xbt_test_test_t;
 
 static void xbt_test_test_dump(xbt_test_test_t test)
 {
   if (test) {
-    xbt_test_log_t log;
-    unsigned int it_log;
     fprintf(stderr, "    test %p(%s:%d)=%s (%s)\n", test, test->file, test->line, test->title,
             test->failed ? "failed" : "not failed");
-    xbt_dynar_foreach(test->logs, it_log, log)
-        xbt_test_log_dump(log);
+    for (s_xbt_test_log const& log : test->logs)
+      log.dump();
   } else
     fprintf(stderr, "    test=nullptr\n");
 }
@@ -153,15 +159,7 @@ static void xbt_test_test_free(void *test)
 {
   xbt_test_test_t t = *(xbt_test_test_t *) test;
   free(t->title);
-  xbt_dynar_free(&(t->logs));
-  free(t);
-}
-
-static void xbt_test_log_free(void *log)
-{
-  xbt_test_log_t l = *(xbt_test_log_t *) log;
-  free(l->text);
-  free(l);
+  delete t;
 }
 
 /** @brief retrieve a testsuite from name, or create a new one */
@@ -235,7 +233,6 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
 {
   xbt_test_unit_t unit;
   xbt_test_test_t test;
-  xbt_test_log_t log;
 
   if (suite == nullptr)
     return 0;
@@ -327,11 +324,10 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
           fprintf(stderr, "      %s: %s [%s:%d]\n", resname, test->title, file, line);
 
           if ((test->expected_failure && not test->failed) || (not test->expected_failure && test->failed)) {
-            unsigned int it_log;
-            xbt_dynar_foreach(test->logs, it_log, log) {
-              file = (log->file != nullptr ? log->file : file);
-              line = (log->line != 0 ? log->line : line);
-              fprintf(stderr, "             %s:%d: %s\n", file, line, log->text);
+            for (s_xbt_test_log const& log : test->logs) {
+              file = (log.file_.empty() ? file : log.file_.c_str());
+              line = (log.line_ == 0 ? line : log.line_);
+              fprintf(stderr, "             %s:%d: %s\n", file, line, log.text_.c_str());
             }
           }
         }
@@ -631,7 +627,7 @@ void _xbt_test_add(const char *file, int line, const char *fmt, ...)
   xbt_assert(unit);
 
   va_list ap;
-  xbt_test_test_t test = xbt_new0(s_xbt_test_test, 1);
+  xbt_test_test_t test = new s_xbt_test_test{};
   va_start(ap, fmt);
   test->title = bvprintf(fmt, ap);
   va_end(ap);
@@ -640,7 +636,6 @@ void _xbt_test_add(const char *file, int line, const char *fmt, ...)
   test->ignored = 0;
   test->file = file;
   test->line = line;
-  test->logs = xbt_dynar_new(sizeof(xbt_test_log_t), xbt_test_log_free);
   xbt_dynar_push(unit->tests, &test);
 }
 
@@ -652,16 +647,11 @@ void _xbt_test_fail(const char *file, int line, const char *fmt, ...)
   xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
       "Test failed even before being declared (broken unit: %s)", unit->title);
 
-  va_list ap;
-  xbt_test_log_t log = xbt_new(s_xbt_test_log, 1);
-  va_start(ap, fmt);
-  log->text = bvprintf(fmt, ap);
-  va_end(ap);
-  log->file = file;
-  log->line = line;
-
   xbt_test_test_t test = xbt_dynar_getlast_as(unit->tests, xbt_test_test_t);
-  xbt_dynar_push(test->logs, &log);
+  va_list ap;
+  va_start(ap, fmt);
+  test->logs.emplace_back(simgrid::xbt::string_vprintf(fmt, ap), file, line);
+  va_end(ap);
 
   test->failed = 1;
 }
@@ -695,16 +685,11 @@ void _xbt_test_log(const char *file, int line, const char *fmt, ...)
   xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
       "Test logged into even before being declared (broken test unit: %s)", unit->title);
 
-  va_list ap;
-  xbt_test_log_t log = xbt_new(s_xbt_test_log, 1);
-  va_start(ap, fmt);
-  log->text = bvprintf(fmt, ap);
-  va_end(ap);
-  log->file = file;
-  log->line = line;
-
   xbt_test_test_t test = xbt_dynar_getlast_as(unit->tests, xbt_test_test_t);
-  xbt_dynar_push(test->logs, &log);
+  va_list ap;
+  va_start(ap, fmt);
+  test->logs.emplace_back(simgrid::xbt::string_vprintf(fmt, ap), file, line);
+  va_end(ap);
 }
 
 #ifdef SIMGRID_TEST
