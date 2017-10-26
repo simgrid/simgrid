@@ -18,6 +18,9 @@
 #include <xbt/ex.hpp>
 #include <xbt/string.hpp>
 
+/* output stream to use everywhere */
+static std::ostream& _xbt_test_out = std::cerr;
+
 /* collection of all suites */
 static std::vector<xbt_test_suite_t> _xbt_test_suites;
 /* global statistics */
@@ -55,7 +58,7 @@ public:
 
 void s_xbt_test_log::dump() const
 {
-  std::cerr << "      log " << this << "(" << file_ << ":" << line_ << ")=" << text_ << "\n";
+  _xbt_test_out << "      log " << this << "(" << file_ << ":" << line_ << ")=" << text_ << "\n";
 }
 
 /* test suite test check */
@@ -78,8 +81,8 @@ public:
 
 void s_xbt_test_test::dump() const
 {
-  std::cerr << "    test " << this << "(" << file_ << ":" << line_ << ")=" << title_ << " ("
-            << (failed_ ? "failed" : "not failed") << ")\n";
+  _xbt_test_out << "    test " << this << "(" << file_ << ":" << line_ << ")=" << title_ << " ("
+                << (failed_ ? "failed" : "not failed") << ")\n";
   for (s_xbt_test_log const& log : this->logs_)
     log.dump();
 }
@@ -107,7 +110,7 @@ public:
 
 void s_xbt_test_unit::dump() const
 {
-  std::cerr << "  UNIT " << name_ << ": " << title_ << " (" << (this->enabled_ ? "enabled" : "disabled") << ")\n";
+  _xbt_test_out << "  UNIT " << name_ << ": " << title_ << " (" << (this->enabled_ ? "enabled" : "disabled") << ")\n";
   if (this->enabled_) {
     for (s_xbt_test_test const& test : this->tests_)
       test.dump();
@@ -157,7 +160,8 @@ xbt_test_suite_t xbt_test_suite_by_name(const char *name, const char *fmt, ...)
 
 void s_xbt_test_suite::dump() const
 {
-  std::cerr << "TESTSUITE " << name_ << ": " << title_ << " (" << (this->enabled_ ? "enabled" : "disabled") << ")\n";
+  _xbt_test_out << "TESTSUITE " << name_ << ": " << title_ << " (" << (this->enabled_ ? "enabled" : "disabled")
+                << ")\n";
   if (this->enabled_) {
     for (s_xbt_test_unit const& unit : this->units_)
       unit.dump();
@@ -191,7 +195,7 @@ int s_xbt_test_suite::run(int verbosity)
   suite_title.resize(79, '=');
   if (not this->enabled_)
     suite_title.replace(70, std::string::npos, " DISABLED");
-  std::cerr << "\n" << suite_title << "\n";
+  _xbt_test_out << "\n" << suite_title << "\n";
 
   if (this->enabled_) {
     /* iterate through all tests */
@@ -205,7 +209,7 @@ int s_xbt_test_suite::run(int verbosity)
       /* display unit title */
       std::string cp = std::string(" Unit: ") + unit.title_ + " ";
       cp.resize(70, '.');
-      std::cerr << cp;
+      _xbt_test_out << cp;
 
       /* run the test case function */
       _xbt_test_current_unit = &unit;
@@ -229,11 +233,11 @@ int s_xbt_test_suite::run(int verbosity)
       if (unit.test_failed_ > 0 || unit.test_expect_ || (verbosity && unit.nb_tests_ > 0)) {
         /* some tests failed (or were supposed to), so do detailed reporting of test case */
         if (unit.test_failed_ > 0) {
-          std::cerr << ".. failed\n";
+          _xbt_test_out << ".. failed\n";
         } else if (unit.nb_tests_) {
-          std::cerr << "...... ok\n"; /* successful, but show about expected */
+          _xbt_test_out << "...... ok\n"; /* successful, but show about expected */
         } else {
-          std::cerr << ".... skip\n"; /* shouldn't happen, but I'm a bit lost with this logic */
+          _xbt_test_out << ".... skip\n"; /* shouldn't happen, but I'm a bit lost with this logic */
         }
         for (s_xbt_test_test const& test : unit.tests_) {
           std::string file = test.file_;
@@ -252,28 +256,28 @@ int s_xbt_test_suite::run(int verbosity)
             else
               resname = " PASS";
           }
-          std::cerr << "      " << resname << ": " << test.title_ << " [" << file << ":" << line << "]\n";
+          _xbt_test_out << "      " << resname << ": " << test.title_ << " [" << file << ":" << line << "]\n";
 
           if ((test.expected_failure_ && not test.failed_) || (not test.expected_failure_ && test.failed_)) {
             for (s_xbt_test_log const& log : test.logs_) {
               file = (log.file_.empty() ? file : log.file_);
               line = (log.line_ == 0 ? line : log.line_);
-              std::cerr << "             " << file << ":" << line << ": " << log.text_ << "\n";
+              _xbt_test_out << "             " << file << ":" << line << ": " << log.text_ << "\n";
             }
           }
         }
-        std::cerr << "    Summary: " << unit.test_failed_ << " of " << unit.nb_tests_ << " tests failed";
+        _xbt_test_out << "    Summary: " << unit.test_failed_ << " of " << unit.nb_tests_ << " tests failed";
         if (unit.test_ignore_) {
-          std::cerr << " (" << unit.test_ignore_ << " tests ignored)\n";
+          _xbt_test_out << " (" << unit.test_ignore_ << " tests ignored)\n";
         } else {
-          std::cerr << "\n";
+          _xbt_test_out << "\n";
         }
       } else if (not unit.enabled_) {
-        std::cerr << " disabled\n"; /* no test were run */
+        _xbt_test_out << " disabled\n"; /* no test were run */
       } else if (unit.nb_tests_) {
-        std::cerr << "...... ok\n"; /* successful */
+        _xbt_test_out << "...... ok\n"; /* successful */
       } else {
-        std::cerr << ".... skip\n"; /* no test were run */
+        _xbt_test_out << ".... skip\n"; /* no test were run */
       }
 
       /* Accumulate test counts into the suite */
@@ -318,50 +322,50 @@ int s_xbt_test_suite::run(int verbosity)
   if (this->enabled_) {
     bool first = true; /* for result pretty printing */
 
-    std::cerr << " ====================================================================="
-              << (this->nb_units_ ? (this->unit_failed_ ? "== FAILED" : "====== OK")
-                                  : (this->unit_disabled_ ? " DISABLED" : "==== SKIP"))
-              << "\n";
-    std::cerr.setf(std::ios::fixed);
-    std::cerr.precision(0);
-    std::cerr << " Summary: Units: "
-              << (this->nb_units_ ? ((1 - (double)this->unit_failed_ / (double)this->nb_units_) * 100.0) : 100.0)
-              << "% ok (" << this->nb_units_ << " units: ";
+    _xbt_test_out << " ====================================================================="
+                  << (this->nb_units_ ? (this->unit_failed_ ? "== FAILED" : "====== OK")
+                                      : (this->unit_disabled_ ? " DISABLED" : "==== SKIP"))
+                  << "\n";
+    _xbt_test_out.setf(std::ios::fixed);
+    _xbt_test_out.precision(0);
+    _xbt_test_out << " Summary: Units: "
+                  << (this->nb_units_ ? ((1 - (double)this->unit_failed_ / (double)this->nb_units_) * 100.0) : 100.0)
+                  << "% ok (" << this->nb_units_ << " units: ";
     if (this->nb_units_ != this->unit_failed_) {
-      std::cerr << (first ? "" : ", ") << (this->nb_units_ - this->unit_failed_) << " ok";
+      _xbt_test_out << (first ? "" : ", ") << (this->nb_units_ - this->unit_failed_) << " ok";
       first = false;
     }
     if (this->unit_failed_) {
-      std::cerr << (first ? "" : ", ") << this->unit_failed_ << " failed";
+      _xbt_test_out << (first ? "" : ", ") << this->unit_failed_ << " failed";
       first = false;
     }
     if (this->unit_ignore_) {
-      std::cerr << (first ? "" : ", ") << this->unit_ignore_ << " ignored";
+      _xbt_test_out << (first ? "" : ", ") << this->unit_ignore_ << " ignored";
       first = false;
     }
     if (this->unit_disabled_) {
-      std::cerr << (first ? "" : ", ") << this->unit_disabled_ << " disabled";
+      _xbt_test_out << (first ? "" : ", ") << this->unit_disabled_ << " disabled";
     }
-    std::cerr << ")\n          Tests: "
-              << (this->nb_tests_ ? ((1 - (double)this->test_failed_ / (double)this->nb_tests_) * 100.0) : 100.0)
-              << "% ok (" << this->nb_tests_ << " tests: ";
+    _xbt_test_out << ")\n          Tests: "
+                  << (this->nb_tests_ ? ((1 - (double)this->test_failed_ / (double)this->nb_tests_) * 100.0) : 100.0)
+                  << "% ok (" << this->nb_tests_ << " tests: ";
     first = true;
     if (this->nb_tests_ != this->test_failed_) {
-      std::cerr << (first ? "" : ", ") << (this->nb_tests_ - this->test_failed_) << " ok";
+      _xbt_test_out << (first ? "" : ", ") << (this->nb_tests_ - this->test_failed_) << " ok";
       first = false;
     }
     if (this->test_failed_) {
-      std::cerr << (first ? "" : ", ") << this->test_failed_ << " failed";
+      _xbt_test_out << (first ? "" : ", ") << this->test_failed_ << " failed";
       first = false;
     }
     if (this->test_ignore_) {
-      std::cerr << (first ? "" : "; ") << this->test_ignore_ << " ignored";
+      _xbt_test_out << (first ? "" : "; ") << this->test_ignore_ << " ignored";
       first = false;
     }
     if (this->test_expect_) {
-      std::cerr << (first ? "" : "; ") << this->test_expect_ << " expected to fail";
+      _xbt_test_out << (first ? "" : "; ") << this->test_expect_ << " expected to fail";
     }
-    std::cerr << ")\n";
+    _xbt_test_out << ")\n";
   }
   return this->unit_failed_;
 }
@@ -458,7 +462,7 @@ void xbt_test_dump(char *selection)
     for (xbt_test_suite_t suite : _xbt_test_suites)
       suite->dump();
   } else {
-    std::cerr << " No suite defined.";
+    _xbt_test_out << " No suite defined.";
   }
 }
 
@@ -475,64 +479,64 @@ int xbt_test_run(char *selection, int verbosity)
         suite->run(verbosity);
 
     /* Display some more statistics */
-    std::cerr.setf(std::ios::fixed);
-    std::cerr.precision(0);
-    std::cerr << "\n\n TOTAL: Suites: "
-              << (_xbt_test_nb_suites ? ((1 - (double)_xbt_test_suite_failed / (double)_xbt_test_nb_suites) * 100.0)
-                                      : 100.0)
-              << "% ok (" << _xbt_test_nb_suites << " suites: ";
+    _xbt_test_out.setf(std::ios::fixed);
+    _xbt_test_out.precision(0);
+    _xbt_test_out << "\n\n TOTAL: Suites: "
+                  << (_xbt_test_nb_suites ? ((1 - (double)_xbt_test_suite_failed / (double)_xbt_test_nb_suites) * 100.0)
+                                          : 100.0)
+                  << "% ok (" << _xbt_test_nb_suites << " suites: ";
     if (_xbt_test_nb_suites != _xbt_test_suite_failed) {
-      std::cerr << (_xbt_test_nb_suites - _xbt_test_suite_failed) << " ok";
+      _xbt_test_out << (_xbt_test_nb_suites - _xbt_test_suite_failed) << " ok";
       first = false;
     }
     if (_xbt_test_suite_failed) {
-      std::cerr << (first ? "" : ", ") << _xbt_test_suite_failed << " failed";
+      _xbt_test_out << (first ? "" : ", ") << _xbt_test_suite_failed << " failed";
       first = false;
     }
 
     if (_xbt_test_suite_ignore) {
-      std::cerr << (first ? "" : ", ") << _xbt_test_suite_ignore << " ignored";
+      _xbt_test_out << (first ? "" : ", ") << _xbt_test_suite_ignore << " ignored";
     }
-    std::cerr << ")\n        Units:  "
-              << (_xbt_test_nb_units ? ((1 - (double)_xbt_test_unit_failed / (double)_xbt_test_nb_units) * 100.0)
-                                     : 100.0)
-              << "% ok (" << _xbt_test_nb_units << " units: ";
+    _xbt_test_out << ")\n        Units:  "
+                  << (_xbt_test_nb_units ? ((1 - (double)_xbt_test_unit_failed / (double)_xbt_test_nb_units) * 100.0)
+                                         : 100.0)
+                  << "% ok (" << _xbt_test_nb_units << " units: ";
     first = true;
     if (_xbt_test_nb_units != _xbt_test_unit_failed) {
-      std::cerr << (_xbt_test_nb_units - _xbt_test_unit_failed) << " ok";
+      _xbt_test_out << (_xbt_test_nb_units - _xbt_test_unit_failed) << " ok";
       first = false;
     }
     if (_xbt_test_unit_failed) {
-      std::cerr << (first ? "" : ", ") << _xbt_test_unit_failed << " failed";
+      _xbt_test_out << (first ? "" : ", ") << _xbt_test_unit_failed << " failed";
       first = false;
     }
     if (_xbt_test_unit_ignore) {
-      std::cerr << (first ? "" : ", ") << _xbt_test_unit_ignore << " ignored";
+      _xbt_test_out << (first ? "" : ", ") << _xbt_test_unit_ignore << " ignored";
     }
-    std::cerr << ")\n        Tests:  "
-              << (_xbt_test_nb_tests ? ((1 - (double)_xbt_test_test_failed / (double)_xbt_test_nb_tests) * 100.0)
-                                     : 100.0)
-              << "% ok (" << _xbt_test_nb_tests << " tests: ";
+    _xbt_test_out << ")\n        Tests:  "
+                  << (_xbt_test_nb_tests ? ((1 - (double)_xbt_test_test_failed / (double)_xbt_test_nb_tests) * 100.0)
+                                         : 100.0)
+                  << "% ok (" << _xbt_test_nb_tests << " tests: ";
     first = true;
     if (_xbt_test_nb_tests != _xbt_test_test_failed) {
-      std::cerr << (_xbt_test_nb_tests - _xbt_test_test_failed) << " ok";
+      _xbt_test_out << (_xbt_test_nb_tests - _xbt_test_test_failed) << " ok";
       first = false;
     }
     if (_xbt_test_test_failed) {
-      std::cerr << (first ? "" : ", ") << _xbt_test_test_failed << " failed";
+      _xbt_test_out << (first ? "" : ", ") << _xbt_test_test_failed << " failed";
       first = false;
     }
     if (_xbt_test_test_ignore) {
-      std::cerr << (first ? "" : ", ") << _xbt_test_test_ignore << " ignored";
+      _xbt_test_out << (first ? "" : ", ") << _xbt_test_test_ignore << " ignored";
       first = false;
     }
     if (_xbt_test_test_expect) {
-      std::cerr << (first ? "" : ", ") << _xbt_test_test_expect << " expected to fail";
+      _xbt_test_out << (first ? "" : ", ") << _xbt_test_test_expect << " expected to fail";
     }
 
-    std::cerr << ")\n";
+    _xbt_test_out << ")\n";
   } else {
-    std::cerr << "No unit to run!\n";
+    _xbt_test_out << "No unit to run!\n";
     _xbt_test_unit_failed++;
   }
   return _xbt_test_unit_failed;
