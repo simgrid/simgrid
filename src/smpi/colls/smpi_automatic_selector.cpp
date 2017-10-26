@@ -16,7 +16,8 @@
 
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->getOrCreateEventType(#cat);                      \
+    simgrid::instr::EventType* type =                                                                                  \
+        static_cast<simgrid::instr::EventType*>(simgrid::instr::Type::getRootType()->getOrCreateEventType(#cat));      \
                                                                                                                        \
     char cont_name[25];                                                                                                \
     snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \

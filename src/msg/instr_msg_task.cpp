@@ -50,8 +50,9 @@ void TRACE_msg_task_execute_start(msg_task_t task)
 
   if (TRACE_msg_process_is_enabled()){
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
-    simgrid::instr::Value* val    = state->getEntityValue("task_execute");
+    simgrid::instr::StateType* state =
+        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
+    simgrid::instr::Value* val = state->getEntityValue("task_execute");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
   }
 }
@@ -84,7 +85,8 @@ void TRACE_msg_task_get_start()
 
   if (TRACE_msg_process_is_enabled()){
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::Type* state   = process_container->type_->byName("MSG_PROCESS_STATE");
+    simgrid::instr::StateType* state =
+        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
     simgrid::instr::Value* val    = state->getEntityValue("receive");
     new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
   }
@@ -113,12 +115,14 @@ int TRACE_msg_task_put_start(msg_task_t task)
 
   if (TRACE_msg_process_is_enabled()){
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
-    simgrid::instr::Value* val    = type->getEntityValue("send");
-    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, type, val);
+    simgrid::instr::StateType* state =
+        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
+    simgrid::instr::Value* val = state->getEntityValue("send");
+    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
 
     std::string key = std::string("p") + std::to_string(task->counter);
-    type = simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_TASK_LINK");
+    simgrid::instr::LinkType* type =
+        static_cast<simgrid::instr::LinkType*>(simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_TASK_LINK"));
     new simgrid::instr::StartLinkEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), type,
                                        process_container, "SR", key);
   }

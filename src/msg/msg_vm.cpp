@@ -186,7 +186,8 @@ void MSG_vm_start(msg_vm_t vm)
   vm->start();
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container    = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::Type* state = vm_container->type_->byName("MSG_VM_STATE");
+    simgrid::instr::StateType* state =
+        static_cast<simgrid::instr::StateType*>(vm_container->type_->byName("MSG_VM_STATE"));
     state->addEntityValue("start", "0 0 1"); // start is blue
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, state, state->getEntityValue("start"));
   }
@@ -769,7 +770,8 @@ void MSG_vm_suspend(msg_vm_t vm)
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t vm_container    = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::Type* state = vm_container->type_->byName("MSG_VM_STATE");
+    simgrid::instr::StateType* state =
+        static_cast<simgrid::instr::StateType*>(vm_container->type_->byName("MSG_VM_STATE"));
     state->addEntityValue("suspend", "1 0 0"); // suspend is red
     new simgrid::instr::PushStateEvent(MSG_get_clock(), vm_container, state, state->getEntityValue("suspend"));
   }

@@ -30,6 +30,11 @@ namespace simgrid {
 namespace instr {
 
 class Value;
+class ContainerType;
+class EventType;
+class LinkType;
+class StateType;
+class VariableType;
 
 enum e_event_type {
   PAJE_DefineContainerType,
@@ -52,49 +57,74 @@ enum e_event_type {
   PAJE_NewEvent
 };
 
-//--------------------------------------------------
-enum e_entity_types { TYPE_VARIABLE, TYPE_LINK, TYPE_CONTAINER, TYPE_STATE, TYPE_EVENT };
-
 class Type {
-  std::string id_;
+  long long int id_;
   std::string name_;
   std::string color_;
-  e_entity_types kind_;
+
+protected:
   Type* father_;
 
 public:
   std::map<std::string, Type*> children_;
-  std::map<std::string, Value*> values_; // valid for all types except variable and container
 
-  Type(std::string name, std::string alias, std::string color, e_entity_types kind, Type* father);
+  Type(std::string name, std::string alias, std::string color, Type* father);
   ~Type();
 
   std::string getName() { return name_; }
   const char* getCname() { return name_.c_str(); }
-  const char* getId() { return id_.c_str(); }
-  e_entity_types getKind() { return kind_; }
+  long long int getId() { return id_; }
   bool isColored() { return not color_.empty(); }
 
   Type* byName(std::string name);
 
-  Type* getOrCreateContainerType(std::string name);
-  Type* getOrCreateEventType(std::string name);
-  Type* getOrCreateLinkType(std::string name, Type* source, Type* dest);
-  Type* getOrCreateStateType(std::string name);
-  Type* getOrCreateVariableType(std::string name, std::string color);
+  ContainerType* getOrCreateContainerType(std::string name);
+  EventType* getOrCreateEventType(std::string name);
+  LinkType* getOrCreateLinkType(std::string name, Type* source, Type* dest);
+  StateType* getOrCreateStateType(std::string name);
+  VariableType* getOrCreateVariableType(std::string name, std::string color);
 
+  void logDefinition(e_event_type event_type);
+  void logDefinition(Type* source, Type* dest);
+
+  static ContainerType* createRootType();
+  static ContainerType* getRootType();
+};
+
+class ContainerType : public Type {
+public:
+  ContainerType(std::string name, Type* father);
+};
+
+class VariableType : public Type {
+public:
+  VariableType(std::string name, std::string color, Type* father);
+};
+
+class ValueType : public Type {
+public:
+  std::map<std::string, Value*> values_;
+  ValueType(std::string name, std::string alias, Type* father) : Type(name, alias, "", father){};
+  ValueType(std::string name, Type* father) : Type(name, name, "", father){};
+  ~ValueType();
   void addEntityValue(std::string name, std::string color);
   void addEntityValue(std::string name);
   Value* getEntityValue(std::string name);
+};
 
-  void logContainerTypeDefinition();
-  void logVariableTypeDefinition();
-  void logStateTypeDefinition();
-  void logLinkTypeDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest);
-  void logDefineEventType();
+class LinkType : public ValueType {
+public:
+  LinkType(std::string name, std::string alias, Type* father);
+};
 
-  static Type* createRootType();
-  static Type* getRootType();
+class EventType : public ValueType {
+public:
+  EventType(std::string name, Type* father);
+};
+
+class StateType : public ValueType {
+public:
+  StateType(std::string name, Type* father);
 };
 
 class Value {

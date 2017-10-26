@@ -96,8 +96,9 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   filter->insert(aux2);
 
   //declare type
-  std::string link_typename = father->type_->getName() + "-" + src->type_->getName() + src->type_->getId() + "-" +
-                              dst->type_->getName() + dst->type_->getId();
+  std::string link_typename = father->type_->getName() + "-" + src->type_->getName() +
+                              std::to_string(src->type_->getId()) + "-" + dst->type_->getName() +
+                              std::to_string(dst->type_->getId());
   simgrid::instr::Type* link_type = father->type_->getOrCreateLinkType(link_typename, src->type_, dst->type_);
 
   //register EDGE types for triva configuration
@@ -218,8 +219,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     container->type_->getOrCreateContainerType("MPI")->getOrCreateStateType("MPI_STATE");
 
   if (TRACE_msg_process_is_enabled()) {
-    simgrid::instr::Type* msg_process = container->type_->getOrCreateContainerType("MSG_PROCESS");
-    simgrid::instr::Type* state       = msg_process->getOrCreateStateType("MSG_PROCESS_STATE");
+    simgrid::instr::ContainerType* msg_process = container->type_->getOrCreateContainerType("MSG_PROCESS");
+    simgrid::instr::StateType* state           = msg_process->getOrCreateStateType("MSG_PROCESS_STATE");
     state->addEntityValue("suspend", "1 0 1");
     state->addEntityValue("sleep", "1 1 0");
     state->addEntityValue("receive", "1 0 0");
@@ -230,8 +231,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 
   if (TRACE_msg_vm_is_enabled()) {
-    simgrid::instr::Type* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
-    simgrid::instr::Type* state  = msg_vm->getOrCreateStateType("MSG_VM_STATE");
+    simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
+    simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("MSG_VM_STATE");
     state->addEntityValue("suspend", "1 0 1");
     state->addEntityValue("sleep", "1 1 0");
     state->addEntityValue("receive", "1 0 0");
@@ -329,7 +330,7 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
                                               simgrid::instr::Type* root)
 {
   if (root->getName() == type_name)
-    root->addEntityValue(val, color);
+    static_cast<simgrid::instr::StateType*>(root)->addEntityValue(val, color);
 
   for (auto elm : root->children_)
     recursiveNewValueForUserStateType(type_name, val, color, elm.second);

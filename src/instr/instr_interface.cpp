@@ -186,7 +186,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
       mark_color = "1.0 1.0 1.0" /*white*/;
 
     XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-    type->addEntityValue(mark_value, mark_color);
+    static_cast<simgrid::instr::EventType*>(type)->addEntityValue(mark_value, mark_color);
   }
 }
 
@@ -233,7 +233,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   //check if mark_type is already declared
-  simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName(mark_type);
+  simgrid::instr::EventType* type =
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Type::getRootType()->byName(mark_type));
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   } else {
@@ -940,7 +941,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
 void TRACE_host_set_state(const char* host, const char* state_name, const char* value_name)
 {
   container_t container       = simgrid::instr::Container::byName(host);
-  simgrid::instr::Type* state = container->type_->byName(state_name);
+  simgrid::instr::StateType* state = static_cast<simgrid::instr::StateType*>(container->type_->byName(state_name));
   state->addEntityValue(value_name);
   new simgrid::instr::SetStateEvent(MSG_get_clock(), container, state, state->getEntityValue(value_name));
 }
@@ -959,7 +960,7 @@ void TRACE_host_set_state(const char* host, const char* state_name, const char* 
 void TRACE_host_push_state(const char* host, const char* state_name, const char* value_name)
 {
   container_t container      = simgrid::instr::Container::byName(host);
-  simgrid::instr::Type* state = container->type_->byName(state_name);
+  simgrid::instr::StateType* state = static_cast<simgrid::instr::StateType*>(container->type_->byName(state_name));
   state->addEntityValue(value_name);
   new simgrid::instr::PushStateEvent(MSG_get_clock(), container, state, state->getEntityValue(value_name));
 }
