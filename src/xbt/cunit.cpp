@@ -164,11 +164,6 @@ void s_xbt_test_suite::dump() const
   }
 }
 
-void xbt_test_suite_dump(xbt_test_suite_t suite)
-{
-  suite->dump();
-}
-
 /* add test case to test suite */
 void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t func, const char *fmt, ...)
 {
