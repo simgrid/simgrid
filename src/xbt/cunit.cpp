@@ -164,20 +164,26 @@ static void xbt_test_log_free(void *log)
   free(l);
 }
 
-/** @brief create test suite */
-xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...)
+/** @brief retrieve a testsuite from name, or create a new one */
+xbt_test_suite_t xbt_test_suite_by_name(const char *name, const char *fmt, ...)
 {
+  if (_xbt_test_suites == nullptr) {
+    _xbt_test_suites = xbt_dynar_new(sizeof(xbt_test_suite_t), xbt_test_suite_free);
+  } else {
+    xbt_test_suite_t suite;
+    unsigned int it_suite;
+    xbt_dynar_foreach(_xbt_test_suites, it_suite, suite)
+      if (not strcmp(suite->name, name))
+        return suite;
+  }
+
   xbt_test_suite_t suite = xbt_new0(s_xbt_test_suite, 1);
   va_list ap;
-
-  if (_xbt_test_suites == nullptr)
-    _xbt_test_suites = xbt_dynar_new(sizeof(xbt_test_suite_t), xbt_test_suite_free);
-
   va_start(ap, fmt);
   suite->title = bvprintf(fmt, ap);
   suite->units = xbt_dynar_new(sizeof(xbt_test_unit_t), &xbt_test_unit_free);
   va_end(ap);
-  suite->name = name;
+  suite->name    = name;
   suite->enabled = 1;
 
   xbt_dynar_push(_xbt_test_suites, &suite);
@@ -185,30 +191,7 @@ xbt_test_suite_t xbt_test_suite_new(const char *name, const char *fmt, ...)
   return suite;
 }
 
-/** @brief retrieve a testsuite from name, or create a new one */
-xbt_test_suite_t xbt_test_suite_by_name(const char *name, const char *fmt, ...)
-{
-  xbt_test_suite_t suite;
-  char *bufname;
-  va_list ap;
-
-  if (_xbt_test_suites) {
-    unsigned int it_suite;
-    xbt_dynar_foreach(_xbt_test_suites, it_suite, suite)
-      if (not strcmp(suite->name, name))
-        return suite;
-  }
-
-  va_start(ap, fmt);
-  bufname = bvprintf(fmt, ap);
-  va_end(ap);
-  suite = xbt_test_suite_new(name, bufname, nullptr);
-  free(bufname);
-
-  return suite;
-}
-
-void xbt_test_suite_dump(xbt_test_suite_t suite)
+static void xbt_test_suite_dump(xbt_test_suite_t suite)
 {
   if (suite) {
     fprintf(stderr, "TESTSUITE %s: %s (%s)\n", suite->name, suite->title, suite->enabled ? "enabled" : "disabled");
