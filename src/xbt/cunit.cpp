@@ -64,26 +64,29 @@ void s_xbt_test_log::dump() const
 }
 
 /* test suite test check */
-struct s_xbt_test_test {
-  char *title;
-  int failed;
-  int expected_failure;
-  int ignored;
-  const char *file;
-  int line;
-  std::vector<s_xbt_test_log> logs;
-};
-typedef s_xbt_test_test* xbt_test_test_t;
+class s_xbt_test_test {
+public:
+  s_xbt_test_test(std::string title, std::string file, int line)
+      : title_(std::move(title)), file_(std::move(file)), line_(line)
+  {
+  }
+  void dump() const;
 
-static void xbt_test_test_dump(xbt_test_test_t test)
+  std::string title_;
+  bool failed_           = false;
+  bool expected_failure_ = false;
+  bool ignored_          = false;
+  std::string file_;
+  int line_;
+  std::vector<s_xbt_test_log> logs_;
+};
+
+void s_xbt_test_test::dump() const
 {
-  if (test) {
-    fprintf(stderr, "    test %p(%s:%d)=%s (%s)\n", test, test->file, test->line, test->title,
-            test->failed ? "failed" : "not failed");
-    for (s_xbt_test_log const& log : test->logs)
-      log.dump();
-  } else
-    fprintf(stderr, "    test=nullptr\n");
+  fprintf(stderr, "    test %p(%s:%d)=%s (%s)\n", this, this->file_.c_str(), this->line_, this->title_.c_str(),
+          this->failed_ ? "failed" : "not failed");
+  for (s_xbt_test_log const& log : this->logs_)
+    log.dump();
 }
 
 /* test suite test unit */
@@ -94,7 +97,7 @@ struct s_xbt_test_unit {
   ts_test_cb_t func;
   const char *file;
   int line;
-  xbt_dynar_t tests;            /* of xbt_test_test_t */
+  std::vector<s_xbt_test_test> tests;
 
   int nb_tests;
   int test_failed;
@@ -107,10 +110,8 @@ static void xbt_test_unit_dump(xbt_test_unit_t unit)
   if (unit) {
     fprintf(stderr, "  UNIT %s: %s (%s)\n", unit->name, unit->title, (unit->enabled ? "enabled" : "disabled"));
     if (unit->enabled) {
-      xbt_test_test_t test;
-      unsigned int it_test;
-      xbt_dynar_foreach(unit->tests, it_test, test)
-          xbt_test_test_dump(test);
+      for (s_xbt_test_test const& test : unit->tests)
+        test.dump();
     }
   } else {
     fprintf(stderr, "  unit=nullptr\n");
@@ -150,16 +151,8 @@ static void xbt_test_unit_free(void *unit)
 {
   xbt_test_unit_t u = *(xbt_test_unit_t *) unit;
   /* name is static */
-  free(u->title);
-  xbt_dynar_free(&u->tests);
-  free(u);
-}
-
-static void xbt_test_test_free(void *test)
-{
-  xbt_test_test_t t = *(xbt_test_test_t *) test;
-  free(t->title);
-  delete t;
+  xbt_free(u->title);
+  delete u;
 }
 
 /** @brief retrieve a testsuite from name, or create a new one */
@@ -223,7 +216,6 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
   unit->file = nullptr;
   unit->line = 0;
   unit->enabled = 1;
-  unit->tests = xbt_dynar_new(sizeof(xbt_test_test_t), xbt_test_test_free);
 
   xbt_dynar_push(suite->units, &unit);
 }
@@ -232,7 +224,6 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
 static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
 {
   xbt_test_unit_t unit;
-  xbt_test_test_t test;
 
   if (suite == nullptr)
     return 0;
@@ -279,18 +270,15 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         unit->func();
 
       /* iterate through all performed tests to determine status */
-      unsigned int it_test;
-      xbt_dynar_foreach(unit->tests, it_test, test) {
-        if (test->ignored) {
+      for (s_xbt_test_test const& test : unit->tests) {
+        if (test.ignored_) {
           unit->test_ignore++;
         } else {
           unit->nb_tests++;
 
-          if (test->failed && not test->expected_failure)
+          if ((test.failed_ && not test.expected_failure_) || (not test.failed_ && test.expected_failure_))
             unit->test_failed++;
-          if (not test->failed && test->expected_failure)
-            unit->test_failed++;
-          if (test->expected_failure)
+          if (test.expected_failure_)
             unit->test_expect++;
         }
       }
@@ -304,30 +292,30 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
         } else {
           fprintf(stderr, ".... skip\n");       /* shouldn't happen, but I'm a bit lost with this logic */
         }
-        xbt_dynar_foreach(unit->tests, it_test, test) {
-          const char* file = (test->file != nullptr ? test->file : unit->file);
-          int line         = (test->line != 0 ? test->line : unit->line);
+        for (s_xbt_test_test const& test : unit->tests) {
+          std::string file = (test.file_.empty() ? unit->file : test.file_);
+          int line         = (test.line_ == 0 ? unit->line : test.line_);
           const char* resname;
-          if (test->ignored)
+          if (test.ignored_)
             resname = " SKIP";
-          else if (test->expected_failure) {
-            if (test->failed)
+          else if (test.expected_failure_) {
+            if (test.failed_)
               resname = "EFAIL";
             else
               resname = "EPASS";
           } else {
-            if (test->failed)
+            if (test.failed_)
               resname = " FAIL";
             else
               resname = " PASS";
           }
-          fprintf(stderr, "      %s: %s [%s:%d]\n", resname, test->title, file, line);
+          fprintf(stderr, "      %s: %s [%s:%d]\n", resname, test.title_.c_str(), file.c_str(), line);
 
-          if ((test->expected_failure && not test->failed) || (not test->expected_failure && test->failed)) {
-            for (s_xbt_test_log const& log : test->logs) {
-              file = (log.file_.empty() ? file : log.file_.c_str());
+          if ((test.expected_failure_ && not test.failed_) || (not test.expected_failure_ && test.failed_)) {
+            for (s_xbt_test_log const& log : test.logs_) {
+              file = (log.file_.empty() ? file : log.file_);
               line = (log.line_ == 0 ? line : log.line_);
-              fprintf(stderr, "             %s:%d: %s\n", file, line, log.text_.c_str());
+              fprintf(stderr, "             %s:%d: %s\n", file.c_str(), line, log.text_.c_str());
             }
           }
         }
@@ -627,16 +615,9 @@ void _xbt_test_add(const char *file, int line, const char *fmt, ...)
   xbt_assert(unit);
 
   va_list ap;
-  xbt_test_test_t test = new s_xbt_test_test{};
   va_start(ap, fmt);
-  test->title = bvprintf(fmt, ap);
+  unit->tests.emplace_back(simgrid::xbt::string_vprintf(fmt, ap), file, line);
   va_end(ap);
-  test->failed = 0;
-  test->expected_failure = 0;
-  test->ignored = 0;
-  test->file = file;
-  test->line = line;
-  xbt_dynar_push(unit->tests, &test);
 }
 
 /* annotate test case with log message and failure */
@@ -644,16 +625,16 @@ void _xbt_test_fail(const char *file, int line, const char *fmt, ...)
 {
   xbt_test_unit_t unit = _xbt_test_current_unit;
   xbt_assert(unit);
-  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
-      "Test failed even before being declared (broken unit: %s)", unit->title);
+  xbt_assert(not _xbt_test_current_unit->tests.empty(), "Test failed even before being declared (broken unit: %s)",
+             unit->title);
 
-  xbt_test_test_t test = xbt_dynar_getlast_as(unit->tests, xbt_test_test_t);
+  s_xbt_test_test& test = unit->tests.back();
   va_list ap;
   va_start(ap, fmt);
-  test->logs.emplace_back(simgrid::xbt::string_vprintf(fmt, ap), file, line);
+  test.logs_.emplace_back(simgrid::xbt::string_vprintf(fmt, ap), file, line);
   va_end(ap);
 
-  test->failed = 1;
+  test.failed_ = true;
 }
 
 void xbt_test_exception(xbt_ex_t e)
@@ -663,18 +644,17 @@ void xbt_test_exception(xbt_ex_t e)
 
 void xbt_test_expect_failure()
 {
-  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
-      "Cannot expect the failure of a test before declaring it (broken unit: %s)", _xbt_test_current_unit->title);
-  xbt_test_test_t test = xbt_dynar_getlast_as(_xbt_test_current_unit->tests, xbt_test_test_t);
-  test->expected_failure = 1;
+  xbt_assert(not _xbt_test_current_unit->tests.empty(),
+             "Cannot expect the failure of a test before declaring it (broken unit: %s)",
+             _xbt_test_current_unit->title);
+  _xbt_test_current_unit->tests.back().expected_failure_ = true;
 }
 
 void xbt_test_skip()
 {
-  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
-      "Test skipped even before being declared (broken unit: %s)", _xbt_test_current_unit->title);
-  xbt_test_test_t test = xbt_dynar_getlast_as(_xbt_test_current_unit->tests, xbt_test_test_t);
-  test->ignored = 1;
+  xbt_assert(not _xbt_test_current_unit->tests.empty(), "Test skipped even before being declared (broken unit: %s)",
+             _xbt_test_current_unit->title);
+  _xbt_test_current_unit->tests.back().ignored_ = true;
 }
 
 /* annotate test case with log message only */
@@ -682,13 +662,12 @@ void _xbt_test_log(const char *file, int line, const char *fmt, ...)
 {
   xbt_test_unit_t unit = _xbt_test_current_unit;
   xbt_assert(unit);
-  xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
-      "Test logged into even before being declared (broken test unit: %s)", unit->title);
+  xbt_assert(not _xbt_test_current_unit->tests.empty(),
+             "Test logged into even before being declared (broken test unit: %s)", unit->title);
 
-  xbt_test_test_t test = xbt_dynar_getlast_as(unit->tests, xbt_test_test_t);
   va_list ap;
   va_start(ap, fmt);
-  test->logs.emplace_back(simgrid::xbt::string_vprintf(fmt, ap), file, line);
+  unit->tests.back().logs_.emplace_back(simgrid::xbt::string_vprintf(fmt, ap), file, line);
   va_end(ap);
 }
 
