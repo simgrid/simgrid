@@ -410,7 +410,7 @@ if __name__ == '__main__':
 
     try:
         options = parser.parse_args()
-    except:
+    except SystemExit:
         tesh_exit(1)
 
     if options.cd is not None:

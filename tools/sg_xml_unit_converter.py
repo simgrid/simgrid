@@ -12,7 +12,7 @@
 import sys
 import fnmatch
 import os
-from decimal import Decimal
+from decimal import Decimal, DecimalException
 import re
 
 
@@ -37,7 +37,7 @@ def format(xml, formats, attrib):
                     tmp = "%s%s" % (to_str(d), f)
                     break
             res.append(tmp)
-        except:
+        except DecimalException:
             print "Error with:", val
             res.append(val)
         m = re.search(r'%s="(.*?)"' % attrib, xml)
