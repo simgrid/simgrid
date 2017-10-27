@@ -8,6 +8,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -217,20 +218,19 @@ std::vector<std::string> resolveBacktrace(
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
 
-      char maps_buff[512];
       unsigned long int offset = 0;
-      char* p;
       int found = 0;
 
       /* let's look for the offset of this library in our addressing space */
       std::string maps_name = std::string("/proc/") + std::to_string(getpid()) + "/maps";
-      FILE* maps            = fopen(maps_name.c_str(), "r");
-      if (maps == nullptr) {
-        XBT_CRITICAL("fopen(\"%s\") failed: %s", maps_name.c_str(), strerror(errno));
+      std::ifstream maps(maps_name);
+      if (not maps) {
+        XBT_CRITICAL("open(\"%s\") failed: %s", maps_name.c_str(), strerror(errno));
         continue;
       }
-      unsigned long int addr = strtoul(addrs[i].c_str(), &p, 16);
-      if (*p != '\0') {
+      size_t pos;
+      unsigned long int addr = std::stoul(addrs[i], &pos, 16);
+      if (pos != addrs[i].length()) {
         XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)", addrs[i].c_str(), addr);
       }
       XBT_DEBUG("addr=%s (as string) =%#lx (as number)", addrs[i].c_str(), addr);
@@ -239,15 +239,15 @@ std::vector<std::string> resolveBacktrace(
         unsigned long int first;
         unsigned long int last;
 
-        if (fgets(maps_buff, 512, maps) == nullptr)
+        std::string maps_buff;
+        if (not std::getline(maps, maps_buff))
           break;
         if (i == 0) {
-          maps_buff[strlen(maps_buff) - 1] = '\0';
-          XBT_DEBUG("map line: %s", maps_buff);
+          XBT_DEBUG("map line: %s", maps_buff.c_str());
         }
-        sscanf(maps_buff, "%lx", &first);
-        p = strchr(maps_buff, '-') + 1;
-        sscanf(p, "%lx", &last);
+        first = std::stoul(maps_buff, &pos, 16);
+        maps_buff.erase(0, pos + 1);
+        last = std::stoul(maps_buff, nullptr, 16);
         if (first < addr && addr < last) {
           offset = first;
           found = 1;
@@ -257,7 +257,7 @@ std::vector<std::string> resolveBacktrace(
           XBT_DEBUG("Symbol found, map lines not further displayed (even if looking for next ones)");
         }
       }
-      fclose(maps);
+      maps.close();
       addrs[i].clear();
 
       if (not found) {
@@ -275,22 +275,17 @@ std::vector<std::string> resolveBacktrace(
       XBT_DEBUG("offset=%#lx new addr=%s", offset, addrs[i].c_str());
 
       /* Got it. We have our new address. Let's get the library path and we are set */
-      p = xbt_strdup(backtrace_syms[i]);
+      std::string p(backtrace_syms[i]);
       if (p[0] == '[') {
         /* library path not displayed in the map file either... */
-        free(p);
-        snprintf(line_func,3, "??");
+        snprintf(line_func, 3, "??");
       } else {
-        char* p2 = strrchr(p, '(');
-        if (p2)
-          *p2 = '\0';
-        p2 = strrchr(p, ' ');
-        if (p2)
-          *p2 = '\0';
+        size_t p2 = p.find_first_of("( ");
+        if (p2 != std::string::npos)
+          p.erase(p2);
 
         /* Here we go, fire an addr2line up */
         std::string subcmd = std::string(ADDR2LINE) + " -f -e " + p + " " + addrs[i];
-        free(p);
         XBT_VERB("Fire a new command: '%s'", subcmd.c_str());
         FILE* subpipe = popen(subcmd.c_str(), "r");
         if (not subpipe) {
