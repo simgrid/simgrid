@@ -498,52 +498,37 @@ void xbt_cfg_set_parse(const char *options)
   if (not options || not strlen(options)) { /* nothing to do */
     return;
   }
-  char *optionlist_cpy = xbt_strdup(options);
 
   XBT_DEBUG("List to parse and set:'%s'", options);
-  char *option = optionlist_cpy;
-  while (1) {                   /* breaks in the code */
-    if (not option)
-      break;
-    char *name = option;
-    int len = strlen(name);
-    XBT_DEBUG("Still to parse and set: '%s'. len=%d; option-name=%ld", name, len, (long) (option - name));
+  std::string optionlist(options);
+  while (not optionlist.empty()) {
+    XBT_DEBUG("Still to parse and set: '%s'", optionlist.c_str());
 
-    /* Pass the value */
-    while (option - name <= (len - 1) && *option != ' ' && *option != '\n' && *option != '\t' && *option != ',') {
-      XBT_DEBUG("Take %c.", *option);
-      option++;
-    }
-    if (option - name == len) {
-      XBT_DEBUG("Boundary=EOL");
-      option = nullptr;            /* don't do next iteration */
-    } else {
-      XBT_DEBUG("Boundary on '%c'. len=%d;option-name=%ld", *option, len, (long) (option - name));
-      /* Pass the following blank chars */
-      *(option++) = '\0';
-      while (option - name < (len - 1) && (*option == ' ' || *option == '\n' || *option == '\t')) {
-        option++;
-      }
-      if (option - name == len - 1)
-        option = nullptr;          /* don't do next iteration */
-    }
-    XBT_DEBUG("parse now:'%s'; parse later:'%s'", name, option);
+    // skip separators
+    size_t pos = optionlist.find_first_not_of(" \t\n,");
+    optionlist.erase(0, pos);
+    // find option
+    pos              = optionlist.find_first_of(" \t\n,");
+    std::string name = optionlist.substr(0, pos);
+    optionlist.erase(0, pos);
+    XBT_DEBUG("parse now:'%s'; parse later:'%s'", name.c_str(), optionlist.c_str());
 
-    if (name[0] == ' ' || name[0] == '\n' || name[0] == '\t')
+    if (name.empty())
       continue;
-    if (not strlen(name))
-      break;
 
-    char *val = strchr(name, ':');
-    xbt_assert(val, "Option '%s' badly formatted. Should be of the form 'name:value'", name);
-    /* don't free(optionlist_cpy) if the assert fails, 'name' points inside it */
-    *(val++) = '\0';
+    pos = name.find(':');
+    xbt_assert(pos != std::string::npos, "Option '%s' badly formatted. Should be of the form 'name:value'",
+               name.c_str());
 
-    if (strncmp(name, "path", strlen("path")))
-      XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
+    std::string val = name.substr(pos + 1);
+    name.erase(pos);
+
+    const std::string path("path");
+    if (name.compare(0, path.length(), path) != 0)
+      XBT_INFO("Configuration change: Set '%s' to '%s'", name.c_str(), val.c_str());
 
     try {
-      (*simgrid_config)[name].setStringValue(val);
+      (*simgrid_config)[name.c_str()].setStringValue(val.c_str());
     }
     catch (simgrid::config::missing_key_error& e) {
       goto on_missing_key;
@@ -552,17 +537,12 @@ void xbt_cfg_set_parse(const char *options)
       goto on_exception;
     }
   }
-
-  free(optionlist_cpy);
   return;
 
   /* Do not THROWF from a C++ exception catching context, or some cleanups will be missing */
 on_missing_key:
-  free(optionlist_cpy);
   THROWF(not_found_error, 0, "Could not set variables %s", options);
-  return;
 on_exception:
-  free(optionlist_cpy);
   THROWF(unknown_error, 0, "Could not set variables %s", options);
 }
 
