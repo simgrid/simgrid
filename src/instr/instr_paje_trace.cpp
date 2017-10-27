@@ -213,7 +213,7 @@ void simgrid::instr::AddVariableEvent::print()
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId() << " " << value;
     print_row();
@@ -236,7 +236,7 @@ void simgrid::instr::SubVariableEvent::print()
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId() << " " << value;
     print_row();
@@ -267,7 +267,7 @@ void simgrid::instr::SetStateEvent::print()
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId();
     stream << " " << value->getId();
@@ -308,9 +308,9 @@ simgrid::instr::PushStateEvent::PushStateEvent(double timestamp, container_t con
 void simgrid::instr::PushStateEvent::print()
 {
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)eventType_, TRACE_precision(), timestamp_);
+    XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId();
     stream << " " << value->getId();
@@ -483,7 +483,7 @@ void simgrid::instr::PopStateEvent::print()
   if (instr_fmt_type == instr_fmt_paje) {
     XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId();
     print_row();
@@ -505,9 +505,9 @@ simgrid::instr::ResetStateEvent::ResetStateEvent(double timestamp, container_t c
 void simgrid::instr::ResetStateEvent::print()
 {
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)eventType_, TRACE_precision(), timestamp_);
+    XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId();
     print_row();
@@ -532,16 +532,17 @@ simgrid::instr::StartLinkEvent::StartLinkEvent(double timestamp, container_t con
     , key_(key)
     , size_(size)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f, value:%s", __FUNCTION__, (int)eventType_, this->timestamp_, this->value_.c_str());
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f, value:%s", __FUNCTION__, eventType_, this->timestamp_,
+            this->value_.c_str());
   insertIntoBuffer();
 }
 
 void simgrid::instr::StartLinkEvent::print()
 {
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)eventType_, TRACE_precision(), timestamp_);
+    XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId() << " " << value_;
     stream << " " << sourceContainer_->getId() << " " << key_;
@@ -564,16 +565,16 @@ simgrid::instr::EndLinkEvent::EndLinkEvent(double timestamp, container_t contain
     , value(value)
     , key(key)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, this->timestamp_);
   insertIntoBuffer();
 }
 
 void simgrid::instr::EndLinkEvent::print()
 {
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)eventType_, TRACE_precision(), timestamp_);
+    XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId() << " " << value;
     stream << " " << destContainer->getId() << " " << key;
@@ -586,11 +587,9 @@ void simgrid::instr::EndLinkEvent::print()
 }
 
 simgrid::instr::NewEvent::NewEvent(double timestamp, container_t container, Type* type, EntityValue* val)
-    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent)
+    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent), val(val)
 {
-  this->val                             = val;
-
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)eventType_, this->timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, this->timestamp_);
 
   insertIntoBuffer();
 }
@@ -598,9 +597,9 @@ simgrid::instr::NewEvent::NewEvent(double timestamp, container_t container, Type
 void simgrid::instr::NewEvent::print()
 {
   if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)eventType_, TRACE_precision(), timestamp_);
+    XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
     stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << (int)this->eventType_;
+    stream << eventType_;
     print_timestamp(this);
     stream << " " << type->getId() << " " << container->getId() << " " << val->getId();
     print_row();
