@@ -260,7 +260,7 @@ xbt_dynar_t TRACE_get_marks ()
   return instr_set_to_dynar(&declared_marks);
 }
 
-static void instr_user_variable(double time, const char* resource, const char* variable, const char* father_type,
+static void instr_user_variable(double time, const char* resource, const char* variable_name, const char* father_type,
                                 double value, InstrUserVariable what, const char* color, std::set<std::string>* filter)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
@@ -268,27 +268,28 @@ static void instr_user_variable(double time, const char* resource, const char* v
     return;
 
   //check if variable is already declared
-  auto created = filter->find(variable);
+  auto created = filter->find(variable_name);
   if (what == INSTR_US_DECLARE){
     if (created == filter->end()) { // not declared yet
-      filter->insert(variable);
-      instr_new_user_variable_type(father_type, variable, color == nullptr ? "" : color);
+      filter->insert(variable_name);
+      instr_new_user_variable_type(father_type, variable_name, color == nullptr ? "" : color);
     }
   }else{
     if (created != filter->end()) { // declared, let's work
       char valuestr[100];
       snprintf(valuestr, 100, "%g", value);
       container_t container      = simgrid::instr::Container::byName(resource);
-      simgrid::instr::Type* type = container->type_->byName(variable);
+      simgrid::instr::VariableType* variable =
+          static_cast<simgrid::instr::VariableType*>(container->type_->byName(variable_name));
       switch (what){
       case INSTR_US_SET:
-        new simgrid::instr::SetVariableEvent(time, container, type, value);
+        variable->setEvent(time, container, value);
         break;
       case INSTR_US_ADD:
-        new simgrid::instr::AddVariableEvent(time, container, type, value);
+        variable->addEvent(time, container, value);
         break;
       case INSTR_US_SUB:
-        new simgrid::instr::SubVariableEvent(time, container, type, value);
+        variable->subEvent(time, container, value);
         break;
       default:
         THROW_IMPOSSIBLE;

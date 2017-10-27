@@ -15,6 +15,13 @@ std::map<container_t, FILE*> tracing_files; // TI specific
 namespace simgrid {
 namespace instr {
 
+VariableEvent::VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value)
+    : PajeEvent::PajeEvent(container, type, timestamp, event_type), value(value)
+{
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, this->timestamp_);
+  insertIntoBuffer();
+}
+
 StateEvent::StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value)
     : StateEvent(timestamp, container, type, event_type, value, nullptr)
 {
@@ -35,6 +42,22 @@ StateEvent::StateEvent(double timestamp, Container* container, Type* type, e_eve
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
   insertIntoBuffer();
 };
+
+void VariableEvent::print()
+{
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(TRACE_precision());
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
+  if (instr_fmt_type != instr_fmt_paje)
+    return;
+
+  if (timestamp_ < 1e-12)
+    stream << eventType_ << " " << 0 << " " << type->getId() << " " << container->getId() << " " << value;
+  else
+    stream << eventType_ << " " << timestamp_ << " " << type->getId() << " " << container->getId() << " " << value;
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  fprintf(tracing_file, "%s\n", stream.str().c_str());
+}
 
 void StateEvent::print()
 {

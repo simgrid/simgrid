@@ -20,6 +20,7 @@ class LinkType;
 class StateType;
 class VariableType;
 class StateEvent;
+class VariableEvent;
 
 class Type {
   long long int id_;
@@ -59,8 +60,14 @@ public:
 };
 
 class VariableType : public Type {
+  std::vector<VariableEvent*> events_;
+
 public:
   VariableType(std::string name, std::string color, Type* father);
+  ~VariableType();
+  void setEvent(double timestamp, Container* container, double value);
+  void addEvent(double timestamp, Container* container, double value);
+  void subEvent(double timestamp, Container* container, double value);
 };
 
 class ValueType : public Type {

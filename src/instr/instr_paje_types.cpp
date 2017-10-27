@@ -87,6 +87,26 @@ VariableType::VariableType(std::string name, std::string color, Type* father) : 
   logDefinition(PAJE_DefineVariableType);
 }
 
+VariableType::~VariableType()
+{
+  events_.clear();
+}
+
+void VariableType::setEvent(double timestamp, Container* container, double value)
+{
+  events_.push_back(new VariableEvent(timestamp, container, this, PAJE_SetVariable, value));
+}
+
+void VariableType::addEvent(double timestamp, Container* container, double value)
+{
+  events_.push_back(new VariableEvent(timestamp, container, this, PAJE_AddVariable, value));
+}
+
+void VariableType::subEvent(double timestamp, Container* container, double value)
+{
+  events_.push_back(new VariableEvent(timestamp, container, this, PAJE_SubVariable, value));
+}
+
 LinkType::LinkType(std::string name, std::string alias, Type* father) : ValueType(name, alias, father)
 {
 }

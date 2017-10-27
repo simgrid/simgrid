@@ -193,10 +193,8 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   container_t container = new simgrid::instr::Container(link.getName(), "LINK", father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    simgrid::instr::Type* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");
-    simgrid::instr::Type* latency   = container->type_->getOrCreateVariableType("latency", "");
-    new simgrid::instr::SetVariableEvent(0, container, bandwidth, link.bandwidth());
-    new simgrid::instr::SetVariableEvent(0, container, latency, link.latency());
+    container->type_->getOrCreateVariableType("bandwidth", "")->setEvent(0, container, link.bandwidth());
+    container->type_->getOrCreateVariableType("latency", "")->setEvent(0, container, link.latency());
   }
   if (TRACE_uncategorized()) {
     container->type_->getOrCreateVariableType("bandwidth_used", "0.5 0.5 0.5");
@@ -208,8 +206,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   container_t container = new simgrid::instr::HostContainer(host, currentContainer.back());
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    simgrid::instr::Type* speed = container->type_->getOrCreateVariableType("power", "");
-    new simgrid::instr::SetVariableEvent(0, container, speed, host.getSpeed());
+    container->type_->getOrCreateVariableType("power", "")->setEvent(0, container, host.getSpeed());
   }
 
   if (TRACE_uncategorized())

@@ -90,27 +90,11 @@ public:
   void insertIntoBuffer();
 };
 
-class SetVariableEvent : public PajeEvent {
+class VariableEvent : public PajeEvent {
   double value;
 
 public:
-  SetVariableEvent(double timestamp, Container* container, Type* type, double value);
-  void print() override;
-};
-
-class AddVariableEvent : public PajeEvent {
-  double value;
-
-public:
-  AddVariableEvent(double timestamp, Container* container, Type* type, double value);
-  void print() override;
-};
-
-class SubVariableEvent : public PajeEvent {
-  double value;
-
-public:
-  SubVariableEvent(double timestamp, Container* container, Type* type, double value);
+  VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value);
   void print() override;
 };
 
