@@ -39,15 +39,15 @@ XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype, int* known);
 
 class smpi_trace_call_location_t {
 public:
-  const char* filename;
+  std::string filename;
   int linenumber;
 
-  const char* previous_filename;
+  std::string previous_filename;
   int previous_linenumber;
 
   std::string get_composed_key()
   {
-    return std::string(previous_filename) + ':' + std::to_string(previous_linenumber) + ':' + filename + ':' +
+    return previous_filename + ':' + std::to_string(previous_linenumber) + ':' + filename + ':' +
            std::to_string(linenumber);
   }
 };

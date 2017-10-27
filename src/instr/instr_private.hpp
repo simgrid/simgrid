@@ -116,7 +116,7 @@ public:
 
 class SetStateEvent : public PajeEvent {
   EntityValue* value;
-  const char* filename;
+  std::string filename;
   int linenumber;
 
 public:
@@ -126,7 +126,7 @@ public:
 
 class PushStateEvent : public PajeEvent {
   EntityValue* value;
-  const char* filename;
+  std::string filename;
   int linenumber;
   void* extra_;
 
