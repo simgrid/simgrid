@@ -178,7 +178,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   if (not mark_value)
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
-  simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName(mark_type);
+  simgrid::instr::EventType* type =
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Type::getRootType()->byName(mark_type));
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   } else {
@@ -186,7 +187,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
       mark_color = "1.0 1.0 1.0" /*white*/;
 
     XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-    static_cast<simgrid::instr::EventType*>(type)->addEntityValue(mark_value, mark_color);
+    type->addEntityValue(mark_value, mark_color);
   }
 }
 

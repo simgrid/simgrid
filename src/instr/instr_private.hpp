@@ -69,7 +69,7 @@ public:
   std::map<std::string, Type*> children_;
 
   Type(std::string name, std::string alias, std::string color, Type* father);
-  ~Type();
+  virtual ~Type();
 
   std::string getName() { return name_; }
   const char* getCname() { return name_.c_str(); }
@@ -106,7 +106,7 @@ public:
   std::map<std::string, Value*> values_;
   ValueType(std::string name, std::string alias, Type* father) : Type(name, alias, "", father){};
   ValueType(std::string name, Type* father) : Type(name, name, "", father){};
-  ~ValueType();
+  virtual ~ValueType();
   void addEntityValue(std::string name, std::string color);
   void addEntityValue(std::string name);
   Value* getEntityValue(std::string name);
