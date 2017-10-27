@@ -7,6 +7,7 @@
 #define INSTR_PAJE_CONTAINERS_HPP
 
 #include "src/instr/instr_private.hpp"
+#include <string>
 
 namespace simgrid {
 namespace instr {
