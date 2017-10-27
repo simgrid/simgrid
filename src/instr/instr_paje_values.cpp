@@ -4,22 +4,31 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
 #include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
+extern FILE* tracing_file;
 
 namespace simgrid {
 namespace instr {
 
-Value::Value(std::string name, std::string color, Type* father) : name_(name), color_(color), father_(father)
-{
-  this->id_    = std::to_string(instr_new_paje_id());
-};
+EntityValue::EntityValue(std::string name, std::string color, Type* father)
+    : id_(instr_new_paje_id()), name_(name), color_(color), father_(father){};
 
-Value::~Value()
+void EntityValue::print()
 {
-  XBT_DEBUG("free value %s, child of %s", getCname(), father_->getCname());
+  if (instr_fmt_type != instr_fmt_paje)
+    return;
+  std::stringstream stream;
+  XBT_DEBUG("%s: event_type=%u", __FUNCTION__, simgrid::instr::PAJE_DefineEntityValue);
+  stream << std::fixed << std::setprecision(TRACE_precision());
+  stream << simgrid::instr::PAJE_DefineEntityValue;
+  stream << " " << id_ << " " << father_->getId() << " " << name_;
+  if (not color_.empty())
+    stream << " \"" << color_ << "\"";
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  stream << std::endl;
+  fprintf(tracing_file, "%s", stream.str().c_str());
 }
 
 }

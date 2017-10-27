@@ -26,7 +26,6 @@ long long int instr_new_paje_id ()
   return type_id++;
 }
 
-
 namespace simgrid {
 namespace instr {
 
@@ -149,7 +148,7 @@ void Container::logCreation()
   double timestamp = SIMIX_get_clock();
   std::stringstream stream;
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_CreateContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_CreateContainer, timestamp);
 
   if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());
@@ -201,7 +200,7 @@ void Container::logDestruction()
   std::stringstream stream;
   double timestamp = SIMIX_get_clock();
 
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_DestroyContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_DestroyContainer, timestamp);
 
   if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision());

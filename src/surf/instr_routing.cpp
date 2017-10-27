@@ -314,9 +314,9 @@ void instr_new_user_variable_type(std::string father_type, std::string new_typen
 
 static void recursiveNewUserStateType(std::string father_type, std::string new_typename, simgrid::instr::Type* root)
 {
-  if (root->getName() == father_type) {
+  if (root->getName() == father_type)
     root->getOrCreateStateType(new_typename);
-  }
+
   for (auto elm : root->children_)
     recursiveNewUserStateType(father_type, new_typename, elm.second);
 }

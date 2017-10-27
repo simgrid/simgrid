@@ -71,7 +71,7 @@ void Type::logDefinition(e_event_type event_type)
   if (instr_fmt_type != instr_fmt_paje)
     return;
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, event_type, TRACE_precision(), 0.);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, event_type, TRACE_precision(), 0.);
   stream << std::fixed << std::setprecision(TRACE_precision()) << event_type << " " << getId();
   stream << " " << father_->getId() << " " << getName();
   if (isColored())
@@ -86,7 +86,7 @@ void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* des
   if (instr_fmt_type != instr_fmt_paje)
     return;
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, PAJE_DefineLinkType, TRACE_precision(), 0.);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, PAJE_DefineLinkType, TRACE_precision(), 0.);
   stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineLinkType << " " << getId();
   stream << " " << father_->getId() << " " << source->getId() << " " << dest->getId() << " " << getName();
   XBT_DEBUG("Dump %s", stream.str().c_str());
@@ -123,14 +123,14 @@ void ValueType::addEntityValue(std::string name, std::string color)
 
   auto it = values_.find(name);
   if (it == values_.end()) {
-    Value* new_val = new Value(name, color, this);
+    EntityValue* new_val = new EntityValue(name, color, this);
     values_.insert({name, new_val});
     XBT_DEBUG("new value %s, child of %s", name.c_str(), getCname());
     new_val->print();
   }
 }
 
-Value* ValueType::getEntityValue(std::string name)
+EntityValue* ValueType::getEntityValue(std::string name)
 {
   auto ret = values_.find(name);
   if (ret == values_.end()) {
@@ -171,8 +171,8 @@ StateType* Type::getOrCreateStateType(std::string name)
 VariableType* Type::getOrCreateVariableType(std::string name, std::string color)
 {
   auto cont = children_.find(name);
-  return cont == children_.end() ? new VariableType(name, color.empty() ? "1 1 1" : color, this)
-                                 : static_cast<VariableType*>(cont->second);
+  std::string mycolor = color.empty() ? "1 1 1" : color;
+  return cont == children_.end() ? new VariableType(name, mycolor, this) : static_cast<VariableType*>(cont->second);
 }
 
 LinkType* Type::getOrCreateLinkType(std::string name, Type* source, Type* dest)

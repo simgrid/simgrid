@@ -13,7 +13,7 @@ extern FILE *tracing_file;
 
 static void TRACE_header_PajeDefineContainerType(bool basic)
 {
-  fprintf(tracing_file, "%%EventDef PajeDefineContainerType %d\n", simgrid::instr::PAJE_DefineContainerType);
+  fprintf(tracing_file, "%%EventDef PajeDefineContainerType %u\n", simgrid::instr::PAJE_DefineContainerType);
   fprintf(tracing_file, "%%       Alias string\n");
   if (basic){
     fprintf(tracing_file, "%%       ContainerType string\n");
@@ -26,7 +26,7 @@ static void TRACE_header_PajeDefineContainerType(bool basic)
 
 static void TRACE_header_PajeDefineVariableType(bool basic)
 {
-  fprintf(tracing_file, "%%EventDef PajeDefineVariableType %d\n", simgrid::instr::PAJE_DefineVariableType);
+  fprintf(tracing_file, "%%EventDef PajeDefineVariableType %u\n", simgrid::instr::PAJE_DefineVariableType);
   fprintf(tracing_file, "%%       Alias string\n");
   if (basic){
     fprintf(tracing_file, "%%       ContainerType string\n");
@@ -40,7 +40,7 @@ static void TRACE_header_PajeDefineVariableType(bool basic)
 
 static void TRACE_header_PajeDefineStateType(bool basic)
 {
-  fprintf(tracing_file, "%%EventDef PajeDefineStateType %d\n", simgrid::instr::PAJE_DefineStateType);
+  fprintf(tracing_file, "%%EventDef PajeDefineStateType %u\n", simgrid::instr::PAJE_DefineStateType);
   fprintf(tracing_file, "%%       Alias string\n");
   if (basic){
     fprintf(tracing_file, "%%       ContainerType string\n");
@@ -53,7 +53,7 @@ static void TRACE_header_PajeDefineStateType(bool basic)
 
 static void TRACE_header_PajeDefineEventType(bool basic)
 {
-  fprintf(tracing_file, "%%EventDef PajeDefineEventType %d\n", simgrid::instr::PAJE_DefineEventType);
+  fprintf(tracing_file, "%%EventDef PajeDefineEventType %u\n", simgrid::instr::PAJE_DefineEventType);
   fprintf(tracing_file, "%%       Alias string\n");
   if (basic){
     fprintf(tracing_file, "%%       ContainerType string\n");
@@ -66,7 +66,7 @@ static void TRACE_header_PajeDefineEventType(bool basic)
 
 static void TRACE_header_PajeDefineLinkType(bool basic)
 {
-  fprintf(tracing_file, "%%EventDef PajeDefineLinkType %d\n", simgrid::instr::PAJE_DefineLinkType);
+  fprintf(tracing_file, "%%EventDef PajeDefineLinkType %u\n", simgrid::instr::PAJE_DefineLinkType);
   fprintf(tracing_file, "%%       Alias string\n");
   if (basic){
     fprintf(tracing_file, "%%       ContainerType string\n");
@@ -83,7 +83,7 @@ static void TRACE_header_PajeDefineLinkType(bool basic)
 
 static void TRACE_header_PajeDefineEntityValue(bool basic)
 {
-  fprintf(tracing_file, "%%EventDef PajeDefineEntityValue %d\n", simgrid::instr::PAJE_DefineEntityValue);
+  fprintf(tracing_file, "%%EventDef PajeDefineEntityValue %u\n", simgrid::instr::PAJE_DefineEntityValue);
   fprintf(tracing_file, "%%       Alias string\n");
   if (basic){
     fprintf(tracing_file, "%%       EntityType string\n");
@@ -97,7 +97,7 @@ static void TRACE_header_PajeDefineEntityValue(bool basic)
 
 static void TRACE_header_PajeCreateContainer()
 {
-  fprintf(tracing_file, "%%EventDef PajeCreateContainer %d\n", simgrid::instr::PAJE_CreateContainer);
+  fprintf(tracing_file, "%%EventDef PajeCreateContainer %u\n", simgrid::instr::PAJE_CreateContainer);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Alias string\n");
   fprintf(tracing_file, "%%       Type string\n");
@@ -108,7 +108,7 @@ static void TRACE_header_PajeCreateContainer()
 
 static void TRACE_header_PajeDestroyContainer()
 {
-  fprintf(tracing_file, "%%EventDef PajeDestroyContainer %d\n", simgrid::instr::PAJE_DestroyContainer);
+  fprintf(tracing_file, "%%EventDef PajeDestroyContainer %u\n", simgrid::instr::PAJE_DestroyContainer);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Name string\n");
@@ -117,7 +117,7 @@ static void TRACE_header_PajeDestroyContainer()
 
 static void TRACE_header_PajeSetVariable()
 {
-  fprintf(tracing_file, "%%EventDef PajeSetVariable %d\n", simgrid::instr::PAJE_SetVariable);
+  fprintf(tracing_file, "%%EventDef PajeSetVariable %u\n", simgrid::instr::PAJE_SetVariable);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -127,7 +127,7 @@ static void TRACE_header_PajeSetVariable()
 
 static void TRACE_header_PajeAddVariable()
 {
-  fprintf(tracing_file, "%%EventDef PajeAddVariable %d\n", simgrid::instr::PAJE_AddVariable);
+  fprintf(tracing_file, "%%EventDef PajeAddVariable %u\n", simgrid::instr::PAJE_AddVariable);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -137,7 +137,7 @@ static void TRACE_header_PajeAddVariable()
 
 static void TRACE_header_PajeSubVariable()
 {
-  fprintf(tracing_file, "%%EventDef PajeSubVariable %d\n", simgrid::instr::PAJE_SubVariable);
+  fprintf(tracing_file, "%%EventDef PajeSubVariable %u\n", simgrid::instr::PAJE_SubVariable);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -147,7 +147,7 @@ static void TRACE_header_PajeSubVariable()
 
 static void TRACE_header_PajeSetState()
 {
-  fprintf(tracing_file, "%%EventDef PajeSetState %d\n", simgrid::instr::PAJE_SetState);
+  fprintf(tracing_file, "%%EventDef PajeSetState %u\n", simgrid::instr::PAJE_SetState);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -157,7 +157,7 @@ static void TRACE_header_PajeSetState()
 
 static void TRACE_header_PajePushState(int size)
 {
-  fprintf(tracing_file, "%%EventDef PajePushState %d\n", simgrid::instr::PAJE_PushState);
+  fprintf(tracing_file, "%%EventDef PajePushState %u\n", simgrid::instr::PAJE_PushState);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -178,7 +178,7 @@ static void TRACE_header_PajePushState(int size)
 
 static void TRACE_header_PajePopState()
 {
-  fprintf(tracing_file, "%%EventDef PajePopState %d\n", simgrid::instr::PAJE_PopState);
+  fprintf(tracing_file, "%%EventDef PajePopState %u\n", simgrid::instr::PAJE_PopState);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -190,7 +190,7 @@ static void TRACE_header_PajeResetState(bool basic)
   if (basic)
     return;
 
-  fprintf(tracing_file, "%%EventDef PajeResetState %d\n", simgrid::instr::PAJE_ResetState);
+  fprintf(tracing_file, "%%EventDef PajeResetState %u\n", simgrid::instr::PAJE_ResetState);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -199,7 +199,7 @@ static void TRACE_header_PajeResetState(bool basic)
 
 static void TRACE_header_PajeStartLink(bool basic, int size)
 {
-  fprintf(tracing_file, "%%EventDef PajeStartLink %d\n", simgrid::instr::PAJE_StartLink);
+  fprintf(tracing_file, "%%EventDef PajeStartLink %u\n", simgrid::instr::PAJE_StartLink);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -216,7 +216,7 @@ static void TRACE_header_PajeStartLink(bool basic, int size)
 
 static void TRACE_header_PajeEndLink(bool basic)
 {
-  fprintf(tracing_file, "%%EventDef PajeEndLink %d\n", simgrid::instr::PAJE_EndLink);
+  fprintf(tracing_file, "%%EventDef PajeEndLink %u\n", simgrid::instr::PAJE_EndLink);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");
@@ -232,7 +232,7 @@ static void TRACE_header_PajeEndLink(bool basic)
 
 static void TRACE_header_PajeNewEvent()
 {
-  fprintf(tracing_file, "%%EventDef PajeNewEvent %d\n", simgrid::instr::PAJE_NewEvent);
+  fprintf(tracing_file, "%%EventDef PajeNewEvent %u\n", simgrid::instr::PAJE_NewEvent);
   fprintf(tracing_file, "%%       Time date\n");
   fprintf(tracing_file, "%%       Type string\n");
   fprintf(tracing_file, "%%       Container string\n");

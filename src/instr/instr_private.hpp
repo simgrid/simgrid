@@ -11,6 +11,8 @@
 #include "instr/instr_interface.h"
 #include "simgrid/instr.h"
 #include "simgrid_config.h"
+#include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/internal_config.h"
 #include "xbt/graph.h"
 #include <iomanip> /** std::setprecision **/
@@ -29,14 +31,16 @@
 namespace simgrid {
 namespace instr {
 
-class Value;
+class Container;
+class Type;
+class EntityValue;
 class ContainerType;
 class EventType;
 class LinkType;
 class StateType;
 class VariableType;
 
-enum e_event_type {
+enum e_event_type : unsigned int {
   PAJE_DefineContainerType,
   PAJE_DefineVariableType,
   PAJE_DefineStateType,
@@ -57,128 +61,18 @@ enum e_event_type {
   PAJE_NewEvent
 };
 
-class Type {
+class EntityValue {
   long long int id_;
   std::string name_;
   std::string color_;
-
-protected:
   Type* father_;
 
 public:
-  std::map<std::string, Type*> children_;
-
-  Type(std::string name, std::string alias, std::string color, Type* father);
-  virtual ~Type();
-
-  std::string getName() { return name_; }
+  explicit EntityValue(std::string name, std::string color, Type* father);
+  ~EntityValue() = default;
   const char* getCname() { return name_.c_str(); }
   long long int getId() { return id_; }
-  bool isColored() { return not color_.empty(); }
-
-  Type* byName(std::string name);
-
-  ContainerType* getOrCreateContainerType(std::string name);
-  EventType* getOrCreateEventType(std::string name);
-  LinkType* getOrCreateLinkType(std::string name, Type* source, Type* dest);
-  StateType* getOrCreateStateType(std::string name);
-  VariableType* getOrCreateVariableType(std::string name, std::string color);
-
-  void logDefinition(e_event_type event_type);
-  void logDefinition(Type* source, Type* dest);
-
-  static ContainerType* createRootType();
-  static ContainerType* getRootType();
-};
-
-class ContainerType : public Type {
-public:
-  ContainerType(std::string name, Type* father);
-};
-
-class VariableType : public Type {
-public:
-  VariableType(std::string name, std::string color, Type* father);
-};
-
-class ValueType : public Type {
-public:
-  std::map<std::string, Value*> values_;
-  ValueType(std::string name, std::string alias, Type* father) : Type(name, alias, "", father){};
-  ValueType(std::string name, Type* father) : Type(name, name, "", father){};
-  virtual ~ValueType();
-  void addEntityValue(std::string name, std::string color);
-  void addEntityValue(std::string name);
-  Value* getEntityValue(std::string name);
-};
-
-class LinkType : public ValueType {
-public:
-  LinkType(std::string name, std::string alias, Type* father);
-};
-
-class EventType : public ValueType {
-public:
-  EventType(std::string name, Type* father);
-};
-
-class StateType : public ValueType {
-public:
-  StateType(std::string name, Type* father);
-};
-
-class Value {
-  std::string name_;
-  std::string id_;
-  std::string color_;
-  Type* father_;
-
-public:
-  explicit Value(std::string name, std::string color, Type* father);
-  ~Value();
-  const char* getCname() { return name_.c_str(); }
-  const char* getId() { return id_.c_str(); }
-  bool isColored() { return not color_.empty(); }
   void print();
-};
-
-class Container {
-  long long int id_;
-  std::string name_;       /* Unique name of this container */
-public:
-  Container(std::string name, std::string type_name, Container* father);
-  virtual ~Container();
-
-  Type* type_;             /* Type of this container */
-  Container* father_;
-  std::map<std::string, Container*> children_;
-  sg_netpoint_t netpoint_ = nullptr;
-
-  static Container* byNameOrNull(std::string name);
-  static Container* byName(std::string name);
-  std::string getName() { return name_; }
-  const char* getCname() { return name_.c_str(); }
-  long long int getId() { return id_; }
-  void removeFromParent();
-  void logCreation();
-  void logDestruction();
-
-  static Container* getRootContainer();
-};
-
-class NetZoneContainer : public Container {
-public:
-  NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father);
-};
-
-class RouterContainer : public Container {
-public:
-  RouterContainer(std::string name, Container* father);
-};
-
-class HostContainer : public Container {
-public:
-  HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father);
 };
 
 class PajeEvent {
@@ -196,7 +90,6 @@ public:
   void insertIntoBuffer();
 };
 
-//--------------------------------------------------
 class SetVariableEvent : public PajeEvent {
   double value;
 
@@ -212,7 +105,6 @@ public:
   AddVariableEvent(double timestamp, Container* container, Type* type, double value);
   void print() override;
 };
-//--------------------------------------------------
 
 class SubVariableEvent : public PajeEvent {
   double value;
@@ -221,27 +113,26 @@ public:
   SubVariableEvent(double timestamp, Container* container, Type* type, double value);
   void print() override;
 };
-//--------------------------------------------------
 
 class SetStateEvent : public PajeEvent {
-  Value* value;
+  EntityValue* value;
   const char* filename;
   int linenumber;
 
 public:
-  SetStateEvent(double timestamp, Container* container, Type* type, Value* val);
+  SetStateEvent(double timestamp, Container* container, Type* type, EntityValue* val);
   void print() override;
 };
 
 class PushStateEvent : public PajeEvent {
-  Value* value;
+  EntityValue* value;
   const char* filename;
   int linenumber;
   void* extra_;
 
 public:
-  PushStateEvent(double timestamp, Container* container, Type* type, Value* val);
-  PushStateEvent(double timestamp, Container* container, Type* type, Value* val, void* extra);
+  PushStateEvent(double timestamp, Container* container, Type* type, EntityValue* val);
+  PushStateEvent(double timestamp, Container* container, Type* type, EntityValue* val, void* extra);
   void print() override;
 };
 
@@ -284,10 +175,10 @@ public:
 };
 
 class NewEvent : public PajeEvent {
-  Value* val;
+  EntityValue* val;
 
 public:
-  NewEvent(double timestamp, Container* container, Type* type, Value* val);
+  NewEvent(double timestamp, Container* container, Type* type, EntityValue* val);
   void print() override;
 };
 }
