@@ -8,6 +8,7 @@
 
 #include "src/instr/instr_private.hpp"
 #include <string>
+#include <vector>
 
 namespace simgrid {
 namespace instr {
@@ -18,6 +19,7 @@ class EventType;
 class LinkType;
 class StateType;
 class VariableType;
+class StateEvent;
 
 class Type {
   long long int id_;
@@ -83,8 +85,15 @@ public:
 };
 
 class StateType : public ValueType {
+  std::vector<StateEvent*> events_;
+
 public:
   StateType(std::string name, Type* father);
+  ~StateType();
+  void setEvent(double timestamp, Container* container, std::string value_name);
+  void pushEvent(double timestamp, Container* container, std::string value_name);
+  void pushEvent(double timestamp, Container* container, std::string value_name, void* extra);
+  void popEvent(double timestamp, Container* container);
 };
 }
 }

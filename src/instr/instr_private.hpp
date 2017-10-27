@@ -114,37 +114,16 @@ public:
   void print() override;
 };
 
-class SetStateEvent : public PajeEvent {
+class StateEvent : public PajeEvent {
   EntityValue* value;
   std::string filename;
   int linenumber;
+  void* extra_ = nullptr;
 
 public:
-  SetStateEvent(double timestamp, Container* container, Type* type, EntityValue* val);
-  void print() override;
-};
-
-class PushStateEvent : public PajeEvent {
-  EntityValue* value;
-  std::string filename;
-  int linenumber;
-  void* extra_;
-
-public:
-  PushStateEvent(double timestamp, Container* container, Type* type, EntityValue* val);
-  PushStateEvent(double timestamp, Container* container, Type* type, EntityValue* val, void* extra);
-  void print() override;
-};
-
-class PopStateEvent : public PajeEvent {
-public:
-  PopStateEvent(double timestamp, Container* container, Type* type);
-  void print() override;
-};
-
-class ResetStateEvent : public PajeEvent {
-public:
-  ResetStateEvent(double timestamp, Container* container, Type* type);
+  StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value);
+  StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value,
+             void* extra);
   void print() override;
 };
 

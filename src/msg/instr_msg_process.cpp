@@ -77,8 +77,7 @@ void TRACE_msg_process_suspend(msg_process_t process)
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
     simgrid::instr::StateType* state =
         static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    simgrid::instr::EntityValue* val = state->getEntityValue("suspend");
-    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
+    state->pushEvent(MSG_get_clock(), process_container, "suspend");
   }
 }
 
@@ -86,8 +85,9 @@ void TRACE_msg_process_resume(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
-    simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
-    new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
+    simgrid::instr::StateType* state =
+        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
+    state->popEvent(MSG_get_clock(), process_container);
   }
 }
 
@@ -97,8 +97,7 @@ void TRACE_msg_process_sleep_in(msg_process_t process)
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
     simgrid::instr::StateType* state =
         static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    simgrid::instr::EntityValue* val = state->getEntityValue("sleep");
-    new simgrid::instr::PushStateEvent(MSG_get_clock(), process_container, state, val);
+    state->pushEvent(MSG_get_clock(), process_container, "sleep");
   }
 }
 
@@ -106,7 +105,8 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
     container_t process_container = simgrid::instr::Container::byName(instr_process_id(process));
-    simgrid::instr::Type* type    = process_container->type_->byName("MSG_PROCESS_STATE");
-    new simgrid::instr::PopStateEvent(MSG_get_clock(), process_container, type);
+    simgrid::instr::StateType* state =
+        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
+    state->popEvent(MSG_get_clock(), process_container);
   }
 }

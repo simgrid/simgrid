@@ -56,6 +56,31 @@ StateType::StateType(std::string name, Type* father) : ValueType(name, father)
   logDefinition(PAJE_DefineStateType);
 }
 
+StateType::~StateType()
+{
+  events_.clear();
+}
+
+void StateType::setEvent(double timestamp, Container* container, std::string value_name)
+{
+  events_.push_back(new StateEvent(timestamp, container, this, PAJE_SetState, getEntityValue(value_name)));
+}
+
+void StateType::pushEvent(double timestamp, Container* container, std::string value_name, void* extra)
+{
+  events_.push_back(new StateEvent(timestamp, container, this, PAJE_PushState, getEntityValue(value_name), extra));
+}
+
+void StateType::pushEvent(double timestamp, Container* container, std::string value_name)
+{
+  events_.push_back(new StateEvent(timestamp, container, this, PAJE_PushState, getEntityValue(value_name)));
+}
+
+void StateType::popEvent(double timestamp, Container* container)
+{
+  events_.push_back(new StateEvent(timestamp, container, this, PAJE_PopState, nullptr));
+}
+
 VariableType::VariableType(std::string name, std::string color, Type* father) : Type(name, name, color, father)
 {
   XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", getCname(), getId(), father->getCname(), father->getId());

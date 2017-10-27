@@ -188,7 +188,6 @@ void Container::logCreation()
       xbt_free(folder_name);
       xbt_free(filename);
     }
-
     tracing_files.insert({this, ti_unique_file});
   } else {
     THROW_IMPOSSIBLE;
