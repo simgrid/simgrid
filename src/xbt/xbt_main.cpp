@@ -114,7 +114,6 @@ static void xbt_postexit()
   xbt_os_thread_mod_postexit();
   xbt_dynar_free(&xbt_cmdline);
   xbt_log_postexit();
-  free(xbt_binary_name);
 #if SIMGRID_HAVE_MC
   mmalloc_postexit();
 #endif
@@ -131,7 +130,7 @@ void xbt_init(int *argc, char **argv)
     return;
   }
 
-  xbt_binary_name = xbt_strdup(argv[0]);
+  xbt_binary_name = argv[0];
   xbt_cmdline     = xbt_dynar_new(sizeof(char*), NULL);
   for (int i = 0; i < *argc; i++)
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
