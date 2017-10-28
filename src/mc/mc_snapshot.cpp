@@ -156,6 +156,8 @@ int MC_snapshot_memcmp(
   return MC_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
 }
 
+} // extern "C"
+
 namespace simgrid {
 namespace mc {
 
@@ -190,8 +192,6 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 }
 
 }
-}
-
 }
 
 #ifdef SIMGRID_TEST

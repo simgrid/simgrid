@@ -8,6 +8,8 @@
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 
+#include <xbt/asserts.h> // xbt_log_no_loc
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
 simgrid::vm::VMModel* surf_vm_model = nullptr;
@@ -128,8 +130,6 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   XBT_VERB("Create VM(%s)@PM(%s)", piface->getCname(), hostPM_->getCname());
 }
 
-extern "C" int
-    xbt_log_no_loc; /* ugly pimpl to ensure that the debug info in the known issue below don't break the test */
 /** @brief A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation */
 VirtualMachineImpl::~VirtualMachineImpl()
 {
