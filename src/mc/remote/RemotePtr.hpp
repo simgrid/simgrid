@@ -40,11 +40,14 @@ private:
 public:
   Remote() { /* Nothing to do */}
   ~Remote() { /* Nothing to do */}
-  Remote(T& p) { std::memcpy(&buffer, &p, sizeof(buffer)); }
-  Remote(Remote const& that) { std::memcpy(&buffer, &that.buffer, sizeof(buffer)); }
+  Remote(T const& p) { std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&p), sizeof(buffer)); }
+  Remote(Remote const& that)
+  {
+    std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&that.buffer), sizeof(buffer));
+  }
   Remote& operator=(Remote const& that)
   {
-    std::memcpy(&buffer, &that.buffer, sizeof(buffer));
+    std::memcpy(static_cast<void*>(&buffer), static_cast<const void*>(&that.buffer), sizeof(buffer));
     return *this;
   }
   T* getBuffer() { return &buffer; }
