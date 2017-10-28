@@ -56,6 +56,7 @@ public:
 
 class ContainerType : public Type {
 public:
+  ContainerType(std::string name) : Type(name, name, "", nullptr){};
   ContainerType(std::string name, Type* father);
 };
 

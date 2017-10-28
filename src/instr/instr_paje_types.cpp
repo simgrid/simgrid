@@ -186,7 +186,7 @@ EntityValue* ValueType::getEntityValue(std::string name)
 
 ContainerType* Type::createRootType()
 {
-  rootType = static_cast<ContainerType*>(new simgrid::instr::Type("0", "0", "", nullptr));
+  rootType = new ContainerType("0");
   return rootType;
 }
 

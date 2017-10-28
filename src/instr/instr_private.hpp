@@ -85,8 +85,8 @@ public:
   e_event_type eventType_;
   PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType)
       : container(container), type(type), timestamp_(timestamp), eventType_(eventType){};
-  virtual void print() = 0;
   virtual ~PajeEvent();
+  virtual void print() = 0;
   void insertIntoBuffer();
 };
 
