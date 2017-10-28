@@ -22,8 +22,8 @@ class Arg(object):
         return self.type
 
 class Simcall(object):
-    simcalls_BODY = None
-    simcalls_PRE = None
+    simcalls_body = None
+    simcalls_pre = None
 
     def __init__(self, name, handler, res, args, call_kind):
         self.name = name
@@ -34,11 +34,11 @@ class Simcall(object):
 
     def check(self):
         # libsmx.c  simcall_BODY_
-        if self.simcalls_BODY is None:
+        if self.simcalls_body is None:
             f = open('libsmx.cpp')
-            self.simcalls_BODY = set(re.findall(r'simcall_BODY_(.*?)\(', f.read()))
+            self.simcalls_body = set(re.findall(r'simcall_BODY_(.*?)\(', f.read()))
             f.close()
-        if self.name not in self.simcalls_BODY:
+        if self.name not in self.simcalls_body:
             print ('# ERROR: No function calling simcall_BODY_%s' % self.name)
             print ('# Add something like this to libsmx.c:')
             print ('%s simcall_%s(%s)' % (self.res.rettype(), self.name, ', '.
@@ -50,14 +50,14 @@ class Simcall(object):
 
         # smx_*.c void simcall_HANDLER_host_on(smx_simcall_t simcall,
         # smx_host_t h)
-        if self.simcalls_PRE is None:
-            self.simcalls_PRE = set()
+        if self.simcalls_pre is None:
+            self.simcalls_pre = set()
             for fn in glob.glob('smx_*') + glob.glob('ActorImpl*') + glob.glob('../mc/*cpp'):
                 f = open(fn)
-                self.simcalls_PRE |= set(re.findall(r'simcall_HANDLER_(.*?)\(', f.read()))
+                self.simcalls_pre |= set(re.findall(r'simcall_HANDLER_(.*?)\(', f.read()))
                 f.close()
         if self.need_handler:
-            if self.name not in self.simcalls_PRE:
+            if self.name not in self.simcalls_pre:
                 print ('# ERROR: No function called simcall_HANDLER_%s' % self.name)
                 print ('# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):')
                 print ('%s simcall_HANDLER_%s(smx_simcall_t simcall%s)' % (self.res.rettype(), self.name, ''.
@@ -67,7 +67,7 @@ class Simcall(object):
                 print ('}')
                 return False
         else:
-            if self.name in self.simcalls_PRE:
+            if self.name in self.simcalls_pre:
                 print ('# ERROR: You have a function called simcall_HANDLER_%s, but that simcall is not using any handler' % self.name)
                 print ('# Either change your simcall definition, or kill that function')
                 return False
