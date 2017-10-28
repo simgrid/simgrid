@@ -407,10 +407,9 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     remote_act = simcall_comm_wait__getraw__comm(req);
     break;
 
-  case SIMCALL_COMM_WAITANY: {
+  case SIMCALL_COMM_WAITANY:
     read_element(mc_model_checker->process(), &remote_act, remote(simcall_comm_waitany__getraw__comms(req)), idx,
                  sizeof(remote_act));
-    }
     break;
 
   case SIMCALL_COMM_TESTANY:
@@ -470,7 +469,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
       label = simgrid::xbt::string_printf("[(%lu)] iRecv", issuer->pid);
     break;
 
-  case SIMCALL_COMM_WAIT: {
+  case SIMCALL_COMM_WAIT:
     if (value == -1) {
       if (issuer->host)
         label = simgrid::xbt::string_printf("[(%lu)%s] WaitTimeout", issuer->pid, MC_smx_actor_get_host_name(issuer));
@@ -496,7 +495,6 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
                     dst_proc ? dst_proc->pid : 0);
     }
     break;
-  }
 
   case SIMCALL_COMM_TEST: {
     simgrid::kernel::activity::ActivityImpl* remote_act = simcall_comm_test__getraw__comm(req);
