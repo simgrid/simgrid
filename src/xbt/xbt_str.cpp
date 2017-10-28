@@ -194,34 +194,6 @@ xbt_dynar_t xbt_str_split_quoted(const char *s)
   return res;
 }
 
-/** @brief Join a set of strings as a single string */
-char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
-{
-  int len     = 1;
-  int dyn_len = xbt_dynar_length(dyn);
-  unsigned int cpt;
-  char* cursor;
-
-  if (not dyn_len)
-    return xbt_strdup("");
-
-  /* compute the length */
-  xbt_dynar_foreach(dyn, cpt, cursor) {
-    len += strlen(cursor);
-  }
-  len += strlen(sep) * dyn_len;
-  /* Do the job */
-  char* res = (char*)xbt_malloc(len);
-  char* p   = res;
-  xbt_dynar_foreach(dyn, cpt, cursor) {
-    if ((int) cpt < dyn_len - 1)
-      p += snprintf(p,len, "%s%s", cursor, sep);
-    else
-      p += snprintf(p,len, "%s", cursor);
-  }
-  return res;
-}
-
 /** @brief Join a set of strings as a single string
  *
  * The parameter must be a nullptr-terminated array of chars,
@@ -299,14 +271,16 @@ XBT_TEST_SUITE("xbt_str", "String Handling");
 
 #define mytest(name, input, expected)                                                                                  \
   xbt_test_add(name);                                                                                                  \
-  d = xbt_str_split_quoted(input);                                                                                     \
-  s = xbt_str_join(d, "XXX");                                                                                          \
+  a = static_cast<char**>(xbt_dynar_to_array(xbt_str_split_quoted(input)));                                            \
+  s = xbt_str_join_array(a, "XXX");                                                                                    \
   xbt_test_assert(not strcmp(s, expected), "Input (%s) leads to (%s) instead of (%s)", input, s, expected);            \
-  free(s);                                                                                                             \
-  xbt_dynar_free(&d);
-XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_str_split_quoted")
+  xbt_free(s);                                                                                                         \
+  for (int i = 0; a[i] != nullptr; i++)                                                                                \
+    xbt_free(a[i]);                                                                                                    \
+  xbt_free(a);
+XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "Test the function xbt_str_split_quoted")
 {
-  xbt_dynar_t d;
+  char** a;
   char *s;
 
   mytest("Empty", "", "");
