@@ -91,7 +91,7 @@ class Request : public F2C {
     static int match_send(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored);
     static int match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl* ignored);
 
-    int add_f();
+    int add_f() override;
     static void free_f(int id);
     static Request* f2c(int);
 

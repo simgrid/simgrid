@@ -33,10 +33,12 @@ class F2C {
     static void delete_lookup();
     static std::unordered_map<std::string, F2C*>* lookup();
 
+    virtual ~F2C() = default;
+
     //Override these to handle specific values.
-    int add_f();
+    virtual int add_f();
     static void free_f(int id);
-    int c2f();
+    virtual int c2f();
 
     // This method should be overridden in all subclasses to avoid casting the result when calling it.
     // For the default one, the MPI_*_NULL returned is assumed to be NULL.
