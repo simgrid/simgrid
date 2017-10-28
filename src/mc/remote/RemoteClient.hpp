@@ -122,10 +122,7 @@ public:
   }
 
   std::string read_string(RemotePtr<char> address) const;
-  std::string read_string(RemotePtr<char> address, std::size_t len) const
-  {
-    return AddressSpace::read_string(address, len);
-  }
+  using AddressSpace::read_string;
 
   // Write memory:
   void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);
