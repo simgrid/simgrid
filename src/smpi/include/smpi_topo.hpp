@@ -48,7 +48,6 @@ class Topo_Cart: public Topo {
 class Topo_Graph: public Topo {
   private:
     int nnodes_;
-    int nedges_;
     int *index_;
     int *edges_;
   public:
@@ -58,13 +57,10 @@ class Topo_Graph: public Topo {
 
 class Topo_Dist_Graph: public Topo {
   private:
-    int indegree_;
     int *in_;
     int *in_weights_;
-    int outdegree_;
     int *out_;
     int *out_weights_;
-    int is_weighted_;
   public:
     Topo_Dist_Graph();
     ~Topo_Dist_Graph();
