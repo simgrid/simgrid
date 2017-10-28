@@ -5,17 +5,20 @@
 
 #define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
 
+#include <algorithm>
 #include <cassert>
 #include <cerrno>
 #include <cstddef>
 #include <cstdint>
+#include <regex>
+#include <string>
+#include <vector>
 
 #include <sys/ptrace.h>
 
 #include <cstdio>
 
 #include <fcntl.h>
-#include <regex.h>
 #include <sys/mman.h> // PROT_*
 #include <sys/types.h>
 #include <unistd.h>
@@ -45,16 +48,13 @@ using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc, "MC process information");
 
-// ***** Helper stuff
-
-#define SO_RE "\\.so[\\.0-9]*$"
-#define VERSION_RE "-[\\.0-9-]*$"
-
 namespace simgrid {
 namespace mc {
 
+// ***** Helper stuff
+
 // List of library which memory segments are not considered:
-static const char* const filtered_libraries[] = {
+static const std::vector<std::string> filtered_libraries = {
 #ifdef __linux__
     "ld",
 #elif defined __FreeBSD__
@@ -99,39 +99,30 @@ static const char* const filtered_libraries[] = {
     "libunwind-ptrace",
     "libz"};
 
-static bool is_simgrid_lib(const char* libname)
+static bool is_simgrid_lib(const std::string& libname)
 {
-  return not strcmp(libname, "libsimgrid");
+  return libname == "libsimgrid";
 }
 
-static bool is_filtered_lib(const char* libname)
+static bool is_filtered_lib(const std::string& libname)
 {
-  for (const char* const& filtered_lib : filtered_libraries)
-    if (strcmp(libname, filtered_lib) == 0)
-      return true;
-  return false;
+  return std::find(begin(filtered_libraries), end(filtered_libraries), libname) != end(filtered_libraries);
 }
 
-struct s_mc_memory_map_re {
-  regex_t so_re;
-  regex_t version_re;
-};
-
-static char* get_lib_name(const char* pathname, s_mc_memory_map_re* res)
+static std::string get_lib_name(const std::string& pathname)
 {
+  static const std::regex so_re("\\.so[.0-9]*$");
+  static const std::regex version_re("-[.0-9-]*$");
   std::string map_basename = simgrid::xbt::Path(pathname).getBasename();
+  std::string libname;
 
-  regmatch_t match;
-  if (regexec(&res->so_re, map_basename.c_str(), 1, &match, 0))
-    return nullptr;
+  std::smatch match;
+  if (std::regex_search(map_basename, match, so_re)) {
+    libname = match.prefix();
 
-  char* libname = strndup(map_basename.c_str(), match.rm_so);
-
-  // Strip the version suffix:
-  if (libname && not regexec(&res->version_re, libname, 1, &match, 0)) {
-    char* temp = libname;
-    libname    = strndup(temp, match.rm_so);
-    free(temp);
+    // Strip the version suffix:
+    if (std::regex_search(libname, match, version_re))
+      libname = match.prefix();
   }
 
   return libname;
@@ -291,11 +282,6 @@ void RemoteClient::init_memory_map_info()
   this->binary_info     = nullptr;
   this->libsimgrid_info = nullptr;
 
-  s_mc_memory_map_re res;
-
-  if (regcomp(&res.so_re, SO_RE, 0) || regcomp(&res.version_re, VERSION_RE, 0))
-    xbt_die(".so regexp did not compile");
-
   std::vector<simgrid::xbt::VmMap> const& maps = this->memory_map_;
 
   const char* current_name = nullptr;
@@ -330,13 +316,10 @@ void RemoteClient::init_memory_map_info()
       continue;
 
     const bool is_executable = not i;
-    char* libname            = nullptr;
+    std::string libname;
     if (not is_executable) {
-      libname = get_lib_name(pathname, &res);
-      if (not libname)
-        continue;
+      libname = get_lib_name(pathname);
       if (is_filtered_lib(libname)) {
-        free(libname);
         continue;
       }
     }
@@ -346,13 +329,9 @@ void RemoteClient::init_memory_map_info()
     this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;
-    else if (libname && is_simgrid_lib(libname))
+    else if (is_simgrid_lib(libname))
       this->libsimgrid_info = info;
-    free(libname);
   }
-
-  regfree(&res.so_re);
-  regfree(&res.version_re);
 
   // Resolve time (including across different objects):
   for (auto const& object_info : this->object_infos)
