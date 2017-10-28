@@ -111,8 +111,8 @@ static bool is_filtered_lib(const std::string& libname)
 
 static std::string get_lib_name(const std::string& pathname)
 {
-  static const std::regex so_re("\\.so[.0-9]*$");
-  static const std::regex version_re("-[.0-9-]*$");
+  static const std::regex so_re("\\.so[\\.0-9]*$", std::regex_constants::basic);
+  static const std::regex version_re("-[\\.0-9-]*$", std::regex_constants::basic);
   std::string map_basename = simgrid::xbt::Path(pathname).getBasename();
   std::string libname;
 
