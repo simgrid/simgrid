@@ -143,7 +143,6 @@ void add_region(int index, simgrid::mc::Snapshot* snapshot,
   snapshot->snapshot_regions[index]
     = std::unique_ptr<simgrid::mc::RegionSnapshot>(
       new simgrid::mc::RegionSnapshot(std::move(region)));
-  return;
 }
 
 static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::Snapshot* snapshot)

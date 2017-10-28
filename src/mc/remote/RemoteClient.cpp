@@ -649,7 +649,6 @@ void RemoteClient::dumpStack()
 
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
-  return;
 }
 
 bool RemoteClient::actor_is_enabled(aid_t pid)

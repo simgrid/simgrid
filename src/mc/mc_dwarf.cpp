@@ -831,7 +831,7 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
   if (not variable)
     return;
   // Those arrays are sorted later:
-  else if (variable->global)
+  if (variable->global)
     info->global_variables.push_back(std::move(*variable));
   else if (frame != nullptr)
     frame->variables.push_back(std::move(*variable));
