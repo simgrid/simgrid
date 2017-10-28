@@ -375,13 +375,8 @@ void ModelChecker::handle_waitpid()
 
 void ModelChecker::on_signal(int signo)
 {
-  switch(signo) {
-  case SIGCHLD:
+  if (signo == SIGCHLD)
     this->handle_waitpid();
-    break;
-  default:
-    break;
-  }
 }
 
 void ModelChecker::wait_for_requests()
