@@ -10,7 +10,6 @@
 #include <cerrno>
 #include <cstddef>
 #include <cstdint>
-#include <regex>
 #include <string>
 #include <vector>
 
@@ -111,18 +110,22 @@ static bool is_filtered_lib(const std::string& libname)
 
 static std::string get_lib_name(const std::string& pathname)
 {
-  static const std::regex so_re("\\.so[\\.0-9]*$", std::regex_constants::basic);
-  static const std::regex version_re("-[\\.0-9-]*$", std::regex_constants::basic);
+  constexpr char digits[]  = ".0123456789";
   std::string map_basename = simgrid::xbt::Path(pathname).getBasename();
   std::string libname;
 
-  std::smatch match;
-  if (std::regex_search(map_basename, match, so_re)) {
-    libname = match.prefix();
+  size_t pos = map_basename.rfind(".so");
+  if (pos != std::string::npos && map_basename.find_first_not_of(digits, pos + 3) == std::string::npos) {
+    // strip the extension (matching regex "\.so[.0-9]*$")
+    libname.assign(map_basename, 0, pos);
 
-    // Strip the version suffix:
-    if (std::regex_search(libname, match, version_re))
-      libname = match.prefix();
+    // strip the version suffix (matching regex "-[.0-9-]*$")
+    while (true) {
+      pos = libname.rfind('-');
+      if (pos == std::string::npos || libname.find_first_not_of(digits, pos + 1) != std::string::npos)
+        break;
+      libname.erase(pos);
+    }
   }
 
   return libname;
