@@ -13,6 +13,7 @@
 #include <boost/context/detail/fcontext.hpp>
 #endif
 
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <vector>
@@ -96,7 +97,7 @@ public:
 private:
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<ParallelBoostContext*> workers_context_;
-  static uintptr_t threads_working_;
+  static std::atomic<uintptr_t> threads_working_;
   static xbt_os_thread_key_t worker_id_key_;
 };
 #endif

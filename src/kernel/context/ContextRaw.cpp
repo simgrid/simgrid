@@ -315,7 +315,7 @@ void SerialRawContext::run_all()
 #if HAVE_THREAD_CONTEXTS
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelRawContext::parmap_;
-uintptr_t ParallelRawContext::threads_working_;         /* number of threads that have started their work */
+std::atomic<uintptr_t> ParallelRawContext::threads_working_; /* number of threads that have started their work */
 xbt_os_thread_key_t ParallelRawContext::worker_id_key_; /* thread-specific storage for the thread id */
 std::vector<ParallelRawContext*> ParallelRawContext::workers_context_; /* space to save the worker context
                                                                           in each thread */
@@ -363,7 +363,7 @@ void ParallelRawContext::suspend()
     XBT_DEBUG("No more processes to run");
     uintptr_t worker_id = reinterpret_cast<uintptr_t>(xbt_os_thread_get_specific(worker_id_key_));
     next_context        = workers_context_[worker_id];
-    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)", worker_id, threads_working_);
+    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)", worker_id, threads_working_.load());
   }
 
   SIMIX_context_set_current(next_context);
@@ -372,7 +372,7 @@ void ParallelRawContext::suspend()
 
 void ParallelRawContext::resume()
 {
-  uintptr_t worker_id = __sync_fetch_and_add(&threads_working_, 1);
+  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
   xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
   ParallelRawContext* worker_context = static_cast<ParallelRawContext*>(SIMIX_context_self());
   workers_context_[worker_id]        = worker_context;

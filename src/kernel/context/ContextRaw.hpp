@@ -6,6 +6,7 @@
 #ifndef SIMGRID_SIMIX_RAW_CONTEXT_HPP
 #define SIMGRID_SIMIX_RAW_CONTEXT_HPP
 
+#include <atomic>
 #include <cstdint>
 #include <functional>
 #include <vector>
@@ -79,7 +80,7 @@ public:
 private:
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<ParallelRawContext*> workers_context_;
-  static uintptr_t threads_working_;
+  static std::atomic<uintptr_t> threads_working_;
   static xbt_os_thread_key_t worker_id_key_;
 };
 #endif

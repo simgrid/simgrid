@@ -202,7 +202,7 @@ void SerialBoostContext::run_all()
 #if HAVE_THREAD_CONTEXTS
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelBoostContext::parmap_;
-uintptr_t ParallelBoostContext::threads_working_;
+std::atomic<uintptr_t> ParallelBoostContext::threads_working_;
 xbt_os_thread_key_t ParallelBoostContext::worker_id_key_;
 std::vector<ParallelBoostContext*> ParallelBoostContext::workers_context_;
 
@@ -254,7 +254,7 @@ void ParallelBoostContext::suspend()
 
 void ParallelBoostContext::resume()
 {
-  uintptr_t worker_id = __sync_fetch_and_add(&threads_working_, 1);
+  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
   xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
 
   ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(SIMIX_context_self());

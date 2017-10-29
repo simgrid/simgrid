@@ -188,7 +188,7 @@ void SerialUContext::run_all()
 #if HAVE_THREAD_CONTEXTS
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelUContext::parmap_;
-uintptr_t ParallelUContext::threads_working_;                      /* number of threads that have started their work */
+std::atomic<uintptr_t> ParallelUContext::threads_working_;         /* number of threads that have started their work */
 xbt_os_thread_key_t ParallelUContext::worker_id_key_;              /* thread-specific storage for the thread id */
 std::vector<ParallelUContext*> ParallelUContext::workers_context_; /* space to save the worker's context
                                                                     * in each thread */
@@ -263,7 +263,7 @@ void ParallelUContext::suspend()
 void ParallelUContext::resume()
 {
   // What is my containing body?
-  uintptr_t worker_id = __sync_fetch_and_add(&threads_working_, 1);
+  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
   // Store the number of my containing body in os-thread-specific area :
   xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
   // Get my current soul:
