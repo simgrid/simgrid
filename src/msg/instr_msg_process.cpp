@@ -40,20 +40,18 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
   }
 }
 
-void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host)
+void TRACE_msg_process_create(std::string process_name, int process_pid, msg_host_t host)
 {
   if (TRACE_msg_process_is_enabled()){
     container_t host_container = simgrid::instr::Container::byName(host->getName());
-    new simgrid::instr::Container(std::string(process_name) + "-" + std::to_string(process_pid), "MSG_PROCESS",
-                                  host_container);
+    new simgrid::instr::Container(process_name + "-" + std::to_string(process_pid), "MSG_PROCESS", host_container);
   }
 }
 
-void TRACE_msg_process_destroy (const char *process_name, int process_pid)
+void TRACE_msg_process_destroy(std::string process_name, int process_pid)
 {
   if (TRACE_msg_process_is_enabled()) {
-    container_t process =
-        simgrid::instr::Container::byNameOrNull(std::string(process_name) + "-" + std::to_string(process_pid));
+    container_t process = simgrid::instr::Container::byNameOrNull(process_name + "-" + std::to_string(process_pid));
     if (process) {
       process->removeFromParent();
       delete process;

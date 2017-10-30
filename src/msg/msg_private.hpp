@@ -95,6 +95,8 @@ struct s_MSG_Global_t {
 typedef s_MSG_Global_t* MSG_Global_t;
 
 XBT_PRIVATE std::string instr_pid(msg_process_t proc);
+XBT_PRIVATE void TRACE_msg_process_create(std::string process_name, int process_pid, msg_host_t host);
+XBT_PRIVATE void TRACE_msg_process_destroy(std::string process_name, int process_pid);
 
 extern "C" {
 
@@ -124,8 +126,6 @@ XBT_PRIVATE void TRACE_msg_task_put_end();
 
 /* declaration of instrumentation functions from msg_process_instr.c */
 XBT_PRIVATE void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host);
-XBT_PRIVATE void TRACE_msg_process_create(const char* process_name, int process_pid, msg_host_t host);
-XBT_PRIVATE void TRACE_msg_process_destroy(const char* process_name, int process_pid);
 XBT_PRIVATE void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_suspend(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_resume(msg_process_t process);
