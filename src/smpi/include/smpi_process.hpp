@@ -7,6 +7,7 @@
 #ifndef SMPI_PROCESS_HPP
 #define SMPI_PROCESS_HPP
 
+#include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include "xbt/synchro.h"
@@ -36,6 +37,7 @@ class Process {
     int return_value_ = 0;
     smpi_trace_call_location_t trace_call_loc_;
     smx_actor_t process_ = nullptr;
+    smpi_privatization_region_t privatized_region_;
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
     int papi_event_set_;
@@ -53,6 +55,8 @@ class Process {
     void set_user_data(void *data);
     void *get_user_data();
     smpi_trace_call_location_t* call_location();
+    void set_privatized_region(smpi_privatization_region_t region);
+    smpi_privatization_region_t privatized_region();
     int index();
     MPI_Comm comm_world();
     smx_mailbox_t mailbox();

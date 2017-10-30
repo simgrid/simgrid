@@ -83,7 +83,7 @@ public:
  * which are not currently enforced.
  *
  * The exact topology is described in the mandatory topo_parameters
- * field, and follow the "h ; m_h, ..., m_1 ; w_h, ..., w_1 ; p_h, ..., p_1" format.
+ * field, and follow the "h ; m_1, ..., m_h ; w_1, ..., w_h ; p_1, ..., p_h" format.
  * h stands for the switches levels number, i.e. the fat tree is of height h,
  * without the processing nodes. m_i stands for the number of lower level nodes
  * connected to a node in level i. w_i stands for the number of upper levels

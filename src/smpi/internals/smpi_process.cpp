@@ -166,6 +166,16 @@ smpi_trace_call_location_t* Process::call_location()
   return &trace_call_loc_;
 }
 
+void Process::set_privatized_region(smpi_privatization_region_t region)
+{
+  privatized_region_ = region;
+}
+
+smpi_privatization_region_t Process::privatized_region()
+{
+  return privatized_region_;
+}
+
 int Process::index()
 {
   return index_;
@@ -270,7 +280,7 @@ void Process::init(int *argc, char ***argv){
     smx_actor_t proc = SIMIX_process_self();
     proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
-    int index = proc->pid - 1;
+    int index = proc->pid - 1; // The maestro process has always ID 0 but we don't need that process here
 
     if(index_to_process_data == nullptr){
       index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
@@ -284,14 +294,17 @@ void Process::init(int *argc, char ***argv){
       throw std::invalid_argument(std::string("Invalid rank: ") + (*argv)[2]);
     }
 
+    // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
+    // this up here so that I can set the privatized region before the switch.
+    Process* process = smpi_process_remote(index);
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using segment index of the process  */
       index = proc->segment_index;
+      process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
       SMPI_switch_data_segment(index);
     }
 
-    Process* process = smpi_process_remote(index);
     process->set_data(index, argc, argv);
   }
   xbt_assert(smpi_process(),

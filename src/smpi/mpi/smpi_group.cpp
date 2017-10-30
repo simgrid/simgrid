@@ -19,13 +19,11 @@ namespace smpi{
 Group::Group()
 {
   size_              = 0;       /* size */
-  rank_to_index_map_ = nullptr; /* rank_to_index_map_ */
   refcount_          = 1;       /* refcount_: start > 0 so that this group never gets freed */
 }
 
-Group::Group(int n) : size_(n)
+Group::Group(int n) : size_(n), rank_to_index_map_(size_)
 {
-  rank_to_index_map_ = new int[size_];
   refcount_ = 1;
   for (int i              = 0; i < size_; i++)
     rank_to_index_map_[i] = MPI_UNDEFINED;
@@ -35,11 +33,8 @@ Group::Group(MPI_Group origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();
-    rank_to_index_map_ = new int[size_];
     refcount_          = 1;
-    for (int i = 0; i < size_; i++) {
-      rank_to_index_map_[i] = origin->rank_to_index_map_[i];
-    }
+    rank_to_index_map_ = origin->rank_to_index_map_;
 
     for (auto const& elm : origin->index_to_rank_map_) {
       index_to_rank_map_.insert({elm.first, elm.second});
@@ -49,7 +44,7 @@ Group::Group(MPI_Group origin)
 
 Group::~Group()
 {
-  delete[] rank_to_index_map_;
+  rank_to_index_map_.clear();
 }
 
 void Group::set_mapping(int index, int rank)

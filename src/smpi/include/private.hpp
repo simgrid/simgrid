@@ -93,7 +93,7 @@ XBT_PRIVATE void smpi_really_switch_data_segment(int dest);
 XBT_PRIVATE int smpi_is_privatization_file(char* file);
 
 XBT_PRIVATE void smpi_get_executable_global_size();
-XBT_PRIVATE void smpi_initialize_global_memory_segments();
+XBT_PRIVATE void smpi_backup_global_memory_segment();
 XBT_PRIVATE void smpi_destroy_global_memory_segments();
 XBT_PRIVATE void smpi_bench_destroy();
 XBT_PRIVATE void smpi_bench_begin();
@@ -410,9 +410,10 @@ struct s_smpi_privatization_region_t {
 };
 typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 
-extern XBT_PRIVATE smpi_privatization_region_t smpi_privatization_regions;
+// extern XBT_PRIVATE smpi_privatization_region_t smpi_privatization_regions;
 extern XBT_PRIVATE int smpi_loaded_page;
 extern XBT_PRIVATE int smpi_universe_size;
+XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process();
 }
 
 /**

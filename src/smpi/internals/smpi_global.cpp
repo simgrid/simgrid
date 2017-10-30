@@ -233,8 +233,6 @@ int smpi_enabled() {
 
 void smpi_global_init()
 {
-  MPI_Group group;
-
   if (not MC_is_active()) {
     global_timer = xbt_os_timer_new();
     xbt_os_walltimer_start(global_timer);
@@ -343,6 +341,7 @@ void smpi_global_init()
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
+  MPI_Group group;
   if (smpirun) {
     group = new  simgrid::smpi::Group(process_count);
     MPI_COMM_WORLD = new  simgrid::smpi::Comm(group, nullptr);
@@ -355,8 +354,6 @@ void smpi_global_init()
 
 void smpi_global_destroy()
 {
-  int count = smpi_process_count();
-
   smpi_bench_destroy();
   smpi_shared_destroy();
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
@@ -365,7 +362,7 @@ void smpi_global_destroy()
   }else{
       smpi_deployment_cleanup_instances();
   }
-  for (int i = 0; i < count; i++) {
+  for (int i = 0, count = smpi_process_count(); i < count; i++) {
     if(process_data[i]->comm_self()!=MPI_COMM_NULL){
       simgrid::smpi::Comm::destroy(process_data[i]->comm_self());
     }
@@ -664,9 +661,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
       "You may want to use sampling functions or trace replay to reduce this.");
     }
   }
-  int count = smpi_process_count();
   int ret   = 0;
-  for (int i = 0; i < count; i++) {
+  for (int i = 0, count = smpi_process_count(); i < count; i++) {
     if(process_data[i]->return_value()!=0){
       ret=process_data[i]->return_value();//return first non 0 value
       break;
@@ -688,7 +684,7 @@ void SMPI_init(){
   TRACE_smpi_alloc();
   simgrid::surf::surfExitCallbacks.connect(TRACE_smpi_release);
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
-    smpi_initialize_global_memory_segments();
+    smpi_backup_global_memory_segment();
 }
 
 void SMPI_finalize(){

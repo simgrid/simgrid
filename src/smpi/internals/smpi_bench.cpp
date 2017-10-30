@@ -27,7 +27,6 @@ double smpi_host_speed;
 
 shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
 double smpi_total_benched_time = 0;
-smpi_privatization_region_t smpi_privatization_regions;
 
 extern "C" XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
 void smpi_execute_flops_(double *flops)
