@@ -209,7 +209,7 @@ template <typename T> void Parmap<T>::apply(void (*fun)(T), const std::vector<T>
   this->fun   = fun;
   this->data  = &data;
   this->index = 0;
-  this->synchro->master_signal(); // maestro runs futex_wait to wake all the minions (the working threads)
+  this->synchro->master_signal(); // maestro runs futex_wake to wake all the minions (the working threads)
   this->work();                   // maestro works with its minions
   this->synchro->master_wait();   // When there is no more work to do, then maestro waits for the last minion to stop
   XBT_CDEBUG(xbt_parmap, "Job done"); //   ... and proceeds
@@ -266,7 +266,7 @@ template <typename T> typename Parmap<T>::Synchro* Parmap<T>::new_synchro(e_xbt_
 #if HAVE_FUTEX_H
       res = new FutexSynchro(*this);
 #else
-      xbt_die("Fute is not available on this OS.");
+      xbt_die("Futex is not available on this OS.");
 #endif
       break;
     case XBT_PARMAP_BUSY_WAIT:
