@@ -11,8 +11,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
 
-int test_amount = 99;           /* Up to 999 to not break the logs (and thus the testing mechanism) */
-int crasher_amount = 99;        /* Up to 99  to not break the logs (and thus the testing mechanism) */
+const int test_amount    = 99;  /* Up to 99 to not break the logs (and thus the testing mechanism) */
+const int crasher_amount = 99;  /* Up to 99 to not break the logs (and thus the testing mechanism) */
 int *id;                        /* to pass a pointer to the threads without race condition */
 
 int more_info = 0;              /* SET IT TO TRUE TO GET MORE INFO */
