@@ -139,10 +139,10 @@ int TRACE_end()
     TRACE_last_timestamp_to_dump = surf_get_clock();
     TRACE_paje_dump_buffer(true);
 
-    container_t root = simgrid::instr::Container::getRootContainer();
+    simgrid::instr::Type* root_type = simgrid::instr::Container::getRootContainer()->type_;
     /* destroy all data structures of tracing (and free) */
-    delete root;
-    delete root->type_;
+    delete simgrid::instr::Container::getRootContainer();
+    delete root_type;
 
     /* close the trace files */
     const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
