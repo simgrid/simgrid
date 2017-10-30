@@ -338,7 +338,7 @@ template <typename T> void Parmap<T>::PosixSynchro::master_signal()
 template <typename T> void Parmap<T>::PosixSynchro::master_wait()
 {
   xbt_os_mutex_acquire(done_mutex);
-  if (this->parmap.thread_counter < this->parmap.num_workers) {
+  while (this->parmap.thread_counter < this->parmap.num_workers) {
     /* wait for all workers to be ready */
     xbt_os_cond_wait(done_cond, done_mutex);
   }
@@ -360,7 +360,7 @@ template <typename T> void Parmap<T>::PosixSynchro::worker_wait(unsigned round)
 {
   xbt_os_mutex_acquire(ready_mutex);
   /* wait for more work */
-  if (this->parmap.work_round != round) {
+  while (this->parmap.work_round != round) {
     xbt_os_cond_wait(ready_cond, ready_mutex);
   }
   xbt_os_mutex_release(ready_mutex);
