@@ -12,7 +12,9 @@
 #include "simgrid/instr.h"
 #include "simgrid_config.h"
 #include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_events.hpp"
 #include "src/instr/instr_paje_types.hpp"
+#include "src/instr/instr_paje_values.hpp"
 #include "src/internal_config.h"
 #include "xbt/graph.h"
 #include <iomanip> /** std::setprecision **/
@@ -28,124 +30,6 @@
 #define drand48() (rand() / (RAND_MAX + 1.0))
 #endif
 
-namespace simgrid {
-namespace instr {
-
-class Container;
-class Type;
-class EntityValue;
-class ContainerType;
-class EventType;
-class LinkType;
-class StateType;
-class VariableType;
-
-enum e_event_type : unsigned int {
-  PAJE_DefineContainerType,
-  PAJE_DefineVariableType,
-  PAJE_DefineStateType,
-  PAJE_DefineEventType,
-  PAJE_DefineLinkType,
-  PAJE_DefineEntityValue,
-  PAJE_CreateContainer,
-  PAJE_DestroyContainer,
-  PAJE_SetVariable,
-  PAJE_AddVariable,
-  PAJE_SubVariable,
-  PAJE_SetState,
-  PAJE_PushState,
-  PAJE_PopState,
-  PAJE_ResetState,
-  PAJE_StartLink,
-  PAJE_EndLink,
-  PAJE_NewEvent
-};
-
-class EntityValue {
-  long long int id_;
-  std::string name_;
-  std::string color_;
-  Type* father_;
-
-public:
-  explicit EntityValue(std::string name, std::string color, Type* father);
-  ~EntityValue() = default;
-  const char* getCname() { return name_.c_str(); }
-  long long int getId() { return id_; }
-  void print();
-};
-
-class PajeEvent {
-protected:
-  Container* container;
-  Type* type;
-
-public:
-  double timestamp_;
-  e_event_type eventType_;
-  PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType)
-      : container(container), type(type), timestamp_(timestamp), eventType_(eventType){};
-  virtual ~PajeEvent();
-  virtual void print() = 0;
-  void insertIntoBuffer();
-};
-
-class VariableEvent : public PajeEvent {
-  double value;
-
-public:
-  VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value);
-  void print() override;
-};
-
-class StateEvent : public PajeEvent {
-  EntityValue* value;
-  std::string filename;
-  int linenumber;
-  void* extra_ = nullptr;
-
-public:
-  StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value);
-  StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value,
-             void* extra);
-  void print() override;
-};
-
-class StartLinkEvent : public PajeEvent {
-  Container* sourceContainer_;
-  std::string value_;
-  std::string key_;
-  int size_;
-
-public:
-  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, std::string value,
-                 std::string key);
-  StartLinkEvent(double timestamp, Container* container, Type* type, Container* sourceContainer, std::string value,
-                 std::string key, int size);
-  void print() override;
-};
-
-class EndLinkEvent : public PajeEvent {
-  Container* destContainer;
-  std::string value;
-  std::string key;
-
-public:
-  EndLinkEvent(double timestamp, Container* container, Type* type, Container* destContainer, std::string value,
-               std::string key);
-  ~EndLinkEvent() = default;
-  void print() override;
-};
-
-class NewEvent : public PajeEvent {
-  EntityValue* val;
-
-public:
-  NewEvent(double timestamp, Container* container, Type* type, EntityValue* val);
-  void print() override;
-};
-}
-} // namespace simgrid::instr
 typedef simgrid::instr::Container* container_t;
 
 extern "C" {

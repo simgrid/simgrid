@@ -99,10 +99,10 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   std::string link_typename = father->type_->getName() + "-" + src->type_->getName() +
                               std::to_string(src->type_->getId()) + "-" + dst->type_->getName() +
                               std::to_string(dst->type_->getId());
-  simgrid::instr::Type* link_type = father->type_->getOrCreateLinkType(link_typename, src->type_, dst->type_);
+  simgrid::instr::LinkType* link = father->type_->getOrCreateLinkType(link_typename, src->type_, dst->type_);
 
   //register EDGE types for triva configuration
-  trivaEdgeTypes.insert(link_type->getName());
+  trivaEdgeTypes.insert(link->getName());
 
   //create the link
   static long long counter = 0;
@@ -110,8 +110,8 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   std::string key = std::to_string(counter);
   counter++;
 
-  new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), father, link_type, src, "topology", key);
-  new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), father, link_type, dst, "topology", key);
+  link->startEvent(SIMIX_get_clock(), father, src, "topology", key);
+  link->endEvent(SIMIX_get_clock(), father, dst, "topology", key);
 
   XBT_DEBUG("  linkContainers %s <-> %s", src->getCname(), dst->getCname());
 }

@@ -102,9 +102,9 @@ void TRACE_msg_task_get_end(double start_time, msg_task_t task)
     state->popEvent(MSG_get_clock(), process_container);
 
     std::string key = std::string("p") + std::to_string(task->counter);
-    simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_TASK_LINK");
-    new simgrid::instr::EndLinkEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), type,
-                                     process_container, "SR", key);
+    simgrid::instr::LinkType* link =
+        static_cast<simgrid::instr::LinkType*>(simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_TASK_LINK"));
+    link->endEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), process_container, "SR", key);
   }
 }
 
@@ -120,10 +120,9 @@ int TRACE_msg_task_put_start(msg_task_t task)
     state->pushEvent(MSG_get_clock(), process_container, "send");
 
     std::string key = std::string("p") + std::to_string(task->counter);
-    simgrid::instr::LinkType* type =
+    simgrid::instr::LinkType* link =
         static_cast<simgrid::instr::LinkType*>(simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_TASK_LINK"));
-    new simgrid::instr::StartLinkEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), type,
-                                       process_container, "SR", key);
+    link->startEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), process_container, "SR", key);
   }
 
   return 1;

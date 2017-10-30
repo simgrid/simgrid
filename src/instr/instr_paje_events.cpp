@@ -15,6 +15,25 @@ std::map<container_t, FILE*> tracing_files; // TI specific
 namespace simgrid {
 namespace instr {
 
+PajeEvent::~PajeEvent()
+{
+  XBT_DEBUG("%s not implemented for %p: event_type=%u, timestamp=%f", __FUNCTION__, this, eventType_, timestamp_);
+}
+
+LinkEvent::LinkEvent(double timestamp, container_t container, Type* type, e_event_type event_type, container_t endpoint,
+                     std::string value, std::string key)
+    : LinkEvent(timestamp, container, type, event_type, endpoint, value, key, -1)
+{
+}
+
+LinkEvent::LinkEvent(double timestamp, container_t container, Type* type, e_event_type event_type, container_t endpoint,
+                     std::string value, std::string key, int size)
+    : PajeEvent(container, type, timestamp, event_type), endpoint_(endpoint), value_(value), key_(key), size_(size)
+{
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f, value:%s", __FUNCTION__, eventType_, timestamp_, value_.c_str());
+  insertIntoBuffer();
+}
+
 VariableEvent::VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value)
     : PajeEvent::PajeEvent(container, type, timestamp, event_type), value(value)
 {
@@ -42,6 +61,27 @@ StateEvent::StateEvent(double timestamp, Container* container, Type* type, e_eve
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
   insertIntoBuffer();
 };
+
+void LinkEvent::print()
+{
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(TRACE_precision());
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
+  if (instr_fmt_type != instr_fmt_paje)
+    return;
+  if (timestamp_ < 1e-12)
+    stream << eventType_ << " " << 0 << " " << type->getId() << " " << container->getId() << " " << value_;
+  else
+    stream << eventType_ << " " << timestamp_ << " " << type->getId() << " " << container->getId() << " " << value_;
+
+  stream << " " << endpoint_->getId() << " " << key_;
+
+  if (TRACE_display_sizes()) {
+    stream << " " << size_;
+  }
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  fprintf(tracing_file, "%s\n", stream.str().c_str());
+}
 
 void VariableEvent::print()
 {

@@ -341,10 +341,10 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
   std::string key = TRACE_smpi_get_key(src, dst, tag, 1);
 
   container_t container      = simgrid::instr::Container::byName(smpi_container(rank));
-  simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MPI_LINK");
+  simgrid::instr::LinkType* link =
+      static_cast<simgrid::instr::LinkType*>(simgrid::instr::Type::getRootType()->byName("MPI_LINK"));
   XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
-  new simgrid::instr::StartLinkEvent(SIMIX_get_clock(), simgrid::instr::Container::getRootContainer(), type, container,
-                                     "PTP", key, size);
+  link->startEvent(SIMIX_get_clock(), simgrid::instr::Container::getRootContainer(), container, "PTP", key, size);
 }
 
 void TRACE_smpi_recv(int src, int dst, int tag)
@@ -355,8 +355,8 @@ void TRACE_smpi_recv(int src, int dst, int tag)
   std::string key = TRACE_smpi_get_key(src, dst, tag, 0);
 
   container_t container      = simgrid::instr::Container::byName(smpi_container(dst));
-  simgrid::instr::Type* type = simgrid::instr::Type::getRootType()->byName("MPI_LINK");
+  simgrid::instr::LinkType* link =
+      static_cast<simgrid::instr::LinkType*>(simgrid::instr::Type::getRootType()->byName("MPI_LINK"));
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
-  new simgrid::instr::EndLinkEvent(SIMIX_get_clock(), simgrid::instr::Container::getRootContainer(), type, container,
-                                   "PTP", key);
+  link->endEvent(SIMIX_get_clock(), simgrid::instr::Container::getRootContainer(), container, "PTP", key);
 }

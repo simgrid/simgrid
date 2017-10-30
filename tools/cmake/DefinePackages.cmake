@@ -551,11 +551,13 @@ set(TRACING_SRC
   src/instr/instr_paje_containers.cpp
   src/instr/instr_paje_containers.hpp
   src/instr/instr_paje_events.cpp
+  src/instr/instr_paje_events.hpp
   src/instr/instr_paje_header.cpp
   src/instr/instr_paje_trace.cpp
   src/instr/instr_paje_types.cpp
   src/instr/instr_paje_types.hpp
   src/instr/instr_paje_values.cpp
+  src/instr/instr_paje_values.hpp
   src/instr/instr_private.hpp
   src/instr/instr_smpi.hpp
   src/instr/instr_resource_utilization.cpp

@@ -110,6 +110,23 @@ void VariableType::subEvent(double timestamp, Container* container, double value
 LinkType::LinkType(std::string name, std::string alias, Type* father) : ValueType(name, alias, father)
 {
 }
+void LinkType::startEvent(double timestamp, Container* container, container_t endpoint, std::string value,
+                          std::string key)
+{
+  startEvent(timestamp, container, endpoint, value, key, -1);
+}
+
+void LinkType::startEvent(double timestamp, Container* container, container_t endpoint, std::string value,
+                          std::string key, int size)
+{
+  new LinkEvent(timestamp, container, this, PAJE_StartLink, endpoint, value, key, size);
+}
+
+void LinkType::endEvent(double timestamp, Container* container, container_t endpoint, std::string value,
+                        std::string key)
+{
+  new LinkEvent(timestamp, container, this, PAJE_EndLink, endpoint, value, key);
+}
 
 void Type::logDefinition(e_event_type event_type)
 {

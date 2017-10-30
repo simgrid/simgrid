@@ -85,6 +85,12 @@ public:
 class LinkType : public ValueType {
 public:
   LinkType(std::string name, std::string alias, Type* father);
+  void startEvent(double timestamp, Container* source_container, Container* sourceContainer, std::string value,
+                  std::string key);
+  void startEvent(double timestamp, Container* source_container, Container* sourceContainer, std::string value,
+                  std::string key, int size);
+  void endEvent(double timestamp, Container* source_container, Container* destContainer, std::string value,
+                std::string key);
 };
 
 class EventType : public ValueType {
