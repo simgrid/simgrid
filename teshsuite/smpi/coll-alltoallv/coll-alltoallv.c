@@ -44,7 +44,7 @@
    <2> rbuf: (#9):   [3][4][103][104][203][204][-1][-1][-1]
 */
 
-static void print_buffer_int(void *buf, int len, char *msg, int rank)
+static void print_buffer_int(void *buf, int len, const char *msg, int rank)
 {
   printf("[%d] %s (#%d): ", rank, msg, len);
   for (int tmp = 0; tmp < len; tmp++) {
@@ -52,7 +52,6 @@ static void print_buffer_int(void *buf, int len, char *msg, int rank)
     printf("[%d]", v[tmp]);
   }
   printf("\n");
-  free(msg);
 }
 
 int main(int argc, char **argv)
@@ -94,15 +93,15 @@ int main(int argc, char **argv)
     sdispls[i] = (i * (i + 1)) / 2;
   }
 
-  print_buffer_int( sbuf, size*size, strdup("sbuf:"),rank);
-  print_buffer_int( sendcounts, size, strdup("scount:"),rank);
-  print_buffer_int( recvcounts, size, strdup("rcount:"),rank);
-  print_buffer_int( sdispls, size, strdup("sdisp:"),rank);
-  print_buffer_int( rdispls, size, strdup("rdisp:"),rank);
+  print_buffer_int(sbuf, size * size, "sbuf:", rank);
+  print_buffer_int(sendcounts, size, "scount:", rank);
+  print_buffer_int(recvcounts, size, "rcount:", rank);
+  print_buffer_int(sdispls, size, "sdisp:", rank);
+  print_buffer_int(rdispls, size, "rdisp:", rank);
 
   MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, comm);
 
-  print_buffer_int( rbuf, size*size, strdup("rbuf:"),rank);
+  print_buffer_int(rbuf, size * size, "rbuf:", rank);
 
   MPI_Barrier(MPI_COMM_WORLD);
   if (0 == rank) {

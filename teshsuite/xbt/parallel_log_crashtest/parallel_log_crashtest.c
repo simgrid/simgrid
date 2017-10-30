@@ -1,6 +1,6 @@
 /* synchro_crashtest -- tries to crash the logging mechanism by doing parallel logs*/
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -43,9 +43,9 @@ static int crasher()
 
   /* spawn threads */
   for (int i = 0; i < crasher_amount; i++) {
-    char *name = bprintf("thread %d", i);
+    char name[16];
+    snprintf(name, sizeof name, "thread %d", i);
     crashers[i] = xbt_os_thread_create(name, &crasher_thread, &id[i], NULL );
-    free(name);
   }
 
   /* wait for them */
