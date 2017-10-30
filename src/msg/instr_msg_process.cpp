@@ -26,7 +26,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
     container_t msg = simgrid::instr::Container::byName(instr_pid(process));
     simgrid::instr::LinkType* link =
         static_cast<simgrid::instr::LinkType*>(simgrid::instr::Type::getRootType()->byName("MSG_PROCESS_LINK"));
-    link->startEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), msg, "M", key);
+    link->startEvent(simgrid::instr::Container::getRootContainer(), msg, "M", key);
 
     //destroy existing container of this process
     TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process));
@@ -36,7 +36,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 
     //end link
     msg = simgrid::instr::Container::byName(instr_pid(process));
-    link->endEvent(MSG_get_clock(), simgrid::instr::Container::getRootContainer(), msg, "M", key);
+    link->endEvent(simgrid::instr::Container::getRootContainer(), msg, "M", key);
   }
 }
 

@@ -20,15 +20,13 @@ void EntityValue::print()
   if (instr_fmt_type != instr_fmt_paje)
     return;
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%u", __FUNCTION__, simgrid::instr::PAJE_DefineEntityValue);
-  stream << std::fixed << std::setprecision(TRACE_precision());
-  stream << simgrid::instr::PAJE_DefineEntityValue;
+  XBT_DEBUG("%s: event_type=%u", __FUNCTION__, PAJE_DefineEntityValue);
+  stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineEntityValue;
   stream << " " << id_ << " " << father_->getId() << " " << name_;
   if (not color_.empty())
     stream << " \"" << color_ << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
-  stream << std::endl;
-  fprintf(tracing_file, "%s", stream.str().c_str());
+  fprintf(tracing_file, "%s\n", stream.str().c_str());
 }
 
 }

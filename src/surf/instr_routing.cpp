@@ -110,8 +110,8 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   std::string key = std::to_string(counter);
   counter++;
 
-  link->startEvent(SIMIX_get_clock(), father, src, "topology", key);
-  link->endEvent(SIMIX_get_clock(), father, dst, "topology", key);
+  link->startEvent(father, src, "topology", key);
+  link->endEvent(father, dst, "topology", key);
 
   XBT_DEBUG("  linkContainers %s <-> %s", src->getCname(), dst->getCname());
 }
