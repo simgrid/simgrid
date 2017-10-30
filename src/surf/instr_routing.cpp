@@ -161,7 +161,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
       simgrid::instr::Type* mpi = root->type_->getOrCreateContainerType("MPI");
       if (not TRACE_smpi_is_grouped())
         mpi->getOrCreateStateType("MPI_STATE");
-      simgrid::instr::Type::getRootType()->getOrCreateLinkType("MPI_LINK", mpi, mpi);
+      root->type_->getOrCreateLinkType("MPI_LINK", mpi, mpi);
     }
 
     if (TRACE_needs_platform()){
@@ -193,8 +193,12 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   container_t container = new simgrid::instr::Container(link.getName(), "LINK", father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    container->type_->getOrCreateVariableType("bandwidth", "")->setEvent(0, container, link.bandwidth());
-    container->type_->getOrCreateVariableType("latency", "")->setEvent(0, container, link.latency());
+    simgrid::instr::VariableType* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");
+    bandwidth->setCallingContainer(container);
+    bandwidth->setEvent(0, link.bandwidth());
+    simgrid::instr::VariableType* latency = container->type_->getOrCreateVariableType("latency", "");
+    latency->setCallingContainer(container);
+    latency->setEvent(0, link.latency());
   }
   if (TRACE_uncategorized()) {
     container->type_->getOrCreateVariableType("bandwidth_used", "0.5 0.5 0.5");
@@ -204,9 +208,12 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t container = new simgrid::instr::HostContainer(host, currentContainer.back());
+  container_t root      = simgrid::instr::Container::getRootContainer();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    container->type_->getOrCreateVariableType("power", "")->setEvent(0, container, host.getSpeed());
+    simgrid::instr::VariableType* power = container->type_->getOrCreateVariableType("power", "");
+    power->setCallingContainer(container);
+    power->setEvent(0, host.getSpeed());
   }
 
   if (TRACE_uncategorized())
@@ -223,8 +230,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     state->addEntityValue("receive", "1 0 0");
     state->addEntityValue("send", "0 0 1");
     state->addEntityValue("task_execute", "0 1 1");
-    simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_PROCESS_LINK", msg_process, msg_process);
-    simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_PROCESS_TASK_LINK", msg_process, msg_process);
+    root->type_->getOrCreateLinkType("MSG_PROCESS_LINK", msg_process, msg_process);
+    root->type_->getOrCreateLinkType("MSG_PROCESS_TASK_LINK", msg_process, msg_process);
   }
 
   if (TRACE_msg_vm_is_enabled()) {
@@ -235,8 +242,8 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     state->addEntityValue("receive", "1 0 0");
     state->addEntityValue("send", "0 0 1");
     state->addEntityValue("task_execute", "0 1 1");
-    simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_VM_LINK", msg_vm, msg_vm);
-    simgrid::instr::Type::getRootType()->getOrCreateLinkType("MSG_VM_PROCESS_LINK", msg_vm, msg_vm);
+    root->type_->getOrCreateLinkType("MSG_VM_LINK", msg_vm, msg_vm);
+    root->type_->getOrCreateLinkType("MSG_VM_PROCESS_LINK", msg_vm, msg_vm);
   }
 }
 
@@ -291,7 +298,7 @@ static void recursiveNewVariableType(std::string new_typename, std::string color
 
 void instr_new_variable_type(std::string new_typename, std::string color)
 {
-  recursiveNewVariableType(new_typename, color, simgrid::instr::Type::getRootType());
+  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::getRootContainer()->type_);
 }
 
 static void recursiveNewUserVariableType(std::string father_type, std::string new_typename, std::string color,
@@ -306,7 +313,7 @@ static void recursiveNewUserVariableType(std::string father_type, std::string ne
 
 void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color)
 {
-  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Type::getRootType());
+  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::getRootContainer()->type_);
 }
 
 static void recursiveNewUserStateType(std::string father_type, std::string new_typename, simgrid::instr::Type* root)
@@ -320,7 +327,7 @@ static void recursiveNewUserStateType(std::string father_type, std::string new_t
 
 void instr_new_user_state_type(std::string father_type, std::string new_typename)
 {
-  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Type::getRootType());
+  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::getRootContainer()->type_);
 }
 
 static void recursiveNewValueForUserStateType(std::string type_name, const char* val, std::string color,
@@ -335,7 +342,7 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
 
 void instr_new_value_for_user_state_type(std::string type_name, const char* value, std::string color)
 {
-  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Type::getRootType());
+  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::getRootContainer()->type_);
 }
 
 int instr_platform_traced ()

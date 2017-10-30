@@ -26,12 +26,12 @@ static void instr_event(double now, double delta, simgrid::instr::VariableType* 
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the global map.
   if (platform_variables.find(key) == platform_variables.end()) {
-    variable->setEvent(now, resource, 0);
+    variable->setEvent(now, 0);
     platform_variables.insert(key);
   }
 
-  variable->addEvent(now, resource, value);
-  variable->subEvent(now + delta, resource, value);
+  variable->addEvent(now, value);
+  variable->subEvent(now + delta, value);
 }
 
 /* TRACE_surf_link_set_utilization: entry point from SimGrid */
@@ -45,8 +45,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now + delta, resource, value);
-    simgrid::instr::VariableType* variable =
-        static_cast<simgrid::instr::VariableType*>(container->type_->byName("bandwidth_used"));
+    simgrid::instr::VariableType* variable = container->getVariable("bandwidth_used");
     instr_event(now, delta, variable, container, value);
   }
 
@@ -57,8 +56,7 @@ void TRACE_surf_link_set_utilization(const char *resource, const char *category,
     //variable of this category starts by 'b', because we have a link here
     std::string category_type = std::string("b") + category;
     XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now + delta, resource, category_type.c_str(), value);
-    simgrid::instr::VariableType* variable =
-        static_cast<simgrid::instr::VariableType*>(container->type_->byName(category_type));
+    simgrid::instr::VariableType* variable = container->getVariable(category_type);
     instr_event(now, delta, variable, container, value);
   }
 }
@@ -74,8 +72,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    simgrid::instr::VariableType* variable =
-        static_cast<simgrid::instr::VariableType*>(container->type_->byName("power_used"));
+    simgrid::instr::VariableType* variable = container->getVariable("power_used");
     instr_event(now, delta, variable, container, value);
   }
 
@@ -86,8 +83,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
     //variable of this category starts by 'p', because we have a host here
     std::string category_type = std::string("p") + category;
     XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now + delta, resource, category_type.c_str(), value);
-    simgrid::instr::VariableType* variable =
-        static_cast<simgrid::instr::VariableType*>(container->type_->byName(category_type));
+    simgrid::instr::VariableType* variable = container->getVariable(category_type);
     instr_event(now, delta, variable, container, value);
   }
 }

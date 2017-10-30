@@ -12,30 +12,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 void TRACE_surf_host_set_speed(double date, const char *resource, double speed)
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
-    container_t container      = simgrid::instr::Container::byName(resource);
-    simgrid::instr::VariableType* variable =
-        static_cast<simgrid::instr::VariableType*>(container->type_->byName("power"));
-    variable->setEvent(date, container, speed);
+    simgrid::instr::Container::byName(resource)->getVariable("power")->setEvent(date, speed);
   }
 }
 
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth)
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
-    container_t container      = simgrid::instr::Container::byName(resource);
-    simgrid::instr::VariableType* variable =
-        static_cast<simgrid::instr::VariableType*>(container->type_->byName("bandwidth"));
-    variable->setEvent(date, container, bandwidth);
+    simgrid::instr::Container::byName(resource)->getVariable("bandwidth")->setEvent(date, bandwidth);
   }
 }
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
-  if (not TRACE_is_enabled())
-    return;
-  if (not TRACE_categorized())
-    return;
-  if (not category)
+  if (not TRACE_is_enabled() || not TRACE_categorized() || not category)
     return;
 
   surf_action->setCategory(category);

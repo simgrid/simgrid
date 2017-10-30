@@ -8,7 +8,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
-static simgrid::instr::ContainerType* rootType = nullptr; /* the root type */
 extern FILE* tracing_file;
 
 namespace simgrid {
@@ -93,19 +92,19 @@ VariableType::~VariableType()
   events_.clear();
 }
 
-void VariableType::setEvent(double timestamp, Container* container, double value)
+void VariableType::setEvent(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, container, this, PAJE_SetVariable, value));
+  events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_SetVariable, value));
 }
 
-void VariableType::addEvent(double timestamp, Container* container, double value)
+void VariableType::addEvent(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, container, this, PAJE_AddVariable, value));
+  events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_AddVariable, value));
 }
 
-void VariableType::subEvent(double timestamp, Container* container, double value)
+void VariableType::subEvent(double timestamp, double value)
 {
-  events_.push_back(new VariableEvent(timestamp, container, this, PAJE_SubVariable, value));
+  events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_SubVariable, value));
 }
 
 LinkType::LinkType(std::string name, std::string alias, Type* father) : ValueType(name, alias, father)
@@ -197,17 +196,6 @@ EntityValue* ValueType::getEntityValue(std::string name)
     THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), getCname());
   }
   return ret->second;
-}
-
-ContainerType* Type::createRootType()
-{
-  rootType = new ContainerType("0");
-  return rootType;
-}
-
-ContainerType* Type::getRootType()
-{
-  return rootType;
 }
 
 ContainerType* Type::getOrCreateContainerType(std::string name)

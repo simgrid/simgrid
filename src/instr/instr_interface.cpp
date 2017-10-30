@@ -148,7 +148,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  simgrid::instr::Type::getRootType()->getOrCreateEventType(mark_type);
+  simgrid::instr::Container::getRootContainer()->type_->getOrCreateEventType(mark_type);
   declared_marks.insert(mark_type);
 }
 
@@ -179,7 +179,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   simgrid::instr::EventType* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Type::getRootType()->byName(mark_type));
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::getRootContainer()->type_->byName(mark_type));
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   } else {
@@ -235,7 +235,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   //check if mark_type is already declared
   simgrid::instr::EventType* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Type::getRootType()->byName(mark_type));
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::getRootContainer()->type_->byName(mark_type));
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   } else {
@@ -276,20 +276,16 @@ static void instr_user_variable(double time, const char* resource, const char* v
     }
   }else{
     if (created != filter->end()) { // declared, let's work
-      char valuestr[100];
-      snprintf(valuestr, 100, "%g", value);
-      container_t container      = simgrid::instr::Container::byName(resource);
-      simgrid::instr::VariableType* variable =
-          static_cast<simgrid::instr::VariableType*>(container->type_->byName(variable_name));
+      simgrid::instr::VariableType* variable = simgrid::instr::Container::byName(resource)->getVariable(variable_name);
       switch (what){
       case INSTR_US_SET:
-        variable->setEvent(time, container, value);
+        variable->setEvent(time, value);
         break;
       case INSTR_US_ADD:
-        variable->addEvent(time, container, value);
+        variable->addEvent(time, value);
         break;
       case INSTR_US_SUB:
-        variable->subEvent(time, container, value);
+        variable->subEvent(time, value);
         break;
       default:
         THROW_IMPOSSIBLE;

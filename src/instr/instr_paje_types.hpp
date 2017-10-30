@@ -43,17 +43,11 @@ public:
   ContainerType* getOrCreateContainerType(std::string name);
   EventType* getOrCreateEventType(std::string name);
   LinkType* getOrCreateLinkType(std::string name, Type* source, Type* dest);
-
   StateType* getOrCreateStateType(std::string name);
-  StateType* getState(std::string name);
-
   VariableType* getOrCreateVariableType(std::string name, std::string color);
 
   void logDefinition(e_event_type event_type);
   void logDefinition(Type* source, Type* dest);
-
-  static ContainerType* createRootType();
-  static ContainerType* getRootType();
 };
 
 class ContainerType : public Type {
@@ -64,13 +58,15 @@ public:
 
 class VariableType : public Type {
   std::vector<VariableEvent*> events_;
+  Container* issuer_ = nullptr;
 
 public:
   VariableType(std::string name, std::string color, Type* father);
   ~VariableType();
-  void setEvent(double timestamp, Container* container, double value);
-  void addEvent(double timestamp, Container* container, double value);
-  void subEvent(double timestamp, Container* container, double value);
+  void setCallingContainer(Container* container) { issuer_ = container; }
+  void setEvent(double timestamp, double value);
+  void addEvent(double timestamp, double value);
+  void subEvent(double timestamp, double value);
 };
 
 class ValueType : public Type {

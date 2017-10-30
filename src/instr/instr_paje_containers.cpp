@@ -44,7 +44,7 @@ NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZone
     father_->children_.insert({getName(), this});
     logCreation();
   } else {
-    type_ = Type::createRootType();
+    type_         = new ContainerType("0");
     rootContainer = this;
   }
 }
@@ -229,6 +229,18 @@ void Container::logDestruction()
 StateType* Container::getState(std::string name)
 {
   StateType* ret = dynamic_cast<StateType*>(type_->byName(name));
+  ret->setCallingContainer(this);
+  return ret;
+}
+
+LinkType* Container::getLink(std::string name)
+{
+  return dynamic_cast<LinkType*>(type_->byName(name));
+}
+
+VariableType* Container::getVariable(std::string name)
+{
+  VariableType* ret = dynamic_cast<VariableType*>(type_->byName(name));
   ret->setCallingContainer(this);
   return ret;
 }

@@ -12,7 +12,9 @@
 namespace simgrid {
 namespace instr {
 class Type;
+class LinkType;
 class StateType;
+class VariableType;
 
 class Container {
   long long int id_;
@@ -36,6 +38,9 @@ public:
   void logDestruction();
 
   StateType* getState(std::string name);
+  LinkType* getLink(std::string name);
+  VariableType* getVariable(std::string name);
+
   static Container* getRootContainer();
 };
 
