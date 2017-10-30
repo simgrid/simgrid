@@ -87,24 +87,6 @@ void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
   XBT_DEBUG("<<<<<<");
 }
 
-static void print_row() {
-  stream << std::endl;
-  fprintf(tracing_file, "%s", stream.str().c_str());
-  XBT_DEBUG("Dump %s", stream.str().c_str());
-  stream.str("");
-  stream.clear();
-}
-
-static void print_timestamp(simgrid::instr::PajeEvent* event)
-{
-  stream << " ";
-  /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
-  if (event->timestamp_ < 1e-12)
-    stream << 0;
-  else
-    stream << event->timestamp_;
-}
-
 /* internal do the instrumentation module */
 void simgrid::instr::PajeEvent::insertIntoBuffer()
 {
@@ -171,29 +153,6 @@ void TRACE_paje_end() {
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-simgrid::instr::NewEvent::NewEvent(double timestamp, container_t container, Type* type, EntityValue* val)
-    : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent), val(val)
-{
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, this->timestamp_);
-
-  insertIntoBuffer();
-}
-
-void simgrid::instr::NewEvent::print()
-{
-  if (instr_fmt_type == instr_fmt_paje) {
-    XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << eventType_;
-    print_timestamp(this);
-    stream << " " << type->getId() << " " << container->getId() << " " << val->getId();
-    print_row();
-  } else if (instr_fmt_type == instr_fmt_TI) {
-    /* Nothing to do */
-  } else {
-    THROW_IMPOSSIBLE;
-  }
-}
 
 void TRACE_TI_start()
 {
