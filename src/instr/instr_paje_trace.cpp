@@ -76,7 +76,8 @@ void TRACE_paje_dump_buffer(bool force)
 
 void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
 {
-  return;
+  if (not XBT_LOG_ISENABLED(instr_paje_trace, xbt_log_priority_debug))
+    return;
   XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
   for (auto const& event : *buf) {
     event->print();
