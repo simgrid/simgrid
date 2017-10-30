@@ -61,24 +61,25 @@ StateType::~StateType()
   events_.clear();
 }
 
-void StateType::setEvent(double timestamp, Container* container, std::string value_name)
+void StateType::setEvent(std::string value_name)
 {
-  events_.push_back(new StateEvent(timestamp, container, this, PAJE_SetState, getEntityValue(value_name)));
+  events_.push_back(new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_SetState, getEntityValue(value_name)));
 }
 
-void StateType::pushEvent(double timestamp, Container* container, std::string value_name, void* extra)
+void StateType::pushEvent(std::string value_name, void* extra)
 {
-  events_.push_back(new StateEvent(timestamp, container, this, PAJE_PushState, getEntityValue(value_name), extra));
+  events_.push_back(
+      new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_PushState, getEntityValue(value_name), extra));
 }
 
-void StateType::pushEvent(double timestamp, Container* container, std::string value_name)
+void StateType::pushEvent(std::string value_name)
 {
-  events_.push_back(new StateEvent(timestamp, container, this, PAJE_PushState, getEntityValue(value_name)));
+  events_.push_back(new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_PushState, getEntityValue(value_name)));
 }
 
-void StateType::popEvent(double timestamp, Container* container)
+void StateType::popEvent()
 {
-  events_.push_back(new StateEvent(timestamp, container, this, PAJE_PopState, nullptr));
+  events_.push_back(new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_PopState, nullptr));
 }
 
 VariableType::VariableType(std::string name, std::string color, Type* father) : Type(name, name, color, father)

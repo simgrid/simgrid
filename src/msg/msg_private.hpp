@@ -94,7 +94,7 @@ struct s_MSG_Global_t {
 };
 typedef s_MSG_Global_t* MSG_Global_t;
 
-XBT_PRIVATE std::string instr_process_id(msg_process_t proc);
+XBT_PRIVATE std::string instr_pid(msg_process_t proc);
 
 extern "C" {
 

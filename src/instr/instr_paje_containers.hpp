@@ -12,6 +12,7 @@
 namespace simgrid {
 namespace instr {
 class Type;
+class StateType;
 
 class Container {
   long long int id_;
@@ -34,6 +35,7 @@ public:
   void logCreation();
   void logDestruction();
 
+  StateType* getState(std::string name);
   static Container* getRootContainer();
 };
 

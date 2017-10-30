@@ -225,5 +225,12 @@ void Container::logDestruction()
     THROW_IMPOSSIBLE;
   }
 }
+
+StateType* Container::getState(std::string name)
+{
+  StateType* ret = dynamic_cast<StateType*>(type_->byName(name));
+  ret->setCallingContainer(this);
+  return ret;
+}
 }
 }

@@ -48,24 +48,18 @@ void TRACE_msg_task_execute_start(msg_task_t task)
 {
   XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled()){
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    state->pushEvent(MSG_get_clock(), process_container, "task_execute");
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))
+        ->getState("MSG_PROCESS_STATE")
+        ->pushEvent("task_execute");
 }
 
 void TRACE_msg_task_execute_end(msg_task_t task)
 {
   XBT_DEBUG("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled()){
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    state->popEvent(MSG_get_clock(), process_container);
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->popEvent();
 }
 
 /* MSG_task_destroy related functions */
@@ -83,12 +77,10 @@ void TRACE_msg_task_get_start()
 {
   XBT_DEBUG("GET,in");
 
-  if (TRACE_msg_process_is_enabled()){
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    state->pushEvent(MSG_get_clock(), process_container, "receive");
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))
+        ->getState("MSG_PROCESS_STATE")
+        ->pushEvent("receive");
 }
 
 void TRACE_msg_task_get_end(double start_time, msg_task_t task)
@@ -96,10 +88,8 @@ void TRACE_msg_task_get_end(double start_time, msg_task_t task)
   XBT_DEBUG("GET,out %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    state->popEvent(MSG_get_clock(), process_container);
+    container_t process_container = simgrid::instr::Container::byName(instr_pid(MSG_process_self()));
+    process_container->getState("MSG_PROCESS_STATE")->popEvent();
 
     std::string key = std::string("p") + std::to_string(task->counter);
     simgrid::instr::LinkType* link =
@@ -114,10 +104,8 @@ int TRACE_msg_task_put_start(msg_task_t task)
   XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    state->pushEvent(MSG_get_clock(), process_container, "send");
+    container_t process_container = simgrid::instr::Container::byName(instr_pid(MSG_process_self()));
+    process_container->getState("MSG_PROCESS_STATE")->pushEvent("send");
 
     std::string key = std::string("p") + std::to_string(task->counter);
     simgrid::instr::LinkType* link =
@@ -132,10 +120,6 @@ void TRACE_msg_task_put_end()
 {
   XBT_DEBUG("PUT,out");
 
-  if (TRACE_msg_process_is_enabled()){
-    container_t process_container = simgrid::instr::Container::byName(instr_process_id(MSG_process_self()));
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(process_container->type_->byName("MSG_PROCESS_STATE"));
-    state->popEvent(MSG_get_clock(), process_container);
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->popEvent();
 }

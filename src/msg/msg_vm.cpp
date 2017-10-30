@@ -185,11 +185,9 @@ void MSG_vm_start(msg_vm_t vm)
 {
   vm->start();
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container    = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(vm_container->type_->byName("MSG_VM_STATE"));
+    simgrid::instr::StateType* state = simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE");
     state->addEntityValue("start", "0 0 1"); // start is blue
-    state->pushEvent(MSG_get_clock(), vm_container, "start");
+    state->pushEvent("start");
   }
 }
 
@@ -767,11 +765,9 @@ void MSG_vm_suspend(msg_vm_t vm)
   XBT_DEBUG("vm_suspend done");
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container    = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(vm_container->type_->byName("MSG_VM_STATE"));
+    simgrid::instr::StateType* state = simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE");
     state->addEntityValue("suspend", "1 0 0"); // suspend is red
-    state->pushEvent(MSG_get_clock(), vm_container, "suspend");
+    state->pushEvent("suspend");
   }
 }
 
@@ -784,12 +780,8 @@ void MSG_vm_resume(msg_vm_t vm)
 {
   vm->pimpl_vm_->resume();
 
-  if (TRACE_msg_vm_is_enabled()) {
-    container_t vm_container   = simgrid::instr::Container::byName(vm->getName());
-    simgrid::instr::StateType* state =
-        static_cast<simgrid::instr::StateType*>(vm_container->type_->byName("MSG_VM_STATE"));
-    state->popEvent(MSG_get_clock(), vm_container);
-  }
+  if (TRACE_msg_vm_is_enabled())
+    simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE")->popEvent();
 }
 
 /** @brief Get the physical host of a given VM.

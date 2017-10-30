@@ -40,11 +40,13 @@ public:
   bool isColored() { return not color_.empty(); }
 
   Type* byName(std::string name);
-
   ContainerType* getOrCreateContainerType(std::string name);
   EventType* getOrCreateEventType(std::string name);
   LinkType* getOrCreateLinkType(std::string name, Type* source, Type* dest);
+
   StateType* getOrCreateStateType(std::string name);
+  StateType* getState(std::string name);
+
   VariableType* getOrCreateVariableType(std::string name, std::string color);
 
   void logDefinition(e_event_type event_type);
@@ -100,14 +102,16 @@ public:
 
 class StateType : public ValueType {
   std::vector<StateEvent*> events_;
+  Container* issuer_ = nullptr;
 
 public:
   StateType(std::string name, Type* father);
   ~StateType();
-  void setEvent(double timestamp, Container* container, std::string value_name);
-  void pushEvent(double timestamp, Container* container, std::string value_name);
-  void pushEvent(double timestamp, Container* container, std::string value_name, void* extra);
-  void popEvent(double timestamp, Container* container);
+  void setCallingContainer(Container* container) { issuer_ = container; }
+  void setEvent(std::string value_name);
+  void pushEvent(std::string value_name);
+  void pushEvent(std::string value_name, void* extra);
+  void popEvent();
 };
 }
 }
