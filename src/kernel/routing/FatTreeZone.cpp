@@ -361,11 +361,11 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
+  const std::string error_msg {"Fat trees are defined by the levels number and 3 vectors, see the documentation for more information"};
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
   if (parameters.size() != 4) {
-    surf_parse_error(
-        "Fat trees are defined by the levels number and 3 vectors, see the documentation for more information");
+    surf_parse_error(error_msg);
   }
 
   // The first parts of topo_parameters should be the levels number
@@ -378,8 +378,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
@@ -392,8 +391,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // Then, a l-sized vector standing for the parents number by level
   boost::split(tmp, parameters[2], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
@@ -406,8 +404,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
