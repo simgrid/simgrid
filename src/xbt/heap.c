@@ -1,6 +1,6 @@
 /* a generic and efficient heap                                             */
 
-/* Copyright (c) 2004-2005, 2007-2015. The SimGrid Team.
+/* Copyright (c) 2004-2005, 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -92,6 +92,7 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   if (count > size) {
     H->size = (size << 1) + 1;
     H->items = (void *) xbt_realloc(H->items, (H->size) * sizeof(struct xbt_heap_item));
+    xbt_assert(H->items != NULL);
   }
 
   item = &(H->items[count - 1]);
