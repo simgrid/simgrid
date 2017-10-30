@@ -6,8 +6,6 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
-#include "surf/surf.h"
-#include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
@@ -16,7 +14,7 @@ extern std::map<container_t, FILE*> tracing_files; // TI specific
 double prefix = 0.0;                               // TI specific
 
 static container_t rootContainer = nullptr;    /* the root container */
-static std::unordered_map<std::string, container_t> allContainers; /* all created containers indexed by name */
+static std::map<std::string, container_t> allContainers; /* all created containers indexed by name */
 std::set<std::string> trivaNodeTypes;           /* all host types defined */
 std::set<std::string> trivaEdgeTypes;           /* all link types defined */
 
@@ -87,9 +85,8 @@ Container::Container(std::string name, std::string type_name, Container* father)
   }
 
   //register all kinds by name
-  if (not allContainers.emplace(name_, this).second) {
+  if (not allContainers.emplace(name_, this).second)
     THROWF(tracing_error, 1, "container %s already present in allContainers data structure", name_.c_str());
-  }
 
   XBT_DEBUG("Add container name '%s'", name_.c_str());
 
@@ -102,19 +99,16 @@ Container::~Container()
 {
   XBT_DEBUG("destroy container %s", name_.c_str());
   // Begin with destroying my own children
-  for (auto child : children_) {
+  for (auto child : children_)
     delete child.second;
-  }
 
   // obligation to dump previous events because they might reference the container that is about to be destroyed
-  TRACE_last_timestamp_to_dump = surf_get_clock();
+  TRACE_last_timestamp_to_dump = SIMIX_get_clock();
   TRACE_paje_dump_buffer(true);
 
-  // trace my destruction
-  if (not TRACE_disable_destroy() && this != Container::getRootContainer()) {
-    // do not trace the container destruction if user requests or if the container is root
+  // trace my destruction, but not if user requests so or if the container is root
+  if (not TRACE_disable_destroy() && this != Container::getRootContainer())
     logDestruction();
-  }
 
   // remove me from the allContainers data structure
   allContainers.erase(name_);
@@ -138,7 +132,7 @@ Container* Container::byName(std::string name)
 void Container::removeFromParent()
 {
   if (father_) {
-    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", name_.c_str(), father_->name_.c_str());
+    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", getCname(), father_->getCname());
     father_->children_.erase(name_);
   }
 }
@@ -148,22 +142,18 @@ void Container::logCreation()
   double timestamp = SIMIX_get_clock();
   std::stringstream stream;
 
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_CreateContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, PAJE_CreateContainer, timestamp);
 
   if (instr_fmt_type == instr_fmt_paje) {
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << simgrid::instr::PAJE_CreateContainer;
-    stream << " ";
+    stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
     /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
     if (timestamp < 1e-12)
       stream << 0;
     else
       stream << timestamp;
-    stream << " " << id_ << " " << type_->getId() << " " << father_->id_ << " \"" << name_ << "\"" << std::endl;
-    fprintf(tracing_file, "%s", stream.str().c_str());
+    stream << " " << id_ << " " << type_->getId() << " " << father_->id_ << " \"" << name_ << "\"";
     XBT_DEBUG("Dump %s", stream.str().c_str());
-    stream.str("");
-    stream.clear();
+    fprintf(tracing_file, "%s\n", stream.str().c_str());
   } else if (instr_fmt_type == instr_fmt_TI) {
     // if we are in the mode with only one file
     static FILE* ti_unique_file = nullptr;
@@ -199,26 +189,20 @@ void Container::logDestruction()
   std::stringstream stream;
   double timestamp = SIMIX_get_clock();
 
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, simgrid::instr::PAJE_DestroyContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, PAJE_DestroyContainer, timestamp);
 
   if (instr_fmt_type == instr_fmt_paje) {
-    stream << std::fixed << std::setprecision(TRACE_precision());
-    stream << simgrid::instr::PAJE_DestroyContainer;
-    stream << " ";
+    stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";
     /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
     if (timestamp < 1e-12)
-      stream << 0;
+      stream << 0 << " " << type_->getId() << " " << id_;
     else
-      stream << timestamp;
-    stream << " " << type_->getId() << " " << id_ << std::endl;
-    fprintf(tracing_file, "%s", stream.str().c_str());
+      stream << timestamp << " " << type_->getId() << " " << id_;
     XBT_DEBUG("Dump %s", stream.str().c_str());
-    stream.str("");
-    stream.clear();
+    fprintf(tracing_file, "%s\n", stream.str().c_str());
   } else if (instr_fmt_type == instr_fmt_TI) {
     if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
-      FILE* f = tracing_files.at(this);
-      fclose(f);
+      fclose(tracing_files.at(this));
     }
     tracing_files.erase(this);
   } else {
