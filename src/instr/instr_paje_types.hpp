@@ -12,15 +12,8 @@
 
 namespace simgrid {
 namespace instr {
-enum e_event_type : unsigned int;
-class EntityValue;
 class ContainerType;
 class EventType;
-class LinkType;
-class StateType;
-class VariableType;
-class StateEvent;
-class VariableEvent;
 
 class Type {
   long long int id_;

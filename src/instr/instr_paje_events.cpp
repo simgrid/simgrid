@@ -18,7 +18,7 @@ namespace instr {
 NewEvent::NewEvent(double timestamp, container_t container, Type* type, EntityValue* val)
     : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent), val(val)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, this->timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
   insertIntoBuffer();
 }
 
@@ -39,7 +39,7 @@ LinkEvent::LinkEvent(double timestamp, container_t container, Type* type, e_even
 VariableEvent::VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value)
     : PajeEvent::PajeEvent(container, type, timestamp, event_type), value(value)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, this->timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
   insertIntoBuffer();
 }
 
