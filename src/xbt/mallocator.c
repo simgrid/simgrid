@@ -46,8 +46,7 @@ static inline void lock_reset(xbt_mallocator_t m)
 static inline void lock_acquire(xbt_mallocator_t m)
 {
   if (initialization_done > 1) {
-    int *lock = &m->lock;
-    while (__sync_lock_test_and_set(lock, 1))
+    while (__atomic_test_and_set(&m->lock, __ATOMIC_ACQUIRE))
       /* nop */;
   }
 }
@@ -55,7 +54,7 @@ static inline void lock_acquire(xbt_mallocator_t m)
 static inline void lock_release(xbt_mallocator_t m)
 {
   if (initialization_done > 1)
-    __sync_lock_release(&m->lock);
+    __atomic_clear(&m->lock, __ATOMIC_RELEASE);
 }
 
 /**
