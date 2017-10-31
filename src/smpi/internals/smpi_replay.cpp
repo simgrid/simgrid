@@ -417,7 +417,7 @@ static void action_wait(const char *const *action){
 static void action_waitall(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process()->simulated_elapsed();
-  unsigned int count_requests=get_reqq_self()->size();
+  const unsigned int count_requests = get_reqq_self()->size();
 
   if (count_requests>0) {
     MPI_Status status[count_requests];
@@ -429,18 +429,17 @@ static void action_waitall(const char *const *action){
    TRACE_smpi_ptp_in(rank_traced, __FUNCTION__,extra);
    int recvs_snd[count_requests];
    int recvs_rcv[count_requests];
-   unsigned int i=0;
-   for (auto const& req : *(get_reqq_self())) {
+   for (unsigned int i = 0; i < count_requests; i++) {
+     const auto& req = (*get_reqq_self())[i];
      if (req && (req->flags () & RECV)){
        recvs_snd[i]=req->src();
        recvs_rcv[i]=req->dst();
      }else
        recvs_snd[i]=-100;
-     i++;
    }
    Request::waitall(count_requests, &(*get_reqq_self())[0], status);
 
-   for (i=0; i<count_requests;i++){
+   for (unsigned i = 0; i < count_requests; i++) {
      if (recvs_snd[i]!=-100)
        TRACE_smpi_recv(recvs_snd[i], recvs_rcv[i],0);
    }
