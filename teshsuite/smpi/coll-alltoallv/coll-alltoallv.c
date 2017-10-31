@@ -72,11 +72,12 @@ int main(int argc, char **argv)
     return -1;
   }
   MPI_Comm_rank(comm, &rank);
-  int* sbuf = (int *) xbt_malloc(size * size * sizeof(int));
-  int* rbuf = (int *) xbt_malloc(size * size * sizeof(int));
+  int size2 = size * size;
+  int* sbuf = (int*)xbt_malloc(size2 * sizeof(int));
+  int* rbuf = (int*)xbt_malloc(size2 * sizeof(int));
 
   /* Load up the buffers */
-  for (i = 0; i < size * size; i++) {
+  for (i = 0; i < size2; i++) {
     sbuf[i] = i + 100 * rank;
     rbuf[i] = -1;
   }
@@ -93,7 +94,7 @@ int main(int argc, char **argv)
     sdispls[i] = (i * (i + 1)) / 2;
   }
 
-  print_buffer_int(sbuf, size * size, "sbuf:", rank);
+  print_buffer_int(sbuf, size2, "sbuf:", rank);
   print_buffer_int(sendcounts, size, "scount:", rank);
   print_buffer_int(recvcounts, size, "rcount:", rank);
   print_buffer_int(sdispls, size, "sdisp:", rank);
@@ -101,7 +102,7 @@ int main(int argc, char **argv)
 
   MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, comm);
 
-  print_buffer_int(rbuf, size * size, "rbuf:", rank);
+  print_buffer_int(rbuf, size2, "rbuf:", rank);
 
   MPI_Barrier(MPI_COMM_WORLD);
   if (0 == rank) {
