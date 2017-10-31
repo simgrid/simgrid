@@ -1,6 +1,6 @@
 /* xbt_os_time.c -- portable interface to time-related functions            */
 
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,6 +38,32 @@
 #include <mach/task.h>
 #endif
 
+#ifdef _WIN32
+static void w32_time_to_timeval(struct timeval* tv, const FILETIME* ft)
+{
+  unsigned __int64 tm;
+  tm = (unsigned __int64)ft->dwHighDateTime << 32;
+  tm |= ft->dwLowDateTime;
+  tm /= 10;
+  tm -= 11644473600000000ULL;
+  tv->tv_sec  = (long)(tm / 1000000L);
+  tv->tv_usec = (long)(tm % 1000000L);
+}
+
+static void w32_times_to_timeval(struct timeval* tv, const FILETIME* kernel_time, const FILETIME* user_time)
+{
+  unsigned __int64 ktm, utm;
+  ktm = (unsigned __int64)kernel_time->dwHighDateTime << 32;
+  ktm |= kernel_time->dwLowDateTime;
+  ktm /= 10;
+  utm = (unsigned __int64)user_time->dwHighDateTime << 32;
+  utm |= user_time->dwLowDateTime;
+  utm /= 10;
+  tv->tv_sec  = (long)(ktm / 1000000L) + (long)(utm / 1000000L);
+  tv->tv_usec = (long)(ktm % 1000000L) + (long)(utm % 1000000L);
+}
+#endif
+
 double xbt_os_time(void)
 {
 #if HAVE_GETTIMEOFDAY
@@ -46,17 +72,8 @@ double xbt_os_time(void)
 #elif defined(_WIN32)
   struct timeval tv;
   FILETIME ft;
-  unsigned __int64 tm;
-
   GetSystemTimeAsFileTime(&ft);
-  tm = (unsigned __int64) ft.dwHighDateTime << 32;
-  tm |= ft.dwLowDateTime;
-  tm /= 10;
-  tm -= 11644473600000000ULL;
-
-  tv.tv_sec = (long) (tm / 1000000L);
-  tv.tv_usec = (long) (tm % 1000000L);
-
+  w32_time_to_timeval(&tv, &ft);
 #else                           /* not windows, no gettimeofday => poor resolution */
   return (double) (time(NULL));
 #endif                          /* HAVE_GETTIMEOFDAY? */
@@ -149,16 +166,8 @@ void xbt_os_walltimer_start(xbt_os_timer_t timer)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
   FILETIME ft;
-  unsigned __int64 tm;
-
   GetSystemTimeAsFileTime(&ft);
-  tm = (unsigned __int64) ft.dwHighDateTime << 32;
-  tm |= ft.dwLowDateTime;
-  tm /= 10;
-  tm -= 11644473600000000ULL;
-
-  timer->start.tv_sec = (long) (tm / 1000000L);
-  timer->start.tv_usec = (long) (tm % 1000000L);
+  w32_time_to_timeval(&timer->start, &ft);
 #else
   timer->elapse = 0;
   timer->start = (unsigned long int) (time(NULL));
@@ -180,16 +189,8 @@ void xbt_os_walltimer_resume(xbt_os_timer_t timer)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
   FILETIME ft;
-  unsigned __int64 tm;
-
   GetSystemTimeAsFileTime(&ft);
-  tm = (unsigned __int64) ft.dwHighDateTime << 32;
-  tm |= ft.dwLowDateTime;
-  tm /= 10;
-  tm -= 11644473600000000ULL;
-
-  timer->start.tv_sec = (long) (tm / 1000000L);
-  timer->start.tv_usec = (long) (tm % 1000000L);
+  w32_time_to_timeval(&timer->start, &ft);
 #else
   timer->elapse = timer->stop - timer->start;
   timer->start = (unsigned long int) (time(NULL));
@@ -204,16 +205,8 @@ void xbt_os_walltimer_stop(xbt_os_timer_t timer)
   gettimeofday(&(timer->stop), NULL);
 #elif defined(_WIN32)
   FILETIME ft;
-  unsigned __int64 tm;
-
   GetSystemTimeAsFileTime(&ft);
-  tm = (unsigned __int64) ft.dwHighDateTime << 32;
-  tm |= ft.dwLowDateTime;
-  tm /= 10;
-  tm -= 11644473600000000ULL;
-
-  timer->stop.tv_sec = (long) (tm / 1000000L);
-  timer->stop.tv_usec = (long) (tm % 1000000L);
+  w32_time_to_timeval(&timer->stop, &ft);
 #else
   timer->stop = (unsigned long int) (time(NULL));
 #endif
@@ -235,15 +228,7 @@ void xbt_os_cputimer_start(xbt_os_timer_t timer)
   HANDLE h = GetCurrentProcess();
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
-  unsigned __int64 ktm, utm;
-  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
-  ktm |= kernelTime.dwLowDateTime;
-  ktm /= 10;
-  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
-  utm |= userTime.dwLowDateTime;
-  utm /= 10;
-  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
-  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+  w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
 #endif
 }
 
@@ -263,15 +248,7 @@ void xbt_os_cputimer_resume(xbt_os_timer_t timer)
   HANDLE h = GetCurrentProcess();
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
-  unsigned __int64 ktm, utm;
-  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
-  ktm |= kernelTime.dwLowDateTime;
-  ktm /= 10;
-  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
-  utm |= userTime.dwLowDateTime;
-  utm /= 10;
-  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
-  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+  w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
 #endif
 }
 
@@ -285,15 +262,7 @@ void xbt_os_cputimer_stop(xbt_os_timer_t timer)
   HANDLE h = GetCurrentProcess();
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
-  unsigned __int64 ktm, utm;
-  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
-  ktm |= kernelTime.dwLowDateTime;
-  ktm /= 10;
-  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
-  utm |= userTime.dwLowDateTime;
-  utm /= 10;
-  timer->stop.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
-  timer->stop.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+  w32_times_to_timeval(&timer->stop, &kernelTime, &userTime);
 #endif
 }
 
@@ -320,15 +289,7 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   HANDLE h = GetCurrentThread();
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
-  unsigned __int64 ktm, utm;
-  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
-  ktm |= kernelTime.dwLowDateTime;
-  ktm /= 10;
-  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
-  utm |= userTime.dwLowDateTime;
-  utm /= 10;
-  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
-  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+  w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
 #endif
 }
 
@@ -357,15 +318,7 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
   HANDLE h = GetCurrentThread();
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
-  unsigned __int64 ktm, utm;
-  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
-  ktm |= kernelTime.dwLowDateTime;
-  ktm /= 10;
-  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
-  utm |= userTime.dwLowDateTime;
-  utm /= 10;
-  timer->start.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
-  timer->start.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+  w32_times_to_timeval(&timer->start, &kernelTime, &userTime);
 #endif
 }
 
@@ -386,14 +339,6 @@ void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
   HANDLE h = GetCurrentThread();
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetThreadTimes(h, &creationTime, &exitTime, &kernelTime, &userTime);
-  unsigned __int64 ktm, utm;
-  ktm = (unsigned __int64) kernelTime.dwHighDateTime << 32;
-  ktm |= kernelTime.dwLowDateTime;
-  ktm /= 10;
-  utm = (unsigned __int64) userTime.dwHighDateTime << 32;
-  utm |= userTime.dwLowDateTime;
-  utm /= 10;
-  timer->stop.tv_sec = (long) (ktm / 1000000L) + (long) (utm / 1000000L);
-  timer->stop.tv_usec = (long) (ktm % 1000000L) + (long) (utm % 1000000L);
+  w32_times_to_timeval(&timer->stop, &kernelTime, &userTime);
 #endif
 }
