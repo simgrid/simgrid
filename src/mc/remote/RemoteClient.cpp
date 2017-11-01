@@ -650,12 +650,12 @@ void RemoteClient::dumpStack()
 
 bool RemoteClient::actor_is_enabled(aid_t pid)
 {
-  s_mc_message_actor_enabled msg{MC_MESSAGE_ACTOR_ENABLED, pid};
+  s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
   process()->getChannel().send(msg);
   char buff[MC_MESSAGE_LENGTH];
   ssize_t received = process()->getChannel().receive(buff, MC_MESSAGE_LENGTH, true);
-  xbt_assert(received == sizeof(s_mc_message_int), "Unexpected size in answer to ACTOR_ENABLED");
-  return ((mc_message_int_t*)buff)->value;
+  xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
+  return ((s_mc_message_int_t*)buff)->value;
 }
 }
 }

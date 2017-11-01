@@ -585,7 +585,7 @@ void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 #if HAVE_SMPI
   if(snapshot->privatization_index >= 0) {
     // Fix the privatization mmap:
-    s_mc_message_restore message{MC_MESSAGE_RESTORE, snapshot->privatization_index};
+    s_mc_message_restore_t message{MC_MESSAGE_RESTORE, snapshot->privatization_index};
     mc_model_checker->process().getChannel().send(message);
   }
 #endif

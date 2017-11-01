@@ -196,7 +196,7 @@ static void MC_report_assertion_error()
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
 {
-  mc_message_t base_message;
+  s_mc_message_t base_message;
   if (size < (ssize_t) sizeof(base_message))
     xbt_die("Broken message");
   memcpy(&base_message, buffer, sizeof(base_message));
@@ -388,7 +388,7 @@ void ModelChecker::wait_for_requests()
 
 void ModelChecker::handle_simcall(Transition const& transition)
 {
-  s_mc_message_simcall_handle m;
+  s_mc_message_simcall_handle_t m;
   memset(&m, 0, sizeof(m));
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = transition.pid;
@@ -404,7 +404,7 @@ bool ModelChecker::checkDeadlock()
   int res;
   if ((res = this->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
     xbt_die("Could not check deadlock state");
-  mc_message_int_t message;
+  s_mc_message_int_t message;
   ssize_t s = mc_model_checker->process().getChannel().receive(message);
   if (s == -1)
     xbt_die("Could not receive message");
