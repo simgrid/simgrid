@@ -25,7 +25,8 @@ int test_some_array[4][5][6];
 struct some_struct {
   int first;
   int second[4][5];
-} test_some_struct;
+};
+some_struct test_some_struct;
 
 static simgrid::mc::Type* find_type_by_name(simgrid::mc::ObjectInformation* info, const char* name)
 {

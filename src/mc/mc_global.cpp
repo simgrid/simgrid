@@ -163,7 +163,8 @@ static void MC_dump_stacks(FILE* file)
 {
   int nstack = 0;
   for (auto const& stack : mc_model_checker->process().stack_areas()) {
-    fprintf(file, "Stack %i:\n", nstack++);
+    fprintf(file, "Stack %i:\n", nstack);
+    nstack++;
 
     simgrid::mc::UnwindContext context;
     unw_context_t raw_context =

@@ -415,7 +415,6 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
   if (not address)
     return {};
 
-  // TODO, use std::vector with .data() in C++17 to avoid useless copies
   std::vector<char> res(128);
   off_t off = 0;
 

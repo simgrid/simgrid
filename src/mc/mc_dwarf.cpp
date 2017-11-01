@@ -815,10 +815,10 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
 
   // The current code needs a variable name,
   // generate a fake one:
-  if (variable->name.empty())
-    variable->name =
-      "@anonymous#" + std::to_string(mc_anonymous_variable_index++);
-
+  if (variable->name.empty()) {
+    variable->name = "@anonymous#" + std::to_string(mc_anonymous_variable_index);
+    mc_anonymous_variable_index++;
+  }
   return variable;
 }
 

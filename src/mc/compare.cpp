@@ -122,7 +122,8 @@ namespace {
  *
  *  It can hash pairs: the standard hash currently doesn't include this.
  */
-template<class X> struct hash : public std::hash<X> {};
+template <class X> class hash : public std::hash<X> {
+};
 
 template <class X, class Y> class hash<std::pair<X, Y>> {
 public:
