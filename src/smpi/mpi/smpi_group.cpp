@@ -22,11 +22,9 @@ Group::Group()
   refcount_          = 1;       /* refcount_: start > 0 so that this group never gets freed */
 }
 
-Group::Group(int n) : size_(n), rank_to_index_map_(size_)
+Group::Group(int n) : size_(n), rank_to_index_map_(size_, MPI_UNDEFINED)
 {
   refcount_ = 1;
-  for (int i              = 0; i < size_; i++)
-    rank_to_index_map_[i] = MPI_UNDEFINED;
 }
 
 Group::Group(MPI_Group origin)
@@ -35,43 +33,44 @@ Group::Group(MPI_Group origin)
     size_              = origin->size();
     refcount_          = 1;
     rank_to_index_map_ = origin->rank_to_index_map_;
-
-    for (auto const& elm : origin->index_to_rank_map_) {
-      index_to_rank_map_.insert({elm.first, elm.second});
-    }
+    index_to_rank_map_ = origin->index_to_rank_map_;
   }
 }
 
 Group::~Group()
 {
-  rank_to_index_map_.clear();
 }
 
 void Group::set_mapping(int index, int rank)
 {
-  if (rank < size_) {
+  if (0 <= rank && rank < size_) {
     rank_to_index_map_[rank] = index;
-    if (index != MPI_UNDEFINED)
-      index_to_rank_map_.insert({index, rank});
+    if (index != MPI_UNDEFINED) {
+      if ((unsigned)index >= index_to_rank_map_.size())
+        index_to_rank_map_.resize(index + 1, MPI_UNDEFINED);
+      index_to_rank_map_[index] = rank;
+    }
   }
 }
 
 int Group::index(int rank)
 {
-  int index = MPI_UNDEFINED;
-
-  if (0 <= rank && rank < size_) {
+  int index;
+  if (0 <= rank && rank < size_)
     index = rank_to_index_map_[rank];
-  }
+  else
+    index = MPI_UNDEFINED;
   return index;
 }
 
 int Group::rank(int index)
 {
-  if (this == MPI_GROUP_EMPTY)
-    return MPI_UNDEFINED;
-  auto rank = index_to_rank_map_.find(index);
-  return rank == index_to_rank_map_.end() ? MPI_UNDEFINED : rank->second;
+  int rank;
+  if (0 <= index && (unsigned)index < index_to_rank_map_.size())
+    rank = index_to_rank_map_[index];
+  else
+    rank = MPI_UNDEFINED;
+  return rank;
 }
 
 void Group::ref()

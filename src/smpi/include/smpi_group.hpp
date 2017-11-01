@@ -9,6 +9,7 @@
 
 #include "smpi_f2c.hpp"
 #include <smpi/smpi.h>
+#include <vector>
 
 namespace simgrid{
 namespace smpi{
@@ -21,7 +22,7 @@ class Group : public F2C{
      * For a vector, this costs O(1). We hence go with the vector.
      */
     std::vector<int> rank_to_index_map_;
-    std::unordered_map<int, int> index_to_rank_map_;
+    std::vector<int> index_to_rank_map_;
     int refcount_;
   public:
     explicit Group();
