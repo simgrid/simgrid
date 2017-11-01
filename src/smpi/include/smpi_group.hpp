@@ -28,7 +28,6 @@ class Group : public F2C{
     explicit Group();
     explicit Group(int size);
     explicit Group(Group* origin);
-    ~Group();
 
     void set_mapping(int index, int rank);
     int index(int rank);

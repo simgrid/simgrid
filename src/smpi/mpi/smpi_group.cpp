@@ -37,10 +37,6 @@ Group::Group(MPI_Group origin)
   }
 }
 
-Group::~Group()
-{
-}
-
 void Group::set_mapping(int index, int rank)
 {
   if (0 <= rank && rank < size_) {
