@@ -83,7 +83,7 @@ void TRACE_msg_task_get_start()
         ->pushEvent("receive");
 }
 
-void TRACE_msg_task_get_end(double start_time, msg_task_t task)
+void TRACE_msg_task_get_end(msg_task_t task)
 {
   XBT_DEBUG("GET,out %p, %lld, %s", task, task->counter, task->category);
 
