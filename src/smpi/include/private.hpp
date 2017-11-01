@@ -410,7 +410,6 @@ struct s_smpi_privatization_region_t {
 };
 typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 
-// extern XBT_PRIVATE smpi_privatization_region_t smpi_privatization_regions;
 extern XBT_PRIVATE int smpi_loaded_page;
 extern XBT_PRIVATE int smpi_universe_size;
 XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process();
