@@ -76,7 +76,6 @@ typedef int integer;
 typedef long int integer;
 #endif
 typedef char *address;
-typedef short int shortint;
 typedef float real;
 typedef double doublereal;
 struct complex {
