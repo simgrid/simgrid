@@ -3,19 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdint>
-#include <climits>
-#include <cstring>
-
-#include <vector>
-
 #include <cerrno>
+#include <climits>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <deque>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <vector>
 
 #ifndef WIN32
 #include <sys/mman.h>
@@ -33,12 +31,13 @@ int smpi_loaded_page      = -1;
 char* smpi_data_exe_start = nullptr;
 int smpi_data_exe_size    = 0;
 int smpi_privatize_global_variables;
-static char* smpi_data_exe_copy;
+static void* smpi_data_exe_copy;
 
 // We keep a copy of all the privatization regions: We can then delete everything easily by iterating over this
 // collection and nothing can be leaked. We could also iterate over all actors but we would have to be diligent when two
 // actors use the same privatization region (so, smart pointers would have to be used etc.)
-static std::set<smpi_privatization_region_t> smpi_privatization_regions;
+// Use a std::deque so that pointers remain valid after push_back().
+static std::deque<s_smpi_privatization_region_t> smpi_privatization_regions;
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
 static const int PROT_RW  = (PROT_READ | PROT_WRITE );
@@ -149,7 +148,7 @@ void smpi_backup_global_memory_segment()
     return;
   }
 
-  smpi_data_exe_copy = (char*)malloc(smpi_data_exe_size);
+  smpi_data_exe_copy = ::operator new(smpi_data_exe_size);
   // Make a copy of the data segment. This clean copy is retained over the whole runtime
   // of the simulation and can be used to initialize a dynamically added, new process.
   asan_safe_memcpy(smpi_data_exe_copy, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
@@ -208,25 +207,22 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
   asan_safe_memcpy(address, smpi_data_exe_copy, smpi_data_exe_size);
 
   // store the address of the mapping for further switches
-  smpi_privatization_region_t tmp =
-      static_cast<smpi_privatization_region_t>(new struct s_smpi_privatization_region_t);
+  smpi_privatization_regions.emplace_back(s_smpi_privatization_region_t{address, file_descriptor});
 
-  tmp->file_descriptor = file_descriptor;
-  tmp->address         = address;
-  smpi_privatization_regions.insert(tmp);
-
-  return tmp;
+  return &smpi_privatization_regions.back();
 }
 
 void smpi_destroy_global_memory_segments(){
   if (smpi_data_exe_size == 0) // no need to switch
     return;
 #if HAVE_PRIVATIZATION
-  for (auto& it : smpi_privatization_regions) {
-    if (munmap(it->address, smpi_data_exe_size) < 0)
-      XBT_WARN("Unmapping of fd %d failed: %s", it->file_descriptor, strerror(errno));
-    close(it->file_descriptor);
+  for (auto const& region : smpi_privatization_regions) {
+    if (munmap(region.address, smpi_data_exe_size) < 0)
+      XBT_WARN("Unmapping of fd %d failed: %s", region.file_descriptor, strerror(errno));
+    close(region.file_descriptor);
   }
+  smpi_privatization_regions.clear();
+  ::operator delete(smpi_data_exe_copy);
 #endif
 }
 
