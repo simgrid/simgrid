@@ -364,14 +364,13 @@ void SIMIX_cond_unref(smx_cond_t cond)
 
 void intrusive_ptr_add_ref(s_smx_cond_t *cond)
 {
-  auto previous = (cond->refcount_)++;
+  auto previous = cond->refcount_.fetch_add(1);
   xbt_assert(previous != 0);
 }
 
 void intrusive_ptr_release(s_smx_cond_t *cond)
 {
-  auto count = --(cond->refcount_);
-  if (count == 0) {
+  if (cond->refcount_.fetch_sub(1) == 1) {
     xbt_assert(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
     xbt_swag_free(cond->sleeping);

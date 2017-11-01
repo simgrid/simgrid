@@ -31,15 +31,12 @@ public:
   // boost::intrusive_ptr<Mutex> support:
   friend void intrusive_ptr_add_ref(MutexImpl* mutex)
   {
-    // Atomic operation! Do not split in two instructions!
-    XBT_ATTRIB_UNUSED auto previous = (mutex->refcount_)++;
+    XBT_ATTRIB_UNUSED auto previous = mutex->refcount_.fetch_add(1);
     xbt_assert(previous != 0);
   }
   friend void intrusive_ptr_release(MutexImpl* mutex)
   {
-    // Atomic operation! Do not split in two instructions!
-    auto count = --(mutex->refcount_);
-    if (count == 0)
+    if (mutex->refcount_.fetch_sub(1) == 1)
       delete mutex;
   }
 
