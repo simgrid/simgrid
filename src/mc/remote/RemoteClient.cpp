@@ -586,10 +586,7 @@ void RemoteClient::unignore_heap(void* address, size_t size)
   while (start <= end) {
     cursor       = (start + end) / 2;
     auto& region = ignored_heap_[cursor];
-    if (region.address == address) {
-      ignored_heap_.erase(ignored_heap_.begin() + cursor);
-      return;
-    } else if (region.address < address)
+    if (region.address < address)
       start = cursor + 1;
     else if ((char*)region.address <= ((char*)address + size)) {
       ignored_heap_.erase(ignored_heap_.begin() + cursor);
