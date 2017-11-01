@@ -244,6 +244,8 @@ protected:
   double lastUpdate_ = 0;
   int suspended_ = 0;
   int indexHeap_;
+
+private:
   enum heap_action_type hat_ = NOTSET;
 };
 
