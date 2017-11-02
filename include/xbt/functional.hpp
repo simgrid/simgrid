@@ -208,11 +208,11 @@ private:
   {
     const static TaskVtable vtable {
       // Call:
-      [](TaskUnion& buffer, Args... args) -> R {
+      [](TaskUnion& buffer, Args... args) {
         F* src = reinterpret_cast<F*>(&buffer);
         F code = std::move(*src);
         src->~F();
-        code(std::forward<Args>(args)...);
+        return code(std::forward<Args>(args)...);
       },
       // Destroy:
       std::is_trivially_destructible<F>::value ?
@@ -237,7 +237,7 @@ private:
   {
     const static TaskVtable vtable {
       // Call:
-      [](TaskUnion& buffer, Args... args) -> R {
+      [](TaskUnion& buffer, Args... args) {
         // Delete F when we go out of scope:
         std::unique_ptr<F> code(*reinterpret_cast<F**>(&buffer));
         return (*code)(std::forward<Args>(args)...);
