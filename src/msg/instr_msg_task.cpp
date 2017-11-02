@@ -92,9 +92,7 @@ void TRACE_msg_task_get_end(msg_task_t task)
     process_container->getState("MSG_PROCESS_STATE")->popEvent();
 
     std::string key = std::string("p") + std::to_string(task->counter);
-    container_t root               = simgrid::instr::Container::getRootContainer();
-    simgrid::instr::LinkType* link = root->getLink("MSG_PROCESS_TASK_LINK");
-    link->endEvent(root, process_container, "SR", key);
+    simgrid::instr::Container::getRoot()->getLink("MSG_PROCESS_TASK_LINK")->endEvent(process_container, "SR", key);
   }
 }
 
@@ -108,9 +106,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
     process_container->getState("MSG_PROCESS_STATE")->pushEvent("send");
 
     std::string key = std::string("p") + std::to_string(task->counter);
-    container_t root               = simgrid::instr::Container::getRootContainer();
-    simgrid::instr::LinkType* link = root->getLink("MSG_PROCESS_TASK_LINK");
-    link->startEvent(root, process_container, "SR", key);
+    simgrid::instr::Container::getRoot()->getLink("MSG_PROCESS_TASK_LINK")->startEvent(process_container, "SR", key);
   }
 
   return 1;

@@ -5,22 +5,17 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cfloat>
-
 #include <exception>
 
 #include "colls_private.hpp"
 #include "smpi_process.hpp"
 
-
 //attempt to do a quick autotuning version of the collective,
-
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    simgrid::instr::EventType* type =                                                                                  \
-        simgrid::instr::Container::getRootContainer()->type_->getOrCreateEventType(#cat);                              \
+    simgrid::instr::EventType* type = simgrid::instr::Container::getRoot()->type_->getOrCreateEventType(#cat);         \
                                                                                                                        \
-    char cont_name[25];                                                                                                \
-    snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
+    std::string cont_name = std::string("rank-" + std::to_string(smpi_process()->index()));                            \
     type->addEntityValue(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                  \
     new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::byName(cont_name), type,                \
                                  type->getEntityValue(Colls::mpi_coll_##cat##_description[i].name));                   \

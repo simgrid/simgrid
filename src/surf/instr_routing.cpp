@@ -100,6 +100,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
                               std::to_string(src->type_->getId()) + "-" + dst->type_->getName() +
                               std::to_string(dst->type_->getId());
   simgrid::instr::LinkType* link = father->type_->getOrCreateLinkType(link_typename, src->type_, dst->type_);
+  link->setCallingContainer(father);
 
   //register EDGE types for triva configuration
   trivaEdgeTypes.insert(link->getName());
@@ -110,8 +111,8 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   std::string key = std::to_string(counter);
   counter++;
 
-  link->startEvent(father, src, "topology", key);
-  link->endEvent(father, dst, "topology", key);
+  link->startEvent(src, "topology", key);
+  link->endEvent(dst, "topology", key);
 
   XBT_DEBUG("  linkContainers %s <-> %s", src->getCname(), dst->getCname());
 }
@@ -154,7 +155,7 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 {
   std::string id = netzone.getName();
 
-  if (simgrid::instr::Container::getRootContainer() == nullptr) {
+  if (simgrid::instr::Container::getRoot() == nullptr) {
     simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
 
     if (TRACE_smpi_is_enabled()) {
@@ -208,7 +209,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
 static void sg_instr_new_host(simgrid::s4u::Host& host)
 {
   container_t container = new simgrid::instr::HostContainer(host, currentContainer.back());
-  container_t root      = simgrid::instr::Container::getRootContainer();
+  container_t root      = simgrid::instr::Container::getRoot();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::VariableType* power = container->type_->getOrCreateVariableType("power", "");
@@ -258,8 +259,8 @@ static void instr_routing_parse_end_platform ()
   currentContainer.clear();
   std::set<std::string>* filter = new std::set<std::string>;
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(),
-                           simgrid::instr::Container::getRootContainer(), filter);
+  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), simgrid::instr::Container::getRoot(),
+                           filter);
   XBT_DEBUG ("Graph extraction finished.");
   delete filter;
   platform_created = 1;
@@ -298,7 +299,7 @@ static void recursiveNewVariableType(std::string new_typename, std::string color
 
 void instr_new_variable_type(std::string new_typename, std::string color)
 {
-  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::getRootContainer()->type_);
+  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::getRoot()->type_);
 }
 
 static void recursiveNewUserVariableType(std::string father_type, std::string new_typename, std::string color,
@@ -313,7 +314,7 @@ static void recursiveNewUserVariableType(std::string father_type, std::string ne
 
 void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color)
 {
-  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::getRootContainer()->type_);
+  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::getRoot()->type_);
 }
 
 static void recursiveNewUserStateType(std::string father_type, std::string new_typename, simgrid::instr::Type* root)
@@ -327,7 +328,7 @@ static void recursiveNewUserStateType(std::string father_type, std::string new_t
 
 void instr_new_user_state_type(std::string father_type, std::string new_typename)
 {
-  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::getRootContainer()->type_);
+  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::getRoot()->type_);
 }
 
 static void recursiveNewValueForUserStateType(std::string type_name, const char* val, std::string color,
@@ -342,7 +343,7 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
 
 void instr_new_value_for_user_state_type(std::string type_name, const char* value, std::string color)
 {
-  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::getRootContainer()->type_);
+  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::getRoot()->type_);
 }
 
 int instr_platform_traced ()
@@ -373,7 +374,7 @@ xbt_graph_t instr_routing_platform_graph ()
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
   recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::getInstance()->getNetRoot(),
-                              simgrid::instr::Container::getRootContainer());
+                              simgrid::instr::Container::getRoot());
   delete nodes;
   delete edges;
   return ret;

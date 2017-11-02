@@ -23,6 +23,7 @@ class Type {
 
 public:
   std::map<std::string, Type*> children_;
+  Container* issuer_ = nullptr;
 
   Type(std::string name, std::string alias, std::string color, Type* father);
   virtual ~Type();
@@ -39,6 +40,8 @@ public:
   StateType* getOrCreateStateType(std::string name);
   VariableType* getOrCreateVariableType(std::string name, std::string color);
 
+  void setCallingContainer(Container* container) { issuer_ = container; }
+
   void logDefinition(e_event_type event_type);
   void logDefinition(Type* source, Type* dest);
 };
@@ -51,12 +54,9 @@ public:
 
 class VariableType : public Type {
   std::vector<VariableEvent*> events_;
-  Container* issuer_ = nullptr;
-
 public:
   VariableType(std::string name, std::string color, Type* father);
   ~VariableType();
-  void setCallingContainer(Container* container) { issuer_ = container; }
   void setEvent(double timestamp, double value);
   void addEvent(double timestamp, double value);
   void subEvent(double timestamp, double value);
@@ -76,10 +76,9 @@ public:
 class LinkType : public ValueType {
 public:
   LinkType(std::string name, std::string alias, Type* father);
-  void startEvent(Container* source_container, Container* sourceContainer, std::string value, std::string key);
-  void startEvent(Container* source_container, Container* sourceContainer, std::string value, std::string key,
-                  int size);
-  void endEvent(Container* source_container, Container* destContainer, std::string value, std::string key);
+  void startEvent(Container* startContainer, std::string value, std::string key);
+  void startEvent(Container* startContainer, std::string value, std::string key, int size);
+  void endEvent(Container* endContainer, std::string value, std::string key);
 };
 
 class EventType : public ValueType {
@@ -89,12 +88,9 @@ public:
 
 class StateType : public ValueType {
   std::vector<StateEvent*> events_;
-  Container* issuer_ = nullptr;
-
 public:
   StateType(std::string name, Type* father);
   ~StateType();
-  void setCallingContainer(Container* container) { issuer_ = container; }
   void setEvent(std::string value_name);
   void pushEvent(std::string value_name);
   void pushEvent(std::string value_name, void* extra);

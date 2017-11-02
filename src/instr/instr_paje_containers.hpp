@@ -41,7 +41,7 @@ public:
   LinkType* getLink(std::string name);
   VariableType* getVariable(std::string name);
 
-  static Container* getRootContainer();
+  static Container* getRoot();
 };
 
 class NetZoneContainer : public Container {

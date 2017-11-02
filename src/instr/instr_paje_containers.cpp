@@ -27,7 +27,7 @@ long long int instr_new_paje_id ()
 namespace simgrid {
 namespace instr {
 
-container_t Container::getRootContainer()
+container_t Container::getRoot()
 {
   return rootContainer;
 }
@@ -107,7 +107,7 @@ Container::~Container()
   TRACE_paje_dump_buffer(true);
 
   // trace my destruction, but not if user requests so or if the container is root
-  if (not TRACE_disable_destroy() && this != Container::getRootContainer())
+  if (not TRACE_disable_destroy() && this != Container::getRoot())
     logDestruction();
 
   // remove me from the allContainers data structure
@@ -219,7 +219,9 @@ StateType* Container::getState(std::string name)
 
 LinkType* Container::getLink(std::string name)
 {
-  return dynamic_cast<LinkType*>(type_->byName(name));
+  LinkType* ret = dynamic_cast<LinkType*>(type_->byName(name));
+  ret->setCallingContainer(this);
+  return ret;
 }
 
 VariableType* Container::getVariable(std::string name)

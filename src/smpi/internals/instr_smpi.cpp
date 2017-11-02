@@ -158,7 +158,7 @@ void TRACE_smpi_init(int rank)
   if (TRACE_smpi_is_grouped()){
     father = simgrid::instr::Container::byNameOrNull(sg_host_self_get_name());
   }else{
-    father = simgrid::instr::Container::getRootContainer();
+    father = simgrid::instr::Container::getRoot();
   }
   xbt_assert(father != nullptr, "Could not find a parent for mpi rank %s at function %s", str.c_str(), __FUNCTION__);
 #if HAVE_PAPI
@@ -317,10 +317,9 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
 
   std::string key = TRACE_smpi_get_key(src, dst, tag, 1);
 
-  container_t container      = simgrid::instr::Container::byName(smpi_container(rank));
-  simgrid::instr::LinkType* link = simgrid::instr::Container::getRootContainer()->getLink("MPI_LINK");
   XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
-  link->startEvent(simgrid::instr::Container::getRootContainer(), container, "PTP", key, size);
+  container_t startContainer = simgrid::instr::Container::byName(smpi_container(rank));
+  simgrid::instr::Container::getRoot()->getLink("MPI_LINK")->startEvent(startContainer, "PTP", key, size);
 }
 
 void TRACE_smpi_recv(int src, int dst, int tag)
@@ -330,8 +329,7 @@ void TRACE_smpi_recv(int src, int dst, int tag)
 
   std::string key = TRACE_smpi_get_key(src, dst, tag, 0);
 
-  container_t container      = simgrid::instr::Container::byName(smpi_container(dst));
-  simgrid::instr::LinkType* link = simgrid::instr::Container::getRootContainer()->getLink("MPI_LINK");
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
-  link->endEvent(simgrid::instr::Container::getRootContainer(), container, "PTP", key);
+  container_t endContainer = simgrid::instr::Container::byName(smpi_container(dst));
+  simgrid::instr::Container::getRoot()->getLink("MPI_LINK")->endEvent(endContainer, "PTP", key);
 }
