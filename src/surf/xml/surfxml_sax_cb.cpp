@@ -232,23 +232,23 @@ double surf_parse_get_time(const char* string, const char* entity_kind, std::str
 
 double surf_parse_get_size(const char* string, const char* entity_kind, std::string name)
 {
-  static const unit_scale units{
-      {"b", 0.125, 2, true}, {"b", 0.125, 10, true}, {"B", 1.0, 2, true}, {"B", 1.0, 10, true}};
+  static const unit_scale units{std::make_tuple("b", 0.125, 2, true), std::make_tuple("b", 0.125, 10, true),
+                                std::make_tuple("B", 1.0, 2, true), std::make_tuple("B", 1.0, 10, true)};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
 }
 
 double surf_parse_get_bandwidth(const char* string, const char* entity_kind, std::string name)
 {
-  static const unit_scale units{
-      {"bps", 0.125, 2, true}, {"bps", 0.125, 10, true}, {"Bps", 1.0, 2, true}, {"Bps", 1.0, 10, true}};
+  static const unit_scale units{std::make_tuple("bps", 0.125, 2, true), std::make_tuple("bps", 0.125, 10, true),
+                                std::make_tuple("Bps", 1.0, 2, true), std::make_tuple("Bps", 1.0, 10, true)};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
 }
 
 double surf_parse_get_speed(const char* string, const char* entity_kind, std::string name)
 {
-  static const unit_scale units{{"f", 1.0, 10, true}, {"flops", 1.0, 10, false}};
+  static const unit_scale units{std::make_tuple("f", 1.0, 10, true), std::make_tuple("flops", 1.0, 10, false)};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
