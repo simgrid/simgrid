@@ -13,7 +13,11 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <initializer_list>
 #include <string>
+#include <tuple>
+#include <unordered_map>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 
@@ -147,17 +151,51 @@ static std::vector<int>* explodesRadical(std::string radicals)
   return exploded;
 }
 
-struct unit_scale {
-  const char *unit;
-  double scale;
+namespace {
+class unit_scale : public std::unordered_map<std::string, double> {
+public:
+  using std::unordered_map<std::string, double>::unordered_map;
+  // tuples are : <unit, value for unit, base (2 or 10), true if abbreviated>
+  explicit unit_scale(std::initializer_list<std::tuple<const std::string, double, int, bool>> generators);
 };
 
+unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, double, int, bool>> generators)
+{
+  for (const auto& gen : generators) {
+    const std::string& unit = std::get<0>(gen);
+    double value            = std::get<1>(gen);
+    const int base          = std::get<2>(gen);
+    const bool abbrev       = std::get<3>(gen);
+    double mult;
+    std::vector<std::string> prefixes;
+    switch (base) {
+      case 2:
+        mult     = 1024.0;
+        prefixes = abbrev ? std::vector<std::string>{"Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi"}
+                          : std::vector<std::string>{"kibi", "mebi", "gibi", "tebi", "pebi", "exbi", "zebi", "yobi"};
+        break;
+      case 10:
+        mult     = 1000.0;
+        prefixes = abbrev ? std::vector<std::string>{"k", "M", "G", "T", "P", "E", "Z", "Y"}
+                          : std::vector<std::string>{"kilo", "mega", "giga", "tera", "peta", "exa", "zeta", "yotta"};
+        break;
+      default:
+        THROW_IMPOSSIBLE;
+    }
+    emplace(unit, value);
+    for (const auto& prefix : prefixes) {
+      value *= mult;
+      emplace(prefix + unit, value);
+    }
+  }
+}
+}
+
 /* Note: field `unit' for the last element of parameter `units' should be nullptr. */
-static double surf_parse_get_value_with_unit(const char* string, const unit_scale* units, const char* entity_kind,
+static double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
                                              std::string name, const char* error_msg, const char* default_unit)
 {
   char* ptr;
-  int i;
   errno = 0;
   double res   = strtod(string, &ptr);
   if (errno == ERANGE)
@@ -171,102 +209,46 @@ static double surf_parse_get_value_with_unit(const char* string, const unit_scal
     XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s", string, entity_kind, name.c_str(), error_msg);
     ptr = (char*)default_unit;
   }
-  for (i = 0; units[i].unit != nullptr && strcmp(ptr, units[i].unit) != 0; i++);
-
-  if (units[i].unit != nullptr)
-    res *= units[i].scale;
-  else
+  auto u = units.find(ptr);
+  if (u == units.end())
     surf_parse_error(std::string("unknown unit: ") + ptr);
-  return res;
+  return res * u->second;
 }
 
 double surf_parse_get_time(const char* string, const char* entity_kind, std::string name)
 {
-  const unit_scale units[] = {{"w", 7 * 24 * 60 * 60},
-                              {"d", 24 * 60 * 60},
-                              {"h", 60 * 60},
-                              {"m", 60},
-                              {"s", 1.0},
-                              {"ms", 1e-3},
-                              {"us", 1e-6},
-                              {"ns", 1e-9},
-                              {"ps", 1e-12},
-                              {nullptr, 0}};
+  static const unit_scale units{{"w", 7 * 24 * 60 * 60},
+                                {"d", 24 * 60 * 60},
+                                {"h", 60 * 60},
+                                {"m", 60},
+                                {"s", 1.0},
+                                {"ms", 1e-3},
+                                {"us", 1e-6},
+                                {"ns", 1e-9},
+                                {"ps", 1e-12}};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 's' to your time to get seconds", "s");
 }
 
 double surf_parse_get_size(const char* string, const char* entity_kind, std::string name)
 {
-  const unit_scale units[] = {{"EiB", pow(1024, 6)},
-                              {"PiB", pow(1024, 5)},
-                              {"TiB", pow(1024, 4)},
-                              {"GiB", pow(1024, 3)},
-                              {"MiB", pow(1024, 2)},
-                              {"KiB", 1024},
-                              {"EB", 1e18},
-                              {"PB", 1e15},
-                              {"TB", 1e12},
-                              {"GB", 1e9},
-                              {"MB", 1e6},
-                              {"kB", 1e3},
-                              {"B", 1.0},
-                              {"Eib", 0.125 * pow(1024, 6)},
-                              {"Pib", 0.125 * pow(1024, 5)},
-                              {"Tib", 0.125 * pow(1024, 4)},
-                              {"Gib", 0.125 * pow(1024, 3)},
-                              {"Mib", 0.125 * pow(1024, 2)},
-                              {"Kib", 0.125 * 1024},
-                              {"Eb", 0.125 * 1e18},
-                              {"Pb", 0.125 * 1e15},
-                              {"Tb", 0.125 * 1e12},
-                              {"Gb", 0.125 * 1e9},
-                              {"Mb", 0.125 * 1e6},
-                              {"kb", 0.125 * 1e3},
-                              {"b", 0.125},
-                              {nullptr, 0}};
+  static const unit_scale units{
+      {"b", 0.125, 2, true}, {"b", 0.125, 10, true}, {"B", 1.0, 2, true}, {"B", 1.0, 10, true}};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
 }
 
 double surf_parse_get_bandwidth(const char* string, const char* entity_kind, std::string name)
 {
-  const unit_scale units[] = {{"EiBps", pow(1024, 6)},
-                              {"PiBps", pow(1024, 5)},
-                              {"TiBps", pow(1024, 4)},
-                              {"GiBps", pow(1024, 3)},
-                              {"MiBps", pow(1024, 2)},
-                              {"KiBps", 1024},
-                              {"EBps", 1e18},
-                              {"PBps", 1e15},
-                              {"TBps", 1e12},
-                              {"GBps", 1e9},
-                              {"MBps", 1e6},
-                              {"kBps", 1e3},
-                              {"Bps", 1.0},
-                              {"Eibps", 0.125 * pow(1024, 6)},
-                              {"Pibps", 0.125 * pow(1024, 5)},
-                              {"Tibps", 0.125 * pow(1024, 4)},
-                              {"Gibps", 0.125 * pow(1024, 3)},
-                              {"Mibps", 0.125 * pow(1024, 2)},
-                              {"Kibps", 0.125 * 1024},
-                              {"Tbps", 0.125 * 1e12},
-                              {"Gbps", 0.125 * 1e9},
-                              {"Mbps", 0.125 * 1e6},
-                              {"kbps", 0.125 * 1e3},
-                              {"bps", 0.125},
-                              {nullptr, 0}};
+  static const unit_scale units{
+      {"bps", 0.125, 2, true}, {"bps", 0.125, 10, true}, {"Bps", 1.0, 2, true}, {"Bps", 1.0, 10, true}};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
 }
 
 double surf_parse_get_speed(const char* string, const char* entity_kind, std::string name)
 {
-  const unit_scale units[] = {{"yottaflops", 1e24}, {"Yf", 1e24}, {"zettaflops", 1e21}, {"Zf", 1e21},
-                              {"exaflops", 1e18},   {"Ef", 1e18}, {"petaflops", 1e15},  {"Pf", 1e15},
-                              {"teraflops", 1e12},  {"Tf", 1e12}, {"gigaflops", 1e9},   {"Gf", 1e9},
-                              {"megaflops", 1e6},   {"Mf", 1e6},  {"kiloflops", 1e3},   {"kf", 1e3},
-                              {"flops", 1.0},       {"f", 1.0},   {nullptr, 0}};
+  static const unit_scale units{{"f", 1.0, 10, true}, {"flops", 1.0, 10, false}};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
