@@ -58,7 +58,6 @@ class Process {
     void set_privatized_region(smpi_privatization_region_t region);
     smpi_privatization_region_t privatized_region();
     int index();
-    MPI_Comm comm_world();
     smx_mailbox_t mailbox();
     smx_mailbox_t mailbox_small();
     xbt_mutex_t mailboxes_mutex();
@@ -69,6 +68,7 @@ class Process {
     xbt_os_timer_t timer();
     void simulated_start();
     double simulated_elapsed();
+    MPI_Comm comm_world();
     MPI_Comm comm_self();
     MPI_Comm comm_intra();
     void set_comm_intra(MPI_Comm comm);
