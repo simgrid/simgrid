@@ -528,10 +528,10 @@ void CpuTi::updateActionsFinishTime(double now)
       action->setFinishTime(speedIntegratedTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
       if (action->getMaxDuration() > NO_MAX_DURATION &&
-          action->getStartTime() + action->getMaxDuration() < action->finishTime_)
+          action->getStartTime() + action->getMaxDuration() < action->getFinishTime())
         min_finish = action->getStartTime() + action->getMaxDuration();
       else
-        min_finish = action->finishTime_;
+        min_finish = action->getFinishTime();
     } else {
       /* put the max duration time on heap */
       if (action->getMaxDuration() > NO_MAX_DURATION)
@@ -549,7 +549,7 @@ void CpuTi::updateActionsFinishTime(double now)
       xbt_heap_push(static_cast<CpuTiModel*>(model())->tiActionHeap_, action, min_finish);
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
-              action, action->getStartTime(), action->finishTime_, action->getMaxDuration());
+              action, action->getStartTime(), action->getFinishTime(), action->getMaxDuration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -597,12 +597,12 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* skip action that are finishing now */
-    if (action->finishTime_ >= 0 && action->finishTime_ <= now)
+    if (action->getFinishTime() >= 0 && action->getFinishTime() <= now)
       continue;
 
     /* update remaining */
     action->updateRemains(area_total / (sumPriority_ * action->getPriority()));
-    XBT_DEBUG("Update remaining action(%p) remaining %f", action, action->remains_);
+    XBT_DEBUG("Update remaining action(%p) remaining %f", action, action->getRemainsNoUpdate());
   }
   lastUpdate_ = now;
 }
@@ -627,7 +627,7 @@ CpuAction *CpuTi::sleep(double duration)
   XBT_IN("(%s,%g)", getCname(), duration);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
 
-  action->maxDuration_ = duration;
+  action->setMaxDuration(duration);
   action->suspended_ = 2;
   if (duration == NO_MAX_DURATION) {
    /* Move to the *end* of the corresponding action set. This convention
@@ -731,7 +731,7 @@ void CpuTiAction::setMaxDuration(double duration)
 
   XBT_IN("(%p,%g)", this, duration);
 
-  maxDuration_ = duration;
+  setMaxDuration(duration);
 
   if (duration >= 0)
     min_finish = (getStartTime() + getMaxDuration()) < getFinishTime() ?
@@ -763,7 +763,7 @@ double CpuTiAction::getRemains()
   XBT_IN("(%p)", this);
   cpu_->updateRemainingAmount(surf_get_clock());
   XBT_OUT();
-  return remains_;
+  return getRemainsNoUpdate();
 }
 
 }

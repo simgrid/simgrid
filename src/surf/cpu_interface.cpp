@@ -191,21 +191,23 @@ void CpuAction::updateRemainingLazy(double now)
   xbt_assert(getStateSet() == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
   xbt_assert(getPriority() > 0, "You're updating an action that seems suspended.");
 
-  double delta = now - lastUpdate_;
+  double delta = now - getLastUpdate();
 
-  if (remains_ > 0) {
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, remains_, lastUpdate_);
-    double_update(&(remains_), lastValue_ * delta, sg_maxmin_precision*sg_surf_precision);
+  if (getRemainsNoUpdate() > 0) {
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, getRemainsNoUpdate(),
+               getLastUpdate());
+    updateRemains(getLastValue() * delta);
 
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getCname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
+      TRACE_surf_host_set_utilization(cpu->getCname(), getCategory(), getLastValue(), getLastUpdate(),
+                                      now - getLastUpdate());
     }
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, remains_);
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, getRemainsNoUpdate());
   }
 
-  lastUpdate_ = now;
-  lastValue_ = lmm_variable_getvalue(getVariable());
+  refreshLastUpdate();
+  setLastValue(lmm_variable_getvalue(getVariable()));
 }
 
 simgrid::xbt::signal<void(simgrid::surf::CpuAction*, Action::State)> CpuAction::onStateChange;

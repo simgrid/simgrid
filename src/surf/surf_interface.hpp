@@ -213,19 +213,25 @@ protected:
   ActionList* stateSet_;
   double sharingWeight_ = 1.0; /**< priority (1.0 by default) */
   int    refcount_ = 1;
-  double remains_; /**< How much of that cost remains to be done in the currently running task */
-  double maxDuration_ = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
-  double finishTime_ = -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
 private:
+  double maxDuration_ = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
+  double remains_;                       /**< How much of that cost remains to be done in the currently running task */
   double start_; /**< start time  */
   char *category_ = nullptr;            /**< tracing category for categorized resource utilization monitoring */
+  double finishTime_ =
+      -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
   double    cost_;
   simgrid::surf::Model *model_;
   void *data_ = nullptr; /**< for your convenience */
 
   /* LMM */
+  double lastUpdate_         = 0;
+  double lastValue_          = 0;
+  lmm_variable_t variable_   = nullptr;
+  enum heap_action_type hat_ = NOTSET;
+
 public:
   virtual void updateRemainingLazy(double now) { THROW_IMPOSSIBLE; };
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
@@ -233,20 +239,17 @@ public:
   void heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat);
   virtual void updateIndexHeap(int i);
   lmm_variable_t getVariable() {return variable_;}
+  void setVariable(lmm_variable_t var) { variable_ = var; }
   double getLastUpdate() {return lastUpdate_;}
   void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
-  enum heap_action_type getHat() {return hat_;}
+  double getLastValue() { return lastValue_; }
+  void setLastValue(double val) { lastValue_ = val; }
+  enum heap_action_type getHat() { return hat_; }
   bool is_linked() {return action_lmm_hook.is_linked();}
 
 protected:
-  lmm_variable_t variable_ = nullptr;
-  double lastValue_ = 0;
-  double lastUpdate_ = 0;
   int suspended_ = 0;
   int indexHeap_;
-
-private:
-  enum heap_action_type hat_ = NOTSET;
 };
 
 typedef Action::ActionList ActionList;

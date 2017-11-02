@@ -195,17 +195,15 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
   }
 
   XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
-  this->latency_ = latency;
+  latency_ = latency;
 
-  this->variable_ = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
-      (rate > 0 ? rate : -1.0),
-      host_nb + nb_link);
+  setVariable(lmm_variable_new(model->getMaxminSystem(), this, 1.0, (rate > 0 ? rate : -1.0), host_nb + nb_link));
 
-  if (this->latency_ > 0)
-    lmm_update_variable_weight(model->getMaxminSystem(), this->getVariable(), 0.0);
+  if (latency_ > 0)
+    lmm_update_variable_weight(model->getMaxminSystem(), getVariable(), 0.0);
 
   for (int i = 0; i < host_nb; i++)
-    lmm_expand(model->getMaxminSystem(), host_list[i]->pimpl_cpu->constraint(), this->getVariable(), flops_amount[i]);
+    lmm_expand(model->getMaxminSystem(), host_list[i]->pimpl_cpu->constraint(), getVariable(), flops_amount[i]);
 
   if(bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
@@ -292,7 +290,7 @@ Action *CpuL07::execution_start(double size)
 Action *CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
-  action->maxDuration_ = duration;
+  action->setMaxDuration(duration);
   action->suspended_ = 2;
   lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), 0.0);
 

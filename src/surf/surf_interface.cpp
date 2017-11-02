@@ -705,8 +705,7 @@ double Action::getStartTime()
 
 double Action::getFinishTime()
 {
-  /* keep the function behavior, some models (cpu_ti) change the finish time before the action end */
-  return remains_ <= 0 ? finishTime_ : -1;
+  return finishTime_;
 }
 
 void Action::setData(void* data)
