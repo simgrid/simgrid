@@ -217,15 +217,15 @@ static double surf_parse_get_value_with_unit(const char* string, const unit_scal
 
 double surf_parse_get_time(const char* string, const char* entity_kind, std::string name)
 {
-  static const unit_scale units{{"w", 7 * 24 * 60 * 60},
-                                {"d", 24 * 60 * 60},
-                                {"h", 60 * 60},
-                                {"m", 60},
-                                {"s", 1.0},
-                                {"ms", 1e-3},
-                                {"us", 1e-6},
-                                {"ns", 1e-9},
-                                {"ps", 1e-12}};
+  static const unit_scale units{std::make_pair("w", 7 * 24 * 60 * 60),
+                                std::make_pair("d", 24 * 60 * 60),
+                                std::make_pair("h", 60 * 60),
+                                std::make_pair("m", 60),
+                                std::make_pair("s", 1.0),
+                                std::make_pair("ms", 1e-3),
+                                std::make_pair("us", 1e-6),
+                                std::make_pair("ns", 1e-9),
+                                std::make_pair("ps", 1e-12)};
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 's' to your time to get seconds", "s");
 }
