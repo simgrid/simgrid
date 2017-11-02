@@ -731,7 +731,7 @@ void CpuTiAction::setMaxDuration(double duration)
 
   XBT_IN("(%p,%g)", this, duration);
 
-  setMaxDuration(duration);
+  Action::setMaxDuration(duration);
 
   if (duration >= 0)
     min_finish = (getStartTime() + getMaxDuration()) < getFinishTime() ?
