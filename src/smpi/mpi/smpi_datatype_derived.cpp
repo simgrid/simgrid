@@ -8,29 +8,29 @@
 #include "smpi_op.hpp"
 #include <xbt/log.h>
 
-XBT_LOG_EXTERNAL_CATEGORY(smpi_datatype);
-
 namespace simgrid{
 namespace smpi{
 
-
-Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type): Datatype(size, lb, ub, flags), block_count_(block_count), old_type_(old_type){
+Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type)
+    : Datatype(size, lb, ub, flags), block_count_(block_count), old_type_(old_type)
+{
   old_type_->ref();
 }
 
-Type_Contiguous::~Type_Contiguous(){
+Type_Contiguous::~Type_Contiguous()
+{
   Datatype::unref(old_type_);
 }
 
-
-void Type_Contiguous::serialize( void* noncontiguous_buf, void *contiguous_buf,
-                            int count){
+void Type_Contiguous::serialize(void* noncontiguous_buf, void* contiguous_buf, int count)
+{
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb();
   memcpy(contiguous_buf_char, noncontiguous_buf_char, count * block_count_ * old_type_->size());
 }
-void Type_Contiguous::unserialize( void* contiguous_buf, void *noncontiguous_buf,
-                              int count, MPI_Op op){
+
+void Type_Contiguous::unserialize(void* contiguous_buf, void* noncontiguous_buf, int count, MPI_Op op)
+{
   char* contiguous_buf_char = static_cast<char*>(contiguous_buf);
   char* noncontiguous_buf_char = static_cast<char*>(noncontiguous_buf)+lb();
   int n= count*block_count_;

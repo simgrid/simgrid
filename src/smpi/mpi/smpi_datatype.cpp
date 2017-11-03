@@ -189,7 +189,6 @@ void Datatype::commit()
   flags_ |= DT_FLAG_COMMITED;
 }
 
-
 bool Datatype::is_valid(){
   return (flags_ & DT_FLAG_COMMITED);
 }

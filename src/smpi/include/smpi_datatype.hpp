@@ -75,59 +75,58 @@ namespace simgrid{
 namespace smpi{
 
 class Datatype : public F2C, public Keyval{
-  private:
-    char* name_;
-    size_t size_;
-    MPI_Aint lb_;
-    MPI_Aint ub_;
-    int flags_;
-    int refcount_;
+  char* name_;
+  size_t size_;
+  MPI_Aint lb_;
+  MPI_Aint ub_;
+  int flags_;
+  int refcount_;
 
-  public:
-    static std::unordered_map<int, smpi_key_elem> keyvals_;
-    static int keyval_id_;
+public:
+  static std::unordered_map<int, smpi_key_elem> keyvals_;
+  static int keyval_id_;
 
-    Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags);
-    Datatype(char* name, int size,MPI_Aint lb, MPI_Aint ub, int flags);
-    Datatype(Datatype *datatype, int* ret);
-    virtual ~Datatype();
+  Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags);
+  Datatype(char* name, int size, MPI_Aint lb, MPI_Aint ub, int flags);
+  Datatype(Datatype* datatype, int* ret);
+  virtual ~Datatype();
 
-    char* name();
-    size_t size();
-    MPI_Aint lb();
-    MPI_Aint ub();
-    int flags();
-    int refcount();
+  char* name();
+  size_t size();
+  MPI_Aint lb();
+  MPI_Aint ub();
+  int flags();
+  int refcount();
 
-    void ref();
-    static void unref(MPI_Datatype datatype);
-    void commit();
-    bool is_valid();
-    void addflag(int flag);
-    int extent(MPI_Aint * lb, MPI_Aint * extent);
-    MPI_Aint get_extent();
-    void get_name(char* name, int* length);
-    void set_name(char* name);
-    static int copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                    void *recvbuf, int recvcount, MPI_Datatype recvtype);
-    virtual void serialize( void* noncontiguous, void *contiguous,
-                            int count);
-    virtual void unserialize( void* contiguous, void *noncontiguous,
-                              int count, MPI_Op op);
-    static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state);
-    static int keyval_free(int* keyval);
-    int pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);
-    int unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm comm);
+  void ref();
+  static void unref(MPI_Datatype datatype);
+  void commit();
+  bool is_valid();
+  void addflag(int flag);
+  int extent(MPI_Aint* lb, MPI_Aint* extent);
+  MPI_Aint get_extent();
+  void get_name(char* name, int* length);
+  void set_name(char* name);
+  static int copy(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* recvbuf, int recvcount,
+                  MPI_Datatype recvtype);
+  virtual void serialize(void* noncontiguous, void* contiguous, int count);
+  virtual void unserialize(void* contiguous, void* noncontiguous, int count, MPI_Op op);
+  static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
+                           void* extra_state);
+  static int keyval_free(int* keyval);
+  int pack(void* inbuf, int incount, void* outbuf, int outcount, int* position, MPI_Comm comm);
+  int unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Comm comm);
 
+  static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
+  static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);
+  static int create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type);
+  static int create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
+  static int create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type,
+                             MPI_Datatype* new_type);
+  static int create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
+                           MPI_Datatype* new_type);
 
-    static int create_contiguous(int count, MPI_Datatype old_type, MPI_Aint lb, MPI_Datatype* new_type);
-    static int create_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type);
-    static int create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type);
-    static int create_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
-    static int create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type);
-    static int create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type);
-
-    static Datatype* f2c(int id);
+  static Datatype* f2c(int id);
 };
 
 }
