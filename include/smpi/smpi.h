@@ -362,13 +362,13 @@ typedef SMPI_Group* MPI_Group;
 
 XBT_PUBLIC_DATA( MPI_Group ) MPI_GROUP_EMPTY;
 
-typedef SMPI_Comm *MPI_Comm;
+typedef SMPI_Comm* MPI_Comm;
 
 #define MPI_COMM_NULL ((MPI_Comm)NULL)
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
-typedef SMPI_Request *MPI_Request;
+typedef SMPI_Request* MPI_Request;
 
 #define MPIO_Request MPI_Request
 #define MPI_REQUEST_NULL ((MPI_Request)NULL)

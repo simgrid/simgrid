@@ -434,7 +434,7 @@ do
     fi
 
     echo "  <actor host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
-    <argument value=\"1\"/> <!-- instance -->
+    <argument value=\"smpirun\"/> <!-- instance -->
     <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
     if [ ${REPLAY} = 1 ]; then
         if  [ ${NUMTRACES} -gt 1 ]; then

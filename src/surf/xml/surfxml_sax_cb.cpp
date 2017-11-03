@@ -118,9 +118,12 @@ int surf_parse_get_int(std::string s)
     return -1;
   }
 }
+}
+
+namespace {
 
 /* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-static std::vector<int>* explodesRadical(std::string radicals)
+std::vector<int>* explodesRadical(std::string radicals)
 {
   std::vector<int>* exploded = new std::vector<int>();
 
@@ -151,7 +154,6 @@ static std::vector<int>* explodesRadical(std::string radicals)
   return exploded;
 }
 
-namespace {
 class unit_scale : public std::unordered_map<std::string, double> {
 public:
   using std::unordered_map<std::string, double>::unordered_map;
@@ -189,11 +191,10 @@ unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, doubl
     }
   }
 }
-}
 
 /* Note: field `unit' for the last element of parameter `units' should be nullptr. */
-static double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
-                                             std::string name, const char* error_msg, const char* default_unit)
+double surf_parse_get_value_with_unit(const char* string, const unit_scale& units, const char* entity_kind,
+                                      std::string name, const char* error_msg, const char* default_unit)
 {
   char* ptr;
   errno = 0;
@@ -214,6 +215,9 @@ static double surf_parse_get_value_with_unit(const char* string, const unit_scal
     surf_parse_error(std::string("unknown unit: ") + ptr);
   return res * u->second;
 }
+}
+
+extern "C" {
 
 double surf_parse_get_time(const char* string, const char* entity_kind, std::string name)
 {
