@@ -58,10 +58,23 @@ int smpi_universe_size = 0;
 int* index_to_process_data = nullptr;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
+/**
+ * Setting MPI_COMM_WORLD to MPI_COMM_UNINITIALIZED (it's a variable)
+ * is important because the implementation of MPI_Comm checks
+ * "this == MPI_COMM_UNINITIALIZED"? If yes, it uses smpi_process()->comm_world()
+ * instead of "this".
+ * This is basically how we only have one global variable but all processes have
+ * different communicators (basically, the one their SMPI instance uses).
+ *
+ * See smpi_comm.cpp and the functions therein for details.
+ */
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
 MPI_Errhandler *MPI_ERRORS_RETURN = nullptr;
 MPI_Errhandler *MPI_ERRORS_ARE_FATAL = nullptr;
 MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
+// No instance gets manually created; check also the smpirun.in script as
+// this default name is used there as well (when the <actor> tag is generated).
+static const char* smpi_default_instance_name = "smpirun";
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
 static simgrid::config::Flag<double> smpi_init_sleep(
@@ -327,28 +340,29 @@ void smpi_global_init()
   }
 #endif
 
-  int smpirun = 0;
-  msg_bar_t finalization_barrier = nullptr;
-  if (process_count == 0){
-    process_count = SIMIX_process_count();
-    smpirun=1;
-    finalization_barrier = MSG_barrier_init(process_count);
+  if (index_to_process_data == nullptr) {
+    index_to_process_data = new int[SIMIX_process_count()];
+  }
+
+  bool smpirun = 0;
+  if (process_count == 0) { // The program has been dispatched but no other
+                            // SMPI instances have been registered. We're using smpirun.
+    smpirun = true;
+    SMPI_app_instance_register(smpi_default_instance_name, nullptr,
+                               SIMIX_process_count()); // This call has a side effect on process_count...
+    MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
   }
   smpi_universe_size = process_count;
   process_data       = new simgrid::smpi::Process*[process_count];
   for (int i = 0; i < process_count; i++) {
-    process_data[i] = new simgrid::smpi::Process(i, finalization_barrier);
-  }
-  //if the process was launched through smpirun script we generate a global mpi_comm_world
-  //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
-  MPI_Group group;
-  if (smpirun) {
-    group = new  simgrid::smpi::Group(process_count);
-    MPI_COMM_WORLD = new  simgrid::smpi::Comm(group, nullptr);
-    MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
-
-    for (int i = 0; i < process_count; i++)
-      group->set_mapping(i, i);
+    if (smpirun) {
+      process_data[i] = new simgrid::smpi::Process(i, smpi_deployment_finalization_barrier(smpi_default_instance_name));
+      smpi_deployment_register_process(smpi_default_instance_name, i, i);
+    } else {
+      // TODO We can pass a nullptr here because Process::set_data() assigns the
+      // barrier from the instance anyway. This is ugly and should be changed
+      process_data[i] = new simgrid::smpi::Process(i, nullptr);
+    }
   }
 }
 
@@ -356,12 +370,7 @@ void smpi_global_destroy()
 {
   smpi_bench_destroy();
   smpi_shared_destroy();
-  if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
-      delete MPI_COMM_WORLD->group();
-      MSG_barrier_destroy(process_data[0]->finalization_barrier());
-  }else{
-      smpi_deployment_cleanup_instances();
-  }
+  smpi_deployment_cleanup_instances();
   for (int i = 0, count = smpi_process_count(); i < count; i++) {
     if(process_data[i]->comm_self()!=MPI_COMM_NULL){
       simgrid::smpi::Comm::destroy(process_data[i]->comm_self());
@@ -376,13 +385,8 @@ void smpi_global_destroy()
   delete[] process_data;
   process_data = nullptr;
 
-  if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
-    MPI_COMM_WORLD->cleanup_smp();
-    MPI_COMM_WORLD->cleanup_attr<simgrid::smpi::Comm>();
-    if(simgrid::smpi::Colls::smpi_coll_cleanup_callback!=nullptr)
-      simgrid::smpi::Colls::smpi_coll_cleanup_callback();
-    delete MPI_COMM_WORLD;
-  }
+  if (simgrid::smpi::Colls::smpi_coll_cleanup_callback != nullptr)
+    simgrid::smpi::Colls::smpi_coll_cleanup_callback();
 
   MPI_COMM_WORLD = MPI_COMM_NULL;
 
