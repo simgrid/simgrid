@@ -88,7 +88,6 @@ public:
   void setState(simgrid::surf::Action::State state) override;
   int unref() override;
   void cancel() override;
-  void updateIndexHeap(int i) override;
   void suspend() override;
   void resume() override;
   void setMaxDuration(double duration) override;
