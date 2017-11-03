@@ -70,7 +70,7 @@ void Process::set_data(int index, int* argc, char*** argv)
     char* instance_id = (*argv)[1];
     comm_world_         = smpi_deployment_comm_world(instance_id);
     msg_bar_t bar = smpi_deployment_finalization_barrier(instance_id);
-    if (bar!=nullptr) // don't overwrite the default one
+    if (bar != nullptr) // don't overwrite the current one if the instance has none
       finalization_barrier_ = bar;
     instance_id_ = instance_id;
     index_ = index;
