@@ -68,12 +68,12 @@ Process::Process(int index, msg_bar_t finalization_barrier)
 void Process::set_data(int index, int* argc, char*** argv)
 {
     char* instance_id = (*argv)[1];
-    comm_world_         = smpi_deployment_comm_world(instance_id);
-    msg_bar_t bar = smpi_deployment_finalization_barrier(instance_id);
+    comm_world_       = smpi_deployment_comm_world(instance_id);
+    msg_bar_t bar     = smpi_deployment_finalization_barrier(instance_id);
     if (bar != nullptr) // don't overwrite the current one if the instance has none
       finalization_barrier_ = bar;
     instance_id_ = instance_id;
-    index_ = index;
+    index_       = index;
 
     static_cast<simgrid::msg::ActorExt*>(SIMIX_process_self()->userdata)->data = this;
 
