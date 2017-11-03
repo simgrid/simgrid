@@ -62,23 +62,22 @@ StateType::~StateType()
 
 void StateType::setEvent(std::string value_name)
 {
-  events_.push_back(new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_SetState, getEntityValue(value_name)));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, getEntityValue(value_name)));
 }
 
 void StateType::pushEvent(std::string value_name, void* extra)
 {
-  events_.push_back(
-      new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_PushState, getEntityValue(value_name), extra));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, getEntityValue(value_name), extra));
 }
 
 void StateType::pushEvent(std::string value_name)
 {
-  events_.push_back(new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_PushState, getEntityValue(value_name)));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, getEntityValue(value_name)));
 }
 
 void StateType::popEvent()
 {
-  events_.push_back(new StateEvent(SIMIX_get_clock(), issuer_, this, PAJE_PopState, nullptr));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr));
 }
 
 VariableType::VariableType(std::string name, std::string color, Type* father) : Type(name, name, color, father)
@@ -117,12 +116,12 @@ void LinkType::startEvent(container_t startContainer, std::string value, std::st
 
 void LinkType::startEvent(container_t startContainer, std::string value, std::string key, int size)
 {
-  new LinkEvent(SIMIX_get_clock(), issuer_, this, PAJE_StartLink, startContainer, value, key, size);
+  new LinkEvent(issuer_, this, PAJE_StartLink, startContainer, value, key, size);
 }
 
 void LinkType::endEvent(container_t endContainer, std::string value, std::string key)
 {
-  new LinkEvent(SIMIX_get_clock(), issuer_, this, PAJE_EndLink, endContainer, value, key);
+  new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, key);
 }
 
 void Type::logDefinition(e_event_type event_type)

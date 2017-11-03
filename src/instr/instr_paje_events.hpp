@@ -66,9 +66,8 @@ class StateEvent : public PajeEvent {
   void* extra_ = nullptr;
 
 public:
-  StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value);
-  StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value,
-             void* extra);
+  StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value);
+  StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, void* extra);
   void print() override;
 };
 
@@ -79,10 +78,10 @@ class LinkEvent : public PajeEvent {
   int size_ = -1;
 
 public:
-  LinkEvent(double timestamp, Container* container, Type* type, e_event_type event_type, Container* sourceContainer,
-            std::string value, std::string key);
-  LinkEvent(double timestamp, Container* container, Type* type, e_event_type event_type, Container* sourceContainer,
-            std::string value, std::string key, int size);
+  LinkEvent(Container* container, Type* type, e_event_type event_type, Container* sourceContainer, std::string value,
+            std::string key);
+  LinkEvent(Container* container, Type* type, e_event_type event_type, Container* sourceContainer, std::string value,
+            std::string key, int size);
   void print() override;
 };
 
@@ -95,5 +94,4 @@ public:
 };
 }
 }
-
 #endif

@@ -22,15 +22,19 @@ NewEvent::NewEvent(double timestamp, container_t container, Type* type, EntityVa
   insertIntoBuffer();
 }
 
-LinkEvent::LinkEvent(double timestamp, container_t container, Type* type, e_event_type event_type, container_t endpoint,
+LinkEvent::LinkEvent(container_t container, Type* type, e_event_type event_type, container_t endpoint,
                      std::string value, std::string key)
-    : LinkEvent(timestamp, container, type, event_type, endpoint, value, key, -1)
+    : LinkEvent(container, type, event_type, endpoint, value, key, -1)
 {
 }
 
-LinkEvent::LinkEvent(double timestamp, container_t container, Type* type, e_event_type event_type, container_t endpoint,
+LinkEvent::LinkEvent(container_t container, Type* type, e_event_type event_type, container_t endpoint,
                      std::string value, std::string key, int size)
-    : PajeEvent(container, type, timestamp, event_type), endpoint_(endpoint), value_(value), key_(key), size_(size)
+    : PajeEvent(container, type, SIMIX_get_clock(), event_type)
+    , endpoint_(endpoint)
+    , value_(value)
+    , key_(key)
+    , size_(size)
 {
   XBT_DEBUG("%s: event_type=%u, timestamp=%f, value:%s", __FUNCTION__, eventType_, timestamp_, value_.c_str());
   insertIntoBuffer();
@@ -43,14 +47,13 @@ VariableEvent::VariableEvent(double timestamp, Container* container, Type* type,
   insertIntoBuffer();
 }
 
-StateEvent::StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value)
-    : StateEvent(timestamp, container, type, event_type, value, nullptr)
+StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value)
+    : StateEvent(container, type, event_type, value, nullptr)
 {
 }
 
-StateEvent::StateEvent(double timestamp, Container* container, Type* type, e_event_type event_type, EntityValue* value,
-                       void* extra)
-    : PajeEvent::PajeEvent(container, type, timestamp, event_type), value(value), extra_(extra)
+StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, void* extra)
+    : PajeEvent::PajeEvent(container, type, SIMIX_get_clock(), event_type), value(value), extra_(extra)
 {
 #if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
