@@ -35,15 +35,17 @@ enum e_event_type : unsigned int {
 };
 
 class PajeEvent {
-protected:
-  Container* container;
-  Type* type;
+  Container* container_;
+  Type* type_;
 
+protected:
+  Type* getType() { return type_; }
+  Container* getContainer() { return container_; }
 public:
   double timestamp_;
   e_event_type eventType_;
   PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType)
-      : container(container), type(type), timestamp_(timestamp), eventType_(eventType){};
+      : container_(container), type_(type), timestamp_(timestamp), eventType_(eventType){};
   virtual ~PajeEvent() = default;
   virtual void print() = 0;
   void insertIntoBuffer();

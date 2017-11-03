@@ -468,9 +468,9 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
          || action->getState() == Action::State::not_in_the_system) {
           action->setFinishTime(date);
           action->setState(Action::State::failed);
-          if (action->indexHeap_ >= 0) {
+          if (action->getIndexHeap() >= 0) {
             CpuTiAction* heap_act = static_cast<CpuTiAction*>(
-                xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->indexHeap_));
+                xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->getIndexHeap()));
             if (heap_act != action)
               DIE_IMPOSSIBLE;
           }
@@ -538,10 +538,10 @@ void CpuTi::updateActionsFinishTime(double now)
         min_finish = action->getStartTime() + action->getMaxDuration();
     }
     /* add in action heap */
-    XBT_DEBUG("action(%p) index %d", action, action->indexHeap_);
-    if (action->indexHeap_ >= 0) {
+    XBT_DEBUG("action(%p) index %d", action, action->getIndexHeap());
+    if (action->getIndexHeap() >= 0) {
       CpuTiAction* heap_act = static_cast<CpuTiAction*>(
-          xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->indexHeap_));
+          xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->getIndexHeap()));
       if (heap_act != action)
         DIE_IMPOSSIBLE;
     }
@@ -664,13 +664,13 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
  : CpuAction(model_, cost, failed)
  , cpu_(cpu)
 {
-  indexHeap_ = -1;
+  updateIndexHeap(-1);
   cpu_->modified(true);
 }
 
 void CpuTiAction::updateIndexHeap(int i)
 {
-  indexHeap_ = i;
+  Action::updateIndexHeap(i);
 }
 
 void CpuTiAction::setState(Action::State state)
@@ -689,7 +689,7 @@ int CpuTiAction::unref()
     if (action_ti_hook.is_linked())
       cpu_->actionSet_->erase(cpu_->actionSet_->iterator_to(*this));
     /* remove from heap */
-    xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, this->indexHeap_);
+    xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, getIndexHeap());
     cpu_->modified(true);
     delete this;
     return 1;
@@ -700,7 +700,7 @@ int CpuTiAction::unref()
 void CpuTiAction::cancel()
 {
   this->setState(Action::State::failed);
-  xbt_heap_remove(getModel()->getActionHeap(), this->indexHeap_);
+  xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
   cpu_->modified(true);
 }
 
@@ -709,7 +709,7 @@ void CpuTiAction::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
     suspended_ = 1;
-    xbt_heap_remove(getModel()->getActionHeap(), indexHeap_);
+    xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
     cpu_->modified(true);
   }
   XBT_OUT();
@@ -740,8 +740,8 @@ void CpuTiAction::setMaxDuration(double duration)
     min_finish = getFinishTime();
 
 /* add in action heap */
-  if (indexHeap_ >= 0) {
-    CpuTiAction *heap_act = static_cast<CpuTiAction*>(xbt_heap_remove(getModel()->getActionHeap(), indexHeap_));
+  if (getIndexHeap() >= 0) {
+    CpuTiAction* heap_act = static_cast<CpuTiAction*>(xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap()));
     if (heap_act != this)
       DIE_IMPOSSIBLE;
   }
@@ -753,7 +753,7 @@ void CpuTiAction::setMaxDuration(double duration)
 void CpuTiAction::setSharingWeight(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
-  sharingWeight_ = priority;
+  setSharingWeightNoUpdate(priority);
   cpu_->modified(true);
   XBT_OUT();
 }

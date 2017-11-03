@@ -790,7 +790,7 @@ void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), sharingWeight_);
+    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), getPriority());
     suspended_ = 0;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
       heapRemove(getModel()->getActionHeap());

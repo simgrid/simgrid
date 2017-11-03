@@ -201,6 +201,7 @@ public:
   double getPriority() { return sharingWeight_; };
   /** @brief Set the priority of the current Action */
   virtual void setSharingWeight(double priority);
+  void setSharingWeightNoUpdate(double weight) { sharingWeight_ = weight; }
 
   /** @brief Get the state set in which the action is */
   ActionList* getStateSet() {return stateSet_;};
@@ -211,10 +212,10 @@ public:
 
 protected:
   ActionList* stateSet_;
-  double sharingWeight_ = 1.0; /**< priority (1.0 by default) */
   int    refcount_ = 1;
 
 private:
+  double sharingWeight_ = 1.0;             /**< priority (1.0 by default) */
   double maxDuration_ = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
   double remains_;                       /**< How much of that cost remains to be done in the currently running task */
   double start_; /**< start time  */
@@ -231,6 +232,7 @@ private:
   double lastValue_          = 0;
   lmm_variable_t variable_   = nullptr;
   enum heap_action_type hat_ = NOTSET;
+  int indexHeap_;
 
 public:
   virtual void updateRemainingLazy(double now) { THROW_IMPOSSIBLE; };
@@ -246,10 +248,9 @@ public:
   void setLastValue(double val) { lastValue_ = val; }
   enum heap_action_type getHat() { return hat_; }
   bool is_linked() {return action_lmm_hook.is_linked();}
-
+  int getIndexHeap() { return indexHeap_; }
 protected:
   int suspended_ = 0;
-  int indexHeap_;
 };
 
 typedef Action::ActionList ActionList;
@@ -295,6 +296,7 @@ public:
    * @see e_UM_t
    */
   e_UM_t getUpdateMechanism() {return updateMechanism_;}
+  void setUpdateMechanism(e_UM_t mechanism) { updateMechanism_ = mechanism; }
 
   /** @brief Get Action heap */
   xbt_heap_t getActionHeap() {return actionHeap_;}
@@ -329,11 +331,11 @@ public:
 protected:
   ActionLmmListPtr modifiedSet_;
   lmm_system_t maxminSystem_ = nullptr;
-  e_UM_t updateMechanism_ = UM_UNDEFINED;
   bool selectiveUpdate_;
   xbt_heap_t actionHeap_;
 
 private:
+  e_UM_t updateMechanism_ = UM_UNDEFINED;
   ActionList* readyActionSet_; /**< Actions in state SURF_ACTION_READY */
   ActionList* runningActionSet_; /**< Actions in state SURF_ACTION_RUNNING */
   ActionList* failedActionSet_; /**< Actions in state SURF_ACTION_FAILED */

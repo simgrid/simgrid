@@ -138,10 +138,10 @@ NetworkCm02Model::NetworkCm02Model()
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
 
   if (not strcmp(optim, "Full")) {
-    updateMechanism_ = UM_FULL;
+    setUpdateMechanism(UM_FULL);
     selectiveUpdate_ = select;
   } else if (not strcmp(optim, "Lazy")) {
-    updateMechanism_ = UM_LAZY;
+    setUpdateMechanism(UM_LAZY);
     selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
                "You cannot disable selective update when using the lazy update mechanism");
@@ -152,7 +152,7 @@ NetworkCm02Model::NetworkCm02Model()
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
   loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
-  if (updateMechanism_ == UM_LAZY) {
+  if (getUpdateMechanism() == UM_LAZY) {
     actionHeap_ = xbt_heap_new(8, nullptr);
     xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
     modifiedSet_ = new ActionLmmList();
@@ -293,8 +293,8 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->weight_ = latency;
   action->latency_ = latency;
   action->rate_ = rate;
-  if (updateMechanism_ == UM_LAZY) {
-    action->indexHeap_ = -1;
+  if (getUpdateMechanism() == UM_LAZY) {
+    action->updateIndexHeap(-1);
     action->refreshLastUpdate();
   }
 
@@ -318,7 +318,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (action->latency_ > 0) {
     action->setVariable(lmm_variable_new(maxminSystem_, action, 0.0, -1.0, constraints_per_variable));
-    if (updateMechanism_ == UM_LAZY) {
+    if (getUpdateMechanism() == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->getLastUpdate());
       action->heapInsert(actionHeap_, action->latency_ + action->getLastUpdate(), route->empty() ? NORMAL : LATENCY);

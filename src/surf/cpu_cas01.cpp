@@ -41,10 +41,10 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
   if (not strcmp(optim, "Full")) {
-    updateMechanism_ = UM_FULL;
+    setUpdateMechanism(UM_FULL);
     selectiveUpdate_ = select;
   } else if (not strcmp(optim, "Lazy")) {
-    updateMechanism_ = UM_LAZY;
+    setUpdateMechanism(UM_LAZY);
     selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
@@ -214,7 +214,7 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
     , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
-    indexHeap_ = -1;
+    updateIndexHeap(-1);
     refreshLastUpdate();
     setLastValue(0.0);
   }

@@ -73,10 +73,10 @@ void NewEvent::print()
     return;
 
   if (timestamp_ < 1e-12)
-    stream << eventType_ << " " << 0 << " " << type->getId() << " " << container->getId();
+    stream << eventType_ << " " << 0 << " ";
   else
-    stream << eventType_ << " " << timestamp_ << " " << type->getId() << " " << container->getId();
-  stream << " " << val->getId();
+    stream << eventType_ << " " << timestamp_ << " ";
+  stream << getType()->getId() << " " << getContainer()->getId() << " " << val->getId();
   XBT_DEBUG("Dump %s", stream.str().c_str());
   fprintf(tracing_file, "%s\n", stream.str().c_str());
 }
@@ -89,11 +89,11 @@ void LinkEvent::print()
   if (instr_fmt_type != instr_fmt_paje)
     return;
   if (timestamp_ < 1e-12)
-    stream << eventType_ << " " << 0 << " " << type->getId() << " " << container->getId() << " " << value_;
+    stream << eventType_ << " " << 0 << " " << getType()->getId() << " " << getContainer()->getId();
   else
-    stream << eventType_ << " " << timestamp_ << " " << type->getId() << " " << container->getId() << " " << value_;
+    stream << eventType_ << " " << timestamp_ << " " << getType()->getId() << " " << getContainer()->getId();
 
-  stream << " " << endpoint_->getId() << " " << key_;
+  stream << " " << value_ << " " << endpoint_->getId() << " " << key_;
 
   if (TRACE_display_sizes()) {
     stream << " " << size_;
@@ -111,9 +111,10 @@ void VariableEvent::print()
     return;
 
   if (timestamp_ < 1e-12)
-    stream << eventType_ << " " << 0 << " " << type->getId() << " " << container->getId() << " " << value;
+    stream << eventType_ << " " << 0 << " ";
   else
-    stream << eventType_ << " " << timestamp_ << " " << type->getId() << " " << container->getId() << " " << value;
+    stream << eventType_ << " " << timestamp_ << " ";
+  stream << getType()->getId() << " " << getContainer()->getId() << " " << value;
   XBT_DEBUG("Dump %s", stream.str().c_str());
   fprintf(tracing_file, "%s\n", stream.str().c_str());
 }
@@ -125,9 +126,9 @@ void StateEvent::print()
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type == instr_fmt_paje) {
     if (timestamp_ < 1e-12)
-      stream << eventType_ << " " << 0 << " " << type->getId() << " " << container->getId();
+      stream << eventType_ << " " << 0 << " " << getType()->getId() << " " << getContainer()->getId();
     else
-      stream << eventType_ << " " << timestamp_ << " " << type->getId() << " " << container->getId();
+      stream << eventType_ << " " << timestamp_ << " " << getType()->getId() << " " << getContainer()->getId();
 
     if (value != nullptr) // PAJE_PopState Event does not need to have a value
       stream << " " << value->getId();
@@ -161,12 +162,12 @@ void StateEvent::print()
     instr_extra_data extra = (instr_extra_data)extra_;
 
     // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-    if (container->getName().find("rank-") != 0)
-      stream << container->getName() << " ";
+    if (getContainer()->getName().find("rank-") != 0)
+      stream << getContainer()->getName() << " ";
     else
-      stream << container->getName().erase(0, 5) << " ";
+      stream << getContainer()->getName().erase(0, 5) << " ";
 
-    FILE* trace_file = tracing_files.at(container);
+    FILE* trace_file = tracing_files.at(getContainer());
 
     switch (extra->type) {
       case TRACING_INIT:
