@@ -192,8 +192,11 @@ examples/s4u/actions-comm/s4u-actions-comm
 examples/s4u/actions-storage/s4u-actions-storage
 examples/s4u/actor-create/s4u-actor-create
 examples/s4u/actor-daemon/s4u-actor-daemon
+examples/s4u/actor-execute/s4u-actor-execute
 examples/s4u/actor-kill/s4u-actor-kill
+examples/s4u/actor-lifetime/s4u-actor-lifetime
 examples/s4u/actor-migration/s4u-actor-migration
+examples/s4u/actor-priority/s4u-actor-priority
 examples/s4u/actor-suspend/s4u-actor-suspend
 examples/s4u/app-bittorrent/s4u-bittorrent
 examples/s4u/app-masterworker/s4u-app-masterworker
