@@ -461,17 +461,16 @@ static void smpi_init_options(){
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
-    const char* val = xbt_cfg_get_string("smpi/shared-malloc").c_str();
-    if (not strcasecmp(val, "yes") || not strcmp(val, "1") || not strcasecmp(val, "on") ||
-        not strcasecmp(val, "global")) {
+    std::string val = xbt_cfg_get_string("smpi/shared-malloc");
+    if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
       smpi_cfg_shared_malloc = shmalloc_global;
-    } else if (not strcasecmp(val, "local")) {
+    } else if (val == "local") {
       smpi_cfg_shared_malloc = shmalloc_local;
-    } else if (not strcasecmp(val, "no") || not strcmp(val, "0") || not strcasecmp(val, "off")) {
+    } else if ((val == "no") || (val == "0") || (val == "off")) {
       smpi_cfg_shared_malloc = shmalloc_none;
     } else {
       xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
-              val);
+              val.c_str());
     }
 }
 
