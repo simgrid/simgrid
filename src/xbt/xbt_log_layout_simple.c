@@ -15,8 +15,6 @@
 extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;
 
-static double simple_begin_of_time = -1;
-
 #define check_overflow(len)                                             \
   if ((rem_size -= (len)) > 0) {                                        \
     p += (len);                                                         \
@@ -45,7 +43,7 @@ static int xbt_log_layout_simple_doit(XBT_ATTRIB_UNUSED xbt_log_layout_t l, xbt_
   }
 
   /* Display the date */
-  len = snprintf(p, rem_size, "%f] ", MSG_get_clock() - simple_begin_of_time);
+  len = snprintf(p, rem_size, "%f] ", MSG_get_clock());
   check_overflow(len);
 
   /* Display file position if not INFO */
@@ -74,9 +72,6 @@ xbt_log_layout_t xbt_log_layout_simple_new(XBT_ATTRIB_UNUSED char* arg)
 {
   xbt_log_layout_t res = xbt_new0(s_xbt_log_layout_t, 1);
   res->do_layout       = &xbt_log_layout_simple_doit;
-
-  if (simple_begin_of_time < 0)
-    simple_begin_of_time = MSG_get_clock();
 
   return res;
 }

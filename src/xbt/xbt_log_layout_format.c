@@ -13,8 +13,6 @@
 
 extern const char *xbt_log_priority_names[8];
 
-static double format_begin_of_time = -1;
-
 #define ERRMSG                                                          \
   "Unknown %%%c sequence in layout format (%s).\n"                      \
   "Known sequences:\n"                                                  \
@@ -148,7 +146,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
             show_double(MSG_get_clock());
             break;
           case 'r': /* application age; LOG4J compliant */
-            show_double(MSG_get_clock() - format_begin_of_time);
+            show_double(MSG_get_clock());
             break;
           case 'm': { /* user-provided message; LOG4J compliant */
             int sz;
@@ -187,9 +185,6 @@ xbt_log_layout_t xbt_log_layout_format_new(char *arg)
   res->do_layout       = &xbt_log_layout_format_doit;
   res->free_           = &xbt_log_layout_format_free;
   res->data = xbt_strdup((char *) arg);
-
-  if (format_begin_of_time < 0)
-    format_begin_of_time = MSG_get_clock();
 
   return res;
 }
