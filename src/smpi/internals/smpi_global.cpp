@@ -394,7 +394,7 @@ void smpi_global_destroy()
     xbt_os_timer_free(global_timer);
   }
 
-  xbt_free(index_to_process_data);
+  delete[] index_to_process_data;
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
