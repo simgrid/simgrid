@@ -213,6 +213,7 @@ examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
 examples/smpi/mc/smpi_bugged2
 examples/smpi/mc/smpi_mutual_exclusion
+examples/smpi/mc/smpi_sendsend
 examples/smpi/NAS/dt
 examples/smpi/NAS/ep
 examples/smpi/NAS/is
