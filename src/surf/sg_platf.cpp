@@ -530,7 +530,7 @@ static void surf_config_models_setup()
   if ((not xbt_cfg_is_default_value("network/model") || not xbt_cfg_is_default_value("cpu/model")) &&
       xbt_cfg_is_default_value("host/model")) {
     host_model_name = "compound";
-    xbt_cfg_set_string("host/model", host_model_name);
+    xbt_cfg_set_string("host/model", host_model_name.c_str());
   }
 
   XBT_DEBUG("host model: %s", host_model_name.c_str());

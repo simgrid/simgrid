@@ -73,6 +73,7 @@ XBT_PUBLIC(void) xbt_cfg_set_parse(const char *options);
 XBT_PUBLIC(void) xbt_cfg_set_int       (const char *name, int val);
 XBT_PUBLIC(void) xbt_cfg_set_double    (const char *name, double val);
 XBT_PUBLIC(void) xbt_cfg_set_boolean   (const char *name, const char *val);
+XBT_PUBLIC(void) xbt_cfg_set_string(const char* name, const char* val);
 XBT_PUBLIC(void) xbt_cfg_set_as_string(const char *name, const char *val);
 
 /*
