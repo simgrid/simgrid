@@ -668,11 +668,6 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
   cpu_->modified(true);
 }
 
-void CpuTiAction::updateIndexHeap(int i)
-{
-  Action::updateIndexHeap(i);
-}
-
 void CpuTiAction::setState(Action::State state)
 {
   CpuAction::setState(state);
