@@ -14,6 +14,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <string>
 #include <type_traits>
 #include <typeinfo>
 #include <vector>
@@ -458,8 +459,7 @@ void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cf
     simgrid_config = xbt_cfg_new();
     atexit(sg_config_finalize);
   }
-  simgrid_config->registerOption<std::string>(name, desc,
-    default_value ? default_value : "", cb_set);
+  simgrid_config->registerOption<std::string>(name, desc, default_value ? default_value : "", cb_set);
 }
 
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
@@ -657,13 +657,13 @@ void xbt_cfg_set_double(const char *key, double value)
  * @param value the value to be added
  *
  */
-void xbt_cfg_set_string(const char *key, const char *value)
+void xbt_cfg_set_string(const char* key, std::string value)
 {
   try {
-    (*simgrid_config)[key].setValue<std::string>(value ? value : "");
+    (*simgrid_config)[key].setValue<std::string>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s", key, value);
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s", key, value.c_str());
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
@@ -729,10 +729,10 @@ double xbt_cfg_get_double(const char *key)
  *
  * \warning the returned value is the actual content of the config set
  */
-char *xbt_cfg_get_string(const char *key)
+std::string xbt_cfg_get_string(const char* key)
 {
   try {
-    return (char*) (*simgrid_config)[key].getValue<std::string>().c_str();
+    return (*simgrid_config)[key].getValue<std::string>();
   }
   TRANSLATE_EXCEPTIONS("Could not get variable %s", key);
 }

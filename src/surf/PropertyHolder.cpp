@@ -13,7 +13,8 @@ PropertyHolder::~PropertyHolder() {
 }
 
 /** @brief Return the property associated to the provided key (or nullptr if not existing) */
-const char *PropertyHolder::getProperty(const char*key) {
+const char* PropertyHolder::getProperty(std::string key)
+{
   if (properties_ == nullptr)
     return nullptr;
   auto prop = properties_->find(key);

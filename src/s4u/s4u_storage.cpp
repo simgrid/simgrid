@@ -70,12 +70,12 @@ std::map<std::string, std::string>* Storage::getProperties()
   return simgrid::simix::kernelImmediate([this] { return pimpl_->getProperties(); });
 }
 
-const char* Storage::getProperty(const char* key)
+const char* Storage::getProperty(std::string key)
 {
   return this->pimpl_->getProperty(key);
 }
 
-void Storage::setProperty(const char* key, const char* value)
+void Storage::setProperty(std::string key, std::string value)
 {
   simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }

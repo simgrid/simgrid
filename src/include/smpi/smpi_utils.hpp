@@ -7,6 +7,7 @@
 #define SMPI_UTILS_HPP
 #include "xbt/base.h"
 #include <cstddef>
+#include <string>
 #include <vector>
 
 extern "C" {
@@ -19,6 +20,6 @@ struct s_smpi_factor_t {
 typedef s_smpi_factor_t* smpi_os_factor_t;
 }
 
-XBT_PUBLIC(std::vector<s_smpi_factor_t>) parse_factor(const char *smpi_coef_string);
+XBT_PUBLIC(std::vector<s_smpi_factor_t>) parse_factor(std::string smpi_coef_string);
 
 #endif

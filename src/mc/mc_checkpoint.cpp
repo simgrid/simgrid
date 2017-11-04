@@ -51,6 +51,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc, "Logging specific to mc_check
 #define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
 #define PROT_RW (PROT_READ | PROT_WRITE)
 #define PROT_RX (PROT_READ | PROT_EXEC)
+extern std::string _sg_mc_property_file;
+extern std::string _sg_mc_dot_output_file;
 
 namespace simgrid {
 namespace mc {
@@ -560,7 +562,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   snapshot->to_ignore = mc_model_checker->process().ignored_heap();
 
-  if (_sg_mc_max_visited_states > 0 || strcmp(_sg_mc_property_file, "")) {
+  if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.empty()) {
     snapshot->stacks = take_snapshot_stacks(snapshot.get());
     if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);

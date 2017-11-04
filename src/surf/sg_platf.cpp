@@ -521,10 +521,10 @@ void sg_platf_end() {
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
 {
-  const char* host_model_name    = xbt_cfg_get_string("host/model");
-  const char* network_model_name = xbt_cfg_get_string("network/model");
-  const char* cpu_model_name     = xbt_cfg_get_string("cpu/model");
-  const char* storage_model_name = xbt_cfg_get_string("storage/model");
+  std::string host_model_name    = xbt_cfg_get_string("host/model");
+  std::string network_model_name = xbt_cfg_get_string("network/model");
+  std::string cpu_model_name     = xbt_cfg_get_string("cpu/model");
+  std::string storage_model_name = xbt_cfg_get_string("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
   if ((not xbt_cfg_is_default_value("network/model") || not xbt_cfg_is_default_value("cpu/model")) &&
@@ -533,10 +533,10 @@ static void surf_config_models_setup()
     xbt_cfg_set_string("host/model", host_model_name);
   }
 
-  XBT_DEBUG("host model: %s", host_model_name);
-  if (not strcmp(host_model_name, "compound")) {
-    xbt_assert(cpu_model_name, "Set a cpu model to use with the 'compound' host model");
-    xbt_assert(network_model_name, "Set a network model to use with the 'compound' host model");
+  XBT_DEBUG("host model: %s", host_model_name.c_str());
+  if (host_model_name == "compound") {
+    xbt_assert(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
+    xbt_assert(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
 
     int cpu_id = find_model_description(surf_cpu_model_description, cpu_model_name);
     surf_cpu_model_description[cpu_id].model_init_preparse();

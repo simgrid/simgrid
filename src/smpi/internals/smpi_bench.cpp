@@ -86,7 +86,7 @@ void smpi_bench_begin()
     return;
 
 #if HAVE_PAPI
-  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+  if (not xbt_cfg_get_string("smpi/papi-events").empty()) {
     int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
     if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized()) {

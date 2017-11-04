@@ -411,7 +411,7 @@ static bool SIMIX_execute_tasks()
  */
 void SIMIX_run()
 {
-  if (MC_record_path) {
+  if (not MC_record_path.empty()) {
     simgrid::mc::replay(MC_record_path);
     return;
   }

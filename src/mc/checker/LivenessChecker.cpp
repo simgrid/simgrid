@@ -33,6 +33,7 @@
 #include "src/mc/remote/Client.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
+extern std::string _sg_mc_property_file;
 
 /********* Static functions *********/
 
@@ -347,8 +348,8 @@ void LivenessChecker::backtrack()
 
 void LivenessChecker::run()
 {
-  XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
-  MC_automaton_load(_sg_mc_property_file);
+  XBT_INFO("Check the liveness property %s", _sg_mc_property_file.c_str());
+  MC_automaton_load(_sg_mc_property_file.c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
   simgrid::mc::session->initialize();

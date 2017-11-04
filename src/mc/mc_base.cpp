@@ -175,7 +175,7 @@ static int prng_random(int min, int max)
 
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
-  if (not MC_is_active() && not MC_record_path)
+  if (not MC_is_active() && MC_record_path.empty())
     return prng_random(min, max);
   return simcall->mc_value;
 }

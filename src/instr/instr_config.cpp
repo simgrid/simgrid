@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "include/xbt/config.hpp"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.h"
 #include <string>
@@ -103,15 +104,15 @@ int TRACE_start()
     /* init the tracing module to generate the right output */
 
     /* open the trace file(s) */
-    const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
-    XBT_DEBUG("Tracing format %s\n", format);
-    if (not strcmp(format, "Paje")) {
+    std::string format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
+    XBT_DEBUG("Tracing format %s\n", format.c_str());
+    if (format == "Paje") {
       TRACE_paje_start();
-    } else if (not strcmp(format, "TI")) {
+    } else if (format == "TI") {
       instr_fmt_type = instr_fmt_TI;
       TRACE_TI_start();
     }else{
-      xbt_die("Unknown trace format :%s ", format);
+      xbt_die("Unknown trace format :%s ", format.c_str());
     }
 
     /* activate trace */
@@ -145,14 +146,14 @@ int TRACE_end()
     delete root_type;
 
     /* close the trace files */
-    const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
-    XBT_DEBUG("Tracing format %s\n", format);
-    if (not strcmp(format, "Paje")) {
+    std::string format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
+    XBT_DEBUG("Tracing format %s\n", format.c_str());
+    if (format == "Paje") {
       TRACE_paje_end();
-    } else if (not strcmp(format, "TI")) {
+    } else if (format == "TI") {
       TRACE_TI_end();
     }else{
-      xbt_die("Unknown trace format :%s ", format);
+      xbt_die("Unknown trace format :%s ", format.c_str());
     }
 
     /* de-activate trace */
@@ -269,12 +270,12 @@ bool TRACE_display_sizes ()
    return trace_display_sizes && trace_smpi_enabled && TRACE_is_enabled();
 }
 
-char *TRACE_get_comment ()
+std::string TRACE_get_comment()
 {
   return xbt_cfg_get_string(OPT_TRACING_COMMENT);
 }
 
-char *TRACE_get_comment_file ()
+std::string TRACE_get_comment_file()
 {
   return xbt_cfg_get_string(OPT_TRACING_COMMENT_FILE);
 }
@@ -284,17 +285,17 @@ int TRACE_precision ()
   return xbt_cfg_get_int(OPT_TRACING_PRECISION);
 }
 
-char *TRACE_get_filename()
+std::string TRACE_get_filename()
 {
   return xbt_cfg_get_string(OPT_TRACING_FILENAME);
 }
 
-char *TRACE_get_viva_uncat_conf ()
+std::string TRACE_get_viva_uncat_conf()
 {
   return xbt_cfg_get_string(OPT_VIVA_UNCAT_CONF);
 }
 
-char *TRACE_get_viva_cat_conf ()
+std::string TRACE_get_viva_cat_conf()
 {
   return xbt_cfg_get_string(OPT_VIVA_CAT_CONF);
 }
@@ -576,12 +577,12 @@ static void generate_cat_configuration (const char *output, const char *name, in
 
 void TRACE_generate_viva_uncat_conf ()
 {
-  generate_uncat_configuration (TRACE_get_viva_uncat_conf (), "viva", 0);
+  generate_uncat_configuration(TRACE_get_viva_uncat_conf().c_str(), "viva", 0);
 }
 
 void TRACE_generate_viva_cat_conf ()
 {
-  generate_cat_configuration (TRACE_get_viva_cat_conf(), "viva", 0);
+  generate_cat_configuration(TRACE_get_viva_cat_conf().c_str(), "viva", 0);
 }
 
 static int previous_trace_state = -1;

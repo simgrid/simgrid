@@ -238,5 +238,7 @@ public:
 
 }
 }
+XBT_PUBLIC(std::string) xbt_cfg_get_string(const char* name);
+XBT_PUBLIC(void) xbt_cfg_set_string(const char* name, std::string val);
 
 #endif

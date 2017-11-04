@@ -112,11 +112,11 @@ static void _sg_cfg_cb__plugin(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot load a plugin after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (val==nullptr || val[0] == '\0')
+  std::string val = xbt_cfg_get_string(name);
+  if (val.empty())
     return;
 
-  if (not strcmp(val, "help")) {
+  if (val == "help") {
     model_help("plugin", surf_plugin_description);
     sg_cfg_exit_early();
   }
@@ -130,8 +130,8 @@ static void _sg_cfg_cb__host_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("host", surf_host_model_description);
     sg_cfg_exit_early();
   }
@@ -145,8 +145,8 @@ static void _sg_cfg_cb__cpu_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("CPU", surf_cpu_model_description);
     sg_cfg_exit_early();
   }
@@ -160,8 +160,8 @@ static void _sg_cfg_cb__optimization_mode(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("optimization", surf_optimization_mode_description);
     sg_cfg_exit_early();
   }
@@ -175,8 +175,8 @@ static void _sg_cfg_cb__storage_mode(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("storage", surf_storage_model_description);
     sg_cfg_exit_early();
   }
@@ -189,8 +189,8 @@ static void _sg_cfg_cb__network_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("network", surf_network_model_description);
     sg_cfg_exit_early();
   }
@@ -203,8 +203,6 @@ static void _sg_cfg_cb__network_model(const char *name)
 
 static void _sg_cfg_cb_model_check_replay(const char *name) {
   MC_record_path = xbt_cfg_get_string(name);
-  if (MC_record_path[0] == '\0')
-    MC_record_path = nullptr;
 }
 
 #if SIMGRID_HAVE_MC
@@ -250,15 +248,14 @@ static void _sg_cfg_cb_contexts_parallel_threshold(const char *name)
 
 static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
 {
-  const char* mode_name = xbt_cfg_get_string(name);
-  if (not strcmp(mode_name, "posix")) {
+  std::string mode_name = xbt_cfg_get_string(name);
+  if (mode_name == "posix") {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
-  } else if (not strcmp(mode_name, "futex")) {
+  } else if (mode_name == "futex") {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_FUTEX);
-  } else if (not strcmp(mode_name, "busy_wait")) {
+  } else if (mode_name == "busy_wait") {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
-  }
-  else {
+  } else {
     xbt_die("Command line setting of the parallel synchronization mode should "
             "be one of \"posix\", \"futex\" or \"busy_wait\"");
   }
@@ -300,7 +297,7 @@ void sg_config_init(int *argc, char **argv)
 
   /* Plugins configuration */
   describe_model(description, descsize, surf_plugin_description, "plugin", "The plugins");
-  xbt_cfg_register_string("plugin", nullptr, &_sg_cfg_cb__plugin, description);
+  xbt_cfg_register_string("plugin", "", &_sg_cfg_cb__plugin, description);
 
   describe_model(description, descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
   xbt_cfg_register_string("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, description);

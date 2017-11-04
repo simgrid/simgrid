@@ -164,19 +164,16 @@ void Container::logCreation()
     }
 
     if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
-      char* folder_name = bprintf("%s_files", TRACE_get_filename());
-      char* filename    = bprintf("%s/%f_%s.txt", folder_name, prefix, name_.c_str());
+      std::string folder_name = TRACE_get_filename() + "_files";
+      std::string filename    = folder_name + "/" + std::to_string(prefix) + "_" + name_ + ".txt";
 #ifdef WIN32
-      _mkdir(folder_name);
+      _mkdir(folder_name.c_str());
 #else
-      mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
+      mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
-      ti_unique_file = fopen(filename, "w");
-      xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
-      fprintf(tracing_file, "%s\n", filename);
-
-      xbt_free(folder_name);
-      xbt_free(filename);
+      ti_unique_file = fopen(filename.c_str(), "w");
+      xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename.c_str(), strerror(errno));
+      fprintf(tracing_file, "%s\n", filename.c_str());
     }
     tracing_files.insert({this, ti_unique_file});
   } else {

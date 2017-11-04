@@ -19,8 +19,7 @@ void surf_cpu_model_init_Cas01()
   xbt_assert(not surf_cpu_model_pm);
   xbt_assert(not surf_cpu_model_vm);
 
-  char *optim = xbt_cfg_get_string("cpu/optim");
-  if (not strcmp(optim, "TI")) {
+  if (xbt_cfg_get_string("cpu/optim") == "TI") {
     surf_cpu_model_init_ti();
     return;
   }
@@ -37,19 +36,19 @@ namespace surf {
 
 CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 {
-  char *optim = xbt_cfg_get_string("cpu/optim");
+  std::string optim = xbt_cfg_get_string("cpu/optim");
   bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
-  if (not strcmp(optim, "Full")) {
+  if (optim == "Full") {
     setUpdateMechanism(UM_FULL);
     selectiveUpdate_ = select;
-  } else if (not strcmp(optim, "Lazy")) {
+  } else if (optim == "Lazy") {
     setUpdateMechanism(UM_LAZY);
     selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
-    xbt_die("Unsupported optimization (%s) for this model", optim);
+    xbt_die("Unsupported optimization (%s) for this model", optim.c_str());
   }
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();

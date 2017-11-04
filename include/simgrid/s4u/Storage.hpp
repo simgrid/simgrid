@@ -40,8 +40,8 @@ public:
   sg_size_t getSizeUsed();
 
   std::map<std::string, std::string>* getProperties();
-  const char* getProperty(const char* key);
-  void setProperty(const char* key, const char* value);
+  const char* getProperty(std::string key);
+  void setProperty(std::string, std::string value);
   std::map<std::string, sg_size_t>* getContent();
 
   void setUserdata(void* data) { userdata_ = data; }

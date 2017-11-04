@@ -239,23 +239,20 @@ void model_help(const char *category, s_surf_model_description_t * table)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
 
-int find_model_description(s_surf_model_description_t* table, const char* name)
+int find_model_description(s_surf_model_description_t* table, std::string name)
 {
   for (int i = 0; table[i].name; i++)
-    if (not strcmp(name, table[i].name)) {
+    if (name == table[i].name)
       return i;
-    }
 
   if (not table[0].name)
     xbt_die("No model is valid! This is a bug.");
 
-  char* name_list = xbt_strdup(table[0].name);
-  for (int i = 1; table[i].name; i++) {
-    name_list = (char *) xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 3);
-    strncat(name_list, ", ", 2);
-    strncat(name_list, table[i].name, strlen(table[i].name));
-  }
-  xbt_die("Model '%s' is invalid! Valid models are: %s.", name, name_list);
+  std::string name_list = std::string(table[0].name);
+  for (int i = 1; table[i].name; i++)
+    name_list = name_list + ", " + table[i].name;
+
+  xbt_die("Model '%s' is invalid! Valid models are: %s.", name.c_str(), name_list.c_str());
   return -1;
 }
 

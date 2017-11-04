@@ -134,19 +134,19 @@ namespace surf {
 NetworkCm02Model::NetworkCm02Model()
   :NetworkModel()
 {
-  char *optim = xbt_cfg_get_string("network/optim");
+  std::string optim = xbt_cfg_get_string("network/optim");
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
 
-  if (not strcmp(optim, "Full")) {
+  if (optim == "Full") {
     setUpdateMechanism(UM_FULL);
     selectiveUpdate_ = select;
-  } else if (not strcmp(optim, "Lazy")) {
+  } else if (optim == "Lazy") {
     setUpdateMechanism(UM_LAZY);
     selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
                "You cannot disable selective update when using the lazy update mechanism");
   } else {
-    xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim);
+    xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
 
   maxminSystem_ = lmm_system_new(selectiveUpdate_);

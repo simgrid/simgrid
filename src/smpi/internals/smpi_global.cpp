@@ -251,8 +251,8 @@ void smpi_global_init()
     xbt_os_walltimer_start(global_timer);
   }
 
-  if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') {
-    std::string filename {xbt_cfg_get_string("smpi/comp-adjustment-file")};
+  std::string filename = xbt_cfg_get_string("smpi/comp-adjustment-file");
+  if (not filename.empty()) {
     std::ifstream fstream(filename);
     if (not fstream.is_open()) {
       xbt_die("Could not open file %s. Does it exist?", filename.c_str());
@@ -278,7 +278,7 @@ void smpi_global_init()
   // and the (computed) event_set.
   std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 
-  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+  if (not xbt_cfg_get_string("smpi/papi-events").empty()) {
     if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
       XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
                 " Expected version is %i",
@@ -286,7 +286,7 @@ void smpi_global_init()
 
     typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
     boost::char_separator<char> separator_units(";");
-    std::string str = std::string(xbt_cfg_get_string("smpi/papi-events"));
+    std::string str = xbt_cfg_get_string("smpi/papi-events");
     Tokenizer tokens(str, separator_units);
 
     // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
@@ -432,31 +432,24 @@ static void smpi_init_logs(){
 }
 
 static void smpi_init_options(){
-    //return if already called
-    if (smpi_cpu_threshold > -1)
-      return;
-    simgrid::smpi::Colls::set_collectives();
-    simgrid::smpi::Colls::smpi_coll_cleanup_callback=nullptr;
-    smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
-    smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");
-    const char* smpi_privatize_option               = xbt_cfg_get_string("smpi/privatization");
-    if (std::strcmp(smpi_privatize_option, "no") == 0)
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
-    else if (std::strcmp(smpi_privatize_option, "yes") == 0)
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_DEFAULT;
-    else if (std::strcmp(smpi_privatize_option, "mmap") == 0)
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_MMAP;
-    else if (std::strcmp(smpi_privatize_option, "dlopen") == 0)
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
-
-    // Some compatibility stuff:
-    else if (std::strcmp(smpi_privatize_option, "1") == 0)
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_DEFAULT;
-    else if (std::strcmp(smpi_privatize_option, "0") == 0)
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
-
-    else
-      xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option);
+  // return if already called
+  if (smpi_cpu_threshold > -1)
+    return;
+  simgrid::smpi::Colls::set_collectives();
+  simgrid::smpi::Colls::smpi_coll_cleanup_callback = nullptr;
+  smpi_cpu_threshold                               = xbt_cfg_get_double("smpi/cpu-threshold");
+  smpi_host_speed                                  = xbt_cfg_get_double("smpi/host-speed");
+  std::string smpi_privatize_option                = xbt_cfg_get_string("smpi/privatization");
+  if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
+    smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
+  else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
+    smpi_privatize_global_variables = SMPI_PRIVATIZE_DEFAULT;
+  else if (smpi_privatize_option == "mmap")
+    smpi_privatize_global_variables = SMPI_PRIVATIZE_MMAP;
+  else if (smpi_privatize_option == "dlopen")
+    smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
+  else
+    xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option.c_str());
 
 #if defined(__FreeBSD__)
     if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
@@ -468,7 +461,7 @@ static void smpi_init_options(){
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
-    char* val = xbt_cfg_get_string("smpi/shared-malloc");
+    const char* val = xbt_cfg_get_string("smpi/shared-malloc").c_str();
     if (not strcasecmp(val, "yes") || not strcmp(val, "1") || not strcasecmp(val, "on") ||
         not strcasecmp(val, "global")) {
       smpi_cfg_shared_malloc = shmalloc_global;

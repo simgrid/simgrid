@@ -191,8 +191,8 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 
 void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
 {
-  char *huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
-  bool use_huge_page = huge_page_mount_point[0] != '\0';
+  std::string huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
+  bool use_huge_page                = not huge_page_mount_point.empty();
 #ifndef MAP_HUGETLB /* If the system header don't define that mmap flag */
   xbt_assert(not use_huge_page,
              "Huge pages are not available on your system, you cannot use the smpi/shared-malloc-hugepage option.");
@@ -232,11 +232,10 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
    * We cannot use a same file for the two type of calls, since the first one needs to be
    * opened in a hugetlbfs mount point whereas the second needs to be a "classical" file. */
   if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
-    char* huge_page_filename               = bprintf("%s/simgrid-shmalloc-XXXXXX", huge_page_mount_point);
-    smpi_shared_malloc_bogusfile_huge_page = mkstemp(huge_page_filename);
-    XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename);
-    unlink(huge_page_filename);
-    xbt_free(huge_page_filename);
+    std::string huge_page_filename         = huge_page_mount_point + "/simgrid-shmalloc-XXXXXX";
+    smpi_shared_malloc_bogusfile_huge_page = mkstemp((char*)huge_page_filename.c_str());
+    XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename.c_str());
+    unlink(huge_page_filename.c_str());
   }
   if(smpi_shared_malloc_bogusfile == -1) {
     char name[]                  = "/tmp/simgrid-shmalloc-XXXXXX";

@@ -119,13 +119,13 @@ void simgrid::instr::PajeEvent::insertIntoBuffer()
 }
 
 void TRACE_paje_start() {
-  char *filename = TRACE_get_filename();
-  tracing_file = fopen(filename, "w");
+  std::string filename = TRACE_get_filename();
+  tracing_file         = fopen(filename.c_str(), "w");
   if (tracing_file == nullptr){
-    THROWF (system_error, 1, "Tracefile %s could not be opened for writing.", filename);
+    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
   }
 
-  XBT_DEBUG("Filename %s is open for writing", filename);
+  XBT_DEBUG("Filename %s is open for writing", filename.c_str());
 
   /* output generator version */
   fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n",
@@ -150,19 +150,19 @@ void TRACE_paje_start() {
 
 void TRACE_paje_end() {
   fclose(tracing_file);
-  char *filename = TRACE_get_filename();
-  XBT_DEBUG("Filename %s is closed", filename);
+  XBT_DEBUG("Filename %s is closed", TRACE_get_filename().c_str());
 }
 
 
 void TRACE_TI_start()
 {
-  char *filename = TRACE_get_filename();
-  tracing_file = fopen(filename, "w");
-  if (tracing_file == nullptr)
-    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename);
+  std::string filename = TRACE_get_filename();
+  tracing_file         = fopen(filename.c_str(), "w");
+  if (tracing_file == nullptr) {
+    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
+  }
 
-  XBT_DEBUG("Filename %s is open for writing", filename);
+  XBT_DEBUG("Filename %s is open for writing", filename.c_str());
 
   /* output one line comment */
   dump_comment(TRACE_get_comment());
@@ -174,5 +174,5 @@ void TRACE_TI_start()
 void TRACE_TI_end()
 {
   fclose(tracing_file);
-  XBT_DEBUG("Filename %s is closed", TRACE_get_filename());
+  XBT_DEBUG("Filename %s is closed", TRACE_get_filename().c_str());
 }

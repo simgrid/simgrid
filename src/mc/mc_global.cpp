@@ -47,6 +47,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
+extern std::string _sg_mc_dot_output_file;
+
 namespace simgrid {
 namespace mc {
 
@@ -76,7 +78,7 @@ FILE *dot_output = nullptr;
 
 void MC_init_dot_output()
 {
-  dot_output = fopen(_sg_mc_dot_output_file, "w");
+  dot_output = fopen(_sg_mc_dot_output_file.c_str(), "w");
 
   if (dot_output == nullptr) {
     perror("Error open dot output file");

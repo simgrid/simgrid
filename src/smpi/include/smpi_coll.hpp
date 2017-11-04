@@ -13,10 +13,10 @@
 
 /** \brief MPI collective description */
 
-#define COLL_DEFS(cat, ret, args, args2)\
-    static void set_##cat(const char* name);\
-    static s_mpi_coll_description_t mpi_coll_##cat##_description[];\
-    static int (*cat ) args;
+#define COLL_DEFS(cat, ret, args, args2)                                                                               \
+  static void set_##cat(std::string name);                                                                             \
+  static s_mpi_coll_description_t mpi_coll_##cat##_description[];                                                      \
+  static int(*cat) args;
 
 #define COLL_SIG(cat, ret, args, args2)\
     static int cat args;
@@ -91,7 +91,7 @@ struct s_mpi_coll_description_t {
 class Colls{
   public:
     static XBT_PUBLIC(void) coll_help(const char *category, s_mpi_coll_description_t * table);
-    static XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table, const char *name, const char *desc);
+    static XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t* table, std::string name, const char* desc);
     static void set_collectives();
 
     // for each collective type, create the set_* prototype, the description array and the function pointer

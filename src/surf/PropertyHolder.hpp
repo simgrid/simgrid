@@ -21,7 +21,7 @@ public:
   PropertyHolder() = default;
   ~PropertyHolder();
 
-  const char *getProperty(const char*id);
+  const char* getProperty(std::string key);
   void setProperty(std::string id, std::string value);
 
   /* FIXME: This should not be exposed, as users may do bad things with the dict they got (it's not a copy).

@@ -7,9 +7,11 @@
 
 #include "simgrid/msg.h"
 
+#include "include/xbt/signal.hpp"
 #include "jmsg.hpp"
 #include "jmsg_storage.h"
 #include "jxbt_utilities.hpp"
+#include "simgrid/s4u/Storage.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
@@ -164,9 +166,8 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
   const char *value_java = env->GetStringUTFChars((jstring) jvalue, 0);
-  char *value = xbt_strdup(value_java);
 
-  MSG_storage_set_property_value(storage, name, value);
+  storage->setProperty(name, std::string(value_java));
 
   env->ReleaseStringUTFChars((jstring) jvalue, value_java);
   env->ReleaseStringUTFChars((jstring) jname, name);

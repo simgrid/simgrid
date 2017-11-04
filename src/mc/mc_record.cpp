@@ -38,7 +38,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
 
 extern "C" {
-char* MC_record_path = nullptr;
+std::string MC_record_path;
 }
 
 namespace simgrid {
@@ -67,10 +67,10 @@ void replay(RecordTrace const& trace)
   }
 }
 
-void replay(const char* path_string)
+void replay(std::string path_string)
 {
   simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
-  simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string);
+  simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string.c_str());
   simgrid::mc::replay(trace);
   simgrid::mc::processes_time.clear();
 }
