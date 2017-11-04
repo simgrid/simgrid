@@ -6454,7 +6454,7 @@ case YY_STATE_EOF(S_surfxml_AS_3):
 case YY_STATE_EOF(S_surfxml_AS_4):
 case YY_STATE_EOF(S_surfxml_AS_6):
 case YY_STATE_EOF(S_surfxml_AS_8):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</AS>' expected.");
+FAIL("Premature EOF: `</AS>' expected.");
 	YY_BREAK
 
 case 47:
@@ -6553,10 +6553,10 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_1: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
 	YY_BREAK
@@ -6580,10 +6580,10 @@ YY_RULE_SETUP
   ETag_surfxml_ASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_1: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
 	YY_BREAK
@@ -6599,7 +6599,7 @@ FAIL("Unexpected character `%c': `</ASroute>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_ASroute):
 case YY_STATE_EOF(S_surfxml_ASroute):
 case YY_STATE_EOF(S_surfxml_ASroute_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</ASroute>' expected.");
+FAIL("Premature EOF: `</ASroute>' expected.");
 	YY_BREAK
 
 case 68:
@@ -6734,7 +6734,7 @@ FAIL("Unexpected character `%c': `</actor>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_actor):
 case YY_STATE_EOF(S_surfxml_actor):
 case YY_STATE_EOF(S_surfxml_actor_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</actor>' expected.");
+FAIL("Premature EOF: `</actor>' expected.");
 	YY_BREAK
 
 case 89:
@@ -6815,7 +6815,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</argument>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_argument):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</argument>' expected.");
+FAIL("Premature EOF: `</argument>' expected.");
 	YY_BREAK
 
 case 100:
@@ -6924,7 +6924,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</backbone>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_backbone):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</backbone>' expected.");
+FAIL("Premature EOF: `</backbone>' expected.");
 	YY_BREAK
 
 case 115:
@@ -7049,7 +7049,7 @@ FAIL("Unexpected character `%c': `</bypassASroute>' expected.",surf_parse_text[0
 case YY_STATE_EOF(E_surfxml_bypassASroute):
 case YY_STATE_EOF(S_surfxml_bypassASroute):
 case YY_STATE_EOF(S_surfxml_bypassASroute_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassASroute>' expected.");
+FAIL("Premature EOF: `</bypassASroute>' expected.");
 	YY_BREAK
 
 case 132:
@@ -7146,7 +7146,7 @@ FAIL("Unexpected character `%c': `</bypassRoute>' expected.",surf_parse_text[0])
 case YY_STATE_EOF(E_surfxml_bypassRoute):
 case YY_STATE_EOF(S_surfxml_bypassRoute):
 case YY_STATE_EOF(S_surfxml_bypassRoute_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassRoute>' expected.");
+FAIL("Premature EOF: `</bypassRoute>' expected.");
 	YY_BREAK
 
 case 145:
@@ -7271,7 +7271,7 @@ FAIL("Unexpected character `%c': `</bypassZoneRoute>' expected.",surf_parse_text
 case YY_STATE_EOF(E_surfxml_bypassZoneRoute):
 case YY_STATE_EOF(S_surfxml_bypassZoneRoute):
 case YY_STATE_EOF(S_surfxml_bypassZoneRoute_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</bypassZoneRoute>' expected.");
+FAIL("Premature EOF: `</bypassZoneRoute>' expected.");
 	YY_BREAK
 
 case 162:
@@ -7440,7 +7440,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</cabinet>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_cabinet):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</cabinet>' expected.");
+FAIL("Premature EOF: `</cabinet>' expected.");
 	YY_BREAK
 
 case 185:
@@ -7776,7 +7776,7 @@ FAIL("Unexpected character `%c': `</cluster>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_cluster):
 case YY_STATE_EOF(S_surfxml_cluster):
 case YY_STATE_EOF(S_surfxml_cluster_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</cluster>' expected.");
+FAIL("Premature EOF: `</cluster>' expected.");
 	YY_BREAK
 
 case 242:
@@ -7855,7 +7855,7 @@ FAIL("Unexpected character `%c': `</config>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_config):
 case YY_STATE_EOF(S_surfxml_config):
 case YY_STATE_EOF(S_surfxml_config_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</config>' expected.");
+FAIL("Premature EOF: `</config>' expected.");
 	YY_BREAK
 
 case 253:
@@ -8012,7 +8012,7 @@ FAIL("Unexpected character `%c': `</host>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_host):
 case YY_STATE_EOF(S_surfxml_host):
 case YY_STATE_EOF(S_surfxml_host_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</host>' expected.");
+FAIL("Premature EOF: `</host>' expected.");
 	YY_BREAK
 
 case 276:
@@ -8121,7 +8121,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</host_link>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_host___link):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</host_link>' expected.");
+FAIL("Premature EOF: `</host_link>' expected.");
 	YY_BREAK
 
 /* <!-- tag include is deprecated. Not documented, and soon removed -->  */
@@ -8209,7 +8209,7 @@ FAIL("Unexpected character `%c': `</include>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_include):
 case YY_STATE_EOF(S_surfxml_include):
 case YY_STATE_EOF(S_surfxml_include_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</include>' expected.");
+FAIL("Premature EOF: `</include>' expected.");
 	YY_BREAK
 
 case 302:
@@ -8377,7 +8377,7 @@ FAIL("Unexpected character `%c': `</link>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_link):
 case YY_STATE_EOF(S_surfxml_link):
 case YY_STATE_EOF(S_surfxml_link_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</link>' expected.");
+FAIL("Premature EOF: `</link>' expected.");
 	YY_BREAK
 
 case 329:
@@ -8489,7 +8489,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</link_ctn>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_link___ctn):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</link_ctn>' expected.");
+FAIL("Premature EOF: `</link_ctn>' expected.");
 	YY_BREAK
 
 /* <!-- <!ATTLIST model_prop key CDATA #REQUIRED> -->
@@ -8584,7 +8584,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</model_prop>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_model___prop):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</model_prop>' expected.");
+FAIL("Premature EOF: `</model_prop>' expected.");
 	YY_BREAK
 
 case 359:
@@ -8677,7 +8677,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</mount>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_mount):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</mount>' expected.");
+FAIL("Premature EOF: `</mount>' expected.");
 	YY_BREAK
 
 case 372:
@@ -8852,7 +8852,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</peer>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_peer):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</peer>' expected.");
+FAIL("Premature EOF: `</peer>' expected.");
 	YY_BREAK
 
 /* <!-- 
@@ -8989,7 +8989,7 @@ case YY_STATE_EOF(S_surfxml_platform_3):
 case YY_STATE_EOF(S_surfxml_platform_4):
 case YY_STATE_EOF(S_surfxml_platform_6):
 case YY_STATE_EOF(S_surfxml_platform_8):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</platform>' expected.");
+FAIL("Premature EOF: `</platform>' expected.");
 	YY_BREAK
 
 case 408:
@@ -9124,7 +9124,7 @@ FAIL("Unexpected character `%c': `</process>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_process):
 case YY_STATE_EOF(S_surfxml_process):
 case YY_STATE_EOF(S_surfxml_process_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</process>' expected.");
+FAIL("Premature EOF: `</process>' expected.");
 	YY_BREAK
 
 /* <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
@@ -9237,7 +9237,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</prop>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_prop):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</prop>' expected.");
+FAIL("Premature EOF: `</prop>' expected.");
 	YY_BREAK
 
 case 442:
@@ -9426,7 +9426,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</random>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_random):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</random>' expected.");
+FAIL("Premature EOF: `</random>' expected.");
 	YY_BREAK
 
 case 473:
@@ -9539,7 +9539,7 @@ FAIL("Unexpected character `%c': `</route>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_route):
 case YY_STATE_EOF(S_surfxml_route):
 case YY_STATE_EOF(S_surfxml_route_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</route>' expected.");
+FAIL("Premature EOF: `</route>' expected.");
 	YY_BREAK
 
 case 490:
@@ -9632,7 +9632,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</router>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_router):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</router>' expected.");
+FAIL("Premature EOF: `</router>' expected.");
 	YY_BREAK
 
 case 503:
@@ -9755,7 +9755,7 @@ FAIL("Unexpected character `%c': `</storage>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_storage):
 case YY_STATE_EOF(S_surfxml_storage):
 case YY_STATE_EOF(S_surfxml_storage_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</storage>' expected.");
+FAIL("Premature EOF: `</storage>' expected.");
 	YY_BREAK
 
 case 520:
@@ -9876,7 +9876,7 @@ FAIL("Unexpected character `%c': `</storage_type>' expected.",surf_parse_text[0]
 case YY_STATE_EOF(E_surfxml_storage___type):
 case YY_STATE_EOF(S_surfxml_storage___type):
 case YY_STATE_EOF(S_surfxml_storage___type_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</storage_type>' expected.");
+FAIL("Premature EOF: `</storage_type>' expected.");
 	YY_BREAK
 
 case 537:
@@ -9985,7 +9985,7 @@ YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</trace>' expected.",surf_parse_text);
 	YY_BREAK
 case YY_STATE_EOF(IN_trace):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</trace>' expected.");
+FAIL("Premature EOF: `</trace>' expected.");
 	YY_BREAK
 
 case 551:
@@ -10121,7 +10121,7 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</trace_connect>' expected.",surf_parse_text[0]);
 	YY_BREAK
 case YY_STATE_EOF(E_surfxml_trace___connect):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</trace_connect>' expected.");
+FAIL("Premature EOF: `</trace_connect>' expected.");
 	YY_BREAK
 
 case 574:
@@ -10286,7 +10286,7 @@ case YY_STATE_EOF(S_surfxml_zone_3):
 case YY_STATE_EOF(S_surfxml_zone_4):
 case YY_STATE_EOF(S_surfxml_zone_6):
 case YY_STATE_EOF(S_surfxml_zone_8):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</zone>' expected.");
+FAIL("Premature EOF: `</zone>' expected.");
 	YY_BREAK
 
 case 605:
@@ -10385,10 +10385,10 @@ YY_RULE_SETUP
   if (!AX_surfxml_zoneRoute_src) FAIL("Required attribute `src' not set for `zoneRoute' element.");
   LEAVE; STag_surfxml_zoneRoute(); surfxml_pcdata_ix = 0; ETag_surfxml_zoneRoute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_1: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
 	YY_BREAK
@@ -10412,10 +10412,10 @@ YY_RULE_SETUP
   ETag_surfxml_zoneRoute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_1: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+   case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_zone: case S_surfxml_zone_3: case S_surfxml_zone_5: case S_surfxml_zone_6: SET(S_surfxml_zone_6); break;
+   case S_surfxml_zone_1: case S_surfxml_zone_4: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
   }
  }
 	YY_BREAK
@@ -10431,7 +10431,7 @@ FAIL("Unexpected character `%c': `</zoneRoute>' expected.",surf_parse_text[0]);
 case YY_STATE_EOF(E_surfxml_zoneRoute):
 case YY_STATE_EOF(S_surfxml_zoneRoute):
 case YY_STATE_EOF(S_surfxml_zoneRoute_2):
-if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</zoneRoute>' expected.");
+FAIL("Premature EOF: `</zoneRoute>' expected.");
 	YY_BREAK
 
 /* EPILOG: after the root element. */

@@ -23,22 +23,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF 
 
 extern "C" {
 
-int ETag_surfxml_include_state();
-
 #include "simgrid_dtd.c"
 
-/*
- * Stuff relative to the <include> tag
- */
-static std::vector<YY_BUFFER_STATE> surf_input_buffer_stack;
-static std::vector<FILE*> surf_file_to_parse_stack;
-static std::vector<std::string> surf_parsed_filename_stack;
-
-static inline const char* surf_parsed_filename() // to locate parse error messages
-{
-  return surf_parsed_filename_stack.empty() ? nullptr : surf_parsed_filename_stack.back().c_str();
-}
-
+static const char* surf_parsed_filename; // Currently parsed file (for the error messages)
 std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of current list link of a route */
 
 /*
@@ -49,7 +36,7 @@ void surf_parse_assert(bool cond, std::string msg)
   if (not cond) {
     int lineno = surf_parse_lineno;
     cleanup();
-    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename(), lineno, msg.c_str());
+    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
     surf_exit();
     xbt_die("Exiting now");
   }
@@ -59,7 +46,7 @@ void surf_parse_error(std::string msg)
 {
   int lineno = surf_parse_lineno;
   cleanup();
-  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename(), lineno, msg.c_str());
+  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
   surf_exit();
   xbt_die("Exiting now");
 }
@@ -96,7 +83,7 @@ void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::stri
 
 void surf_parse_warn(std::string msg)
 {
-  XBT_WARN("%s:%d: %s", surf_parsed_filename(), surf_parse_lineno, msg.c_str());
+  XBT_WARN("%s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg.c_str());
 }
 
 double surf_parse_get_double(std::string s)
@@ -290,7 +277,6 @@ std::map<std::string, std::string>* current_property_set       = nullptr;
 std::map<std::string, std::string>* current_model_property_set = nullptr;
 int ZONE_TAG                            = 0; // Whether we just opened a zone tag (to see what to do with the properties)
 
-YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = nullptr;
 
 /* Stuff relative to storage */
@@ -356,61 +342,15 @@ void ETag_surfxml_mount()
 
 void STag_surfxml_include()
 {
-  XBT_ERROR("<include> tag is deprecated, and will be removed in SimGrid v3.18. Please stop using it now (or tell us why you need it).");
-  parse_after_config();
-  XBT_DEBUG("STag_surfxml_include '%s'",A_surfxml_include_file);
-  surf_parsed_filename_stack.emplace_back(A_surfxml_include_file); // save file name
-
-  surf_file_to_parse_stack.push_back(surf_file_to_parse); // save old file descriptor
-
-  surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r"); // read new file descriptor
-  xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", A_surfxml_include_file);
-
-  surf_input_buffer_stack.push_back(surf_input_buffer);
-  surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
-  surf_parse_push_buffer_state(surf_input_buffer);
-
-  fflush(nullptr);
+  xbt_die("<include> tag was removed in SimGrid v3.18. Please stop using it now.");
 }
 
-void ETag_surfxml_include() {
-/* Nothing to do when done with reading the include tag.
- * Instead, the handling should be deferred until the EOF of current buffer -- see below */
-}
-
-/** @brief When reaching EOF, check whether we are in an include tag, and behave accordingly if yes
- *
- * This function is called automatically by sedding the parser in tools/cmake/MaintainerMode.cmake
- * Every FAIL on "Premature EOF" is preceded by a call to this function, which role is to restore the
- * previous buffer if we reached the EOF /of an include file/. Its return code is used to avoid the
- * error message in that case.
- *
- * Yeah, that's terribly hackish, but it works. A better solution should be dealed with in flexml
- * directly: a command line flag could instruct it to do the correct thing when the include directive is encountered
- * on a line. One day maybe, if the maya allow it.
- */
-int ETag_surfxml_include_state()
+void ETag_surfxml_include()
 {
-  fflush(nullptr);
-  XBT_DEBUG("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
-
-  if (surf_input_buffer_stack.empty()) // nope, that's a true premature EOF. Let the parser die verbosely.
-    return 0;
-
-  // Yeah, we were in an <include> Restore state and proceed.
-  fclose(surf_file_to_parse);
-  surf_file_to_parse_stack.pop_back();
-  surf_parse_pop_buffer_state();
-  surf_input_buffer_stack.pop_back();
-
-  // Restore the filename for error messages
-  surf_parsed_filename_stack.pop_back();
-
-  return 1;
+  /* Won't happen since <include> is now removed since v3.18. */
 }
 
 /* Stag and Etag parse functions */
-
 void STag_surfxml_platform() {
   XBT_ATTRIB_UNUSED double version = surf_parse_get_double(A_surfxml_platform_version);
 
@@ -444,19 +384,19 @@ void STag_surfxml_platform() {
              "Use simgrid_update_xml to update your file automatically. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
-             surf_parsed_filename(), version);
+             surf_parsed_filename, version);
   if (version < 4.1) {
     XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
              "That's fine, the new version is backward compatible. \n\n"
              "Use simgrid_update_xml to update your file automatically. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
-             version, surf_parsed_filename());
+             version, surf_parsed_filename);
   }
   xbt_assert(version <= 4.1, "******* FILE %s COMES FROM THE FUTURE (v:%.1f) *********\n "
                              "The most recent formalism that this version of SimGrid understands is v4.1.\n"
                              "Please update your code, or use another, more adapted, file.",
-             surf_parsed_filename(), version);
+             surf_parsed_filename, version);
 
   sg_platf_begin();
 }
@@ -1051,11 +991,13 @@ void ETag_surfxml_argument(){/* Nothing to do */}
 void ETag_surfxml_model___prop(){/* Nothing to do */}
 
 /* Open and Close parse file */
+YY_BUFFER_STATE surf_input_buffer;
+
 void surf_parse_open(const char *file)
 {
   xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
 
-  surf_parsed_filename_stack.emplace_back(file);
+  surf_parsed_filename = file;
   std::string dir      = simgrid::xbt::Path(file).getDirname();
   surf_path.push_back(dir);
 
@@ -1069,11 +1011,7 @@ void surf_parse_open(const char *file)
 
 void surf_parse_close()
 {
-  if (surf_parsed_filename()) {
-    surf_path.pop_back();
-  }
-
-  surf_parsed_filename_stack.pop_back();
+  surf_path.pop_back(); // remove the dirname of the opened file, that was added in surf_parse_open()
 
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);
