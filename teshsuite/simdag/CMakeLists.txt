@@ -42,7 +42,6 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_router_id.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_4p_1switch.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_include.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/properties.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/test_of_is_router.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/three_hosts_non_symmetric_route.xml
@@ -54,8 +53,6 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_two_hosts_asymetric.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link_fullduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/clusterA.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/clusterB.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/Dijkstra.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1bb.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1fl.xml
