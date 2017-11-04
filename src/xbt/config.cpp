@@ -147,8 +147,7 @@ public:
   /* Callback */
   xbt_cfg_cb_t old_callback = nullptr;
 
-  ConfigurationElement(const char* key, const char* desc)
-    : key(key ? key : ""), desc(desc ? desc : "") {}
+  ConfigurationElement(const char* key, const char* desc) : key(key ? key : ""), desc(desc ? desc : "") {}
   ConfigurationElement(const char* key, const char* desc, xbt_cfg_cb_t cb)
     : key(key ? key : ""), desc(desc ? desc : ""), old_callback(cb) {}
 
@@ -261,7 +260,7 @@ class Config {
 private:
   // name -> ConfigElement:
   std::map<std::string, simgrid::config::ConfigurationElement*> options;
-  // alias -> xbt_dict_elm_t from options:
+  // alias -> ConfigElement from options:
   std::map<std::string, simgrid::config::ConfigurationElement*> aliases;
   bool warn_for_aliases = true;
 
@@ -657,13 +656,13 @@ void xbt_cfg_set_double(const char *key, double value)
  * @param value the value to be added
  *
  */
-void xbt_cfg_set_string(const char* key, std::string value)
+void xbt_cfg_set_string(const char* key, const char* value)
 {
   try {
     (*simgrid_config)[key].setValue<std::string>(value);
     return;
   }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s", key, value.c_str());
+  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s", key, value);
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
