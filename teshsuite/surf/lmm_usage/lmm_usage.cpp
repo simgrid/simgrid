@@ -215,12 +215,12 @@ static void test3(method_t method)
   int flows = 11;
   int links = 10;
 
-  double **A = xbt_new0(double *, links + 5);
+  double** A = new double*[links + 5];
   /* array to add the constraints of fictitious variables */
   double B[15] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1 };
 
   for (int i = 0; i < links + 5; i++) {
-    A[i] = xbt_new0(double, flows + 5);
+    A[i] = new double[flows + 5];
     for (int j = 0; j < flows + 5; j++) {
       A[i][j] = 0.0;
 
@@ -255,12 +255,12 @@ static void test3(method_t method)
   lmm_system_t Sys = lmm_system_new(1);
 
   /* Creates the constraints */
-  lmm_constraint_t *tmp_cnst = xbt_new0(lmm_constraint_t, 15);
+  lmm_constraint_t* tmp_cnst = new lmm_constraint_t[15];
   for (int i = 0; i < 15; i++)
     tmp_cnst[i] = lmm_constraint_new(Sys, nullptr, B[i]);
 
   /* Creates the variables */
-  lmm_variable_t *tmp_var = xbt_new0(lmm_variable_t, 16);
+  lmm_variable_t* tmp_var = new lmm_variable_t[16];
   for (int j = 0; j < 16; j++) {
     tmp_var[j] = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 15);
     lmm_update_variable_weight(Sys, tmp_var[j], 1.0);
@@ -287,12 +287,12 @@ static void test3(method_t method)
 
   for (int j = 0; j < 16; j++)
     lmm_variable_free(Sys, tmp_var[j]);
-  xbt_free(tmp_var);
-  xbt_free(tmp_cnst);
+  delete[] tmp_var;
+  delete[] tmp_cnst;
   lmm_system_free(Sys);
   for (int i = 0; i < links + 5; i++)
-    xbt_free(A[i]);
-  xbt_free(A);
+    delete[] A[i];
+  delete[] A;
 }
 
 int main(int argc, char** argv)
