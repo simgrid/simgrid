@@ -170,47 +170,6 @@ FILE *surf_fopen(const char *name, const char *mode)
   return nullptr;
 }
 
-#ifdef _WIN32
-#include <windows.h>
-#define MAX_DRIVE 26
-static const char *disk_drives_letter_table[MAX_DRIVE] = {
-  "A:\\","B:\\","C:\\","D:\\","E:\\","F:\\","G:\\","H:\\","I:\\","J:\\","K:\\","L:\\","M:\\",
-  "N:\\","O:\\","P:\\","Q:\\","R:\\","S:\\","T:\\","U:\\","V:\\","W:\\","X:\\","Y:\\","Z:\\"
-};
-#endif
-
-/*
- * Returns the initial path. On Windows the initial path is
- * the current directory for the current process in the other
- * case the function returns "./" that represents the current
- * directory on Unix/Linux platforms.
- */
-
-const char *__surf_get_initial_path()
-{
-
-#ifdef _WIN32
-  unsigned i;
-  char current_directory[MAX_PATH + 1] = { 0 };
-  unsigned int len = GetCurrentDirectory(MAX_PATH + 1, current_directory);
-  char root[4] = { 0 };
-
-  if (not len)
-    return nullptr;
-
-  strncpy(root, current_directory, 3);
-
-  for (i = 0; i < MAX_DRIVE; i++) {
-    if (toupper(root[0]) == disk_drives_letter_table[i][0])
-      return disk_drives_letter_table[i];
-  }
-
-  return nullptr;
-#else
-  return "./";
-#endif
-}
-
 /* The __surf_is_absolute_file_path() returns 1 if
  * file_path is a absolute file path, in the other
  * case the function returns 0.

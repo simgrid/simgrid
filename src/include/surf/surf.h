@@ -419,12 +419,6 @@ XBT_PUBLIC(void) surf_exit();
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC(void) parse_platform_file(const char *file);
 
-/*
- * Returns the initial path. On Windows the initial path is the current directory for the current process in the other
- * case the function returns "./" that represents the current directory on Unix/Linux platforms.
- */
-const char *__surf_get_initial_path();
-
 /********** Tracing **********/
 /* from surf_instr.c */
 void TRACE_surf_action(surf_action_t surf_action, const char *category);

@@ -552,13 +552,8 @@ void sg_config_init(int *argc, char **argv)
         "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
     xbt_cfg_register_alias("clean-atexit","clean_atexit");
 
-    if (surf_path.empty()) {
-      /* retrieves the current directory of the current process */
-      const char *initial_path = __surf_get_initial_path();
-      xbt_assert((initial_path), "__surf_get_initial_path() failed! Can't resolve current Windows directory");
-
-      xbt_cfg_setdefault_string("path", initial_path);
-    }
+    if (surf_path.empty())
+      xbt_cfg_setdefault_string("path", "./");
 
     _sg_cfg_init_status = 1;
 
