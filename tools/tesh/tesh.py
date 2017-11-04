@@ -431,6 +431,7 @@ if __name__ == '__main__':
            re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail\\?id=189"),
            re.compile("For details see https://github.com/google/sanitizers/issues/189"),
            re.compile("Python runtime initialized with LC_CTYPE=C .*"),
+           re.compile("^cmake: .*? no version information available (required by cmake)"), # Seen on CircleCI
            ]
         TeshState().jenkins = True # This is a Jenkins build
 
