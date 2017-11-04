@@ -66,11 +66,6 @@ XBT_PRIVATE bool TRACE_disable_destroy();
 XBT_PRIVATE bool TRACE_basic();
 XBT_PRIVATE bool TRACE_display_sizes();
 XBT_PRIVATE int TRACE_precision();
-XBT_PRIVATE std::string TRACE_get_comment();
-XBT_PRIVATE std::string TRACE_get_comment_file();
-XBT_PRIVATE std::string TRACE_get_filename();
-XBT_PRIVATE std::string TRACE_get_viva_uncat_conf();
-XBT_PRIVATE std::string TRACE_get_viva_cat_conf();
 XBT_PRIVATE void TRACE_generate_viva_uncat_conf();
 XBT_PRIVATE void TRACE_generate_viva_cat_conf();
 XBT_PRIVATE void instr_pause_tracing();
@@ -169,5 +164,10 @@ typedef s_instr_extra_data_t* instr_extra_data;
 enum instr_fmt_type_t { instr_fmt_paje, instr_fmt_TI };
 extern instr_fmt_type_t instr_fmt_type;
 }
+XBT_PRIVATE std::string TRACE_get_comment();
+XBT_PRIVATE std::string TRACE_get_comment_file();
+XBT_PRIVATE std::string TRACE_get_filename();
+XBT_PRIVATE std::string TRACE_get_viva_uncat_conf();
+XBT_PRIVATE std::string TRACE_get_viva_cat_conf();
 
 #endif
