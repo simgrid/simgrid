@@ -9,7 +9,7 @@
 #include "src/xbt/log_private.h"
 
 #include "simgrid/host.h" /* sg_host_self_get_name */
-#include "surf/surf.h"
+#include "simgrid/msg.h"  /* MSG_get_clock */
 #include <stdio.h>
 
 extern const char *xbt_log_priority_names[8];
@@ -45,7 +45,7 @@ static int xbt_log_layout_simple_doit(XBT_ATTRIB_UNUSED xbt_log_layout_t l, xbt_
   }
 
   /* Display the date */
-  len = snprintf(p, rem_size, "%f] ", surf_get_clock() - simple_begin_of_time);
+  len = snprintf(p, rem_size, "%f] ", MSG_get_clock() - simple_begin_of_time);
   check_overflow(len);
 
   /* Display file position if not INFO */
@@ -76,7 +76,7 @@ xbt_log_layout_t xbt_log_layout_simple_new(XBT_ATTRIB_UNUSED char* arg)
   res->do_layout       = &xbt_log_layout_simple_doit;
 
   if (simple_begin_of_time < 0)
-    simple_begin_of_time = surf_get_clock();
+    simple_begin_of_time = MSG_get_clock();
 
   return res;
 }

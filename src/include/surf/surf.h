@@ -17,6 +17,10 @@
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 
+#ifndef __cplusplus
+#error This is a C++ only file, now
+#endif
+
 #ifdef __cplusplus
 
 namespace simgrid {

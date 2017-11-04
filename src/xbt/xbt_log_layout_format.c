@@ -6,8 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/host.h"
+#include "simgrid/msg.h" /* MSG_get_clock */
 #include "src/xbt/log_private.h"
-#include "surf/surf.h"
 #include "xbt/sysdep.h"
 #include <stdio.h>
 
@@ -145,10 +145,10 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
             show_string(ev->functionName);
             break;
           case 'd': /* date; LOG4J compliant */
-            show_double(surf_get_clock());
+            show_double(MSG_get_clock());
             break;
           case 'r': /* application age; LOG4J compliant */
-            show_double(surf_get_clock() - format_begin_of_time);
+            show_double(MSG_get_clock() - format_begin_of_time);
             break;
           case 'm': { /* user-provided message; LOG4J compliant */
             int sz;
@@ -189,7 +189,7 @@ xbt_log_layout_t xbt_log_layout_format_new(char *arg)
   res->data = xbt_strdup((char *) arg);
 
   if (format_begin_of_time < 0)
-    format_begin_of_time = surf_get_clock();
+    format_begin_of_time = MSG_get_clock();
 
   return res;
 }
