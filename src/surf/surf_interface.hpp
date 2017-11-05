@@ -239,7 +239,7 @@ public:
   void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
   void heapRemove(xbt_heap_t heap);
   void heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat);
-  virtual void updateIndexHeap(int i);
+  void updateIndexHeap(int i);
   lmm_variable_t getVariable() {return variable_;}
   void setVariable(lmm_variable_t var) { variable_ = var; }
   double getLastUpdate() {return lastUpdate_;}

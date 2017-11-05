@@ -214,12 +214,11 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 {
   ActionList *running_actions = getRunningActionSet();
-
-  for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
-     ; it != itend ; it=itNext) {
-    ++itNext;
-
+  ActionList::iterator it(running_actions->begin());
+  ActionList::iterator itend(running_actions->end());
+  while (it != itend) {
     NetworkCm02Action *action = static_cast<NetworkCm02Action*> (&*it);
+    ++it;
     XBT_DEBUG("Something happened to action %p", action);
       double deltap = delta;
       if (action->latency_ > 0) {

@@ -76,11 +76,11 @@ double StorageN11Model::nextOccuringEvent(double now)
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
   ActionList *actionSet = getRunningActionSet();
-  for (ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end()); it != itend; it = itNext) {
-    ++itNext;
-
+  ActionList::iterator it(actionSet->begin());
+  ActionList::iterator itend(actionSet->end());
+  while (it != itend) {
     StorageAction *action = static_cast<StorageAction*>(&*it);
-
+    ++it;
     double current_progress = lrint(lmm_variable_getvalue(action->getVariable()) * delta);
 
     action->updateRemains(current_progress);

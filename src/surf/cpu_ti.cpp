@@ -360,7 +360,9 @@ double CpuTiModel::nextOccuringEvent(double now)
   double min_action_duration = -1;
 
 /* iterates over modified cpus to update share resources */
-  for(CpuTiList::iterator it(modifiedCpu_->begin()), itend(modifiedCpu_->end()) ; it != itend ;) {
+  CpuTiList::iterator itend(modifiedCpu_->end());
+  CpuTiList::iterator it(modifiedCpu_->begin());
+  while (it != itend) {
     CpuTi *ti = &*it;
     ++it;
     ti->updateActionsFinishTime(now);
@@ -460,8 +462,8 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
-      for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()); it != itend ; ++it) {
-
+      ActionTiList::iterator itend(actionSet_->end());
+      for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
         CpuTiAction *action = &*it;
         if (action->getState() == Action::State::running
          || action->getState() == Action::State::ready
@@ -493,7 +495,8 @@ void CpuTi::updateActionsFinishTime(double now)
   /* update remaining amount of actions */
   updateRemainingAmount(now);
 
-  for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
+  ActionTiList::iterator itend(actionSet_->end());
+  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
     action = &*it;
     /* action not running, skip it */
     if (action->getStateSet() != surf_cpu_model_pm->getRunningActionSet())
@@ -511,7 +514,7 @@ void CpuTi::updateActionsFinishTime(double now)
   }
   sumPriority_ = sum_priority;
 
-  for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
+  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
     action = &*it;
     double min_finish = -1;
     /* action not running, skip it */
@@ -577,8 +580,8 @@ void CpuTi::updateRemainingAmount(double now)
   /* compute the integration area */
   double area_total = speedIntegratedTrace_->integrate(lastUpdate_, now) * speed_.peak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
-
-  for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
+  ActionTiList::iterator itend(actionSet_->end());
+  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
     CpuTiAction *action = &*it;
     /* action not running, skip it */
     if (action->getStateSet() != model()->getRunningActionSet())
