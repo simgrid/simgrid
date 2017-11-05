@@ -9,7 +9,7 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 #include <algorithm>
 
 enum InstrUserVariable { INSTR_US_DECLARE, INSTR_US_SET, INSTR_US_ADD, INSTR_US_SUB };

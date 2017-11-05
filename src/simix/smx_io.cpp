@@ -12,7 +12,7 @@
 #include "src/surf/FileImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 
 #include "smx_private.hpp"
 #include "src/surf/surf_interface.hpp"

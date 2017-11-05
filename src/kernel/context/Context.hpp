@@ -21,7 +21,7 @@
 #include "src/simix/smx_io_private.hpp"
 #include "src/simix/smx_network_private.hpp"
 #include "src/simix/smx_synchro_private.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 #include "xbt/base.h"
 #include "xbt/config.h"
 #include "xbt/function_types.h"

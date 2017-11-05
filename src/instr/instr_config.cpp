@@ -5,7 +5,7 @@
 
 #include "include/xbt/config.hpp"
 #include "src/instr/instr_private.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 #include <string>
 #include <vector>
 

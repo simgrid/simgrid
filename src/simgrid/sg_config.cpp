@@ -15,7 +15,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/surf/surf_interface.hpp"
 #include "surf/maxmin.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 #include "xbt/config.h"
 #include "xbt/config.hpp"
 #include "xbt/log.h"

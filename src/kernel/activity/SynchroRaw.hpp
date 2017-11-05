@@ -6,8 +6,8 @@
 #ifndef SIMIX_SYNCHRO_RAW_HPP
 #define SIMIX_SYNCHRO_RAW_HPP
 
-#include "surf/surf.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "surf/surf.hpp"
 
 namespace simgrid {
 namespace kernel {

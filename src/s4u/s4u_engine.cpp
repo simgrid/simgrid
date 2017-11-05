@@ -17,7 +17,7 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
-#include "surf/surf.h" // routing_platf. FIXME:KILLME. SOON
+#include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 

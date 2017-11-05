@@ -7,11 +7,11 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
+#include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 #include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");

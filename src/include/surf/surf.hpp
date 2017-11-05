@@ -6,22 +6,20 @@
 #ifndef SURF_SURF_H
 #define SURF_SURF_H
 
-#include "xbt/swag.h"
-#include "xbt/dynar.h"
-#include "xbt/dict.h"
-#include "xbt/graph.h"
-#include "xbt/misc.h"
-#include "xbt/config.h"
-#include "src/internal_config.h"
-#include "surf/datatypes.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
+#include "src/internal_config.h"
+#include "surf/datatypes.h"
+#include "xbt/config.h"
+#include "xbt/dict.h"
+#include "xbt/dynar.h"
+#include "xbt/graph.h"
+#include "xbt/misc.h"
+#include "xbt/swag.h"
 
 #ifndef __cplusplus
 #error This is a C++ only file, now
 #endif
-
-#ifdef __cplusplus
 
 namespace simgrid {
 namespace surf {
@@ -35,23 +33,26 @@ class Action;
 }
 }
 
-typedef simgrid::surf::Model surf_Model;
-typedef simgrid::surf::CpuModel surf_CpuModel;
-typedef simgrid::surf::HostModel surf_HostModel;
-typedef simgrid::surf::NetworkModel surf_NetworkModel;
-typedef simgrid::surf::StorageModel surf_StorageModel;
-typedef simgrid::surf::Action surf_Action;
-
-#else
-
-typedef struct surf_Model surf_Model;
-typedef struct surf_CpuModel surf_CpuModel;
-typedef struct surf_HostModel surf_HostModel;
-typedef struct surf_NetworkModel surf_NetworkModel;
-typedef struct surf_StorageModel surf_StorageModel;
-typedef struct surf_Action surf_Action;
-
-#endif
+/** @ingroup SURF_c_bindings
+ *  \brief Model datatype
+ *
+ *  Generic data structure for a model. The hosts,
+ *  the CPUs and the network links are examples of models.
+ */
+typedef simgrid::surf::Model* surf_model_t;
+typedef simgrid::surf::CpuModel* surf_cpu_model_t;
+typedef simgrid::surf::HostModel* surf_host_model_t;
+typedef simgrid::surf::NetworkModel* surf_network_model_t;
+typedef simgrid::surf::StorageModel* surf_storage_model_t;
+/** @ingroup SURF_c_bindings
+ *  \brief Action structure
+ *
+ *  Never create s_surf_action_t by yourself ! The actions are created
+ *  on the fly when you call execute or communicate on a model.
+ *
+ *  \see e_surf_action_state_t
+ */
+typedef simgrid::surf::Action* surf_action_t;
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
@@ -63,42 +64,17 @@ extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
 extern XBT_PRIVATE int sg_network_crosstraffic;
 
-/** @ingroup SURF_c_bindings
- *  \brief Model datatype
- *
- *  Generic data structure for a model. The hosts,
- *  the CPUs and the network links are examples of models.
- */
-typedef surf_Model *surf_model_t;
-typedef surf_CpuModel *surf_cpu_model_t;
-typedef surf_HostModel *surf_host_model_t;
-typedef surf_NetworkModel *surf_network_model_t;
-typedef surf_StorageModel *surf_storage_model_t;
-
-/** @ingroup SURF_c_bindings
- *  \brief Action structure
- *
- *  Never create s_surf_action_t by yourself ! The actions are created
- *  on the fly when you call execute or communicate on a model.
- *
- *  \see e_surf_action_state_t
- */
-typedef surf_Action *surf_action_t;
-
-
 /** \brief Resource model description
  */
 struct surf_model_description {
-  const char *name;
-  const char *description;
+  const char* name;
+  const char* description;
   void_f_void_t model_init_preparse;
 };
 typedef struct surf_model_description s_surf_model_description_t;
 
-#ifdef __cplusplus
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t* table, std::string name);
-#endif
-XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * table);
+XBT_PUBLIC(void) model_help(const char* category, s_surf_model_description_t* table);
 
 /***************************/
 /* Generic model object */
@@ -162,7 +138,6 @@ XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model_pm;
  *  \brief The CPU model object for the virtual machine layer
  */
 XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model_vm;
-
 
 /** \ingroup SURF_models
  *  \brief Initializes the CPU model with the model Cas01
@@ -383,7 +358,7 @@ XBT_PUBLIC(void) surf_vm_model_init_HL13();
  *
  *  \see surf_host_model_init_CM02(), surf_host_model_init_compound(), surf_exit()
  */
-XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
+XBT_PUBLIC(void) surf_init(int* argc, char** argv); /* initialize common structures */
 
 /** \ingroup SURF_simulation
  *  \brief Finish simulation initialization
@@ -421,17 +396,17 @@ XBT_PUBLIC(double) surf_get_clock();
 XBT_PUBLIC(void) surf_exit();
 
 /* surf parse file related (public because called from a test suite) */
-XBT_PUBLIC(void) parse_platform_file(const char *file);
+XBT_PUBLIC(void) parse_platform_file(const char* file);
 
 /********** Tracing **********/
 /* from surf_instr.c */
-void TRACE_surf_action(surf_action_t surf_action, const char *category);
+void TRACE_surf_action(surf_action_t surf_action, const char* category);
 
 /* instr_routing.c */
-void instr_routing_define_callbacks ();
-int instr_platform_traced ();
-xbt_graph_t instr_routing_platform_graph ();
-void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
+void instr_routing_define_callbacks();
+int instr_platform_traced();
+xbt_graph_t instr_routing_platform_graph();
+void instr_routing_platform_graph_export_graphviz(xbt_graph_t g, const char* filename);
 
 SG_END_DECL()
 

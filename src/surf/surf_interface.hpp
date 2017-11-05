@@ -9,7 +9,7 @@
 #include "xbt/signal.hpp"
 
 #include "src/surf/surf_private.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 #include "xbt/str.h"
 
 #include <boost/intrusive/list.hpp>
