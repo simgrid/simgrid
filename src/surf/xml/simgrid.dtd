@@ -4,11 +4,17 @@
 More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
 To upgrade your files, use the tool simgrid_update_xml
 
+* Things that will change in upcoming version 5 (TODO):
+  - The following tags will be removed:
+    - <include> spits an error since v3.18
+    - <random> does nothing since a very long time
+    - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
+
 * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
    - <zone> can be used as a synonym for the now deprecated <as>
    - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
-   - <actor>  can be used as a synonym for the now deprecated <process>
+   - <actor> can be used as a synonym for the now deprecated <process>
 
 * New in DTD version 4 (in SimGrid 3.13):
    - Rename (power->speed) the attributes describing the amount of flop
