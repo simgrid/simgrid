@@ -1,5 +1,4 @@
-/* Copyright (c) 2011-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,7 +26,7 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/Client.hpp"

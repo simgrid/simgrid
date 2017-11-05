@@ -1,10 +1,9 @@
-/* Copyright (c) 2009-2010, 2012-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* sg_config: configuration infrastructure for the simulation world       */
+/* sg_config: configuration infrastructure for the simulation world         */
 
 #include "simgrid/sg_config.h"
 #include "instr/instr_interface.h"
@@ -12,7 +11,7 @@
 #include "simgrid/instr.h"
 #include "simgrid/simix.h"
 #include "simgrid_config.h" /* what was compiled in? */
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/maxmin.hpp"
 #include "surf/surf.hpp"

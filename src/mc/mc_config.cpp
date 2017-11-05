@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,8 +7,8 @@
 #include "xbt/log.h"
 #include <xbt/sysdep.h>
 
+#include "src/mc/mc_replay.hpp"
 #include <mc/mc.h>
-#include "src/mc/mc_replay.h"
 
 #include <simgrid/sg_config.h>
 

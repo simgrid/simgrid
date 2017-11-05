@@ -6,7 +6,7 @@
 #include "mc/mc.h"
 #include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/ex.hpp"

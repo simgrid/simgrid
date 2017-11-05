@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +18,7 @@
 
 #include "src/kernel/context/Context.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"
 
@@ -37,9 +36,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
 
-extern "C" {
 std::string MC_record_path;
-}
 
 namespace simgrid {
 namespace mc {

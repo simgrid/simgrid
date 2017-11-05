@@ -6,7 +6,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 
 #include "simgrid/modelchecker.h"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_network_private.hpp"
 #include "src/surf/surf_interface.hpp"
 

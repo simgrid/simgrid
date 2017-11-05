@@ -5,15 +5,15 @@
 
 #include "smpi_request.hpp"
 
-#include "mc/mc.h"
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/mc/mc_replay.h"
 #include "SmpiHost.hpp"
+#include "mc/mc.h"
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_op.hpp"
 #include "smpi_process.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 
 #include <algorithm>
 

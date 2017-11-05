@@ -23,7 +23,7 @@
 
 #include "mc/mc.h"
 #include "simgrid/sg_config.h"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/surf/StorageImpl.hpp"
 
 #include "src/smpi/include/smpi_process.hpp"

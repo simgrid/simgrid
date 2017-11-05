@@ -8,7 +8,7 @@
 #include "smpi_comm.hpp"
 #include "smpi_process.hpp"
 #include "src/internal_config.h"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include <unordered_map>
 
 #ifndef WIN32

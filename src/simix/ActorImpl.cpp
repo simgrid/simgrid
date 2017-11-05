@@ -24,7 +24,7 @@
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/surf/cpu_interface.hpp"
