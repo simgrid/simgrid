@@ -203,7 +203,7 @@ void TRACE_smpi_collective_in(int rank, const char *operation, instr_extra_data 
   state->pushEvent(operation, static_cast<void*>(extra));
 }
 
-void TRACE_smpi_collective_out(int rank, const char *operation)
+void TRACE_smpi_collective_out(int rank)
 {
   if (TRACE_smpi_is_enabled())
     simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE")->popEvent();
@@ -304,7 +304,7 @@ void TRACE_smpi_ptp_in(int rank, const char *operation, instr_extra_data extra)
   state->pushEvent(operation, static_cast<void*>(extra));
 }
 
-void TRACE_smpi_ptp_out(int rank, int dst, const char *operation)
+void TRACE_smpi_ptp_out(int rank)
 {
   if (TRACE_smpi_is_enabled())
     simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE")->popEvent();
