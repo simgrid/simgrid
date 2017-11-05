@@ -371,7 +371,7 @@ void smpi_global_destroy()
   smpi_bench_destroy();
   smpi_shared_destroy();
   smpi_deployment_cleanup_instances();
-  for (int i = 0, count = smpi_process_count(); i < count; i++) {
+  for (int i = 0; i < smpi_process_count(); i++) {
     if(process_data[i]->comm_self()!=MPI_COMM_NULL){
       simgrid::smpi::Comm::destroy(process_data[i]->comm_self());
     }
