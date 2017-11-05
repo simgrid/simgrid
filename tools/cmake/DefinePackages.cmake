@@ -9,7 +9,7 @@ set(EXTRA_DIST
   src/include/smpi/smpi_utils.hpp
   src/include/surf/datatypes.h
   src/include/surf/maxmin.hpp
-  src/include/surf/surf.h
+  src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
@@ -578,7 +578,7 @@ set(MC_SRC_BASE
   src/mc/mc_base.cpp
   src/mc/mc_base.h
   src/mc/mc_record.hpp
-  src/mc/mc_replay.h
+  src/mc/mc_replay.hpp
   src/mc/mc_record.cpp
   src/mc/mc_config.cpp
   src/mc/mc_global.cpp
