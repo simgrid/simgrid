@@ -154,9 +154,9 @@ void StateEvent::print()
 
     if (extra_ != nullptr) {
       if (static_cast<instr_extra_data>(extra_)->sendcounts != nullptr)
-        xbt_free(static_cast<instr_extra_data>(extra_)->sendcounts);
+        delete[](static_cast<instr_extra_data>(extra_)->sendcounts);
       if (static_cast<instr_extra_data>(extra_)->recvcounts != nullptr)
-        xbt_free(static_cast<instr_extra_data>(extra_)->recvcounts);
+        delete[](static_cast<instr_extra_data>(extra_)->recvcounts);
       xbt_free(extra_);
     }
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -271,9 +271,9 @@ void StateEvent::print()
     fprintf(trace_file, "%s\n", stream.str().c_str());
 
     if (extra->recvcounts != nullptr)
-      xbt_free(extra->recvcounts);
+      delete[] extra->recvcounts;
     if (extra->sendcounts != nullptr)
-      xbt_free(extra->sendcounts);
+      delete[] extra->sendcounts;
     xbt_free(extra);
 
   } else {

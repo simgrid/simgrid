@@ -153,6 +153,7 @@ struct s_instr_extra_data_t {
   int* recvcounts;
   int num_processes;
 };
+
 typedef s_instr_extra_data_t* instr_extra_data;
 
 /* Format of TRACING output.
