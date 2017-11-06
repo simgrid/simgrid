@@ -193,6 +193,11 @@ bool Datatype::is_valid(){
   return (flags_ & DT_FLAG_COMMITED);
 }
 
+bool Datatype::is_basic()
+{
+  return (flags_ & DT_FLAG_BASIC);
+}
+
 size_t Datatype::size(){
   return size_;
 }

@@ -102,6 +102,7 @@ public:
   static void unref(MPI_Datatype datatype);
   void commit();
   bool is_valid();
+  bool is_basic();
   void addflag(int flag);
   int extent(MPI_Aint* lb, MPI_Aint* extent);
   MPI_Aint get_extent();

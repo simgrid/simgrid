@@ -164,12 +164,8 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     extra->type = TRACING_IRECV;
     extra->src = src_traced;
     extra->dst = rank;
-    int known=0;
-    extra->datatype1 = encode_datatype(datatype, &known);
-    int dt_size_send = 1;
-    if(known==0)
-      dt_size_send = datatype->size();
-    extra->send_size = count*dt_size_send;
+    extra->datatype1       = encode_datatype(datatype);
+    extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
 
     *request = simgrid::smpi::Request::irecv(buf, count, datatype, src, tag, comm);
@@ -212,12 +208,8 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     extra->type = TRACING_ISEND;
     extra->src = rank;
     extra->dst = dst_traced;
-    int known=0;
-    extra->datatype1 = encode_datatype(datatype, &known);
-    int dt_size_send = 1;
-    if(known==0)
-      dt_size_send = datatype->size();
-    extra->send_size = count*dt_size_send;
+    extra->datatype1       = encode_datatype(datatype);
+    extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
@@ -260,12 +252,8 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     extra->type = TRACING_ISSEND;
     extra->src = rank;
     extra->dst = dst_traced;
-    int known=0;
-    extra->datatype1 = encode_datatype(datatype, &known);
-    int dt_size_send = 1;
-    if(known==0)
-      dt_size_send = datatype->size();
-    extra->send_size = count*dt_size_send;
+    extra->datatype1       = encode_datatype(datatype);
+    extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag, count*datatype->size());
 
@@ -307,12 +295,8 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     extra->type            = TRACING_RECV;
     extra->src             = src_traced;
     extra->dst             = rank;
-    int known              = 0;
-    extra->datatype1       = encode_datatype(datatype, &known);
-    int dt_size_send       = 1;
-    if (known == 0)
-      dt_size_send   = datatype->size();
-    extra->send_size = count * dt_size_send;
+    extra->datatype1       = encode_datatype(datatype);
+    extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
@@ -357,13 +341,8 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     extra->type            = TRACING_SEND;
     extra->src             = rank;
     extra->dst             = dst_traced;
-    int known              = 0;
-    extra->datatype1       = encode_datatype(datatype, &known);
-    int dt_size_send       = 1;
-    if (known == 0) {
-      dt_size_send = datatype->size();
-    }
-    extra->send_size = count*dt_size_send;
+    extra->datatype1       = encode_datatype(datatype);
+    extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
     if (not TRACE_smpi_view_internals()) {
       TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
@@ -403,13 +382,9 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     extra->type            = TRACING_SSEND;
     extra->src             = rank;
     extra->dst             = dst_traced;
-    int known              = 0;
-    extra->datatype1       = encode_datatype(datatype, &known);
-    int dt_size_send       = 1;
-    if(known == 0) {
-      dt_size_send = datatype->size();
-    }
-    extra->send_size = count*dt_size_send;
+    extra->datatype1       = encode_datatype(datatype);
+    extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
+
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
 
@@ -447,7 +422,6 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   } else if((sendtag<0 && sendtag !=  MPI_ANY_TAG)||(recvtag<0 && recvtag != MPI_ANY_TAG)){
     retval = MPI_ERR_TAG;
   } else {
-
     int rank               = smpi_process()->index();
     int dst_traced         = comm->group()->index(dst);
     int src_traced         = comm->group()->index(src);
@@ -455,17 +429,10 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     extra->type            = TRACING_SENDRECV;
     extra->src             = src_traced;
     extra->dst             = dst_traced;
-    int known              = 0;
-    extra->datatype1       = encode_datatype(sendtype, &known);
-    int dt_size_send       = 1;
-    if (known == 0)
-      dt_size_send   = sendtype->size();
-    extra->send_size = sendcount * dt_size_send;
-    extra->datatype2 = encode_datatype(recvtype, &known);
-    int dt_size_recv = 1;
-    if (known == 0)
-      dt_size_recv   = recvtype->size();
-    extra->recv_size = recvcount * dt_size_recv;
+    extra->datatype1       = encode_datatype(sendtype);
+    extra->send_size       = sendtype->is_basic() ? sendcount : sendcount * sendtype->size();
+    extra->datatype2       = encode_datatype(recvtype);
+    extra->recv_size       = recvtype->is_basic() ? recvcount : recvcount * recvtype->size();
 
     TRACE_smpi_ptp_in(rank, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, sendtag, sendcount * sendtype->size());

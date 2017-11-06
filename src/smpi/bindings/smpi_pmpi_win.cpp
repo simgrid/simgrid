@@ -77,7 +77,8 @@ int PMPI_Win_attach(MPI_Win win, void *base, MPI_Aint size){
   return retval;
 }
 
-int PMPI_Win_detach(MPI_Win win,  void *base){
+int PMPI_Win_detach(MPI_Win win, void* base)
+{
   int retval = 0;
   smpi_bench_end();
   if(win == MPI_WIN_NULL){
@@ -480,9 +481,9 @@ int PMPI_Fetch_and_op(void *origin_addr, void *result_addr, MPI_Datatype dtype, 
   return PMPI_Get_accumulate(origin_addr, origin_addr==nullptr?0:1, dtype, result_addr, 1, dtype, target_rank, target_disp, 1, dtype, op, win);
 }
 
-int PMPI_Compare_and_swap(void *origin_addr, void *compare_addr,
-        void *result_addr, MPI_Datatype datatype, int target_rank,
-        MPI_Aint target_disp, MPI_Win win){
+int PMPI_Compare_and_swap(void* origin_addr, void* compare_addr, void* result_addr, MPI_Datatype datatype,
+                          int target_rank, MPI_Aint target_disp, MPI_Win win)
+{
   int retval = 0;
   smpi_bench_end();
   if (win == MPI_WIN_NULL) {
@@ -504,8 +505,7 @@ int PMPI_Compare_and_swap(void *origin_addr, void *compare_addr,
     win->get_group(&group);
     TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
 
-    retval = win->compare_and_swap( origin_addr, compare_addr, result_addr, datatype,
-                                  target_rank, target_disp);
+    retval = win->compare_and_swap(origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp);
 
     TRACE_smpi_ptp_out(rank);
   }
