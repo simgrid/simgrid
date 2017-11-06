@@ -18,6 +18,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "my log messages");
 
 namespace example {
 
+class exception : public std::runtime_error {
+  using std::runtime_error::runtime_error;
+};
+
 /** Create a future which becomes ready when the date is reached */
 static
 simgrid::kernel::Future<void> kernel_wait_until(double date)
@@ -53,12 +57,11 @@ static int master(int argc, char *argv[])
     simgrid::simix::kernelSync([] {
       return kernel_wait_until(20).then([](simgrid::kernel::Future<void> future) {
         future.get();
-        throw std::runtime_error("Exception throwed from kernel_defer");
+        throw example::exception("Exception throwed from kernel_defer");
       });
     });
     XBT_ERROR("No exception caught!");
-  }
-  catch(std::runtime_error& e) {
+  } catch (const example::exception& e) {
     XBT_INFO("Exception caught: %s", e.what());
   }
 
