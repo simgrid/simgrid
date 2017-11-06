@@ -77,7 +77,7 @@ RecordTrace parseRecordTrace(const char* data)
   RecordTrace res;
   XBT_INFO("path=%s", data);
   if (data == nullptr || data[0] == '\0')
-    throw std::runtime_error("Could not parse record path");
+    throw std::invalid_argument("Could not parse record path");
 
   const char* current = data;
   while (*current) {
@@ -85,7 +85,7 @@ RecordTrace parseRecordTrace(const char* data)
     simgrid::mc::Transition item;
     int count = sscanf(current, "%d/%d", &item.pid, &item.argument);
     if(count != 2 && count != 1)
-      throw std::runtime_error("Could not parse record path");
+      throw std::invalid_argument("Could not parse record path");
     res.push_back(item);
 
     // Find next chunk:
