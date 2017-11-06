@@ -672,9 +672,9 @@ static void action_gatherv(const char *const *action) {
     recv = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_GATHERV;
-  extra->send_size = send_size;
-  extra->recvcounts= xbt_new(int,comm_size);
+  extra->type            = TRACING_GATHERV;
+  extra->send_size       = send_size;
+  extra->recvcounts      = new int[comm_size];
   for(int i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->root = root;
@@ -718,7 +718,7 @@ static void action_reducescatter(const char *const *action) {
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
   extra->send_size = 0;
-  extra->recvcounts= xbt_new(int, comm_size);
+  extra->recvcounts      = new int[comm_size];
   for(int i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->datatype1       = encode_datatype(MPI_CURRENT_TYPE);
@@ -816,7 +816,7 @@ static void action_allgatherv(const char *const *action) {
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHERV;
   extra->send_size = sendcount;
-  extra->recvcounts= xbt_new(int, comm_size);
+  extra->recvcounts      = new int[comm_size];
   for(int i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->datatype1       = encode_datatype(MPI_CURRENT_TYPE);
@@ -874,8 +874,8 @@ static void action_allToAllv(const char *const *action) {
   int rank = smpi_process()->index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALLV;
-  extra->recvcounts= xbt_new(int, comm_size);
-  extra->sendcounts= xbt_new(int, comm_size);
+  extra->recvcounts      = new int[comm_size];
+  extra->sendcounts      = new int[comm_size];
   extra->num_processes = comm_size;
 
   for(int i=0; i< comm_size; i++){//copy data to avoid bad free

@@ -108,9 +108,9 @@ static std::unordered_map<smx_actor_t, std::string> process_category;
 static void cleanup_extra_data (instr_extra_data extra){
   if(extra!=nullptr){
     if(extra->sendcounts!=nullptr)
-      xbt_free(extra->sendcounts);
+      delete[] extra->sendcounts;
     if(extra->recvcounts!=nullptr)
-      xbt_free(extra->recvcounts);
+      delete[] extra->recvcounts;
     xbt_free(extra);
   }
 }
