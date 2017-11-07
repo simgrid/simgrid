@@ -47,17 +47,9 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
   }
 }
 
-static void dump_platform()
+static void dump_hosts()
 {
-  int version = 4;
   std::map<std::string, std::string>* props = nullptr;
-
-  std::printf("<?xml version='1.0'?>\n");
-  std::printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
-  std::printf("<platform version=\"%d\">\n", version);
-  std::printf("<AS id=\"AS0\" routing=\"Full\">\n");
-
-  // Hosts
   unsigned int totalHosts = sg_host_count();
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
@@ -79,20 +71,11 @@ static void dump_platform()
       std::printf("/>\n");
     }
   }
+  std::free(hosts);
+}
 
-  // Routers
-  std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
-  simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
-  std::sort(netcardList.begin(), netcardList.end(),
-            [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
-              return a->getName() < b->getName();
-            });
-
-  for (auto const& srcCard : netcardList)
-    if (srcCard->isRouter())
-      std::printf("  <router id=\"%s\"/>\n", srcCard->getCname());
-
-  // Links
+static void dump_links()
+{
   unsigned int totalLinks    = sg_link_count();
   simgrid::s4u::Link** links = sg_link_list();
 
@@ -111,6 +94,36 @@ static void dump_platform()
     }
   }
 
+  std::free(links);
+}
+
+static void dump_routers()
+{
+  std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
+  simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
+  std::sort(netcardList.begin(), netcardList.end(),
+            [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
+              return a->getName() < b->getName();
+            });
+
+  for (auto const& srcCard : netcardList)
+    if (srcCard->isRouter())
+      std::printf("  <router id=\"%s\"/>\n", srcCard->getCname());
+}
+
+static void dump_routes()
+{
+  unsigned int totalHosts = sg_host_count();
+  sg_host_t* hosts        = sg_host_list();
+  std::sort(hosts, hosts + totalHosts,
+            [](sg_host_t a, sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
+  std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
+  simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
+  std::sort(netcardList.begin(), netcardList.end(),
+            [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
+              return a->getName() < b->getName();
+            });
+
   for (unsigned int it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
     simgrid::s4u::Host* host1                      = hosts[it_src];
     simgrid::kernel::routing::NetPoint* netcardSrc = host1->pimpl_netpoint;
@@ -126,6 +139,7 @@ static void dump_platform()
         std::printf("\n  </route>\n");
       }
     }
+
     for (auto const& netcardDst : netcardList) { // to router
       if (netcardDst->isRouter()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->getCname(), netcardDst->getCname());
@@ -162,11 +176,32 @@ static void dump_platform()
       }
     }
   }
+  std::free(hosts);
+}
+
+static void dump_platform()
+{
+  int version = 4;
+
+  std::printf("<?xml version='1.0'?>\n");
+  std::printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
+  std::printf("<platform version=\"%d\">\n", version);
+  std::printf("<AS id=\"AS0\" routing=\"Full\">\n");
+
+  // Hosts
+  dump_hosts();
+
+  // Routers
+  dump_routers();
+
+  // Links
+  dump_links();
+
+  // Routes
+  dump_routes();
 
   std::printf("</AS>\n");
   std::printf("</platform>\n");
-  std::free(hosts);
-  std::free(links);
 }
 
 int main(int argc, char** argv)
