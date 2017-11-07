@@ -156,7 +156,8 @@ void smpi_bench_end()
 
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
-    container_t container        = new simgrid::instr::Container(smpi_container(smpi_process()->index()));
+    container_t container =
+        new simgrid::instr::Container(std::string("rank-") + std::to_string(smpi_process()->index()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {

@@ -56,9 +56,9 @@ static const char* instr_find_color(const char* state)
   return ret;
 }
 
-XBT_PRIVATE std::string smpi_container(int rank)
+XBT_PRIVATE container_t smpi_container(int rank)
 {
-  return std::string("rank-") + std::to_string(rank);
+  return simgrid::instr::Container::byName(std::string("rank-") + std::to_string(rank));
 }
 
 static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
@@ -152,7 +152,7 @@ void TRACE_smpi_init(int rank)
   if (not TRACE_smpi_is_enabled())
     return;
 
-  std::string str = smpi_container(rank);
+  std::string str = std::string("rank-") + std::to_string(rank);
 
   container_t father;
   if (TRACE_smpi_is_grouped()){
@@ -185,7 +185,7 @@ void TRACE_smpi_finalize(int rank)
   if (not TRACE_smpi_is_enabled())
     return;
 
-  container_t container = simgrid::instr::Container::byName(smpi_container(rank));
+  container_t container = smpi_container(rank);
   container->removeFromParent();
   delete container;
 }
@@ -196,9 +196,7 @@ void TRACE_smpi_computing_init(int rank)
  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing())
    return;
 
- simgrid::instr::StateType* state = simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE");
- state->addEntityValue("computing", instr_find_color("computing"));
- state->pushEvent("computing");
+ smpi_container(rank)->getState("MPI_STATE")->addEntityValue("computing", instr_find_color("computing"));
 }
 
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
@@ -209,9 +207,7 @@ void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
     return;
   }
 
-  simgrid::instr::StateType* state = simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE");
-  state->addEntityValue("computing");
-  state->pushEvent("computing", static_cast<void*>(extra));
+  smpi_container(rank)->getState("MPI_STATE")->pushEvent("computing", static_cast<void*>(extra));
 }
 
 void TRACE_smpi_computing_out(int rank)
@@ -219,7 +215,7 @@ void TRACE_smpi_computing_out(int rank)
   if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing())
     return;
 
-  simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE")->popEvent();
+  smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
 void TRACE_smpi_sleeping_init(int rank)
@@ -228,9 +224,7 @@ void TRACE_smpi_sleeping_init(int rank)
   if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping())
     return;
 
-  simgrid::instr::StateType* state = simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE");
-  state->addEntityValue("sleeping", instr_find_color("sleeping"));
-  state->pushEvent("sleeping");
+  smpi_container(rank)->getState("MPI_STATE")->addEntityValue("sleeping", instr_find_color("sleeping"));
 }
 
 void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
@@ -241,9 +235,7 @@ void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
     return;
   }
 
-  simgrid::instr::StateType* state = simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE");
-  state->addEntityValue("sleeping");
-  state->pushEvent("sleeping", static_cast<void*>(extra));
+  smpi_container(rank)->getState("MPI_STATE")->pushEvent("sleeping", static_cast<void*>(extra));
 }
 
 void TRACE_smpi_sleeping_out(int rank)
@@ -251,7 +243,7 @@ void TRACE_smpi_sleeping_out(int rank)
   if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping())
     return;
 
-  simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE")->popEvent();
+  smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
 void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
@@ -262,7 +254,7 @@ void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
     return;
   }
 
-  simgrid::instr::StateType* state = simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE");
+  simgrid::instr::StateType* state = smpi_container(rank)->getState("MPI_STATE");
   state->addEntityValue("test");
   state->pushEvent("test", static_cast<void*>(extra));
 }
@@ -270,7 +262,7 @@ void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
 void TRACE_smpi_testing_out(int rank)
 {
   if (TRACE_smpi_is_enabled())
-    simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE")->popEvent();
+    smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
 void TRACE_smpi_comm_in(int rank, const char* operation, instr_extra_data extra)
@@ -280,7 +272,7 @@ void TRACE_smpi_comm_in(int rank, const char* operation, instr_extra_data extra)
     return;
   }
 
-  simgrid::instr::StateType* state = simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE");
+  simgrid::instr::StateType* state = smpi_container(rank)->getState("MPI_STATE");
   state->addEntityValue(operation, instr_find_color(operation));
   state->pushEvent(operation, static_cast<void*>(extra));
 }
@@ -288,7 +280,7 @@ void TRACE_smpi_comm_in(int rank, const char* operation, instr_extra_data extra)
 void TRACE_smpi_comm_out(int rank)
 {
   if (TRACE_smpi_is_enabled())
-    simgrid::instr::Container::byName(smpi_container(rank))->getState("MPI_STATE")->popEvent();
+    smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
 void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
@@ -299,8 +291,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
   std::string key = TRACE_smpi_get_key(src, dst, tag, 1);
 
   XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
-  container_t startContainer = simgrid::instr::Container::byName(smpi_container(rank));
-  simgrid::instr::Container::getRoot()->getLink("MPI_LINK")->startEvent(startContainer, "PTP", key, size);
+  simgrid::instr::Container::getRoot()->getLink("MPI_LINK")->startEvent(smpi_container(rank), "PTP", key, size);
 }
 
 void TRACE_smpi_recv(int src, int dst, int tag)
@@ -311,6 +302,5 @@ void TRACE_smpi_recv(int src, int dst, int tag)
   std::string key = TRACE_smpi_get_key(src, dst, tag, 0);
 
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
-  container_t endContainer = simgrid::instr::Container::byName(smpi_container(dst));
-  simgrid::instr::Container::getRoot()->getLink("MPI_LINK")->endEvent(endContainer, "PTP", key);
+  simgrid::instr::Container::getRoot()->getLink("MPI_LINK")->endEvent(smpi_container(dst), "PTP", key);
 }
