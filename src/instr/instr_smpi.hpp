@@ -10,7 +10,7 @@
 #include "src/instr/instr_private.hpp"
 #include <string>
 
-XBT_PRIVATE std::string smpi_container(int rank);
+XBT_PRIVATE container_t smpi_container(int rank);
 
 extern "C" {
 
