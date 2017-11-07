@@ -34,12 +34,12 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
     extra->root            = root_traced;
     extra->datatype1       = encode_datatype(datatype);
     extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
     if (comm->size() > 1)
       simgrid::smpi::Colls::bcast(buf, count, datatype, root, comm);
     retval = MPI_SUCCESS;
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -57,7 +57,7 @@ int PMPI_Barrier(MPI_Comm comm)
     int rank               = smpi_process()->index();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
     extra->type            = TRACING_BARRIER;
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::barrier(comm);
 
@@ -66,7 +66,7 @@ int PMPI_Barrier(MPI_Comm comm)
 
     retval = MPI_SUCCESS;
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -107,12 +107,12 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbu
     extra->datatype2 = encode_datatype(recvtype);
     extra->recv_size = (comm->rank() != root || recvtype->is_basic()) ? recvcount : recvcount * recvtype->size();
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::gather(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, root, comm);
 
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -161,9 +161,9 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
         extra->recvcounts[i] = recvcounts[i] * dt_size_recv;
     }
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
     retval = simgrid::smpi::Colls::gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts, displs, recvtype, root, comm);
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -200,11 +200,11 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     extra->datatype2 = encode_datatype(recvtype);
     extra->recv_size = recvtype->is_basic() ? recvcount : recvcount * recvtype->size();
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -245,11 +245,11 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     for (int i             = 0; i < extra->num_processes; i++) // copy data to avoid bad free
       extra->recvcounts[i] = recvcounts[i] * dt_size_recv;
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -288,11 +288,11 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     extra->datatype2 = encode_datatype(recvtype);
     extra->recv_size = recvtype->is_basic() ? recvcount : recvcount * recvtype->size();
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -333,11 +333,11 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
         extra->sendcounts[i] = sendcounts[i] * dt_size_send;
     }
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     retval = simgrid::smpi::Colls::scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -363,12 +363,12 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     extra->datatype1       = encode_datatype(datatype);
     extra->send_size       = datatype->is_basic() ? count : count * datatype->size();
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
 
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -415,7 +415,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     extra->datatype1 = encode_datatype(datatype);
     extra->send_size = datatype->is_basic() ? count : count * datatype->size();
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::allreduce(sendtmpbuf, recvbuf, count, datatype, op, comm);
 
@@ -423,7 +423,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
       xbt_free(sendtmpbuf);
 
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -450,11 +450,11 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
     extra->datatype1 = encode_datatype(datatype);
     extra->send_size = datatype->is_basic() ? count : count * datatype->size();
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     retval = simgrid::smpi::Colls::scan(sendbuf, recvbuf, count, datatype, op, comm);
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
 
   smpi_bench_begin();
@@ -483,11 +483,11 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
       sendtmpbuf = static_cast<void*>(xbt_malloc(count * datatype->size()));
       memcpy(sendtmpbuf, recvbuf, count * datatype->size());
     }
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     retval = simgrid::smpi::Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
   }
@@ -531,11 +531,11 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
       memcpy(sendtmpbuf, recvbuf, totalcount * datatype->size());
     }
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
     retval = MPI_SUCCESS;
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
 
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
@@ -578,7 +578,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
       memcpy(sendtmpbuf, recvbuf, recvcount * count * datatype->size());
     }
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     int* recvcounts = new int[count];
     for (int i      = 0; i < count; i++)
@@ -587,7 +587,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     delete[] recvcounts;
     retval = MPI_SUCCESS;
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
 
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
@@ -627,11 +627,11 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
     extra->datatype2 = encode_datatype(recvtype);
     extra->recv_size = recvtype->is_basic() ? recvcount : recvcount * recvtype->size();
 
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
 
     retval = simgrid::smpi::Colls::alltoall(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
 
     if (sendbuf == MPI_IN_PLACE)
       xbt_free(sendtmpbuf);
@@ -698,10 +698,10 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
       extra->sendcounts[i] = sendtmpcounts[i] * dt_size_send;
     }
     extra->num_processes = size;
-    TRACE_smpi_collective_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
     retval = simgrid::smpi::Colls::alltoallv(sendtmpbuf, sendtmpcounts, sendtmpdisps, sendtmptype, recvbuf, recvcounts,
                                     recvdisps, recvtype, comm);
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
 
     if (sendbuf == MPI_IN_PLACE) {
       xbt_free(sendtmpbuf);

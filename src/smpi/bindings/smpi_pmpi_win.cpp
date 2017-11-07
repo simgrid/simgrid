@@ -167,9 +167,9 @@ int PMPI_Win_fence( int assert,  MPI_Win win){
     retval = MPI_ERR_WIN;
   } else {
   int rank = smpi_process()->index();
-  TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
+  TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
   retval = win->fence(assert);
-  TRACE_smpi_collective_out(rank);
+  TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -198,12 +198,12 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -235,12 +235,12 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype, request);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -270,13 +270,13 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     MPI_Group group;
     win->get_group(&group);
     int dst_traced = group->index(target_rank);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*origin_datatype->size());
 
     retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -309,13 +309,13 @@ int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     MPI_Group group;
     win->get_group(&group);
     int dst_traced = group->index(target_rank);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*origin_datatype->size());
 
     retval = win->put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                            target_datatype, request);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -346,11 +346,11 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
     retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                                   target_datatype, op);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -384,12 +384,12 @@ int PMPI_Raccumulate( void *origin_addr, int origin_count, MPI_Datatype origin_d
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                                   target_datatype, op, request);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -422,13 +422,13 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
                                   result_count, result_datatype, target_rank, target_disp,
                                   target_count, target_datatype, op);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -465,13 +465,13 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
                                   result_count, result_datatype, target_rank, target_disp,
                                   target_count, target_datatype, op, request);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -503,11 +503,11 @@ int PMPI_Compare_and_swap(void* origin_addr, void* compare_addr, void* result_ad
     int rank = smpi_process()->index();
     MPI_Group group;
     win->get_group(&group);
-    TRACE_smpi_ptp_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->compare_and_swap(origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp);
 
-    TRACE_smpi_ptp_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -522,9 +522,9 @@ int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
     retval = MPI_ERR_GROUP;
   } else {
     int rank = smpi_process()->index();
-    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
     retval = win->post(group,assert);
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -539,9 +539,9 @@ int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
     retval = MPI_ERR_GROUP;
   } else {
     int rank = smpi_process()->index();
-    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
     retval = win->start(group,assert);
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -554,11 +554,11 @@ int PMPI_Win_complete(MPI_Win win){
     retval = MPI_ERR_WIN;
   } else {
     int rank = smpi_process()->index();
-    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->complete();
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -571,11 +571,11 @@ int PMPI_Win_wait(MPI_Win win){
     retval = MPI_ERR_WIN;
   } else {
     int rank = smpi_process()->index();
-    TRACE_smpi_collective_in(rank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, nullptr);
 
     retval = win->wait();
 
-    TRACE_smpi_collective_out(rank);
+    TRACE_smpi_comm_out(rank);
   }
   smpi_bench_begin();
   return retval;
@@ -593,9 +593,9 @@ int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->lock(lock_type,rank,assert);
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
@@ -610,9 +610,9 @@ int PMPI_Win_unlock(int rank, MPI_Win win){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->unlock(rank);
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
@@ -625,9 +625,9 @@ int PMPI_Win_lock_all(int assert, MPI_Win win){
     retval = MPI_ERR_WIN;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->lock_all(assert);
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
@@ -640,9 +640,9 @@ int PMPI_Win_unlock_all(MPI_Win win){
     retval = MPI_ERR_WIN;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->unlock_all();
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
@@ -657,9 +657,9 @@ int PMPI_Win_flush(int rank, MPI_Win win){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->flush(rank);
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
@@ -674,9 +674,9 @@ int PMPI_Win_flush_local(int rank, MPI_Win win){
     retval = MPI_SUCCESS;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->flush_local(rank);
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
@@ -689,9 +689,9 @@ int PMPI_Win_flush_all(MPI_Win win){
     retval = MPI_ERR_WIN;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->flush_all();
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
@@ -704,9 +704,9 @@ int PMPI_Win_flush_local_all(MPI_Win win){
     retval = MPI_ERR_WIN;
   } else {
     int myrank = smpi_process()->index();
-    TRACE_smpi_collective_in(myrank, __FUNCTION__, nullptr);
+    TRACE_smpi_comm_in(myrank, __FUNCTION__, nullptr);
     retval = win->flush_local_all();
-    TRACE_smpi_collective_out(myrank);
+    TRACE_smpi_comm_out(myrank);
   }
   smpi_bench_begin();
   return retval;
