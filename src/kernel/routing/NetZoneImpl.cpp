@@ -315,7 +315,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
 void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
                                  /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
 {
-  s_sg_platf_route_cbarg_t route{};
+  s_sg_platf_route_cbarg_t route;
 
   XBT_DEBUG("Resolve route from '%s' to '%s'", src->getCname(), dst->getCname());
 

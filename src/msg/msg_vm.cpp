@@ -113,12 +113,15 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
-  s_vm_params_t params{};
-  params.ramsize = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
-  params.devsize = 0;
-  params.skip_stage2 = 0;
+  s_vm_params_t params;
+  params.ncpus        = 0;
+  params.ramsize      = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
+  params.overcommit   = 0;
+  params.devsize      = 0;
+  params.skip_stage1  = 0;
+  params.skip_stage2  = 0;
   params.max_downtime = 0.03;
-  params.mig_speed = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
+  params.mig_speed    = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
   params.dp_intensity = static_cast<double>(dp_intensity) / 100;
   params.dp_cap       = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
 

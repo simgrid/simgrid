@@ -117,7 +117,7 @@ simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name)
 void SIMIX_process_set_function(const char* process_host, const char* process_function, xbt_dynar_t arguments,
                                 double process_start_time, double process_kill_time)
 {
-  s_sg_platf_process_cbarg_t process{};
+  s_sg_platf_process_cbarg_t process;
 
   sg_host_t host = sg_host_by_name(process_host);
   if (not host)
