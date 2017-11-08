@@ -194,8 +194,7 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
 
     XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id.c_str(), cluster->speeds.front());
 
-    s_sg_platf_host_cbarg_t host;
-    memset(&host, 0, sizeof(host));
+    s_sg_platf_host_cbarg_t host{};
     host.id = host_id.c_str();
     if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
       host.properties = new std::map<std::string, std::string>;
@@ -315,8 +314,7 @@ void sg_platf_new_cabinet(CabinetCreationArgs* cabinet)
 {
   for (int const& radical : *cabinet->radicals) {
     std::string hostname = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
-    s_sg_platf_host_cbarg_t host;
-    memset(&host, 0, sizeof(host));
+    s_sg_platf_host_cbarg_t host{};
     host.pstate           = 0;
     host.core_amount      = 1;
     host.id               = hostname.c_str();

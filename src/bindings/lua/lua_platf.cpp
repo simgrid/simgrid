@@ -140,8 +140,7 @@ int console_add_host___link(lua_State *L) {
 }
 
 int console_add_host(lua_State *L) {
-  s_sg_platf_host_cbarg_t host;
-  memset(&host,0,sizeof(host));
+  s_sg_platf_host_cbarg_t host{};
   int type;
 
   // we get values from the table passed as argument
@@ -303,8 +302,7 @@ int console_add_router(lua_State* L) {
 
 int console_add_route(lua_State *L) {
   XBT_DEBUG("Adding route");
-  s_sg_platf_route_cbarg_t route;
-  memset(&route,0,sizeof(route));
+  s_sg_platf_route_cbarg_t route{};
   int type;
 
   lua_ensure(lua_istable(L, -1), "Bad Arguments to add a route. Should be a table with named arguments");
@@ -377,8 +375,7 @@ int console_add_route(lua_State *L) {
 }
 
 int console_add_ASroute(lua_State *L) {
-  s_sg_platf_route_cbarg_t ASroute;
-  memset(&ASroute,0,sizeof(ASroute));
+  s_sg_platf_route_cbarg_t ASroute{};
 
   lua_pushstring(L, "src");
   lua_gettable(L, -2);

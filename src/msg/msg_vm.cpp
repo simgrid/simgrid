@@ -113,8 +113,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
-  s_vm_params_t params;
-  memset(&params, 0, sizeof(params));
+  s_vm_params_t params{};
   params.ramsize = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
   params.devsize = 0;
   params.skip_stage2 = 0;
