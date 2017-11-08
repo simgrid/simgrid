@@ -698,15 +698,11 @@ void ETag_surfxml_route(){
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
-  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
-  for (auto const& link : parsed_link_list)
-    route.link_list->push_back(link);
-  parsed_link_list.clear();
+  route.link_list.swap(parsed_link_list);
 
   sg_platf_new_route(&route);
-  delete route.link_list;
 }
 
 void ETag_surfxml_ASroute()
@@ -728,11 +724,7 @@ void ETag_surfxml_zoneRoute()
   ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_gw___src); // tested to not be nullptr in start tag
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_gw___dst); // tested to not be nullptr in start tag
 
-  ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
-
-  for (auto const& link : parsed_link_list)
-    ASroute.link_list->push_back(link);
-  parsed_link_list.clear();
+  ASroute.link_list.swap(parsed_link_list);
 
   switch (A_surfxml_zoneRoute_symmetrical) {
   case AU_surfxml_zoneRoute_symmetrical:
@@ -747,7 +739,6 @@ void ETag_surfxml_zoneRoute()
   }
 
   sg_platf_new_route(&ASroute);
-  delete ASroute.link_list;
 }
 
 void ETag_surfxml_bypassRoute(){
@@ -758,14 +749,10 @@ void ETag_surfxml_bypassRoute(){
   route.gw_src = nullptr;
   route.gw_dst = nullptr;
   route.symmetrical = false;
-  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
 
-  for (auto const& link : parsed_link_list)
-    route.link_list->push_back(link);
-  parsed_link_list.clear();
+  route.link_list.swap(parsed_link_list);
 
   sg_platf_new_bypassRoute(&route);
-  delete route.link_list;
 }
 
 void ETag_surfxml_bypassASroute()
@@ -782,10 +769,7 @@ void ETag_surfxml_bypassZoneRoute()
 
   ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_src);
   ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_dst);
-  ASroute.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
-  for (auto const& link : parsed_link_list)
-    ASroute.link_list->push_back(link);
-  parsed_link_list.clear();
+  ASroute.link_list.swap(parsed_link_list);
 
   ASroute.symmetrical = false;
 
@@ -793,7 +777,6 @@ void ETag_surfxml_bypassZoneRoute()
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
-  delete ASroute.link_list;
 }
 
 void ETag_surfxml_trace(){

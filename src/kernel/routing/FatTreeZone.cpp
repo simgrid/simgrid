@@ -78,7 +78,7 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
   if (source->id == destination->id && this->hasLoopback_) {
-    into->link_list->push_back(source->loopback);
+    into->link_list.push_back(source->loopback);
     if (latency)
       *latency += source->loopback->latency();
     return;
@@ -95,13 +95,13 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
     int k = this->upperLevelNodesNumber_[currentNode->level];
     d     = d % k;
-    into->link_list->push_back(currentNode->parents[d]->upLink);
+    into->link_list.push_back(currentNode->parents[d]->upLink);
 
     if (latency)
       *latency += currentNode->parents[d]->upLink->latency();
 
     if (this->hasLimiter_)
-      into->link_list->push_back(currentNode->limiterLink);
+      into->link_list.push_back(currentNode->limiterLink);
     currentNode = currentNode->parents[d]->upNode;
   }
 
@@ -112,12 +112,12 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->lowerLevelNodesNumber_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-        into->link_list->push_back(currentNode->children[i]->downLink);
+        into->link_list.push_back(currentNode->children[i]->downLink);
         if (latency)
           *latency += currentNode->children[i]->downLink->latency();
         currentNode = currentNode->children[i]->downNode;
         if (this->hasLimiter_)
-          into->link_list->push_back(currentNode->limiterLink);
+          into->link_list.push_back(currentNode->limiterLink);
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
       }

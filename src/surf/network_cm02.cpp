@@ -266,24 +266,23 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 {
   int failed = 0;
   double latency = 0.0;
-  std::vector<LinkImpl*>* back_route = nullptr;
-  std::vector<LinkImpl*>* route = new std::vector<LinkImpl*>();
+  std::vector<LinkImpl*> back_route;
+  std::vector<LinkImpl*> route;
 
   XBT_IN("(%s,%s,%g,%g)", src->getCname(), dst->getCname(), size, rate);
 
   src->routeTo(dst, route, &latency);
-  xbt_assert(not route->empty() || latency,
+  xbt_assert(not route.empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->getCname(), dst->getCname());
 
-  for (auto const& link : *route)
+  for (auto const& link : route)
     if (link->isOff())
       failed = 1;
 
   if (sg_network_crosstraffic == 1) {
-    back_route = new std::vector<LinkImpl*>();
     dst->routeTo(src, back_route, nullptr);
-    for (auto const& link : *back_route)
+    for (auto const& link : back_route)
       if (link->isOff())
         failed = 1;
   }
@@ -299,10 +298,10 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   double bandwidth_bound = -1.0;
   if (sg_weight_S_parameter > 0)
-    for (auto const& link : *route)
+    for (auto const& link : route)
       action->weight_ += sg_weight_S_parameter / link->bandwidth();
 
-  for (auto const& link : *route) {
+  for (auto const& link : route) {
     double bb       = bandwidthFactor(size) * link->bandwidth();
     bandwidth_bound = (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
   }
@@ -311,16 +310,15 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ *= latencyFactor(size);
   action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
 
-  int constraints_per_variable = route->size();
-  if (back_route != nullptr)
-    constraints_per_variable += back_route->size();
+  int constraints_per_variable = route.size();
+  constraints_per_variable += back_route.size();
 
   if (action->latency_ > 0) {
     action->setVariable(lmm_variable_new(maxminSystem_, action, 0.0, -1.0, constraints_per_variable));
     if (getUpdateMechanism() == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->getLastUpdate());
-      action->heapInsert(actionHeap_, action->latency_ + action->getLastUpdate(), route->empty() ? NORMAL : LATENCY);
+      action->heapInsert(actionHeap_, action->latency_ + action->getLastUpdate(), route.empty() ? NORMAL : LATENCY);
     }
   } else
     action->setVariable(lmm_variable_new(maxminSystem_, action, 1.0, -1.0, constraints_per_variable));
@@ -331,21 +329,18 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     lmm_update_variable_bound(maxminSystem_, action->getVariable(), (action->latCurrent_ > 0) ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)) : action->rate_);
   }
 
-  for (auto const& link : *route)
+  for (auto const& link : route)
     lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), 1.0);
 
-  if (back_route != nullptr) { //  sg_network_crosstraffic was activated
+  if (not back_route.empty()) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
-    for (auto const& link : *back_route)
+    for (auto const& link : back_route)
       lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), .05);
 
     //Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     //(You would also have to change lmm_element_concurrency())
     //lmm_variable_concurrency_share_set(action->getVariable(),2);
   }
-
-  delete route;
-  delete back_route;
   XBT_OUT();
 
   simgrid::s4u::Link::onCommunicate(action, src, dst);

@@ -327,19 +327,18 @@ int console_add_route(lua_State *L) {
   type = lua_gettable(L,-2);
   lua_ensure(type == LUA_TSTRING,
       "Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
-  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   std::vector<std::string> names;
   const char* str = lua_tostring(L, -1);
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name */
-    route.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
+    route.link_list.push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     for (auto const& name : names) {
       if (name.length() > 0) {
         simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
-        route.link_list->push_back(link);
+        route.link_list.push_back(link);
       }
     }
   }
@@ -369,7 +368,6 @@ int console_add_route(lua_State *L) {
   route.gw_dst = nullptr;
 
   sg_platf_new_route(&route);
-  delete route.link_list;
 
   return 0;
 }
@@ -407,19 +405,18 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
-  ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
   std::vector<std::string> names;
   const char* str = lua_tostring(L, -1);
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name with no comma */
-    ASroute.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
+    ASroute.link_list.push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     for (auto const& name : names) {
       if (name.length() > 0) {
         simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
-        ASroute.link_list->push_back(link);
+        ASroute.link_list.push_back(link);
       }
     }
   }
@@ -440,7 +437,6 @@ int console_add_ASroute(lua_State *L) {
   lua_pop(L,1);
 
   sg_platf_new_route(&ASroute);
-  delete ASroute.link_list;
 
   return 0;
 }

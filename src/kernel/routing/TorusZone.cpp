@@ -102,7 +102,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   if (src->id() == dst->id() && hasLoopback_) {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
 
-    route->link_list->push_back(info.first);
+    route->link_list.push_back(info.first);
     if (lat)
       *lat += info.first->latency();
     return;
@@ -179,17 +179,17 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
 
     if (hasLimiter_) { // limiter for sender
       info = privateLinks_.at(nodeOffset + (hasLoopback_ ? 1 : 0));
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
     }
 
     info = privateLinks_.at(linkOffset);
 
     if (use_lnk_up == false) {
-      route->link_list->push_back(info.second);
+      route->link_list.push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     } else {
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
       if (lat)
         *lat += info.first->latency();
     }

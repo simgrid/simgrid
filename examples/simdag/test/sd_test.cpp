@@ -40,7 +40,7 @@ int main(int argc, char **argv)
   XBT_INFO("Route between %s and %s:", h1->getCname(), h2->getCname());
   std::vector<sg_link_t> route;
   double latency = 0;
-  h1->routeTo(h2, &route, &latency);
+  h1->routeTo(h2, route, &latency);
 
   for (auto const& link : route)
     XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(link), sg_link_latency(link),

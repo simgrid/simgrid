@@ -14,14 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
-void routing_route_free(sg_platf_route_cbarg_t route)
-{
-  if (route) {
-    delete route->link_list;
-    delete route;
-  }
-}
-
 /* ***************************************************************** */
 /* *********************** GENERIC METHODS ************************* */
 
@@ -82,7 +74,6 @@ void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* 
         continue;
 
       sg_platf_route_cbarg_t route = new s_sg_platf_route_cbarg_t;
-      route->link_list             = new std::vector<surf::LinkImpl*>();
 
       getLocalRoute(my_src, my_dst, route, nullptr);
 
@@ -101,7 +92,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* 
         previous_name = my_src->getCname();
       }
 
-      for (auto const& link : *route->link_list) {
+      for (auto const& link : route->link_list) {
         const char* link_name = link->getCname();
         current               = new_xbt_graph_node(graph, link_name, nodes);
         current_name          = link_name;
@@ -121,7 +112,6 @@ void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* 
       new_xbt_graph_edge(graph, previous, current, edges);
       XBT_DEBUG("  %s -> %s", previous_name, current_name);
 
-      delete route->link_list;
       delete route;
     }
   }
@@ -136,7 +126,6 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
   sg_platf_route_cbarg_t result;
 
   result            = new s_sg_platf_route_cbarg_t;
-  result->link_list = new std::vector<surf::LinkImpl*>();
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
              "The hierarchy of this netzone is neither BASIC nor RECURSIVE, I'm lost here.");
@@ -148,13 +137,13 @@ sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_pl
     result->gw_dst = routearg->gw_dst;
   }
 
-  for (auto const& link : *routearg->link_list) {
+  for (auto const& link : routearg->link_list) {
     if (change_order)
-      result->link_list->push_back(link);
+      result->link_list.push_back(link);
     else
-      result->link_list->insert(result->link_list->begin(), link);
+      result->link_list.insert(result->link_list.begin(), link);
   }
-  result->link_list->shrink_to_fit();
+  result->link_list.shrink_to_fit();
 
   return result;
 }
@@ -186,7 +175,7 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
-    xbt_assert(not route->link_list->empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
+    xbt_assert(not route->link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
     xbt_assert(not src->isNetZone(),
                "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
                srcName);
@@ -211,7 +200,7 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
                dstName, route->gw_dst->getCname(), srcName);
     xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->getCname(),
                dstName, route->gw_dst->getCname(), dstName);
-    xbt_assert(not route->link_list->empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName,
+    xbt_assert(not route->link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName,
                route->gw_src->getCname(), dstName, route->gw_dst->getCname());
   }
 

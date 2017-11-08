@@ -217,7 +217,7 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
 void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, &vlinks, nullptr);
+  from->routeTo(to, vlinks, nullptr);
   for (auto const& link : vlinks)
     xbt_dynar_push(links, &link);
 }
@@ -231,7 +231,7 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   double res = 0;
-  from->routeTo(to, &vlinks, &res);
+  from->routeTo(to, vlinks, &res);
   return res;
 }
 /**
@@ -245,7 +245,7 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
   double min_bandwidth = -1.0;
 
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, &vlinks, nullptr);
+  from->routeTo(to, vlinks, nullptr);
   for (auto const& link : vlinks) {
     double bandwidth = link->bandwidth();
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
