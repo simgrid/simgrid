@@ -137,7 +137,7 @@ void StateEvent::print()
       stream << " " << value->getId();
 
     if (TRACE_display_sizes())
-      stream << " " << (extra_ != nullptr) ? extra_->display_size() : 0;
+      stream << " " << ((extra_ != nullptr) ? extra_->display_size() : 0);
 
 #if HAVE_SMPI
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
