@@ -52,7 +52,7 @@ StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type
 {
 }
 
-StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, void* extra)
+StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra)
     : PajeEvent::PajeEvent(container, type, SIMIX_get_clock(), event_type), value(value), extra_(extra)
 {
 #if HAVE_SMPI
@@ -136,14 +136,9 @@ void StateEvent::print()
     if (value != nullptr) // PAJE_PopState Event does not need to have a value
       stream << " " << value->getId();
 
-    if (TRACE_display_sizes()) {
-      stream << " ";
-      if (extra_ != nullptr) {
-        stream << static_cast<instr_extra_data>(extra_)->send_size;
-      } else {
-        stream << 0;
-      }
-    }
+    if (TRACE_display_sizes())
+      stream << " " << (extra_ != nullptr) ? extra_->display_size() : 0;
+
 #if HAVE_SMPI
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
       stream << " \"" << filename << "\" " << linenumber;
@@ -151,134 +146,24 @@ void StateEvent::print()
 #endif
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
-
-    if (extra_ != nullptr) {
-      if (static_cast<instr_extra_data>(extra_)->sendcounts != nullptr)
-        delete[](static_cast<instr_extra_data>(extra_)->sendcounts);
-      if (static_cast<instr_extra_data>(extra_)->recvcounts != nullptr)
-        delete[](static_cast<instr_extra_data>(extra_)->recvcounts);
-      xbt_free(extra_);
-    }
   } else if (instr_fmt_type == instr_fmt_TI) {
     if (extra_ == nullptr)
       return;
-    instr_extra_data extra = (instr_extra_data)extra_;
+
+    /* Unimplemented calls are: WAITANY, SENDRECV, SCAN, EXSCAN, SSEND, and ISSEND. */
 
     // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
     if (getContainer()->getName().find("rank-") != 0)
-      stream << getContainer()->getName() << " ";
+      stream << getContainer()->getName() << " " << extra_->print();
     else
-      stream << getContainer()->getName().erase(0, 5) << " ";
+      stream << getContainer()->getName().erase(0, 5) << " " << extra_->print();
 
-    FILE* trace_file = tracing_files.at(getContainer());
-
-    switch (extra->type) {
-      case TRACING_INIT:
-        stream << "init";
-        break;
-      case TRACING_FINALIZE:
-        stream << "finalize";
-        break;
-      case TRACING_SEND:
-        stream << "send " << extra->dst << " " << extra->send_size << " " << extra->datatype1;
-        break;
-      case TRACING_ISEND:
-        stream << "Isend " << extra->dst << " " << extra->send_size << " " << extra->datatype1;
-        break;
-      case TRACING_RECV:
-        stream << "recv " << extra->src << " " << extra->send_size << " " << extra->datatype1;
-        break;
-      case TRACING_IRECV:
-        stream << "Irecv " << extra->src << " " << extra->send_size << " " << extra->datatype1;
-        break;
-      case TRACING_TEST:
-        stream << "test";
-        break;
-      case TRACING_WAIT:
-        stream << "wait";
-        break;
-      case TRACING_WAITALL:
-        stream << "waitAll";
-        break;
-      case TRACING_BARRIER:
-        stream << "barrier";
-        break;
-      case TRACING_BCAST: // rank bcast size (root) (datatype)
-        stream << "bcast " << extra->send_size;
-        if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
-          stream << " " << extra->root << " " << extra->datatype1;
-        break;
-      case TRACING_REDUCE: // rank reduce comm_size comp_size (root) (datatype)
-        stream << "reduce " << extra->send_size << " " << extra->comp_size;
-        if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
-          stream << " " << extra->root << " " << extra->datatype1;
-        break;
-      case TRACING_ALLREDUCE: // rank allreduce comm_size comp_size (datatype)
-        stream << "allReduce " << extra->send_size << " " << extra->comp_size << " " << extra->datatype1;
-        break;
-      case TRACING_ALLTOALL: // rank alltoall send_size recv_size (sendtype) (recvtype)
-        stream << "allToAll " << extra->send_size << " " << extra->recv_size << " " << extra->datatype1 << " ";
-        stream << extra->datatype2;
-        break;
-      case TRACING_ALLTOALLV: // rank alltoallv send_size [sendcounts] recv_size [recvcounts] (sendtype) (recvtype)
-        stream << "allToAllV " << extra->send_size << " ";
-        for (int i = 0; i < extra->num_processes; i++)
-          stream << extra->sendcounts[i] << " ";
-        stream << extra->recv_size << " ";
-        for (int i = 0; i < extra->num_processes; i++)
-          stream << extra->recvcounts[i] << " ";
-        stream << extra->datatype1 << " " << extra->datatype2;
-        break;
-      case TRACING_GATHER: // rank gather send_size recv_size root (sendtype) (recvtype)
-        stream << "gather " << extra->send_size << " " << extra->recv_size << " " << extra->datatype1 << " ";
-        stream << extra->datatype2;
-        break;
-      case TRACING_ALLGATHERV: // rank allgatherv send_size [recvcounts] (sendtype) (recvtype)
-        stream << "allGatherV " << extra->send_size;
-        for (int i = 0; i < extra->num_processes; i++)
-          stream << extra->recvcounts[i] << " ";
-        stream << extra->datatype1 << " " << extra->datatype2;
-        break;
-      case TRACING_REDUCE_SCATTER: // rank reducescatter [recvcounts] comp_size (sendtype)
-        stream << "reduceScatter ";
-        for (int i = 0; i < extra->num_processes; i++)
-          stream << extra->recvcounts[i] << " ";
-        stream << extra->comp_size << " " << extra->datatype1;
-        break;
-      case TRACING_COMPUTING:
-        stream << "compute " << extra->comp_size;
-        break;
-      case TRACING_SLEEPING:
-        stream << "sleep " << extra->sleep_duration;
-        break;
-      case TRACING_GATHERV: // rank gatherv send_size [recvcounts] root (sendtype) (recvtype)
-        stream << "gatherV " << extra->send_size;
-        for (int i = 0; i < extra->num_processes; i++)
-          stream << extra->recvcounts[i] << " ";
-        stream << extra->root << " " << extra->datatype1 << " " << extra->datatype2;
-        break;
-      case TRACING_ALLGATHER: // rank allgather sendcount recvcounts (sendtype) (recvtype)
-        stream << "allGather " << extra->send_size << " " << extra->recv_size << " " << extra->datatype1 << " ";
-        stream << extra->datatype2;
-        break;
-      default:
-        /* Unimplemented calls are: WAITANY, SENDRECV, SCATTER, SCATTERV, SCAN, EXSCAN, COMM_SIZE, COMM_SPLIT, COMM_DUP,
-         * SSEND, and ISSEND.
-         */
-        XBT_WARN("Call from %s impossible to translate into replay command : Not implemented (yet)", value->getCname());
-        break;
-    }
-    fprintf(trace_file, "%s\n", stream.str().c_str());
-
-    if (extra->recvcounts != nullptr)
-      delete[] extra->recvcounts;
-    if (extra->sendcounts != nullptr)
-      delete[] extra->sendcounts;
-    xbt_free(extra);
-
+    fprintf(tracing_files.at(getContainer()), "%s\n", stream.str().c_str());
   } else {
     THROW_IMPOSSIBLE;
   }
+
+  delete extra_;
 }
 }
 }

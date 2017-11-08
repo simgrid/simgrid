@@ -105,16 +105,6 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
 
 static std::unordered_map<smx_actor_t, std::string> process_category;
 
-static void cleanup_extra_data (instr_extra_data extra){
-  if(extra!=nullptr){
-    if(extra->sendcounts!=nullptr)
-      delete[] extra->sendcounts;
-    if(extra->recvcounts!=nullptr)
-      delete[] extra->recvcounts;
-    xbt_free(extra);
-  }
-}
-
 void TRACE_internal_smpi_set_category (const char *category)
 {
   if (not TRACE_smpi_is_enabled())
@@ -193,70 +183,54 @@ void TRACE_smpi_finalize(int rank)
 void TRACE_smpi_computing_init(int rank)
 {
  //first use, initialize the color in the trace
- if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing())
-   return;
-
- smpi_container(rank)->getState("MPI_STATE")->addEntityValue("computing", instr_find_color("computing"));
+ if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing())
+   smpi_container(rank)->getState("MPI_STATE")->addEntityValue("computing", instr_find_color("computing"));
 }
 
-void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
+void TRACE_smpi_computing_in(int rank, double amount)
 {
-  //do not forget to set the color first, otherwise this will explode
-  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing()) {
-    cleanup_extra_data(extra);
-    return;
-  }
-
-  smpi_container(rank)->getState("MPI_STATE")->pushEvent("computing", static_cast<void*>(extra));
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing())
+    smpi_container(rank)
+        ->getState("MPI_STATE")
+        ->pushEvent("computing", new simgrid::instr::CpuTIData("compute", amount));
 }
 
 void TRACE_smpi_computing_out(int rank)
 {
-  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_computing())
-    return;
-
-  smpi_container(rank)->getState("MPI_STATE")->popEvent();
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing())
+    smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
 void TRACE_smpi_sleeping_init(int rank)
 {
   //first use, initialize the color in the trace
-  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping())
-    return;
-
-  smpi_container(rank)->getState("MPI_STATE")->addEntityValue("sleeping", instr_find_color("sleeping"));
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
+    smpi_container(rank)->getState("MPI_STATE")->addEntityValue("sleeping", instr_find_color("sleeping"));
 }
 
-void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
+void TRACE_smpi_sleeping_in(int rank, double duration)
 {
-  //do not forget to set the color first, otherwise this will explode
-  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping()) {
-    cleanup_extra_data(extra);
-    return;
-  }
-
-  smpi_container(rank)->getState("MPI_STATE")->pushEvent("sleeping", static_cast<void*>(extra));
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
+    smpi_container(rank)
+        ->getState("MPI_STATE")
+        ->pushEvent("sleeping", new simgrid::instr::CpuTIData("sleep", duration));
 }
 
 void TRACE_smpi_sleeping_out(int rank)
 {
-  if (not TRACE_smpi_is_enabled() || not TRACE_smpi_is_sleeping())
-    return;
-
-  smpi_container(rank)->getState("MPI_STATE")->popEvent();
+  if (TRACE_smpi_is_enabled() && not TRACE_smpi_is_sleeping())
+    smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
-void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
+void TRACE_smpi_testing_in(int rank)
 {
   //do not forget to set the color first, otherwise this will explode
-  if (not TRACE_smpi_is_enabled()) {
-    cleanup_extra_data(extra);
+  if (not TRACE_smpi_is_enabled())
     return;
-  }
 
   simgrid::instr::StateType* state = smpi_container(rank)->getState("MPI_STATE");
   state->addEntityValue("test");
-  state->pushEvent("test", static_cast<void*>(extra));
+  state->pushEvent("test", new simgrid::instr::NoOpTIData("test"));
 }
 
 void TRACE_smpi_testing_out(int rank)
@@ -265,16 +239,16 @@ void TRACE_smpi_testing_out(int rank)
     smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
-void TRACE_smpi_comm_in(int rank, const char* operation, instr_extra_data extra)
+void TRACE_smpi_comm_in(int rank, const char* operation, simgrid::instr::TIData* extra)
 {
   if (not TRACE_smpi_is_enabled()) {
-    cleanup_extra_data(extra);
+    delete extra;
     return;
   }
 
   simgrid::instr::StateType* state = smpi_container(rank)->getState("MPI_STATE");
   state->addEntityValue(operation, instr_find_color(operation));
-  state->pushEvent(operation, static_cast<void*>(extra));
+  state->pushEvent(operation, extra);
 }
 
 void TRACE_smpi_comm_out(int rank)

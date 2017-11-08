@@ -65,7 +65,7 @@ void StateType::setEvent(std::string value_name)
   events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, getEntityValue(value_name)));
 }
 
-void StateType::pushEvent(std::string value_name, void* extra)
+void StateType::pushEvent(std::string value_name, TIData* extra)
 {
   events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, getEntityValue(value_name), extra));
 }

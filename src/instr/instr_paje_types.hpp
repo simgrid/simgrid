@@ -14,6 +14,7 @@ namespace simgrid {
 namespace instr {
 class ContainerType;
 class EventType;
+class TIData;
 
 class Type {
   long long int id_;
@@ -93,7 +94,7 @@ public:
   ~StateType();
   void setEvent(std::string value_name);
   void pushEvent(std::string value_name);
-  void pushEvent(std::string value_name, void* extra);
+  void pushEvent(std::string value_name, TIData* extra);
   void popEvent();
 };
 }

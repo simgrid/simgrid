@@ -39,11 +39,9 @@ int PMPI_Init(int *argc, char ***argv)
     smpi_process()->mark_as_initialized();
     int rank = smpi_process()->index();
     TRACE_smpi_init(rank);
-    TRACE_smpi_computing_init(rank);
-    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-    extra->type = TRACING_INIT;
-    TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
+    TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("init"));
     TRACE_smpi_comm_out(rank);
+    TRACE_smpi_computing_init(rank);
     smpi_bench_begin();
   }
 
@@ -56,14 +54,12 @@ int PMPI_Finalize()
 {
   smpi_bench_end();
   int rank = smpi_process()->index();
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_FINALIZE;
-  TRACE_smpi_comm_in(rank, __FUNCTION__, extra);
+  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("finalize"));
 
   smpi_process()->finalize();
 
   TRACE_smpi_comm_out(rank);
-  TRACE_smpi_finalize(smpi_process()->index());
+  TRACE_smpi_finalize(rank);
   return MPI_SUCCESS;
 }
 
