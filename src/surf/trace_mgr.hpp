@@ -7,8 +7,8 @@
 #define SURF_TMGR_H
 
 #include "simgrid/forward.h"
-#include "xbt/heap.h"
 #include "xbt/sysdep.h"
+#include <queue>
 #include <vector>
 
 extern "C" {
@@ -18,7 +18,7 @@ struct s_tmgr_trace_event_t {
   tmgr_trace_t trace;
   unsigned int idx;
   sg_resource_t resource;
-  int free_me;
+  bool free_me;
 };
 typedef s_tmgr_trace_event_t* tmgr_trace_event_t;
 
@@ -91,8 +91,8 @@ public:
   tmgr_trace_event_t add_trace(tmgr_trace_t trace, simgrid::surf::Resource * resource);
 
 private:
-  // TODO: use a boost type for the heap (or a ladder queue)
-  xbt_heap_t heap_ = xbt_heap_new(8, xbt_free_f); /* Content: only trace_events (yep, 8 is an arbitrary value) */
+  typedef std::pair<double, tmgr_trace_event_t> Qelt;
+  std::priority_queue<Qelt, std::vector<Qelt>, std::greater<Qelt>> heap_;
 };
 
 }} // namespace simgrid::trace_mgr

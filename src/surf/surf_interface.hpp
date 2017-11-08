@@ -10,6 +10,7 @@
 
 #include "src/surf/surf_private.hpp"
 #include "surf/surf.hpp"
+#include "xbt/heap.h"
 #include "xbt/str.h"
 
 #include <boost/intrusive/list.hpp>
