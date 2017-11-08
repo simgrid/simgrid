@@ -26,7 +26,6 @@ main (int argc, char **argv)
   MPI_Get_processor_name (processor_name, &namelen);
   printf ("(%d) is alive on %s\n", rank, processor_name);
   fflush (stdout);
-	int i;
   MPI_Barrier (MPI_COMM_WORLD);
 
   if (nprocs < 2)
