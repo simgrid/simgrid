@@ -73,7 +73,7 @@ public:
   void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                 std::map<std::string, xbt_edge_t>* edges) override;
 
-  virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, int position);
+  virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position);
   virtual void parse_specific_arguments(ClusterCreationArgs* cluster)
   {
     /* this routing method does not require any specific argument */
@@ -83,9 +83,9 @@ public:
   /* The pair is {linkUp, linkDown} */
   std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> privateLinks_;
 
-  int nodePosition(int id) { return id * linkCountPerNode_; }
-  int nodePositionWithLoopback(int id) { return nodePosition(id) + (hasLoopback_ ? 1 : 0); }
-  int nodePositionWithLimiter(int id) { return nodePositionWithLoopback(id) + (hasLimiter_ ? 1 : 0); }
+  unsigned int nodePosition(int id) { return id * linkCountPerNode_; }
+  unsigned int nodePositionWithLoopback(int id) { return nodePosition(id) + (hasLoopback_ ? 1 : 0); }
+  unsigned int nodePositionWithLimiter(int id) { return nodePositionWithLoopback(id) + (hasLimiter_ ? 1 : 0); }
 
   surf::LinkImpl* backbone_      = nullptr;
   void* loopback_                = nullptr;

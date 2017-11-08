@@ -117,7 +117,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
   }
 }
 
-void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int /*rank*/, int position)
+void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int /*rank*/, unsigned int position)
 {
   std::string link_id = cluster->id + "_link_" + std::to_string(id);
 
