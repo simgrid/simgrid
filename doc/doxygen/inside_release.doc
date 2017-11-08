@@ -94,6 +94,7 @@ the settings icon of the release you want to change.
   - make -C org all sync
   - git commit -a && git push
 - Announce the release
+ - Document the tag on https://github.com/simgrid/simgrid/releases
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - the ChangeLog chunk as attachment
