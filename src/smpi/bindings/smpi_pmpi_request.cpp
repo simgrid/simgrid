@@ -408,12 +408,15 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     int src_traced         = comm->group()->index(src);
 
     // FIXME: Hack the way to trace this one
+    std::vector<int>* dst_hack = new std::vector<int>;
+    std::vector<int>* src_hack = new std::vector<int>;
+    dst_hack->push_back(dst_traced);
+    src_hack->push_back(src_traced);
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::VarCollTIData(
-                           "sendRecv", -1, sendtype->is_basic() ? sendcount : sendcount * sendtype->size(),
-                           new std::vector<int>(src_traced),
-                           recvtype->is_basic() ? recvcount : recvcount * recvtype->size(),
-                           new std::vector<int>(src_traced), encode_datatype(sendtype), encode_datatype(recvtype)));
+                           "sendRecv", -1, sendtype->is_basic() ? sendcount : sendcount * sendtype->size(), dst_hack,
+                           recvtype->is_basic() ? recvcount : recvcount * recvtype->size(), src_hack,
+                           encode_datatype(sendtype), encode_datatype(recvtype)));
 
     TRACE_smpi_send(rank, rank, dst_traced, sendtag, sendcount * sendtype->size());
 
