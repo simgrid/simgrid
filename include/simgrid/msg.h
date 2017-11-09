@@ -380,7 +380,9 @@ XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC(void) MSG_task_set_flops_amount(msg_task_t task, double flops_amount);
 XBT_PUBLIC(double) MSG_task_get_flops_amount(msg_task_t task);
+XBT_PUBLIC(double) MSG_task_get_remaining_work_ratio(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task, double bytes_amount);
+
 
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(msg_task_t task);
 XBT_PUBLIC(int) MSG_task_is_latency_bounded(msg_task_t task);
