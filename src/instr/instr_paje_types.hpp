@@ -14,7 +14,6 @@ namespace simgrid {
 namespace instr {
 class ContainerType;
 class EventType;
-class TIData;
 
 class Type {
   long long int id_;

@@ -50,15 +50,15 @@ public:
   ;
 
   // NoOpTI: init, finalize, test, wait, barrier
-  TIData(std::string name) : name_(name){};
+  explicit TIData(std::string name) : name_(name){};
   // CPuTI: compute, sleep (+ waitAny and waitAll out of laziness)
-  TIData(std::string name, double amount) : name_(name), amount_(amount){};
+  explicit TIData(std::string name, double amount) : name_(name), amount_(amount){};
   // Pt2PtTI: send, isend, sssend, issend, recv, irecv
-  TIData(std::string name, int endpoint, int size, std::string datatype)
+  explicit TIData(std::string name, int endpoint, int size, std::string datatype)
       : name_(name), endpoint(endpoint), send_size(size), send_type(datatype){};
   // CollTI: bcast, reduce, allReduce, gather, scatter, allGather, allToAll
-  TIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
-         std::string recv_type)
+  explicit TIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
+                  std::string recv_type)
       : name_(name)
       , amount_(amount)
       , endpoint(root)
@@ -67,8 +67,8 @@ public:
       , send_type(send_type)
       , recv_type(recv_type){};
   // VarCollTI: gatherV, scatterV, allGatherV, allToAllV (+ reduceScatter out of laziness)
-  TIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
-         std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
+  explicit TIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
+                  std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
       : name_(name)
       , endpoint(root)
       , send_size(send_size)
@@ -92,14 +92,14 @@ public:
 
 class NoOpTIData : public TIData {
 public:
-  NoOpTIData(std::string name) : TIData(name){};
+  explicit NoOpTIData(std::string name) : TIData(name){};
   std::string print() override { return getName(); }
   std::string display_size() override { return ""; }
 };
 
 class CpuTIData : public TIData {
 public:
-  CpuTIData(std::string name, double amount) : TIData(name, amount){};
+  explicit CpuTIData(std::string name, double amount) : TIData(name, amount){};
   std::string print() override
   {
     std::stringstream stream;
@@ -111,7 +111,7 @@ public:
 
 class Pt2PtTIData : public TIData {
 public:
-  Pt2PtTIData(std::string name, int endpoint, int size, std::string datatype)
+  explicit Pt2PtTIData(std::string name, int endpoint, int size, std::string datatype)
       : TIData(name, endpoint, size, datatype){};
   std::string print() override
   {
@@ -127,8 +127,8 @@ public:
 
 class CollTIData : public TIData {
 public:
-  CollTIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
-             std::string recv_type)
+  explicit CollTIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
+                      std::string recv_type)
       : TIData(name, root, amount, send_size, recv_size, send_type, recv_type){};
   std::string print() override
   {
@@ -149,8 +149,8 @@ public:
 
 class VarCollTIData : public TIData {
 public:
-  VarCollTIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
-                std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
+  explicit VarCollTIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
+                         std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
       : TIData(name, root, send_size, sendcounts, recv_size, recvcounts, send_type, recv_type){};
   std::string print() override
   {
