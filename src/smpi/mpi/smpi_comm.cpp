@@ -33,14 +33,14 @@ int Comm::keyval_id_=0;
 
 Comm::Comm(MPI_Group group, MPI_Topology topo) : group_(group), topo_(topo)
 {
-  refcount_=1;
-  topoType_ = MPI_INVALID_TOPO;
-  intra_comm_ = MPI_COMM_NULL;
-  leaders_comm_ = MPI_COMM_NULL;
-  is_uniform_=1;
+  refcount_        = 1;
+  topoType_        = MPI_INVALID_TOPO;
+  intra_comm_      = MPI_COMM_NULL;
+  leaders_comm_    = MPI_COMM_NULL;
+  is_uniform_      = 1;
   non_uniform_map_ = nullptr;
-  leaders_map_ = nullptr;
-  is_blocked_=0;
+  leaders_map_     = nullptr;
+  is_blocked_      = 0;
 }
 
 void Comm::destroy(Comm* comm)
@@ -58,8 +58,8 @@ int Comm::dup(MPI_Comm* newcomm){
     smpi_switch_data_segment(smpi_process()->index());
   }
   MPI_Group cp = new  Group(this->group());
-  (*newcomm) = new  Comm(cp, this->topo());
-  int ret = MPI_SUCCESS;
+  (*newcomm)   = new  Comm(cp, this->topo());
+  int ret      = MPI_SUCCESS;
 
   if (not attributes()->empty()) {
     int flag;
