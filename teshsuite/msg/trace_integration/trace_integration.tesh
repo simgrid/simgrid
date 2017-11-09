@@ -129,10 +129,10 @@ $ ./trace_integration ${srcdir:=.}/../../../examples/platforms/two_hosts_platfor
 > [ 20.000000] (1:test_trace@Cpu B) Test finished
 > [ 30.000000] (2:test_trace@Cpu B) Test finished
 
-p Testing trace integration using trace_B.txt and test-hbp2.5-hbp1.5.xml, two process with different priority
+p Testing trace integration using trace_B.txt and test-hbp2.5-hbp1.5.xml, two process with different priority (included)
 
 ! output sort
-$ ./trace_integration ${srcdir:=.}/../../../examples/platforms/two_hosts_platform_with_availability.xml  ${srcdir:=.}/test-hbp2.5-hbp1.5.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ./trace_integration ${srcdir:=.}/../../../examples/platforms/two_hosts_platform_with_availability_included.xml  ${srcdir:=.}/test-hbp2.5-hbp1.5.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
@@ -164,26 +164,6 @@ $ ./trace_integration ${srcdir:=.}/../../../examples/platforms/two_hosts_platfor
 > [ 50.000000] (1:test_trace@Cpu B) Test finished
 > [ 50.000000] (2:test_trace@Cpu B) Test finished
 > [ 60.000000] (3:test_trace@Cpu B) Test finished
-
-p Testing trace integration using trace_B.txt and test-hbp1.0-hbp3.0-hbp4.0.xml, three process with same priority
-
-! output sort
-$ ./trace_integration ${srcdir:=.}/../../../examples/platforms/two_hosts_platform_with_availability.xml  ${srcdir:=.}/test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI --log=simix.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
-> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
-> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
-> [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (1:test_trace@Cpu B) Task size: 25.000000
-> [ 10.000000] (1:test_trace@Cpu B) Task prio: 1.000000
-> [ 10.000000] (2:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
-> [ 10.000000] (2:test_trace@Cpu B) Task size: 75.000000
-> [ 10.000000] (2:test_trace@Cpu B) Task prio: 3.000000
-> [ 20.000000] (3:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
-> [ 20.000000] (3:test_trace@Cpu B) Task size: 120.000000
-> [ 20.000000] (3:test_trace@Cpu B) Task prio: 4.000000
-> [ 30.000000] (1:test_trace@Cpu B) Test finished
-> [ 30.000000] (2:test_trace@Cpu B) Test finished
-> [ 40.000000] (3:test_trace@Cpu B) Test finished
 
 p Testing trace integration using trace_B.txt and test-hbp1.0-hbp3.0-hbp4.0.xml, three process with different priority
 
