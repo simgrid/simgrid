@@ -47,7 +47,6 @@ public:
   std::vector<int>* recvcounts = nullptr;
   std::string send_type        = "";
   std::string recv_type        = "";
-  ;
 
   // NoOpTI: init, finalize, test, wait, barrier
   explicit TIData(std::string name) : name_(name){};
