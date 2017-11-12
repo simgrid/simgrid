@@ -210,7 +210,6 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
     , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
-    updateIndexHeap(-1);
     refreshLastUpdate();
     setLastValue(0.0);
   }

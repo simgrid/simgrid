@@ -10,10 +10,11 @@
 
 #include "src/surf/surf_private.hpp"
 #include "surf/surf.hpp"
-#include "xbt/heap.h"
 #include "xbt/str.h"
 
+#include <boost/heap/pairing_heap.hpp>
 #include <boost/intrusive/list.hpp>
+#include <boost/optional.hpp>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -66,8 +67,6 @@ enum heap_action_type{
  * Action *
  **********/
 
-XBT_PRIVATE void surf_action_lmm_update_index_heap(void *action, int i);
-
 /** \ingroup SURF_models
  *  \brief List of initialized models
  */
@@ -75,6 +74,14 @@ XBT_PUBLIC_DATA(std::vector<surf_model_t>*) all_existing_models;
 
 namespace simgrid {
 namespace surf {
+
+typedef std::pair<double, simgrid::surf::Action*> heap_element_type;
+struct heap_element_compare {
+  bool operator()(const heap_element_type& a, const heap_element_type& b) const { return a.first > b.first; }
+};
+typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_size<false>, boost::heap::stable<true>,
+                                  boost::heap::compare<heap_element_compare>>
+    heap_type;
 
 /** @ingroup SURF_interface
  * @brief SURF action interface class
@@ -233,14 +240,14 @@ private:
   double lastValue_          = 0;
   lmm_variable_t variable_   = nullptr;
   enum heap_action_type hat_ = NOTSET;
-  int indexHeap_;
+  boost::optional<heap_type::handle_type> heapHandle_ = boost::none;
 
 public:
   virtual void updateRemainingLazy(double now) { THROW_IMPOSSIBLE; };
-  void heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat);
-  void heapRemove(xbt_heap_t heap);
-  void heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat);
-  void updateIndexHeap(int i);
+  void heapInsert(heap_type& heap, double key, enum heap_action_type hat);
+  void heapRemove(heap_type& heap);
+  void heapUpdate(heap_type& heap, double key, enum heap_action_type hat);
+  void clearHeapHandle() { heapHandle_ = boost::none; }
   lmm_variable_t getVariable() {return variable_;}
   void setVariable(lmm_variable_t var) { variable_ = var; }
   double getLastUpdate() {return lastUpdate_;}
@@ -299,11 +306,11 @@ public:
   void setUpdateMechanism(e_UM_t mechanism) { updateMechanism_ = mechanism; }
 
   /** @brief Get Action heap */
-  xbt_heap_t getActionHeap() {return actionHeap_;}
+  heap_type& getActionHeap() { return actionHeap_; }
 
-  double actionHeapTopDate() const { return xbt_heap_maxkey(actionHeap_); }
-  Action* actionHeapPop() { return static_cast<Action*>(xbt_heap_pop(actionHeap_)); }
-  bool actionHeapIsEmpty() const { return xbt_heap_size(actionHeap_) == 0; }
+  double actionHeapTopDate() const { return actionHeap_.top().first; }
+  Action* actionHeapPop();
+  bool actionHeapIsEmpty() const { return actionHeap_.empty(); }
 
   /**
    * @brief Share the resources between the actions
@@ -343,7 +350,7 @@ private:
   ActionList* runningActionSet_; /**< Actions in state SURF_ACTION_RUNNING */
   ActionList* failedActionSet_; /**< Actions in state SURF_ACTION_FAILED */
   ActionList* doneActionSet_; /**< Actions in state SURF_ACTION_DONE */
-  xbt_heap_t actionHeap_;
+  heap_type actionHeap_;
 };
 
 }

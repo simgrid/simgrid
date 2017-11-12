@@ -289,7 +289,6 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ = latency;
   action->rate_ = rate;
   if (getUpdateMechanism() == UM_LAZY) {
-    action->updateIndexHeap(-1);
     action->refreshLastUpdate();
   }
 

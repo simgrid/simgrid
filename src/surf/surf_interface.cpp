@@ -365,18 +365,23 @@ Model::Model()
   doneActionSet_ = new ActionList();
 
   modifiedSet_ = nullptr;
-  actionHeap_      = xbt_heap_new(8, nullptr);
-  xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
   updateMechanism_ = UM_UNDEFINED;
   selectiveUpdate_ = 0;
 }
 
 Model::~Model(){
-  xbt_heap_free(actionHeap_);
   delete readyActionSet_;
   delete runningActionSet_;
   delete failedActionSet_;
   delete doneActionSet_;
+}
+
+Action* Model::actionHeapPop()
+{
+  Action* action = actionHeap_.top().second;
+  actionHeap_.pop();
+  action->clearHeapHandle();
+  return action;
 }
 
 double Model::nextOccuringEvent(double now)
@@ -574,11 +579,6 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-/* added to manage the communication action's heap */
-void surf_action_lmm_update_index_heap(void *action, int i) {
-  static_cast<simgrid::surf::Action*>(action)->updateIndexHeap(i);
-}
-
 namespace simgrid {
 namespace surf {
 
@@ -771,32 +771,29 @@ bool Action::isSuspended()
  * LATENCY = this is a heap entry to warn us when the latency is payed
  * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
  */
-void Action::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapInsert(heap_type& heap, double key, enum heap_action_type hat)
 {
   hat_ = hat;
-  xbt_heap_push(heap, this, key);
+  heapHandle_ = heap.emplace(key, this);
 }
 
-void Action::heapRemove(xbt_heap_t heap)
+void Action::heapRemove(heap_type& heap)
 {
   hat_ = NOTSET;
-  if (indexHeap_ >= 0) {
-    xbt_heap_remove(heap, indexHeap_);
+  if (heapHandle_) {
+    heap.erase(*heapHandle_);
+    clearHeapHandle();
   }
 }
 
-void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapUpdate(heap_type& heap, double key, enum heap_action_type hat)
 {
   hat_ = hat;
-  if (indexHeap_ >= 0) {
-    xbt_heap_update(heap, indexHeap_, key);
-  }else{
-    xbt_heap_push(heap, this, key);
+  if (heapHandle_) {
+    heap.update(*heapHandle_, std::make_pair(key, this));
+  } else {
+    heapHandle_ = heap.emplace(key, this);
   }
-}
-
-void Action::updateIndexHeap(int i) {
-  indexHeap_ = i;
 }
 
 double Action::getRemains()

@@ -646,7 +646,6 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
  : CpuAction(model_, cost, failed)
  , cpu_(cpu)
 {
-  updateIndexHeap(-1);
   cpu_->modified(true);
 }
 
