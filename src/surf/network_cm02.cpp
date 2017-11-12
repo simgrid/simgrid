@@ -171,10 +171,9 @@ LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(getActionHeap()) > 0) &&
-         (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
+  while (not actionHeapIsEmpty() && double_equals(actionHeapTopDate(), now, sg_surf_precision)) {
 
-    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(xbt_heap_pop(getActionHeap()));
+    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(actionHeapPop());
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());

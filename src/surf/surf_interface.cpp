@@ -444,8 +444,8 @@ double Model::nextOccuringEventLazy(double now)
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(actionHeap_) > 0) {
-    double min = xbt_heap_maxkey(actionHeap_) - now;
+  if (not actionHeapIsEmpty()) {
+    double min = actionHeapTopDate() - now;
     XBT_DEBUG("minimum with the HEAP %f", min);
     return min;
   } else {

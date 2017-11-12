@@ -302,6 +302,10 @@ public:
   /** @brief Get Action heap */
   xbt_heap_t getActionHeap() {return actionHeap_;}
 
+  double actionHeapTopDate() const { return xbt_heap_maxkey(actionHeap_); }
+  Action* actionHeapPop() { return static_cast<Action*>(xbt_heap_pop(actionHeap_)); }
+  bool actionHeapIsEmpty() const { return xbt_heap_size(actionHeap_) == 0; }
+
   /**
    * @brief Share the resources between the actions
    *
