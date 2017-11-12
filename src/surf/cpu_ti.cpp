@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
-#include "xbt/heap.h"
 #include "src/surf/trace_mgr.hpp"
 
 #ifndef SURF_MODEL_CPUTI_H_
@@ -460,12 +459,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
          || action->getState() == Action::State::not_in_the_system) {
           action->setFinishTime(date);
           action->setState(Action::State::failed);
-          if (action->getIndexHeap() >= 0) {
-            CpuTiAction* heap_act =
-                static_cast<CpuTiAction*>(xbt_heap_remove(model()->getActionHeap(), action->getIndexHeap()));
-            if (heap_act != action)
-              DIE_IMPOSSIBLE;
-          }
+          action->heapRemove(model()->getActionHeap());
         }
       }
     }
@@ -532,14 +526,10 @@ void CpuTi::updateActionsFinishTime(double now)
     }
     /* add in action heap */
     XBT_DEBUG("action(%p) index %d", action, action->getIndexHeap());
-    if (action->getIndexHeap() >= 0) {
-      CpuTiAction* heap_act =
-          static_cast<CpuTiAction*>(xbt_heap_remove(model()->getActionHeap(), action->getIndexHeap()));
-      if (heap_act != action)
-        DIE_IMPOSSIBLE;
-    }
     if (min_finish > NO_MAX_DURATION)
-      xbt_heap_push(model()->getActionHeap(), action, min_finish);
+      action->heapUpdate(model()->getActionHeap(), min_finish, NOTSET);
+    else
+      action->heapRemove(model()->getActionHeap());
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
               action, action->getStartTime(), action->getFinishTime(), action->getMaxDuration());
@@ -677,7 +667,7 @@ int CpuTiAction::unref()
     if (action_ti_hook.is_linked())
       cpu_->actionSet_->erase(cpu_->actionSet_->iterator_to(*this));
     /* remove from heap */
-    xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
+    heapRemove(getModel()->getActionHeap());
     cpu_->modified(true);
     delete this;
     return 1;
@@ -688,7 +678,7 @@ int CpuTiAction::unref()
 void CpuTiAction::cancel()
 {
   this->setState(Action::State::failed);
-  xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
+  heapRemove(getModel()->getActionHeap());
   cpu_->modified(true);
 }
 
@@ -697,7 +687,7 @@ void CpuTiAction::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
     suspended_ = 1;
-    xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
+    heapRemove(getModel()->getActionHeap());
     cpu_->modified(true);
   }
   XBT_OUT();
@@ -727,13 +717,8 @@ void CpuTiAction::setMaxDuration(double duration)
   else
     min_finish = getFinishTime();
 
-/* add in action heap */
-  if (getIndexHeap() >= 0) {
-    CpuTiAction* heap_act = static_cast<CpuTiAction*>(xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap()));
-    if (heap_act != this)
-      DIE_IMPOSSIBLE;
-  }
-  xbt_heap_push(getModel()->getActionHeap(), this, min_finish);
+  /* add in action heap */
+  heapUpdate(getModel()->getActionHeap(), min_finish, NOTSET);
 
   XBT_OUT();
 }
