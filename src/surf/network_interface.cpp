@@ -63,7 +63,6 @@ namespace simgrid {
     NetworkModel::~NetworkModel()
     {
       lmm_system_free(maxminSystem_);
-      xbt_heap_free(actionHeap_);
       delete modifiedSet_;
     }
 

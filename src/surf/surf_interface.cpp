@@ -365,12 +365,14 @@ Model::Model()
   doneActionSet_ = new ActionList();
 
   modifiedSet_ = nullptr;
-  actionHeap_ = nullptr;
+  actionHeap_      = xbt_heap_new(8, nullptr);
+  xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
   updateMechanism_ = UM_UNDEFINED;
   selectiveUpdate_ = 0;
 }
 
 Model::~Model(){
+  xbt_heap_free(actionHeap_);
   delete readyActionSet_;
   delete runningActionSet_;
   delete failedActionSet_;

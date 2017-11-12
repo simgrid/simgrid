@@ -333,7 +333,6 @@ protected:
   ActionLmmListPtr modifiedSet_;
   lmm_system_t maxminSystem_ = nullptr;
   bool selectiveUpdate_;
-  xbt_heap_t actionHeap_;
 
 private:
   e_UM_t updateMechanism_ = UM_UNDEFINED;
@@ -341,6 +340,7 @@ private:
   ActionList* runningActionSet_; /**< Actions in state SURF_ACTION_RUNNING */
   ActionList* failedActionSet_; /**< Actions in state SURF_ACTION_FAILED */
   ActionList* doneActionSet_; /**< Actions in state SURF_ACTION_DONE */
+  xbt_heap_t actionHeap_;
 };
 
 }

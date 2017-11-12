@@ -55,8 +55,6 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    actionHeap_ = xbt_heap_new(8, nullptr);
-    xbt_heap_set_update_callback(actionHeap_,  surf_action_lmm_update_index_heap);
     modifiedSet_ = new ActionLmmList();
     maxminSystem_->keep_track = modifiedSet_;
   }
@@ -66,7 +64,6 @@ CpuCas01Model::~CpuCas01Model()
 {
   lmm_system_free(maxminSystem_);
   maxminSystem_ = nullptr;
-  xbt_heap_free(actionHeap_);
   delete modifiedSet_;
 
   surf_cpu_model_pm = nullptr;

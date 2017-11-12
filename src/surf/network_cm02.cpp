@@ -153,8 +153,6 @@ NetworkCm02Model::NetworkCm02Model()
   loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    actionHeap_ = xbt_heap_new(8, nullptr);
-    xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
     modifiedSet_ = new ActionLmmList();
     maxminSystem_->keep_track = modifiedSet_;
   }
@@ -173,10 +171,10 @@ LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(actionHeap_) > 0)
-         && (double_equals(xbt_heap_maxkey(actionHeap_), now, sg_surf_precision))) {
+  while ((xbt_heap_size(getActionHeap()) > 0) &&
+         (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
 
-    NetworkCm02Action *action = static_cast<NetworkCm02Action*> (xbt_heap_pop(actionHeap_));
+    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(xbt_heap_pop(getActionHeap()));
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());
@@ -195,7 +193,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     if (action->getHat() == LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       lmm_update_variable_weight(maxminSystem_, action->getVariable(), action->weight_);
-      action->heapRemove(actionHeap_);
+      action->heapRemove(getActionHeap());
       action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
@@ -205,7 +203,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       XBT_DEBUG("Action %p finished", action);
       action->setRemains(0);
       action->finish(Action::State::done);
-      action->heapRemove(actionHeap_);
+      action->heapRemove(getActionHeap());
     }
   }
 }
@@ -318,7 +316,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     if (getUpdateMechanism() == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->getLastUpdate());
-      action->heapInsert(actionHeap_, action->latency_ + action->getLastUpdate(), route.empty() ? NORMAL : LATENCY);
+      action->heapInsert(getActionHeap(), action->latency_ + action->getLastUpdate(), route.empty() ? NORMAL : LATENCY);
     }
   } else
     action->setVariable(lmm_variable_new(maxminSystem_, action, 1.0, -1.0, constraints_per_variable));

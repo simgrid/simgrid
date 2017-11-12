@@ -331,9 +331,6 @@ CpuTiModel::CpuTiModel() : CpuModel()
   runningActionSetThatDoesNotNeedBeingChecked_ = new ActionList();
 
   modifiedCpu_ = new CpuTiList();
-
-  actionHeap_ = xbt_heap_new(8, nullptr);
-  xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
 }
 
 CpuTiModel::~CpuTiModel()
@@ -341,7 +338,6 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
   delete runningActionSetThatDoesNotNeedBeingChecked_;
   delete modifiedCpu_;
-  xbt_heap_free(actionHeap_);
 }
 
 Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedPerPstate, int core)
@@ -363,8 +359,8 @@ double CpuTiModel::nextOccuringEvent(double now)
   }
 
 /* get the min next event if heap not empty */
-  if (xbt_heap_size(actionHeap_) > 0)
-    min_action_duration = xbt_heap_maxkey(actionHeap_) - now;
+  if (xbt_heap_size(getActionHeap()) > 0)
+    min_action_duration = xbt_heap_maxkey(getActionHeap()) - now;
 
   XBT_DEBUG("Share resources, min next event date: %f", min_action_duration);
 
@@ -373,8 +369,8 @@ double CpuTiModel::nextOccuringEvent(double now)
 
 void CpuTiModel::updateActionsState(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(actionHeap_) > 0) && (xbt_heap_maxkey(actionHeap_) <= now)) {
-    CpuTiAction* action = static_cast<CpuTiAction*>(xbt_heap_pop(actionHeap_));
+  while ((xbt_heap_size(getActionHeap()) > 0) && (xbt_heap_maxkey(getActionHeap()) <= now)) {
+    CpuTiAction* action = static_cast<CpuTiAction*>(xbt_heap_pop(getActionHeap()));
     XBT_DEBUG("Action %p: finish", action);
     action->finish(Action::State::done);
     /* set the remains to 0 due to precision problems when updating the remaining amount */
