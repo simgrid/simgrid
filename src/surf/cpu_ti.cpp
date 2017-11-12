@@ -16,12 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the 
 namespace simgrid {
 namespace surf {
 
-static inline
-void cpu_ti_action_update_index_heap(void *action, int i)
-{
-  (static_cast<simgrid::surf::CpuTiAction*>(action))->updateIndexHeap(i);
-}
-
 /*********
  * Trace *
  *********/
@@ -338,8 +332,8 @@ CpuTiModel::CpuTiModel() : CpuModel()
 
   modifiedCpu_ = new CpuTiList();
 
-  tiActionHeap_ = xbt_heap_new(8, nullptr);
-  xbt_heap_set_update_callback(tiActionHeap_, cpu_ti_action_update_index_heap);
+  actionHeap_ = xbt_heap_new(8, nullptr);
+  xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
 }
 
 CpuTiModel::~CpuTiModel()
@@ -347,7 +341,7 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
   delete runningActionSetThatDoesNotNeedBeingChecked_;
   delete modifiedCpu_;
-  xbt_heap_free(tiActionHeap_);
+  xbt_heap_free(actionHeap_);
 }
 
 Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedPerPstate, int core)
@@ -369,8 +363,8 @@ double CpuTiModel::nextOccuringEvent(double now)
   }
 
 /* get the min next event if heap not empty */
-  if (xbt_heap_size(tiActionHeap_) > 0)
-    min_action_duration = xbt_heap_maxkey(tiActionHeap_) - now;
+  if (xbt_heap_size(actionHeap_) > 0)
+    min_action_duration = xbt_heap_maxkey(actionHeap_) - now;
 
   XBT_DEBUG("Share resources, min next event date: %f", min_action_duration);
 
@@ -379,8 +373,8 @@ double CpuTiModel::nextOccuringEvent(double now)
 
 void CpuTiModel::updateActionsState(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(tiActionHeap_) > 0) && (xbt_heap_maxkey(tiActionHeap_) <= now)) {
-    CpuTiAction *action = static_cast<CpuTiAction*>(xbt_heap_pop(tiActionHeap_));
+  while ((xbt_heap_size(actionHeap_) > 0) && (xbt_heap_maxkey(actionHeap_) <= now)) {
+    CpuTiAction* action = static_cast<CpuTiAction*>(xbt_heap_pop(actionHeap_));
     XBT_DEBUG("Action %p: finish", action);
     action->finish(Action::State::done);
     /* set the remains to 0 due to precision problems when updating the remaining amount */
@@ -471,8 +465,8 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
           action->setFinishTime(date);
           action->setState(Action::State::failed);
           if (action->getIndexHeap() >= 0) {
-            CpuTiAction* heap_act = static_cast<CpuTiAction*>(
-                xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->getIndexHeap()));
+            CpuTiAction* heap_act =
+                static_cast<CpuTiAction*>(xbt_heap_remove(model()->getActionHeap(), action->getIndexHeap()));
             if (heap_act != action)
               DIE_IMPOSSIBLE;
           }
@@ -543,13 +537,13 @@ void CpuTi::updateActionsFinishTime(double now)
     /* add in action heap */
     XBT_DEBUG("action(%p) index %d", action, action->getIndexHeap());
     if (action->getIndexHeap() >= 0) {
-      CpuTiAction* heap_act = static_cast<CpuTiAction*>(
-          xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->getIndexHeap()));
+      CpuTiAction* heap_act =
+          static_cast<CpuTiAction*>(xbt_heap_remove(model()->getActionHeap(), action->getIndexHeap()));
       if (heap_act != action)
         DIE_IMPOSSIBLE;
     }
     if (min_finish > NO_MAX_DURATION)
-      xbt_heap_push(static_cast<CpuTiModel*>(model())->tiActionHeap_, action, min_finish);
+      xbt_heap_push(model()->getActionHeap(), action, min_finish);
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
               action, action->getStartTime(), action->getFinishTime(), action->getMaxDuration());
@@ -687,7 +681,7 @@ int CpuTiAction::unref()
     if (action_ti_hook.is_linked())
       cpu_->actionSet_->erase(cpu_->actionSet_->iterator_to(*this));
     /* remove from heap */
-    xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, getIndexHeap());
+    xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
     cpu_->modified(true);
     delete this;
     return 1;
