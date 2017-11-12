@@ -249,7 +249,6 @@ public:
   void setLastValue(double val) { lastValue_ = val; }
   enum heap_action_type getHat() { return hat_; }
   bool is_linked() {return action_lmm_hook.is_linked();}
-  int getIndexHeap() { return indexHeap_; }
 protected:
   int suspended_ = 0;
 };

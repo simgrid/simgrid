@@ -525,7 +525,6 @@ void CpuTi::updateActionsFinishTime(double now)
         min_finish = action->getStartTime() + action->getMaxDuration();
     }
     /* add in action heap */
-    XBT_DEBUG("action(%p) index %d", action, action->getIndexHeap());
     if (min_finish > NO_MAX_DURATION)
       action->heapUpdate(model()->getActionHeap(), min_finish, NOTSET);
     else
