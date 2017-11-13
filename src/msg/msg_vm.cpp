@@ -336,7 +336,7 @@ static void start_dirty_page_tracking(msg_vm_t vm)
 
   for (auto const& elm : vm->pimpl_vm_->dp_objs) {
     dirty_page_t dp    = elm.second;
-    double remaining = MSG_task_get_flops_amount(dp->task);
+    double remaining = MSG_task_get_remaining_work_ratio(dp->task);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
     XBT_DEBUG("%s@%s remaining %f", elm.first.c_str(), vm->getCname(), remaining);

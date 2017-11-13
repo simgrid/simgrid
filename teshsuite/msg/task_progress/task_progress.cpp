@@ -80,6 +80,7 @@ static int get_progress(int /*argc*/, char* /*argv*/ [])
       progress_prev = progress;
     }
   }
+  return 0;
 }
 
 int main(int argc, char *argv[])

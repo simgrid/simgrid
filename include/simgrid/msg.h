@@ -379,7 +379,17 @@ XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC(void) MSG_task_set_flops_amount(msg_task_t task, double flops_amount);
+/* Unable to compile that without -Werror=deprecated-declarations
+XBT_ATTRIB_DEPRECATED_v321( "Use MSG_task_get_initial_flops_amount if you want to get initial amounts of flops, or "
+                            "Use MSG_task_get_remaining_work_ratio to get task progress (in order "
+                            "to compute progress in flops)") static inline double MSG_task_get_flops_amount(msg_task_t task)
+{
+  return MSG_task_get_flops_amount(task);
+}
+*/
+
 XBT_PUBLIC(double) MSG_task_get_flops_amount(msg_task_t task);
+XBT_PUBLIC(double) MSG_task_get_initial_flops_amount(msg_task_t task);
 XBT_PUBLIC(double) MSG_task_get_remaining_work_ratio(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task, double bytes_amount);
 
