@@ -774,7 +774,7 @@ bool Action::isSuspended()
 void Action::heapInsert(heap_type& heap, double key, enum heap_action_type hat)
 {
   hat_ = hat;
-  heapHandle_ = heap.emplace(key, this);
+  heapHandle_ = heap.emplace(std::make_pair(key, this));
 }
 
 void Action::heapRemove(heap_type& heap)
@@ -792,7 +792,7 @@ void Action::heapUpdate(heap_type& heap, double key, enum heap_action_type hat)
   if (heapHandle_) {
     heap.update(*heapHandle_, std::make_pair(key, this));
   } else {
-    heapHandle_ = heap.emplace(key, this);
+    heapHandle_ = heap.emplace(std::make_pair(key, this));
   }
 }
 
