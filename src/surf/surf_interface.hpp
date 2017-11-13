@@ -76,7 +76,8 @@ namespace simgrid {
 namespace surf {
 
 typedef std::pair<double, simgrid::surf::Action*> heap_element_type;
-struct heap_element_compare {
+class heap_element_compare {
+public:
   bool operator()(const heap_element_type& a, const heap_element_type& b) const { return a.first > b.first; }
 };
 typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_size<false>, boost::heap::stable<true>,
