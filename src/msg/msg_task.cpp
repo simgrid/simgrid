@@ -251,13 +251,23 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
   }
 }
 
+double MSG_task_get_flops_amount(msg_task_t task) {
+  if (task->simdata->compute) {
+    return task->simdata->compute->remains();
+  } else {
+    return task->simdata->flops_amount;
+  }
+}
+
 /** \ingroup m_task_management
  * \brief Returns the initial amount of flops needed to execute a task #msg_task_t.
  *
  * Once a task has been processed, this amount is set to 0. If you want, you can reset this value with
  * #MSG_task_set_flops_amount before restarting the task.
+ *
+ * Warning: Only work for simple task, not parallel task.
  */
-double MSG_task_get_flops_amount(msg_task_t task) {
+double MSG_task_get_initial_flops_amount(msg_task_t task) {
   return task->simdata->flops_amount;
 }
 
