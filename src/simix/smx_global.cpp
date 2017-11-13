@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <boost/heap/fibonacci_heap.hpp>
 #include <functional>
 #include <memory>
-#include <queue>
 
 #include "src/internal_config.h"
 #include <csignal> /* Signal handling */
@@ -52,29 +52,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX 
 
 std::unique_ptr<simgrid::simix::Global> simix_global;
 
+namespace {
+typedef std::pair<double, smx_timer_t> TimerQelt;
+boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<simgrid::xbt::HeapComparator<TimerQelt>>> simix_timers;
+}
+
 /** @brief Timer datatype */
 class s_smx_timer_t {
   double date = 0.0;
 
 public:
+  decltype(simix_timers)::handle_type handle_;
   simgrid::xbt::Task<void()> callback;
-  void disable() { date = -1.0; }
-  bool isDisabled() { return date == -1.0; }
   double getDate() { return date; }
   s_smx_timer_t(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
 };
-
-namespace {
-typedef std::pair<double, smx_timer_t> TimerQelt;
-std::priority_queue<TimerQelt, std::vector<TimerQelt>, simgrid::xbt::HeapComparator<TimerQelt>> simix_timers;
-void SIMIX_timer_flush()
-{
-  while (not simix_timers.empty() && simix_timers.top().second->isDisabled()) {
-    delete simix_timers.top().second;
-    simix_timers.pop();
-  }
-}
-}
 
 void (*SMPI_switch_data_segment)(int) = nullptr;
 
@@ -379,7 +371,6 @@ static bool SIMIX_execute_timers()
     // (i.e. provide dispatchers that read and expand the args)
     smx_timer_t timer = simix_timers.top().second;
     simix_timers.pop();
-    SIMIX_timer_flush();
     try {
       timer->callback();
     } catch (...) {
@@ -575,21 +566,21 @@ void SIMIX_run()
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
   smx_timer_t timer = new s_smx_timer_t(date, [callback, arg]() { callback(arg); });
-  simix_timers.emplace(date, timer);
+  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
 
 smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 {
   smx_timer_t timer = new s_smx_timer_t(date, std::move(callback));
-  simix_timers.emplace(date, timer);
+  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
 
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
-  timer->disable();
-  SIMIX_timer_flush();
+  simix_timers.erase(timer->handle_);
+  delete timer;
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
