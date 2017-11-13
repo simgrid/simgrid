@@ -11,7 +11,6 @@
 #include "xbt/graph.h"
 #include "graph_private.h"
 #include "xbt/dict.h"
-#include "xbt/heap.h"
 
 #include <errno.h>
 #include <stdio.h>
