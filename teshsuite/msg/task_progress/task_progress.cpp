@@ -37,10 +37,7 @@ static int seq_task(int /*argc*/, char* /*argv*/ [])
 
 static int par_task(int /*argc*/, char* /*argv*/ [])
 {
-  int nb_res = 2;
-  //double * computation_amount = xbt_new(double, nb_res);
   double * computation_amount = new double[2] {10E7, 10E7};
-  //double * communication_amount = xbt_new(double, nb_res);
   double * communication_amount = new double[4] {1E6, 1E6, 1E6, 1E6};
   double progress = 0;
 
@@ -71,8 +68,8 @@ static int get_progress(int /*argc*/, char* /*argv*/ [])
   while (tasks.empty()) {
     MSG_process_sleep(0.5);
   }
+  double progress;
   for(auto const& task: tasks) {
-    double progress;
     double progress_prev = 1;
     for (int i = 0; i < 3; i++) {
       MSG_process_sleep(0.2);
