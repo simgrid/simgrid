@@ -71,7 +71,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
   src/xbt/graph_private.h
-  src/xbt/heap_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
 
@@ -275,7 +274,6 @@ set(XBT_SRC
   src/xbt/ex.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
-  src/xbt/heap.c
   src/xbt/log.c
   src/xbt/mallocator.c
   src/xbt/memory_map.cpp
@@ -726,7 +724,6 @@ set(headers_to_install
   include/xbt/function_types.h
   include/xbt/future.hpp
   include/xbt/graph.h
-  include/xbt/heap.h
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h
