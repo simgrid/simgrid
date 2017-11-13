@@ -66,7 +66,7 @@ public:
 
 namespace {
 typedef std::pair<double, smx_timer_t> TimerQelt;
-std::priority_queue<TimerQelt, std::vector<TimerQelt>, std::greater<TimerQelt>> simix_timers;
+std::priority_queue<TimerQelt, std::vector<TimerQelt>, simgrid::xbt::HeapComparator<TimerQelt>> simix_timers;
 void SIMIX_timer_flush()
 {
   while (not simix_timers.empty() && simix_timers.top().second->isDisabled()) {

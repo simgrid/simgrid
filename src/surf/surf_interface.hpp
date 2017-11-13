@@ -6,6 +6,7 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include "xbt/algorithm.hpp"
 #include "xbt/signal.hpp"
 
 #include "src/surf/surf_private.hpp"
@@ -76,12 +77,8 @@ namespace simgrid {
 namespace surf {
 
 typedef std::pair<double, simgrid::surf::Action*> heap_element_type;
-class heap_element_compare {
-public:
-  bool operator()(const heap_element_type& a, const heap_element_type& b) const { return a.first > b.first; }
-};
 typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_size<false>, boost::heap::stable<true>,
-                                  boost::heap::compare<heap_element_compare>>
+                                  boost::heap::compare<simgrid::xbt::HeapComparator<heap_element_type>>>
     heap_type;
 
 /** @ingroup SURF_interface
