@@ -13,15 +13,11 @@
 #include <cstdlib>
 #include <cxxabi.h>
 #include <limits>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
-struct s_dyn_light_t {
-  int *data;
-  int pos;
-  int size;
-};
-typedef s_dyn_light_t* dyn_light_t;
+typedef std::vector<int> dyn_light_t;
 
 double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */
 double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:VALUE */
@@ -629,40 +625,29 @@ void *lmm_variable_id(lmm_variable_t var)
 }
 
 static inline void saturated_constraint_set_update(double usage, int cnst_light_num,
-                                                   dyn_light_t saturated_constraint_set, double *min_usage)
+                                                   dyn_light_t& saturated_constraint_set, double* min_usage)
 {
   xbt_assert(usage > 0,"Impossible");
 
   if (*min_usage < 0 || *min_usage > usage) {
     *min_usage = usage;
     XBT_HERE(" min_usage=%f (cnst->remaining / cnst->usage =%f)", *min_usage, usage);
-    saturated_constraint_set->data[0] = cnst_light_num;
-    saturated_constraint_set->pos = 1;
+    saturated_constraint_set.assign(1, cnst_light_num);
   } else if (*min_usage == usage) {
-    if(saturated_constraint_set->pos == saturated_constraint_set->size) { // realloc the size
-      saturated_constraint_set->size *= 2;
-      saturated_constraint_set->data =
-        (int*) xbt_realloc(saturated_constraint_set->data, (saturated_constraint_set->size) * sizeof(int));
-    }
-    saturated_constraint_set->data[saturated_constraint_set->pos] = cnst_light_num;
-    saturated_constraint_set->pos++;
+    saturated_constraint_set.emplace_back(cnst_light_num);
   }
 }
 
-static inline void saturated_variable_set_update(s_lmm_constraint_light_t *cnst_light_tab,
-                                                 dyn_light_t saturated_constraint_set, lmm_system_t sys)
+static inline void saturated_variable_set_update(s_lmm_constraint_light_t* cnst_light_tab,
+                                                 const dyn_light_t& saturated_constraint_set, lmm_system_t sys)
 {
   /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate (cnst_light_tab)*/
-  lmm_constraint_light_t cnst = nullptr;
-  void *_elem;
-  lmm_element_t elem = nullptr;
-  xbt_swag_t elem_list = nullptr;
-  int i;
-  for(i = 0; i< saturated_constraint_set->pos; i++){
-    cnst = &cnst_light_tab[saturated_constraint_set->data[i]];
-    elem_list = &(cnst->cnst->active_element_set);
+  for (int const& saturated_cnst : saturated_constraint_set) {
+    lmm_constraint_light_t cnst = &cnst_light_tab[saturated_cnst];
+    void* _elem;
+    xbt_swag_t elem_list = &(cnst->cnst->active_element_set);
     xbt_swag_foreach(_elem, elem_list) {
-      elem = (lmm_element_t)_elem;
+      lmm_element_t elem = (lmm_element_t)_elem;
       //Visiting active_element_set, so, by construction, should never get a zero weight, correct?
       xbt_assert(elem->variable->sharing_weight > 0);
       if (elem->consumption_weight > 0)
@@ -777,9 +762,7 @@ void lmm_solve(lmm_system_t sys)
   s_lmm_constraint_light_t* cnst_light_tab =
       static_cast<s_lmm_constraint_light_t*>(xbt_malloc0(xbt_swag_size(cnst_list) * sizeof(s_lmm_constraint_light_t)));
   int cnst_light_num = 0;
-  dyn_light_t saturated_constraint_set = xbt_new0(s_dyn_light_t,1);
-  saturated_constraint_set->size = 5;
-  saturated_constraint_set->data = xbt_new0(int, saturated_constraint_set->size);
+  dyn_light_t saturated_constraint_set;
 
   xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
     lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
@@ -929,7 +912,7 @@ void lmm_solve(lmm_system_t sys)
     /* Find out which variables reach the maximum */
     min_usage = -1;
     min_bound = -1;
-    saturated_constraint_set->pos = 0;
+    saturated_constraint_set.clear();
     int pos;
     for(pos=0; pos<cnst_light_num; pos++){
       xbt_assert(cnst_light_tab[pos].cnst->active_element_set.count>0, "Cannot saturate more a constraint that has"
@@ -955,8 +938,6 @@ void lmm_solve(lmm_system_t sys)
 
   lmm_check_concurrency(sys);
 
-  xbt_free(saturated_constraint_set->data);
-  xbt_free(saturated_constraint_set);
   xbt_free(cnst_light_tab);
   XBT_OUT();
 }
