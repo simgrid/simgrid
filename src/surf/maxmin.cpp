@@ -41,7 +41,8 @@ static void lmm_disable_var(lmm_system_t sys, lmm_variable_t var);
 static int lmm_concurrency_slack(lmm_constraint_t cnstr);
 static int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var);
 
-inline int lmm_element_concurrency(lmm_element_t elem) {
+static inline int lmm_element_concurrency(lmm_element_t elem)
+{
   //Ignore element with weight less than one (e.g. cross-traffic)
   return (elem->consumption_weight >= 1) ? 1 : 0;
   //There are other alternatives, but they will change the behaviour of the model..
@@ -52,12 +53,14 @@ inline int lmm_element_concurrency(lmm_element_t elem) {
   //return (int)ceil(elem->weight);//Include element as the rounded-up integer value of the element weight
 }
 
-inline void lmm_decrease_concurrency(lmm_element_t elem) {
+static inline void lmm_decrease_concurrency(lmm_element_t elem)
+{
   xbt_assert(elem->constraint->concurrency_current>=lmm_element_concurrency(elem));
   elem->constraint->concurrency_current-=lmm_element_concurrency(elem);
 }
 
-inline void lmm_increase_concurrency(lmm_element_t elem) {
+static inline void lmm_increase_concurrency(lmm_element_t elem)
+{
   elem->constraint->concurrency_current+= lmm_element_concurrency(elem);
 
   lmm_constraint_t cnstr=elem->constraint;
