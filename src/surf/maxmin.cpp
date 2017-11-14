@@ -487,7 +487,7 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var,
     if (cnst->sharing_policy)
       elem.consumption_weight += value;
     else
-      elem.consumption_weight = MAX(elem.consumption_weight, value);
+      elem.consumption_weight = std::max(elem.consumption_weight, value);
 
     //We need to check that increasing value of the element does not cross the concurrency limit
     if (var->sharing_weight) {
@@ -662,7 +662,7 @@ void lmm_print(lmm_system_t sys)
       if(cnst->sharing_policy)
         sum += elem->consumption_weight * elem->variable->value;
       else
-        sum = MAX(sum, elem->consumption_weight * elem->variable->value);
+        sum = std::max(sum, elem->consumption_weight * elem->variable->value);
     }
     //TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
     elem_list = &(cnst->disabled_element_set);
@@ -673,7 +673,7 @@ void lmm_print(lmm_system_t sys)
       if(cnst->sharing_policy)
         sum += elem->consumption_weight * elem->variable->value;
       else
-        sum = MAX(sum, elem->consumption_weight * elem->variable->value);
+        sum = std::max(sum, elem->consumption_weight * elem->variable->value);
     }
 
     buf = buf + "0) <= " + std::to_string(cnst->bound) + " ('" + std::to_string(cnst->id_int) + "')";
@@ -793,7 +793,7 @@ void lmm_solve(lmm_system_t sys)
         if (min_bound < 0)
           min_bound = var->bound * var->sharing_weight;
         else
-          min_bound = MIN(min_bound, (var->bound * var->sharing_weight));
+          min_bound = std::min(min_bound, (var->bound * var->sharing_weight));
         XBT_DEBUG("Updated min_bound=%f", min_bound);
       }
     }
@@ -853,7 +853,7 @@ void lmm_solve(lmm_system_t sys)
             if (elem2->variable->value > 0)
               continue;
             if (elem2->consumption_weight > 0)
-              cnst->usage = MAX(cnst->usage, elem2->consumption_weight / elem2->variable->sharing_weight);
+              cnst->usage = std::max(cnst->usage, elem2->consumption_weight / elem2->variable->sharing_weight);
           }
           //If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if (not double_positive(cnst->usage, sg_maxmin_precision) ||

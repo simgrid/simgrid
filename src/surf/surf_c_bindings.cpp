@@ -6,6 +6,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include <algorithm>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -75,9 +76,9 @@ double surf_solve(double max_date)
 
     if (not surf_network_model->nextOccuringEventIsIdempotent()) { // NS3, I see you
       if (next_event_date != -1.0) {
-        time_delta = MIN(next_event_date - NOW, time_delta);
+        time_delta = std::min(next_event_date - NOW, time_delta);
       } else {
-        time_delta = MAX(next_event_date - NOW, time_delta); // Get the positive component
+        time_delta = std::max(next_event_date - NOW, time_delta); // Get the positive component
       }
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);

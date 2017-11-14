@@ -690,7 +690,7 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->dst_buff_size)
-    buff_size = MIN(buff_size, *(comm->dst_buff_size));
+    buff_size = std::min(buff_size, *(comm->dst_buff_size));
 
   /* Update the receiver's buffer size to the copied amount */
   if (comm->dst_buff_size)

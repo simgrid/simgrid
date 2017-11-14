@@ -12,6 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h"
+#include <algorithm>
 #include <cmath>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
@@ -145,10 +146,10 @@ static void test1(method_t method)
     lagrange_solve(Sys);
 
     double max_deviation = 0.0;
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
     if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
       XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);

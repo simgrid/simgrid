@@ -115,10 +115,10 @@ void bottleneck_solve(lmm_system_t sys)
       double min_inc = DBL_MAX;
       for (s_lmm_element_t const& elm : var->cnsts) {
         if (elm.consumption_weight > 0)
-          min_inc = MIN(min_inc, elm.constraint->usage / elm.consumption_weight);
+          min_inc = std::min(min_inc, elm.constraint->usage / elm.consumption_weight);
       }
       if (var->bound > 0)
-        min_inc = MIN(min_inc, var->bound - var->value);
+        min_inc = std::min(min_inc, var->bound - var->value);
       var->mu = min_inc;
       XBT_DEBUG("Updating variable %p maximum increment: %g", var, var->mu);
       var->value += var->mu;
@@ -141,7 +141,7 @@ void bottleneck_solve(lmm_system_t sys)
         } else {
           XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g",
               cnst, cnst->usage, elem->variable, elem->variable->mu);
-          cnst->usage = MIN(cnst->usage, elem->consumption_weight * elem->variable->mu);
+          cnst->usage = std::min(cnst->usage, elem->consumption_weight * elem->variable->mu);
         }
       }
       if (not cnst->sharing_policy) {

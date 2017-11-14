@@ -183,7 +183,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
 
           std::vector<LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
-          latency = MAX(latency, lat);
+          latency = std::max(latency, lat);
 
           for (auto const& link : route)
             affected_links.insert(link->getCname());
@@ -409,7 +409,7 @@ void L07Action::updateBound()
           std::vector<LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
 
-          lat_current = MAX(lat_current, lat * communicationAmount_[i * hostNb + j]);
+          lat_current = std::max(lat_current, lat * communicationAmount_[i * hostNb + j]);
         }
       }
     }

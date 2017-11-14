@@ -6,6 +6,7 @@
 
 #include "cpu_ti.hpp"
 #include "src/surf/trace_mgr.hpp"
+#include <algorithm>
 
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
@@ -604,7 +605,7 @@ CpuAction *CpuTi::execution_start(double size)
 CpuAction *CpuTi::sleep(double duration)
 {
   if (duration > 0)
-    duration = MAX(duration, sg_surf_precision);
+    duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getCname(), duration);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);

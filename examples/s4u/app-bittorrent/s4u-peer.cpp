@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
 #include <climits>
 #include <xbt/ex.hpp>
 
@@ -20,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_peer, "Messages specific for the peers");
 #define BLOCK_SIZE 16384
 
 /** Number of blocks asked by each request */
-#define BLOCKS_REQUESTED 2
+#define BLOCKS_REQUESTED 2UL
 
 #define ENABLE_END_GAME_MODE 1
 #define SLEEP_DURATION 1
@@ -163,7 +164,7 @@ void Peer::sendRequestTo(Connection* remote_peer, unsigned int piece)
   xbt_assert(remote_peer->hasPiece(piece));
   int block_index = getFirstMissingBlockFrom(piece);
   if (block_index != -1) {
-    int block_length = MIN(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index);
+    int block_length = std::min(BLOCKS_REQUESTED, PIECES_BLOCKS - block_index);
     XBT_DEBUG("Sending a REQUEST to %s for piece %u (%d,%d)", remote_peer->mailbox_->getCname(), piece, block_index,
               block_length);
     remote_peer->mailbox_

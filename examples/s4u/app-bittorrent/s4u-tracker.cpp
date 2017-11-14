@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "s4u-tracker.hpp"
+#include <algorithm>
 #include <xbt/RngStream.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_tracker, "Messages specific for the tracker");
@@ -48,7 +49,7 @@ void Tracker::operator()()
       TrackerAnswer* ta = new TrackerAnswer(TRACKER_QUERY_INTERVAL);
       std::set<int>::iterator next_peer;
       int nb_known_peers = known_peers.size();
-      int max_tries      = MIN(MAXIMUM_PEERS, nb_known_peers);
+      int max_tries      = std::min(MAXIMUM_PEERS, nb_known_peers);
       int tried          = 0;
       while (tried < max_tries) {
         do {

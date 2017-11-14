@@ -8,6 +8,7 @@
 #include "cpu_ti.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
 
@@ -173,7 +174,7 @@ CpuAction* CpuCas01::execution_start(double size, int requestedCores)
 CpuAction *CpuCas01::sleep(double duration)
 {
   if (duration > 0)
-    duration = MAX(duration, sg_surf_precision);
+    duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getCname(), duration);
   CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());

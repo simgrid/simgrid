@@ -276,7 +276,7 @@ void lagrange_solve(lmm_system_t sys)
       else {
         tmp = new_value(var);
 
-        overall_modification = MAX(overall_modification, fabs(var->value - tmp));
+        overall_modification = std::max(overall_modification, fabs(var->value - tmp));
 
         var->value = tmp;
         XBT_DEBUG("New value of var (%p)  = %e, overall_modification = %e", var, var->value, overall_modification);
