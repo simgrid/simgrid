@@ -11,6 +11,8 @@
 #include "xbt/mallocator.h"
 #include "xbt/swag.h"
 
+#include <vector>
+
 /** @ingroup SURF_lmm
  * @brief LMM element
  * Elements can be seen as glue between constraint objects and variable objects.
@@ -83,9 +85,7 @@ struct s_lmm_variable_t {
   s_xbt_swag_hookup_t variable_set_hookup;
   s_xbt_swag_hookup_t saturated_variable_set_hookup;
 
-  s_lmm_element_t *cnsts;
-  int cnsts_size;
-  int cnsts_number;
+  std::vector<s_lmm_element_t> cnsts;
 
   // sharing_weight: variable's impact on the resource during the sharing
   //   if == 0, the variable is not considered by LMM

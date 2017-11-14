@@ -299,7 +299,7 @@ XBT_PUBLIC(void) lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst, lmm_var
  * @param num The rank of constraint we want to get
  * @return The numth constraint
  */
-XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, int num);
+XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, unsigned num);
 
 /**
  * @brief Get the weigth of the numth constraint associated to the variable
@@ -308,7 +308,7 @@ XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys, lmm_variabl
  * @param num The rank of constraint we want to get
  * @return The numth constraint
  */
-XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var, int num);
+XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var, unsigned num);
 
 /**
  * @brief Get the number of constraint associated to a variable
