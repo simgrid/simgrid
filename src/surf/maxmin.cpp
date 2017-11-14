@@ -177,7 +177,7 @@ lmm_system_t lmm_system_new(bool selective_update)
   s_lmm_variable_t var;
   s_lmm_constraint_t cnst;
 
-  lmm_system_t l = xbt_new0(s_lmm_system_t, 1);
+  lmm_system_t l = new s_lmm_system_t();
 
   l->modified = 0;
   l->selective_update_active = selective_update;
@@ -225,13 +225,13 @@ void lmm_system_free(lmm_system_t sys)
     lmm_cnst_free(sys, cnst);
 
   xbt_mallocator_free(sys->variable_mallocator);
-  free(sys);
+  delete sys;
 }
 
 static inline void lmm_cnst_free(lmm_system_t sys, lmm_constraint_t cnst)
 {
   make_constraint_inactive(sys, cnst);
-  free(cnst);
+  delete cnst;
 }
 
 lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id, double bound_value)
@@ -239,8 +239,8 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id, double bound_val
   lmm_constraint_t cnst = nullptr;
   s_lmm_element_t elem;
 
-  cnst = xbt_new0(s_lmm_constraint_t, 1);
-  cnst->id = id;
+  cnst         = new s_lmm_constraint_t();
+  cnst->id     = id;
   cnst->id_int = Global_const_debug_id++;
   xbt_swag_init(&(cnst->enabled_element_set), xbt_swag_offset(elem, enabled_element_set_hookup));
   xbt_swag_init(&(cnst->disabled_element_set), xbt_swag_offset(elem, disabled_element_set_hookup));
@@ -310,7 +310,7 @@ inline void lmm_constraint_free(lmm_system_t sys,lmm_constraint_t cnst)
 
 static void *lmm_variable_mallocator_new_f()
 {
-  lmm_variable_t var = xbt_new(s_lmm_variable_t, 1);
+  lmm_variable_t var = new s_lmm_variable_t;
   var->cnsts = nullptr; /* will be created by realloc */
   return var;
 }
@@ -318,7 +318,7 @@ static void *lmm_variable_mallocator_new_f()
 static void lmm_variable_mallocator_free_f(void *var)
 {
   xbt_free(((lmm_variable_t) var)->cnsts);
-  xbt_free(var);
+  delete static_cast<lmm_variable_t>(var);
 }
 
 lmm_variable_t lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, double sharing_weight, double bound,
@@ -759,8 +759,7 @@ void lmm_solve(lmm_system_t sys)
     }
   }
 
-  s_lmm_constraint_light_t* cnst_light_tab =
-      static_cast<s_lmm_constraint_light_t*>(xbt_malloc0(xbt_swag_size(cnst_list) * sizeof(s_lmm_constraint_light_t)));
+  s_lmm_constraint_light_t* cnst_light_tab = new s_lmm_constraint_light_t[xbt_swag_size(cnst_list)]();
   int cnst_light_num = 0;
   dyn_light_t saturated_constraint_set;
 
@@ -938,7 +937,7 @@ void lmm_solve(lmm_system_t sys)
 
   lmm_check_concurrency(sys);
 
-  xbt_free(cnst_light_tab);
+  delete[] cnst_light_tab;
   XBT_OUT();
 }
 
