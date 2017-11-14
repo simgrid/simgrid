@@ -129,7 +129,7 @@ static void lmm_check_concurrency(lmm_system_t sys)
   }
 }
 
-static inline void lmm_variable_remove(lmm_system_t sys, lmm_variable_t var)
+static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
 {
   XBT_IN("(sys=%p, var=%p)", sys, var);
   sys->modified = 1;
@@ -164,13 +164,8 @@ static inline void lmm_variable_remove(lmm_system_t sys, lmm_variable_t var)
 
   lmm_check_concurrency(sys);
 
-  XBT_OUT();
-}
-
-static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
-{
-  lmm_variable_remove(sys, var);
   xbt_mallocator_release(sys->variable_mallocator, var);
+  XBT_OUT();
 }
 
 lmm_system_t lmm_system_new(bool selective_update)
