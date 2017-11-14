@@ -184,13 +184,6 @@ XBT_PUBLIC(void) lmm_constraint_shared(lmm_constraint_t cnst);
 XBT_PUBLIC(int) lmm_constraint_sharing_policy(lmm_constraint_t cnst);
 
 /**
- * @brief Free a constraint
- * @param sys The system associated to the constraint
- * @param cnst The constraint to free
- */
-XBT_PUBLIC(void) lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
-
-/**
  * @brief Get the usage of the constraint after the last lmm solve
  * @param cnst A constraint
  * @return The usage of the constraint
@@ -265,14 +258,6 @@ XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
  * @param concurrency_share The new concurrency share
  */
 XBT_PUBLIC(void) lmm_variable_concurrency_share_set(lmm_variable_t var, short int concurrency_share);
-
-/**
- * @brief Remove a variable from a constraint
- * @param sys A system
- * @param cnst A constraint
- * @param var The variable to remove
- */
-XBT_PUBLIC(void) lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var);
 
 /**
  * @brief Associate a variable to a constraint with a coefficient

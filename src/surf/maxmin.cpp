@@ -294,21 +294,6 @@ int lmm_constraint_sharing_policy(lmm_constraint_t cnst)
   return (cnst->sharing_policy);
 }
 
-/* @brief Remove a constraint
- * Currently this is dead code, but it is exposed in maxmin.hpp
- * Apparently, this call was designed assuming that constraint would no more have elements in it.
- * If not the case, assertion will fail, and you need to add calls e.g. to lmm_shrink before effectively removing it.
- */
-inline void lmm_constraint_free(lmm_system_t sys,lmm_constraint_t cnst)
-{
-  xbt_assert(not xbt_swag_size(&(cnst->active_element_set)), "Removing constraint but it still has active elements");
-  xbt_assert(not xbt_swag_size(&(cnst->enabled_element_set)), "Removing constraint but it still has enabled elements");
-  xbt_assert(not xbt_swag_size(&(cnst->disabled_element_set)),
-             "Removing constraint but it still has disabled elements");
-  remove_constraint(sys, cnst);
-  lmm_cnst_free(sys, cnst);
-}
-
 static void *lmm_variable_mallocator_new_f()
 {
   return new s_lmm_variable_t;
@@ -373,51 +358,6 @@ void lmm_variable_concurrency_share_set(lmm_variable_t var, short int concurrenc
 double lmm_variable_getbound(lmm_variable_t var)
 {
   return (var->bound);
-}
-
-void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var)
-{
-  auto elem_it = std::find_if(begin(var->cnsts), end(var->cnsts),
-                              [&cnst](s_lmm_element_t const& x) { return x.constraint == cnst; });
-  if (elem_it == end(var->cnsts)) {
-    XBT_DEBUG("cnst %p is not found in var %p", cnst, var);
-    return;
-  }
-  s_lmm_element_t& elem = *elem_it;
-
-  sys->modified = 1;
-
-  XBT_DEBUG("remove elem(value %f, cnst %p, var %p) in var %p", elem.consumption_weight, elem.constraint, elem.variable,
-            var);
-
-  /* We are going to change the constraint object and the variable object.
-   * Propagate this change to other objects. Calling here before removing variable from not active elements
-   * (inactive elements are not visited)
-   */
-  lmm_update_modified_set(sys, cnst);
-  //Useful in case var was already removed from the constraint
-  lmm_update_modified_set(sys, var->cnsts[0].constraint); // will look up enabled_element_set of this constraint, and
-                                                     //then each var in the enabled_element_set, and each var->cnsts[i].
-
-  if (xbt_swag_remove(&elem, &(elem.constraint->enabled_element_set)))
-    lmm_decrease_concurrency(&elem);
-
-  xbt_swag_remove(&elem, &(elem.constraint->active_element_set));
-  elem.constraint         = nullptr;
-  elem.variable           = nullptr;
-  elem.consumption_weight = 0;
-
-  var->cnsts.pop_back();
-
-  //No variable in this constraint -> make it inactive
-  if (xbt_swag_size(&(cnst->enabled_element_set))+xbt_swag_size(&(cnst->disabled_element_set)) == 0)
-    make_constraint_inactive(sys, cnst);
-  else {
-    //Check maxconcurrency to see if we can enable new variables
-    lmm_on_disabled_var(sys, elem.constraint);
-  }
-
-  lmm_check_concurrency(sys);
 }
 
 void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
