@@ -13,6 +13,7 @@
 
 #include <xbt/algorithm.hpp>
 #include <xbt/functional.hpp>
+#include <xbt/utility.hpp>
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"

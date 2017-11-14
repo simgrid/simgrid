@@ -11,16 +11,6 @@
 namespace simgrid {
 namespace xbt {
 
-/** @brief Comparator class for using with std::priority_queue or boost::heap.
- *
- * Compare two std::pair by their first element (of type double), and return true when the first is greater than the
- * second.  Useful to have priority queues with the smallest element on top.
- */
-template <class Pair> class HeapComparator {
-public:
-  bool operator()(const Pair& a, const Pair& b) const { return a.first > b.first; }
-};
-
 /** @brief Sorts the elements of the sequence [first, last) according to their color assuming elements can have only
  * three colors.  Since there are only three colors, it is linear and much faster than a classical sort.  See for
  * example http://en.wikipedia.org/wiki/Dutch_national_flag_problem

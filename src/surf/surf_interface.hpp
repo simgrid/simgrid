@@ -6,8 +6,8 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
-#include "xbt/algorithm.hpp"
 #include "xbt/signal.hpp"
+#include "xbt/utility.hpp"
 
 #include "src/surf/surf_private.hpp"
 #include "surf/surf.hpp"
