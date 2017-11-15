@@ -147,14 +147,7 @@ while true; do
             fi
 	    shift 2
             ;;
-        "-hostfile")
-	    HOSTFILE="$2"
-            if [ ! -f "${HOSTFILE}" ]; then
-                die "the file '${HOSTFILE}' does not exist"
-            fi
-	    shift 2
-            ;;
-        "-machinefile")
+        "-hostfile" | "-machinefile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
                 die "the file '${HOSTFILE}' does not exist"
