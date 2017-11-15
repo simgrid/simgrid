@@ -975,13 +975,11 @@ void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
 
     lmm_element_t nextelem = (lmm_element_t)xbt_swag_getNext(elem, cnstr->disabled_element_set.offset);
 
-    if (elem->variable->staged_weight>0 ){
+    if (elem->variable->staged_weight > 0 && lmm_can_enable_var(elem->variable)) {
       //Found a staged variable
       //TODOLATER: Add random timing function to model reservation protocol fuzziness? Then how to make sure that
       //staged variables will eventually be called?
-      if(lmm_can_enable_var(elem->variable)){
-        lmm_enable_var(sys,elem->variable);
-      }
+      lmm_enable_var(sys, elem->variable);
     }
 
     xbt_assert(cnstr->concurrency_current<=cnstr->concurrency_limit,"Concurrency overflow!");
