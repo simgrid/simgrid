@@ -867,29 +867,26 @@ void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var, double boun
     lmm_update_modified_set(sys, var->cnsts[0].constraint);
 }
 
-int lmm_concurrency_slack(lmm_constraint_t cnstr){
-  //FIXME MARTIN: Replace by infinite value std::numeric_limits<int>::(max)(), or something better within Simgrid?
-  if(cnstr->concurrency_limit<0)
-    return 666;
-
+int lmm_concurrency_slack(lmm_constraint_t cnstr)
+{
+  if (cnstr->concurrency_limit < 0)
+    return std::numeric_limits<int>::max();
   return  cnstr->concurrency_limit - cnstr->concurrency_current;
 }
 
 /** \brief Measure the minimum concurrency slack across all constraints where the given var is involved */
-int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var){
+int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var)
+{
   int minslack = std::numeric_limits<int>::max();
   for (s_lmm_element_t const& elem : var->cnsts) {
     int slack = lmm_concurrency_slack(elem.constraint);
-
-    //This is only an optimization, to avoid looking at more constraints when slack is already zero
-    //Disable it when debugging to let lmm_concurrency_slack catch nasty things
-    if (not slack && not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug))
-      return 0;
-
-    if(minslack>slack)
-      minslack=slack;
+    if (slack < minslack) {
+      // This is only an optimization, to avoid looking at more constraints when slack is already zero
+      if (slack == 0)
+        return 0;
+      minslack = slack;
+    }
   }
-
   return minslack;
 }
 
