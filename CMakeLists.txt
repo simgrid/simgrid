@@ -40,7 +40,7 @@ if(COMPILER_SUPPORTS_CXX11)
 else() 
   message(FATAL_ERROR 
           "The compiler ${CMAKE_CXX_COMPILER} (v${CMAKE_CXX_COMPILER_VERSION}) has no C++11 support. "
-           "Please use a decent C++ compiler.")
+          "Please install a decent C++ compiler (remove CMakeCache.txt once it's installed).")
 endif()
 
 ### And we need C11 standard, too
