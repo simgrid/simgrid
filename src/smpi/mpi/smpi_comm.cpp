@@ -263,7 +263,7 @@ void Comm::cleanup_smp(){
   if (non_uniform_map_ != nullptr)
     xbt_free(non_uniform_map_);
   if (leaders_map_ != nullptr)
-    xbt_free(leaders_map_);
+    delete[] leaders_map_;
 }
 
 void Comm::unref(Comm* comm){
@@ -332,11 +332,10 @@ void Comm::init_smp(){
   MPI_Comm comm_intra = new  Comm(group_intra, nullptr);
   leader=min_index;
 
-  int * leaders_map= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
-  int * leader_list= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
-  for(i=0; i<comm_size; i++){
-    leader_list[i] = -1;
-  }
+  int* leaders_map = new int[comm_size];
+  int* leader_list = new int[comm_size];
+  std::fill_n(leaders_map, comm_size, 0);
+  std::fill_n(leader_list, comm_size, -1);
 
   Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
@@ -347,7 +346,7 @@ void Comm::init_smp(){
   if(leaders_map_==nullptr){
     leaders_map_= leaders_map;
   }else{
-    xbt_free(leaders_map);
+    delete[] leaders_map;
   }
   int j=0;
   int leader_group_size = 0;
@@ -438,7 +437,7 @@ void Comm::init_smp(){
   }else{
     is_blocked_=global_blocked;
   }
-  xbt_free(leader_list);
+  delete[] leader_list;
 
   if(replaying)
     smpi_process()->set_replaying(true);
