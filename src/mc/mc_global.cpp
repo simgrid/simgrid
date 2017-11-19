@@ -148,7 +148,7 @@ void dumpStack(FILE* file, unw_cursor_t cursor)
     fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n", nframe, realname.get(), (std::uint64_t)rip,
             (std::uint64_t)rsp);
 #else
-    fprintf(file, "  %i: %s\n", nframe, realname ? realname : name);
+    fprintf(file, "  %i: %s\n", nframe, realname.get());
 #endif
 
     ++nframe;
