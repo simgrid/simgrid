@@ -463,7 +463,8 @@ double Model::nextOccuringEventFull(double /*now*/) {
   maxminSystem_->solve_fun(maxminSystem_);
 
   double min = -1;
-  for (auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; ++it) {
+
+  for (auto it(getRunningActionSet()->begin()); it != getRunningActionSet()->end(); ++it) {
     Action *action = &*it;
     double value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {

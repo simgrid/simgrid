@@ -82,7 +82,7 @@ namespace simgrid {
     {
       double minRes = Model::nextOccuringEventFull(now);
 
-      for(auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; it++) {
+      for (auto it(getRunningActionSet()->begin()); it != getRunningActionSet()->end(); it++) {
         NetworkAction *action = static_cast<NetworkAction*>(&*it);
         if (action->latency_ > 0)
           minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
