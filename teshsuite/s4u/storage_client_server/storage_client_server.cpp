@@ -22,37 +22,33 @@ static void display_storage_properties(simgrid::s4u::Storage* storage)
   }
 }
 
-static sg_size_t write_local_file(const char* dest, sg_size_t file_size)
+static sg_size_t write_local_file(const std::string& dest, sg_size_t file_size)
 {
-  simgrid::s4u::File* file = new simgrid::s4u::File(dest, nullptr);
-  sg_size_t written        = file->write(file_size);
+  simgrid::s4u::File file(dest, nullptr);
+  sg_size_t written = file.write(file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1", written, file_size,
            simgrid::s4u::Actor::self()->getCname());
-  delete file;
   return written;
 }
 
-static sg_size_t read_local_file(const char* src)
+static sg_size_t read_local_file(const std::string& src)
 {
-  simgrid::s4u::File* file = new simgrid::s4u::File(src, nullptr);
-  sg_size_t file_size      = file->size();
-  sg_size_t read           = file->read(file_size);
-
-  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getCname(), read, src);
-  delete file;
-
+  simgrid::s4u::File file(src, nullptr);
+  sg_size_t file_size = file.size();
+  sg_size_t read      = file.read(file_size);
+  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getCname(), read, src.c_str());
   return read;
 }
 
 // Read src file on local disk and send a put message to remote host (size of message = size of src file)
-static void hsm_put(const char* remote_host, const char* src, const char* dest)
+static void hsm_put(const std::string& remote_host, const std::string& src, const std::string& dest)
 {
   // Read local src file, and return the size that was actually read
   sg_size_t read_size = read_local_file(src);
 
   // Send file
-  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getCname(), read_size, remote_host);
-  char* payload                    = bprintf("%s %llu", dest, read_size);
+  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getCname(), read_size, remote_host.c_str());
+  std::string* payload             = new std::string(simgrid::xbt::string_printf("%s %llu", dest.c_str(), read_size));
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(remote_host);
   mailbox->put(payload, static_cast<double>(read_size));
   simgrid::s4u::this_actor::sleep_for(.4);
@@ -70,16 +66,16 @@ static void display_storage_content(simgrid::s4u::Storage* storage)
   }
 }
 
-static void dump_storage_by_name(const char* name)
+static void dump_storage_by_name(const std::string& name)
 {
   XBT_INFO("*** Dump a storage element ***");
   simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(name);
   display_storage_content(storage);
 }
 
-static void get_set_storage_data(const char* storage_name)
+static void get_set_storage_data(const std::string& storage_name)
 {
-  XBT_INFO("*** GET/SET DATA for storage element: %s ***", storage_name);
+  XBT_INFO("*** GET/SET DATA for storage element: %s ***", storage_name.c_str());
   simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(storage_name);
 
   char* data = static_cast<char*>(storage->getUserdata());
@@ -106,9 +102,9 @@ static void storage_info(simgrid::s4u::Host* host)
   XBT_INFO("*** Storage info on %s ***", host->getCname());
 
   for (auto const& elm : host->getMountedStorages()) {
-    const char* mount_name         = elm.first.c_str();
+    const std::string& mount_name  = elm.first;
     simgrid::s4u::Storage* storage = elm.second;
-    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getCname(), mount_name);
+    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getCname(), mount_name.c_str());
 
     sg_size_t free_size = storage->getSizeFree();
     sg_size_t used_size = storage->getSizeUsed();
@@ -128,7 +124,7 @@ static void client()
   hsm_put("alice", "/home/doc/simgrid/examples/msg/alias/masterslave_forwarder_with_alias.c", "c:\\Windows\\tata.c");
 
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("alice");
-  mailbox->put(xbt_strdup("finalize"), 0);
+  mailbox->put(new std::string("finalize"), 0);
 
   get_set_storage_data("Disk1");
 }
@@ -140,16 +136,16 @@ static void server()
 
   XBT_INFO("Server waiting for transfers ...");
   while (1) {
-    char* msg = static_cast<char*>(mailbox->get());
-    if (not strcmp(msg, "finalize")) { // Shutdown ...
-      xbt_free(msg);
+    std::string* msg = static_cast<std::string*>(mailbox->get());
+    if (*msg == "finalize") { // Shutdown ...
+      delete msg;
       break;
     } else { // Receive file to save
-      char* saveptr;
-      char* dest              = strtok_r(msg, " ", &saveptr);
-      sg_size_t size_to_write = std::stoull(strtok_r(nullptr, " ", &saveptr));
+      size_t pos              = msg->find(' ');
+      std::string dest        = msg->substr(0, pos);
+      sg_size_t size_to_write = std::stoull(msg->substr(pos + 1));
       write_local_file(dest, size_to_write);
-      xbt_free(dest);
+      delete msg;
     }
   }
 
@@ -159,17 +155,15 @@ static void server()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n", argv[0]);
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
 
   simgrid::s4u::Actor::createActor("server", simgrid::s4u::Host::by_name("alice"), server);
   simgrid::s4u::Actor::createActor("client", simgrid::s4u::Host::by_name("bob"), client);
 
-  e->run();
+  e.run();
 
-  XBT_INFO("Simulated time: %g", e->getClock());
-
-  delete e;
+  XBT_INFO("Simulated time: %g", e.getClock());
   return 0;
 }
