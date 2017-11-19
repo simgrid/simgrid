@@ -67,40 +67,32 @@ int main(int argc, char **argv)
     XBT_DEBUG("\t CPU actions");
 
     simgrid::surf::ActionList* action_list = surf_cpu_model_pm->getFailedActionSet();
-    for(simgrid::surf::ActionList::iterator it(action_list->begin()), itNext = it, itend(action_list->end()) ;
-        it != itend ; it=itNext) {
-      ++itNext;
-      simgrid::surf::Action *action = static_cast<simgrid::surf::CpuAction*>(&*it);
-       XBT_INFO("   CPU Failed action");
-       XBT_DEBUG("\t * Failed : %p", action);
-       action->unref();
+    while (not action_list->empty()) {
+      simgrid::surf::Action* action = &*action_list->begin();
+      XBT_INFO("   CPU Failed action");
+      XBT_DEBUG("\t * Failed : %p", action);
+      action->unref();
     }
 
     action_list = surf_cpu_model_pm->getDoneActionSet();
-    for(simgrid::surf::ActionList::iterator it(action_list->begin()), itNext = it, itend(action_list->end()) ;
-        it != itend ; it=itNext) {
-      ++itNext;
-      simgrid::surf::Action *action = static_cast<simgrid::surf::CpuAction*>(&*it);
+    while (not action_list->empty()) {
+      simgrid::surf::Action* action = &*action_list->begin();
       XBT_INFO("   CPU Done action");
       XBT_DEBUG("\t * Done : %p", action);
       action->unref();
     }
 
     action_list = surf_network_model->getFailedActionSet();
-    for(simgrid::surf::ActionList::iterator it(action_list->begin()), itNext = it, itend(action_list->end()) ;
-        it != itend ; it=itNext) {
-      ++itNext;
-      simgrid::surf::Action *action = static_cast<simgrid::surf::NetworkAction*>(&*it);
-       XBT_INFO("   Network Failed action");
-       XBT_DEBUG("\t * Failed : %p", action);
-       action->unref();
+    while (not action_list->empty()) {
+      simgrid::surf::Action* action = &*action_list->begin();
+      XBT_INFO("   Network Failed action");
+      XBT_DEBUG("\t * Failed : %p", action);
+      action->unref();
     }
 
     action_list = surf_network_model->getDoneActionSet();
-    for(simgrid::surf::ActionList::iterator it(action_list->begin()), itNext = it, itend(action_list->end()) ;
-        it != itend ; it=itNext) {
-      ++itNext;
-      simgrid::surf::Action *action = static_cast<simgrid::surf::NetworkAction*>(&*it);
+    while (not action_list->empty()) {
+      simgrid::surf::Action* action = &*action_list->begin();
       XBT_INFO("   Network Done action");
       XBT_DEBUG("\t * Done : %p", action);
       action->unref();
