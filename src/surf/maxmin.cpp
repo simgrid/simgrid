@@ -6,6 +6,7 @@
 /* \file callbacks.h */
 
 #include "maxmin_private.hpp"
+#include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/sysdep.h"
@@ -209,12 +210,9 @@ void lmm_system_free(lmm_system_t sys)
     return;
 
   while ((var = (lmm_variable_t) extract_variable(sys))) {
-    int status;
-    char* demangled = abi::__cxa_demangle(typeid(*var->id).name(), 0, 0, &status);
-
-    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled,
+    auto demangled = simgrid::xbt::demangle(typeid(*var->id).name());
+    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled.get(),
              var->id_int);
-    xbt_free(demangled);
     lmm_var_free(sys, var);
   }
   while ((cnst = (lmm_constraint_t) extract_constraint(sys)))
