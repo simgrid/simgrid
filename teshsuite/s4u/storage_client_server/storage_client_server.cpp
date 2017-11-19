@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u.hpp"
 #include <string>
+#include <xbt/string.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
