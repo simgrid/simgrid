@@ -25,7 +25,7 @@ documentation, but it should remain readable directly.
     @ref examples/s4u/actor-create/s4u-actor-create_d.xml \n
     Shows how to start your actors to populate your simulation.
 
-  - <b>Ping Pong</b>: @ref examples/s4u/app-pingpong/s4u-app-pingpong.c\n
+  - <b>Ping Pong</b>: @ref examples/s4u/app-pingpong/s4u-app-pingpong.cpp\n
     This simple example just sends one message back and forth.
     The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
     the simulators (as detailed in Section \ref options). 
