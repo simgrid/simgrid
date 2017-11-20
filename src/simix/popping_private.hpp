@@ -143,8 +143,8 @@ inline void marshal(type<boost::intrusive_ptr<T>>, u_smx_scalar& simcall, boost:
   if (value.get() == nullptr) { // Sometimes we return nullptr in an intrusive_ptr...
     simcall.dp = nullptr;
   } else {
-    intrusive_ptr_add_ref(&*value);
-    simcall.dp = static_cast<void*>(&*value);
+    intrusive_ptr_add_ref(value.get());
+    simcall.dp = static_cast<void*>(value.get());
   }
 }
 template <class T> inline boost::intrusive_ptr<T> unmarshal(type<boost::intrusive_ptr<T>>, u_smx_scalar const& simcall)
