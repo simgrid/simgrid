@@ -124,8 +124,8 @@ void xbt_init(int *argc, char **argv)
 {
   simgrid::xbt::installExceptionHandler();
 
-  if (xbt_initialized) {
-    xbt_initialized++;
+  xbt_initialized++;
+  if (xbt_initialized > 1) {
     XBT_DEBUG("XBT has been initialized %d times.", xbt_initialized);
     return;
   }
