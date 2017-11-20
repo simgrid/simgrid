@@ -608,7 +608,7 @@ void Action::finish(Action::State state)
   setState(state);
 }
 
-Action::State Action::getState()
+Action::State Action::getState() const
 {
   if (stateSet_ == model_->getReadyActionSet())
     return Action::State::ready;
@@ -645,7 +645,7 @@ void Action::setState(Action::State state)
     stateSet_->push_back(*this);
 }
 
-double Action::getBound()
+double Action::getBound() const
 {
   return (variable_) ? lmm_variable_getbound(variable_) : 0;
 }
@@ -659,21 +659,6 @@ void Action::setBound(double bound)
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
     heapRemove(getModel()->getActionHeap());
   XBT_OUT();
-}
-
-double Action::getStartTime()
-{
-  return start_;
-}
-
-double Action::getFinishTime()
-{
-  return finishTime_;
-}
-
-void Action::setData(void* data)
-{
-  data_ = data;
 }
 
 void Action::setCategory(const char *category)
@@ -804,11 +789,6 @@ double Action::getRemains()
   if (getModel()->getUpdateMechanism() == UM_LAZY)      /* update remains before return it */
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
-  return remains_;
-}
-
-double Action::getRemainsNoUpdate()
-{
   return remains_;
 }
 

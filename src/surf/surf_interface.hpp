@@ -132,27 +132,27 @@ public:
   void finish(Action::State state);
 
   /** @brief Get the [state](\ref simgrid::surf::Action::State) of the current Action */
-  Action::State getState(); /**< get the state*/
+  Action::State getState() const; /**< get the state*/
   /** @brief Set the [state](\ref simgrid::surf::Action::State) of the current Action */
   virtual void setState(Action::State state);
 
   /** @brief Get the bound of the current Action */
-  double getBound();
+  double getBound() const;
   /** @brief Set the bound of the current Action */
   void setBound(double bound);
 
   /** @brief Get the start time of the current action */
-  double getStartTime();
+  double getStartTime() const { return start_; }
   /** @brief Get the finish time of the current action */
-  double getFinishTime();
+  double getFinishTime() const { return finishTime_; }
 
   /** @brief Get the user data associated to the current action */
-  void *getData() {return data_;}
+  void* getData() const { return data_; }
   /** @brief Set the user data associated to the current action */
-  void setData(void* data);
+  void setData(void* data) { data_ = data; }
 
   /** @brief Get the cost of the current action */
-  double getCost() {return cost_;}
+  double getCost() const { return cost_; }
   /** @brief Set the cost of the current action */
   void setCost(double cost) {cost_ = cost;}
 
@@ -169,7 +169,7 @@ public:
   /** @brief Get the remaining time of the current action after updating the resource */
   virtual double getRemains();
   /** @brief Get the remaining time of the current action without updating the resource */
-  double getRemainsNoUpdate();
+  double getRemainsNoUpdate() const { return remains_; }
 
   /** @brief Set the finish time of the current action */
   void setFinishTime(double value) {finishTime_ = value;}
@@ -194,27 +194,27 @@ public:
   virtual bool isSuspended();
 
   /** @brief Get the maximum duration of the current action */
-  double getMaxDuration() {return maxDuration_;}
+  double getMaxDuration() const { return maxDuration_; }
   /** @brief Set the maximum duration of the current Action */
   virtual void setMaxDuration(double duration);
 
   /** @brief Get the tracing category associated to the current action */
-  char *getCategory() {return category_;}
+  char* getCategory() const { return category_; }
   /** @brief Set the tracing category of the current Action */
   void setCategory(const char *category);
 
   /** @brief Get the priority of the current Action */
-  double getPriority() { return sharingWeight_; };
+  double getPriority() const { return sharingWeight_; };
   /** @brief Set the priority of the current Action */
   virtual void setSharingWeight(double priority);
   void setSharingWeightNoUpdate(double weight) { sharingWeight_ = weight; }
 
   /** @brief Get the state set in which the action is */
-  ActionList* getStateSet() {return stateSet_;};
+  ActionList* getStateSet() const { return stateSet_; };
 
   s_xbt_swag_hookup_t stateHookup_ = {nullptr,nullptr};
 
-  simgrid::surf::Model* getModel() { return model_; }
+  simgrid::surf::Model* getModel() const { return model_; }
 
 protected:
   ActionList* stateSet_;
@@ -246,14 +246,14 @@ public:
   void heapRemove(heap_type& heap);
   void heapUpdate(heap_type& heap, double key, enum heap_action_type hat);
   void clearHeapHandle() { heapHandle_ = boost::none; }
-  lmm_variable_t getVariable() {return variable_;}
+  lmm_variable_t getVariable() const { return variable_; }
   void setVariable(lmm_variable_t var) { variable_ = var; }
-  double getLastUpdate() {return lastUpdate_;}
+  double getLastUpdate() const { return lastUpdate_; }
   void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
-  double getLastValue() { return lastValue_; }
+  double getLastValue() const { return lastValue_; }
   void setLastValue(double val) { lastValue_ = val; }
-  enum heap_action_type getHat() { return hat_; }
-  bool is_linked() {return action_lmm_hook.is_linked();}
+  enum heap_action_type getHat() const { return hat_; }
+  bool is_linked() const { return action_lmm_hook.is_linked(); }
 protected:
   int suspended_ = 0;
 };
@@ -279,28 +279,28 @@ public:
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  virtual ActionList* getReadyActionSet() {return readyActionSet_;}
+  virtual ActionList* getReadyActionSet() const { return readyActionSet_; }
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
-  virtual ActionList* getRunningActionSet() {return runningActionSet_;}
+  virtual ActionList* getRunningActionSet() const { return runningActionSet_; }
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  virtual ActionList* getFailedActionSet() {return failedActionSet_;}
+  virtual ActionList* getFailedActionSet() const { return failedActionSet_; }
 
   /** @brief Get the set of [actions](@ref Action) in *done* state */
-  virtual ActionList* getDoneActionSet() {return doneActionSet_;}
+  virtual ActionList* getDoneActionSet() const { return doneActionSet_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
-  virtual ActionLmmListPtr getModifiedSet() {return modifiedSet_;}
+  virtual ActionLmmListPtr getModifiedSet() const { return modifiedSet_; }
 
   /** @brief Get the maxmin system of the current Model */
-  lmm_system_t getMaxminSystem() {return maxminSystem_;}
+  lmm_system_t getMaxminSystem() const { return maxminSystem_; }
 
   /**
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
    */
-  e_UM_t getUpdateMechanism() {return updateMechanism_;}
+  e_UM_t getUpdateMechanism() const { return updateMechanism_; }
   void setUpdateMechanism(e_UM_t mechanism) { updateMechanism_ = mechanism; }
 
   /** @brief Get Action heap */
