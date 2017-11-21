@@ -149,7 +149,7 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
   auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
   auto data = res.first;
   if (res.second) {
-    // The insertion did not take place.
+    // The new element was inserted.
     // Generate a shared memory name from the address of the shared_data:
     char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
     snprintf(shmname, 31, "/shmalloc%p", &*data);
