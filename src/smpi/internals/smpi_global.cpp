@@ -371,7 +371,8 @@ void smpi_global_destroy()
   smpi_bench_destroy();
   smpi_shared_destroy();
   smpi_deployment_cleanup_instances();
-  for (int i = 0; i < smpi_process_count(); i++) {
+  int count = smpi_process_count();
+  for (int i = 0; i < count; i++) {
     if(process_data[i]->comm_self()!=MPI_COMM_NULL){
       simgrid::smpi::Comm::destroy(process_data[i]->comm_self());
     }
@@ -658,7 +659,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
     }
   }
   int ret   = 0;
-  for (int i = 0, count = smpi_process_count(); i < count; i++) {
+  int count = smpi_process_count();
+  for (int i = 0; i < count; i++) {
     if(process_data[i]->return_value()!=0){
       ret=process_data[i]->return_value();//return first non 0 value
       break;

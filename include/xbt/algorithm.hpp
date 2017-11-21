@@ -6,6 +6,8 @@
 #ifndef XBT_ALGORITHM_HPP
 #define XBT_ALGORITHM_HPP
 
+#include <utility>
+
 namespace simgrid {
 namespace xbt {
 

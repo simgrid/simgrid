@@ -81,10 +81,10 @@ static void clusterCreation_cb(ClusterCreationArgs* cluster)
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
                              simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
                              simgrid::kernel::routing::NetPoint* gw_dst,
-                             std::vector<simgrid::surf::LinkImpl*>* link_list)
+                             std::vector<simgrid::surf::LinkImpl*>& link_list)
 {
-  if (link_list->size() == 1) {
-    simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list->at(0));
+  if (link_list.size() == 1) {
+    simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list[0]);
 
     XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->getCname(), dst->getCname(), link->getCname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
@@ -109,7 +109,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                "of length 1.\n"
                "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
                "ignored.",
-               src->getCname(), dst->getCname(), link_list->size());
+               src->getCname(), dst->getCname(), link_list.size());
     warned_about_long_routes = true;
   }
 }
@@ -219,7 +219,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
 
-      action->src_->routeTo(action->dst_, &route, nullptr);
+      action->src_->routeTo(action->dst_, route, nullptr);
       for (auto const& link : route)
         TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), (data_delta_sent) / delta, now - delta,
                                         delta);

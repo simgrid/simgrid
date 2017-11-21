@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <boost/heap/fibonacci_heap.hpp>
 #include <functional>
 #include <memory>
 
@@ -12,6 +13,7 @@
 
 #include <xbt/algorithm.hpp>
 #include <xbt/functional.hpp>
+#include <xbt/utility.hpp>
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
@@ -50,14 +52,18 @@ XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
 
 std::unique_ptr<simgrid::simix::Global> simix_global;
-static xbt_heap_t simix_timers = nullptr;
+
+namespace {
+typedef std::pair<double, smx_timer_t> TimerQelt;
+boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<simgrid::xbt::HeapComparator<TimerQelt>>> simix_timers;
+}
 
 /** @brief Timer datatype */
 class s_smx_timer_t {
   double date = 0.0;
-  s_smx_timer_t() = default;
 
 public:
+  decltype(simix_timers)::handle_type handle_;
   simgrid::xbt::Task<void()> callback;
   double getDate() { return date; }
   s_smx_timer_t(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
@@ -156,7 +162,7 @@ static void install_segvhandler()
 /********************************* SIMIX **************************************/
 double SIMIX_timer_next()
 {
-  return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
+  return simix_timers.empty() ? -1.0 : simix_timers.top().first;
 }
 
 static void kill_process(smx_actor_t process)
@@ -240,11 +246,6 @@ void SIMIX_global_init(int *argc, char **argv)
     });
   }
 
-  if (not simix_timers)
-    simix_timers = xbt_heap_new(8, [](void* p) {
-      delete static_cast<smx_timer_t>(p);
-    });
-
   if (xbt_cfg_get_boolean("clean-atexit"))
     atexit(SIMIX_clean);
 
@@ -292,8 +293,10 @@ void SIMIX_clean()
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
 
-  xbt_heap_free(simix_timers);
-  simix_timers = nullptr;
+  while (not simix_timers.empty()) {
+    delete simix_timers.top().second;
+    simix_timers.pop();
+  }
   /* Free the remaining data structures */
   simix_global->process_to_run.clear();
   simix_global->process_that_ran.clear();
@@ -363,18 +366,18 @@ static void SIMIX_wake_processes()
 static bool SIMIX_execute_timers()
 {
   bool result = false;
-  while (xbt_heap_size(simix_timers) > 0 && SIMIX_get_clock() >= SIMIX_timer_next()) {
+  while (not simix_timers.empty() && SIMIX_get_clock() >= simix_timers.top().first) {
     result = true;
-     //FIXME: make the timers being real callbacks
-     // (i.e. provide dispatchers that read and expand the args)
-     smx_timer_t timer = (smx_timer_t) xbt_heap_pop(simix_timers);
-     try {
-       timer->callback();
-     }
-     catch(...) {
-       xbt_die("Exception throwed ouf of timer callback");
-     }
-     delete timer;
+    // FIXME: make the timers being real callbacks
+    // (i.e. provide dispatchers that read and expand the args)
+    smx_timer_t timer = simix_timers.top().second;
+    simix_timers.pop();
+    try {
+      timer->callback();
+    } catch (...) {
+      xbt_die("Exception thrown ouf of timer callback");
+    }
+    delete timer;
   }
   return result;
 }
@@ -564,20 +567,21 @@ void SIMIX_run()
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
   smx_timer_t timer = new s_smx_timer_t(date, [callback, arg]() { callback(arg); });
-  xbt_heap_push(simix_timers, timer, date);
+  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
 
 smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 {
   smx_timer_t timer = new s_smx_timer_t(date, std::move(callback));
-  xbt_heap_push(simix_timers, timer, date);
+  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
 
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
-  delete static_cast<smx_timer_t>(xbt_heap_rm_elm(simix_timers, timer, timer->getDate()));
+  simix_timers.erase(timer->handle_);
+  delete timer;
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */

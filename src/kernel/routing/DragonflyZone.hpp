@@ -72,7 +72,7 @@ public:
 
 private:
   void rankId_to_coords(int rankId, unsigned int (*coords)[4]);
-  ClusterCreationArgs* cluster_;
+  ClusterCreationArgs* cluster_     = nullptr;
   unsigned int numNodesPerBlade_    = 0;
   unsigned int numBladesPerChassis_ = 0;
   unsigned int numChassisPerGroup_  = 0;

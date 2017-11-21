@@ -22,6 +22,8 @@
  */
 
 #include "../colls_private.hpp"
+#include <algorithm>
+
 namespace simgrid{
 namespace smpi{
 int Coll_allreduce_mvapich2_rs::allreduce(void *sendbuf,
@@ -53,7 +55,7 @@ int Coll_allreduce_mvapich2_rs::allreduce(void *sendbuf,
     datatype->extent(&true_lb, &true_extent);
     extent = datatype->get_extent();
 
-    tmp_buf_free= smpi_get_tmp_recvbuffer(count * (MAX(extent, true_extent)));
+    tmp_buf_free = smpi_get_tmp_recvbuffer(count * std::max(extent, true_extent));
 
     /* adjust for potential negative lower bound in datatype */
     tmp_buf = (void *) ((char *) tmp_buf_free - true_lb);

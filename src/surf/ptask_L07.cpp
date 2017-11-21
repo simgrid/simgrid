@@ -65,7 +65,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   , hostModel_(hmodel)
 {
   maxminSystem_ = sys;
-  loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
+  loopback_     = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
@@ -182,8 +182,8 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
           double lat=0.0;
 
           std::vector<LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
-          latency = MAX(latency, lat);
+          hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
+          latency = std::max(latency, lat);
 
           for (auto const& link : route)
             affected_links.insert(link->getCname());
@@ -210,7 +210,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
       for (int j = 0; j < host_nb; j++) {
         if (bytes_amount[i * host_nb + j] > 0.0) {
           std::vector<LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), &route, nullptr);
+          hostList_->at(i)->routeTo(hostList_->at(j), route, nullptr);
 
           for (auto const& link : route)
             lmm_expand_add(model->getMaxminSystem(), link->constraint(), this->getVariable(),
@@ -407,9 +407,9 @@ void L07Action::updateBound()
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
           std::vector<LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
+          hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
 
-          lat_current = MAX(lat_current, lat * communicationAmount_[i * hostNb + j]);
+          lat_current = std::max(lat_current, lat * communicationAmount_[i * hostNb + j]);
         }
       }
     }

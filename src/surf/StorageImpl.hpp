@@ -205,7 +205,6 @@ public:
 
   e_surf_action_storage_type_t type_;
   StorageImpl* storage_;
-  FileImpl* file_ = nullptr;
 };
 
 class StorageType {

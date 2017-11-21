@@ -93,7 +93,7 @@ public:
   ~StateType();
   void setEvent(std::string value_name);
   void pushEvent(std::string value_name);
-  void pushEvent(std::string value_name, void* extra);
+  void pushEvent(std::string value_name, TIData* extra);
   void popEvent();
 };
 }

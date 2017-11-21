@@ -11,6 +11,8 @@
 #include "xbt/mallocator.h"
 #include "xbt/swag.h"
 
+#include <vector>
+
 /** @ingroup SURF_lmm
  * @brief LMM element
  * Elements can be seen as glue between constraint objects and variable objects.
@@ -31,8 +33,8 @@ struct s_lmm_element_t {
   //   - If network, then 1 in forward direction and 0.05 backward for the ACKs
   double consumption_weight;
 };
-#define make_elem_active(elem) xbt_swag_insert_at_head(elem,&(elem->constraint->active_element_set))
-#define make_elem_inactive(elem) xbt_swag_remove(elem,&(elem->constraint->active_element_set))
+#define make_elem_active(elem) xbt_swag_insert_at_head((elem), &((elem)->constraint->active_element_set))
+#define make_elem_inactive(elem) xbt_swag_remove((elem), &((elem)->constraint->active_element_set))
 
 struct s_lmm_constraint_light_t {
   double remaining_over_usage;
@@ -83,9 +85,7 @@ struct s_lmm_variable_t {
   s_xbt_swag_hookup_t variable_set_hookup;
   s_xbt_swag_hookup_t saturated_variable_set_hookup;
 
-  s_lmm_element_t *cnsts;
-  int cnsts_size;
-  int cnsts_number;
+  std::vector<s_lmm_element_t> cnsts;
 
   // sharing_weight: variable's impact on the resource during the sharing
   //   if == 0, the variable is not considered by LMM
@@ -132,17 +132,25 @@ struct s_lmm_system_t {
   void (*solve_fun)(lmm_system_t self);
 };
 
-#define extract_variable(sys) xbt_swag_extract(&(sys->variable_set))
-#define extract_constraint(sys) xbt_swag_extract(&(sys->constraint_set))
-#define insert_constraint(sys,cnst) xbt_swag_insert(cnst,&(sys->constraint_set))
-#define remove_variable(sys,var) do {xbt_swag_remove(var,&(sys->variable_set));\
-                                 xbt_swag_remove(var,&(sys->saturated_variable_set));} while(0)
-#define remove_constraint(sys,cnst) do {xbt_swag_remove(cnst,&(sys->constraint_set));\
-                                        xbt_swag_remove(cnst,&(sys->saturated_constraint_set));} while(0)
-#define make_constraint_active(sys,cnst) xbt_swag_insert(cnst,&(sys->active_constraint_set))
-#define make_constraint_inactive(sys,cnst) \
-  do { xbt_swag_remove(cnst, &sys->active_constraint_set);              \
-    xbt_swag_remove(cnst, &sys->modified_constraint_set); } while (0)
+#define extract_variable(sys) xbt_swag_extract(&((sys)->variable_set))
+#define extract_constraint(sys) xbt_swag_extract(&((sys)->constraint_set))
+#define insert_constraint(sys, cnst) xbt_swag_insert((cnst), &((sys)->constraint_set))
+#define remove_variable(sys, var)                                                                                      \
+  do {                                                                                                                 \
+    xbt_swag_remove(var, &((sys)->variable_set));                                                                      \
+    xbt_swag_remove(var, &((sys)->saturated_variable_set));                                                            \
+  } while (0)
+#define remove_constraint(sys, cnst)                                                                                   \
+  do {                                                                                                                 \
+    xbt_swag_remove((cnst), &((sys)->constraint_set));                                                                 \
+    xbt_swag_remove((cnst), &((sys)->saturated_constraint_set));                                                       \
+  } while (0)
+#define make_constraint_active(sys, cnst) xbt_swag_insert((cnst), &((sys)->active_constraint_set))
+#define make_constraint_inactive(sys, cnst)                                                                            \
+  do {                                                                                                                 \
+    xbt_swag_remove((cnst), &(sys)->active_constraint_set);                                                            \
+    xbt_swag_remove((cnst), &(sys)->modified_constraint_set);                                                          \
+  } while (0)
 
 /** @ingroup SURF_lmm
  * @brief Print information about a lmm system

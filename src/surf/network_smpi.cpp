@@ -11,7 +11,7 @@
 
 #include "network_smpi.hpp"
 #include "simgrid/sg_config.h"
-#include "smpi/smpi_utils.hpp"
+#include "smpi_utils.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 

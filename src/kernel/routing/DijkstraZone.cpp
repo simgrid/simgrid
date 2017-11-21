@@ -8,6 +8,8 @@
 #include "src/surf/network_interface.hpp"
 
 #include <cfloat>
+#include <queue>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 
@@ -19,13 +21,10 @@ static void graph_node_data_free(void* n)
   delete data;
 }
 
-static void graph_edge_data_free(void* e) // FIXME: useless code duplication
+static void graph_edge_data_free(void* e)
 {
   sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(e);
-  if (e_route) {
-    delete e_route->link_list;
-    delete e_route;
-  }
+  delete e_route;
 }
 
 /* Utility functions */
@@ -58,8 +57,7 @@ void DijkstraZone::seal()
 
       if (not found) {
         sg_platf_route_cbarg_t e_route = new s_sg_platf_route_cbarg_t;
-        e_route->link_list             = new std::vector<surf::LinkImpl*>();
-        e_route->link_list->push_back(surf_network_model->loopback_);
+        e_route->link_list.push_back(surf_network_model->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
       }
     }
@@ -153,8 +151,8 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
 
     sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
 
-    for (auto const& link : *e_route->link_list) {
-      route->link_list->insert(route->link_list->begin(), link);
+    for (auto const& link : e_route->link_list) {
+      route->link_list.insert(route->link_list.begin(), link);
       if (lat)
         *lat += static_cast<surf::LinkImpl*>(link)->latency();
     }
@@ -167,7 +165,8 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     int nr_nodes      = xbt_dynar_length(nodes);
     std::vector<double> cost_arr(nr_nodes); /* link cost from src to other hosts */
     pred_arr.resize(nr_nodes);              /* predecessors in path from src */
-    xbt_heap_t pqueue = xbt_heap_new(nr_nodes, nullptr);
+    typedef std::pair<double, int> Qelt;
+    std::priority_queue<Qelt, std::vector<Qelt>, std::greater<Qelt>> pqueue;
 
     /* initialize */
     cost_arr[src_node_id] = 0.0;
@@ -180,14 +179,14 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
       pred_arr[i] = 0;
 
       /* initialize priority queue */
-      int* nodeid = new int(i);
-      xbt_heap_push(pqueue, nodeid, cost_arr[i]);
+      pqueue.emplace(cost_arr[i], i);
     }
 
     /* apply dijkstra using the indexes from the graph's node array */
-    while (xbt_heap_size(pqueue) > 0) {
-      int* v_id         = static_cast<int*>(xbt_heap_pop(pqueue));
-      xbt_node_t v_node = xbt_dynar_get_as(nodes, *v_id, xbt_node_t);
+    while (not pqueue.empty()) {
+      int v_id = pqueue.top().second;
+      pqueue.pop();
+      xbt_node_t v_node = xbt_dynar_get_as(nodes, v_id, xbt_node_t);
       xbt_edge_t edge   = nullptr;
       unsigned int cursor;
 
@@ -196,20 +195,15 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
         graph_node_data_t data             = static_cast<graph_node_data_t>(xbt_graph_node_get_data(u_node));
         int u_id                           = data->graph_id;
         sg_platf_route_cbarg_t tmp_e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
-        int cost_v_u                       = tmp_e_route->link_list->size(); /* count of links, old model assume 1 */
+        int cost_v_u                       = tmp_e_route->link_list.size(); /* count of links, old model assume 1 */
 
-        if (cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
-          pred_arr[u_id] = *v_id;
-          cost_arr[u_id] = cost_v_u + cost_arr[*v_id];
-          int* nodeid    = new int(u_id);
-          xbt_heap_push(pqueue, nodeid, cost_arr[u_id]);
+        if (cost_v_u + cost_arr[v_id] < cost_arr[u_id]) {
+          pred_arr[u_id] = v_id;
+          cost_arr[u_id] = cost_v_u + cost_arr[v_id];
+          pqueue.emplace(cost_arr[u_id], u_id);
         }
       }
-
-      /* free item popped from pqueue */
-      delete v_id;
     }
-    xbt_heap_free(pqueue);
   }
 
   /* compose route path with links */
@@ -239,18 +233,18 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
 
       NetPoint* gw_dst_net_elm      = nullptr;
       NetPoint* prev_gw_src_net_elm = nullptr;
-      getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, nullptr);
-      auto pos = route->link_list->begin();
+      getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
+      auto pos = route->link_list.begin();
       for (auto const& link : e_route_as_to_as) {
-        route->link_list->insert(pos, link);
+        route->link_list.insert(pos, link);
         if (lat)
           *lat += link->latency();
         pos++;
       }
     }
 
-    for (auto const& link : *e_route->link_list) {
-      route->link_list->insert(route->link_list->begin(), link);
+    for (auto const& link : e_route->link_list) {
+      route->link_list.insert(route->link_list.begin(), link);
       if (lat)
         *lat += static_cast<surf::LinkImpl*>(link)->latency();
     }

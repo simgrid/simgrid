@@ -30,7 +30,7 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
     xbt_assert(not src->isRouter(), "Routing from a cluster private router to itself is meaningless");
 
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePosition(src->id()));
-    route->link_list->push_back(info.first);
+    route->link_list.push_back(info.first);
     if (lat)
       *lat += info.first->latency();
     return;
@@ -39,19 +39,19 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   if (not src->isRouter()) { // No private link for the private router
     if (hasLimiter_) { // limiter for sender
       std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(src->id()));
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
     }
 
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLimiter(src->id()));
     if (info.first) { // link up
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
       if (lat)
         *lat += info.first->latency();
     }
   }
 
   if (backbone_) {
-    route->link_list->push_back(backbone_);
+    route->link_list.push_back(backbone_);
     if (lat)
       *lat += backbone_->latency();
   }
@@ -60,13 +60,13 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLimiter(dst->id()));
     if (info.second) { // link down
-      route->link_list->push_back(info.second);
+      route->link_list.push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }
     if (hasLimiter_) { // limiter for receiver
       info = privateLinks_.at(nodePositionWithLoopback(dst->id()));
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
     }
   }
 }
@@ -117,7 +117,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
   }
 }
 
-void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int /*rank*/, int position)
+void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int /*rank*/, unsigned int position)
 {
   std::string link_id = cluster->id + "_link_" + std::to_string(id);
 

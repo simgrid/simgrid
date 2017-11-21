@@ -91,7 +91,7 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   if (src_link != privateLinks_.end()) {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = src_link->second;
     if (info.first) {
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
       if (lat)
         *lat += info.first->latency();
     }
@@ -103,7 +103,7 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   if (dst_link != privateLinks_.end()) {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = dst_link->second;
     if (info.second) {
-      route->link_list->push_back(info.second);
+      route->link_list.push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }

@@ -104,8 +104,8 @@ public:
    */
   std::unordered_map<std::string, Storage*> const& getMountedStorages();
 
-  void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
-  void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
+  void routeTo(Host* dest, std::vector<Link*>& links, double* latency);
+  void routeTo(Host* dest, std::vector<surf::LinkImpl*>& links, double* latency);
 
   /** Block the calling actor on an execution located on the called host
    *

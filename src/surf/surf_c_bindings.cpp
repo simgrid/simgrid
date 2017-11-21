@@ -6,6 +6,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include <algorithm>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -74,10 +75,10 @@ double surf_solve(double max_date)
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
     if (not surf_network_model->nextOccuringEventIsIdempotent()) { // NS3, I see you
-      if (next_event_date!=-1.0 && time_delta!=-1.0) {
-        time_delta = MIN(next_event_date - NOW, time_delta);
+      if (next_event_date != -1.0) {
+        time_delta = std::min(next_event_date - NOW, time_delta);
       } else {
-        time_delta = MAX(next_event_date - NOW, time_delta); // Get the positive component
+        time_delta = std::max(next_event_date - NOW, time_delta); // Get the positive component
       }
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
@@ -85,17 +86,15 @@ double surf_solve(double max_date)
       model_next_action_end = surf_network_model->nextOccuringEvent(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
-      if(model_next_action_end>=0.0)
+      if (model_next_action_end >= 0.0)
         time_delta = model_next_action_end;
     }
 
-    if (next_event_date < 0.0) {
-      XBT_DEBUG("no next TRACE event. Stop searching for it");
+    if (next_event_date < 0.0 || (next_event_date > NOW + time_delta)) {
+      // next event may have already occurred or will after the next resource change, then bail out
+      XBT_DEBUG("no next usable TRACE event. Stop searching for it");
       break;
     }
-
-    if ((time_delta == -1.0) || (next_event_date > NOW + time_delta))
-      break; // next event occurs after the next resource change, bail out
 
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
@@ -129,9 +128,9 @@ double surf_solve(double max_date)
   NOW = NOW + time_delta;
 
   // Inform the models of the date change
-  for (auto const& model : *all_existing_models) {
+  for (auto const& model : *all_existing_models)
     model->updateActionsState(NOW, time_delta);
-  }
+
   simgrid::s4u::onTimeAdvance(time_delta);
 
   TRACE_paje_dump_buffer(false);

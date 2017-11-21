@@ -365,7 +365,6 @@ Model::Model()
   doneActionSet_ = new ActionList();
 
   modifiedSet_ = nullptr;
-  actionHeap_ = nullptr;
   updateMechanism_ = UM_UNDEFINED;
   selectiveUpdate_ = 0;
 }
@@ -375,6 +374,14 @@ Model::~Model(){
   delete runningActionSet_;
   delete failedActionSet_;
   delete doneActionSet_;
+}
+
+Action* Model::actionHeapPop()
+{
+  Action* action = actionHeap_.top().second;
+  actionHeap_.pop();
+  action->clearHeapHandle();
+  return action;
 }
 
 double Model::nextOccuringEvent(double now)
@@ -442,8 +449,8 @@ double Model::nextOccuringEventLazy(double now)
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(actionHeap_) > 0) {
-    double min = xbt_heap_maxkey(actionHeap_) - now;
+  if (not actionHeapIsEmpty()) {
+    double min = actionHeapTopDate() - now;
     XBT_DEBUG("minimum with the HEAP %f", min);
     return min;
   } else {
@@ -456,7 +463,8 @@ double Model::nextOccuringEventFull(double /*now*/) {
   maxminSystem_->solve_fun(maxminSystem_);
 
   double min = -1;
-  for (auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; ++it) {
+
+  for (auto it(getRunningActionSet()->begin()); it != getRunningActionSet()->end(); ++it) {
     Action *action = &*it;
     double value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
@@ -572,11 +580,6 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-/* added to manage the communication action's heap */
-void surf_action_lmm_update_index_heap(void *action, int i) {
-  static_cast<simgrid::surf::Action*>(action)->updateIndexHeap(i);
-}
-
 namespace simgrid {
 namespace surf {
 
@@ -605,7 +608,7 @@ void Action::finish(Action::State state)
   setState(state);
 }
 
-Action::State Action::getState()
+Action::State Action::getState() const
 {
   if (stateSet_ == model_->getReadyActionSet())
     return Action::State::ready;
@@ -642,7 +645,7 @@ void Action::setState(Action::State state)
     stateSet_->push_back(*this);
 }
 
-double Action::getBound()
+double Action::getBound() const
 {
   return (variable_) ? lmm_variable_getbound(variable_) : 0;
 }
@@ -656,21 +659,6 @@ void Action::setBound(double bound)
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
     heapRemove(getModel()->getActionHeap());
   XBT_OUT();
-}
-
-double Action::getStartTime()
-{
-  return start_;
-}
-
-double Action::getFinishTime()
-{
-  return finishTime_;
-}
-
-void Action::setData(void* data)
-{
-  data_ = data;
 }
 
 void Action::setCategory(const char *category)
@@ -769,32 +757,29 @@ bool Action::isSuspended()
  * LATENCY = this is a heap entry to warn us when the latency is payed
  * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
  */
-void Action::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapInsert(heap_type& heap, double key, enum heap_action_type hat)
 {
   hat_ = hat;
-  xbt_heap_push(heap, this, key);
+  heapHandle_ = heap.emplace(std::make_pair(key, this));
 }
 
-void Action::heapRemove(xbt_heap_t heap)
+void Action::heapRemove(heap_type& heap)
 {
   hat_ = NOTSET;
-  if (indexHeap_ >= 0) {
-    xbt_heap_remove(heap, indexHeap_);
+  if (heapHandle_) {
+    heap.erase(*heapHandle_);
+    clearHeapHandle();
   }
 }
 
-void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapUpdate(heap_type& heap, double key, enum heap_action_type hat)
 {
   hat_ = hat;
-  if (indexHeap_ >= 0) {
-    xbt_heap_update(heap, indexHeap_, key);
-  }else{
-    xbt_heap_push(heap, this, key);
+  if (heapHandle_) {
+    heap.update(*heapHandle_, std::make_pair(key, this));
+  } else {
+    heapHandle_ = heap.emplace(std::make_pair(key, this));
   }
-}
-
-void Action::updateIndexHeap(int i) {
-  indexHeap_ = i;
 }
 
 double Action::getRemains()
@@ -804,11 +789,6 @@ double Action::getRemains()
   if (getModel()->getUpdateMechanism() == UM_LAZY)      /* update remains before return it */
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
-  return remains_;
-}
-
-double Action::getRemainsNoUpdate()
-{
   return remains_;
 }
 

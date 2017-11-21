@@ -184,13 +184,6 @@ XBT_PUBLIC(void) lmm_constraint_shared(lmm_constraint_t cnst);
 XBT_PUBLIC(int) lmm_constraint_sharing_policy(lmm_constraint_t cnst);
 
 /**
- * @brief Free a constraint
- * @param sys The system associated to the constraint
- * @param cnst The constraint to free
- */
-XBT_PUBLIC(void) lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
-
-/**
  * @brief Get the usage of the constraint after the last lmm solve
  * @param cnst A constraint
  * @return The usage of the constraint
@@ -267,14 +260,6 @@ XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
 XBT_PUBLIC(void) lmm_variable_concurrency_share_set(lmm_variable_t var, short int concurrency_share);
 
 /**
- * @brief Remove a variable from a constraint
- * @param sys A system
- * @param cnst A constraint
- * @param var The variable to remove
- */
-XBT_PUBLIC(void) lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var);
-
-/**
  * @brief Associate a variable to a constraint with a coefficient
  * @param sys A system
  * @param cnst A constraint
@@ -299,7 +284,7 @@ XBT_PUBLIC(void) lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst, lmm_var
  * @param num The rank of constraint we want to get
  * @return The numth constraint
  */
-XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, int num);
+XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, unsigned num);
 
 /**
  * @brief Get the weigth of the numth constraint associated to the variable
@@ -308,7 +293,7 @@ XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys, lmm_variabl
  * @param num The rank of constraint we want to get
  * @return The numth constraint
  */
-XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var, int num);
+XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var, unsigned num);
 
 /**
  * @brief Get the number of constraint associated to a variable

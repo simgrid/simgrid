@@ -12,6 +12,7 @@
 namespace simgrid {
 namespace instr {
 class EntityValue;
+class TIData;
 
 enum e_event_type : unsigned int {
   PAJE_DefineContainerType,
@@ -62,12 +63,12 @@ public:
 class StateEvent : public PajeEvent {
   EntityValue* value;
   std::string filename;
-  int linenumber;
-  void* extra_ = nullptr;
+  int linenumber = 0;
+  TIData* extra_ = nullptr;
 
 public:
   StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value);
-  StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, void* extra);
+  StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra);
   void print() override;
 };
 

@@ -70,8 +70,8 @@ void       cond_broadcast(smx_cond_t cond) [[nohandler]];
 void      sem_acquire(smx_sem_t sem) [[block]];
 void      sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
 
-sg_size_t   file_read(surf_file_t fd, sg_size_t size) [[block]];
-sg_size_t   file_write(surf_file_t fd, sg_size_t size) [[block]];
+sg_size_t   storage_read(surf_storage_t st, sg_size_t size) [[block]];
+sg_size_t   storage_write(surf_storage_t st, sg_size_t size) [[block]];
 
 int        mc_random(int min, int max);
 void       set_category(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> synchro, const char* category) [[nohandler]];

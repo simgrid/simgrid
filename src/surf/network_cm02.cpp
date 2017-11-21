@@ -150,11 +150,9 @@ NetworkCm02Model::NetworkCm02Model()
   }
 
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
-  loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
+  loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    actionHeap_ = xbt_heap_new(8, nullptr);
-    xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
     modifiedSet_ = new ActionLmmList();
     maxminSystem_->keep_track = modifiedSet_;
   }
@@ -173,10 +171,9 @@ LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(actionHeap_) > 0)
-         && (double_equals(xbt_heap_maxkey(actionHeap_), now, sg_surf_precision))) {
+  while (not actionHeapIsEmpty() && double_equals(actionHeapTopDate(), now, sg_surf_precision)) {
 
-    NetworkCm02Action *action = static_cast<NetworkCm02Action*> (xbt_heap_pop(actionHeap_));
+    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(actionHeapPop());
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());
@@ -195,7 +192,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     if (action->getHat() == LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       lmm_update_variable_weight(maxminSystem_, action->getVariable(), action->weight_);
-      action->heapRemove(actionHeap_);
+      action->heapRemove(getActionHeap());
       action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
@@ -205,7 +202,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       XBT_DEBUG("Action %p finished", action);
       action->setRemains(0);
       action->finish(Action::State::done);
-      action->heapRemove(actionHeap_);
+      action->heapRemove(getActionHeap());
     }
   }
 }
@@ -214,12 +211,11 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 {
   ActionList *running_actions = getRunningActionSet();
-
-  for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
-     ; it != itend ; it=itNext) {
-    ++itNext;
-
+  ActionList::iterator it(running_actions->begin());
+  ActionList::iterator itend(running_actions->end());
+  while (it != itend) {
     NetworkCm02Action *action = static_cast<NetworkCm02Action*> (&*it);
+    ++it;
     XBT_DEBUG("Something happened to action %p", action);
       double deltap = delta;
       if (action->latency_ > 0) {
@@ -267,24 +263,23 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 {
   int failed = 0;
   double latency = 0.0;
-  std::vector<LinkImpl*>* back_route = nullptr;
-  std::vector<LinkImpl*>* route = new std::vector<LinkImpl*>();
+  std::vector<LinkImpl*> back_route;
+  std::vector<LinkImpl*> route;
 
   XBT_IN("(%s,%s,%g,%g)", src->getCname(), dst->getCname(), size, rate);
 
   src->routeTo(dst, route, &latency);
-  xbt_assert(not route->empty() || latency,
+  xbt_assert(not route.empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->getCname(), dst->getCname());
 
-  for (auto const& link : *route)
+  for (auto const& link : route)
     if (link->isOff())
       failed = 1;
 
   if (sg_network_crosstraffic == 1) {
-    back_route = new std::vector<LinkImpl*>();
     dst->routeTo(src, back_route, nullptr);
-    for (auto const& link : *back_route)
+    for (auto const& link : back_route)
       if (link->isOff())
         failed = 1;
   }
@@ -294,16 +289,15 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ = latency;
   action->rate_ = rate;
   if (getUpdateMechanism() == UM_LAZY) {
-    action->updateIndexHeap(-1);
     action->refreshLastUpdate();
   }
 
   double bandwidth_bound = -1.0;
   if (sg_weight_S_parameter > 0)
-    for (auto const& link : *route)
+    for (auto const& link : route)
       action->weight_ += sg_weight_S_parameter / link->bandwidth();
 
-  for (auto const& link : *route) {
+  for (auto const& link : route) {
     double bb       = bandwidthFactor(size) * link->bandwidth();
     bandwidth_bound = (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
   }
@@ -312,16 +306,15 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_ *= latencyFactor(size);
   action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
 
-  int constraints_per_variable = route->size();
-  if (back_route != nullptr)
-    constraints_per_variable += back_route->size();
+  int constraints_per_variable = route.size();
+  constraints_per_variable += back_route.size();
 
   if (action->latency_ > 0) {
     action->setVariable(lmm_variable_new(maxminSystem_, action, 0.0, -1.0, constraints_per_variable));
     if (getUpdateMechanism() == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->getLastUpdate());
-      action->heapInsert(actionHeap_, action->latency_ + action->getLastUpdate(), route->empty() ? NORMAL : LATENCY);
+      action->heapInsert(getActionHeap(), action->latency_ + action->getLastUpdate(), route.empty() ? NORMAL : LATENCY);
     }
   } else
     action->setVariable(lmm_variable_new(maxminSystem_, action, 1.0, -1.0, constraints_per_variable));
@@ -332,21 +325,18 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     lmm_update_variable_bound(maxminSystem_, action->getVariable(), (action->latCurrent_ > 0) ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)) : action->rate_);
   }
 
-  for (auto const& link : *route)
+  for (auto const& link : route)
     lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), 1.0);
 
-  if (back_route != nullptr) { //  sg_network_crosstraffic was activated
+  if (not back_route.empty()) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
-    for (auto const& link : *back_route)
+    for (auto const& link : back_route)
       lmm_expand(maxminSystem_, link->constraint(), action->getVariable(), .05);
 
     //Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     //(You would also have to change lmm_element_concurrency())
     //lmm_variable_concurrency_share_set(action->getVariable(),2);
   }
-
-  delete route;
-  delete back_route;
   XBT_OUT();
 
   simgrid::s4u::Link::onCommunicate(action, src, dst);

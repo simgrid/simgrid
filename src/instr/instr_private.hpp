@@ -32,6 +32,150 @@
 
 typedef simgrid::instr::Container* container_t;
 
+namespace simgrid {
+namespace instr {
+
+class TIData {
+  std::string name_;
+  double amount_ = 0;
+
+public:
+  int endpoint                 = 0;
+  int send_size                = 0;
+  std::vector<int>* sendcounts = nullptr;
+  int recv_size                = 0;
+  std::vector<int>* recvcounts = nullptr;
+  std::string send_type        = "";
+  std::string recv_type        = "";
+
+  // NoOpTI: init, finalize, test, wait, barrier
+  explicit TIData(std::string name) : name_(name){};
+  // CPuTI: compute, sleep (+ waitAny and waitAll out of laziness)
+  explicit TIData(std::string name, double amount) : name_(name), amount_(amount){};
+  // Pt2PtTI: send, isend, sssend, issend, recv, irecv
+  explicit TIData(std::string name, int endpoint, int size, std::string datatype)
+      : name_(name), endpoint(endpoint), send_size(size), send_type(datatype){};
+  // CollTI: bcast, reduce, allReduce, gather, scatter, allGather, allToAll
+  explicit TIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
+                  std::string recv_type)
+      : name_(name)
+      , amount_(amount)
+      , endpoint(root)
+      , send_size(send_size)
+      , recv_size(recv_size)
+      , send_type(send_type)
+      , recv_type(recv_type){};
+  // VarCollTI: gatherV, scatterV, allGatherV, allToAllV (+ reduceScatter out of laziness)
+  explicit TIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
+                  std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
+      : name_(name)
+      , endpoint(root)
+      , send_size(send_size)
+      , sendcounts(sendcounts)
+      , recv_size(recv_size)
+      , recvcounts(recvcounts)
+      , send_type(send_type)
+      , recv_type(recv_type){};
+
+  virtual ~TIData()
+  {
+    delete sendcounts;
+    delete recvcounts;
+  }
+
+  std::string getName() { return name_; }
+  double getAmount() { return amount_; }
+  virtual std::string print()        = 0;
+  virtual std::string display_size() = 0;
+};
+
+class NoOpTIData : public TIData {
+public:
+  explicit NoOpTIData(std::string name) : TIData(name){};
+  std::string print() override { return getName(); }
+  std::string display_size() override { return ""; }
+};
+
+class CpuTIData : public TIData {
+public:
+  explicit CpuTIData(std::string name, double amount) : TIData(name, amount){};
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " " << getAmount();
+    return stream.str();
+  }
+  std::string display_size() override { return std::to_string(getAmount()); }
+};
+
+class Pt2PtTIData : public TIData {
+public:
+  explicit Pt2PtTIData(std::string name, int endpoint, int size, std::string datatype)
+      : TIData(name, endpoint, size, datatype){};
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " ";
+    if (endpoint >= 0)
+      stream << endpoint << " ";
+    stream << send_size << " " << send_type;
+    return stream.str();
+  }
+  std::string display_size() override { return std::to_string(send_size); }
+};
+
+class CollTIData : public TIData {
+public:
+  explicit CollTIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
+                      std::string recv_type)
+      : TIData(name, root, amount, send_size, recv_size, send_type, recv_type){};
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " " << send_size << " ";
+    if (recv_size >= 0)
+      stream << recv_size << " ";
+    if (getAmount() >= 0.0)
+      stream << getAmount() << " ";
+    if (endpoint > 0 || (endpoint == 0 && not send_type.empty()))
+      stream << endpoint << " ";
+    stream << send_type << " " << recv_type;
+
+    return stream.str();
+  }
+  std::string display_size() override { return std::to_string(send_size); }
+};
+
+class VarCollTIData : public TIData {
+public:
+  explicit VarCollTIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
+                         std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
+      : TIData(name, root, send_size, sendcounts, recv_size, recvcounts, send_type, recv_type){};
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " ";
+    if (send_size >= 0)
+      stream << send_size << " ";
+    if (sendcounts != nullptr)
+      for (auto count : *sendcounts)
+        stream << count << " ";
+    if (recv_size >= 0)
+      stream << recv_size << " ";
+    if (recvcounts != nullptr)
+      for (auto count : *recvcounts)
+        stream << count << " ";
+    if (endpoint > 0 || (endpoint == 0 && not send_type.empty()))
+      stream << endpoint << " ";
+    stream << send_type << " " << recv_type;
+
+    return stream.str();
+  }
+  std::string display_size() override { return std::to_string(send_size > 0 ? send_size : recv_size); }
+};
+}
+}
+
 extern "C" {
 
 extern XBT_PRIVATE std::set<std::string> created_categories;
@@ -66,8 +210,6 @@ XBT_PRIVATE bool TRACE_disable_destroy();
 XBT_PRIVATE bool TRACE_basic();
 XBT_PRIVATE bool TRACE_display_sizes();
 XBT_PRIVATE int TRACE_precision();
-XBT_PRIVATE void TRACE_generate_viva_uncat_conf();
-XBT_PRIVATE void TRACE_generate_viva_cat_conf();
 XBT_PRIVATE void instr_pause_tracing();
 XBT_PRIVATE void instr_resume_tracing();
 
@@ -102,59 +244,6 @@ XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(std::string filename);
 XBT_PRIVATE void dump_comment(std::string comment);
 
-enum e_caller_type {
-  TRACING_INIT,
-  TRACING_FINALIZE,
-  TRACING_COMM_SIZE,
-  TRACING_COMM_SPLIT,
-  TRACING_COMM_DUP,
-  TRACING_SEND,
-  TRACING_ISEND,
-  TRACING_SSEND,
-  TRACING_ISSEND,
-  TRACING_RECV,
-  TRACING_IRECV,
-  TRACING_SENDRECV,
-  TRACING_TEST,
-  TRACING_WAIT,
-  TRACING_WAITALL,
-  TRACING_WAITANY,
-  TRACING_BARRIER,
-  TRACING_BCAST,
-  TRACING_REDUCE,
-  TRACING_ALLREDUCE,
-  TRACING_ALLTOALL,
-  TRACING_ALLTOALLV,
-  TRACING_GATHER,
-  TRACING_GATHERV,
-  TRACING_SCATTER,
-  TRACING_SCATTERV,
-  TRACING_ALLGATHER,
-  TRACING_ALLGATHERV,
-  TRACING_REDUCE_SCATTER,
-  TRACING_COMPUTING,
-  TRACING_SLEEPING,
-  TRACING_SCAN,
-  TRACING_EXSCAN
-};
-
-struct s_instr_extra_data_t {
-  e_caller_type type;
-  int send_size;
-  int recv_size;
-  double comp_size;
-  double sleep_duration;
-  int src;
-  int dst;
-  int root;
-  const char* datatype1;
-  const char* datatype2;
-  int* sendcounts;
-  int* recvcounts;
-  int num_processes;
-};
-typedef s_instr_extra_data_t* instr_extra_data;
-
 /* Format of TRACING output.
  *   - paje is the regular format, that we all know
  *   - TI is a trick to reuse the tracing functions to generate a time independent trace during the execution. Such
@@ -167,7 +256,5 @@ extern instr_fmt_type_t instr_fmt_type;
 XBT_PRIVATE std::string TRACE_get_comment();
 XBT_PRIVATE std::string TRACE_get_comment_file();
 XBT_PRIVATE std::string TRACE_get_filename();
-XBT_PRIVATE std::string TRACE_get_viva_uncat_conf();
-XBT_PRIVATE std::string TRACE_get_viva_cat_conf();
 
 #endif

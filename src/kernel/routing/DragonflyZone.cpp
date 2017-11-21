@@ -112,12 +112,13 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
     throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
   }
 
+  if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX)
+    this->numLinksperLink_ = 2;
+
   this->cluster_ = cluster;
 }
 
-/*
-* Generate the cluster once every node is created
-*/
+/* Generate the cluster once every node is created */
 void DragonflyZone::seal()
 {
   if (this->numNodesPerBlade_ == 0) {
@@ -167,14 +168,9 @@ void DragonflyZone::createLink(const std::string& id, int numlinks, surf::LinkIm
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", id.c_str());
   surf::LinkImpl* link;
-  std::string tmpID;
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
-    tmpID     = linkTemplate.id + "_UP";
-    link      = surf::LinkImpl::byName(tmpID);
-    *linkup   = link; // check link?
-    tmpID     = linkTemplate.id + "_DOWN";
-    link      = surf::LinkImpl::byName(tmpID);
-    *linkdown = link; // check link ?
+    *linkup   = surf::LinkImpl::byName(linkTemplate.id + "_UP");   // check link?
+    *linkdown = surf::LinkImpl::byName(linkTemplate.id + "_DOWN"); // check link ?
   } else {
     link      = surf::LinkImpl::byName(linkTemplate.id);
     *linkup   = link;
@@ -190,9 +186,6 @@ void DragonflyZone::generateLinks()
 
   unsigned int numRouters = this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_;
 
-  if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
-    numLinksperLink_ = 2;
-
   // Links from routers to their local nodes.
   for (unsigned int i = 0; i < numRouters; i++) {
     // allocate structures
@@ -205,12 +198,10 @@ void DragonflyZone::generateLinks()
           std::to_string(j / numLinksperLink_) + "_" + std::to_string(uniqueId);
       this->createLink(id, 1, &linkup, &linkdown);
 
-      if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
-        this->routers_[i]->myNodes_[j]     = linkup;
+      this->routers_[i]->myNodes_[j] = linkup;
+      if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
         this->routers_[i]->myNodes_[j + 1] = linkdown;
-      } else {
-        this->routers_[i]->myNodes_[j] = linkup;
-      }
+
       uniqueId++;
     }
   }
@@ -282,7 +273,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   if ((src->id() == dst->id()) && hasLoopback_) {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePosition(src->id()));
 
-    route->link_list->push_back(info.first);
+    route->link_list.push_back(info.first);
     if (latency)
       *latency += info.first->latency();
     return;
@@ -303,13 +294,13 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   DragonflyRouter* currentRouter = myRouter;
 
   // node->router local link
-  route->link_list->push_back(myRouter->myNodes_[myCoords[3] * numLinksperLink_]);
+  route->link_list.push_back(myRouter->myNodes_[myCoords[3] * numLinksperLink_]);
   if (latency)
     *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
 
   if (hasLimiter_) { // limiter for sender
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(src->id()));
-    route->link_list->push_back(info.first);
+    route->link_list.push_back(info.first);
   }
 
   if (targetRouter != myRouter) {
@@ -319,7 +310,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
       // go to the router of our group connected to this one.
       if (currentRouter->blade_ != targetCoords[0]) {
         // go to the nth router in our chassis
-        route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]]);
+        route->link_list.push_back(currentRouter->greenLinks_[targetCoords[0]]);
         if (latency)
           *latency += currentRouter->greenLinks_[targetCoords[0]]->latency();
         currentRouter = routers_[myCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
@@ -328,14 +319,14 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
 
       if (currentRouter->chassis_ != 0) {
         // go to the first chassis of our group
-        route->link_list->push_back(currentRouter->blackLinks_[0]);
+        route->link_list.push_back(currentRouter->blackLinks_[0]);
         if (latency)
           *latency += currentRouter->blackLinks_[0]->latency();
         currentRouter = routers_[myCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + targetCoords[0]];
       }
 
       // go to destination group - the only optical hop
-      route->link_list->push_back(currentRouter->blueLinks_[0]);
+      route->link_list.push_back(currentRouter->blueLinks_[0]);
       if (latency)
         *latency += currentRouter->blueLinks_[0]->latency();
       currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + myCoords[0]];
@@ -343,7 +334,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
 
     // same group, but same blade ?
     if (targetRouter->blade_ != currentRouter->blade_) {
-      route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]]);
+      route->link_list.push_back(currentRouter->greenLinks_[targetCoords[2]]);
       if (latency)
         *latency += currentRouter->greenLinks_[targetCoords[2]]->latency();
       currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + targetCoords[2]];
@@ -351,7 +342,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
 
     // same blade, but same chassis ?
     if (targetRouter->chassis_ != currentRouter->chassis_) {
-      route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
+      route->link_list.push_back(currentRouter->blackLinks_[targetCoords[1]]);
       if (latency)
         *latency += currentRouter->blackLinks_[targetCoords[1]]->latency();
     }
@@ -359,11 +350,11 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
 
   if (hasLimiter_) { // limiter for receiver
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(dst->id()));
-    route->link_list->push_back(info.first);
+    route->link_list.push_back(info.first);
   }
 
   // router->node local link
-  route->link_list->push_back(targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]);
+  route->link_list.push_back(targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]);
   if (latency)
     *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
 }

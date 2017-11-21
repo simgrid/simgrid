@@ -8,6 +8,7 @@
 #include "cpu_ti.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
 
@@ -55,8 +56,6 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    actionHeap_ = xbt_heap_new(8, nullptr);
-    xbt_heap_set_update_callback(actionHeap_,  surf_action_lmm_update_index_heap);
     modifiedSet_ = new ActionLmmList();
     maxminSystem_->keep_track = modifiedSet_;
   }
@@ -66,7 +65,6 @@ CpuCas01Model::~CpuCas01Model()
 {
   lmm_system_free(maxminSystem_);
   maxminSystem_ = nullptr;
-  xbt_heap_free(actionHeap_);
   delete modifiedSet_;
 
   surf_cpu_model_pm = nullptr;
@@ -176,7 +174,7 @@ CpuAction* CpuCas01::execution_start(double size, int requestedCores)
 CpuAction *CpuCas01::sleep(double duration)
 {
   if (duration > 0)
-    duration = MAX(duration, sg_surf_precision);
+    duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getCname(), duration);
   CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());
@@ -213,7 +211,6 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
     , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
-    updateIndexHeap(-1);
     refreshLastUpdate();
     setLastValue(0.0);
   }

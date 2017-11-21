@@ -73,7 +73,7 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->getPath(), fd->size(), fd->mount_point.c_str(), fd->storageId.c_str(), fd->storage_type.c_str(),
+           fd->getPath(), fd->size(), fd->mount_point.c_str(), fd->onStorage->getCname(), fd->onStorage->getType(),
            fd->desc_id);
 }
 
@@ -92,7 +92,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located and read it */
-  msg_storage_t storage_src           = simgrid::s4u::Storage::byName(fd->storageId);
+  msg_storage_t storage_src           = fd->onStorage;
   msg_host_t attached_host            = storage_src->getHost();
   read_size                           = fd->read(size);
 
@@ -133,7 +133,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located (remote or local)*/
-  msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
+  msg_storage_t storage_src = fd->onStorage;
   msg_host_t attached_host  = storage_src->getHost();
 
   if (strcmp(attached_host->getCname(), MSG_host_self()->getCname())) {
@@ -275,7 +275,7 @@ msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpath)
 {
   /* Find the host where the file is physically located and read it */
-  msg_storage_t storage_src = simgrid::s4u::Storage::byName(file->storageId);
+  msg_storage_t storage_src = file->onStorage;
   msg_host_t src_host       = storage_src->getHost();
   MSG_file_seek(file, 0, SEEK_SET);
   sg_size_t read_size = file->read(file->size());

@@ -36,6 +36,7 @@
  */
 
 #include "../colls_private.hpp"
+#include <algorithm>
 
 #define MPIR_Gather_MV2_Direct Coll_gather_ompi_basic_linear::gather
 #define MPIR_Gather_MV2_two_level_Direct Coll_gather_ompi_basic_linear::gather
@@ -223,12 +224,9 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
         if (local_rank == 0) {
             /* Node leader, allocate tmp_buffer */
             if (rank == root) {
-                tmp_buf = smpi_get_tmp_recvbuffer(recvcnt * MAX(recvtype_extent,
-                            recvtype_true_extent) * local_size);
+              tmp_buf = smpi_get_tmp_recvbuffer(recvcnt * std::max(recvtype_extent, recvtype_true_extent) * local_size);
             } else {
-                tmp_buf = smpi_get_tmp_sendbuffer(sendcnt * MAX(sendtype_extent,
-                            sendtype_true_extent) *
-                        local_size);
+              tmp_buf = smpi_get_tmp_sendbuffer(sendcnt * std::max(sendtype_extent, sendtype_true_extent) * local_size);
             }
             if (tmp_buf == NULL) {
                 mpi_errno = MPI_ERR_OTHER;
@@ -291,10 +289,10 @@ int Coll_gather_mvapich2_two_level::gather(void *sendbuf,
            * is the same as leader_root */
           if (rank == root) {
             leader_gather_buf =
-                smpi_get_tmp_recvbuffer(recvcnt * MAX(recvtype_extent, recvtype_true_extent) * comm_size);
+                smpi_get_tmp_recvbuffer(recvcnt * std::max(recvtype_extent, recvtype_true_extent) * comm_size);
           } else {
             leader_gather_buf =
-                smpi_get_tmp_sendbuffer(sendcnt * MAX(sendtype_extent, sendtype_true_extent) * comm_size);
+                smpi_get_tmp_sendbuffer(sendcnt * std::max(sendtype_extent, sendtype_true_extent) * comm_size);
           }
           if (leader_gather_buf == NULL) {
             mpi_errno = MPI_ERR_OTHER;

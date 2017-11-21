@@ -59,13 +59,12 @@ public:
   /** Remove a file from disk */
   int unlink();
 
-  std::string storage_type;
-  std::string storageId;
   std::string mount_point;
+  Storage* onStorage;
   int desc_id = 0;
 
 private:
-  surf_file_t pimpl_ = nullptr;
+  simgrid::surf::FileImpl* pimpl_ = nullptr;
   std::string path_;
   void* userdata_ = nullptr;
 };

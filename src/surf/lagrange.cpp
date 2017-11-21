@@ -11,6 +11,7 @@
 #include "xbt/sysdep.h"
 #include "maxmin_private.hpp"
 
+#include <algorithm>
 #include <cstdlib>
 #ifndef MATH
 #include <cmath>
@@ -86,8 +87,8 @@ static double new_value(lmm_variable_t var)
 {
   double tmp = 0;
 
-  for (int i = 0; i < var->cnsts_number; i++) {
-    tmp += (var->cnsts[i].constraint)->lambda;
+  for (s_lmm_element_t const& elem : var->cnsts) {
+    tmp += elem.constraint->lambda;
   }
   if (var->bound > 0)
     tmp += var->mu;
@@ -101,8 +102,8 @@ static double new_mu(lmm_variable_t var)
   double mu_i = 0.0;
   double sigma_i = 0.0;
 
-  for (int j = 0; j < var->cnsts_number; j++) {
-    sigma_i += (var->cnsts[j].constraint)->lambda;
+  for (s_lmm_element_t const& elem : var->cnsts) {
+    sigma_i += elem.constraint->lambda;
   }
   mu_i = var->func_fp(var, var->bound) - sigma_i;
   if (mu_i < 0.0)
@@ -126,8 +127,8 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
     if (not var->sharing_weight)
       break;
 
-    for (int j = 0; j < var->cnsts_number; j++)
-      sigma_i += (var->cnsts[j].constraint)->lambda;
+    for (s_lmm_element_t const& elem : var->cnsts)
+      sigma_i += elem.constraint->lambda;
 
     if (var->bound > 0)
       sigma_i += var->mu;
@@ -200,30 +201,27 @@ void lagrange_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   i = 0;
   xbt_swag_foreach(_var, var_list) {
-  var = static_cast<lmm_variable_t>(_var);
-  if (not var->sharing_weight)
-    var->value = 0.0;
-  else {
-    int nb = 0;
-    if (var->bound < 0.0) {
-      XBT_DEBUG("#### NOTE var(%d) is a boundless variable", i);
-      var->mu    = -1.0;
-      var->value = new_value(var);
-    } else {
-      var->mu     = 1.0;
-      var->new_mu = 2.0;
-      var->value  = new_value(var);
-    }
-    XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->sharing_weight);
-    XBT_DEBUG("#### var(%p) ->mu :  %e", var, var->mu);
-    XBT_DEBUG("#### var(%p) ->weight: %e", var, var->sharing_weight);
-    XBT_DEBUG("#### var(%p) ->bound: %e", var, var->bound);
-    for (i = 0; i < var->cnsts_number; i++) {
-      if (var->cnsts[i].consumption_weight == 0.0)
-        nb++;
-    }
-    if (nb == var->cnsts_number)
-      var->value = 1.0;
+    var = static_cast<lmm_variable_t>(_var);
+    if (not var->sharing_weight)
+      var->value = 0.0;
+    else {
+      if (var->bound < 0.0) {
+        XBT_DEBUG("#### NOTE var(%d) is a boundless variable", i);
+        var->mu    = -1.0;
+        var->value = new_value(var);
+      } else {
+        var->mu     = 1.0;
+        var->new_mu = 2.0;
+        var->value  = new_value(var);
+      }
+      XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->sharing_weight);
+      XBT_DEBUG("#### var(%p) ->mu :  %e", var, var->mu);
+      XBT_DEBUG("#### var(%p) ->weight: %e", var, var->sharing_weight);
+      XBT_DEBUG("#### var(%p) ->bound: %e", var, var->bound);
+      auto weighted = std::find_if(begin(var->cnsts), end(var->cnsts),
+                                   [](s_lmm_element_t const& x) { return x.consumption_weight != 0.0; });
+      if (weighted == end(var->cnsts))
+        var->value = 1.0;
     }
   }
 
@@ -278,7 +276,7 @@ void lagrange_solve(lmm_system_t sys)
       else {
         tmp = new_value(var);
 
-        overall_modification = MAX(overall_modification, fabs(var->value - tmp));
+        overall_modification = std::max(overall_modification, fabs(var->value - tmp));
 
         var->value = tmp;
         XBT_DEBUG("New value of var (%p)  = %e, overall_modification = %e", var, var->value, overall_modification);
@@ -435,8 +433,8 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
     double sigma_i = 0.0;
 
     // Compute sigma_i
-    for (int j = 0; j < var->cnsts_number; j++) {
-      sigma_i += (var->cnsts[j].constraint)->lambda;
+    for (s_lmm_element_t const& elem : var->cnsts) {
+      sigma_i += elem.constraint->lambda;
     }
 
     //add mu_i if this flow has a RTT constraint associated

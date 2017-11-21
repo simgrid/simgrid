@@ -38,6 +38,7 @@ public:
   sg_size_t getSize(); /** Retrieve the total amount of space of this storage element */
   sg_size_t getSizeFree();
   sg_size_t getSizeUsed();
+  void decrUsedSize(sg_size_t size);
 
   std::map<std::string, std::string>* getProperties();
   const char* getProperty(std::string key);
@@ -47,6 +48,8 @@ public:
   void setUserdata(void* data) { userdata_ = data; }
   void* getUserdata() { return userdata_; }
 
+  sg_size_t read(sg_size_t size);
+  sg_size_t write(sg_size_t size);
   surf::StorageImpl* getImpl() { return pimpl_; }
 
   /* The signals */

@@ -234,6 +234,14 @@ int Group::excl(int n, int *ranks, MPI_Group * newgroup){
 
 }
 
+static bool is_rank_in_range(int rank, int first, int last)
+{
+  if (first < last)
+    return rank <= last;
+  else
+    return rank >= last;
+}
+
 int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
   int newsize = 0;
   for (int i = 0; i < n; i++) {
@@ -245,13 +253,8 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
         break;
       }
       rank += ranges[i][2]; /* Stride */
-      if (ranges[i][0] < ranges[i][1]) {
-        if (rank > ranges[i][1])
-          break;
-      } else {
-        if (rank < ranges[i][1])
-          break;
-      }
+      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+        break;
     }
   }
   *newgroup = new  Group(newsize);
@@ -267,13 +270,8 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
         break;
       }
       rank += ranges[i][2]; /* Stride */
-      if (ranges[i][0] < ranges[i][1]) {
-        if (rank > ranges[i][1])
-          break;
-      } else {
-        if (rank < ranges[i][1])
-          break;
-      }
+      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+        break;
     }
   }
   return MPI_SUCCESS;
@@ -290,13 +288,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
         break;
       }
       rank += ranges[i][2]; /* Stride */
-      if (ranges[i][0] < ranges[i][1]) {
-        if (rank > ranges[i][1])
-          break;
-      } else {
-        if (rank < ranges[i][1])
-          break;
-      }
+      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+        break;
     }
   }
   if (newsize == 0) {
@@ -317,13 +310,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
             break;
           }
           rank += ranges[i][2]; /* Stride */
-          if (ranges[i][0]<ranges[i][1]){
-            if (rank > ranges[i][1])
-              break;
-          }else{
-            if (rank < ranges[i][1])
-              break;
-          }
+          if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+            break;
         }
       }
       if(add==1){

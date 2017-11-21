@@ -882,7 +882,8 @@ void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb){
       XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
       task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
       if ((src_end > dst_start) && (dst_end > src_start)) { /* There is something to send */
-        task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j] = MIN(src_end, dst_end)- MAX(src_start, dst_start);
+        task->bytes_amount[i * (src_nb + dst_nb) + src_nb + j] =
+            std::min(src_end, dst_end) - std::max(src_start, dst_start);
         XBT_VERB("==> %.2f", task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
       }
     }

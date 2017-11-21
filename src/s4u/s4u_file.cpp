@@ -45,8 +45,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : path_(fullpat
 
   pimpl_ =
       simgrid::simix::kernelImmediate([this, st, path] { return new simgrid::surf::FileImpl(st, path, mount_point); });
-  storage_type = st->getType();
-  storageId    = st->getName();
+  onStorage = st;
 }
 
 File::~File()
@@ -56,12 +55,30 @@ File::~File()
 
 sg_size_t File::read(sg_size_t size)
 {
-  return simcall_file_read(pimpl_, size);
+  XBT_DEBUG("READ %s on disk '%s'", getPath(), onStorage->getCname());
+  // if the current position is close to the end of the file, we may not be able to read the requested size
+  sg_size_t read_size = onStorage->read(std::min(size, this->size() - this->tell()));
+  pimpl_->incrPosition(read_size);
+  return read_size;
 }
 
 sg_size_t File::write(sg_size_t size)
 {
-  return simcall_file_write(pimpl_, size);
+  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getPath(), onStorage->getCname(), size, this->size());
+  // If the storage is full before even starting to write
+  if (onStorage->getSizeUsed() >= onStorage->getSize())
+    return 0;
+  /* Substract the part of the file that might disappear from the used sized on the storage element */
+  onStorage->decrUsedSize(this->size() - this->tell());
+
+  sg_size_t write_size = onStorage->write(size);
+  pimpl_->incrPosition(write_size);
+  pimpl_->setSize(this->tell());
+
+  onStorage->getContent()->erase(pimpl_->getName());
+  onStorage->getContent()->insert({pimpl_->getName(), this->size()});
+
+  return write_size;
 }
 
 sg_size_t File::size()

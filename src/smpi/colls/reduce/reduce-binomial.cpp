@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.hpp"
+#include <algorithm>
 
 //#include <star-reduction.c>
 namespace simgrid{
@@ -47,7 +48,7 @@ int Coll_reduce_binomial::reduce(void *sendbuf, void *recvbuf, int count,
   /* If I'm not the root, then my recvbuf may not be valid, therefore
      I have to allocate a temporary one */
   if (rank != root) {
-      recvbuf = (void *) smpi_get_tmp_recvbuffer(count*(MAX(extent,true_extent)));
+      recvbuf = (void*)smpi_get_tmp_recvbuffer(count * std::max(extent, true_extent));
       recvbuf = (void *)((char*)recvbuf - true_lb);
   }
    if ((rank != root) || (sendbuf != MPI_IN_PLACE)) {

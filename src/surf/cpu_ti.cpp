@@ -5,8 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
-#include "xbt/heap.h"
 #include "src/surf/trace_mgr.hpp"
+#include <algorithm>
 
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
@@ -15,12 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the 
 
 namespace simgrid {
 namespace surf {
-
-static inline
-void cpu_ti_action_update_index_heap(void *action, int i)
-{
-  (static_cast<simgrid::surf::CpuTiAction*>(action))->updateIndexHeap(i);
-}
 
 /*********
  * Trace *
@@ -337,9 +331,6 @@ CpuTiModel::CpuTiModel() : CpuModel()
   runningActionSetThatDoesNotNeedBeingChecked_ = new ActionList();
 
   modifiedCpu_ = new CpuTiList();
-
-  tiActionHeap_ = xbt_heap_new(8, nullptr);
-  xbt_heap_set_update_callback(tiActionHeap_, cpu_ti_action_update_index_heap);
 }
 
 CpuTiModel::~CpuTiModel()
@@ -347,7 +338,6 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
   delete runningActionSetThatDoesNotNeedBeingChecked_;
   delete modifiedCpu_;
-  xbt_heap_free(tiActionHeap_);
 }
 
 Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedPerPstate, int core)
@@ -360,15 +350,17 @@ double CpuTiModel::nextOccuringEvent(double now)
   double min_action_duration = -1;
 
 /* iterates over modified cpus to update share resources */
-  for(CpuTiList::iterator it(modifiedCpu_->begin()), itend(modifiedCpu_->end()) ; it != itend ;) {
+  CpuTiList::iterator itend(modifiedCpu_->end());
+  CpuTiList::iterator it(modifiedCpu_->begin());
+  while (it != itend) {
     CpuTi *ti = &*it;
     ++it;
     ti->updateActionsFinishTime(now);
   }
 
 /* get the min next event if heap not empty */
-  if (xbt_heap_size(tiActionHeap_) > 0)
-    min_action_duration = xbt_heap_maxkey(tiActionHeap_) - now;
+  if (not actionHeapIsEmpty())
+    min_action_duration = actionHeapTopDate() - now;
 
   XBT_DEBUG("Share resources, min next event date: %f", min_action_duration);
 
@@ -377,8 +369,8 @@ double CpuTiModel::nextOccuringEvent(double now)
 
 void CpuTiModel::updateActionsState(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(tiActionHeap_) > 0) && (xbt_heap_maxkey(tiActionHeap_) <= now)) {
-    CpuTiAction *action = static_cast<CpuTiAction*>(xbt_heap_pop(tiActionHeap_));
+  while (not actionHeapIsEmpty() && actionHeapTopDate() <= now) {
+    CpuTiAction* action = static_cast<CpuTiAction*>(actionHeapPop());
     XBT_DEBUG("Action %p: finish", action);
     action->finish(Action::State::done);
     /* set the remains to 0 due to precision problems when updating the remaining amount */
@@ -460,20 +452,15 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
-      for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()); it != itend ; ++it) {
-
+      ActionTiList::iterator itend(actionSet_->end());
+      for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
         CpuTiAction *action = &*it;
         if (action->getState() == Action::State::running
          || action->getState() == Action::State::ready
          || action->getState() == Action::State::not_in_the_system) {
           action->setFinishTime(date);
           action->setState(Action::State::failed);
-          if (action->getIndexHeap() >= 0) {
-            CpuTiAction* heap_act = static_cast<CpuTiAction*>(
-                xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->getIndexHeap()));
-            if (heap_act != action)
-              DIE_IMPOSSIBLE;
-          }
+          action->heapRemove(model()->getActionHeap());
         }
       }
     }
@@ -493,7 +480,8 @@ void CpuTi::updateActionsFinishTime(double now)
   /* update remaining amount of actions */
   updateRemainingAmount(now);
 
-  for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
+  ActionTiList::iterator itend(actionSet_->end());
+  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
     action = &*it;
     /* action not running, skip it */
     if (action->getStateSet() != surf_cpu_model_pm->getRunningActionSet())
@@ -511,7 +499,7 @@ void CpuTi::updateActionsFinishTime(double now)
   }
   sumPriority_ = sum_priority;
 
-  for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
+  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
     action = &*it;
     double min_finish = -1;
     /* action not running, skip it */
@@ -538,15 +526,10 @@ void CpuTi::updateActionsFinishTime(double now)
         min_finish = action->getStartTime() + action->getMaxDuration();
     }
     /* add in action heap */
-    XBT_DEBUG("action(%p) index %d", action, action->getIndexHeap());
-    if (action->getIndexHeap() >= 0) {
-      CpuTiAction* heap_act = static_cast<CpuTiAction*>(
-          xbt_heap_remove(static_cast<CpuTiModel*>(model())->tiActionHeap_, action->getIndexHeap()));
-      if (heap_act != action)
-        DIE_IMPOSSIBLE;
-    }
     if (min_finish > NO_MAX_DURATION)
-      xbt_heap_push(static_cast<CpuTiModel*>(model())->tiActionHeap_, action, min_finish);
+      action->heapUpdate(model()->getActionHeap(), min_finish, NOTSET);
+    else
+      action->heapRemove(model()->getActionHeap());
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
               action, action->getStartTime(), action->getFinishTime(), action->getMaxDuration());
@@ -577,8 +560,8 @@ void CpuTi::updateRemainingAmount(double now)
   /* compute the integration area */
   double area_total = speedIntegratedTrace_->integrate(lastUpdate_, now) * speed_.peak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
-
-  for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {
+  ActionTiList::iterator itend(actionSet_->end());
+  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
     CpuTiAction *action = &*it;
     /* action not running, skip it */
     if (action->getStateSet() != model()->getRunningActionSet())
@@ -622,7 +605,7 @@ CpuAction *CpuTi::execution_start(double size)
 CpuAction *CpuTi::sleep(double duration)
 {
   if (duration > 0)
-    duration = MAX(duration, sg_surf_precision);
+    duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getCname(), duration);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
@@ -664,7 +647,6 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
  : CpuAction(model_, cost, failed)
  , cpu_(cpu)
 {
-  updateIndexHeap(-1);
   cpu_->modified(true);
 }
 
@@ -684,7 +666,7 @@ int CpuTiAction::unref()
     if (action_ti_hook.is_linked())
       cpu_->actionSet_->erase(cpu_->actionSet_->iterator_to(*this));
     /* remove from heap */
-    xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, getIndexHeap());
+    heapRemove(getModel()->getActionHeap());
     cpu_->modified(true);
     delete this;
     return 1;
@@ -695,7 +677,7 @@ int CpuTiAction::unref()
 void CpuTiAction::cancel()
 {
   this->setState(Action::State::failed);
-  xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
+  heapRemove(getModel()->getActionHeap());
   cpu_->modified(true);
 }
 
@@ -704,7 +686,7 @@ void CpuTiAction::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
     suspended_ = 1;
-    xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap());
+    heapRemove(getModel()->getActionHeap());
     cpu_->modified(true);
   }
   XBT_OUT();
@@ -734,13 +716,8 @@ void CpuTiAction::setMaxDuration(double duration)
   else
     min_finish = getFinishTime();
 
-/* add in action heap */
-  if (getIndexHeap() >= 0) {
-    CpuTiAction* heap_act = static_cast<CpuTiAction*>(xbt_heap_remove(getModel()->getActionHeap(), getIndexHeap()));
-    if (heap_act != this)
-      DIE_IMPOSSIBLE;
-  }
-  xbt_heap_push(getModel()->getActionHeap(), this, min_finish);
+  /* add in action heap */
+  heapUpdate(getModel()->getActionHeap(), min_finish, NOTSET);
 
   XBT_OUT();
 }

@@ -76,21 +76,16 @@ double StorageN11Model::nextOccuringEvent(double now)
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
   ActionList *actionSet = getRunningActionSet();
-  for (ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end()); it != itend; it = itNext) {
-    ++itNext;
-
+  ActionList::iterator it(actionSet->begin());
+  ActionList::iterator itend(actionSet->end());
+  while (it != itend) {
     StorageAction *action = static_cast<StorageAction*>(&*it);
-
+    ++it;
     double current_progress = lrint(lmm_variable_getvalue(action->getVariable()) * delta);
 
     action->updateRemains(current_progress);
     if (action->type_ == WRITE) {
       action->storage_->usedSize_ += current_progress;
-      action->file_->incrPosition(current_progress);
-      action->file_->setSize(action->file_->tell());
-
-      action->storage_->getContent()->erase(action->file_->getCname());
-      action->storage_->getContent()->insert({action->file_->getCname(), action->file_->size()});
     }
 
     if (action->getMaxDuration() > NO_MAX_DURATION)

@@ -193,6 +193,11 @@ bool Datatype::is_valid(){
   return (flags_ & DT_FLAG_COMMITED);
 }
 
+bool Datatype::is_basic()
+{
+  return (flags_ & DT_FLAG_BASIC);
+}
+
 size_t Datatype::size(){
   return size_;
 }
@@ -278,9 +283,9 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       if (not smpi_process()->replaying())
         memcpy(recvbuf, sendbuf, count);
     } else if (not(sendtype->flags() & DT_FLAG_DERIVED)) {
-      recvtype->unserialize( sendbuf, recvbuf, recvcount/recvtype->size(), MPI_REPLACE);
+      recvtype->unserialize(sendbuf, recvbuf, count / recvtype->size(), MPI_REPLACE);
     } else if (not(recvtype->flags() & DT_FLAG_DERIVED)) {
-      sendtype->serialize(sendbuf, recvbuf, sendcount/sendtype->size());
+      sendtype->serialize(sendbuf, recvbuf, count / sendtype->size());
     }else{
 
       void * buf_tmp = xbt_malloc(count);

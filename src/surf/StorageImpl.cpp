@@ -7,6 +7,7 @@
 #include "StorageImpl.hpp"
 
 #include "surf_private.hpp"
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -60,14 +61,14 @@ StorageModel::~StorageModel()
 
 StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
                          std::string type_id, std::string content_name, sg_size_t size, std::string attach)
-    : Resource(model, name.c_str(), lmm_constraint_new(maxminSystem, this, MAX(bread, bwrite)))
+    : Resource(model, name.c_str(), lmm_constraint_new(maxminSystem, this, std::max(bread, bwrite)))
     , piface_(this)
     , typeId_(type_id)
     , size_(size)
     , attach_(attach)
 {
   content_ = parseContent(content_name);
-  turnOn();
+  StorageImpl::turnOn();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
   constraintWrite_ = lmm_constraint_new(maxminSystem, this, bwrite);

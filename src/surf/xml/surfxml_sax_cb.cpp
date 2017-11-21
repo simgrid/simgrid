@@ -427,7 +427,6 @@ void STag_surfxml_prop()
 
 void ETag_surfxml_host()    {
   s_sg_platf_host_cbarg_t host;
-  memset(&host,0,sizeof(host));
 
   host.properties = current_property_set;
   current_property_set = nullptr;
@@ -694,21 +693,16 @@ void STag_surfxml_bypassZoneRoute(){
 
 void ETag_surfxml_route(){
   s_sg_platf_route_cbarg_t route;
-  memset(&route,0,sizeof(route));
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
-  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
-  for (auto const& link : parsed_link_list)
-    route.link_list->push_back(link);
-  parsed_link_list.clear();
+  route.link_list.swap(parsed_link_list);
 
   sg_platf_new_route(&route);
-  delete route.link_list;
 }
 
 void ETag_surfxml_ASroute()
@@ -723,7 +717,6 @@ void ETag_surfxml_ASroute()
 void ETag_surfxml_zoneRoute()
 {
   s_sg_platf_route_cbarg_t ASroute;
-  memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_src); // tested to not be nullptr in start tag
   ASroute.dst = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_dst); // tested to not be nullptr in start tag
@@ -731,11 +724,7 @@ void ETag_surfxml_zoneRoute()
   ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_gw___src); // tested to not be nullptr in start tag
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_gw___dst); // tested to not be nullptr in start tag
 
-  ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
-
-  for (auto const& link : parsed_link_list)
-    ASroute.link_list->push_back(link);
-  parsed_link_list.clear();
+  ASroute.link_list.swap(parsed_link_list);
 
   switch (A_surfxml_zoneRoute_symmetrical) {
   case AU_surfxml_zoneRoute_symmetrical:
@@ -750,26 +739,20 @@ void ETag_surfxml_zoneRoute()
   }
 
   sg_platf_new_route(&ASroute);
-  delete ASroute.link_list;
 }
 
 void ETag_surfxml_bypassRoute(){
   s_sg_platf_route_cbarg_t route;
-  memset(&route,0,sizeof(route));
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
   route.gw_src = nullptr;
   route.gw_dst = nullptr;
   route.symmetrical = false;
-  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
 
-  for (auto const& link : parsed_link_list)
-    route.link_list->push_back(link);
-  parsed_link_list.clear();
+  route.link_list.swap(parsed_link_list);
 
   sg_platf_new_bypassRoute(&route);
-  delete route.link_list;
 }
 
 void ETag_surfxml_bypassASroute()
@@ -783,14 +766,10 @@ void ETag_surfxml_bypassASroute()
 void ETag_surfxml_bypassZoneRoute()
 {
   s_sg_platf_route_cbarg_t ASroute;
-  memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_src);
   ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_dst);
-  ASroute.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
-  for (auto const& link : parsed_link_list)
-    ASroute.link_list->push_back(link);
-  parsed_link_list.clear();
+  ASroute.link_list.swap(parsed_link_list);
 
   ASroute.symmetrical = false;
 
@@ -798,7 +777,6 @@ void ETag_surfxml_bypassZoneRoute()
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
-  delete ASroute.link_list;
 }
 
 void ETag_surfxml_trace(){
@@ -899,8 +877,7 @@ void ETag_surfxml_config()
   current_property_set = nullptr;
 }
 
-static int argc;
-static char **argv;
+static std::vector<std::string> arguments;
 
 void STag_surfxml_process()
 {
@@ -911,9 +888,7 @@ void STag_surfxml_process()
 void STag_surfxml_actor()
 {
   ZONE_TAG  = 0;
-  argc    = 1;
-  argv    = xbt_new(char *, 1);
-  argv[0] = xbt_strdup(A_surfxml_actor_function);
+  arguments.assign(1, A_surfxml_actor_function);
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
@@ -930,13 +905,11 @@ void ETag_surfxml_process()
 void ETag_surfxml_actor()
 {
   s_sg_platf_process_cbarg_t actor;
-  memset(&actor,0,sizeof(actor));
 
   actor.properties     = current_property_set;
   current_property_set = nullptr;
 
-  actor.argc       = argc;
-  actor.argv       = (const char **)argv;
+  actor.args.swap(arguments);
   actor.host       = A_surfxml_actor_host;
   actor.function   = A_surfxml_actor_function;
   actor.start_time = surf_parse_get_double(A_surfxml_actor_start___time);
@@ -956,17 +929,10 @@ void ETag_surfxml_actor()
   }
 
   sg_platf_new_process(&actor);
-
-  for (int i = 0; i != argc; ++i)
-    xbt_free(argv[i]);
-  xbt_free(argv);
-  argv = nullptr;
 }
 
 void STag_surfxml_argument(){
-  argc++;
-  argv = (char**)xbt_realloc(argv, (argc) * sizeof(char **));
-  argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
+  arguments.push_back(A_surfxml_argument_value);
 }
 
 void STag_surfxml_model___prop(){

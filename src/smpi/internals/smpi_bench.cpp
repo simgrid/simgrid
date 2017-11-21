@@ -54,10 +54,7 @@ void smpi_execute(double duration)
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
     double flops = duration * smpi_host_speed;
     int rank = smpi_process()->index();
-    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-    extra->type=TRACING_COMPUTING;
-    extra->comp_size=flops;
-    TRACE_smpi_computing_in(rank, extra);
+    TRACE_smpi_computing_in(rank, flops);
 
     smpi_execute_flops(flops);
 
@@ -156,7 +153,8 @@ void smpi_bench_end()
 
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
-    container_t container        = new simgrid::instr::Container(smpi_container(smpi_process()->index()));
+    container_t container =
+        new simgrid::instr::Container(std::string("rank-") + std::to_string(smpi_process()->index()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
@@ -176,10 +174,7 @@ static unsigned int private_sleep(double secs)
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
   int rank = MPI_COMM_WORLD->rank();
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type=TRACING_SLEEPING;
-  extra->sleep_duration=secs;
-  TRACE_smpi_sleeping_in(rank, extra);
+  TRACE_smpi_sleeping_in(rank, secs);
 
   simcall_process_sleep(secs);
 

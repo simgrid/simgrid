@@ -34,8 +34,7 @@ void FullZone::seal()
         e_route            = new s_sg_platf_route_cbarg_t;
         e_route->gw_src    = nullptr;
         e_route->gw_dst    = nullptr;
-        e_route->link_list = new std::vector<surf::LinkImpl*>();
-        e_route->link_list->push_back(surf_network_model->loopback_);
+        e_route->link_list.push_back(surf_network_model->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
       }
     }
@@ -48,12 +47,8 @@ FullZone::~FullZone()
     unsigned int table_size = getTableSize();
     /* Delete routing table */
     for (unsigned int i = 0; i < table_size; i++)
-      for (unsigned int j = 0; j < table_size; j++) {
-        if (TO_ROUTE_FULL(i, j)) {
-          delete TO_ROUTE_FULL(i, j)->link_list;
-          delete TO_ROUTE_FULL(i, j);
-        }
-      }
+      for (unsigned int j = 0; j < table_size; j++)
+        delete TO_ROUTE_FULL(i, j);
     delete[] routingTable_;
   }
 }
@@ -68,8 +63,8 @@ void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_
   if (e_route != nullptr) {
     res->gw_src = e_route->gw_src;
     res->gw_dst = e_route->gw_dst;
-    for (auto const& link : *e_route->link_list) {
-      res->link_list->push_back(link);
+    for (auto const& link : e_route->link_list) {
+      res->link_list.push_back(link);
       if (lat)
         *lat += link->latency();
     }

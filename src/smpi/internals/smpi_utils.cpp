@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi/smpi_utils.hpp"
-#include "xbt/sysdep.h"
+#include "smpi_utils.hpp"
 #include "xbt/log.h"
+#include "xbt/sysdep.h"
 #include <boost/tokenizer.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");

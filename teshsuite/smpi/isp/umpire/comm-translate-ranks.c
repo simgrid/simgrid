@@ -24,7 +24,6 @@ main (int argc, char **argv)
   int key = -1;
   int nrank;
   int nsize;
-  int dat = 0;
   int color = -1;
 
 

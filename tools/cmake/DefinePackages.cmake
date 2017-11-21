@@ -6,7 +6,6 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.h
-  src/include/smpi/smpi_utils.hpp
   src/include/surf/datatypes.h
   src/include/surf/maxmin.hpp
   src/include/surf/surf.hpp
@@ -35,6 +34,7 @@ set(EXTRA_DIST
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
   src/smpi/include/private.hpp
+  src/smpi/include/smpi_utils.hpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
@@ -71,7 +71,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
   src/xbt/graph_private.h
-  src/xbt/heap_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
 
@@ -275,7 +274,6 @@ set(XBT_SRC
   src/xbt/ex.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
-  src/xbt/heap.c
   src/xbt/log.c
   src/xbt/mallocator.c
   src/xbt/memory_map.cpp
@@ -727,7 +725,6 @@ set(headers_to_install
   include/xbt/function_types.h
   include/xbt/future.hpp
   include/xbt/graph.h
-  include/xbt/heap.h
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h

@@ -34,56 +34,40 @@ static void instr_event(double now, double delta, simgrid::instr::VariableType* 
   variable->subEvent(now + delta, value);
 }
 
-/* TRACE_surf_link_set_utilization: entry point from SimGrid */
-void TRACE_surf_link_set_utilization(const char *resource, const char *category, double value, double now, double delta)
+static void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
+                                                const char* category, double value, double now, double delta)
 {
-  //only trace link utilization if link is known by tracing mechanism
+  // only trace resource utilization if resource is known by tracing mechanism
   container_t container = simgrid::instr::Container::byNameOrNull(resource);
   if (not container || not value)
     return;
 
-  //trace uncategorized link utilization
+  // trace uncategorized resource utilization
   if (TRACE_uncategorized()){
-    XBT_DEBUG("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now + delta, resource, value);
-    simgrid::instr::VariableType* variable = container->getVariable("bandwidth_used");
+    XBT_DEBUG("UNCAT %s [%f - %f] %s %s %f", type, now, now + delta, resource, name, value);
+    simgrid::instr::VariableType* variable = container->getVariable(name);
     instr_event(now, delta, variable, container, value);
   }
 
-  //trace categorized utilization
+  // trace categorized resource utilization
   if (TRACE_categorized()){
     if (not category)
       return;
-    //variable of this category starts by 'b', because we have a link here
-    std::string category_type = std::string("b") + category;
-    XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now + delta, resource, category_type.c_str(), value);
+    std::string category_type = name[0] + std::string(category);
+    XBT_DEBUG("CAT %s [%f - %f] %s %s %f", type, now, now + delta, resource, category_type.c_str(), value);
     simgrid::instr::VariableType* variable = container->getVariable(category_type);
     instr_event(now, delta, variable, container, value);
   }
 }
 
-/* TRACE_surf_host_set_utilization: entry point from SimGrid */
-void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now, double delta)
+/* TRACE_surf_link_set_utilization: entry point from SimGrid */
+void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now, double delta)
 {
-  //only trace host utilization if host is known by tracing mechanism
-  container_t container = simgrid::instr::Container::byNameOrNull(resource);
-  if (not container || not value)
-    return;
+  TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", resource, category, value, now, delta);
+}
 
-  //trace uncategorized host utilization
-  if (TRACE_uncategorized()){
-    XBT_DEBUG("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    simgrid::instr::VariableType* variable = container->getVariable("power_used");
-    instr_event(now, delta, variable, container, value);
-  }
-
-  //trace categorized utilization
-  if (TRACE_categorized()){
-    if (not category)
-      return;
-    //variable of this category starts by 'p', because we have a host here
-    std::string category_type = std::string("p") + category;
-    XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now + delta, resource, category_type.c_str(), value);
-    simgrid::instr::VariableType* variable = container->getVariable(category_type);
-    instr_event(now, delta, variable, container, value);
-  }
+/* TRACE_surf_host_set_utilization: entry point from SimGrid */
+void TRACE_surf_host_set_utilization(const char* resource, const char* category, double value, double now, double delta)
+{
+  TRACE_surf_resource_set_utilization("HOST", "power_used", resource, category, value, now, delta);
 }

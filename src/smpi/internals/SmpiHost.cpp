@@ -5,7 +5,7 @@
 
 #include "SmpiHost.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
-#include "smpi/smpi_utils.hpp"
+#include "smpi_utils.hpp"
 
 #include <string>
 #include <vector>

@@ -18,13 +18,14 @@
 
 #include "simgrid/host.h"
 #include "simgrid/simix.hpp"
+#include "xbt/string.hpp"
 
 extern "C" {
 
 struct s_dirty_page {
-  double prev_clock;
-  double prev_remaining;
-  msg_task_t task;
+  double prev_clock     = 0.0;
+  double prev_remaining = 0.0;
+  msg_task_t task       = nullptr;
 };
 typedef s_dirty_page* dirty_page_t;
 
@@ -114,12 +115,14 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
   s_vm_params_t params;
-  memset(&params, 0, sizeof(params));
-  params.ramsize = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
-  params.devsize = 0;
-  params.skip_stage2 = 0;
+  params.ncpus        = 0;
+  params.ramsize      = static_cast<sg_size_t>(ramsize) * 1024 * 1024;
+  params.overcommit   = 0;
+  params.devsize      = 0;
+  params.skip_stage1  = 0;
+  params.skip_stage2  = 0;
   params.max_downtime = 0.03;
-  params.mig_speed = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
+  params.mig_speed    = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
   params.dp_intensity = static_cast<double>(dp_intensity) / 100;
   params.dp_cap       = params.ramsize * 0.9; // assume working set memory is 90% of ramsize
 
@@ -230,9 +233,9 @@ struct migration_session {
 
   /* The miration_rx process uses mbox_ctl to let the caller of do_migration()
    * know the completion of the migration. */
-  char *mbox_ctl;
+  std::string mbox_ctl;
   /* The migration_rx and migration_tx processes use mbox to transfer migration data. */
-  char *mbox;
+  std::string mbox;
 };
 
 static int migration_rx_fun(int argc, char *argv[])
@@ -247,7 +250,7 @@ static int migration_rx_fun(int argc, char *argv[])
   std::string finalize_task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 3);
   while (not received_finalize) {
     msg_task_t task = nullptr;
-    int ret         = MSG_task_recv(&task, ms->mbox);
+    int ret         = MSG_task_recv(&task, ms->mbox.c_str());
 
     if (ret != MSG_OK) {
       // An error occurred, clean the code and return
@@ -311,7 +314,7 @@ static int migration_rx_fun(int argc, char *argv[])
   // Inform the SRC that the migration has been correctly performed
   std::string task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
   msg_task_t task       = MSG_task_create(task_name.c_str(), 0, 0, nullptr);
-  msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
+  msg_error_t ret       = MSG_task_send(task, ms->mbox_ctl.c_str());
   if(ret == MSG_HOST_FAILURE){
     // The DST has crashed, this is a problem has the VM since we are not sure whether SRC is considering that the VM
     // has been correctly migrated on the DST node
@@ -346,12 +349,12 @@ static void stop_dirty_page_tracking(msg_vm_t vm)
   vm->pimpl_vm_->dp_enabled = 0;
 }
 
-static double get_computed(const char* key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
+static double get_computed(const std::string& key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
 {
   double computed = dp->prev_remaining - remaining;
   double duration = clock - dp->prev_clock;
 
-  XBT_DEBUG("%s@%s: computed %f ops (remaining %f -> %f) in %f secs (%f -> %f)", key, vm->getCname(), computed,
+  XBT_DEBUG("%s@%s: computed %f ops (remaining %f -> %f) in %f secs (%f -> %f)", key.c_str(), vm->getCname(), computed,
             dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
 
   return computed;
@@ -362,7 +365,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   double total = 0;
 
   for (auto const& elm : vm->pimpl_vm_->dp_objs) {
-    const char* key  = elm.first.c_str();
+    const std::string& key = elm.first;
     dirty_page_t dp  = elm.second;
     double remaining = MSG_task_get_flops_amount(dp->task);
 
@@ -394,18 +397,17 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
     return;
 
   double remaining = MSG_task_get_flops_amount(task);
-  char *key = bprintf("%s-%p", task->name, task);
+  std::string key  = simgrid::xbt::string_printf("%s-%p", task->name, task);
 
-  dirty_page_t dp = xbt_new0(s_dirty_page, 1);
+  dirty_page_t dp = new s_dirty_page;
   dp->task = task;
   if (vm->pimpl_vm_->dp_enabled) {
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
   }
   vm->pimpl_vm_->dp_objs.insert({key, dp});
-  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, host->getCname(), remaining, vm->pimpl_vm_->dp_enabled);
-
-  xbt_free(key);
+  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key.c_str(), host->getCname(), remaining,
+            vm->pimpl_vm_->dp_enabled);
 }
 
 void MSG_host_del_task(msg_host_t host, msg_task_t task)
@@ -414,10 +416,11 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   if (vm == nullptr)
     return;
 
-  char *key = bprintf("%s-%p", task->name, task);
+  std::string key = simgrid::xbt::string_printf("%s-%p", task->name, task);
   dirty_page_t dp = nullptr;
-  if (vm->pimpl_vm_->dp_objs.find(key) != vm->pimpl_vm_->dp_objs.end())
-    dp = vm->pimpl_vm_->dp_objs.at(key);
+  auto dp_obj     = vm->pimpl_vm_->dp_objs.find(key);
+  if (dp_obj != vm->pimpl_vm_->dp_objs.end())
+    dp = dp_obj->second;
   xbt_assert(dp && dp->task == task);
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
@@ -431,14 +434,14 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   }
 
   vm->pimpl_vm_->dp_objs.erase(key);
-  xbt_free(dp);
+  delete dp;
 
-  XBT_DEBUG("del %s on %s", key, host->getCname());
-  xbt_free(key);
+  XBT_DEBUG("del %s on %s", key.c_str(), host->getCname());
 }
 
-static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, sg_size_t size, char* mbox,
-                                     int stage, int stage2_round, double mig_speed, double timeout)
+static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, sg_size_t size,
+                                     const std::string& mbox, int stage, int stage2_round, double mig_speed,
+                                     double timeout)
 {
   sg_size_t sent = 0;
   std::string task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
@@ -448,9 +451,9 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
 
   msg_error_t ret;
   if (mig_speed > 0)
-    ret = MSG_task_send_with_timeout_bounded(task, mbox, timeout, mig_speed);
+    ret = MSG_task_send_with_timeout_bounded(task, mbox.c_str(), timeout, mig_speed);
   else
-    ret = MSG_task_send(task, mbox);
+    ret = MSG_task_send(task, mbox.c_str());
 
   if (ret == MSG_OK) {
     sent = size;
@@ -700,33 +703,31 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 
   vm->pimpl_vm_->isMigrating = true;
 
-  migration_session* ms = xbt_new(migration_session, 1);
-  ms->vm = vm;
-  ms->src_pm = src_pm;
-  ms->dst_pm = dst_pm;
+  migration_session ms;
+  ms.vm     = vm;
+  ms.src_pm = src_pm;
+  ms.dst_pm = dst_pm;
 
   /* We have two mailboxes. mbox is used to transfer migration data between source and destination PMs. mbox_ctl is used
    * to detect the completion of a migration. The names of these mailboxes must not conflict with others. */
-  ms->mbox_ctl = bprintf("__mbox_mig_ctl:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
-  ms->mbox     = bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  ms.mbox_ctl =
+      simgrid::xbt::string_printf("__mbox_mig_ctl:%s(%s-%s)", vm->getCname(), src_pm->getCname(), dst_pm->getCname());
+  ms.mbox = simgrid::xbt::string_printf("__mbox_mig_src_dst:%s(%s-%s)", vm->getCname(), src_pm->getCname(),
+                                        dst_pm->getCname());
 
   std::string pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   std::string pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-  MSG_process_create(pr_rx_name.c_str(), migration_rx_fun, ms, dst_pm);
+  MSG_process_create(pr_rx_name.c_str(), migration_rx_fun, &ms, dst_pm);
 
-  MSG_process_create(pr_tx_name.c_str(), migration_tx_fun, ms, src_pm);
+  MSG_process_create(pr_tx_name.c_str(), migration_tx_fun, &ms, src_pm);
 
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
   msg_task_t task = nullptr;
-  msg_error_t ret = MSG_task_receive(&task, ms->mbox_ctl);
+  msg_error_t ret = MSG_task_receive(&task, ms.mbox_ctl.c_str());
 
   vm->pimpl_vm_->isMigrating = false;
-
-  xbt_free(ms->mbox_ctl);
-  xbt_free(ms->mbox);
-  xbt_free(ms);
 
   if (ret == MSG_HOST_FAILURE) {
     // Note that since the communication failed, the owner did not change and the task should be destroyed on the
