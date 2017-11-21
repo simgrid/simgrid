@@ -114,6 +114,11 @@ int Link::sharingPolicy()
   return this->pimpl_->sharingPolicy();
 }
 
+double Link::getUsage()
+{
+  return lmm_constraint_get_usage(this->pimpl_->constraint());
+}
+
 void Link::turnOn()
 {
   simgrid::simix::kernelImmediate([this]() {
@@ -155,6 +160,15 @@ void Link::setLatencyTrace(tmgr_trace_t trace)
   simgrid::simix::kernelImmediate([this, trace]() {
     this->pimpl_->setLatencyTrace(trace);
   });
+}
+
+const char* Link::getProperty(const char* key)
+{
+  return this->pimpl_->getProperty(key);
+}
+void Link::setProperty(std::string key, std::string value)
+{
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 /*************

@@ -7,11 +7,11 @@
 #define S4U_LINK_HPP_
 
 #include <simgrid/link.h>
-#include <xbt/base.h>
-#include <xbt/signal.hpp>
-
 #include <string>
 #include <unordered_map>
+#include <xbt/Extendable.hpp>
+#include <xbt/base.h>
+#include <xbt/signal.hpp>
 
 /***********
  * Classes *
@@ -23,7 +23,7 @@ class NetworkAction;
 };
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
-XBT_PUBLIC_CLASS Link
+XBT_PUBLIC_CLASS Link : public simgrid::xbt::Extendable<Link>
 {
   friend simgrid::surf::LinkImpl;
 
@@ -52,6 +52,9 @@ public:
    */
   int sharingPolicy();
 
+  /** @brief Returns the current load (in flops per second) */
+  double getUsage();
+
   /** @brief Check if the Link is used */
   bool isUsed();
 
@@ -67,6 +70,9 @@ public:
                                                   external load). Trace must contain percentages (value between 0 and 1). */
   void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to
                                                external load). Trace must contain absolute values */
+
+  const char* getProperty(const char* key);
+  void setProperty(std::string key, std::string value);
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */

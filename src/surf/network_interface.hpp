@@ -174,6 +174,7 @@ public:
   static LinkImpl* byName(std::string name);
   static int linksCount();
   static LinkImpl** linksList();
+  static void linksList(std::vector<s4u::Link*>* linkList);
   static void linksExit();
 };
 

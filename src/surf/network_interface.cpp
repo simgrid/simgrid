@@ -30,6 +30,13 @@ namespace simgrid {
   {
     return links->size();
   }
+  void LinkImpl::linksList(std::vector<s4u::Link*>* linkList)
+  {
+    for (auto const& kv : *links) {
+      linkList->push_back(&kv.second->piface_);
+    }
+  }
+
   /** @brief Returns a list of all existing links */
   LinkImpl** LinkImpl::linksList()
   {
