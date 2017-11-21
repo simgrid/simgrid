@@ -209,6 +209,7 @@ examples/s4u/basic/s4u-basic
 examples/s4u/basic/s4u-basic_deployment
 examples/s4u/basic/s4u-basic_function
 examples/s4u/dht-chord/s4u-dht-chord
+examples/s4u/energy-link/s4u-energy-link
 examples/s4u/io/s4u-io
 examples/s4u/mutex/s4u-mutex
 examples/s4u/plugin-hostload/s4u-plugin-hostload

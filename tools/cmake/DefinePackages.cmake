@@ -346,6 +346,7 @@ set(SURF_SRC
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
   src/surf/plugins/host_energy.cpp
+  src/surf/plugins/link_energy.cpp
   src/surf/plugins/host_load.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
