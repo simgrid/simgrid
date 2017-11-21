@@ -27,7 +27,7 @@ static int execute_load_test(int argc, char* argv[])
   // Run a task
   start            = MSG_get_clock();
   msg_task_t task1 = MSG_task_create("t1", 100E6, 0, NULL);
-  XBT_INFO("Run a task of %.0E flops", MSG_task_get_flops_amount(task1));
+  XBT_INFO("Run a task of %.0E flops", MSG_task_get_initial_flops_amount(task1));
   MSG_task_execute(task1);
   MSG_task_destroy(task1);
 
@@ -44,7 +44,7 @@ static int execute_load_test(int argc, char* argv[])
   // Run a second task
   start = MSG_get_clock();
   task1 = MSG_task_create("t2", 100E6, 0, NULL);
-  XBT_INFO("Run a task of %.0E flops", MSG_task_get_flops_amount(task1));
+  XBT_INFO("Run a task of %.0E flops", MSG_task_get_initial_flops_amount(task1));
   MSG_task_execute(task1);
   MSG_task_destroy(task1);
   XBT_INFO("Done working on my task; this took %.2fs; current peak speed: %.0E flop/s; number of flops computed so "

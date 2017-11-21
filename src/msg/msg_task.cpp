@@ -228,17 +228,47 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Returns the remaining amount of flops needed to execute a task #msg_task_t.
+ * \brief Returns a value in ]0,1[ that represent the task remaining work
+ *    to do: starts at 1 and goes to 0. Returns 0 if not started or finished.
  *
- * Once a task has been processed, this amount is set to 0. If you want, you can reset this value with
- * #MSG_task_set_flops_amount before restarting the task.
+ * It works for either parallel or sequential tasks.
+ * TODO: Improve this function by returning 1 if the task has not started
  */
+double MSG_task_get_remaining_work_ratio(msg_task_t task) {
+
+  xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
+  if (task->simdata->compute) {
+    // Task in progress
+    return task->simdata->compute->remains();
+
+  //} else if ((MSG_task_get_flops_amount(task) == 0 and task->simdata->flops_parallel_amount == nullptr) //this is a sequential task
+  //    or (task->simdata->flops_parallel_amount != nullptr and task->simdata->flops_parallel_amount == 0)) {
+  //  // Task finished
+  //  return 1;
+  } else {
+    // Task not started or finished
+    return 0;
+  }
+}
+
 double MSG_task_get_flops_amount(msg_task_t task) {
   if (task->simdata->compute) {
     return task->simdata->compute->remains();
   } else {
     return task->simdata->flops_amount;
   }
+}
+
+/** \ingroup m_task_management
+ * \brief Returns the initial amount of flops needed to execute a task #msg_task_t.
+ *
+ * Once a task has been processed, this amount is set to 0. If you want, you can reset this value with
+ * #MSG_task_set_flops_amount before restarting the task.
+ *
+ * Warning: Only work for simple task, not parallel task.
+ */
+double MSG_task_get_initial_flops_amount(msg_task_t task) {
+  return task->simdata->flops_amount;
 }
 
 /** \ingroup m_task_management
