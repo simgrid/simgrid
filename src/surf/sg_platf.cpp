@@ -440,14 +440,14 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   double kill_time  = process->kill_time;
   int auto_restart = process->on_failure == SURF_ACTOR_ON_FAILURE_DIE ? 0 : 1;
 
-  std::vector<std::string> args(process->argv, process->argv + process->argc);
-  std::function<void()> code = factory(std::move(args));
+  std::string process_name   = process->args[0];
+  std::function<void()> code = factory(std::move(process->args));
   std::shared_ptr<std::map<std::string, std::string>> properties(process->properties);
 
   smx_process_arg_t arg = nullptr;
 
   arg = new simgrid::simix::ProcessArg();
-  arg->name = std::string(process->argv[0]);
+  arg->name = process_name;
   arg->code = code;
   arg->data = nullptr;
   arg->host = host;
@@ -459,7 +459,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   if (start_time > SIMIX_get_clock()) {
 
     arg = new simgrid::simix::ProcessArg();
-    arg->name = std::string(process->argv[0]);
+    arg->name = process_name;
     arg->code = std::move(code);
     arg->data = nullptr;
     arg->host = host;

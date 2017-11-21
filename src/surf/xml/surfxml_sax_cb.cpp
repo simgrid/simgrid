@@ -877,8 +877,7 @@ void ETag_surfxml_config()
   current_property_set = nullptr;
 }
 
-static int argc;
-static char **argv;
+static std::vector<std::string> arguments;
 
 void STag_surfxml_process()
 {
@@ -889,9 +888,7 @@ void STag_surfxml_process()
 void STag_surfxml_actor()
 {
   ZONE_TAG  = 0;
-  argc    = 1;
-  argv    = xbt_new(char *, 1);
-  argv[0] = xbt_strdup(A_surfxml_actor_function);
+  arguments.assign(1, A_surfxml_actor_function);
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
@@ -912,8 +909,7 @@ void ETag_surfxml_actor()
   actor.properties     = current_property_set;
   current_property_set = nullptr;
 
-  actor.argc       = argc;
-  actor.argv       = (const char **)argv;
+  actor.args.swap(arguments);
   actor.host       = A_surfxml_actor_host;
   actor.function   = A_surfxml_actor_function;
   actor.start_time = surf_parse_get_double(A_surfxml_actor_start___time);
@@ -933,17 +929,10 @@ void ETag_surfxml_actor()
   }
 
   sg_platf_new_process(&actor);
-
-  for (int i = 0; i != argc; ++i)
-    xbt_free(argv[i]);
-  xbt_free(argv);
-  argv = nullptr;
 }
 
 void STag_surfxml_argument(){
-  argc++;
-  argv = (char**)xbt_realloc(argv, (argc) * sizeof(char **));
-  argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
+  arguments.push_back(A_surfxml_argument_value);
 }
 
 void STag_surfxml_model___prop(){

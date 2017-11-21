@@ -174,8 +174,7 @@ public:
 };
 
 struct s_sg_platf_process_cbarg_t {
-  const char** argv = nullptr;
-  int argc          = 0;
+  std::vector<std::string> args;
   std::map<std::string, std::string>* properties = nullptr;
   const char* host                       = nullptr;
   const char* function                   = nullptr;
