@@ -139,16 +139,16 @@ void xbt_init(int *argc, char **argv)
 }
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
-/** @brief like free, but you can be sure that it is a function  */
+/** @brief like xbt_free, but you can be sure that it is a function  */
 void xbt_free_f(void *p)
 {
-  free(p);
+  xbt_free(p);
 }
 
 /** @brief should be given a pointer to pointer, and frees the second one */
 void xbt_free_ref(void *d)
 {
-  free(*(void **) d);
+  xbt_free(*(void**)d);
 }
 
 /** @brief Kill the program in silence */
