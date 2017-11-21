@@ -76,13 +76,11 @@ NetworkL07Model::~NetworkL07Model()
 double HostL07Model::nextOccuringEvent(double now)
 {
   double min = HostModel::nextOccuringEventFull(now);
-  ActionList::iterator it(getRunningActionSet()->begin());
-  ActionList::iterator itend(getRunningActionSet()->end());
-  for (; it != itend; ++it) {
-    L07Action *action = static_cast<L07Action*>(&*it);
-    if (action->latency_ > 0 && (min < 0 || action->latency_ < min)) {
-      min = action->latency_;
-      XBT_DEBUG("Updating min with %p (start %f): %f", action, action->getStartTime(), min);
+  for (Action const& action : *getRunningActionSet()) {
+    const L07Action& net_action = static_cast<const L07Action&>(action);
+    if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min)) {
+      min = net_action.latency_;
+      XBT_DEBUG("Updating min with %p (start %f): %f", &net_action, net_action.getStartTime(), min);
     }
   }
   XBT_DEBUG("min value: %f", min);
@@ -90,36 +88,30 @@ double HostL07Model::nextOccuringEvent(double now)
   return min;
 }
 
-void HostL07Model::updateActionsState(double /*now*/, double delta) {
-
-  L07Action *action;
-  ActionList *actionSet = getRunningActionSet();
-  ActionList::iterator it(actionSet->begin());
-  ActionList::iterator itNext = it;
-  ActionList::iterator itend(actionSet->end());
-
-  for (; it != itend; it = itNext) {
-    ++itNext;
-    action = static_cast<L07Action*>(&*it);
-    if (action->latency_ > 0) {
-      if (action->latency_ > delta) {
-        double_update(&(action->latency_), delta, sg_surf_precision);
+void HostL07Model::updateActionsState(double /*now*/, double delta)
+{
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    L07Action& action = static_cast<L07Action&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
+    if (action.latency_ > 0) {
+      if (action.latency_ > delta) {
+        double_update(&(action.latency_), delta, sg_surf_precision);
       } else {
-        action->latency_ = 0.0;
+        action.latency_ = 0.0;
       }
-      if ((action->latency_ <= 0.0) && (action->isSuspended() == 0)) {
-        action->updateBound();
-        lmm_update_variable_weight(maxminSystem_, action->getVariable(), 1.0);
+      if ((action.latency_ <= 0.0) && (action.isSuspended() == 0)) {
+        action.updateBound();
+        lmm_update_variable_weight(maxminSystem_, action.getVariable(), 1.0);
       }
     }
-    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.",
-           action, action->getRemains(), lmm_variable_getvalue(action->getVariable()) * delta);
-    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
+    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.getRemains(),
+              lmm_variable_getvalue(action.getVariable()) * delta);
+    action.updateRemains(lmm_variable_getvalue(action.getVariable()) * delta);
 
-    if (action->getMaxDuration() > NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    if (action.getMaxDuration() > NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    XBT_DEBUG("Action (%p) : remains (%g).", action, action->getRemains());
+    XBT_DEBUG("Action (%p) : remains (%g).", &action, action.getRemains());
 
     /* In the next if cascade, the action can be finished either because:
      *  - The amount of remaining work reached 0
@@ -127,22 +119,22 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
      * If it's not done, it may have failed.
      */
 
-    if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-        ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish(Action::State::done);
+    if (((action.getRemains() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+        ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
-      lmm_constraint_t cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
+      lmm_constraint_t cnst = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
       while (cnst != nullptr) {
         i++;
         void *constraint_id = lmm_constraint_id(cnst);
         if (static_cast<simgrid::surf::Resource*>(constraint_id)->isOff()) {
-          XBT_DEBUG("Action (%p) Failed!!", action);
-          action->finish(Action::State::failed);
+          XBT_DEBUG("Action (%p) Failed!!", &action);
+          action.finish(Action::State::failed);
           break;
         }
-        cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
+        cnst = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
       }
     }
   }
