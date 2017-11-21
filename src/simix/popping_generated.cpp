@@ -53,8 +53,8 @@ const char* simcall_names[] = {
     "SIMCALL_COND_BROADCAST",
     "SIMCALL_SEM_ACQUIRE",
     "SIMCALL_SEM_ACQUIRE_TIMEOUT",
-    "SIMCALL_FILE_READ",
-    "SIMCALL_FILE_WRITE",
+    "SIMCALL_STORAGE_READ",
+    "SIMCALL_STORAGE_WRITE",
     "SIMCALL_MC_RANDOM",
     "SIMCALL_SET_CATEGORY",
     "SIMCALL_RUN_KERNEL",
@@ -197,12 +197,14 @@ case SIMCALL_SEM_ACQUIRE_TIMEOUT:
   simcall_HANDLER_sem_acquire_timeout(simcall, simgrid::simix::unmarshal<smx_sem_t>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]));
   break;
 
-case SIMCALL_FILE_READ:
-  simcall_HANDLER_file_read(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
+case SIMCALL_STORAGE_READ:
+  simcall_HANDLER_storage_read(simcall, simgrid::simix::unmarshal<surf_storage_t>(simcall->args[0]),
+                               simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
   break;
 
-case SIMCALL_FILE_WRITE:
-  simcall_HANDLER_file_write(simcall, simgrid::simix::unmarshal<surf_file_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
+case SIMCALL_STORAGE_WRITE:
+  simcall_HANDLER_storage_write(simcall, simgrid::simix::unmarshal<surf_storage_t>(simcall->args[0]),
+                                simgrid::simix::unmarshal<sg_size_t>(simcall->args[1]));
   break;
 
 case SIMCALL_MC_RANDOM:

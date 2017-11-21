@@ -27,37 +27,6 @@ FileImpl::FileImpl(sg_storage_t st, std::string path, std::string mount) : path_
   }
 }
 
-Action* FileImpl::read(sg_size_t size)
-{
-  XBT_DEBUG("READ %s on disk '%s'", getCname(), location_->getCname());
-  if (current_position_ + size > size_) {
-    if (current_position_ > size_) {
-      size = 0;
-    } else {
-      size = size_ - current_position_;
-    }
-    current_position_ = size_;
-  } else
-    current_position_ += size;
-
-  return location_->read(size);
-}
-
-Action* FileImpl::write(sg_size_t size)
-{
-  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getCname(), location_->getCname(), size, size_);
-
-  StorageAction* action = location_->write(size);
-  action->file_         = this;
-  /* Substract the part of the file that might disappear from the used sized on the storage element */
-  location_->usedSize_ -= (size_ - current_position_);
-  // If the storage is full before even starting to write
-  if (location_->usedSize_ >= location_->getSize()) {
-    action->setState(Action::State::failed);
-  }
-  return action;
-}
-
 int FileImpl::seek(sg_offset_t offset, int origin)
 {
   switch (origin) {

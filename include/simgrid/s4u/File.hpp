@@ -64,7 +64,7 @@ public:
   int desc_id = 0;
 
 private:
-  surf_file_t pimpl_ = nullptr;
+  simgrid::surf::FileImpl* pimpl_ = nullptr;
   std::string path_;
   void* userdata_ = nullptr;
 };

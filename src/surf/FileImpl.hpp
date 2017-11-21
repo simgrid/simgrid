@@ -29,8 +29,6 @@ public:
   int seek(sg_offset_t offset, int origin);
   int unlink();
   void move(std::string fullpath);
-  Action* read(sg_size_t size);
-  Action* write(sg_size_t size);
 
 private:
   StorageImpl* location_;

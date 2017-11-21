@@ -86,11 +86,6 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
     action->updateRemains(current_progress);
     if (action->type_ == WRITE) {
       action->storage_->usedSize_ += current_progress;
-      action->file_->incrPosition(current_progress);
-      action->file_->setSize(action->file_->tell());
-
-      action->storage_->getContent()->erase(action->file_->getCname());
-      action->storage_->getContent()->insert({action->file_->getCname(), action->file_->size()});
     }
 
     if (action->getMaxDuration() > NO_MAX_DURATION)

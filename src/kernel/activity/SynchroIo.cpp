@@ -23,14 +23,14 @@ void simgrid::kernel::activity::IoImpl::post()
 {
   for (smx_simcall_t const& simcall : simcalls) {
     switch (simcall->call) {
-    case SIMCALL_FILE_WRITE:
-      simcall_file_write__set__result(simcall, surf_io->getCost());
-      break;
-    case SIMCALL_FILE_READ:
-      simcall_file_read__set__result(simcall, surf_io->getCost());
-      break;
-    default:
-      break;
+      case SIMCALL_STORAGE_WRITE:
+        simcall_storage_write__set__result(simcall, surf_io->getCost());
+        break;
+      case SIMCALL_STORAGE_READ:
+        simcall_storage_read__set__result(simcall, surf_io->getCost());
+        break;
+      default:
+        break;
     }
   }
 
