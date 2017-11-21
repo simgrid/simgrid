@@ -45,8 +45,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : path_(fullpat
 
   pimpl_ =
       simgrid::simix::kernelImmediate([this, st, path] { return new simgrid::surf::FileImpl(st, path, mount_point); });
-  storage_type = st->getType();
-  storageId    = st->getName();
+  onStorage = st;
 }
 
 File::~File()
