@@ -68,7 +68,7 @@ StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSyst
     , attach_(attach)
 {
   content_ = parseContent(content_name);
-  turnOn();
+  StorageImpl::turnOn();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
   constraintWrite_ = lmm_constraint_new(maxminSystem, this, bwrite);

@@ -150,7 +150,7 @@ NetworkCm02Model::NetworkCm02Model()
   }
 
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
-  loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
+  loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY) {
     modifiedSet_ = new ActionLmmList();
