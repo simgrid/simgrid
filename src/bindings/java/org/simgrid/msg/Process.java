@@ -280,7 +280,6 @@ public abstract class Process implements Runnable {
 	/**
 	 * This method actually creates and run the process.
 	 * It is a noop if the process is already launched.
-	 * @throws HostNotFoundException
 	 */
 	public final void start() {
 	   if (bind == 0)

@@ -58,7 +58,6 @@ public final class Msg {
 
 	/** Example launcher. You can use it or provide your own launcher, as you wish
 	 * @param args
-	 * @throws MsgException
 	 */
 	public static void main(String[]args) {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */
