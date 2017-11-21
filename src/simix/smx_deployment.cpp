@@ -123,17 +123,13 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
   if (not host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
   process.host = process_host;
-
-  process.argc = 1 + xbt_dynar_length(arguments);
-  process.argv    = static_cast<const char**>(xbt_new(const char*, process.argc + 1));
-  process.argv[0] = xbt_strdup(process_function);
+  process.args.push_back(process_function);
   /* add arguments */
   unsigned int i;
   char *arg;
   xbt_dynar_foreach(arguments, i, arg) {
-    process.argv[i + 1] = xbt_strdup(arg);
+    process.args.push_back(arg);
   }
-  process.argv[process.argc] = nullptr;
 
   // Check we know how to handle this function name:
   simgrid::simix::ActorCodeFactory& parse_code = SIMIX_get_actor_code_factory(process_function);
