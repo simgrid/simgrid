@@ -7,8 +7,8 @@
 #ifndef SIMGRID_PLUGINS_LINK_ENERGY_H_
 #define SIMGRID_PLUGINS_LINK_ENERGY_H_
 
-#include <xbt/base.h>
 #include <simgrid/forward.h>
+#include <xbt/base.h>
 
 SG_BEGIN_DECL()
 
@@ -27,4 +27,3 @@ XBT_PUBLIC(void) ns3_link_energy_plugin_init();
 SG_END_DECL()
 
 #endif
-
