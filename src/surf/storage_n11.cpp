@@ -75,28 +75,24 @@ double StorageN11Model::nextOccuringEvent(double now)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  ActionList *actionSet = getRunningActionSet();
-  ActionList::iterator it(actionSet->begin());
-  ActionList::iterator itend(actionSet->end());
-  while (it != itend) {
-    StorageAction *action = static_cast<StorageAction*>(&*it);
-    ++it;
-    double current_progress = lrint(lmm_variable_getvalue(action->getVariable()) * delta);
-
-    action->updateRemains(current_progress);
-    if (action->type_ == WRITE) {
-      action->storage_->usedSize_ += current_progress;
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    StorageAction& action = static_cast<StorageAction&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
+    double current_progress = lrint(lmm_variable_getvalue(action.getVariable()) * delta);
+    action.updateRemains(current_progress);
+    if (action.type_ == WRITE) {
+      action.storage_->usedSize_ += current_progress;
     }
 
-    if (action->getMaxDuration() > NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    if (action.getMaxDuration() > NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    if (action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->storage_->usedSize_ == action->storage_->getSize()) {
-      action->finish(Action::State::failed);
-    } else if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-               ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish(Action::State::done);
+    if (action.getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action.getVariable()) > 0 &&
+        action.storage_->usedSize_ == action.storage_->getSize()) {
+      action.finish(Action::State::failed);
+    } else if (((action.getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+               ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     }
   }
 }

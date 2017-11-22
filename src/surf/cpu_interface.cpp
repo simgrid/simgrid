@@ -44,13 +44,9 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    ActionList *actionSet = getRunningActionSet();
-    ActionList::iterator it(actionSet->begin());
-    ActionList::iterator itend(actionSet->end());
-    for (; it != itend; ++it) {
-      CpuAction *action = static_cast<CpuAction*>(&*it);
-      if (smaller < 0 || action->getLastUpdate() < smaller)
-        smaller = action->getLastUpdate();
+    for (Action const& action : *getRunningActionSet()) {
+      if (smaller < 0 || action.getLastUpdate() < smaller)
+        smaller = action.getLastUpdate();
     }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
@@ -60,30 +56,26 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
 void CpuModel::updateActionsStateFull(double now, double delta)
 {
-  CpuAction *action = nullptr;
-  ActionList *running_actions = getRunningActionSet();
-  ActionList::iterator it(running_actions->begin());
-  ActionList::iterator itNext = it;
-  ActionList::iterator itend(running_actions->end());
-  for (; it != itend; it = itNext) {
-    ++itNext;
-    action = static_cast<CpuAction*>(&*it);
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    CpuAction& action = static_cast<CpuAction&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (TRACE_is_enabled()) {
-      Cpu *cpu = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
+      Cpu* cpu =
+          static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action.getVariable(), 0)));
 
-      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(),
-                                      lmm_variable_getvalue(action->getVariable()), now - delta, delta);
+      TRACE_surf_host_set_utilization(cpu->getCname(), action.getCategory(),
+                                      lmm_variable_getvalue(action.getVariable()), now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 
-    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
+    action.updateRemains(lmm_variable_getvalue(action.getVariable()) * delta);
 
-    if (action->getMaxDuration() != NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    if (action.getMaxDuration() != NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish(Action::State::done);
+    if (((action.getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+        ((action.getMaxDuration() != NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     }
   }
 }

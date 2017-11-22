@@ -464,22 +464,21 @@ double Model::nextOccuringEventFull(double /*now*/) {
 
   double min = -1;
 
-  for (auto it(getRunningActionSet()->begin()); it != getRunningActionSet()->end(); ++it) {
-    Action *action = &*it;
-    double value = lmm_variable_getvalue(action->getVariable());
+  for (Action& action : *getRunningActionSet()) {
+    double value = lmm_variable_getvalue(action.getVariable());
     if (value > 0) {
-      if (action->getRemains() > 0)
-        value = action->getRemainsNoUpdate() / value;
+      if (action.getRemains() > 0)
+        value = action.getRemainsNoUpdate() / value;
       else
         value = 0.0;
       if (min < 0 || value < min) {
         min = value;
-        XBT_DEBUG("Updating min (value) with %p: %f", action, min);
+        XBT_DEBUG("Updating min (value) with %p: %f", &action, min);
       }
     }
-    if ((action->getMaxDuration() >= 0) && (min<0 || action->getMaxDuration() < min)) {
-      min = action->getMaxDuration();
-      XBT_DEBUG("Updating min (duration) with %p: %f", action, min);
+    if ((action.getMaxDuration() >= 0) && (min < 0 || action.getMaxDuration() < min)) {
+      min = action.getMaxDuration();
+      XBT_DEBUG("Updating min (duration) with %p: %f", &action, min);
     }
   }
   XBT_DEBUG("min value : %f", min);

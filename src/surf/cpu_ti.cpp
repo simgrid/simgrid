@@ -349,16 +349,14 @@ double CpuTiModel::nextOccuringEvent(double now)
 {
   double min_action_duration = -1;
 
-/* iterates over modified cpus to update share resources */
-  CpuTiList::iterator itend(modifiedCpu_->end());
-  CpuTiList::iterator it(modifiedCpu_->begin());
-  while (it != itend) {
-    CpuTi *ti = &*it;
-    ++it;
-    ti->updateActionsFinishTime(now);
+  /* iterates over modified cpus to update share resources */
+  for (auto it = std::begin(*modifiedCpu_); it != std::end(*modifiedCpu_);) {
+    CpuTi& ti = *it;
+    ++it; // increment iterator here since the following call to ti.updateActionsFinishTime() may invalidate it
+    ti.updateActionsFinishTime(now);
   }
 
-/* get the min next event if heap not empty */
+  /* get the min next event if heap not empty */
   if (not actionHeapIsEmpty())
     min_action_duration = actionHeapTopDate() - now;
 
@@ -452,15 +450,12 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
-      ActionTiList::iterator itend(actionSet_->end());
-      for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
-        CpuTiAction *action = &*it;
-        if (action->getState() == Action::State::running
-         || action->getState() == Action::State::ready
-         || action->getState() == Action::State::not_in_the_system) {
-          action->setFinishTime(date);
-          action->setState(Action::State::failed);
-          action->heapRemove(model()->getActionHeap());
+      for (CpuTiAction& action : *actionSet_) {
+        if (action.getState() == Action::State::running || action.getState() == Action::State::ready ||
+            action.getState() == Action::State::not_in_the_system) {
+          action.setFinishTime(date);
+          action.setState(Action::State::failed);
+          action.heapRemove(model()->getActionHeap());
         }
       }
     }
@@ -473,66 +468,62 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
 void CpuTi::updateActionsFinishTime(double now)
 {
-  CpuTiAction *action;
   double sum_priority = 0.0;
   double total_area;
 
   /* update remaining amount of actions */
   updateRemainingAmount(now);
 
-  ActionTiList::iterator itend(actionSet_->end());
-  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
-    action = &*it;
+  for (CpuTiAction const& action : *actionSet_) {
     /* action not running, skip it */
-    if (action->getStateSet() != surf_cpu_model_pm->getRunningActionSet())
+    if (action.getStateSet() != surf_cpu_model_pm->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
-    if (action->getPriority() <= 0)
+    if (action.getPriority() <= 0)
       continue;
 
     /* action suspended, skip it */
-    if (action->suspended_ != 0)
+    if (action.suspended_ != 0)
       continue;
 
-    sum_priority += 1.0 / action->getPriority();
+    sum_priority += 1.0 / action.getPriority();
   }
   sumPriority_ = sum_priority;
 
-  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
-    action = &*it;
+  for (CpuTiAction& action : *actionSet_) {
     double min_finish = -1;
     /* action not running, skip it */
-    if (action->getStateSet() !=  surf_cpu_model_pm->getRunningActionSet())
+    if (action.getStateSet() != surf_cpu_model_pm->getRunningActionSet())
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action->suspended_ == 0 && action->getPriority() > 0) {
+    if (action.suspended_ == 0 && action.getPriority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
-      total_area = (action->getRemains()) * sum_priority * action->getPriority();
+      total_area = (action.getRemains()) * sum_priority * action.getPriority();
 
       total_area /= speed_.peak;
 
-      action->setFinishTime(speedIntegratedTrace_->solve(now, total_area));
+      action.setFinishTime(speedIntegratedTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
-      if (action->getMaxDuration() > NO_MAX_DURATION &&
-          action->getStartTime() + action->getMaxDuration() < action->getFinishTime())
-        min_finish = action->getStartTime() + action->getMaxDuration();
+      if (action.getMaxDuration() > NO_MAX_DURATION &&
+          action.getStartTime() + action.getMaxDuration() < action.getFinishTime())
+        min_finish = action.getStartTime() + action.getMaxDuration();
       else
-        min_finish = action->getFinishTime();
+        min_finish = action.getFinishTime();
     } else {
       /* put the max duration time on heap */
-      if (action->getMaxDuration() > NO_MAX_DURATION)
-        min_finish = action->getStartTime() + action->getMaxDuration();
+      if (action.getMaxDuration() > NO_MAX_DURATION)
+        min_finish = action.getStartTime() + action.getMaxDuration();
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
-      action->heapUpdate(model()->getActionHeap(), min_finish, NOTSET);
+      action.heapUpdate(model()->getActionHeap(), min_finish, NOTSET);
     else
-      action->heapRemove(model()->getActionHeap());
+      action.heapRemove(model()->getActionHeap());
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
-              action, action->getStartTime(), action->getFinishTime(), action->getMaxDuration());
+              &action, action.getStartTime(), action.getFinishTime(), action.getMaxDuration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -560,32 +551,30 @@ void CpuTi::updateRemainingAmount(double now)
   /* compute the integration area */
   double area_total = speedIntegratedTrace_->integrate(lastUpdate_, now) * speed_.peak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
-  ActionTiList::iterator itend(actionSet_->end());
-  for (ActionTiList::iterator it(actionSet_->begin()); it != itend; ++it) {
-    CpuTiAction *action = &*it;
+  for (CpuTiAction& action : *actionSet_) {
     /* action not running, skip it */
-    if (action->getStateSet() != model()->getRunningActionSet())
+    if (action.getStateSet() != model()->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
-    if (action->getPriority() <= 0)
+    if (action.getPriority() <= 0)
       continue;
 
     /* action suspended, skip it */
-    if (action->suspended_ != 0)
+    if (action.suspended_ != 0)
       continue;
 
     /* action don't need update */
-    if (action->getStartTime() >= now)
+    if (action.getStartTime() >= now)
       continue;
 
     /* skip action that are finishing now */
-    if (action->getFinishTime() >= 0 && action->getFinishTime() <= now)
+    if (action.getFinishTime() >= 0 && action.getFinishTime() <= now)
       continue;
 
     /* update remaining */
-    action->updateRemains(area_total / (sumPriority_ * action->getPriority()));
-    XBT_DEBUG("Update remaining action(%p) remaining %f", action, action->getRemainsNoUpdate());
+    action.updateRemains(area_total / (sumPriority_ * action.getPriority()));
+    XBT_DEBUG("Update remaining action(%p) remaining %f", &action, action.getRemainsNoUpdate());
   }
   lastUpdate_ = now;
 }

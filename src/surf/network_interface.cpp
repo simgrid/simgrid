@@ -89,10 +89,10 @@ namespace simgrid {
     {
       double minRes = Model::nextOccuringEventFull(now);
 
-      for (auto it(getRunningActionSet()->begin()); it != getRunningActionSet()->end(); it++) {
-        NetworkAction *action = static_cast<NetworkAction*>(&*it);
-        if (action->latency_ > 0)
-          minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
+      for (Action const& action : *getRunningActionSet()) {
+        const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
+        if (net_action.latency_ > 0)
+          minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);
       }
 
       XBT_DEBUG("Min of share resources %f", minRes);

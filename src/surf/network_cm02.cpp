@@ -210,51 +210,48 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 
 void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 {
-  ActionList *running_actions = getRunningActionSet();
-  ActionList::iterator it(running_actions->begin());
-  ActionList::iterator itend(running_actions->end());
-  while (it != itend) {
-    NetworkCm02Action *action = static_cast<NetworkCm02Action*> (&*it);
-    ++it;
-    XBT_DEBUG("Something happened to action %p", action);
-      double deltap = delta;
-      if (action->latency_ > 0) {
-        if (action->latency_ > deltap) {
-          double_update(&(action->latency_), deltap, sg_surf_precision);
-          deltap = 0.0;
-        } else {
-          double_update(&(deltap), action->latency_, sg_surf_precision);
-          action->latency_ = 0.0;
-        }
-        if (action->latency_ <= 0.0 && not action->isSuspended())
-          lmm_update_variable_weight(maxminSystem_, action->getVariable(), action->weight_);
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    NetworkCm02Action& action = static_cast<NetworkCm02Action&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
+    XBT_DEBUG("Something happened to action %p", &action);
+    double deltap = delta;
+    if (action.latency_ > 0) {
+      if (action.latency_ > deltap) {
+        double_update(&action.latency_, deltap, sg_surf_precision);
+        deltap = 0.0;
+      } else {
+        double_update(&deltap, action.latency_, sg_surf_precision);
+        action.latency_ = 0.0;
       }
-      if (TRACE_is_enabled()) {
-        int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());
-        for (int i = 0; i < n; i++){
-          lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
+      if (action.latency_ <= 0.0 && not action.isSuspended())
+        lmm_update_variable_weight(maxminSystem_, action.getVariable(), action.weight_);
+    }
+    if (TRACE_is_enabled()) {
+      int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action.getVariable());
+      for (int i = 0; i < n; i++) {
+        lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
 
-          NetworkCm02Link* link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
-          TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(),
-                                          (lmm_variable_getvalue(action->getVariable()) *
-                                           lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i)),
-                                          action->getLastUpdate(), now - action->getLastUpdate());
-        }
+        NetworkCm02Link* link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
+        TRACE_surf_link_set_utilization(link->getCname(), action.getCategory(),
+                                        (lmm_variable_getvalue(action.getVariable()) *
+                                         lmm_get_cnst_weight_from_var(maxminSystem_, action.getVariable(), i)),
+                                        action.getLastUpdate(), now - action.getLastUpdate());
       }
-      if (not lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable())) {
-        /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
-         * vivaldi. In such case, just make sure that the action completes immediately.
-         */
-        action->updateRemains(action->getRemains());
-      }
-    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
+    }
+    if (not lmm_get_number_of_cnst_from_var(maxminSystem_, action.getVariable())) {
+      /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
+       * vivaldi. In such case, just make sure that the action completes immediately.
+       */
+      action.updateRemains(action.getRemains());
+    }
+    action.updateRemains(lmm_variable_getvalue(action.getVariable()) * delta);
 
-    if (action->getMaxDuration() > NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    if (action.getMaxDuration() > NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-        ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish(Action::State::done);
+    if (((action.getRemains() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+        ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     }
   }
 }
