@@ -150,56 +150,6 @@ static inline int double_equals(double value1, double value2, double precision)
 /** @{ @ingroup SURF_lmm */
 
 /**
- * @brief Share a constraint
- * @param cnst The constraint to share
- */
-XBT_PUBLIC(void) lmm_constraint_shared(lmm_constraint_t cnst);
-
-/**
- * @brief Check if a constraint is shared (shared by default)
- * @param cnst The constraint to share
- * @return 1 if shared, 0 otherwise
- */
-XBT_PUBLIC(int) lmm_constraint_sharing_policy(lmm_constraint_t cnst);
-
-/**
- * @brief Get the usage of the constraint after the last lmm solve
- * @param cnst A constraint
- * @return The usage of the constraint
- */
-XBT_PUBLIC(double) lmm_constraint_get_usage(lmm_constraint_t cnst);
-
-XBT_PUBLIC(int) lmm_constraint_get_variable_amount(lmm_constraint_t cnst);
-
-/**
- * @brief Sets the concurrency limit for this constraint
- * @param cnst A constraint
- * @param concurrency_limit The concurrency limit to use for this constraint
- */
-XBT_PUBLIC(void) lmm_constraint_concurrency_limit_set(lmm_constraint_t cnst, int concurrency_limit);
-
-/**
- * @brief Gets the concurrency limit for this constraint
- * @param cnst A constraint
- * @return The concurrency limit used by this constraint
- */
-XBT_PUBLIC(int) lmm_constraint_concurrency_limit_get(lmm_constraint_t cnst);
-
-/**
- * @brief Reset the concurrency maximum for a given variable (we will update the maximum to reflect constraint
- * evolution).
- * @param cnst A constraint
-*/
-XBT_PUBLIC(void) lmm_constraint_concurrency_maximum_reset(lmm_constraint_t cnst);
-
-/**
- * @brief Get the concurrency maximum for a given variable (which reflects constraint evolution).
- * @param cnst A constraint
- * @return the maximum concurrency of the constraint
- */
-XBT_PUBLIC(int) lmm_constraint_concurrency_maximum_get(lmm_constraint_t cnst);
-
-/**
  * @brief Get the value of the variable after the last lmm solve
  * @param var A variable
  * @return The value of the variable
@@ -245,37 +195,6 @@ XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t
  * @return The number of constraint associated to the variable
  */
 XBT_PUBLIC(int) lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
-
-/**
- * @brief Get a var associated to a constraint
- * @details Get the first variable of the next variable of elem if elem is not NULL
- * @param sys The system associated to the variable (not used)
- * @param cnst A constraint
- * @param elem A element of constraint of the constraint or NULL
- * @return A variable associated to a constraint
- */
-XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys, lmm_constraint_t cnst, lmm_element_t* elem);
-
-/**
- * @brief Get a var associated to a constraint
- * @details Get the first variable of the next variable of elem if elem is not NULL
- * @param cnst A constraint
- * @param elem A element of constraint of the constraint or NULL
- * @param nextelem A element of constraint of the constraint or NULL, the one after elem
- * @param numelem parameter representing the number of elements to go
- *
- * @return A variable associated to a constraint
- */
-XBT_PUBLIC(lmm_variable_t)
-lmm_get_var_from_cnst_safe(lmm_system_t sys, lmm_constraint_t cnst, lmm_element_t* elem, lmm_element_t* nextelem,
-                           int* numelem);
-
-/**
- * @brief Get the data associated to a constraint
- * @param cnst A constraint
- * @return The data associated to the constraint
- */
-XBT_PUBLIC(void*) lmm_constraint_id(lmm_constraint_t cnst);
 
 /**
  * @brief Get the data associated to a variable

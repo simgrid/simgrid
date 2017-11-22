@@ -154,7 +154,7 @@ namespace simgrid {
 
     int LinkImpl::sharingPolicy()
     {
-      return lmm_constraint_sharing_policy(constraint());
+      return constraint()->get_sharing_policy();
     }
 
     void LinkImpl::turnOn()
@@ -208,7 +208,7 @@ namespace simgrid {
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */
         // extra pb: we cannot dynamic_cast from void*...
-        Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+        Resource* resource = static_cast<Resource*>(lmm_get_cnst_from_var(sys, getVariable(), i)->get_id());
         LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
         if (link != nullptr)
           retlist.push_back(link);

@@ -54,7 +54,7 @@ HostLoad::HostLoad(simgrid::s4u::Host* ptr)
     : host(ptr)
     , last_updated(surf_get_clock())
     , last_reset(surf_get_clock())
-    , current_flops(lmm_constraint_get_usage(host->pimpl_cpu->constraint()))
+    , current_flops(host->pimpl_cpu->constraint()->get_usage())
 {
 }
 
@@ -66,7 +66,7 @@ void HostLoad::update()
   if (last_updated < now) {
     /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k \in {0, 1, ..., cores}
      * number of active cores */
-    current_flops = lmm_constraint_get_usage(host->pimpl_cpu->constraint());
+    current_flops = host->pimpl_cpu->constraint()->get_usage();
 
     /* flops == pstate_speed * cores_being_currently_used */
     computed_flops += (now - last_updated) * current_flops;

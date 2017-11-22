@@ -26,10 +26,9 @@ double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:V
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
 static int Global_debug_id = 1;
-static int Global_const_debug_id = 1;
+int s_lmm_constraint_t::Global_debug_id = 1;
 
 static int lmm_can_enable_var(lmm_variable_t var);
-static int lmm_concurrency_slack(lmm_constraint_t cnstr);
 static int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var);
 
 static inline int lmm_element_concurrency(lmm_element_t elem)
@@ -59,7 +58,7 @@ static inline void lmm_increase_concurrency(lmm_element_t elem)
   if(cnstr->concurrency_current > cnstr->concurrency_maximum)
     cnstr->concurrency_maximum= cnstr->concurrency_current;
 
-  xbt_assert(cnstr->concurrency_limit<0 || cnstr->concurrency_current<=cnstr->concurrency_limit,
+  xbt_assert(cnstr->get_concurrency_limit() < 0 || cnstr->concurrency_current <= cnstr->get_concurrency_limit(),
              "Concurrency limit overflow!");
 }
 
@@ -86,12 +85,13 @@ void s_lmm_system_t::check_concurrency()
     {
       lmm_element_t elem = (lmm_element_t)elemIt;
       // We should have staged variables only if concurrency is reached in some constraint
-      xbt_assert(cnst->concurrency_limit < 0 || elem->variable->staged_weight == 0 ||
+      xbt_assert(cnst->get_concurrency_limit() < 0 || elem->variable->staged_weight == 0 ||
                      lmm_cnstrs_min_concurrency_slack(elem->variable) < elem->variable->concurrency_share,
                  "should not have staged variable!");
     }
 
-    xbt_assert(cnst->concurrency_limit < 0 || cnst->concurrency_limit >= concurrency, "concurrency check failed!");
+    xbt_assert(cnst->get_concurrency_limit() < 0 || cnst->get_concurrency_limit() >= concurrency,
+               "concurrency check failed!");
     xbt_assert(cnst->concurrency_current == concurrency, "concurrency_current is out-of-date!");
   }
 
@@ -201,63 +201,34 @@ void s_lmm_system_t::cnst_free(lmm_constraint_t cnst)
   delete cnst;
 }
 
-lmm_constraint_t s_lmm_system_t::constraint_new(void* id, double bound_value)
+s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value)
 {
-  lmm_constraint_t cnst = nullptr;
   s_lmm_element_t elem;
 
-  cnst         = new s_lmm_constraint_t();
-  cnst->id     = id;
-  cnst->id_int = Global_const_debug_id++;
-  xbt_swag_init(&(cnst->enabled_element_set), xbt_swag_offset(elem, enabled_element_set_hookup));
-  xbt_swag_init(&(cnst->disabled_element_set), xbt_swag_offset(elem, disabled_element_set_hookup));
-  xbt_swag_init(&(cnst->active_element_set), xbt_swag_offset(elem, active_element_set_hookup));
+  id     = id_value;
+  id_int = Global_debug_id++;
+  xbt_swag_init(&enabled_element_set, xbt_swag_offset(elem, enabled_element_set_hookup));
+  xbt_swag_init(&disabled_element_set, xbt_swag_offset(elem, disabled_element_set_hookup));
+  xbt_swag_init(&active_element_set, xbt_swag_offset(elem, active_element_set_hookup));
 
-  cnst->bound = bound_value;
-  cnst->concurrency_maximum=0;
-  cnst->concurrency_current=0;
-  cnst->concurrency_limit  = sg_concurrency_limit;
-  cnst->usage = 0;
-  cnst->sharing_policy = 1; /* FIXME: don't hardcode the value */
+  remaining           = 0.0;
+  usage               = 0.0;
+  bound               = bound_value;
+  concurrency_limit   = sg_concurrency_limit;
+  concurrency_current = 0;
+  concurrency_maximum = 0;
+  sharing_policy      = 1; /* FIXME: don't hardcode the value */
+
+  lambda     = 0.0;
+  new_lambda = 0.0;
+  cnst_light = nullptr;
+}
+
+lmm_constraint_t s_lmm_system_t::constraint_new(void* id, double bound_value)
+{
+  lmm_constraint_t cnst = new s_lmm_constraint_t(id, bound_value);
   insert_constraint(cnst);
-
   return cnst;
-}
-
-int lmm_constraint_concurrency_limit_get(lmm_constraint_t cnst)
-{
- return cnst->concurrency_limit;
-}
-
-void lmm_constraint_concurrency_limit_set(lmm_constraint_t cnst, int concurrency_limit)
-{
-  xbt_assert(concurrency_limit<0 || cnst->concurrency_maximum<=concurrency_limit,
-             "New concurrency limit should be larger than observed concurrency maximum. Maybe you want to call"
-             " lmm_constraint_concurrency_maximum_reset() to reset the maximum?");
-  cnst->concurrency_limit = concurrency_limit;
-}
-
-void lmm_constraint_concurrency_maximum_reset(lmm_constraint_t cnst)
-{
-  cnst->concurrency_maximum = 0;
-}
-
-int lmm_constraint_concurrency_maximum_get(lmm_constraint_t cnst)
-{
- xbt_assert(cnst->concurrency_limit<0 || cnst->concurrency_maximum<=cnst->concurrency_limit,
-            "Very bad: maximum observed concurrency is higher than limit. This is a bug of SURF, please report it.");
-  return cnst->concurrency_maximum;
-}
-
-void lmm_constraint_shared(lmm_constraint_t cnst)
-{
-  cnst->sharing_policy = 0;
-}
-
-/** Return true if the constraint is shared, and false if it's FATPIPE */
-int lmm_constraint_sharing_policy(lmm_constraint_t cnst)
-{
-  return (cnst->sharing_policy);
 }
 
 void* s_lmm_system_t::variable_mallocator_new_f()
@@ -341,7 +312,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
   }
 
   //Check if we need to disable the variable
-  if (var->sharing_weight > 0 && var->concurrency_share - current_share > lmm_concurrency_slack(cnst)) {
+  if (var->sharing_weight > 0 && var->concurrency_share - current_share > cnst->get_concurrency_slack()) {
     double weight = var->sharing_weight;
     disable_var(var);
     for (s_lmm_element_t const& elem : var->cnsts)
@@ -400,7 +371,7 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
 
     //We need to check that increasing value of the element does not cross the concurrency limit
     if (var->sharing_weight) {
-      if (lmm_concurrency_slack(cnst) < lmm_element_concurrency(&elem)) {
+      if (cnst->get_concurrency_slack() < lmm_element_concurrency(&elem)) {
         double weight = var->sharing_weight;
         disable_var(var);
         for (s_lmm_element_t const& elem2 : var->cnsts)
@@ -438,23 +409,23 @@ int lmm_get_number_of_cnst_from_var(lmm_system_t /*sys*/, lmm_variable_t var)
   return (var->cnsts.size());
 }
 
-lmm_variable_t lmm_get_var_from_cnst(lmm_system_t /*sys*/, lmm_constraint_t cnst, lmm_element_t * elem)
+lmm_variable_t s_lmm_constraint_t::get_variable(lmm_element_t* elem) const
 {
   if (*elem == nullptr) {
     // That is the first call, pick the first element among enabled_element_set (or disabled_element_set if
     // enabled_element_set is empty)
-    *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->enabled_element_set));
+    *elem = (lmm_element_t)xbt_swag_getFirst(&enabled_element_set);
     if (*elem == nullptr)
-      *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
+      *elem = (lmm_element_t)xbt_swag_getFirst(&disabled_element_set);
   } else {
     //elem is not null, so we carry on
-    if(xbt_swag_belongs(*elem,&(cnst->enabled_element_set))){
+    if (xbt_swag_belongs(*elem, &enabled_element_set)) {
       //Look at enabled_element_set, and jump to disabled_element_set when finished
-      *elem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->enabled_element_set.offset);
+      *elem = (lmm_element_t)xbt_swag_getNext(*elem, enabled_element_set.offset);
       if (*elem == nullptr)
-        *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
+        *elem = (lmm_element_t)xbt_swag_getFirst(&disabled_element_set);
     } else {
-      *elem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->disabled_element_set.offset);
+      *elem = (lmm_element_t)xbt_swag_getNext(*elem, disabled_element_set.offset);
     }
   }
   if (*elem)
@@ -465,14 +436,13 @@ lmm_variable_t lmm_get_var_from_cnst(lmm_system_t /*sys*/, lmm_constraint_t cnst
 
 //if we modify the swag between calls, normal version may loop forever
 //this safe version ensures that we browse the swag elements only once
-lmm_variable_t lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/, lmm_constraint_t cnst, lmm_element_t * elem,
-                                          lmm_element_t * nextelem, int * numelem)
+lmm_variable_t s_lmm_constraint_t::get_variable_safe(lmm_element_t* elem, lmm_element_t* nextelem, int* numelem) const
 {
   if (*elem == nullptr) {
-    *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->enabled_element_set));
-    *numelem = xbt_swag_size(&(cnst->enabled_element_set))+xbt_swag_size(&(cnst->disabled_element_set))-1;
+    *elem    = (lmm_element_t)xbt_swag_getFirst(&enabled_element_set);
+    *numelem = xbt_swag_size(&enabled_element_set) + xbt_swag_size(&disabled_element_set) - 1;
     if (*elem == nullptr)
-      *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
+      *elem = (lmm_element_t)xbt_swag_getFirst(&disabled_element_set);
   }else{
     *elem = *nextelem;
     if(*numelem>0){
@@ -482,22 +452,17 @@ lmm_variable_t lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/, lmm_constraint_t
   }
   if (*elem){
     //elem is not null, so we carry on
-    if(xbt_swag_belongs(*elem,&(cnst->enabled_element_set))){
+    if (xbt_swag_belongs(*elem, &enabled_element_set)) {
       //Look at enabled_element_set, and jump to disabled_element_set when finished
-      *nextelem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->enabled_element_set.offset);
+      *nextelem = (lmm_element_t)xbt_swag_getNext(*elem, enabled_element_set.offset);
       if (*nextelem == nullptr)
-        *nextelem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
+        *nextelem = (lmm_element_t)xbt_swag_getFirst(&disabled_element_set);
     } else {
-      *nextelem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->disabled_element_set.offset);
+      *nextelem = (lmm_element_t)xbt_swag_getNext(*elem, disabled_element_set.offset);
     }
     return (*elem)->variable;
   }else
     return nullptr;
-}
-
-void *lmm_constraint_id(lmm_constraint_t cnst)
-{
-  return cnst->id;
 }
 
 void *lmm_variable_id(lmm_variable_t var)
@@ -669,7 +634,7 @@ void s_lmm_system_t::solve()
       }
     }
     XBT_DEBUG("Constraint '%d' usage: %f remaining: %f concurrency: %i<=%i<=%i", cnst->id_int, cnst->usage,
-              cnst->remaining,cnst->concurrency_current,cnst->concurrency_maximum,cnst->concurrency_limit);
+              cnst->remaining, cnst->concurrency_current, cnst->concurrency_maximum, cnst->get_concurrency_limit());
     /* Saturated constraints update */
 
     if(cnst->usage > 0) {
@@ -843,19 +808,12 @@ void s_lmm_system_t::update_variable_bound(lmm_variable_t var, double bound)
     update_modified_set(var->cnsts[0].constraint);
 }
 
-int lmm_concurrency_slack(lmm_constraint_t cnstr)
-{
-  if (cnstr->concurrency_limit < 0)
-    return std::numeric_limits<int>::max();
-  return  cnstr->concurrency_limit - cnstr->concurrency_current;
-}
-
 /** \brief Measure the minimum concurrency slack across all constraints where the given var is involved */
 int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var)
 {
   int minslack = std::numeric_limits<int>::max();
   for (s_lmm_element_t const& elem : var->cnsts) {
-    int slack = lmm_concurrency_slack(elem.constraint);
+    int slack = elem.constraint->get_concurrency_slack();
     if (slack < minslack) {
       // This is only an optimization, to avoid looking at more constraints when slack is already zero
       if (slack == 0)
@@ -936,7 +894,7 @@ void s_lmm_system_t::disable_var(lmm_variable_t var)
  */
 void s_lmm_system_t::on_disabled_var(lmm_constraint_t cnstr)
 {
-  if(cnstr->concurrency_limit<0)
+  if (cnstr->get_concurrency_limit() < 0)
     return;
 
   int numelem = xbt_swag_size(&(cnstr->disabled_element_set));
@@ -957,8 +915,8 @@ void s_lmm_system_t::on_disabled_var(lmm_constraint_t cnstr)
       enable_var(elem->variable);
     }
 
-    xbt_assert(cnstr->concurrency_current<=cnstr->concurrency_limit,"Concurrency overflow!");
-    if(cnstr->concurrency_current==cnstr->concurrency_limit)
+    xbt_assert(cnstr->concurrency_current <= cnstr->get_concurrency_limit(), "Concurrency overflow!");
+    if (cnstr->concurrency_current == cnstr->get_concurrency_limit())
       break;
 
     elem = nextelem;
@@ -1085,16 +1043,17 @@ void s_lmm_system_t::remove_all_modified_set()
  *
  * \param cnst the lmm_constraint_t associated to the resource
  */
-double lmm_constraint_get_usage(lmm_constraint_t cnst) {
+double s_lmm_constraint_t::get_usage() const
+{
   double usage         = 0.0;
-  xbt_swag_t elem_list = &(cnst->enabled_element_set);
+  const_xbt_swag_t elem_list = &enabled_element_set;
   void* _elem;
 
   xbt_swag_foreach(_elem, elem_list)
   {
     lmm_element_t elem = (lmm_element_t)_elem;
     if (elem->consumption_weight > 0) {
-      if (cnst->sharing_policy)
+      if (sharing_policy)
         usage += elem->consumption_weight * elem->variable->value;
       else if (usage < elem->consumption_weight * elem->variable->value)
         usage = std::max(usage, elem->consumption_weight * elem->variable->value);
@@ -1103,9 +1062,10 @@ double lmm_constraint_get_usage(lmm_constraint_t cnst) {
   return usage;
 }
 
-int lmm_constraint_get_variable_amount(lmm_constraint_t cnst) {
+int s_lmm_constraint_t::get_variable_amount() const
+{
   int usage = 0;
-  xbt_swag_t elem_list = &(cnst->enabled_element_set);
+  const_xbt_swag_t elem_list = &enabled_element_set;
   void *_elem;
 
   xbt_swag_foreach(_elem, elem_list) {

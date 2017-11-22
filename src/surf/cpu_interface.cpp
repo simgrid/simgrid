@@ -28,7 +28,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     CpuAction* action = static_cast<CpuAction*>(actionHeapPop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
+      Cpu* cpu = static_cast<Cpu*>(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)->get_id());
       TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(),
                                       lmm_variable_getvalue(action->getVariable()), action->getLastUpdate(),
                                       now - action->getLastUpdate());
@@ -60,9 +60,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
     CpuAction& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (TRACE_is_enabled()) {
-      Cpu* cpu =
-          static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action.getVariable(), 0)));
-
+      Cpu* cpu = static_cast<Cpu*>(lmm_get_cnst_from_var(getMaxminSystem(), action.getVariable(), 0)->get_id());
       TRACE_surf_host_set_utilization(cpu->getCname(), action.getCategory(),
                                       lmm_variable_getvalue(action.getVariable()), now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
@@ -190,7 +188,7 @@ void CpuAction::updateRemainingLazy(double now)
     updateRemains(getLastValue() * delta);
 
     if (TRACE_is_enabled()) {
-      Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      Cpu* cpu = static_cast<Cpu*>(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)->get_id());
       TRACE_surf_host_set_utilization(cpu->getCname(), getCategory(), getLastValue(), getLastUpdate(),
                                       now - getLastUpdate());
     }
@@ -229,7 +227,7 @@ std::list<Cpu*> CpuAction::cpus() {
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
-    Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+    Resource* resource = static_cast<Resource*>(lmm_get_cnst_from_var(sys, getVariable(), i)->get_id());
     Cpu* cpu           = dynamic_cast<Cpu*>(resource);
     if (cpu != nullptr)
       retlist.push_back(cpu);

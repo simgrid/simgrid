@@ -56,7 +56,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
       //Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
       l=(1<<pw_base_limit)+(1<<int_random(pw_max_limit));
 
-    lmm_constraint_concurrency_limit_set(cnst[i],l );
+    cnst[i]->set_concurrency_limit(l);
   }
 
   for (int i = 0; i < nb_var; i++) {
@@ -88,14 +88,14 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     fprintf(stderr,"Max concurrency:\n");
     int l=0;
     for (int i = 0; i < nb_cnst; i++) {
-      int j=lmm_constraint_concurrency_maximum_get(cnst[i]);
-      int k=lmm_constraint_concurrency_limit_get(cnst[i]);
+      int j = cnst[i]->get_concurrency_maximum();
+      int k = cnst[i]->get_concurrency_limit();
       xbt_assert(k<0 || j<=k);
       if(j>l)
         l=j;
       fprintf(stderr,"(%i):%i/%i ",i,j,k);
-      lmm_constraint_concurrency_maximum_reset(cnst[i]);
-      xbt_assert(not lmm_constraint_concurrency_maximum_get(cnst[i]));
+      cnst[i]->reset_concurrency_maximum();
+      xbt_assert(not cnst[i]->get_concurrency_maximum());
       if(i%10==9)
         fprintf(stderr,"\n");
     }

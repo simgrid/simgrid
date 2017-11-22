@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Link.hpp"
 #include "simgrid/sg_config.h"
 #include "simgrid/simix.hpp"
+#include "src/surf/maxmin_private.hpp"
 #include "src/surf/network_interface.hpp"
 #include "xbt/log.h"
 
@@ -116,7 +117,7 @@ int Link::sharingPolicy()
 
 double Link::getUsage()
 {
-  return lmm_constraint_get_usage(this->pimpl_->constraint());
+  return this->pimpl_->constraint()->get_usage();
 }
 
 void Link::turnOn()

@@ -49,30 +49,117 @@ struct s_lmm_constraint_light_t {
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero. LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
  *
  */
-struct s_lmm_constraint_t {
-  /* hookup to system */
-  s_xbt_swag_hookup_t constraint_set_hookup;
-  s_xbt_swag_hookup_t active_constraint_set_hookup;
-  s_xbt_swag_hookup_t modified_constraint_set_hookup;
-  s_xbt_swag_hookup_t saturated_constraint_set_hookup;
+class s_lmm_constraint_t {
+public:
+  s_lmm_constraint_t() = default;
+  s_lmm_constraint_t(void* id_value, double bound_value);
 
+  /** @brief Share a constraint. FIXME: name is misleading */
+  void shared() { sharing_policy = 0; }
+
+  /**
+   * @brief Check if a constraint is shared (shared by default)
+   * @return 1 if shared, 0 otherwise
+   */
+  int get_sharing_policy() const { return sharing_policy; }
+
+  /**
+   * @brief Get the usage of the constraint after the last lmm solve
+   * @return The usage of the constraint
+   */
+  double get_usage() const;
+  int get_variable_amount() const;
+
+  /**
+   * @brief Sets the concurrency limit for this constraint
+   * @param concurrency_limit The concurrency limit to use for this constraint
+   */
+  void set_concurrency_limit(int limit)
+  {
+    xbt_assert(limit < 0 || concurrency_maximum <= limit,
+               "New concurrency limit should be larger than observed concurrency maximum. Maybe you want to call"
+               " concurrency_maximum_reset() to reset the maximum?");
+    concurrency_limit = limit;
+  }
+
+  /**
+   * @brief Gets the concurrency limit for this constraint
+   * @return The concurrency limit used by this constraint
+   */
+  int get_concurrency_limit() const { return concurrency_limit; }
+
+  /**
+   * @brief Reset the concurrency maximum for a given variable (we will update the maximum to reflect constraint
+   * evolution).
+   */
+  void reset_concurrency_maximum() { concurrency_maximum = 0; }
+
+  /**
+   * @brief Get the concurrency maximum for a given variable (which reflects constraint evolution).
+   * @return the maximum concurrency of the constraint
+   */
+  int get_concurrency_maximum() const
+  {
+    xbt_assert(concurrency_limit < 0 || concurrency_maximum <= concurrency_limit,
+               "Very bad: maximum observed concurrency is higher than limit. This is a bug of SURF, please report it.");
+    return concurrency_maximum;
+  }
+
+  int get_concurrency_slack() const
+  {
+    return concurrency_limit < 0 ? std::numeric_limits<int>::max() : concurrency_limit - concurrency_current;
+  }
+
+  /**
+   * @brief Get a var associated to a constraint
+   * @details Get the first variable of the next variable of elem if elem is not NULL
+   * @param elem A element of constraint of the constraint or NULL
+   * @return A variable associated to a constraint
+   */
+  lmm_variable_t get_variable(lmm_element_t* elem) const;
+
+  /**
+   * @brief Get a var associated to a constraint
+   * @details Get the first variable of the next variable of elem if elem is not NULL
+   * @param elem A element of constraint of the constraint or NULL
+   * @param nextelem A element of constraint of the constraint or NULL, the one after elem
+   * @param numelem parameter representing the number of elements to go
+   * @return A variable associated to a constraint
+   */
+  lmm_variable_t get_variable_safe(lmm_element_t* elem, lmm_element_t* nextelem, int* numelem) const;
+
+  /**
+   * @brief Get the data associated to a constraint
+   * @return The data associated to the constraint
+   */
+  void* get_id() const { return id; }
+
+  /* hookup to system */
+  s_xbt_swag_hookup_t constraint_set_hookup           = {nullptr, nullptr};
+  s_xbt_swag_hookup_t active_constraint_set_hookup    = {nullptr, nullptr};
+  s_xbt_swag_hookup_t modified_constraint_set_hookup  = {nullptr, nullptr};
+  s_xbt_swag_hookup_t saturated_constraint_set_hookup = {nullptr, nullptr};
   s_xbt_swag_t enabled_element_set;     /* a list of lmm_element_t */
   s_xbt_swag_t disabled_element_set;     /* a list of lmm_element_t */
   s_xbt_swag_t active_element_set;      /* a list of lmm_element_t */
   double remaining;
   double usage;
   double bound;
-  int concurrency_limit; /* The maximum number of variables that may be enabled at any time (stage variables if necessary) */
   //TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500
   int concurrency_current; /* The current concurrency */
   int concurrency_maximum; /* The maximum number of (enabled and disabled) variables associated to the constraint at any given time (essentially for tracing)*/
 
   int sharing_policy; /* see @e_surf_link_sharing_policy_t (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
-  void *id;
   int id_int;
   double lambda;
   double new_lambda;
   lmm_constraint_light_t cnst_light;
+
+private:
+  static int Global_debug_id;
+  int concurrency_limit; /* The maximum number of variables that may be enabled at any time (stage variables if
+                          * necessary) */
+  void* id;
 };
 
 /** @ingroup SURF_lmm

@@ -180,7 +180,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 
       for (int i = 0; i < n; i++){
         lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
-        NetworkCm02Link *link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
+        NetworkCm02Link* link       = static_cast<NetworkCm02Link*>(constraint->get_id());
         double value = lmm_variable_getvalue(action->getVariable())*
             lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i);
         TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), value, action->getLastUpdate(),
@@ -231,7 +231,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
       for (int i = 0; i < n; i++) {
         lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
 
-        NetworkCm02Link* link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
+        NetworkCm02Link* link = static_cast<NetworkCm02Link*>(constraint->get_id());
         TRACE_surf_link_set_utilization(link->getCname(), action.getCategory(),
                                         (lmm_variable_getvalue(action.getVariable()) *
                                          lmm_get_cnst_weight_from_var(maxminSystem_, action.getVariable(), i)),
@@ -358,7 +358,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
   latency_.peak  = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    lmm_constraint_shared(constraint());
+    constraint()->shared();
 
   simgrid::s4u::Link::onCreation(this->piface_);
 }
@@ -383,7 +383,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
       double now = surf_get_clock();
 
       turnOff();
-      while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
+      while ((var = constraint()->get_variable(&elem))) {
         Action *action = static_cast<Action*>( lmm_variable_id(var) );
 
         if (action->getState() == Action::State::running ||
@@ -416,7 +416,7 @@ void NetworkCm02Link::setBandwidth(double value)
     lmm_element_t elem = nullptr;
     lmm_element_t nextelem = nullptr;
     int numelem = 0;
-    while ((var = lmm_get_var_from_cnst_safe(model()->getMaxminSystem(), constraint(), &elem, &nextelem, &numelem))) {
+    while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_variable_id(var));
       action->weight_ += delta;
       if (not action->isSuspended())
@@ -435,7 +435,7 @@ void NetworkCm02Link::setLatency(double value)
 
   latency_.peak = value;
 
-  while ((var = lmm_get_var_from_cnst_safe(model()->getMaxminSystem(), constraint(), &elem, &nextelem, &numelem))) {
+  while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
     NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_variable_id(var));
     action->latCurrent_ += delta;
     action->weight_ += delta;

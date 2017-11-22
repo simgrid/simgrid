@@ -30,7 +30,7 @@ void HostModel::ignoreEmptyVmInPmLMM()
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : vm::VirtualMachineImpl::allVms_) {
     Cpu* cpu = ws_vm->pimpl_cpu;
-    int active_tasks = lmm_constraint_get_variable_amount(cpu->constraint());
+    int active_tasks = cpu->constraint()->get_variable_amount();
 
     /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
     int impact = std::min(active_tasks, ws_vm->pimpl_vm_->coreAmount());

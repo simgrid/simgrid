@@ -128,7 +128,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
       lmm_constraint_t cnst = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
       while (cnst != nullptr) {
         i++;
-        void *constraint_id = lmm_constraint_id(cnst);
+        void* constraint_id = cnst->get_id();
         if (static_cast<simgrid::surf::Resource*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", &action);
           action.finish(Action::State::failed);
@@ -262,7 +262,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
   latency_.peak   = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    lmm_constraint_shared(constraint());
+    constraint()->shared();
 
   s4u::Link::onCreation(this->piface_);
 }
@@ -298,7 +298,7 @@ void CpuL07::onSpeedChange() {
   lmm_element_t elem = nullptr;
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), speed_.peak * speed_.scale);
-  while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
+  while ((var = constraint()->get_variable(&elem))) {
     Action* action = static_cast<Action*>(lmm_variable_id(var));
 
     model()->getMaxminSystem()->update_variable_bound(action->getVariable(), speed_.scale * speed_.peak);
@@ -368,7 +368,7 @@ void LinkL07::setLatency(double value)
   lmm_element_t elem = nullptr;
 
   latency_.peak = value;
-  while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
+  while ((var = constraint()->get_variable(&elem))) {
     action = static_cast<L07Action*>(lmm_variable_id(var));
     action->updateBound();
   }

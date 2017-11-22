@@ -107,7 +107,7 @@ void CpuCas01::onSpeedChange() {
   lmm_element_t elem = nullptr;
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), coresAmount_ * speed_.scale * speed_.peak);
-  while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
+  while ((var = constraint()->get_variable(&elem))) {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
     model()->getMaxminSystem()->update_variable_bound(action->getVariable(),
@@ -143,7 +143,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
 
       turnOff();
 
-      while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), cnst, &elem))) {
+      while ((var = cnst->get_variable(&elem))) {
         Action *action = static_cast<Action*>(lmm_variable_id(var));
 
         if (action->getState() == Action::State::running ||
