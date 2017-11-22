@@ -77,7 +77,7 @@ static void receiver(std::vector<std::string> args)
 int main(int argc, char* argv[])
 {
 
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   /* Check if we got --NS3 on the command line, and activate ecofen if so */
   bool NS3 = false;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
                        "\tIf you add NS3 as last parameter, this will try to activate the ecofen plugin.\n"
                        "\tWithout it, it will use the SimGrid link energy plugin.\n",
              argv[0], argv[0]);
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
 
   /* prepare to launch the actors */
   std::vector<std::string> argSender;
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::createActor("receiver", simgrid::s4u::Host::by_name("MyHost2"), receiver, argReceiver);
 
   /* And now, launch the simulation */
-  e->run();
+  e.run();
 
   return 0;
 }
