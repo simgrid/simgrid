@@ -31,6 +31,7 @@ static int seq_task(int /*argc*/, char* /*argv*/ [])
   progress = MSG_task_get_remaining_work_ratio(task);
   xbt_assert(progress == 0, "Progress should be equal to 1 not %f", progress);
 
+  MSG_task_destroy(task);
   XBT_INFO("Goodbye now!");
   return 0;
 }
@@ -58,6 +59,10 @@ static int par_task(int /*argc*/, char* /*argv*/ [])
   XBT_INFO("get the progress of %s after the task finishes", task->name);
   progress = MSG_task_get_remaining_work_ratio(task);
   xbt_assert(progress == 0, "Progress should be equal to 1 not %f", progress);
+
+  MSG_task_destroy(task);
+  delete[] computation_amount;
+  delete[] communication_amount;
 
   XBT_INFO("Goodbye now!");
   return 0;
