@@ -53,9 +53,9 @@ static int worker(int argc, char *argv[])
       MSG_task_destroy(task);
       break;
     }
-    //adding the value returned by MSG_task_get_compute_duration(task)
-    //to the variable "task_computation"
-    TRACE_host_variable_add(MSG_host_get_name(MSG_host_self()), "task_computation", MSG_task_get_flops_amount(task));
+    // adding the value returned by MSG_task_get_compute_duration(task) to the variable "task_computation"
+    TRACE_host_variable_add(MSG_host_get_name(MSG_host_self()), "task_computation",
+                            MSG_task_get_initial_flops_amount(task));
     MSG_task_execute(task);
     MSG_task_destroy(task);
     task = NULL;
