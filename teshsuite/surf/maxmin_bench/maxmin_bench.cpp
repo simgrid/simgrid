@@ -8,6 +8,7 @@
 
 #include "surf/maxmin.hpp"
 #include "simgrid/msg.h"
+#include "src/surf/maxmin_private.hpp"
 #include "xbt/module.h"
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"
@@ -43,10 +44,10 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   lmm_variable_t var[nb_var];
   int used[nb_cnst];
 
-  lmm_system_t Sys = lmm_system_new(1);
+  lmm_system_t Sys = new s_lmm_system_t(true);
 
   for (int i = 0; i < nb_cnst; i++) {
-    cnst[i] = lmm_constraint_new(Sys, NULL, float_random(10.0));
+    cnst[i] = Sys->constraint_new(NULL, float_random(10.0));
     int l;
     if(rate_no_limit>float_random(1.0))
       //Look at what happens when there is no concurrency limit
@@ -59,7 +60,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   }
 
   for (int i = 0; i < nb_var; i++) {
-    var[i] = lmm_variable_new(Sys, NULL, 1.0, -1.0, nb_elem);
+    var[i] = Sys->variable_new(NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     int concurrency_share = 1 + int_random(max_share);
     lmm_variable_concurrency_share_set(var[i],concurrency_share);
@@ -72,8 +73,8 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
         j--;
         continue;
       }
-      lmm_expand(Sys, cnst[k], var[i], float_random(1.5));
-      lmm_expand_add(Sys, cnst[k], var[i], float_random(1.5));
+      Sys->expand(cnst[k], var[i], float_random(1.5));
+      Sys->expand_add(cnst[k], var[i], float_random(1.5));
       used[k]++;
     }
   }
@@ -100,12 +101,12 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     }
     fprintf(stderr,"\nTotal maximum concurrency is %i\n",l);
 
-    lmm_print(Sys);
+    Sys->print();
   }
 
   for (int i = 0; i < nb_var; i++)
-    lmm_variable_free(Sys, var[i]);
-  lmm_system_free(Sys);
+    Sys->variable_free(var[i]);
+  delete Sys;
 }
 
 unsigned int TestClasses [][4]=

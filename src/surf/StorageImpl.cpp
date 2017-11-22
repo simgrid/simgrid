@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "StorageImpl.hpp"
+#include "maxmin_private.hpp"
 #include "surf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
@@ -40,12 +41,12 @@ StorageImpl* StorageImpl::byName(std::string name)
 
 StorageModel::StorageModel() : Model()
 {
-  maxminSystem_ = lmm_system_new(true /* lazy update */);
+  maxminSystem_ = new s_lmm_system_t(true /* lazy update */);
 }
 
 StorageModel::~StorageModel()
 {
-  lmm_system_free(maxminSystem_);
+  delete maxminSystem_;
   surf_storage_model = nullptr;
 }
 
@@ -55,7 +56,7 @@ StorageModel::~StorageModel()
 
 StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
                          std::string type_id, std::string content_name, sg_size_t size, std::string attach)
-    : Resource(model, name.c_str(), lmm_constraint_new(maxminSystem, this, std::max(bread, bwrite)))
+    : Resource(model, name.c_str(), maxminSystem->constraint_new(this, std::max(bread, bwrite)))
     , piface_(this)
     , typeId_(type_id)
     , content_name(content_name)
@@ -64,8 +65,8 @@ StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSyst
 {
   StorageImpl::turnOn();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
-  constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
-  constraintWrite_ = lmm_constraint_new(maxminSystem, this, bwrite);
+  constraintRead_  = maxminSystem->constraint_new(this, bread);
+  constraintWrite_ = maxminSystem->constraint_new(this, bwrite);
   storages->insert({name, this});
 }
 

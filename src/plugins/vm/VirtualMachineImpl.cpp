@@ -99,7 +99,7 @@ double VMModel::nextOccuringEvent(double now)
 
     xbt_assert(cpu->model() == surf_cpu_model_vm);
     lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
-    lmm_update_constraint_bound(vcpu_system, cpu->constraint(), virt_overhead * solved_value);
+    vcpu_system->update_constraint_bound(cpu->constraint(), virt_overhead * solved_value);
   }
 
   /* 2. Calculate resource share at the virtual machine layer. */

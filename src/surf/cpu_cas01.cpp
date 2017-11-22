@@ -53,7 +53,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   }
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
-  maxminSystem_ = lmm_system_new(selectiveUpdate_);
+  maxminSystem_                                    = new s_lmm_system_t(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
     modifiedSet_ = new ActionLmmList();
@@ -63,7 +63,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 
 CpuCas01Model::~CpuCas01Model()
 {
-  lmm_system_free(maxminSystem_);
+  delete maxminSystem_;
   maxminSystem_ = nullptr;
   delete modifiedSet_;
 
@@ -80,9 +80,9 @@ Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, std::vector<double> *spe
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
-: Cpu(model, host, lmm_constraint_new(model->getMaxminSystem(), this, core * speedPerPstate->front()),
-    speedPerPstate, core)
+CpuCas01::CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core)
+    : Cpu(model, host, model->getMaxminSystem()->constraint_new(this, core * speedPerPstate->front()), speedPerPstate,
+          core)
 {
 }
 
@@ -98,7 +98,7 @@ std::vector<double> * CpuCas01::getSpeedPeakList(){
 
 bool CpuCas01::isUsed()
 {
-  return lmm_constraint_used(model()->getMaxminSystem(), constraint());
+  return model()->getMaxminSystem()->constraint_used(constraint());
 }
 
 /** @brief take into account changes of speed (either load or max) */
@@ -106,12 +106,12 @@ void CpuCas01::onSpeedChange() {
   lmm_variable_t var = nullptr;
   lmm_element_t elem = nullptr;
 
-  lmm_update_constraint_bound(model()->getMaxminSystem(), constraint(), coresAmount_ * speed_.scale * speed_.peak);
+  model()->getMaxminSystem()->update_constraint_bound(constraint(), coresAmount_ * speed_.scale * speed_.peak);
   while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
-    lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(),
-                              action->requestedCore() * speed_.scale * speed_.peak);
+    model()->getMaxminSystem()->update_variable_bound(action->getVariable(),
+                                                      action->requestedCore() * speed_.scale * speed_.peak);
   }
 
   Cpu::onSpeedChange();
@@ -189,7 +189,7 @@ CpuAction *CpuCas01::sleep(double duration)
     action->getStateSet()->push_back(*action);
   }
 
-  lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), 0.0);
+  model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);
   if (model()->getUpdateMechanism() == UM_LAZY) { // remove action from the heap
     action->heapRemove(model()->getActionHeap());
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
@@ -207,14 +207,14 @@ CpuAction *CpuCas01::sleep(double duration)
 CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint,
                                int requestedCore)
     : CpuAction(model, cost, failed,
-                lmm_variable_new(model->getMaxminSystem(), this, 1.0 / requestedCore, requestedCore * speed, 1))
+                model->getMaxminSystem()->variable_new(this, 1.0 / requestedCore, requestedCore * speed, 1))
     , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
     refreshLastUpdate();
     setLastValue(0.0);
   }
-  lmm_expand(model->getMaxminSystem(), constraint, getVariable(), 1.0);
+  model->getMaxminSystem()->expand(constraint, getVariable(), 1.0);
 }
 
 CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint)

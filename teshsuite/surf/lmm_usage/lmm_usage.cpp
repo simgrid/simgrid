@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "src/surf/maxmin_private.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/maxmin.hpp"
 #include "xbt/log.h"
@@ -94,28 +95,28 @@ static void test1(method_t method)
   else if (method == LAGRANGE_RENO)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fpi, func_reno_fpi);
 
-  lmm_system_t Sys = lmm_system_new(1);
-  lmm_constraint_t L1 = lmm_constraint_new(Sys, nullptr, a);
-  lmm_constraint_t L2 = lmm_constraint_new(Sys, nullptr, b);
-  lmm_constraint_t L3 = lmm_constraint_new(Sys, nullptr, a);
+  lmm_system_t Sys    = new s_lmm_system_t(true);
+  lmm_constraint_t L1 = Sys->constraint_new(nullptr, a);
+  lmm_constraint_t L2 = Sys->constraint_new(nullptr, b);
+  lmm_constraint_t L3 = Sys->constraint_new(nullptr, a);
 
-  lmm_variable_t R_1_2_3 = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 3);
-  lmm_variable_t R_1 = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 1);
-  lmm_variable_t R_2 = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 1);
-  lmm_variable_t R_3 = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 1);
+  lmm_variable_t R_1_2_3 = Sys->variable_new(nullptr, 1.0, -1.0, 3);
+  lmm_variable_t R_1     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm_variable_t R_2     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm_variable_t R_3     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
-  lmm_update_variable_weight(Sys, R_1_2_3, 1.0);
-  lmm_update_variable_weight(Sys, R_1, 1.0);
-  lmm_update_variable_weight(Sys, R_2, 1.0);
-  lmm_update_variable_weight(Sys, R_3, 1.0);
+  Sys->update_variable_weight(R_1_2_3, 1.0);
+  Sys->update_variable_weight(R_1, 1.0);
+  Sys->update_variable_weight(R_2, 1.0);
+  Sys->update_variable_weight(R_3, 1.0);
 
-  lmm_expand(Sys, L1, R_1_2_3, 1.0);
-  lmm_expand(Sys, L2, R_1_2_3, 1.0);
-  lmm_expand(Sys, L3, R_1_2_3, 1.0);
+  Sys->expand(L1, R_1_2_3, 1.0);
+  Sys->expand(L2, R_1_2_3, 1.0);
+  Sys->expand(L3, R_1_2_3, 1.0);
 
-  lmm_expand(Sys, L1, R_1, 1.0);
-  lmm_expand(Sys, L2, R_2, 1.0);
-  lmm_expand(Sys, L3, R_3, 1.0);
+  Sys->expand(L1, R_1, 1.0);
+  Sys->expand(L2, R_2, 1.0);
+  Sys->expand(L3, R_3, 1.0);
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
@@ -168,11 +169,11 @@ static void test1(method_t method)
   PRINT_VAR(R_2);
   PRINT_VAR(R_3);
 
-  lmm_variable_free(Sys, R_1_2_3);
-  lmm_variable_free(Sys, R_1);
-  lmm_variable_free(Sys, R_2);
-  lmm_variable_free(Sys, R_3);
-  lmm_system_free(Sys);
+  Sys->variable_free(R_1_2_3);
+  Sys->variable_free(R_1);
+  Sys->variable_free(R_2);
+  Sys->variable_free(R_3);
+  delete Sys;
 }
 
 static void test2(method_t method)
@@ -182,18 +183,18 @@ static void test2(method_t method)
   if (method == LAGRANGE_RENO)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
 
-  lmm_system_t Sys = lmm_system_new(1);
-  lmm_constraint_t CPU1 = lmm_constraint_new(Sys, nullptr, 200.0);
-  lmm_constraint_t CPU2 = lmm_constraint_new(Sys, nullptr, 100.0);
+  lmm_system_t Sys      = new s_lmm_system_t(true);
+  lmm_constraint_t CPU1 = Sys->constraint_new(nullptr, 200.0);
+  lmm_constraint_t CPU2 = Sys->constraint_new(nullptr, 100.0);
 
-  lmm_variable_t T1 = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 1);
-  lmm_variable_t T2 = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 1);
+  lmm_variable_t T1 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm_variable_t T2 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
-  lmm_update_variable_weight(Sys, T1, 1.0);
-  lmm_update_variable_weight(Sys, T2, 1.0);
+  Sys->update_variable_weight(T1, 1.0);
+  Sys->update_variable_weight(T2, 1.0);
 
-  lmm_expand(Sys, CPU1, T1, 1.0);
-  lmm_expand(Sys, CPU2, T2, 1.0);
+  Sys->expand(CPU1, T1, 1.0);
+  Sys->expand(CPU2, T2, 1.0);
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
@@ -206,9 +207,9 @@ static void test2(method_t method)
   PRINT_VAR(T1);
   PRINT_VAR(T2);
 
-  lmm_variable_free(Sys, T1);
-  lmm_variable_free(Sys, T2);
-  lmm_system_free(Sys);
+  Sys->variable_free(T1);
+  Sys->variable_free(T2);
+  delete Sys;
 }
 
 static void test3(method_t method)
@@ -253,25 +254,25 @@ static void test3(method_t method)
   if (method == LAGRANGE_RENO)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
 
-  lmm_system_t Sys = lmm_system_new(1);
+  lmm_system_t Sys = new s_lmm_system_t(true);
 
   /* Creates the constraints */
   lmm_constraint_t* tmp_cnst = new lmm_constraint_t[15];
   for (int i = 0; i < 15; i++)
-    tmp_cnst[i] = lmm_constraint_new(Sys, nullptr, B[i]);
+    tmp_cnst[i] = Sys->constraint_new(nullptr, B[i]);
 
   /* Creates the variables */
   lmm_variable_t* tmp_var = new lmm_variable_t[16];
   for (int j = 0; j < 16; j++) {
-    tmp_var[j] = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 15);
-    lmm_update_variable_weight(Sys, tmp_var[j], 1.0);
+    tmp_var[j] = Sys->variable_new(nullptr, 1.0, -1.0, 15);
+    Sys->update_variable_weight(tmp_var[j], 1.0);
   }
 
   /* Link constraints and variables */
   for (int i = 0; i < 15; i++)
     for (int j = 0; j < 16; j++)
       if (A[i][j])
-        lmm_expand(Sys, tmp_cnst[i], tmp_var[j], 1.0);
+        Sys->expand(tmp_cnst[i], tmp_var[j], 1.0);
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
@@ -287,10 +288,10 @@ static void test3(method_t method)
     PRINT_VAR(tmp_var[j]);
 
   for (int j = 0; j < 16; j++)
-    lmm_variable_free(Sys, tmp_var[j]);
+    Sys->variable_free(tmp_var[j]);
   delete[] tmp_var;
   delete[] tmp_cnst;
-  lmm_system_free(Sys);
+  delete Sys;
   for (int i = 0; i < links + 5; i++)
     delete[] A[i];
   delete[] A;

@@ -148,25 +148,6 @@ static inline int double_equals(double value1, double value2, double precision)
 }
 
 /** @{ @ingroup SURF_lmm */
-/**
- * @brief Create a new Linear MaxMim system
- * @param selective_update whether we should do lazy updates
- */
-XBT_PUBLIC(lmm_system_t) lmm_system_new(bool selective_update);
-
-/**
- * @brief Free an existing Linear MaxMin system
- * @param sys The lmm system to free
- */
-XBT_PUBLIC(void) lmm_system_free(lmm_system_t sys);
-
-/**
- * @brief Create a new Linear MaxMin constraint
- * @param sys The system in which we add a constraint
- * @param id Data associated to the constraint (e.g.: a network link)
- * @param bound_value The bound value of the constraint
- */
-XBT_PUBLIC(lmm_constraint_t) lmm_constraint_new(lmm_system_t sys, void* id, double bound_value);
 
 /**
  * @brief Share a constraint
@@ -219,24 +200,6 @@ XBT_PUBLIC(void) lmm_constraint_concurrency_maximum_reset(lmm_constraint_t cnst)
 XBT_PUBLIC(int) lmm_constraint_concurrency_maximum_get(lmm_constraint_t cnst);
 
 /**
- * @brief Create a new Linear MaxMin variable
- * @param sys The system in which we add a constaint
- * @param id Data associated to the variable (e.g.: a network communication)
- * @param weight_value The weight of the variable (0.0 if not used)
- * @param bound The maximum value of the variable (-1.0 if no maximum value)
- * @param number_of_constraints The maximum number of constraint to associate to the variable
- */
-XBT_PUBLIC(lmm_variable_t)
-lmm_variable_new(lmm_system_t sys, simgrid::surf::Action* id, double weight_value, double bound,
-                 int number_of_constraints);
-/**
- * @brief Free a variable
- * @param sys The system associated to the variable
- * @param var The variable to free
- */
-XBT_PUBLIC(void) lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
-
-/**
  * @brief Get the value of the variable after the last lmm solve
  * @param var A variable
  * @return The value of the variable
@@ -256,24 +219,6 @@ XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
  * @param concurrency_share The new concurrency share
  */
 XBT_PUBLIC(void) lmm_variable_concurrency_share_set(lmm_variable_t var, short int concurrency_share);
-
-/**
- * @brief Associate a variable to a constraint with a coefficient
- * @param sys A system
- * @param cnst A constraint
- * @param var A variable
- * @param value The coefficient associated to the variable in the constraint
- */
-XBT_PUBLIC(void) lmm_expand(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, double value);
-
-/**
- * @brief Add value to the coefficient between a constraint and a variable or create one
- * @param sys A system
- * @param cnst A constraint
- * @param var A variable
- * @param value The value to add to the coefficient associated to the variable in the constraint
- */
-XBT_PUBLIC(void) lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, double value);
 
 /**
  * @brief Get the numth constraint associated to the variable
@@ -340,58 +285,11 @@ XBT_PUBLIC(void*) lmm_constraint_id(lmm_constraint_t cnst);
 XBT_PUBLIC(void*) lmm_variable_id(lmm_variable_t var);
 
 /**
- * @brief Update the value of element linking the constraint and the variable
- * @param sys A system
- * @param cnst A constraint
- * @param var A variable
- * @param value The new value
- */
-XBT_PUBLIC(void) lmm_update(lmm_system_t sys, lmm_constraint_t cnst, lmm_variable_t var, double value);
-
-/**
- * @brief Update the bound of a variable
- * @param sys A system
- * @param var A constraint
- * @param bound The new bound
- */
-XBT_PUBLIC(void) lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var, double bound);
-
-/**
- * @brief Update the weight of a variable
- * @param sys A system
- * @param var A variable
- * @param weight The new weight of the variable
- */
-XBT_PUBLIC(void) lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var, double weight);
-
-/**
  * @brief Get the weight of a variable
  * @param var A variable
  * @return The weight of the variable
  */
 XBT_PUBLIC(double) lmm_get_variable_weight(lmm_variable_t var);
-
-/**
- * @brief Update a constraint bound
- * @param sys A system
- * @param cnst A constraint
- * @param bound The new bound of the consrtaint
- */
-XBT_PUBLIC(void) lmm_update_constraint_bound(lmm_system_t sys, lmm_constraint_t cnst, double bound);
-
-/**
- * @brief [brief description]
- * @param sys A system
- * @param cnst A constraint
- * @return [description]
- */
-XBT_PUBLIC(int) lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
-
-/**
- * @brief Print the lmm system
- * @param sys The lmm system to print
- */
-XBT_PUBLIC(void) lmm_print(lmm_system_t sys);
 
 /**
  * @brief Solve the lmm system

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "storage_n11.hpp"
+#include "maxmin_private.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include <cmath> /*ceil*/
@@ -118,18 +119,18 @@ StorageAction* StorageN11::write(sg_size_t size)
 
 StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage,
                                    e_surf_action_storage_type_t type)
-    : StorageAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0, 3), storage, type)
+    : StorageAction(model, cost, failed, model->getMaxminSystem()->variable_new(this, 1.0, -1.0, 3), storage, type)
 {
   XBT_IN("(%s,%g", storage->getCname(), cost);
 
   // Must be less than the max bandwidth for all actions
-  lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
+  model->getMaxminSystem()->expand(storage->constraint(), getVariable(), 1.0);
   switch(type) {
   case READ:
-    lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
+    model->getMaxminSystem()->expand(storage->constraintRead_, getVariable(), 1.0);
     break;
   case WRITE:
-    lmm_expand(model->getMaxminSystem(), storage->constraintWrite_, getVariable(), 1.0);
+    model->getMaxminSystem()->expand(storage->constraintWrite_, getVariable(), 1.0);
     break;
   default:
     THROW_UNIMPLEMENTED;
@@ -144,7 +145,7 @@ int StorageN11Action::unref()
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
-      lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+      getModel()->getMaxminSystem()->variable_free(getVariable());
     xbt_free(getCategory());
     delete this;
     return 1;
@@ -161,7 +162,7 @@ void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
+    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
     suspended_ = 1;
   }
   XBT_OUT();

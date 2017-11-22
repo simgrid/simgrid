@@ -179,7 +179,7 @@ void lagrange_solve(lmm_system_t sys)
   XBT_DEBUG("#### Minimum error tolerated (dichotomy) : %e", dichotomy_min_error);
 
   if (XBT_LOG_ISENABLED(surf_lagrange, xbt_log_priority_debug)) {
-    lmm_print(sys);
+    sys->print();
   }
 
   if (not sys->modified)
@@ -299,7 +299,7 @@ void lagrange_solve(lmm_system_t sys)
   }
 
   if (XBT_LOG_ISENABLED(surf_lagrange, xbt_log_priority_debug)) {
-    lmm_print(sys);
+    sys->print();
   }
 }
 

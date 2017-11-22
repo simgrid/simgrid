@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "maxmin_private.hpp"
 #include "network_interface.hpp"
 #include "simgrid/sg_config.h"
 
@@ -69,7 +70,7 @@ namespace simgrid {
 
     NetworkModel::~NetworkModel()
     {
-      lmm_system_free(maxminSystem_);
+      delete maxminSystem_;
       delete modifiedSet_;
     }
 
@@ -138,7 +139,7 @@ namespace simgrid {
 
     bool LinkImpl::isUsed()
     {
-      return lmm_constraint_used(model()->getMaxminSystem(), constraint());
+      return model()->getMaxminSystem()->constraint_used(constraint());
     }
 
     double LinkImpl::latency()

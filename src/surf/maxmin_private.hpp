@@ -112,52 +112,152 @@ struct s_lmm_variable_t {
 /** @ingroup SURF_lmm
  * @brief LMM system
  */
-struct s_lmm_system_t {
+class s_lmm_system_t {
+public:
+  /**
+   * @brief Create a new Linear MaxMim system
+   * @param selective_update whether we should do lazy updates
+   */
+  s_lmm_system_t(bool selective_update);
+  /** @brief Free an existing Linear MaxMin system */
+  ~s_lmm_system_t();
+
+  /**
+   * @brief Create a new Linear MaxMin constraint
+   * @param id Data associated to the constraint (e.g.: a network link)
+   * @param bound_value The bound value of the constraint
+   */
+  lmm_constraint_t constraint_new(void* id, double bound_value);
+
+  /**
+   * @brief Create a new Linear MaxMin variable
+   * @param id Data associated to the variable (e.g.: a network communication)
+   * @param weight_value The weight of the variable (0.0 if not used)
+   * @param bound The maximum value of the variable (-1.0 if no maximum value)
+   * @param number_of_constraints The maximum number of constraint to associate to the variable
+   */
+  lmm_variable_t variable_new(simgrid::surf::Action* id, double weight_value, double bound, int number_of_constraints);
+
+  /**
+   * @brief Free a variable
+   * @param var The variable to free
+   */
+  void variable_free(lmm_variable_t var);
+
+  /**
+   * @brief Associate a variable to a constraint with a coefficient
+   * @param cnst A constraint
+   * @param var A variable
+   * @param value The coefficient associated to the variable in the constraint
+   */
+  void expand(lmm_constraint_t cnst, lmm_variable_t var, double value);
+
+  /**
+   * @brief Add value to the coefficient between a constraint and a variable or create one
+   * @param cnst A constraint
+   * @param var A variable
+   * @param value The value to add to the coefficient associated to the variable in the constraint
+   */
+  void expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value);
+
+  /**
+   * @brief Update the bound of a variable
+   * @param var A constraint
+   * @param bound The new bound
+   */
+  void update_variable_bound(lmm_variable_t var, double bound);
+
+  /**
+   * @brief Update the weight of a variable
+   * @param var A variable
+   * @param weight The new weight of the variable
+   */
+  void update_variable_weight(lmm_variable_t var, double weight);
+
+  /**
+   * @brief Update a constraint bound
+   * @param cnst A constraint
+   * @param bound The new bound of the consrtaint
+   */
+  void update_constraint_bound(lmm_constraint_t cnst, double bound);
+
+  /**
+   * @brief [brief description]
+   * @param cnst A constraint
+   * @return [description]
+   */
+  int constraint_used(lmm_constraint_t cnst) { return xbt_swag_belongs(cnst, &active_constraint_set); }
+
+  /** @brief Print the lmm system */
+  void print();
+
+  /** @brief Solve the lmm system */
+  void solve();
+
+private:
+  static void* variable_mallocator_new_f();
+  static void variable_mallocator_free_f(void* var);
+
+  void var_free(lmm_variable_t var);
+  void cnst_free(lmm_constraint_t cnst);
+  lmm_variable_t extract_variable() { return static_cast<lmm_variable_t>(xbt_swag_extract(&variable_set)); }
+  lmm_constraint_t extract_constraint() { return static_cast<lmm_constraint_t>(xbt_swag_extract(&constraint_set)); }
+  void insert_constraint(lmm_constraint_t cnst) { xbt_swag_insert(cnst, &constraint_set); }
+  void remove_variable(lmm_variable_t var)
+  {
+    xbt_swag_remove(var, &variable_set);
+    xbt_swag_remove(var, &saturated_variable_set);
+  }
+  void remove_constraint(lmm_constraint_t cnst) // FIXME: unused
+  {
+    xbt_swag_remove(cnst, &constraint_set);
+    xbt_swag_remove(cnst, &saturated_constraint_set);
+  }
+  void make_constraint_active(lmm_constraint_t cnst) { xbt_swag_insert(cnst, &active_constraint_set); }
+  void make_constraint_inactive(lmm_constraint_t cnst)
+  {
+    xbt_swag_remove(cnst, &active_constraint_set);
+    xbt_swag_remove(cnst, &modified_constraint_set);
+  }
+
+  void enable_var(lmm_variable_t var);
+  void disable_var(lmm_variable_t var);
+  void on_disabled_var(lmm_constraint_t cnstr);
+
+  /**
+   * @brief Update the value of element linking the constraint and the variable
+   * @param cnst A constraint
+   * @param var A variable
+   * @param value The new value
+   */
+  void update(lmm_constraint_t cnst, lmm_variable_t var, double value);
+
+  void update_modified_set(lmm_constraint_t cnst);
+  void update_modified_set_rec(lmm_constraint_t cnst);
+
+  /** @brief Remove all constraints of the modified_constraint_set. */
+  void remove_all_modified_set();
+  void check_concurrency();
+
+public:
   int modified;
-  bool selective_update_active;  /* flag to update partially the system only selecting changed portions */
-  unsigned visited_counter;     /* used by lmm_update_modified_set  and lmm_remove_modified_set to cleverly (un-)flag the constraints (more details in these functions)*/
   s_xbt_swag_t variable_set;    /* a list of lmm_variable_t */
-  s_xbt_swag_t constraint_set;  /* a list of lmm_constraint_t */
-
   s_xbt_swag_t active_constraint_set;   /* a list of lmm_constraint_t */
-  s_xbt_swag_t modified_constraint_set; /* a list of modified lmm_constraint_t */
-
   s_xbt_swag_t saturated_variable_set;  /* a list of lmm_variable_t */
   s_xbt_swag_t saturated_constraint_set;        /* a list of lmm_constraint_t_t */
 
   simgrid::surf::ActionLmmListPtr keep_track;
 
-  xbt_mallocator_t variable_mallocator;
-
   void (*solve_fun)(lmm_system_t self);
+
+private:
+  bool selective_update_active; /* flag to update partially the system only selecting changed portions */
+  unsigned visited_counter;     /* used by lmm_update_modified_set and lmm_remove_modified_set to cleverly (un-)flag the
+                                 * constraints (more details in these functions) */
+  s_xbt_swag_t constraint_set;  /* a list of lmm_constraint_t */
+  s_xbt_swag_t modified_constraint_set; /* a list of modified lmm_constraint_t */
+  xbt_mallocator_t variable_mallocator;
 };
-
-#define extract_variable(sys) xbt_swag_extract(&((sys)->variable_set))
-#define extract_constraint(sys) xbt_swag_extract(&((sys)->constraint_set))
-#define insert_constraint(sys, cnst) xbt_swag_insert((cnst), &((sys)->constraint_set))
-#define remove_variable(sys, var)                                                                                      \
-  do {                                                                                                                 \
-    xbt_swag_remove(var, &((sys)->variable_set));                                                                      \
-    xbt_swag_remove(var, &((sys)->saturated_variable_set));                                                            \
-  } while (0)
-#define remove_constraint(sys, cnst)                                                                                   \
-  do {                                                                                                                 \
-    xbt_swag_remove((cnst), &((sys)->constraint_set));                                                                 \
-    xbt_swag_remove((cnst), &((sys)->saturated_constraint_set));                                                       \
-  } while (0)
-#define make_constraint_active(sys, cnst) xbt_swag_insert((cnst), &((sys)->active_constraint_set))
-#define make_constraint_inactive(sys, cnst)                                                                            \
-  do {                                                                                                                 \
-    xbt_swag_remove((cnst), &(sys)->active_constraint_set);                                                            \
-    xbt_swag_remove((cnst), &(sys)->modified_constraint_set);                                                          \
-  } while (0)
-
-/** @ingroup SURF_lmm
- * @brief Print information about a lmm system
- *
- * @param sys A lmm system
- */
-//XBT_PRIVATE void lmm_print(lmm_system_t sys);
 
 extern XBT_PRIVATE double (*func_f_def) (lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fp_def) (lmm_variable_t, double);

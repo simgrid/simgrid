@@ -82,7 +82,7 @@ void bottleneck_solve(lmm_system_t sys)
   do {
     if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
       XBT_DEBUG("Fair bottleneck done");
-      lmm_print(sys);
+      sys->print();
     }
     XBT_DEBUG("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
     xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
@@ -172,6 +172,6 @@ void bottleneck_solve(lmm_system_t sys)
   sys->modified = 0;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     XBT_DEBUG("Fair bottleneck done");
-    lmm_print(sys);
+    sys->print();
   }
 }

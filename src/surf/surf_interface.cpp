@@ -653,7 +653,7 @@ void Action::setBound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
   if (variable_)
-    lmm_update_variable_bound(getModel()->getMaxminSystem(), variable_, bound);
+    getModel()->getMaxminSystem()->update_variable_bound(variable_, bound);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
     heapRemove(getModel()->getActionHeap());
@@ -680,7 +680,7 @@ void Action::setSharingWeight(double weight)
 {
   XBT_IN("(%p,%g)", this, weight);
   sharingWeight_ = weight;
-  lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), weight);
+  getModel()->getMaxminSystem()->update_variable_weight(getVariable(), weight);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY)
     heapRemove(getModel()->getActionHeap());
@@ -702,7 +702,7 @@ int Action::unref(){
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
-      lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+      getModel()->getMaxminSystem()->variable_free(getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
       /* remove from heap */
       heapRemove(getModel()->getActionHeap());
@@ -719,7 +719,7 @@ void Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
+    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
     if (getModel()->getUpdateMechanism() == UM_LAZY){
       heapRemove(getModel()->getActionHeap());
       if (getModel()->getUpdateMechanism() == UM_LAZY && stateSet_ == getModel()->getRunningActionSet() &&
@@ -737,7 +737,7 @@ void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), getPriority());
+    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), getPriority());
     suspended_ = 0;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
       heapRemove(getModel()->getActionHeap());
