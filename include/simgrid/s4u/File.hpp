@@ -60,7 +60,7 @@ public:
   int unlink();
 
   std::string mount_point;
-  Storage* onStorage;
+  Storage* localStorage;
   int desc_id = 0;
 
 private:
