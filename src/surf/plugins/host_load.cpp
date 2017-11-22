@@ -106,13 +106,6 @@ void HostLoad::reset()
 using simgrid::plugin::HostLoad;
 
 /* **************************** events  callback *************************** */
-static void on_host_added(simgrid::s4u::Host& host)
-{
-  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
-    return;
-  host.extension_set(new HostLoad(&host));
-}
-
 /* This callback is fired either when the host changes its state (on/off) or its speed
  * (because the user changed the pstate, or because of external trace events) */
 static void onHostChange(simgrid::s4u::Host& host)
@@ -120,8 +113,7 @@ static void onHostChange(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  HostLoad* host_load = host.extension<HostLoad>();
-  host_load->update();
+  host.extension<HostLoad>()->update();
 }
 
 /* This callback is called when an action (computation, idle, ...) terminates */
@@ -152,7 +144,14 @@ void sg_host_load_plugin_init()
 
   HostLoad::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostLoad>();
 
-  simgrid::s4u::Host::onCreation.connect(&on_host_added);
+  /* When attaching a callback into a signal, you can use a lambda as follows, or a regular function as done below */
+
+  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
+      return;
+    host.extension_set(new HostLoad(&host));
+  });
+
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
   simgrid::s4u::Host::onStateChange.connect(&onHostChange);
   simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
