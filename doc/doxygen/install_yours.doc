@@ -84,7 +84,17 @@ clean:
 .PHONY: clean
 @endverbatim
 
-@section install_yours_javaexamples Building the Java examples in Eclipse
+@section install_yours_cppeclipsedevenv Develop in C++ with SimGrid with Eclipse
+
+If you wish to develop your plugin or modify SimGrid using Eclipse. You have to run cmake and import it as a Makefile project. 
+
+Next you have to activate C++11 in your build settings, add -std=c++11 in the CDT GCC Built-in compiler settings.
+
+ \image html eclipseScreenShot.png "Eclipse preference page" width=10cm
+
+
+
+@section install_yours_javaexample  Building the Java examples in Eclipse
 
 If you want to build our Java examples in Eclipse, get the whole
 source code and open the archive on your disk. In Eclipse, select
