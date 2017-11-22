@@ -1046,16 +1046,6 @@ int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst)
   return xbt_swag_belongs(cnst, &(sys->active_constraint_set));
 }
 
-inline lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t sys)
-{
-  return (lmm_constraint_t)xbt_swag_getFirst(&(sys->active_constraint_set));
-}
-
-inline lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst)
-{
-  return (lmm_constraint_t)xbt_swag_getNext(cnst, (sys->active_constraint_set).offset);
-}
-
 /** \brief Update the constraint set propagating recursively to other constraints so the system should not be entirely
  *  computed.
  *

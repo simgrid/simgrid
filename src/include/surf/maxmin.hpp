@@ -326,22 +326,6 @@ lmm_get_var_from_cnst_safe(lmm_system_t sys, lmm_constraint_t cnst, lmm_element_
                            int* numelem);
 
 /**
- * @brief Get the first active constraint of a system
- * @param sys A system
- * @return The first active constraint
- */
-XBT_PUBLIC(lmm_constraint_t) lmm_get_first_active_constraint(lmm_system_t sys);
-
-/**
- * @brief Get the next active constraint of a constraint in a system
- * @param sys A system
- * @param cnst An active constraint of the system
- *
- * @return The next active constraint
- */
-XBT_PUBLIC(lmm_constraint_t) lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst);
-
-/**
  * @brief Get the data associated to a constraint
  * @param cnst A constraint
  * @return The data associated to the constraint
