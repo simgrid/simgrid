@@ -238,7 +238,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_cpu_cas);
   XBT_LOG_CONNECT(surf_cpu_ti);
   XBT_LOG_CONNECT(surf_energy);
-  XBT_LOG_CONNECT(surf_file);
   XBT_LOG_CONNECT(surf_kernel);
   XBT_LOG_CONNECT(surf_lagrange);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);

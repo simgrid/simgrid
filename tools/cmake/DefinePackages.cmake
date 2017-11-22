@@ -53,7 +53,6 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/surf/FileImpl.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -335,7 +334,6 @@ set(SURF_SRC
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/fair_bottleneck.cpp
-  src/surf/FileImpl.cpp
   src/surf/instr_routing.cpp
   src/surf/instr_surf.cpp
   src/surf/lagrange.cpp

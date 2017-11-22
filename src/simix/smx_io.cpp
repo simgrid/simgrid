@@ -9,7 +9,6 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/surf/FileImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "surf/surf.hpp"

@@ -6,7 +6,6 @@
 
 #include <xbt/base.h>
 
-#include "FileImpl.hpp"
 #include "StorageImpl.hpp"
 
 #ifndef STORAGE_N11_HPP_

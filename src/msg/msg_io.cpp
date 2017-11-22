@@ -73,7 +73,7 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->getPath(), fd->size(), fd->mount_point.c_str(), fd->localStorage->getCname(),
+           fd->getPath(), fd->size(), fd->mount_point_.c_str(), fd->localStorage->getCname(),
            fd->localStorage->getType(), fd->desc_id);
 }
 
