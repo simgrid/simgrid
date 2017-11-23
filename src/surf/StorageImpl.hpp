@@ -115,31 +115,9 @@ public:
    * @return The StorageAction corresponding to the writing
    */
   virtual StorageAction* write(sg_size_t size) = 0;
-
-  /**
-   * @brief Get the content of the current Storage
-   *
-   * @return A map with path as keys and size in bytes as values
-   */
-  virtual std::map<std::string, sg_size_t>* getContent();
-
-  /**
-   * @brief Get the available size in bytes of the current Storage
-   *
-   * @return The available size in bytes of the current Storage
-   */
-  virtual sg_size_t getFreeSize();
-
-  /**
-   * @brief Get the used size in bytes of the current Storage
-   *
-   * @return The used size in bytes of the current Storage
-   */
-  virtual sg_size_t getUsedSize();
   virtual sg_size_t getSize() { return size_; }
   virtual std::string getHost() { return attach_; }
 
-  std::map<std::string, sg_size_t>* parseContent(std::string filename);
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
 
   lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/
@@ -147,6 +125,7 @@ public:
 
   std::string typeId_;
   sg_size_t usedSize_ = 0;
+  std::string content_name;
 
 private:
   sg_size_t size_;

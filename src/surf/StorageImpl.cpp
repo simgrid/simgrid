@@ -5,13 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "StorageImpl.hpp"
-
 #include "surf_private.hpp"
-#include <algorithm>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <fstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
@@ -64,10 +58,10 @@ StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSyst
     : Resource(model, name.c_str(), lmm_constraint_new(maxminSystem, this, std::max(bread, bwrite)))
     , piface_(this)
     , typeId_(type_id)
+    , content_name(content_name)
     , size_(size)
     , attach_(attach)
 {
-  content_ = parseContent(content_name);
   StorageImpl::turnOn();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
@@ -78,37 +72,8 @@ StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSyst
 StorageImpl::~StorageImpl()
 {
   storageDestructedCallbacks(this);
-  if (content_ != nullptr)
-    delete content_;
 }
 
-std::map<std::string, sg_size_t>* StorageImpl::parseContent(std::string filename)
-{
-  usedSize_ = 0;
-  if (filename.empty())
-    return nullptr;
-
-  std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
-
-  std::ifstream* fs = surf_ifsopen(filename);
-
-  std::string line;
-  std::vector<std::string> tokens;
-  do {
-    std::getline(*fs, line);
-    boost::trim(line);
-    if (line.length() > 0) {
-      boost::split(tokens, line, boost::is_any_of(" \t"), boost::token_compress_on);
-      xbt_assert(tokens.size() == 2, "Parse error in %s: %s", filename.c_str(), line.c_str());
-      sg_size_t size = std::stoull(tokens.at(1));
-
-      usedSize_ += size;
-      parse_content->insert({tokens.front(), size});
-    }
-  } while (not fs->eof());
-  delete fs;
-  return parse_content;
-}
 
 bool StorageImpl::isUsed()
 {
@@ -134,22 +99,6 @@ void StorageImpl::turnOff()
     Resource::turnOff();
     storageStateChangedCallbacks(this, 1, 0);
   }
-}
-
-std::map<std::string, sg_size_t>* StorageImpl::getContent()
-{
-  /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
-  return content_;
-}
-
-sg_size_t StorageImpl::getFreeSize()
-{
-  return size_ - usedSize_;
-}
-
-sg_size_t StorageImpl::getUsedSize()
-{
-  return usedSize_;
 }
 
 /**********

@@ -41,6 +41,7 @@ static void host()
 int main(int argc, char** argv)
 {
   simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  sg_storage_file_system_init();
   e->loadPlatform(argv[1]);
 
   for (int i = 0; i < 5; i++)

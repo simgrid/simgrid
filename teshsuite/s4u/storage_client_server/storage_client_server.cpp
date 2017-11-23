@@ -157,6 +157,7 @@ static void server()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
+  sg_storage_file_system_init();
   xbt_assert(argc == 2, "Usage: %s platform_file\n", argv[0]);
   e.loadPlatform(argv[1]);
 
