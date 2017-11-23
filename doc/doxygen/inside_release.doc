@@ -100,7 +100,8 @@ the settings icon of the release you want to change.
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
-- Release the debian package   
+- Release the debian package
+- Update the simgrid/package.py for spack: https://github.com/solverstack/spack
 - Create the template for the next release in ChangeLog and NEWS files
 - Change the release number in CMakeLists.txt
 
