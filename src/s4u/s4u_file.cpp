@@ -210,7 +210,7 @@ static void onStorageCreation(simgrid::s4u::Storage& st)
 
 static void onStorageDestruction(simgrid::s4u::Storage& st)
 {
-  XBT_INFO("BLIH");
+  delete st.extension<FileSystemStorageExt>();
 }
 
 /* **************************** Public interface *************************** */
