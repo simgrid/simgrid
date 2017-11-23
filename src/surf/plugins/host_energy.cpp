@@ -250,6 +250,14 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
   xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->getCname());
 
+ /*
+  *    * Return watts_off if pstate == pstate_off
+  *       * this happens when host is off
+  */
+  if (this->pstate == pstate_off) {
+    return watts_off;
+  }
+
   /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */
   auto range           = power_range_watts_list.at(this->pstate);
