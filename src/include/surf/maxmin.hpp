@@ -121,32 +121,6 @@
  * constraint.
  */
 
-XBT_PUBLIC_DATA(double) sg_maxmin_precision;
-XBT_PUBLIC_DATA(double) sg_surf_precision;
-XBT_PUBLIC_DATA(int) sg_concurrency_limit;
-
-static inline void double_update(double* variable, double value, double precision)
-{
-  // printf("Updating %g -= %g +- %g\n",*variable,value,precision);
-  // xbt_assert(value==0  || value>precision);
-  // Check that precision is higher than the machine-dependent size of the mantissa. If not, brutal rounding  may
-  // happen, and the precision mechanism is not active...
-  // xbt_assert(*variable< (2<<DBL_MANT_DIG)*precision && FLT_RADIX==2);
-  *variable -= value;
-  if (*variable < precision)
-    *variable = 0.0;
-}
-
-static inline int double_positive(double value, double precision)
-{
-  return (value > precision);
-}
-
-static inline int double_equals(double value1, double value2, double precision)
-{
-  return (fabs(value1 - value2) < precision);
-}
-
 /** @{ @ingroup SURF_lmm */
 
 /**
