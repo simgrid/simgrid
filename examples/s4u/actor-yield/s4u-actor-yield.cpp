@@ -4,9 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
-#include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
-#include <string>
 
 /* This example does not much: It just spans over-polite actor that yield a large amount
 * of time before ending.
