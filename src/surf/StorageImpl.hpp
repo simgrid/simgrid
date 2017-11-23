@@ -130,7 +130,6 @@ public:
 private:
   sg_size_t size_;
   static std::unordered_map<std::string, StorageImpl*>* storages;
-  std::map<std::string, sg_size_t>* content_;
   // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
   // the Host directly.
   std::string attach_;
