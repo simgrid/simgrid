@@ -147,8 +147,6 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-extern "C" {
-
 /** @{ @ingroup SURF_lmm */
 /**
  * @brief Create a new Linear MaxMim system
@@ -440,6 +438,5 @@ XBT_PUBLIC(double) func_vegas_fp(lmm_variable_t var, double x);
 XBT_PUBLIC(double) func_vegas_fpi(lmm_variable_t var, double x);
 
 /** @} */
-}
 
 #endif
