@@ -1069,7 +1069,6 @@ static void lmm_update_modified_set_rec(lmm_system_t sys, lmm_constraint_t cnst)
 {
   void* _elem;
 
-  //TODOLATER: Why lmm_modified_set has been changed in git version 2392B5157...? Looks equivalent logically and less obvious..
   xbt_swag_foreach(_elem, &cnst->enabled_element_set) {
     lmm_variable_t var = ((lmm_element_t)_elem)->variable;
     for (s_lmm_element_t const& elem : var->cnsts) {
