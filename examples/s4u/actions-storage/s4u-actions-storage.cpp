@@ -103,6 +103,7 @@ public:
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
+  sg_storage_file_system_init();
 
   xbt_assert(argc > 3, "Usage: %s platform_file deployment_file [action_files]\n"
                        "\texample: %s platform.xml deployment.xml actions # if all actions are in the same file\n"

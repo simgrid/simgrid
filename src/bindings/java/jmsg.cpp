@@ -11,6 +11,7 @@
 
 #include "simgrid/msg.h"
 #include "simgrid/plugins/energy.h"
+#include "simgrid/plugins/file_system.h"
 #include "simgrid/simix.h"
 
 #include "simgrid/s4u/Host.hpp"
@@ -238,6 +239,11 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jde
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
   sg_host_energy_plugin_init();
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit()
+{
+  sg_storage_file_system_init();
 }
 } // extern "C"
 

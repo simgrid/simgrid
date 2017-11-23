@@ -11,10 +11,17 @@
 #include "simgrid/simix.hpp"
 #include "src/surf/HostImpl.hpp"
 
+#include <algorithm>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <fstream>
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
 
 namespace simgrid {
 namespace s4u {
+simgrid::xbt::Extension<s4u::Storage, FileSystemStorageExt> FileSystemStorageExt::EXTENSION_ID;
 
 File::File(std::string fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
@@ -75,6 +82,8 @@ sg_size_t File::write(sg_size_t size)
   localStorage->decrUsedSize(size_ - current_position_);
 
   sg_size_t write_size = localStorage->write(size);
+  localStorage->incrUsedSize(write_size);
+
   current_position_ += write_size;
   size_ = current_position_;
 
@@ -153,4 +162,70 @@ int File::unlink()
   }
 }
 
-}} // namespace simgrid::s4u
+FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
+{
+  content_ = parseContent(ptr->getImpl()->content_name);
+}
+
+FileSystemStorageExt::~FileSystemStorageExt()
+{
+  delete content_;
+}
+
+std::map<std::string, sg_size_t>* FileSystemStorageExt::parseContent(std::string filename)
+{
+  if (filename.empty())
+    return nullptr;
+
+  std::map<std::string, sg_size_t>* parse_content = new std::map<std::string, sg_size_t>();
+
+  std::ifstream* fs = surf_ifsopen(filename);
+
+  std::string line;
+  std::vector<std::string> tokens;
+  do {
+    std::getline(*fs, line);
+    boost::trim(line);
+    if (line.length() > 0) {
+      boost::split(tokens, line, boost::is_any_of(" \t"), boost::token_compress_on);
+      xbt_assert(tokens.size() == 2, "Parse error in %s: %s", filename.c_str(), line.c_str());
+      sg_size_t size = std::stoull(tokens.at(1));
+
+      usedSize_ += size;
+      parse_content->insert({tokens.front(), size});
+    }
+  } while (not fs->eof());
+  delete fs;
+  return parse_content;
+}
+}
+}
+
+using simgrid::s4u::FileSystemStorageExt;
+
+static void onStorageCreation(simgrid::s4u::Storage& st)
+{
+  st.extension_set(new FileSystemStorageExt(&st));
+}
+
+static void onStorageDestruction(simgrid::s4u::Storage& st)
+{
+  XBT_INFO("BLIH");
+}
+
+/* **************************** Public interface *************************** */
+SG_BEGIN_DECL()
+
+void sg_storage_file_system_init()
+{
+
+  if (FileSystemStorageExt::EXTENSION_ID.valid())
+    return;
+
+  FileSystemStorageExt::EXTENSION_ID = simgrid::s4u::Storage::extension_create<FileSystemStorageExt>();
+
+  simgrid::s4u::Storage::onCreation.connect(&onStorageCreation);
+  simgrid::s4u::Storage::onDestruction.connect(&onStorageDestruction);
+}
+
+SG_END_DECL()

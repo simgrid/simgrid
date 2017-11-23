@@ -6,6 +6,8 @@
 #ifndef SIMGRID_S4U_FILE_HPP
 #define SIMGRID_S4U_FILE_HPP
 
+#include "simgrid/plugins/file_system.h"
+#include <xbt/Extendable.hpp>
 #include <xbt/base.h>
 
 #include <simgrid/simix.h>
@@ -69,6 +71,21 @@ private:
   std::string fullpath_;
   sg_size_t current_position_ = SEEK_SET;
   void* userdata_             = nullptr;
+};
+
+class FileSystemStorageExt {
+public:
+  static simgrid::xbt::Extension<simgrid::s4u::Storage, FileSystemStorageExt> EXTENSION_ID;
+  explicit FileSystemStorageExt(simgrid::s4u::Storage* ptr);
+  ~FileSystemStorageExt();
+  std::map<std::string, sg_size_t>* parseContent(std::string filename);
+  std::map<std::string, sg_size_t>* getContent() { return content_; }
+  sg_size_t getUsedSize() { return usedSize_; }
+  void decrUsedSize(sg_size_t size) { usedSize_ -= size; }
+  void incrUsedSize(sg_size_t size) { usedSize_ += size; }
+private:
+  std::map<std::string, sg_size_t>* content_;
+  sg_size_t usedSize_ = 0;
 };
 }
 } // namespace simgrid::s4u
