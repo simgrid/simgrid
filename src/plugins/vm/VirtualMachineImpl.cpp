@@ -93,8 +93,8 @@ double VMModel::nextOccuringEvent(double now)
     surf::Cpu* cpu = ws_vm->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
-    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()
-                              ->value; // this is X1 in comment above, what this VM got in the sharing on the PM
+    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()->get_value(); // this is X1 in comment above, what
+                                                                                 // this VM got in the sharing on the PM
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->pimpl_vm_->getPm()->getCname());
 
     xbt_assert(cpu->model() == surf_cpu_model_vm);

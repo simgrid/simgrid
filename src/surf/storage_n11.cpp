@@ -79,12 +79,12 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
   for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
     StorageAction& action = static_cast<StorageAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    action.updateRemains(lrint(lmm_variable_getvalue(action.getVariable()) * delta));
+    action.updateRemains(lrint(action.getVariable()->get_value() * delta));
 
     if (action.getMaxDuration() > NO_MAX_DURATION)
       action.updateMaxDuration(delta);
 
-    if (((action.getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+    if (((action.getRemainsNoUpdate() <= 0) && (action.getVariable()->get_weight() > 0)) ||
         ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
       action.finish(Action::State::done);
     }

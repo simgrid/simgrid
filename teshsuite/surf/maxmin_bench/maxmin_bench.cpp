@@ -63,7 +63,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     var[i] = Sys->variable_new(NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     int concurrency_share = 1 + int_random(max_share);
-    lmm_variable_concurrency_share_set(var[i],concurrency_share);
+    var[i]->set_concurrency_share(concurrency_share);
 
     for (int j = 0; j < nb_cnst; j++)
       used[j] = 0;

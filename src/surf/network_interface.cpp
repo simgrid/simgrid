@@ -202,13 +202,12 @@ namespace simgrid {
     std::list<LinkImpl*> NetworkAction::links()
     {
       std::list<LinkImpl*> retlist;
-      lmm_system_t sys = getModel()->getMaxminSystem();
-      int llen         = lmm_get_number_of_cnst_from_var(sys, getVariable());
+      int llen = getVariable()->get_number_of_constraint();
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */
         // extra pb: we cannot dynamic_cast from void*...
-        Resource* resource = static_cast<Resource*>(lmm_get_cnst_from_var(sys, getVariable(), i)->get_id());
+        Resource* resource = static_cast<Resource*>(getVariable()->get_constraint(i)->get_id());
         LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
         if (link != nullptr)
           retlist.push_back(link);

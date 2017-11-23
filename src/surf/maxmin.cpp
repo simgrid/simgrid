@@ -25,11 +25,8 @@ double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision
 double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:VALUE */
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
-static int Global_debug_id = 1;
+int s_lmm_variable_t::Global_debug_id   = 1;
 int s_lmm_constraint_t::Global_debug_id = 1;
-
-static int lmm_can_enable_var(lmm_variable_t var);
-static int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var);
 
 int s_lmm_element_t::get_concurrency() const
 {
@@ -85,7 +82,7 @@ void s_lmm_system_t::check_concurrency()
       lmm_element_t elem = (lmm_element_t)elemIt;
       // We should have staged variables only if concurrency is reached in some constraint
       xbt_assert(cnst->get_concurrency_limit() < 0 || elem->variable->staged_weight == 0 ||
-                     lmm_cnstrs_min_concurrency_slack(elem->variable) < elem->variable->concurrency_share,
+                     elem->variable->get_min_concurrency_slack() < elem->variable->concurrency_share,
                  "should not have staged variable!");
     }
 
@@ -245,27 +242,8 @@ lmm_variable_t s_lmm_system_t::variable_new(simgrid::surf::Action* id, double sh
 {
   XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", this, id, sharing_weight, bound, number_of_constraints);
 
-  lmm_variable_t var = (lmm_variable_t)xbt_mallocator_get(variable_mallocator);
-  var->id = id;
-  var->id_int = Global_debug_id++;
-  var->cnsts.reserve(number_of_constraints);
-  var->sharing_weight    = sharing_weight;
-  var->staged_weight = 0.0;
-  var->bound = bound;
-  var->concurrency_share = 1;
-  var->value = 0.0;
-  var->visited           = visited_counter - 1;
-  var->mu = 0.0;
-  var->new_mu = 0.0;
-  var->func_f = func_f_def;
-  var->func_fp = func_fp_def;
-  var->func_fpi = func_fpi_def;
-
-  var->variable_set_hookup.next = nullptr;
-  var->variable_set_hookup.prev = nullptr;
-  var->saturated_variable_set_hookup.next = nullptr;
-  var->saturated_variable_set_hookup.prev = nullptr;
-
+  lmm_variable_t var = static_cast<lmm_variable_t>(xbt_mallocator_get(variable_mallocator));
+  var->initialize(id, sharing_weight, bound, number_of_constraints, visited_counter - 1);
   if (sharing_weight)
     xbt_swag_insert_at_head(var, &variable_set);
   else
@@ -279,21 +257,6 @@ void s_lmm_system_t::variable_free(lmm_variable_t var)
 {
   remove_variable(var);
   var_free(var);
-}
-
-double lmm_variable_getvalue(lmm_variable_t var)
-{
-  return (var->value);
-}
-
-void lmm_variable_concurrency_share_set(lmm_variable_t var, short int concurrency_share)
-{
-  var->concurrency_share=concurrency_share;
-}
-
-double lmm_variable_getbound(lmm_variable_t var)
-{
-  return (var->bound);
 }
 
 void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
@@ -387,27 +350,6 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
   check_concurrency();
 }
 
-lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t /*sys*/, lmm_variable_t var, unsigned num)
-{
-  if (num < var->cnsts.size())
-    return (var->cnsts[num].constraint);
-  else
-    return nullptr;
-}
-
-double lmm_get_cnst_weight_from_var(lmm_system_t /*sys*/, lmm_variable_t var, unsigned num)
-{
-  if (num < var->cnsts.size())
-    return (var->cnsts[num].consumption_weight);
-  else
-    return 0.0;
-}
-
-int lmm_get_number_of_cnst_from_var(lmm_system_t /*sys*/, lmm_variable_t var)
-{
-  return (var->cnsts.size());
-}
-
 lmm_variable_t s_lmm_constraint_t::get_variable(lmm_element_t* elem) const
 {
   if (*elem == nullptr) {
@@ -462,11 +404,6 @@ lmm_variable_t s_lmm_constraint_t::get_variable_safe(lmm_element_t* elem, lmm_el
     return (*elem)->variable;
   }else
     return nullptr;
-}
-
-void *lmm_variable_id(lmm_variable_t var)
-{
-  return var->id;
 }
 
 static inline void saturated_constraint_set_update(double usage, int cnst_light_num,
@@ -807,11 +744,34 @@ void s_lmm_system_t::update_variable_bound(lmm_variable_t var, double bound)
     update_modified_set(var->cnsts[0].constraint);
 }
 
-/** \brief Measure the minimum concurrency slack across all constraints where the given var is involved */
-int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var)
+void s_lmm_variable_t::initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
+                                  int number_of_constraints, unsigned visited_value)
+{
+  id     = id_value;
+  id_int = s_lmm_variable_t::Global_debug_id++;
+  cnsts.reserve(number_of_constraints);
+  sharing_weight    = sharing_weight_value;
+  staged_weight     = 0.0;
+  bound             = bound_value;
+  concurrency_share = 1;
+  value             = 0.0;
+  visited           = visited_value;
+  mu                = 0.0;
+  new_mu            = 0.0;
+  func_f            = func_f_def;
+  func_fp           = func_fp_def;
+  func_fpi          = func_fpi_def;
+
+  variable_set_hookup.next           = nullptr;
+  variable_set_hookup.prev           = nullptr;
+  saturated_variable_set_hookup.next = nullptr;
+  saturated_variable_set_hookup.prev = nullptr;
+}
+
+int s_lmm_variable_t::get_min_concurrency_slack() const
 {
   int minslack = std::numeric_limits<int>::max();
-  for (s_lmm_element_t const& elem : var->cnsts) {
+  for (s_lmm_element_t const& elem : cnsts) {
     int slack = elem.constraint->get_concurrency_slack();
     if (slack < minslack) {
       // This is only an optimization, to avoid looking at more constraints when slack is already zero
@@ -823,21 +783,13 @@ int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var)
   return minslack;
 }
 
-/* /Check if a variable can be enabled
- *
- * Make sure to set staged_weight before, if your intent is only to check concurrency
- */
-int lmm_can_enable_var(lmm_variable_t var){
-  return var->staged_weight>0 && lmm_cnstrs_min_concurrency_slack(var)>=var->concurrency_share;
-}
-
 //Small remark: In this implementation of lmm_enable_var and lmm_disable_var, we will meet multiple times with var when
 // running sys->update_modified_set.
 // A priori not a big performance issue, but we might do better by calling sys->update_modified_set within the for loops
 // (after doing the first for enabling==1, and before doing the last for disabling==1)
 void s_lmm_system_t::enable_var(lmm_variable_t var)
 {
-  xbt_assert(not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug) || lmm_can_enable_var(var));
+  xbt_assert(not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug) || var->can_enable());
 
   var->sharing_weight = var->staged_weight;
   var->staged_weight = 0;
@@ -907,7 +859,7 @@ void s_lmm_system_t::on_disabled_var(lmm_constraint_t cnstr)
 
     lmm_element_t nextelem = (lmm_element_t)xbt_swag_getNext(elem, cnstr->disabled_element_set.offset);
 
-    if (elem->variable->staged_weight > 0 && lmm_can_enable_var(elem->variable)) {
+    if (elem->variable->staged_weight > 0 && elem->variable->can_enable()) {
       //Found a staged variable
       //TODOLATER: Add random timing function to model reservation protocol fuzziness? Then how to make sure that
       //staged variables will eventually be called?
@@ -946,7 +898,7 @@ void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
   //Are we enabling this variable?
   if (enabling_var){
     var->staged_weight = weight;
-    int minslack       = lmm_cnstrs_min_concurrency_slack(var);
+    int minslack       = var->get_min_concurrency_slack();
     if (minslack < var->concurrency_share) {
       XBT_DEBUG("Staging var (instead of enabling) because min concurrency slack %i, with weight %f and concurrency"
                 " share %i", minslack, weight, var->concurrency_share);
@@ -964,11 +916,6 @@ void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
   check_concurrency();
 
   XBT_OUT();
-}
-
-double lmm_get_variable_weight(lmm_variable_t var)
-{
-  return var->sharing_weight;
 }
 
 void s_lmm_system_t::update_constraint_bound(lmm_constraint_t cnst, double bound)

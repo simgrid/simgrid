@@ -28,10 +28,9 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     CpuAction* action = static_cast<CpuAction*>(actionHeapPop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(),
-                                      lmm_variable_getvalue(action->getVariable()), action->getLastUpdate(),
-                                      now - action->getLastUpdate());
+      Cpu* cpu = static_cast<Cpu*>(action->getVariable()->get_constraint(0)->get_id());
+      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(), action->getVariable()->get_value(),
+                                      action->getLastUpdate(), now - action->getLastUpdate());
     }
 
     action->finish(Action::State::done);
@@ -60,18 +59,18 @@ void CpuModel::updateActionsStateFull(double now, double delta)
     CpuAction& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(lmm_get_cnst_from_var(getMaxminSystem(), action.getVariable(), 0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), action.getCategory(),
-                                      lmm_variable_getvalue(action.getVariable()), now - delta, delta);
+      Cpu* cpu = static_cast<Cpu*>(action.getVariable()->get_constraint(0)->get_id());
+      TRACE_surf_host_set_utilization(cpu->getCname(), action.getCategory(), action.getVariable()->get_value(),
+                                      now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 
-    action.updateRemains(lmm_variable_getvalue(action.getVariable()) * delta);
+    action.updateRemains(action.getVariable()->get_value() * delta);
 
     if (action.getMaxDuration() != NO_MAX_DURATION)
       action.updateMaxDuration(delta);
 
-    if (((action.getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+    if (((action.getRemainsNoUpdate() <= 0) && (action.getVariable()->get_weight() > 0)) ||
         ((action.getMaxDuration() != NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
       action.finish(Action::State::done);
     }
@@ -188,7 +187,7 @@ void CpuAction::updateRemainingLazy(double now)
     updateRemains(getLastValue() * delta);
 
     if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)->get_id());
+      Cpu* cpu = static_cast<Cpu*>(getVariable()->get_constraint(0)->get_id());
       TRACE_surf_host_set_utilization(cpu->getCname(), getCategory(), getLastValue(), getLastUpdate(),
                                       now - getLastUpdate());
     }
@@ -196,7 +195,7 @@ void CpuAction::updateRemainingLazy(double now)
   }
 
   refreshLastUpdate();
-  setLastValue(lmm_variable_getvalue(getVariable()));
+  setLastValue(getVariable()->get_value());
 }
 
 simgrid::xbt::signal<void(simgrid::surf::CpuAction*, Action::State)> CpuAction::onStateChange;
@@ -221,13 +220,12 @@ void CpuAction::setState(Action::State state){
 /** @brief returns a list of all CPUs that this action is using */
 std::list<Cpu*> CpuAction::cpus() {
   std::list<Cpu*> retlist;
-  lmm_system_t sys = getModel()->getMaxminSystem();
-  int llen = lmm_get_number_of_cnst_from_var(sys, getVariable());
+  int llen = getVariable()->get_number_of_constraint();
 
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
-    Resource* resource = static_cast<Resource*>(lmm_get_cnst_from_var(sys, getVariable(), i)->get_id());
+    Resource* resource = static_cast<Resource*>(getVariable()->get_constraint(i)->get_id());
     Cpu* cpu           = dynamic_cast<Cpu*>(resource);
     if (cpu != nullptr)
       retlist.push_back(cpu);

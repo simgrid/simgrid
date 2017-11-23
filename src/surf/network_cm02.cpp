@@ -176,13 +176,12 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     NetworkCm02Action* action = static_cast<NetworkCm02Action*>(actionHeapPop());
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());
+      int n = action->getVariable()->get_number_of_constraint();
 
       for (int i = 0; i < n; i++){
-        lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
+        lmm_constraint_t constraint = action->getVariable()->get_constraint(i);
         NetworkCm02Link* link       = static_cast<NetworkCm02Link*>(constraint->get_id());
-        double value = lmm_variable_getvalue(action->getVariable())*
-            lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i);
+        double value = action->getVariable()->get_value() * action->getVariable()->get_constraint_weight(i);
         TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), value, action->getLastUpdate(),
                                         now - action->getLastUpdate());
       }
@@ -227,29 +226,28 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
         maxminSystem_->update_variable_weight(action.getVariable(), action.weight_);
     }
     if (TRACE_is_enabled()) {
-      int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action.getVariable());
+      int n = action.getVariable()->get_number_of_constraint();
       for (int i = 0; i < n; i++) {
-        lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
-
+        lmm_constraint_t constraint = action.getVariable()->get_constraint(i);
         NetworkCm02Link* link = static_cast<NetworkCm02Link*>(constraint->get_id());
-        TRACE_surf_link_set_utilization(link->getCname(), action.getCategory(),
-                                        (lmm_variable_getvalue(action.getVariable()) *
-                                         lmm_get_cnst_weight_from_var(maxminSystem_, action.getVariable(), i)),
-                                        action.getLastUpdate(), now - action.getLastUpdate());
+        TRACE_surf_link_set_utilization(
+            link->getCname(), action.getCategory(),
+            (action.getVariable()->get_value() * action.getVariable()->get_constraint_weight(i)),
+            action.getLastUpdate(), now - action.getLastUpdate());
       }
     }
-    if (not lmm_get_number_of_cnst_from_var(maxminSystem_, action.getVariable())) {
+    if (not action.getVariable()->get_number_of_constraint()) {
       /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
        * vivaldi. In such case, just make sure that the action completes immediately.
        */
       action.updateRemains(action.getRemains());
     }
-    action.updateRemains(lmm_variable_getvalue(action.getVariable()) * delta);
+    action.updateRemains(action.getVariable()->get_value() * delta);
 
     if (action.getMaxDuration() > NO_MAX_DURATION)
       action.updateMaxDuration(delta);
 
-    if (((action.getRemains() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+    if (((action.getRemains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
         ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
       action.finish(Action::State::done);
     }
@@ -384,7 +382,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
 
       turnOff();
       while ((var = constraint()->get_variable(&elem))) {
-        Action *action = static_cast<Action*>( lmm_variable_id(var) );
+        Action* action = static_cast<Action*>(var->get_id());
 
         if (action->getState() == Action::State::running ||
             action->getState() == Action::State::ready) {
@@ -417,7 +415,7 @@ void NetworkCm02Link::setBandwidth(double value)
     lmm_element_t nextelem = nullptr;
     int numelem = 0;
     while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
-      NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_variable_id(var));
+      NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->weight_ += delta;
       if (not action->isSuspended())
         model()->getMaxminSystem()->update_variable_weight(action->getVariable(), action->weight_);
@@ -436,7 +434,7 @@ void NetworkCm02Link::setLatency(double value)
   latency_.peak = value;
 
   while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
-    NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_variable_id(var));
+    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->latCurrent_ += delta;
     action->weight_ += delta;
     if (action->rate_ < 0)
@@ -481,14 +479,14 @@ void NetworkCm02Action::updateRemainingLazy(double now)
     setMaxDuration(max_duration);
   }
 
-  if ((getRemainsNoUpdate() <= 0 && (lmm_get_variable_weight(getVariable()) > 0)) ||
+  if ((getRemainsNoUpdate() <= 0 && (getVariable()->get_weight() > 0)) ||
       ((max_duration > NO_MAX_DURATION) && (max_duration <= 0))) {
     finish(Action::State::done);
     heapRemove(getModel()->getActionHeap());
   }
 
   refreshLastUpdate();
-  setLastValue(lmm_variable_getvalue(getVariable()));
+  setLastValue(getVariable()->get_value());
 }
 
 }

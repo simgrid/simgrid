@@ -174,7 +174,69 @@ private:
  *
  * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as soon as possible we enable the variable with desired weight
  */
-struct s_lmm_variable_t {
+class s_lmm_variable_t {
+public:
+  void initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
+                  int number_of_constraints, unsigned visited_value);
+
+  /**
+   * @brief Get the value of the variable after the last lmm solve
+   * @return The value of the variable
+   */
+  double get_value() const { return value; }
+
+  /**
+   * @brief Get the maximum value of the variable (-1.0 if no maximum value)
+   * @return The bound of the variable
+   */
+  double get_bound() const { return bound; }
+
+  /**
+   * @brief Set the concurrent share of the variable
+   * @param concurrency_share The new concurrency share
+   */
+  void set_concurrency_share(short int value) { concurrency_share = value; }
+
+  /**
+   * @brief Get the numth constraint associated to the variable
+   * @param num The rank of constraint we want to get
+   * @return The numth constraint
+   */
+  lmm_constraint_t get_constraint(unsigned num) const { return num < cnsts.size() ? cnsts[num].constraint : nullptr; }
+
+  /**
+   * @brief Get the weigth of the numth constraint associated to the variable
+   * @param num The rank of constraint we want to get
+   * @return The numth constraint
+   */
+  double get_constraint_weight(unsigned num) const { return num < cnsts.size() ? cnsts[num].consumption_weight : 0.0; }
+
+  /**
+   * @brief Get the number of constraint associated to a variable
+   * @return The number of constraint associated to the variable
+   */
+  int get_number_of_constraint() const { return cnsts.size(); }
+
+  /**
+   * @brief Get the data associated to a variable
+   * @return The data associated to the variable
+   */
+  simgrid::surf::Action* get_id() const { return id; }
+
+  /**
+   * @brief Get the weight of a variable
+   * @return The weight of the variable
+   */
+  double get_weight() const { return sharing_weight; }
+
+  /** @brief Measure the minimum concurrency slack across all constraints where the given var is involved */
+  int get_min_concurrency_slack() const;
+
+  /** @brief Check if a variable can be enabled
+   * Make sure to set staged_weight before, if your intent is only to check concurrency
+   */
+  int can_enable() const { return staged_weight > 0 && get_min_concurrency_slack() >= concurrency_share; }
+
   /* hookup to system */
   s_xbt_swag_hookup_t variable_set_hookup;
   s_xbt_swag_hookup_t saturated_variable_set_hookup;
@@ -201,6 +263,9 @@ struct s_lmm_variable_t {
   double (*func_fp)(s_lmm_variable_t* var, double x);  /* (f')    */
   double (*func_fpi)(s_lmm_variable_t* var, double x); /* (f')^{-1}    */
   /* \end{For Lagrange only} */
+
+private:
+  static int Global_debug_id;
 };
 
 inline void s_lmm_element_t::make_active()

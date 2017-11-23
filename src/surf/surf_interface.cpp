@@ -416,7 +416,7 @@ double Model::nextOccuringEventLazy(double now)
     action->updateRemainingLazy(now);
 
     double min = -1;
-    double share = lmm_variable_getvalue(action->getVariable());
+    double share = action->getVariable()->get_value();
 
     if (share > 0) {
       double time_to_completion;
@@ -465,7 +465,7 @@ double Model::nextOccuringEventFull(double /*now*/) {
   double min = -1;
 
   for (Action& action : *getRunningActionSet()) {
-    double value = lmm_variable_getvalue(action.getVariable());
+    double value = action.getVariable()->get_value();
     if (value > 0) {
       if (action.getRemains() > 0)
         value = action.getRemainsNoUpdate() / value;
@@ -646,7 +646,7 @@ void Action::setState(Action::State state)
 
 double Action::getBound() const
 {
-  return (variable_) ? lmm_variable_getbound(variable_) : 0;
+  return variable_ ? variable_->get_bound() : 0;
 }
 
 void Action::setBound(double bound)

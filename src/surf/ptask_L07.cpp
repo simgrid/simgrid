@@ -105,8 +105,8 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
       }
     }
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.getRemains(),
-              lmm_variable_getvalue(action.getVariable()) * delta);
-    action.updateRemains(lmm_variable_getvalue(action.getVariable()) * delta);
+              action.getVariable()->get_value() * delta);
+    action.updateRemains(action.getVariable()->get_value() * delta);
 
     if (action.getMaxDuration() > NO_MAX_DURATION)
       action.updateMaxDuration(delta);
@@ -119,13 +119,13 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
      * If it's not done, it may have failed.
      */
 
-    if (((action.getRemains() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+    if (((action.getRemains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
         ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
       action.finish(Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
-      lmm_constraint_t cnst = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
+      lmm_constraint_t cnst = action.getVariable()->get_constraint(i);
       while (cnst != nullptr) {
         i++;
         void* constraint_id = cnst->get_id();
@@ -134,7 +134,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
           action.finish(Action::State::failed);
           break;
         }
-        cnst = lmm_get_cnst_from_var(maxminSystem_, action.getVariable(), i);
+        cnst = action.getVariable()->get_constraint(i);
       }
     }
   }
@@ -299,7 +299,7 @@ void CpuL07::onSpeedChange() {
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), speed_.peak * speed_.scale);
   while ((var = constraint()->get_variable(&elem))) {
-    Action* action = static_cast<Action*>(lmm_variable_id(var));
+    Action* action = static_cast<Action*>(var->get_id());
 
     model()->getMaxminSystem()->update_variable_bound(action->getVariable(), speed_.scale * speed_.peak);
   }
@@ -369,7 +369,7 @@ void LinkL07::setLatency(double value)
 
   latency_.peak = value;
   while ((var = constraint()->get_variable(&elem))) {
-    action = static_cast<L07Action*>(lmm_variable_id(var));
+    action = static_cast<L07Action*>(var->get_id());
     action->updateBound();
   }
 }

@@ -150,67 +150,6 @@ static inline int double_equals(double value1, double value2, double precision)
 /** @{ @ingroup SURF_lmm */
 
 /**
- * @brief Get the value of the variable after the last lmm solve
- * @param var A variable
- * @return The value of the variable
- */
-XBT_PUBLIC(double) lmm_variable_getvalue(lmm_variable_t var);
-
-/**
- * @brief Get the maximum value of the variable (-1.0 if no maximum value)
- * @param var A variable
- * @return The bound of the variable
- */
-XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
-
-/**
- * @brief Set the concurrent share of the variable
- * @param var A variable
- * @param concurrency_share The new concurrency share
- */
-XBT_PUBLIC(void) lmm_variable_concurrency_share_set(lmm_variable_t var, short int concurrency_share);
-
-/**
- * @brief Get the numth constraint associated to the variable
- * @param sys The system associated to the variable (not used)
- * @param var A variable
- * @param num The rank of constraint we want to get
- * @return The numth constraint
- */
-XBT_PUBLIC(lmm_constraint_t) lmm_get_cnst_from_var(lmm_system_t sys, lmm_variable_t var, unsigned num);
-
-/**
- * @brief Get the weigth of the numth constraint associated to the variable
- * @param sys The system associated to the variable (not used)
- * @param var A variable
- * @param num The rank of constraint we want to get
- * @return The numth constraint
- */
-XBT_PUBLIC(double) lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var, unsigned num);
-
-/**
- * @brief Get the number of constraint associated to a variable
- * @param sys The system associated to the variable (not used)
- * @param var A variable
- * @return The number of constraint associated to the variable
- */
-XBT_PUBLIC(int) lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
-
-/**
- * @brief Get the data associated to a variable
- * @param var A variable
- * @return The data associated to the variable
- */
-XBT_PUBLIC(void*) lmm_variable_id(lmm_variable_t var);
-
-/**
- * @brief Get the weight of a variable
- * @param var A variable
- * @return The weight of the variable
- */
-XBT_PUBLIC(double) lmm_get_variable_weight(lmm_variable_t var);
-
-/**
  * @brief Solve the lmm system
  * @param sys The lmm system to solve
  */

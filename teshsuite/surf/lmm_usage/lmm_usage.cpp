@@ -18,7 +18,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-#define PRINT_VAR(var) XBT_DEBUG(#var " = %g",lmm_variable_getvalue(var))
+#define PRINT_VAR(var) XBT_DEBUG(#var " = %g", (var)->get_value())
 #define SHOW_EXPR(expr) XBT_DEBUG(#expr " = %g",expr)
 
 /*        ______                 */
@@ -147,20 +147,18 @@ static void test1(method_t method)
     lagrange_solve(Sys);
 
     double max_deviation = 0.0;
-    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
-    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
-    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
-    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
+    max_deviation        = std::max(max_deviation, fabs(R_1->get_value() - x));
+    max_deviation        = std::max(max_deviation, fabs(R_3->get_value() - x));
+    max_deviation        = std::max(max_deviation, fabs(R_2->get_value() - (b - a + x)));
+    max_deviation        = std::max(max_deviation, fabs(R_1_2_3->get_value() - (a - x)));
 
     if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
       XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
       XBT_WARN("Found x = %1.20f", x);
-      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x, lmm_variable_getvalue(R_1) - x);
-      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f", b - a + x,
-               lmm_variable_getvalue(R_2) - (b - a + x));
-      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x, lmm_variable_getvalue(R_3) - x);
-      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f", a - x,
-               lmm_variable_getvalue(R_1_2_3) - (a - x));
+      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x, R_1->get_value() - x);
+      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f", b - a + x, R_2->get_value() - (b - a + x));
+      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x, R_3->get_value() - x);
+      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f", a - x, R_1_2_3->get_value() - (a - x));
     }
   }
 
