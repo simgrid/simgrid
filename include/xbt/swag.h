@@ -74,6 +74,7 @@ struct xbt_swag {
 };
 typedef struct xbt_swag  s_xbt_swag_t;
 typedef struct xbt_swag* xbt_swag_t;
+typedef const struct xbt_swag* const_xbt_swag_t;
 
 /**< A typical swag */
 /* @} */
@@ -108,13 +109,13 @@ XBT_PUBLIC(void) xbt_swag_insert_at_head(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void) xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void *) xbt_swag_remove(void *obj, xbt_swag_t swag);
 XBT_PUBLIC(void *) xbt_swag_extract(xbt_swag_t swag);
-XBT_PUBLIC(int) xbt_swag_size(xbt_swag_t swag);
+XBT_PUBLIC(int) xbt_swag_size(const_xbt_swag_t swag);
 
 #define xbt_swag_getPrev(obj, offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->prev)
 #define xbt_swag_getNext(obj, offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
 #define xbt_swag_belongs(obj, swag) (xbt_swag_getNext((obj), (swag)->offset) || (swag)->tail == (obj))
 
-static inline void *xbt_swag_getFirst(xbt_swag_t swag)
+static inline void *xbt_swag_getFirst(const_xbt_swag_t swag)
 {
   return (swag->head);
 }
