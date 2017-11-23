@@ -30,6 +30,13 @@ namespace simgrid {
   {
     return links->size();
   }
+  void LinkImpl::linksList(std::vector<s4u::Link*>* linkList)
+  {
+    for (auto const& kv : *links) {
+      linkList->push_back(&kv.second->piface_);
+    }
+  }
+
   /** @brief Returns a list of all existing links */
   LinkImpl** LinkImpl::linksList()
   {
@@ -63,7 +70,6 @@ namespace simgrid {
     NetworkModel::~NetworkModel()
     {
       lmm_system_free(maxminSystem_);
-      xbt_heap_free(actionHeap_);
       delete modifiedSet_;
     }
 
@@ -83,10 +89,10 @@ namespace simgrid {
     {
       double minRes = Model::nextOccuringEventFull(now);
 
-      for(auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; it++) {
-        NetworkAction *action = static_cast<NetworkAction*>(&*it);
-        if (action->latency_ > 0)
-          minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
+      for (Action const& action : *getRunningActionSet()) {
+        const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
+        if (net_action.latency_ > 0)
+          minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);
       }
 
       XBT_DEBUG("Min of share resources %f", minRes);
@@ -166,17 +172,17 @@ namespace simgrid {
     }
     void LinkImpl::setStateTrace(tmgr_trace_t trace)
     {
-      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", cname());
+      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", getCname());
       stateEvent_ = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", cname());
+      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", getCname());
       bandwidth_.event = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", cname());
+      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", getCname());
       latency_.event = future_evt_set->add_trace(trace, this);
     }
 
@@ -196,7 +202,7 @@ namespace simgrid {
     {
       std::list<LinkImpl*> retlist;
       lmm_system_t sys = getModel()->getMaxminSystem();
-      int llen         = lmm_get_number_of_cnst_from_var(sys, variable_);
+      int llen         = lmm_get_number_of_cnst_from_var(sys, getVariable());
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */

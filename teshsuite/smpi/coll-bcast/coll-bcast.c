@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2009, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -46,11 +46,9 @@ int main(int argc, char **argv)
     if (values[i]==17) good++;
   printf("[%d] number of values equals to 17: %d\n", rank, good);
 
-  if (rank == 0) {
-    if (status != MPI_SUCCESS) {
-      printf("bcast returned %d\n", status);
-      fflush(stdout);
-    }
+  if (rank == 0 && status != MPI_SUCCESS) {
+    printf("bcast returned %d\n", status);
+    fflush(stdout);
   }
   xbt_free(values);
   MPI_Finalize();

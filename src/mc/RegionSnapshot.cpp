@@ -12,7 +12,7 @@
 #endif
 
 #include "mc/mc.h"
-#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_snapshot.hpp"
 
 #include "src/mc/ChunkedData.hpp"
 #include "src/mc/RegionSnapshot.hpp"
@@ -42,7 +42,7 @@ Buffer::Buffer(std::size_t size, Type type) : size_(size), type_(type)
 {
   switch(type_) {
   case Type::Malloc:
-    data_ = ::malloc(size_);
+    data_ = ::operator new(size_);
     break;
   case Type::Mmap:
     data_ = ::mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
@@ -62,7 +62,7 @@ void Buffer::clear() noexcept
 {
   switch(type_) {
   case Type::Malloc:
-    std::free(data_);
+    ::operator delete(data_);
     break;
   case Type::Mmap:
     if (munmap(data_, size_) != 0)

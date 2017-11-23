@@ -22,6 +22,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 #define TESTSIZE 100
 #define size_of_block(i) (((i % 50)+1)* 100)
 
+static void check_block(const void* s, int c, int n)
+{
+  const unsigned char* p = static_cast<const unsigned char*>(s);
+  unsigned char b        = static_cast<unsigned char>(c);
+  for (int i = 0; i < n; i++)
+    if (p[i] != b)
+      xbt_die("value mismatch: %p[%d] = %#hhx, expected %#hhx", p, i, p[i], b);
+}
+
 int main(int argc, char**argv)
 {
   xbt_mheap_t heapA = nullptr;
@@ -85,6 +94,21 @@ int main(int argc, char**argv)
     }
     if (not gotit)
       xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
+  }
+
+  XBT_INFO("Let's try different codepaths for mrealloc");
+  for (i = 0; i < TESTSIZE; i++) {
+    const std::vector<std::pair<int, int>> requests = {
+        {size_of_block(i) / 2, 0x77}, {size_of_block(i) * 2, 0xaa}, {1, 0xc0}, {0, 0}};
+    pointers[i] = nullptr;
+    for (unsigned k = 0; k < requests.size(); ++k) {
+      size        = requests[k].first;
+      pointers[i] = mrealloc(heapA, pointers[i], size);
+      if (k > 0)
+        check_block(pointers[i], requests[k - 1].second, std::min(size, requests[k - 1].first));
+      if (size > 0)
+        memset(pointers[i], requests[k].second, size);
+    }
   }
 
   XBT_INFO("Damnit, I cannot break mmalloc this time. That's SO disappointing.");

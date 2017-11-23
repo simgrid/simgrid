@@ -14,7 +14,7 @@ static char *rcsid =
 
 #define buf_size 128
 
-int mydelay ()			/* about 6 seconds */
+static int mydelay(void) /* about 6 seconds */
 {
   int i;
   int val;
@@ -37,8 +37,8 @@ main (int argc, char **argv)
   int namelen = 128;
   int buf0[buf_size];
   int buf1[buf_size];
-  MPI_Request req, req0, req1;
-  MPI_Status status, status0, status1;
+  MPI_Request req;
+  MPI_Status status;
   MPI_Request areq[10];
   MPI_Status astatus[10];
 

@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 //#include <star-reduction.c>
 
 int reduce_NTSL_segment_size_in_byte = 8192;

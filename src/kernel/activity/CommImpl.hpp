@@ -7,9 +7,9 @@
 #define SIMIX_SYNCHRO_COMM_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 
-typedef enum { SIMIX_COMM_SEND, SIMIX_COMM_RECEIVE, SIMIX_COMM_READY, SIMIX_COMM_DONE } e_smx_comm_type_t;
+enum e_smx_comm_type_t { SIMIX_COMM_SEND, SIMIX_COMM_RECEIVE, SIMIX_COMM_READY, SIMIX_COMM_DONE };
 
 namespace simgrid {
 namespace kernel {

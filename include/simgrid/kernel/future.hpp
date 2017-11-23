@@ -207,7 +207,7 @@ public:
 template<class T>
 void bindPromise(Promise<T> promise, Future<T> future)
 {
-  struct PromiseBinder {
+  class PromiseBinder {
   public:
     PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
     void operator()(Future<T> future)

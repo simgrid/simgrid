@@ -1,9 +1,8 @@
-/* Copyright (c) 2010-2016. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 
 /*
  * This file contains functions that aid users to debug their lua scripts; for instance,
@@ -15,7 +14,7 @@
 extern "C" {
 #include <lauxlib.h>
 }
-#include "lua_utils.h"
+#include "lua_utils.hpp"
 #include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_debug, "Lua bindings (helper functions)");

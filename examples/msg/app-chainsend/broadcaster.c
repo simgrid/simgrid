@@ -79,6 +79,7 @@ broadcaster_t broadcaster_init(xbt_dynar_t host_list, unsigned int piece_count)
   int status;
   broadcaster_t bc = xbt_new(s_broadcaster_t, 1);
 
+  bc->first             = NULL;
   bc->piece_count = piece_count;
   bc->current_piece = 0;
   bc->host_list = host_list;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -44,7 +44,10 @@ protected:
 public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
-  const char* getCname();
+  /** @brief Retrieves the name of that netzone as a C++ string */
+  const std::string& getName() const { return name_; }
+  /** @brief Retrieves the name of that netzone as a C string */
+  const char* getCname() const;
   NetZone* getFather();
 
   std::vector<NetZone*>* getChildren();             // Sub netzones
@@ -65,7 +68,7 @@ public:
   /*** Called on each newly created regular route (not on bypass routes) */
   static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                    kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                   std::vector<surf::LinkImpl*>* link_list)>
+                                   std::vector<surf::LinkImpl*>& link_list)>
       onRouteCreation;
   static simgrid::xbt::signal<void(NetZone&)> onCreation;
   static simgrid::xbt::signal<void(NetZone&)> onSeal;

@@ -10,7 +10,7 @@ foreach(x actions-comm actions-storage cloud-sharing get_sender host_on_off host
 endforeach()
 
 # CPP examples
-foreach(x task_destroy_cancel task_listen_from)
+foreach(x task_destroy_cancel task_listen_from task_progress)
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -51,7 +51,8 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1-c1s1-c3s2.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp2.5-hbp1.5.xml    PARENT_SCOPE)
 
-foreach(x get_sender host_on_off host_on_off_processes host_on_off_recv task_destroy_cancel task_listen_from trace_integration)
+foreach(x get_sender host_on_off host_on_off_processes host_on_off_recv
+    task_destroy_cancel task_listen_from task_progress trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()
 

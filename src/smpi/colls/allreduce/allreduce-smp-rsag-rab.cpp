@@ -7,7 +7,7 @@
 /*
  * implemented by Pitch Patarasuk, 07/01/2007
  */
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 //#include <star-reduction.c>
 
 

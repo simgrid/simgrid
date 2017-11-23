@@ -106,4 +106,5 @@ $ ${bindir:=.}/mmalloc_test --log=root.fmt:%m%n
 > Re-allocate every second block
 > free all blocks (each one twice, to check that double free are correctly catched)
 > free again all blocks (to really check that double free are correctly catched)
+> Let's try different codepaths for mrealloc
 > Damnit, I cannot break mmalloc this time. That's SO disappointing.

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,21 +9,20 @@
 
 #include <dwarf.h>
 #include <elfutils/libdw.h>
+#include <libunwind.h>
 
-#include "src/mc/mc_private.h"
-#include "src/mc/LocationList.hpp"
 #include "src/mc/AddressSpace.hpp"
-#include "src/mc/Frame.hpp"
-#include "src/mc/ObjectInformation.hpp"
 #include "src/mc/DwarfExpression.hpp"
+#include "src/mc/Frame.hpp"
+#include "src/mc/LocationList.hpp"
+#include "src/mc/ObjectInformation.hpp"
 #include "src/mc/mc_dwarf.hpp"
+#include "src/mc/mc_private.hpp"
 
 using simgrid::mc::remote;
 
 namespace simgrid {
 namespace dwarf {
-
-evaluation_error::~evaluation_error() noexcept(true) {}
 
 void execute(
   const Dwarf_Op* ops, std::size_t n,
@@ -32,6 +31,8 @@ void execute(
   for (size_t i = 0; i != n; ++i) {
     const Dwarf_Op *op = ops + i;
     std::uint8_t atom = op->atom;
+    intptr_t first;
+    intptr_t second;
 
     switch (atom) {
 
@@ -205,19 +206,17 @@ void execute(
       // and replace the top of the stack with the computed value
       // (stack.top() += stack.before_top()).
 
-    case DW_OP_plus: {
-      intptr_t first = stack.pop();
-      intptr_t second = stack.pop();
+    case DW_OP_plus:
+      first  = stack.pop();
+      second = stack.pop();
       stack.push(first + second);
       break;
-    }
 
-    case DW_OP_mul: {
-      intptr_t first = stack.pop();
-      intptr_t second = stack.pop();
+    case DW_OP_mul:
+      first  = stack.pop();
+      second = stack.pop();
       stack.push(first * second);
       break;
-    }
 
     case DW_OP_plus_uconst:
       stack.top() += op->number;
@@ -231,33 +230,29 @@ void execute(
       stack.top() = - (intptr_t) stack.top();
       break;
 
-    case DW_OP_minus: {
-      intptr_t first = stack.pop();
-      intptr_t second = stack.pop();
+    case DW_OP_minus:
+      first  = stack.pop();
+      second = stack.pop();
       stack.push(second - first);
       break;
-    }
 
-    case DW_OP_and: {
-      intptr_t first = stack.pop();
-      intptr_t second = stack.pop();
+    case DW_OP_and:
+      first  = stack.pop();
+      second = stack.pop();
       stack.push(first & second);
       break;
-    }
 
-    case DW_OP_or: {
-      intptr_t first = stack.pop();
-      intptr_t second = stack.pop();
+    case DW_OP_or:
+      first  = stack.pop();
+      second = stack.pop();
       stack.push(first | second);
       break;
-    }
 
-    case DW_OP_xor: {
-      intptr_t first = stack.pop();
-      intptr_t second = stack.pop();
+    case DW_OP_xor:
+      first  = stack.pop();
+      second = stack.pop();
       stack.push(first ^ second);
       break;
-    }
 
     case DW_OP_nop:
       break;

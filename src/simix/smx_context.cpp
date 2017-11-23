@@ -16,15 +16,13 @@
 #include <xbt/range.hpp>
 #include <xbt/sysdep.h>
 
+#include "simgrid/modelchecker.h"
+#include "simgrid/sg_config.h"
+#include "smx_private.hpp"
 #include "src/internal_config.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
-#include "smx_private.h"
-#include "simgrid/sg_config.h"
-#include "src/internal_config.h"
-#include "simgrid/modelchecker.h"
-
 
 #ifdef _WIN32
 #include <windows.h>
@@ -107,14 +105,13 @@ void SIMIX_context_mod_init()
 #endif
 
 #if defined(__APPLE__) || defined(__NetBSD__)
-  if (context_factory_name == std::string("thread") &&
-      strcmp(xbt_cfg_get_string("smpi/privatization"), "dlopen") == 0) {
+  if (context_factory_name == "thread" && xbt_cfg_get_string("smpi/privatization") == "dlopen") {
     XBT_WARN("dlopen+thread broken on Apple and BSD. Switching to raw contexts.");
     context_factory_name = "raw";
   }
 #endif
 #if defined(__FreeBSD__)
-  if (context_factory_name == std::string("thread") && strcmp(xbt_cfg_get_string("smpi/privatization"), "no") != 0) {
+  if (context_factory_name == "thread" && xbt_cfg_get_string("smpi/privatization") != "no") {
     XBT_WARN("mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts.");
     context_factory_name = "raw";
   }

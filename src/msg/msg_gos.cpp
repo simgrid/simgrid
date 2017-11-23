@@ -6,12 +6,12 @@
 #include <xbt/ex.hpp>
 
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/msg/msg_private.h"
-#include "src/simix/smx_private.h" /* MSG_task_listen looks inside the rdv directly. Not clean. */
+#include "src/msg/msg_private.hpp"
+#include "src/simix/smx_private.hpp" /* MSG_task_listen looks inside the rdv directly. Not clean. */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
@@ -259,7 +259,6 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
     THROW_UNIMPLEMENTED;
 
   TRACE_msg_task_get_start();
-  double start_time = MSG_get_clock();
 
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
@@ -270,7 +269,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   /* Try to receive it by calling SIMIX network layer */
   try {
     simcall_comm_recv(MSG_process_self()->getImpl(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
-    XBT_DEBUG("Got task %s from %s", (*task)->name, mailbox->getName());
+    XBT_DEBUG("Got task %s from %s", (*task)->name, mailbox->getCname());
     (*task)->simdata->setNotUsed();
   }
   catch (xbt_ex& e) {
@@ -291,7 +290,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   }
 
   if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
-    TRACE_msg_task_get_end(start_time, *task);
+    TRACE_msg_task_get_end(*task);
   }
   return ret;
 }
@@ -907,5 +906,4 @@ const char *MSG_task_get_category (msg_task_t task)
 {
   return task->category;
 }
-
-SG_END_DECL()
+}

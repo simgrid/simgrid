@@ -11,10 +11,9 @@
 #include "xbt/graph.h"
 #include "graph_private.h"
 #include "xbt/dict.h"
-#include "xbt/heap.h"
-#include "xbt/file.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_graph, xbt, "Graph");
@@ -226,11 +225,10 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p)
   for (k = 0; k < n; k++) {
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
-        if ((d[i*n+k] > -1) && (d[k*n+j] > -1)) {
-          if ((d[i*n+j] < 0) || (d[i*n+j] > d[i*n+k] + d[k*n+j])) {
-            d[i*n+j] = d[i*n+k] + d[k*n+j];
-            p[i*n+j] = p[k*n+j];
-          }
+        if (d[i * n + k] > -1 && d[k * n + j] > -1 &&
+            (d[i * n + j] < 0 || d[i * n + j] > d[i * n + k] + d[k * n + j])) {
+          d[i * n + j] = d[i * n + k] + d[k * n + j];
+          p[i * n + j] = p[k * n + j];
         }
       }
     }

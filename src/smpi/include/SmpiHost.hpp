@@ -6,7 +6,7 @@
 #ifndef SMPI_HOST_HPP_
 #define SMPI_HOST_HPP_
 
-#include "src/include/smpi/smpi_utils.hpp"
+#include "smpi_utils.hpp"
 
 #include "simgrid/s4u/Host.hpp"
 #include <string>
@@ -16,10 +16,6 @@
 
 namespace simgrid {
 namespace smpi {
-
-void sg_smpi_host_init();
-static void onHostDestruction(simgrid::s4u::Host& host);
-static void onCreation(simgrid::s4u::Host& host);
 
 class SmpiHost {
 

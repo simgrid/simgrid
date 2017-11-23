@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -28,18 +28,17 @@ namespace mc {
  */
 class XBT_PUBLIC() Client {
 private:
-  bool active_ = false;
   Channel channel_;
   static std::unique_ptr<Client> instance_;
 
 public:
   Client();
-  explicit Client(int fd) : active_(true), channel_(fd) {}
+  explicit Client(int fd) : channel_(fd) {}
   void handleMessages();
 
 private:
-  void handleDeadlockCheck(mc_message_t* msg);
-  void handleContinue(mc_message_t* msg);
+  void handleDeadlockCheck(s_mc_message_t* msg);
+  void handleContinue(s_mc_message_t* msg);
   void handleSimcall(s_mc_message_simcall_handle_t* message);
   void handleRestore(s_mc_message_restore_t* msg);
   void handleActorEnabled(s_mc_message_actor_enabled_t* msg);

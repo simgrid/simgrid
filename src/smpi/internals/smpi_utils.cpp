@@ -4,14 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi/smpi_utils.hpp"
-#include "xbt/sysdep.h"
+#include "smpi_utils.hpp"
 #include "xbt/log.h"
+#include "xbt/sysdep.h"
 #include <boost/tokenizer.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 
-std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
+std::vector<s_smpi_factor_t> parse_factor(std::string smpi_coef_string)
 {
   std::vector<s_smpi_factor_t> smpi_factor;
 
@@ -19,8 +19,7 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
   typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
   boost::char_separator<char> sep(";");
   boost::char_separator<char> factor_separator(":");
-  std::string tmp_string(smpi_coef_string);
-  Tokenizer tokens(tmp_string, sep);
+  Tokenizer tokens(smpi_coef_string, sep);
 
   /**
    * Iterate over patterns like A:B:C:D;E:F;G:H
@@ -34,7 +33,7 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
     Tokenizer factor_values(*token_iter, factor_separator);
     s_smpi_factor_t fact;
     if (factor_values.begin() == factor_values.end()) {
-      xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
+      xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string.c_str());
     }
     unsigned int iteration = 0;
     for (Tokenizer::iterator factor_iter = factor_values.begin(); factor_iter != factor_values.end(); ++factor_iter) {

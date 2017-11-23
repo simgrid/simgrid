@@ -12,6 +12,9 @@
 #if HAVE_UNISTD_H
 # include <unistd.h>   /* isatty */
 #endif
+#include <xbt/log.h>
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_automaton);
 
 static xbt_automaton_t parsed_automaton;
 char* state_id_src;
@@ -88,6 +91,9 @@ static xbt_automaton_exp_label_t new_label(int type, ...){
     break;
   case 4 :
     label = xbt_automaton_exp_label_new(type);
+    break;
+  default:
+    XBT_DEBUG("Invalid type: %d", type);
     break;
   }
   va_end(ap);

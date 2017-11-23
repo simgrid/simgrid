@@ -104,7 +104,7 @@ namespace surf {
 
 NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
-  const char* IB_factors_string = xbt_cfg_get_string("smpi/IB-penalty-factors");
+  std::string IB_factors_string = xbt_cfg_get_string("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
 
@@ -183,18 +183,18 @@ void NetworkIBModel::computeIBfactors(IBNode* root)
   XBT_DEBUG("Finished computing IB penalties");
 }
 
-void NetworkIBModel::updateIBfactors_rec(IBNode* root, bool* updatedlist)
+void NetworkIBModel::updateIBfactors_rec(IBNode* root, std::vector<bool>& updatedlist)
 {
-  if (updatedlist[root->id] == 0) {
+  if (not updatedlist[root->id]) {
     XBT_DEBUG("IB - Updating rec %d", root->id);
     computeIBfactors(root);
-    updatedlist[root->id] = 1;
+    updatedlist[root->id] = true;
     for (std::vector<ActiveComm*>::iterator it = root->ActiveCommsUp.begin(); it != root->ActiveCommsUp.end(); ++it) {
-      if (updatedlist[(*it)->destination->id] != 1)
+      if (not updatedlist[(*it)->destination->id])
         updateIBfactors_rec((*it)->destination, updatedlist);
     }
     for (std::map<IBNode*, int>::iterator it = root->ActiveCommsDown.begin(); it != root->ActiveCommsDown.end(); ++it) {
-      if (updatedlist[it->first->id] != 1)
+      if (not updatedlist[it->first->id])
         updateIBfactors_rec(it->first, updatedlist);
     }
   }
@@ -205,7 +205,6 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
   if (from == to) // disregard local comms (should use loopback)
     return;
 
-  bool* updated    = (bool*)xbt_malloc0(active_nodes.size() * sizeof(bool));
   ActiveComm* comm = nullptr;
   if (remove) {
     if (to->ActiveCommsDown[from] == 1)
@@ -233,11 +232,10 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
     to->nbActiveCommsDown++;
   }
   XBT_DEBUG("IB - Updating %d", from->id);
+  std::vector<bool> updated(active_nodes.size(), false);
   updateIBfactors_rec(from, updated);
   XBT_DEBUG("IB - Finished updating %d", from->id);
-  if (comm)
-    delete comm;
-  xbt_free(updated);
+  delete comm;
 }
 }
 }

@@ -7,7 +7,7 @@
 #include "simdag_private.hpp"
 #include "simgrid/simdag.h"
 #include "src/internal_config.h"
-#include "xbt/file.h"
+#include "xbt/file.hpp"
 #include <cstring>
 #include <unordered_map>
 
@@ -238,9 +238,8 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   }
 
   if (result && not acyclic_graph_detail(result)) {
-    char* base = xbt_basename(filename);
-    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", base);
-    free(base);
+    std::string base = simgrid::xbt::Path(filename).getBasename();
+    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", base.c_str());
     xbt_dynar_free(&result);
     result = nullptr;
   }

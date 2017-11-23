@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2015. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,9 +11,9 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-static void* hash(char *str, uint64_t* ans)
+static void* hash(const char *str, uint64_t* ans)
 {
-  char *tohash = str;
+  const char *tohash = str;
   *ans=5381;
   printf("hashing !\n");
   int c = *tohash;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
   MPI_Barrier(MPI_COMM_WORLD);
   //Try SMPI_SHARED_CALL function, which should call hash only once and for all.
-  char *str = strdup("onceandforall");
+  static const char str[] = "onceandforall";
   if(rank==size-1){
     SMPI_SHARED_CALL(hash,str,str,buf);
   }
@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
   printf("[%d] After change, the value in the shared buffer is: %" PRIu64"\n", rank, *buf);
 
   SMPI_SHARED_FREE(buf);
-  free(str);
 
   MPI_Finalize();
   return 0;

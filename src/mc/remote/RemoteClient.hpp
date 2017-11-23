@@ -26,8 +26,8 @@
 #include "src/mc/remote/Channel.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
-#include "src/simix/popping_private.h"
-#include "src/simix/smx_private.h"
+#include "src/simix/popping_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include <simgrid/simix.h>
 
 #include "src/xbt/memory_map.hpp"
@@ -122,10 +122,7 @@ public:
   }
 
   std::string read_string(RemotePtr<char> address) const;
-  std::string read_string(RemotePtr<char> address, std::size_t len) const
-  {
-    return AddressSpace::read_string(address, len);
-  }
+  using AddressSpace::read_string;
 
   // Write memory:
   void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);
@@ -226,7 +223,6 @@ private:
   void refresh_malloc_info();
   void refresh_simix();
 
-private:
   pid_t pid_ = -1;
   Channel channel_;
   bool running_ = false;
@@ -239,17 +235,18 @@ private:
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
 
-public: // object info
+public:
+  // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
   std::vector<std::shared_ptr<simgrid::mc::ObjectInformation>> object_infos;
   std::shared_ptr<simgrid::mc::ObjectInformation> libsimgrid_info;
   std::shared_ptr<simgrid::mc::ObjectInformation> binary_info;
 
-public: // Copies of MCed SMX data structures
-        /** Copy of `simix_global->process_list`
-         *
-         *  See mc_smx.c.
-         */
+  // Copies of MCed SMX data structures
+  /** Copy of `simix_global->process_list`
+   *
+   *  See mc_smx.c.
+   */
   std::vector<ActorInformation> smx_actors_infos;
 
   /** Copy of `simix_global->process_to_destroy`
@@ -282,13 +279,13 @@ public:
    */
   std::vector<malloc_info> heap_info;
 
-public: // Libunwind-data
-        /** Full-featured MC-aware libunwind address space for the process
-         *
-         *  This address space is using a simgrid::mc::UnwindContext*
-         *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
-         *  and unw_context_t).
-         */
+  // Libunwind-data
+  /** Full-featured MC-aware libunwind address space for the process
+   *
+   *  This address space is using a simgrid::mc::UnwindContext*
+   *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
+   *  and unw_context_t).
+   */
   unw_addr_space_t unw_addr_space;
 
   /** Underlying libunwind address-space

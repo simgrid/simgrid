@@ -14,9 +14,9 @@
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "xbt/log.h"
@@ -153,23 +153,23 @@ void Host::actorList(std::vector<ActorPtr>* whereto)
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
  */
-void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
+void Host::routeTo(Host* dest, std::vector<Link*>& links, double* latency)
 {
   std::vector<surf::LinkImpl*> linkImpls;
-  this->routeTo(dest, &linkImpls, latency);
+  this->routeTo(dest, linkImpls, latency);
   for (surf::LinkImpl* const& l : linkImpls)
-    links->push_back(&l->piface_);
+    links.push_back(&l->piface_);
 }
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
-void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* latency)
+void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>& links, double* latency)
 {
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", getCname(), dest->getCname(),
                (latency == nullptr ? -1 : *latency));
-    for (auto const& link : *links)
-      XBT_CDEBUG(surf_route, "Link %s", link->cname());
+    for (auto const& link : links)
+      XBT_CDEBUG(surf_route, "Link %s", link->getCname());
   }
 }
 

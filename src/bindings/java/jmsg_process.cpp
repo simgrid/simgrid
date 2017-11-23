@@ -9,14 +9,14 @@
 
 #include "jmsg_process.h"
 
-#include "jmsg.h"
-#include "jmsg_host.h"
-#include "jxbt_utilities.h"
 #include "JavaContext.hpp"
+#include "jmsg.hpp"
+#include "jmsg_host.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 jfieldID jprocess_field_Process_bind;
 jfieldID jprocess_field_Process_host;
@@ -89,6 +89,18 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   /* sets the PID and the PPID of the process */
   env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
   env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_daemonize(JNIEnv* env, jobject jprocess)
+{
+  msg_process_t process = jprocess_to_native(jprocess, env);
+
+  if (not process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  MSG_process_daemonize(process);
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv * env, jclass cls, jint jresetPID)
@@ -289,5 +301,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , j
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls) {
   return (jint) MSG_process_get_number();
 }
-
-SG_END_DECL()
+}

@@ -3,13 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
 #include "private.hpp"
 #include "simgrid/modelchecker.h"
 #include "smpi_comm.hpp"
 #include "smpi_process.hpp"
 #include "src/internal_config.h"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include <unordered_map>
 
 #ifndef WIN32
@@ -28,7 +27,6 @@ double smpi_host_speed;
 
 shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
 double smpi_total_benched_time = 0;
-smpi_privatization_region_t smpi_privatization_regions;
 
 extern "C" XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
 void smpi_execute_flops_(double *flops)
@@ -56,10 +54,7 @@ void smpi_execute(double duration)
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
     double flops = duration * smpi_host_speed;
     int rank = smpi_process()->index();
-    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-    extra->type=TRACING_COMPUTING;
-    extra->comp_size=flops;
-    TRACE_smpi_computing_in(rank, extra);
+    TRACE_smpi_computing_in(rank, flops);
 
     smpi_execute_flops(flops);
 
@@ -88,7 +83,7 @@ void smpi_bench_begin()
     return;
 
 #if HAVE_PAPI
-  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+  if (not xbt_cfg_get_string("smpi/papi-events").empty()) {
     int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
     if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized()) {
@@ -158,14 +153,13 @@ void smpi_bench_end()
 
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
-    char container_name[INSTR_DEFAULT_STR_SIZE];
-    smpi_container(smpi_process()->index(), container_name, INSTR_DEFAULT_STR_SIZE);
-    container_t container        = PJ_container_get(container_name);
+    container_t container =
+        new simgrid::instr::Container(std::string("rank-") + std::to_string(smpi_process()->index()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
-      new_pajeSetVariable(surf_get_clock(), container,
-                          PJ_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
+      new simgrid::instr::SetVariableEvent(
+          surf_get_clock(), container, PJ_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
     }
   }
 #endif
@@ -180,10 +174,7 @@ static unsigned int private_sleep(double secs)
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
   int rank = MPI_COMM_WORLD->rank();
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type=TRACING_SLEEPING;
-  extra->sleep_duration=secs;
-  TRACE_smpi_sleeping_in(rank, extra);
+  TRACE_smpi_sleeping_in(rank, secs);
 
   simcall_process_sleep(secs);
 
@@ -204,13 +195,13 @@ int smpi_usleep(useconds_t usecs)
 }
 
 #if _POSIX_TIMERS > 0
-int smpi_nanosleep(const struct timespec *tp, struct timespec * t)
+int smpi_nanosleep(const struct timespec* tp, struct timespec* /*t*/)
 {
   return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));
 }
 #endif
 
-int smpi_gettimeofday(struct timeval *tv, void* tz)
+int smpi_gettimeofday(struct timeval* tv, void* /*tz*/)
 {
   smpi_bench_end();
   double now = SIMIX_get_clock();
@@ -227,7 +218,7 @@ int smpi_gettimeofday(struct timeval *tv, void* tz)
 }
 
 #if _POSIX_TIMERS > 0
-int smpi_clock_gettime(clockid_t clk_id, struct timespec *tp)
+int smpi_clock_gettime(clockid_t /*clk_id*/, struct timespec* tp)
 {
   //there is only one time in SMPI, so clk_id is ignored.
   smpi_bench_end();

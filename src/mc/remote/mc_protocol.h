@@ -27,7 +27,7 @@ SG_BEGIN_DECL()
 
 // ***** Messages
 
-typedef enum {
+enum e_mc_message_type {
   MC_MESSAGE_NONE,
   MC_MESSAGE_CONTINUE,
   MC_MESSAGE_IGNORE_HEAP,
@@ -44,7 +44,7 @@ typedef enum {
   MC_MESSAGE_RESTORE,
   MC_MESSAGE_ACTOR_ENABLED,
   MC_MESSAGE_ACTOR_ENABLED_REPLY
-} e_mc_message_type;
+};
 
 #define MC_MESSAGE_LENGTH 512
 
@@ -59,69 +59,60 @@ typedef enum {
  */
 
 /* Basic structure: all message start with a message type */
-struct s_mc_message {
-  e_mc_message_type type;
+struct s_mc_message_t {
+  enum e_mc_message_type type;
 };
-typedef struct s_mc_message mc_message_t;
 
-struct s_mc_message_int {
-  e_mc_message_type type;
+struct s_mc_message_int_t {
+  enum e_mc_message_type type;
   uint64_t value;
 };
-typedef struct s_mc_message_int mc_message_int_t;
 
 /* Client->Server */
-struct s_mc_message_ignore_heap {
-  e_mc_message_type type;
+struct s_mc_message_ignore_heap_t {
+  enum e_mc_message_type type;
   int block;
   int fragment;
   void* address;
   size_t size;
 };
-typedef struct s_mc_message_ignore_heap s_mc_message_ignore_heap_t;
 
-struct s_mc_message_ignore_memory {
-  e_mc_message_type type;
+struct s_mc_message_ignore_memory_t {
+  enum e_mc_message_type type;
   uint64_t addr;
   size_t size;
 };
-typedef struct s_mc_message_ignore_memory s_mc_message_ignore_memory_t;
 
-struct s_mc_message_stack_region {
-  e_mc_message_type type;
+struct s_mc_message_stack_region_t {
+  enum e_mc_message_type type;
   s_stack_region_t stack_region;
 };
-typedef struct s_mc_message_stack_region s_mc_message_stack_region_t;
 
-struct s_mc_message_register_symbol {
-  e_mc_message_type type;
+struct s_mc_message_register_symbol_t {
+  enum e_mc_message_type type;
   char name[128];
   int (*callback)(void*);
   void* data;
 };
-typedef struct s_mc_message_register_symbol s_mc_message_register_symbol_t;
 
 /* Server -> client */
-struct s_mc_message_simcall_handle {
-  e_mc_message_type type;
+struct s_mc_message_simcall_handle_t {
+  enum e_mc_message_type type;
   unsigned long pid;
   int value;
 };
-typedef struct s_mc_message_simcall_handle s_mc_message_simcall_handle_t;
 
-struct s_mc_message_restore {
-  e_mc_message_type type;
+struct s_mc_message_restore_t {
+  enum e_mc_message_type type;
   int index;
 };
-typedef struct s_mc_message_restore s_mc_message_restore_t;
 
-struct s_mc_message_actor_enabled {
-  e_mc_message_type type;
+struct s_mc_message_actor_enabled_t {
+  enum e_mc_message_type type;
   aid_t aid; // actor ID
 };
-typedef struct s_mc_message_actor_enabled s_mc_message_actor_enabled_t;
 
-XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);
+XBT_PRIVATE const char* MC_message_type_name(enum e_mc_message_type type);
 
 SG_END_DECL()
 

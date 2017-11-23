@@ -95,6 +95,26 @@ if(enable_smpi AND APPLE)
   set(SIMGRID_DEP "${SIMGRID_DEP} -Wl,-U -Wl,_smpi_simulated_main")
 endif()
 
+# See https://github.com/HewlettPackard/foedus_code/blob/master/foedus-core/cmake/FindGccAtomic.cmake
+FIND_LIBRARY(GCCLIBATOMIC_LIBRARY NAMES atomic atomic.so.1 libatomic.so.1
+  HINTS
+    $ENV{HOME}/local/lib64
+    $ENV{HOME}/local/lib
+    /usr/local/lib64
+    /usr/local/lib
+    /opt/local/lib64
+    /opt/local/lib
+    /usr/lib64
+    /usr/lib
+    /lib64
+    /lib
+)
+
+# Fix a FTBFS on armel, mips, mipsel and friends (Debian's #872881)
+if(CMAKE_COMPILER_IS_GNUCC AND GCCLIBATOMIC_LIBRARY)
+    set(SIMGRID_DEP   "${SIMGRID_DEP}   -Wl,--as-needed -latomic -Wl,--no-as-needed")
+endif()
+
 target_link_libraries(simgrid 	${SIMGRID_DEP})
 
 # Dependencies from maintainer mode

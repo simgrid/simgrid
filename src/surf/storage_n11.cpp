@@ -20,8 +20,8 @@ static void check_disk_attachment()
   for (auto const& s : *simgrid::surf::StorageImpl::storagesMap()) {
     simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
     if (not host_elm)
-      surf_parse_error(std::string("Unable to attach storage ") + s.second->cname() + ": host " + s.second->getHost() +
-                       " does not exist.");
+      surf_parse_error(std::string("Unable to attach storage ") + s.second->getCname() + ": host " +
+                       s.second->getHost() + " does not exist.");
     else
       s.second->piface_.attached_to_ = sg_host_by_name(s.second->getHost().c_str());
   }
@@ -75,33 +75,24 @@ double StorageN11Model::nextOccuringEvent(double now)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  ActionList *actionSet = getRunningActionSet();
-  for (ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end()); it != itend; it = itNext) {
-    ++itNext;
-
-    StorageAction *action = static_cast<StorageAction*>(&*it);
-
-    double current_progress = lrint(lmm_variable_getvalue(action->getVariable()) * delta);
-
-    action->updateRemains(current_progress);
-    if (action->type_ == WRITE) {
-      action->storage_->usedSize_ += current_progress;
-      action->file_->incrPosition(current_progress);
-      action->file_->setSize(action->file_->tell());
-
-      action->storage_->getContent()->erase(action->file_->cname());
-      action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    StorageAction& action = static_cast<StorageAction&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
+    double current_progress = lrint(lmm_variable_getvalue(action.getVariable()) * delta);
+    action.updateRemains(current_progress);
+    if (action.type_ == WRITE) {
+      action.storage_->usedSize_ += current_progress;
     }
 
-    if (action->getMaxDuration() > NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    if (action.getMaxDuration() > NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    if (action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->storage_->usedSize_ == action->storage_->getSize()) {
-      action->finish(Action::State::failed);
-    } else if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-               ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish(Action::State::done);
+    if (action.getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action.getVariable()) > 0 &&
+        action.storage_->usedSize_ == action.storage_->getSize()) {
+      action.finish(Action::State::failed);
+    } else if (((action.getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action.getVariable()) > 0)) ||
+               ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     }
   }
 }
@@ -136,7 +127,7 @@ StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, Stora
                                    e_surf_action_storage_type_t type)
     : StorageAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0, 3), storage, type)
 {
-  XBT_IN("(%s,%g", storage->cname(), cost);
+  XBT_IN("(%s,%g", storage->getCname(), cost);
 
   // Must be less than the max bandwidth for all actions
   lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);

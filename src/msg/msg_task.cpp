@@ -1,12 +1,13 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.h"
-#include "src/simix/smx_private.h"
+#include "msg_private.hpp"
+#include "src/simix/smx_private.hpp"
+#include <algorithm>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @addtogroup m_task_management
  *
@@ -18,7 +19,7 @@ SG_BEGIN_DECL()
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
-void simdata_task::reportMultipleUse() const
+void s_simdata_task_t::reportMultipleUse() const
 {
   if (msg_global->debug_multiple_use){
     XBT_ERROR("This task is already used in there:");
@@ -49,7 +50,7 @@ void simdata_task::reportMultipleUse() const
  */
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
-  msg_task_t task = xbt_new(s_msg_task_t, 1);
+  msg_task_t task        = new s_msg_task_t;
   simdata_task_t simdata = new s_simdata_task_t();
   task->simdata = simdata;
 
@@ -90,12 +91,16 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 
   /* Simulator Data specific to parallel tasks */
   simdata->host_nb = host_nb;
-  simdata->host_list = xbt_new0(sg_host_t, host_nb);
-  simdata->flops_parallel_amount = flops_amount;
-  simdata->bytes_parallel_amount = bytes_amount;
-
-  for (int i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i];
+  simdata->host_list             = new sg_host_t[host_nb];
+  std::copy_n(host_list, host_nb, simdata->host_list);
+  if (flops_amount != nullptr) {
+    simdata->flops_parallel_amount = new double[host_nb];
+    std::copy_n(flops_amount, host_nb, simdata->flops_parallel_amount);
+  }
+  if (bytes_amount != nullptr) {
+    simdata->bytes_parallel_amount = new double[host_nb * host_nb];
+    std::copy_n(bytes_amount, host_nb * host_nb, simdata->bytes_parallel_amount);
+  }
 
   return task;
 }
@@ -198,7 +203,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 
   /* free main structures */
   delete task->simdata;
-  xbt_free(task);
+  delete task;
 
   return MSG_OK;
 }
@@ -223,17 +228,47 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Returns the remaining amount of flops needed to execute a task #msg_task_t.
+ * \brief Returns a value in ]0,1[ that represent the task remaining work
+ *    to do: starts at 1 and goes to 0. Returns 0 if not started or finished.
  *
- * Once a task has been processed, this amount is set to 0. If you want, you can reset this value with
- * #MSG_task_set_flops_amount before restarting the task.
+ * It works for either parallel or sequential tasks.
+ * TODO: Improve this function by returning 1 if the task has not started
  */
+double MSG_task_get_remaining_work_ratio(msg_task_t task) {
+
+  xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
+  if (task->simdata->compute) {
+    // Task in progress
+    return task->simdata->compute->remains();
+
+  //} else if ((MSG_task_get_flops_amount(task) == 0 and task->simdata->flops_parallel_amount == nullptr) //this is a sequential task
+  //    or (task->simdata->flops_parallel_amount != nullptr and task->simdata->flops_parallel_amount == 0)) {
+  //  // Task finished
+  //  return 1;
+  } else {
+    // Task not started or finished
+    return 0;
+  }
+}
+
 double MSG_task_get_flops_amount(msg_task_t task) {
   if (task->simdata->compute) {
     return task->simdata->compute->remains();
   } else {
     return task->simdata->flops_amount;
   }
+}
+
+/** \ingroup m_task_management
+ * \brief Returns the initial amount of flops needed to execute a task #msg_task_t.
+ *
+ * Once a task has been processed, this amount is set to 0. If you want, you can reset this value with
+ * #MSG_task_set_flops_amount before restarting the task.
+ *
+ * Warning: Only work for simple task, not parallel task.
+ */
+double MSG_task_get_initial_flops_amount(msg_task_t task) {
+  return task->simdata->flops_amount;
 }
 
 /** \ingroup m_task_management
@@ -304,5 +339,4 @@ void MSG_task_set_bound(msg_task_t task, double bound)
   if (task->simdata->compute)
     simcall_execution_set_bound(task->simdata->compute, task->simdata->bound);
 }
-
-SG_END_DECL()
+}

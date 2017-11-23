@@ -42,7 +42,7 @@ public:
 };
 
 /* Types of tasks exchanged between nodes. */
-typedef enum {
+enum e_message_type_t {
   FIND_SUCCESSOR,
   FIND_SUCCESSOR_ANSWER,
   GET_PREDECESSOR,
@@ -52,7 +52,7 @@ typedef enum {
   PREDECESSOR_LEAVING,
   PREDECESSOR_ALIVE,
   PREDECESSOR_ALIVE_ANSWER
-} e_message_type_t;
+};
 
 class ChordMessage {
 public:

@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../surf/StorageImpl.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
+#include "src/surf/StorageImpl.hpp"
 #include <unordered_map>
 
 namespace simgrid {
@@ -30,9 +30,14 @@ Storage* Storage::byName(std::string name)
   return &res->piface_;
 }
 
-const char* Storage::getName()
+const std::string& Storage::getName() const
 {
-  return pimpl_->cname();
+  return pimpl_->getName();
+}
+
+const char* Storage::getCname() const
+{
+  return pimpl_->getCname();
 }
 
 const char* Storage::getType()
@@ -55,6 +60,11 @@ sg_size_t Storage::getSizeUsed()
   return simgrid::simix::kernelImmediate([this] { return pimpl_->getUsedSize(); });
 }
 
+void Storage::decrUsedSize(sg_size_t size)
+{
+  simgrid::simix::kernelImmediate([this, size] { pimpl_->usedSize_ -= size; });
+}
+
 sg_size_t Storage::getSize()
 {
   return pimpl_->getSize();
@@ -65,12 +75,12 @@ std::map<std::string, std::string>* Storage::getProperties()
   return simgrid::simix::kernelImmediate([this] { return pimpl_->getProperties(); });
 }
 
-const char* Storage::getProperty(const char* key)
+const char* Storage::getProperty(std::string key)
 {
   return this->pimpl_->getProperty(key);
 }
 
-void Storage::setProperty(const char* key, const char* value)
+void Storage::setProperty(std::string key, std::string value)
 {
   simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
@@ -78,6 +88,16 @@ void Storage::setProperty(const char* key, const char* value)
 std::map<std::string, sg_size_t>* Storage::getContent()
 {
   return simgrid::simix::kernelImmediate([this] { return pimpl_->getContent(); });
+}
+
+sg_size_t Storage::read(sg_size_t size)
+{
+  return simcall_storage_read(pimpl_, size);
+}
+
+sg_size_t Storage::write(sg_size_t size)
+{
+  return simcall_storage_write(pimpl_, size);
 }
 
 /*************

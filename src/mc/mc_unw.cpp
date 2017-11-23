@@ -23,7 +23,7 @@ typedef register_t greg_t;
 #include <libunwind.h>
 
 #include "src/mc/Frame.hpp"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 
 using simgrid::mc::remote;

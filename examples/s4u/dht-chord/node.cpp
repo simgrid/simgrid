@@ -235,7 +235,7 @@ void Node::checkPredecessor()
   }
   // receive the answer
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
-            message->answer_to->getName());
+            message->answer_to->getCname());
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
@@ -280,7 +280,7 @@ int Node::remoteGetPredecessor(int ask_to)
 
   // receive the answer
   XBT_DEBUG("Sent 'Get Predecessor' request to %d, waiting for the answer on my mailbox '%s'", ask_to,
-            message->answer_to->getName());
+            message->answer_to->getCname());
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
@@ -432,7 +432,7 @@ void Node::handleMessage(ChordMessage* message)
       message->type = FIND_SUCCESSOR_ANSWER;
       message->answer_id = fingers_[0];
       XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
-                message->issuer_host_name.c_str(), message->answer_to->getName(), message->request_id,
+                message->issuer_host_name.c_str(), message->answer_to->getCname(), message->request_id,
                 message->answer_id);
       message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     } else {
@@ -450,7 +450,7 @@ void Node::handleMessage(ChordMessage* message)
     message->type = GET_PREDECESSOR_ANSWER;
     message->answer_id = pred_id_;
     XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
-              message->issuer_host_name.c_str(), message->answer_to->getName(), message->answer_id);
+              message->issuer_host_name.c_str(), message->answer_to->getCname(), message->answer_id);
     message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     break;
 
@@ -488,7 +488,7 @@ void Node::handleMessage(ChordMessage* message)
     XBT_DEBUG("Receiving a 'Predecessor Alive' request from %s", message->issuer_host_name.c_str());
     message->type = PREDECESSOR_ALIVE_ANSWER;
     XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)", message->issuer_host_name.c_str(),
-              message->answer_to->getName());
+              message->answer_to->getCname());
     message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     break;
 

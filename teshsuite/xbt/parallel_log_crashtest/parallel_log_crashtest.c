@@ -1,6 +1,6 @@
 /* synchro_crashtest -- tries to crash the logging mechanism by doing parallel logs*/
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,8 +11,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
 
-int test_amount = 99;           /* Up to 999 to not break the logs (and thus the testing mechanism) */
-int crasher_amount = 99;        /* Up to 99  to not break the logs (and thus the testing mechanism) */
+const int test_amount    = 99;  /* Up to 99 to not break the logs (and thus the testing mechanism) */
+const int crasher_amount = 99;  /* Up to 99 to not break the logs (and thus the testing mechanism) */
 int *id;                        /* to pass a pointer to the threads without race condition */
 
 int more_info = 0;              /* SET IT TO TRUE TO GET MORE INFO */
@@ -43,9 +43,9 @@ static int crasher()
 
   /* spawn threads */
   for (int i = 0; i < crasher_amount; i++) {
-    char *name = bprintf("thread %d", i);
+    char name[16];
+    snprintf(name, sizeof name, "thread %d", i);
     crashers[i] = xbt_os_thread_create(name, &crasher_thread, &id[i], NULL );
-    free(name);
   }
 
   /* wait for them */

@@ -5,18 +5,16 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-
-#include "surf/surf.h"
-
-#include "src/instr/instr_private.h"
-
-#include <unordered_map>
+#include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
+extern FILE* tracing_file;
+extern std::map<container_t, FILE*> tracing_files; // TI specific
+double prefix = 0.0;                               // TI specific
+
 static container_t rootContainer = nullptr;    /* the root container */
-static std::unordered_map<std::string, simgrid::instr::Container*>
-    allContainers;                              /* all created containers indexed by name */
+static std::map<std::string, container_t> allContainers; /* all created containers indexed by name */
 std::set<std::string> trivaNodeTypes;           /* all host types defined */
 std::set<std::string> trivaEdgeTypes;           /* all link types defined */
 
@@ -26,197 +24,208 @@ long long int instr_new_paje_id ()
   return type_id++;
 }
 
-void PJ_container_set_root (container_t root)
+namespace simgrid {
+namespace instr {
+
+container_t Container::getRoot()
 {
-  rootContainer = root;
+  return rootContainer;
 }
 
-simgrid::instr::Container::Container(const char* name, simgrid::instr::e_container_types kind, Container* father)
-    : name_(xbt_strdup(name)), father_(father)
+NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father)
+    : Container::Container(name, "", father)
 {
-  xbt_assert(name != nullptr, "Container name cannot be nullptr");
+  netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+  xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+  if (father_) {
+    type_ = father_->type_->getOrCreateContainerType(std::string("L") + std::to_string(level));
+    father_->children_.insert({getName(), this});
+    logCreation();
+  } else {
+    type_         = new ContainerType("0");
+    rootContainer = this;
+  }
+}
 
+RouterContainer::RouterContainer(std::string name, Container* father) : Container::Container(name, "ROUTER", father)
+{
+  xbt_assert(father, "Only the Root container has no father");
+
+  netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+  xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
+
+  trivaNodeTypes.insert(type_->getName());
+}
+
+HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
+    : Container::Container(host.getCname(), "HOST", father)
+{
+  xbt_assert(father, "Only the Root container has no father");
+
+  netpoint_ = host.pimpl_netpoint;
+  xbt_assert(netpoint_, "Element '%s' not found", host.getCname());
+
+  trivaNodeTypes.insert(type_->getName());
+}
+
+Container::Container(std::string name, std::string type_name, Container* father) : name_(name), father_(father)
+{
   static long long int container_id = 0;
-  id_                               = bprintf("%lld", container_id); // id (or alias) of the container
+  id_                               = container_id; // id (or alias) of the container
   container_id++;
 
-  //Search for network_element_t
-  switch (kind){
-    case simgrid::instr::INSTR_HOST:
-      this->netpoint_ = sg_host_by_name(name)->pimpl_netpoint;
-      xbt_assert(this->netpoint_, "Element '%s' not found", name);
-      break;
-    case simgrid::instr::INSTR_ROUTER:
-      this->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(this->netpoint_, "Element '%s' not found", name);
-      break;
-    case simgrid::instr::INSTR_AS:
-      this->netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
-      xbt_assert(this->netpoint_, "Element '%s' not found", name);
-      break;
-    default:
-      this->netpoint_ = nullptr;
-      break;
-  }
-
   if (father_) {
-    this->level_ = father_->level_ + 1;
-    XBT_DEBUG("new container %s, child of %s", name, father->name_);
-  }
+    XBT_DEBUG("new container %s, child of %s", name.c_str(), father->name_.c_str());
 
-  // type definition (method depends on kind of this new container)
-  this->kind_ = kind;
-  if (this->kind_ == simgrid::instr::INSTR_AS) {
-    //if this container is of an AS, its type name depends on its level
-    char as_typename[INSTR_DEFAULT_STR_SIZE];
-    snprintf(as_typename, INSTR_DEFAULT_STR_SIZE, "L%d", this->level_);
-    if (this->father_) {
-      this->type_ = this->father_->type_->getChildOrNull(as_typename);
-      if (this->type_ == nullptr) {
-        this->type_ = simgrid::instr::Type::containerNew(as_typename, this->father_->type_);
-      }
-    }else{
-      this->type_ = simgrid::instr::Type::containerNew("0", nullptr);
+    if (not type_name.empty()) {
+      type_ = father_->type_->getOrCreateContainerType(type_name);
+      father_->children_.insert({name_, this});
+      logCreation();
     }
-  }else{
-    //otherwise, the name is its kind
-    char typeNameBuff[INSTR_DEFAULT_STR_SIZE];
-    switch (this->kind_) {
-      case simgrid::instr::INSTR_HOST:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "HOST");
-        break;
-      case simgrid::instr::INSTR_LINK:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "LINK");
-        break;
-      case simgrid::instr::INSTR_ROUTER:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "ROUTER");
-        break;
-      case simgrid::instr::INSTR_SMPI:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MPI");
-        break;
-      case simgrid::instr::INSTR_MSG_PROCESS:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_PROCESS");
-        break;
-      case simgrid::instr::INSTR_MSG_VM:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_VM");
-        break;
-      case simgrid::instr::INSTR_MSG_TASK:
-        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_TASK");
-        break;
-      default:
-        THROWF (tracing_error, 0, "new container kind is unknown.");
-        break;
-    }
-    simgrid::instr::Type* type = this->father_->type_->getChildOrNull(typeNameBuff);
-    if (type == nullptr){
-      this->type_ = simgrid::instr::Type::containerNew(typeNameBuff, this->father_->type_);
-    }else{
-      this->type_ = type;
-    }
-  }
-  this->children_ = xbt_dict_new_homogeneous(nullptr);
-  if (this->father_) {
-    xbt_dict_set(this->father_->children_, this->name_, this, nullptr);
-    LogContainerCreation(this);
   }
 
   //register all kinds by name
-  if (not allContainers.emplace(this->name_, this).second) {
-    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", this->name_);
-  }
+  if (not allContainers.emplace(name_, this).second)
+    THROWF(tracing_error, 1, "container %s already present in allContainers data structure", name_.c_str());
 
-  XBT_DEBUG("Add container name '%s'", this->name_);
+  XBT_DEBUG("Add container name '%s'", name_.c_str());
 
   //register NODE types for triva configuration
-  if (this->kind_ == simgrid::instr::INSTR_HOST || this->kind_ == simgrid::instr::INSTR_LINK ||
-      this->kind_ == simgrid::instr::INSTR_ROUTER) {
-    trivaNodeTypes.insert(this->type_->name_);
-  }
+  if (type_name == "LINK")
+    trivaNodeTypes.insert(type_->getName());
 }
-simgrid::instr::Container::~Container()
+
+Container::~Container()
 {
-  XBT_DEBUG("destroy container %s", name_);
+  XBT_DEBUG("destroy container %s", name_.c_str());
+  // Begin with destroying my own children
+  for (auto child : children_)
+    delete child.second;
 
-  // obligation to dump previous events because they might
-  // reference the container that is about to be destroyed
-  TRACE_last_timestamp_to_dump = surf_get_clock();
-  TRACE_paje_dump_buffer(1);
+  // obligation to dump previous events because they might reference the container that is about to be destroyed
+  TRACE_last_timestamp_to_dump = SIMIX_get_clock();
+  TRACE_paje_dump_buffer(true);
 
-  // trace my destruction
-  if (not TRACE_disable_destroy() && this != PJ_container_get_root()) {
-    // do not trace the container destruction if user requests
-    // or if the container is root
-    LogContainerDestruction(this);
-  }
+  // trace my destruction, but not if user requests so or if the container is root
+  if (not TRACE_disable_destroy() && this != Container::getRoot())
+    logDestruction();
 
-  // remove it from allContainers data structure
+  // remove me from the allContainers data structure
   allContainers.erase(name_);
-
-  // free
-  xbt_free(name_);
-  xbt_free(id_);
-  xbt_dict_free(&children_);
 }
 
-simgrid::instr::Container* PJ_container_get(const char* name)
-{
-  container_t ret = PJ_container_get_or_null (name);
-  if (ret == nullptr){
-    THROWF(tracing_error, 1, "container with name %s not found", name);
-  }
-  return ret;
-}
-
-simgrid::instr::Container* PJ_container_get_or_null(const char* name)
+Container* Container::byNameOrNull(std::string name)
 {
   auto cont = allContainers.find(name);
   return cont == allContainers.end() ? nullptr : cont->second;
 }
 
-simgrid::instr::Container* PJ_container_get_root()
+Container* Container::byName(std::string name)
 {
-  return rootContainer;
+  Container* ret = Container::byNameOrNull(name);
+  if (ret == nullptr)
+    THROWF(tracing_error, 1, "container with name %s not found", name.c_str());
+
+  return ret;
 }
 
-void PJ_container_remove_from_parent (container_t child)
+void Container::removeFromParent()
 {
-  if (child == nullptr){
-    THROWF (tracing_error, 0, "can't remove from parent with a nullptr child");
-  }
-
-  container_t parent = child->father_;
-  if (parent){
-    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", child->name_, parent->name_);
-    xbt_dict_remove(parent->children_, child->name_);
+  if (father_) {
+    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", getCname(), father_->getCname());
+    father_->children_.erase(name_);
   }
 }
 
-static void recursiveDestroyContainer (container_t container)
+void Container::logCreation()
 {
-  if (container == nullptr){
-    THROWF (tracing_error, 0, "trying to recursively destroy a nullptr container");
+  double timestamp = SIMIX_get_clock();
+  std::stringstream stream;
+
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, PAJE_CreateContainer, timestamp);
+
+  if (instr_fmt_type == instr_fmt_paje) {
+    stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
+    /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
+    if (timestamp < 1e-12)
+      stream << 0;
+    else
+      stream << timestamp;
+    stream << " " << id_ << " " << type_->getId() << " " << father_->id_ << " \"" << name_ << "\"";
+    XBT_DEBUG("Dump %s", stream.str().c_str());
+    fprintf(tracing_file, "%s\n", stream.str().c_str());
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    // if we are in the mode with only one file
+    static FILE* ti_unique_file = nullptr;
+
+    if (tracing_files.empty()) {
+      // generate unique run id with time
+      prefix = xbt_os_time();
+    }
+
+    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
+      std::string folder_name = TRACE_get_filename() + "_files";
+      std::string filename    = folder_name + "/" + std::to_string(prefix) + "_" + name_ + ".txt";
+#ifdef WIN32
+      _mkdir(folder_name.c_str());
+#else
+      mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
+      ti_unique_file = fopen(filename.c_str(), "w");
+      xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename.c_str(), strerror(errno));
+      fprintf(tracing_file, "%s\n", filename.c_str());
+    }
+    tracing_files.insert({this, ti_unique_file});
+  } else {
+    THROW_IMPOSSIBLE;
   }
-  XBT_DEBUG("recursiveDestroyContainer %s", container->name_);
-  xbt_dict_cursor_t cursor = nullptr;
-  container_t child;
-  char *child_name;
-  xbt_dict_foreach (container->children_, cursor, child_name, child) {
-    recursiveDestroyContainer (child);
-  }
-  delete container;
 }
 
-void PJ_container_free_all ()
+void Container::logDestruction()
 {
-  container_t root = PJ_container_get_root();
-  if (root == nullptr){
-    THROWF (tracing_error, 0, "trying to free all containers, but root is nullptr");
-  }
-  recursiveDestroyContainer (root);
-  rootContainer = nullptr;
+  std::stringstream stream;
+  double timestamp = SIMIX_get_clock();
 
-  //checks
-  if (not allContainers.empty()) {
-    THROWF(tracing_error, 0, "some containers still present even after destroying all of them");
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, PAJE_DestroyContainer, timestamp);
+
+  if (instr_fmt_type == instr_fmt_paje) {
+    stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";
+    /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
+    if (timestamp < 1e-12)
+      stream << 0 << " " << type_->getId() << " " << id_;
+    else
+      stream << timestamp << " " << type_->getId() << " " << id_;
+    XBT_DEBUG("Dump %s", stream.str().c_str());
+    fprintf(tracing_file, "%s\n", stream.str().c_str());
+  } else if (instr_fmt_type == instr_fmt_TI) {
+    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
+      fclose(tracing_files.at(this));
+    }
+    tracing_files.erase(this);
+  } else {
+    THROW_IMPOSSIBLE;
   }
+}
+
+StateType* Container::getState(std::string name)
+{
+  StateType* ret = dynamic_cast<StateType*>(type_->byName(name));
+  ret->setCallingContainer(this);
+  return ret;
+}
+
+LinkType* Container::getLink(std::string name)
+{
+  LinkType* ret = dynamic_cast<LinkType*>(type_->byName(name));
+  ret->setCallingContainer(this);
+  return ret;
+}
+
+VariableType* Container::getVariable(std::string name)
+{
+  VariableType* ret = dynamic_cast<VariableType*>(type_->byName(name));
+  ret->setCallingContainer(this);
+  return ret;
+}
+}
 }

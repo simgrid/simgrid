@@ -9,30 +9,28 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/surf/FileImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 
+#include "smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "smx_private.h"
 
 #include "src/kernel/activity/SynchroIo.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
-//SIMIX FILE READ
-void simcall_HANDLER_file_read(smx_simcall_t simcall, surf_file_t fd, sg_size_t size)
+void simcall_HANDLER_storage_read(smx_simcall_t simcall, surf_storage_t st, sg_size_t size)
 {
-  smx_activity_t synchro = SIMIX_file_read(fd, size);
+  smx_activity_t synchro = SIMIX_storage_read(st, size);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size)
+smx_activity_t SIMIX_storage_read(surf_storage_t st, sg_size_t size)
 {
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_io                           = file->read(size);
+  synchro->surf_io                           = st->read(size);
 
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
@@ -40,18 +38,17 @@ smx_activity_t SIMIX_file_read(surf_file_t file, sg_size_t size)
   return synchro;
 }
 
-//SIMIX FILE WRITE
-void simcall_HANDLER_file_write(smx_simcall_t simcall, surf_file_t fd, sg_size_t size)
+void simcall_HANDLER_storage_write(smx_simcall_t simcall, surf_storage_t st, sg_size_t size)
 {
-  smx_activity_t synchro = SIMIX_file_write(fd, size);
+  smx_activity_t synchro = SIMIX_storage_write(st, size);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_activity_t SIMIX_file_write(surf_file_t file, sg_size_t size)
+smx_activity_t SIMIX_storage_write(surf_storage_t st, sg_size_t size)
 {
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_io                           = file->write(size);
+  synchro->surf_io                           = st->write(size);
   synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 

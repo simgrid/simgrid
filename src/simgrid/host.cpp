@@ -12,7 +12,7 @@
 #include "xbt/dict.h"
 
 #include "src/kernel/routing/NetPoint.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -126,7 +126,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
   for (auto const& elm : host->getMountedStorages()) {
     const char* mount_name = elm.first.c_str();
     sg_storage_t storage   = elm.second;
-    xbt_dict_set(res, mount_name, (void*)storage->getName(), nullptr);
+    xbt_dict_set(res, mount_name, (void*)storage->getCname(), nullptr);
   }
 
   return res;
@@ -217,7 +217,7 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
 void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, &vlinks, nullptr);
+  from->routeTo(to, vlinks, nullptr);
   for (auto const& link : vlinks)
     xbt_dynar_push(links, &link);
 }
@@ -231,7 +231,7 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   double res = 0;
-  from->routeTo(to, &vlinks, &res);
+  from->routeTo(to, vlinks, &res);
   return res;
 }
 /**
@@ -245,7 +245,7 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
   double min_bandwidth = -1.0;
 
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, &vlinks, nullptr);
+  from->routeTo(to, vlinks, nullptr);
   for (auto const& link : vlinks) {
     double bandwidth = link->bandwidth();
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)

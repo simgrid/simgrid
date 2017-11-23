@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,22 +8,11 @@
 
 #include "src/kernel/routing/RoutedZone.hpp"
 
-typedef struct graph_node_data {
+struct s_graph_node_data_t {
   int id;
   int graph_id; /* used for caching internal graph id's */
-} s_graph_node_data_t;
+};
 typedef s_graph_node_data_t* graph_node_data_t;
-
-typedef struct graph_node_map_element {
-  xbt_node_t node;
-} s_graph_node_map_element_t;
-typedef s_graph_node_map_element_t* graph_node_map_element_t;
-
-typedef struct route_cache_element {
-  int* pred_arr;
-  int size;
-} s_route_cache_element_t;
-typedef s_route_cache_element_t* route_cache_element_t;
 
 namespace simgrid {
 namespace kernel {
@@ -48,7 +37,7 @@ public:
 
   ~DijkstraZone() override;
   xbt_node_t routeGraphNewNode(int id, int graph_id);
-  graph_node_map_element_t nodeMapSearch(int id);
+  xbt_node_t nodeMapSearch(int id);
   void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
   /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback
@@ -65,8 +54,9 @@ public:
   void addRoute(sg_platf_route_cbarg_t route) override;
 
   xbt_graph_t routeGraph_  = nullptr; /* xbt_graph */
-  xbt_dict_t graphNodeMap_ = nullptr; /* map */
-  xbt_dict_t routeCache_   = nullptr; /* use in cache mode */
+  std::map<int, xbt_node_t> graphNodeMap_;     /* map */
+  bool cached_;                                /* cache mode */
+  std::map<int, std::vector<int>> routeCache_; /* use in cache mode */
 };
 }
 }

@@ -40,7 +40,7 @@ if(COMPILER_SUPPORTS_CXX11)
 else() 
   message(FATAL_ERROR 
           "The compiler ${CMAKE_CXX_COMPILER} (v${CMAKE_CXX_COMPILER_VERSION}) has no C++11 support. "
-           "Please use a decent C++ compiler.")
+          "Please install a decent C++ compiler (remove CMakeCache.txt once it's installed).")
 endif()
 
 ### And we need C11 standard, too
@@ -105,7 +105,7 @@ endif()
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "17")
+set(SIMGRID_VERSION_MINOR "18")
 set(SIMGRID_VERSION_PATCH "0")
 set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
 
@@ -242,6 +242,7 @@ endif()
 if(WIN32)
   set(Boost_USE_STATIC_LIBS 1)
 endif()
+
 set(HAVE_PAPI 0)
 if(enable_smpi_papi)
   include(FindPAPI)

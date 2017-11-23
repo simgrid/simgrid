@@ -8,7 +8,7 @@
 
 #include <xbt/signal.hpp>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Module management functions */
 XBT_PUBLIC(void) sg_platf_init();;
@@ -17,7 +17,7 @@ XBT_PUBLIC(void) sg_platf_exit();
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close();
 XBT_PUBLIC(void) surf_parse_assert(bool cond, std::string msg);
-XBT_PUBLIC(void) XBT_ATTRIB_NORETURN surf_parse_error(std::string msg);
+XBT_ATTRIB_NORETURN XBT_PUBLIC(void) surf_parse_error(std::string msg);
 XBT_PUBLIC(void) surf_parse_assert_netpoint(std::string hostname, std::string pre, std::string post);
 XBT_PUBLIC(void) surf_parse_warn(std::string msg);
 
@@ -29,7 +29,6 @@ XBT_PUBLIC(double) surf_parse_get_bandwidth(const char* string, const char* enti
 XBT_PUBLIC(double) surf_parse_get_speed(const char* string, const char* entity_kind, std::string name);
 
 XBT_PUBLIC(int) surf_parse(); /* Entry-point to the parser */
-
-SG_END_DECL()
+}
 
 #endif

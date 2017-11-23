@@ -325,6 +325,9 @@ public class Peer extends Process {
           }
         }
       break;
+      default:
+        Msg.error("Unexpected message type: " + message.type);
+        break;
     }
     if (remotePeer != null) {
       remotePeer.addSpeedValue(1 / (Msg.getClock() - beginReceiveTime));

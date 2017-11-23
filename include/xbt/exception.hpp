@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2016. The SimGrid Team.All rights reserved. */
+/* Copyright (c) 2005-2017. The SimGrid Team.All rights reserved. */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -99,8 +99,7 @@ class WithContext : public E, public WithContextException
 public:
   static_assert(not std::is_base_of<WithContextException, E>::value, "Trying to appli WithContext twice");
 
-  WithContext(E exception) :
-    E(std::move(exception)) {}
+  explicit WithContext(E exception) : E(std::move(exception)) {}
   WithContext(E exception, ThrowPoint throwpoint, Backtrace backtrace) :
     E(std::move(exception)),
     WithContextException(throwpoint, std::move(backtrace)) {}

@@ -5,7 +5,7 @@
 
 #include "SmpiHost.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
-#include "smpi/smpi_utils.hpp"
+#include "smpi_utils.hpp"
 
 #include <string>
 #include <vector>
@@ -114,23 +114,5 @@ SmpiHost::SmpiHost(simgrid::s4u::Host *ptr) : host(ptr)
 }
 
 SmpiHost::~SmpiHost()=default;
-
-static void onCreation(simgrid::s4u::Host& host)
-{
-}
-
-static void onHostDestruction(simgrid::s4u::Host& host)
-{
-  // Ignore virtual machines
-  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host))
-    return;
-}
-
-void sg_smpi_host_init()
-{
-  simgrid::s4u::Host::onCreation.connect(&onCreation);
-  simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
-}
-
 }
 }

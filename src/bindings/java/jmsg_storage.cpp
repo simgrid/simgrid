@@ -7,13 +7,15 @@
 
 #include "simgrid/msg.h"
 
-#include "jmsg.h"
+#include "include/xbt/signal.hpp"
+#include "jmsg.hpp"
 #include "jmsg_storage.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
+#include "simgrid/s4u/Storage.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jmethodID jstorage_method_Storage_constructor;
 static jfieldID jstorage_field_Storage_bind;
@@ -164,9 +166,8 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
   const char *value_java = env->GetStringUTFChars((jstring) jvalue, 0);
-  char *value = xbt_strdup(value_java);
 
-  MSG_storage_set_property_value(storage, name, value);
+  storage->setProperty(name, std::string(value_java));
 
   env->ReleaseStringUTFChars((jstring) jvalue, value_java);
   env->ReleaseStringUTFChars((jstring) jname, name);
@@ -227,5 +228,4 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   xbt_dynar_free(&table);
   return jtable;
 }
-
-SG_END_DECL()
+}

@@ -7,20 +7,20 @@
 #define SURF_TMGR_H
 
 #include "simgrid/forward.h"
-#include "xbt/heap.h"
 #include "xbt/sysdep.h"
+#include <queue>
 #include <vector>
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Iterator within a trace */
-typedef struct tmgr_trace_event {
+struct s_tmgr_trace_event_t {
   tmgr_trace_t trace;
   unsigned int idx;
   sg_resource_t resource;
-  int free_me;
-} s_tmgr_trace_event_t;
-typedef struct tmgr_trace_event* tmgr_trace_event_t;
+  bool free_me;
+};
+typedef s_tmgr_trace_event_t* tmgr_trace_event_t;
 
 /**
  * \brief Free a trace event structure
@@ -35,10 +35,8 @@ XBT_PUBLIC(void) tmgr_finalize();
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(std::string filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(std::string id, std::string input, double periodicity);
+}
 
-SG_END_DECL()
-
-#ifdef __cplusplus
 namespace simgrid {
 /** @brief Modeling of the availability profile (due to an external load) or the churn
  *
@@ -93,11 +91,10 @@ public:
   tmgr_trace_event_t add_trace(tmgr_trace_t trace, simgrid::surf::Resource * resource);
 
 private:
-  // TODO: use a boost type for the heap (or a ladder queue)
-  xbt_heap_t heap_ = xbt_heap_new(8, xbt_free_f); /* Content: only trace_events (yep, 8 is an arbitrary value) */
+  typedef std::pair<double, tmgr_trace_event_t> Qelt;
+  std::priority_queue<Qelt, std::vector<Qelt>, std::greater<Qelt>> heap_;
 };
 
 }} // namespace simgrid::trace_mgr
-#endif /* C++ only */
 
 #endif /* SURF_TMGR_H */

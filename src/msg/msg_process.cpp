@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.h"
+#include "msg_private.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @addtogroup m_process_management
  *
@@ -40,7 +40,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
     simcall_process_set_data(smx_actor, nullptr);
   }
 
-  TRACE_msg_process_destroy(smx_actor->name.c_str(), smx_actor->pid);
+  TRACE_msg_process_destroy(smx_actor->name, smx_actor->pid);
   // free the data if a function was provided
   if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_actor->data);
@@ -52,7 +52,8 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                          std::map<std::string, std::string>* properties, smx_actor_t parent_process)
+                                          std::map<std::string, std::string>* properties,
+                                          smx_actor_t /*parent_process*/)
 {
   msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
   return p == nullptr ? nullptr : p->getImpl();
@@ -138,8 +139,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   xbt_free(argv);
   return res;
 }
-
-SG_END_DECL()
+}
 
 msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
                                               std::map<std::string, std::string>* properties)
@@ -158,7 +158,7 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
   return process->ciface();
 }
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Become a process in the simulation
  *
@@ -507,7 +507,7 @@ XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
  */
 XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
 {
-  simgrid::simix::kernelImmediate([process]() { process->getImpl()->daemonize(); });
+  process->daemonize();
 }
 
 /** @ingroup m_process_management
@@ -524,5 +524,4 @@ XBT_PUBLIC(void) MSG_process_unref(msg_process_t process)
 {
   intrusive_ptr_release(process);
 }
-
-SG_END_DECL()
+}

@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "xbt/replay.hpp"
 
 #include <cerrno>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg, "MSG actions for trace driven simulation");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 void MSG_action_init()
 {
@@ -52,5 +52,4 @@ msg_error_t MSG_action_trace_run(char *path)
 
   return res;
 }
-
-SG_END_DECL()
+}

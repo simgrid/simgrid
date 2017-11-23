@@ -19,16 +19,16 @@ $ ./concurrent_rw$EXEEXT ${srcdir:=.}/../../../examples/platforms/storage/storag
 > [  4.600000] (host@bob) process 4 goes to sleep for 2 seconds
 > [  5.500000] (host@bob) process 5 is writing again!
 > [  5.600000] (host@bob) process 5 goes to sleep for 1 seconds
-> [  6.600000] (host@bob) process 4 is reading!
-> [  6.600000] (host@bob) process 5 is reading!
 > [  6.600000] (host@bob) process 1 is reading!
 > [  6.600000] (host@bob) process 2 is reading!
 > [  6.600000] (host@bob) process 3 is reading!
-> [  6.750000] (host@bob) process 4 goes to sleep for 4 seconds
-> [  6.750000] (host@bob) process 5 goes to sleep for 5 seconds
+> [  6.600000] (host@bob) process 4 is reading!
+> [  6.600000] (host@bob) process 5 is reading!
 > [  6.750000] (host@bob) process 1 goes to sleep for 1 seconds
 > [  6.750000] (host@bob) process 2 goes to sleep for 2 seconds
 > [  6.750000] (host@bob) process 3 goes to sleep for 3 seconds
+> [  6.750000] (host@bob) process 4 goes to sleep for 4 seconds
+> [  6.750000] (host@bob) process 5 goes to sleep for 5 seconds
 > [  7.750000] (host@bob) process 1 is reading again!
 > [  7.780000] (host@bob) process 1 => Size of /home/doc/simgrid/examples/platforms/g5k.xml1: 6000000
 > [  8.750000] (host@bob) process 2 is reading again!

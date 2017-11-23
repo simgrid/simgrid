@@ -5,16 +5,15 @@
 
 #include "smpi_request.hpp"
 
-#include "mc/mc.h"
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/mc/mc_replay.h"
 #include "SmpiHost.hpp"
-#include "private.h"
+#include "mc/mc.h"
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_op.hpp"
 #include "smpi_process.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 
 #include <algorithm>
 
@@ -32,7 +31,8 @@ extern void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t);
 namespace simgrid{
 namespace smpi{
 
-Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
+Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags)
+    : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
 {
   void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.
@@ -692,12 +692,11 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     if (((req->flags_ & ACCUMULATE) != 0) ||
         (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
 
-      if (not smpi_process()->replaying()) {
-        if (smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_data_exe_start) &&
-            ((char*)req->old_buf_ < smpi_data_exe_start + smpi_data_exe_size)) {
-          XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
-          smpi_switch_data_segment(smpi_process()->index());
-        }
+      if (not smpi_process()->replaying() && smpi_privatize_global_variables != 0 &&
+          static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
+          static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
+        XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
+        smpi_switch_data_segment(smpi_process()->index());
       }
 
       if(datatype->flags() & DT_FLAG_DERIVED){

@@ -108,10 +108,10 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_dict_elm);
   XBT_LOG_CONNECT(xbt_dyn);
   XBT_LOG_CONNECT(xbt_ex);
+  XBT_LOG_CONNECT(xbt_automaton);
   XBT_LOG_CONNECT(xbt_backtrace);
   XBT_LOG_CONNECT(xbt_exception);
   XBT_LOG_CONNECT(xbt_graph);
-  XBT_LOG_CONNECT(xbt_heap);
   XBT_LOG_CONNECT(xbt_mallocator);
   XBT_LOG_CONNECT(xbt_memory_map);
   XBT_LOG_CONNECT(xbt_parmap);
@@ -238,7 +238,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_cpu_cas);
   XBT_LOG_CONNECT(surf_cpu_ti);
   XBT_LOG_CONNECT(surf_energy);
-  XBT_LOG_CONNECT(surf_file);
   XBT_LOG_CONNECT(surf_kernel);
   XBT_LOG_CONNECT(surf_lagrange);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
@@ -336,7 +335,7 @@ void xbt_log_postexit(void)
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
 
- /* Size of the static string in which we  build the log string */
+/* Size of the static string in which we build the log string */
 #define XBT_LOG_STATIC_BUFFER_SIZE 2048
 /* Minimum size of the dynamic string in which we build the log string
    (should be greater than XBT_LOG_STATIC_BUFFER_SIZE) */
@@ -391,23 +390,26 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
   }
 }
 
-#undef XBT_LOG_DYNAMIC_BUFFER_SIZE
-#undef XBT_LOG_STATIC_BUFFER_SIZE
-
 /* NOTE:
  *
  * The standard logging macros use _XBT_LOG_ISENABLED, which calls _xbt_log_cat_init().  Thus, if we want to avoid an
  * infinite recursion, we can not use the standard logging macros in _xbt_log_cat_init(), and in all functions called
  * from it.
  *
- * To circumvent the problem, we define the macro_xbt_log_init() as (0) for the length of the affected functions, and
- * we do not forget to undefine it at the end!
+ * To circumvent the problem, we define the macro DISABLE_XBT_LOG_CAT_INIT() to hide the real _xbt_log_cat_init(). The
+ * macro has to be called at the beginning of the affected functions.
  */
+static int fake_xbt_log_cat_init(xbt_log_category_t XBT_ATTRIB_UNUSED category,
+                                 e_xbt_log_priority_t XBT_ATTRIB_UNUSED priority)
+{
+  return 0;
+}
+#define DISABLE_XBT_LOG_CAT_INIT()                                                                                     \
+  int (*_xbt_log_cat_init)(xbt_log_category_t, e_xbt_log_priority_t) XBT_ATTRIB_UNUSED = fake_xbt_log_cat_init;
 
 static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_t setting)
 {
-#define _xbt_log_cat_init(a, b) (0)
-
+  DISABLE_XBT_LOG_CAT_INIT();
   if (setting->thresh != xbt_log_priority_uninitialized) {
     xbt_log_threshold_set(category, setting->thresh);
 
@@ -434,7 +436,6 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_
     category->additivity = 0;
     XBT_DEBUG("Set %p as appender of category '%s'", setting->appender, category->name);
   }
-#undef _xbt_log_cat_init
 }
 
 /*
@@ -443,8 +444,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category, xbt_log_setting_
  */
 int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority)
 {
-#define _xbt_log_cat_init(a, b) (0)
-
+  DISABLE_XBT_LOG_CAT_INIT();
   if (log_cat_init_mutex != NULL)
     xbt_os_mutex_acquire(log_cat_init_mutex);
 
@@ -522,8 +522,6 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   if (log_cat_init_mutex != NULL)
     xbt_os_mutex_release(log_cat_init_mutex);
   return priority >= category->threshold;
-
-#undef _xbt_log_cat_init
 }
 
 void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
@@ -782,7 +780,7 @@ void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app)
 
 void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
 {
-#define _xbt_log_cat_init(a, b) (0)
+  DISABLE_XBT_LOG_CAT_INIT();
   if (!cat->appender) {
     XBT_VERB ("No appender to category %s. Setting the file appender as default", cat->name);
     xbt_log_appender_set(cat, xbt_log_appender_file_new(NULL));
@@ -795,7 +793,6 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
   }
   cat->layout = lay;
   xbt_log_additivity_set(cat, 0);
-#undef _xbt_log_cat_init
 }
 
 void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)

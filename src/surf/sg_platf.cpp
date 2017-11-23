@@ -7,7 +7,7 @@
 #include "simgrid/s4u/Storage.hpp"
 
 #include "src/kernel/EngineImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 #include "src/include/simgrid/sg_config.h"
 
@@ -195,7 +195,6 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
     XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id.c_str(), cluster->speeds.front());
 
     s_sg_platf_host_cbarg_t host;
-    memset(&host, 0, sizeof(host));
     host.id = host_id.c_str();
     if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
       host.properties = new std::map<std::string, std::string>;
@@ -316,7 +315,6 @@ void sg_platf_new_cabinet(CabinetCreationArgs* cabinet)
   for (int const& radical : *cabinet->radicals) {
     std::string hostname = cabinet->prefix + std::to_string(radical) + cabinet->suffix;
     s_sg_platf_host_cbarg_t host;
-    memset(&host, 0, sizeof(host));
     host.pstate           = 0;
     host.core_amount      = 1;
     host.id               = hostname.c_str();
@@ -442,14 +440,14 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   double kill_time  = process->kill_time;
   int auto_restart = process->on_failure == SURF_ACTOR_ON_FAILURE_DIE ? 0 : 1;
 
-  std::vector<std::string> args(process->argv, process->argv + process->argc);
-  std::function<void()> code = factory(std::move(args));
+  std::string process_name   = process->args[0];
+  std::function<void()> code = factory(std::move(process->args));
   std::shared_ptr<std::map<std::string, std::string>> properties(process->properties);
 
   smx_process_arg_t arg = nullptr;
 
   arg = new simgrid::simix::ProcessArg();
-  arg->name = std::string(process->argv[0]);
+  arg->name = process_name;
   arg->code = code;
   arg->data = nullptr;
   arg->host = host;
@@ -461,7 +459,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   if (start_time > SIMIX_get_clock()) {
 
     arg = new simgrid::simix::ProcessArg();
-    arg->name = std::string(process->argv[0]);
+    arg->name = process_name;
     arg->code = std::move(code);
     arg->data = nullptr;
     arg->host = host;
@@ -521,22 +519,22 @@ void sg_platf_end() {
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
 {
-  const char* host_model_name    = xbt_cfg_get_string("host/model");
-  const char* network_model_name = xbt_cfg_get_string("network/model");
-  const char* cpu_model_name     = xbt_cfg_get_string("cpu/model");
-  const char* storage_model_name = xbt_cfg_get_string("storage/model");
+  std::string host_model_name    = xbt_cfg_get_string("host/model");
+  std::string network_model_name = xbt_cfg_get_string("network/model");
+  std::string cpu_model_name     = xbt_cfg_get_string("cpu/model");
+  std::string storage_model_name = xbt_cfg_get_string("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
   if ((not xbt_cfg_is_default_value("network/model") || not xbt_cfg_is_default_value("cpu/model")) &&
       xbt_cfg_is_default_value("host/model")) {
     host_model_name = "compound";
-    xbt_cfg_set_string("host/model", host_model_name);
+    xbt_cfg_set_string("host/model", host_model_name.c_str());
   }
 
-  XBT_DEBUG("host model: %s", host_model_name);
-  if (not strcmp(host_model_name, "compound")) {
-    xbt_assert(cpu_model_name, "Set a cpu model to use with the 'compound' host model");
-    xbt_assert(network_model_name, "Set a network model to use with the 'compound' host model");
+  XBT_DEBUG("host model: %s", host_model_name.c_str());
+  if (host_model_name == "compound") {
+    xbt_assert(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
+    xbt_assert(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
 
     int cpu_id = find_model_description(surf_cpu_model_description, cpu_model_name);
     surf_cpu_model_description[cpu_id].model_init_preparse();
@@ -600,10 +598,10 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(ZoneCreationArgs* zone)
       new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id);
       break;
     case A_surfxml_AS_routing_Dijkstra:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 0);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, false);
       break;
     case A_surfxml_AS_routing_DijkstraCache:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, 1);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, true);
       break;
     case A_surfxml_AS_routing_Floyd:
       new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id);
@@ -676,7 +674,7 @@ void sg_platf_new_hostlink(HostLinkCreationArgs* hostlink)
   if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->cname(), netpoint->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->getCname(), netpoint->id());
   as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 

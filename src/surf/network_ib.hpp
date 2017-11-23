@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,6 +11,7 @@
 #include "xbt/base.h"
 
 #include <unordered_map>
+#include <vector>
 
 namespace simgrid {
   namespace surf {
@@ -42,7 +43,7 @@ namespace simgrid {
 
     class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
     private:
-      void updateIBfactors_rec(IBNode *root, bool* updatedlist);
+      void updateIBfactors_rec(IBNode* root, std::vector<bool>& updatedlist);
       void computeIBfactors(IBNode *root);
     public:
       NetworkIBModel();

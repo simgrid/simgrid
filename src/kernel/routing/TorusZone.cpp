@@ -31,7 +31,7 @@ TorusZone::TorusZone(NetZone* father, std::string name) : ClusterZone(father, na
 {
 }
 
-void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, int position)
+void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
@@ -94,8 +94,7 @@ void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
 {
 
-  XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->name().c_str(), src->id(), dst->name().c_str(),
-           dst->id());
+  XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
 
   if (dst->isRouter() || src->isRouter())
     return;
@@ -103,7 +102,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   if (src->id() == dst->id() && hasLoopback_) {
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
 
-    route->link_list->push_back(info.first);
+    route->link_list.push_back(info.first);
     if (lat)
       *lat += info.first->latency();
     return;
@@ -180,17 +179,17 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
 
     if (hasLimiter_) { // limiter for sender
       info = privateLinks_.at(nodeOffset + (hasLoopback_ ? 1 : 0));
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
     }
 
     info = privateLinks_.at(linkOffset);
 
     if (use_lnk_up == false) {
-      route->link_list->push_back(info.second);
+      route->link_list.push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     } else {
-      route->link_list->push_back(info.first);
+      route->link_list.push_back(info.first);
       if (lat)
         *lat += info.first->latency();
     }

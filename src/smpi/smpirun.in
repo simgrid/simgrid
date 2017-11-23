@@ -44,7 +44,6 @@ Options:
   -trace-comment-file <file> # put file contents on the top of the trace file as comment
   -trace-grouped             # group MPI processes by location
   -trace-resource            # trace resource utilization
-  -trace-viva                # generate configuration for Viva's GraphView
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
   -ext <value>               # additional parameter (reserved)
 
@@ -147,14 +146,7 @@ while true; do
             fi
 	    shift 2
             ;;
-        "-hostfile")
-	    HOSTFILE="$2"
-            if [ ! -f "${HOSTFILE}" ]; then
-                die "the file '${HOSTFILE}' does not exist"
-            fi
-	    shift 2
-            ;;
-        "-machinefile")
+        "-hostfile" | "-machinefile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
                 die "the file '${HOSTFILE}' does not exist"
@@ -201,10 +193,6 @@ while true; do
         "-trace-resource")
             TRACE_RESOURCE="true"
             shift 1
-            ;;
-        "-trace-viva")
-   	    TRACE_VIVA="true"
-   	    shift 1
             ;;
         "-keep-temps")
 	    KEEP="true"
@@ -434,7 +422,7 @@ do
     fi
 
     echo "  <actor host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
-    <argument value=\"1\"/> <!-- instance -->
+    <argument value=\"smpirun\"/> <!-- instance -->
     <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
     if [ ${REPLAY} = 1 ]; then
         if  [ ${NUMTRACES} -gt 1 ]; then
@@ -482,10 +470,6 @@ if [ -n "${TRACE_ACTIVE}" ]; then
     if [ -n "${TRACE_RESOURCE}" ]; then
         TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes"
     fi
-
-    if [ -n "${TRACE_VIVA}" ]; then
-        TRACEOPTIONS="${TRACEOPTIONS} --cfg=viva/categorized:smpi_cat.plist --cfg=viva/uncategorized:smpi_uncat.plist"
-    fi
 fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------
 
@@ -521,7 +505,7 @@ pid=""
 # Keep temporary files on failures to help debugging
 #
 if [ ${status} -ne 0 ] ; then
-    if [ -z ${KEEP} ]; then
+    if [ -z "${KEEP}" ]; then
         echo ${EXEC} ${PRIVATIZE} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
         if [ ${HOSTFILETMP} = 1 ] ; then
             echo "Generated hostfile ${HOSTFILE} kept."

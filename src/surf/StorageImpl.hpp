@@ -32,28 +32,27 @@ class StorageAction;
  * @brief Callbacks handler which emit the callbacks after Storage creation *
  * @details Callback functions have the following signature: `void(Storage*)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageImpl*)>) storageCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageImpl*)>) storageCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage destruction *
  * @details Callback functions have the following signature: `void(StoragePtr)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageImpl*)>) storageDestructedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageImpl*)>) storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
  * @details Callback functions have the following signature: `void(StorageAction *action, int previouslyOn, int
  * currentlyOn)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageImpl*, int, int)>) storageStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageImpl*, int, int)>) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
  * @details Callback functions have the following signature: `void(StorageAction *action, simgrid::surf::Action::State
  * old, simgrid::surf::Action::State current)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageAction*, simgrid::surf::Action::State,
-                                          simgrid::surf::Action::State)>)
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)>)
 storageActionStateChangedCallbacks;
 
 /*********
@@ -81,7 +80,7 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class StorageImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
+class StorageImpl : public Resource, public PropertyHolder {
 public:
   /** @brief Storage constructor */
   StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
@@ -165,10 +164,10 @@ private:
 /** @ingroup SURF_storage_interface
  * @brief The possible type of action for the storage component
  */
-typedef enum {
+enum e_surf_action_storage_type_t {
   READ = 0, /**< Read a file */
   WRITE     /**< Write in a file */
-} e_surf_action_storage_type_t;
+};
 
 /** @ingroup SURF_storage_interface
  * @brief SURF storage action interface class
@@ -205,7 +204,6 @@ public:
 
   e_surf_action_storage_type_t type_;
   StorageImpl* storage_;
-  FileImpl* file_ = nullptr;
 };
 
 class StorageType {

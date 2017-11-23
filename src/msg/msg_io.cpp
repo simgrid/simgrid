@@ -6,12 +6,12 @@
 #include "simgrid/s4u/File.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @addtogroup msg_file
  * (#msg_file_t) and the functions for managing it.
@@ -73,8 +73,8 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           fd->getPath(), fd->size(), fd->mount_point.c_str(), fd->storageId.c_str(), fd->storage_type.c_str(),
-           fd->desc_id);
+           fd->getPath(), fd->size(), fd->mount_point_.c_str(), fd->localStorage->getCname(),
+           fd->localStorage->getType(), fd->desc_id);
 }
 
 /** \ingroup msg_file
@@ -92,9 +92,9 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located and read it */
-  msg_storage_t storage_src           = simgrid::s4u::Storage::byName(fd->storageId);
+  msg_storage_t storage_src           = fd->localStorage;
   msg_host_t attached_host            = storage_src->getHost();
-  read_size                           = fd->read(size); // TODO re-add attached_host
+  read_size                           = fd->read(size);
 
   if (strcmp(attached_host->getCname(), MSG_host_self()->getCname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
@@ -133,7 +133,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located (remote or local)*/
-  msg_storage_t storage_src = simgrid::s4u::Storage::byName(fd->storageId);
+  msg_storage_t storage_src = fd->localStorage;
   msg_host_t attached_host  = storage_src->getHost();
 
   if (strcmp(attached_host->getCname(), MSG_host_self()->getCname())) {
@@ -158,7 +158,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     }
   }
   /* Write file on local or remote host */
-  sg_size_t write_size = fd->write(size); // TODO readd attached_host
+  sg_size_t write_size = fd->write(size);
 
   return write_size;
 }
@@ -175,6 +175,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
 {
   msg_file_t fd         = new simgrid::s4u::File(fullpath, MSG_host_self());
   fd->desc_id           = MSG_host_get_file_descriptor_id(MSG_host_self());
+  fd->setUserdata(data);
   return fd;
 }
 
@@ -274,7 +275,7 @@ msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpath)
 {
   /* Find the host where the file is physically located and read it */
-  msg_storage_t storage_src = simgrid::s4u::Storage::byName(file->storageId);
+  msg_storage_t storage_src = file->localStorage;
   msg_host_t src_host       = storage_src->getHost();
   MSG_file_seek(file, 0, SEEK_SET);
   sg_size_t read_size = file->read(file->size());
@@ -357,7 +358,7 @@ msg_error_t MSG_file_rmove (msg_file_t file, msg_host_t host, const char* fullpa
 const char* MSG_storage_get_name(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->getName();
+  return storage->getCname();
 }
 
 /** \ingroup msg_storage_management
@@ -477,10 +478,11 @@ void *MSG_storage_get_data(msg_storage_t storage)
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
   std::map<std::string, sg_size_t>* content = storage->getContent();
-  xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
+  xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
 
   for (auto const& entry : *content) {
-    sg_size_t* psize = static_cast<sg_size_t*>(malloc(sizeof(sg_size_t)));
+    sg_size_t* psize = new sg_size_t;
     *psize           = entry.second;
     xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);
   }
@@ -509,5 +511,4 @@ const char* MSG_storage_get_host(msg_storage_t storage)
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->getHost()->getCname();
 }
-
-SG_END_DECL()
+}

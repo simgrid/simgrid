@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
-#include "src/simix/smx_private.h"
-#include "smpi_datatype.hpp"
 #include "smpi_status.hpp"
+#include "private.hpp"
+#include "smpi_datatype.hpp"
+#include "src/simix/smx_private.hpp"
 
 namespace simgrid{
 namespace smpi{

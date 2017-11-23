@@ -121,9 +121,8 @@ tracing/uncategorized
 tracing/filename
 </b>:
   A file with this name will be created to register the simulation. The file
-  is in the Paje format and can be analyzed using Viva or Paje visualization
+  is in the Paje format and can be analyzed using Paje visualization
   tools. More information can be found in these webpages:
-     <a href="http://github.com/schnorr/viva/">http://github.com/schnorr/viva/</a>
      <a href="http://github.com/schnorr/pajeng/">http://github.com/schnorr/pajeng/</a>
 \verbatim
 --cfg=tracing/filename:mytracefile.trace
@@ -326,24 +325,6 @@ TODO
 TODO
 \endverbatim
 
-\li <b>\c
-viva/categorized
-</b>:
-  This option generates a graph configuration file for Viva considering
-  categorized resource utilization.
-\verbatim
---cfg=viva/categorized:graph_categorized.plist
-\endverbatim
-
-\li <b>\c
-viva/uncategorized
-</b>:
-  This option generates a graph configuration file for Viva considering
-  uncategorized resource utilization.
-\verbatim
---cfg=viva/uncategorized:graph_uncategorized.plist
-\endverbatim
-
 Please pass \verbatim --help-tracing \endverbatim to your simulator
 for the updated list of tracing options.
 
@@ -362,7 +343,6 @@ simulator):
           --cfg=tracing:yes \
           --cfg=tracing/uncategorized:yes \
           --cfg=tracing/filename:mytracefile.trace \
-          --cfg=viva/uncategorized:uncat.plist
 \endverbatim
 
 \li I want to trace only a subset of my MSG (or SimDAG) tasks.
@@ -377,7 +357,6 @@ recompiling, run your simulator with the following parameters:
           --cfg=tracing:yes \
           --cfg=tracing/categorized:yes \
           --cfg=tracing/filename:mytracefile.trace \
-          --cfg=viva/categorized:cat.plist
 \endverbatim
 
 
@@ -453,23 +432,6 @@ several options to analyze this trace file:
   file format</a>. Consider this option if you need to understand the
   causality of your distributed simulation.
 
-- Visualize the behavior of your simulation with treemaps (specially
-  if your simulation has a platform with several thousand resources),
-  provided by the <a href="http://github.com/schnorr/viva/">Viva</a>
-  visualization tool. See <a
-  href="https://github.com/schnorr/viva/wiki">Viva's wiki</a> for
-  further details on what is a treemap and how to use it.
-
-- Correlate the behavior of your simulator with the platform topology
-  with an interactive, force-directed, and hierarchical graph
-  visualization, provided by <a
-  href="http://github.com/schnorr/viva/">Viva</a>.  Check <a
-  href="https://github.com/schnorr/viva/wiki">Viva's wiki</a> for
-  further details. This <a
-  href="http://hal.inria.fr/hal-00738321/">research report</a>,
-  published at ISPASS 2013, has a detailed description of this
-  visualization technique.
-
 - You can also check our online <a
   href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial
   section</a> that contains a dedicated tutorial with several
@@ -483,124 +445,5 @@ several options to analyze this trace file:
   can also check the <a
   href="http://lists.gforge.inria.fr/pipermail/simgrid-user/">mailing
   list archive</a> for old messages regarding tracing and analysis.
-
-\subsection tracing_viva_analysis Viva Visualization Tool
-
-This subsection describe some of the concepts regarding the <a
-href="http://github.com/schnorr/viva/">Viva Visualization Tool</a> and
-its relation with SimGrid traces. You should refer to Viva's website
-for further details on all its visualization techniques.
-
-\subsubsection tracing_viva_time_slice Time Slice
-
-The analysis of a trace file using the tool always takes into account
-the concept of the <em>time-slice</em>.  This concept means that what
-is being visualized in the screen is always calculated considering a
-specific time frame, with its beggining and end timestamp. The
-time-slice is configured by the user and can be changed dynamically
-through the window called <em>Time Interval</em> that is opened
-whenever a trace file is being analyzed. Users are capable to select
-the beggining and size of the time slice.
-
-\subsubsection tracing_viva_graph Hierarchical Graph View
-
-As stated above (see section \ref tracing_tracing_analyzing), one
-possibility to analyze SimGrid traces is to use Viva's graph view with
-a graph configuration to customize the graph according to the
-traces. A valid graph configuration (we are using the non-XML <a
-href="http://en.wikipedia.org/wiki/Property_list">Property List
-Format</a> to describe the configuration) can be created for any
-SimGrid-based simulator using the
-<em>--cfg=viva/uncategorized:graph_uncategorized.plist</em> or
-<em>--cfg=viva/categorized:graph_categorized.plist</em> (if the
-simulator defines resource utilization categories) when executing the
-simulation.
-
-\subsubsection basic_conf Basic Graph Configuration
-
-The basic description of the configuration is as follows:
-\verbatim
-{
-  node = (LINK, HOST, );
-  edge = (HOST-LINK, LINK-HOST, LINK-LINK, );
-\endverbatim
-
-The nodes of the graph will be created based on the <i>node</i>
-parameter, which in this case is the different <em>"HOST"</em>s and
-<em>"LINK"</em>s of the platform used to simulate. The <i>edge</i>
-parameter indicates that the edges of the graph will be created based
-on the <em>"HOST-LINK"</em>s, <em>"LINK-HOST"</em>s, and
-<em>"LINK-LINK"</em>s of the platform.  After the definition of these
-two parameters, the configuration must detail how the nodes
-(<em>HOST</em>s and <em>LINK</em>s) should be drawn.
-
-For that, the configuration must have an entry for each of
-the types used. For <em>HOST</em>, as basic configuration, we have:
-
-\verbatim
-  HOST = {
-    type = square;
-    size = power;
-    values = (power_used);
-  };
-\endverbatim
-
-The parameter <em>size</em> indicates which variable from the trace
-file will be used to define the size of the node HOST in the
-visualization. If the simulation was executed with availability
-traces, the size of the nodes will be changed according to these
-traces. The parameter <em>type</em> indicates which geometrical shape
-will be used to represent HOST, and the <em>values</em> parameter
-indicates which values from the trace will be used to fill the shape.
-
-For <em>LINK</em> we have:
-
-\verbatim
-  LINK = {
-    type = rhombus;
-    size = bandwidth;
-    values = (bandwidth_used);
-  };
-}
-\endverbatim
-
-The same configuration parameters are used here: <em>type</em> (with a
-rhombus), the <em>size</em> (whose value is from trace's bandwidth
-variable) and the <em>values</em>.
-
-\subsubsection custom_graph Customizing the Graph Representation
-
-Viva is capable to handle a customized graph representation based on
-the variables present in the trace file. In the case of SimGrid, every
-time a category is created for tasks, two variables in the trace file
-are defined: one to indicate node utilization (how much power was used
-by that task category), and another to indicate link utilization (how
-much bandwidth was used by that category). For instance, if the user
-declares a category named <i>request</i>, there will be variables
-named <b>p</b><i>request</i> and a <b>b</b><i>request</i> (<b>p</b>
-for power and <b>b</b> for bandwidth). It is important to notice that
-the variable <i>prequest</i> in this case is only available for HOST,
-and <i>brequest</i> is only available for LINK. <b>Example</b>:
-suppose there are two categories for tasks: request and compute. To
-create a customized graph representation with a proportional
-separation of host and link utilization, use as configuration for HOST
-and LINK this:
-
-\verbatim
-  HOST = {
-    type = square;
-    size = power;
-    values = (prequest, pcomputation);
-  };
-  LINK = {
-    type = rhombus;
-    size = bandwidth;
-    values = (brequest, bcomputation);
-  };
-\endverbatim
-
-This configuration enables the analysis of resource utilization by MSG
-tasks through the identification of load-balancing issues and network
-bottlenecks, for instance.
 
 */

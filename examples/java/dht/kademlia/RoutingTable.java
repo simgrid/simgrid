@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -67,7 +67,8 @@ public class RoutingTable {
       Msg.debug("Adding " + id + " to my routing table");
       bucket.add(id);
       if (bucket.size() > Common.BUCKET_SIZE)  {
-        //TODO: Ping the least seen guy and remove him if he is offline.
+        // TODO
+        Msg.debug("Should ping the least seen guy and remove him if he is offline.");
       }
     }
   }

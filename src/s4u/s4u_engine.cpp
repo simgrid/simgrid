@@ -17,7 +17,7 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
-#include "surf/surf.h" // routing_platf. FIXME:KILLME. SOON
+#include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 
@@ -48,8 +48,9 @@ Engine::~Engine()
 Engine* Engine::getInstance()
 {
   if (s4u::Engine::instance_ == nullptr)
-    new Engine(0,nullptr);
-  return s4u::Engine::instance_;
+    return new Engine(0, nullptr);
+  else
+    return s4u::Engine::instance_;
 }
 
 void Engine::shutdown() {
@@ -91,6 +92,16 @@ void Engine::getHostList(std::vector<Host*>* list)
 {
   for (auto const& kv : host_list)
     list->push_back(kv.second);
+}
+/** @brief Returns the amount of links in the platform */
+size_t Engine::getLinkCount()
+{
+  return simgrid::surf::LinkImpl::linksCount();
+}
+/** @brief Fills the passed list with all hosts found in the platform */
+void Engine::getLinkList(std::vector<Link*>* list)
+{
+  simgrid::surf::LinkImpl::linksList(list);
 }
 
 void Engine::run() {
@@ -142,15 +153,15 @@ void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* l
 /** @brief Register a new netpoint to the system */
 void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
 {
-//  simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
-  pimpl->netpoints_[point->name()] = point;
-//  });
+  // simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
+  pimpl->netpoints_[point->getName()] = point;
+  // });
 }
 /** @brief Unregister a given netpoint */
 void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
 {
   simgrid::simix::kernelImmediate([this, point] {
-    pimpl->netpoints_.erase(point->name());
+    pimpl->netpoints_.erase(point->getName());
     delete point;
   });
 }

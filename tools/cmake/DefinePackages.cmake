@@ -6,36 +6,35 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.h
-  src/include/smpi/smpi_utils.hpp
   src/include/surf/datatypes.h
-  src/include/surf/maxmin.h
-  src/include/surf/surf.h
+  src/include/surf/maxmin.hpp
+  src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
-  src/mc/mc_mmu.h
-  src/mc/mc_record.h
+  src/mc/mc_mmu.hpp
+  src/mc/mc_record.hpp
   src/mc/PageStore.hpp
-  src/msg/msg_private.h
+  src/msg/msg_private.hpp
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
   src/simdag/simdag_private.hpp
   src/simix/simcalls.in
   src/simix/simcalls.py
-  src/simix/popping_private.h
+  src/simix/popping_private.hpp
   src/simix/popping_bodies.cpp
   src/simix/popping_generated.cpp
   src/simix/popping_enum.h
-  src/simix/popping_accessors.h
-  src/simix/smx_host_private.h
-  src/simix/smx_io_private.h
-  src/simix/smx_network_private.h
-  src/simix/smx_private.h
+  src/simix/popping_accessors.hpp
+  src/simix/smx_host_private.hpp
+  src/simix/smx_io_private.hpp
+  src/simix/smx_network_private.hpp
+  src/simix/smx_private.hpp
   src/simix/smx_synchro_private.hpp
-  src/smpi/colls/coll_tuned_topo.h
-  src/smpi/colls/colls_private.h
-  src/smpi/colls/smpi_mvapich2_selector_stampede.h
-  src/smpi/include/private.h
+  src/smpi/colls/coll_tuned_topo.hpp
+  src/smpi/colls/colls_private.hpp
+  src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
   src/smpi/include/private.hpp
+  src/smpi/include/smpi_utils.hpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
@@ -46,19 +45,18 @@ set(EXTRA_DIST
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
-  src/surf/ns3/ns3_interface.h
-  src/surf/ns3/ns3_simulator.h
+  src/surf/ns3/ns3_interface.hpp
+  src/surf/ns3/ns3_simulator.hpp
   src/surf/trace_mgr_test.cpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/surf/FileImpl.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
-  src/surf/surf_private.h
+  src/surf/surf_private.hpp
   src/surf/PropertyHolder.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
@@ -72,7 +70,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
   src/xbt/graph_private.h
-  src/xbt/heap_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
 
@@ -276,7 +273,6 @@ set(XBT_SRC
   src/xbt/ex.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
-  src/xbt/heap.c
   src/xbt/log.c
   src/xbt/mallocator.c
   src/xbt/memory_map.cpp
@@ -289,7 +285,7 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.cpp
-  src/xbt/xbt_os_file.c
+  src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_synchro.cpp
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.cpp
@@ -303,7 +299,7 @@ if(HAVE_MMALLOC)
 endif()
 
 set(NS3_SRC  src/surf/network_ns3.cpp
-             src/surf/ns3/ns3_simulator.cc )
+             src/surf/ns3/ns3_simulator.cpp )
 
 set(SURF_SRC
   src/kernel/routing/ClusterZone.cpp
@@ -338,7 +334,6 @@ set(SURF_SRC
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/fair_bottleneck.cpp
-  src/surf/FileImpl.cpp
   src/surf/instr_routing.cpp
   src/surf/instr_surf.cpp
   src/surf/lagrange.cpp
@@ -347,6 +342,7 @@ set(SURF_SRC
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
   src/surf/plugins/host_energy.cpp
+  src/surf/plugins/link_energy.cpp
   src/surf/plugins/host_load.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
@@ -381,6 +377,7 @@ set(SIMIX_SRC
   src/kernel/context/Context.cpp
   src/kernel/context/Context.hpp
   src/kernel/context/ContextRaw.cpp
+  src/kernel/context/ContextRaw.hpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
@@ -468,16 +465,16 @@ set(SIMDAG_SRC
   )
 
 set(BINDINGS_SRC
-  src/bindings/lua/lua_private.h
-  src/bindings/lua/lua_utils.h
-  src/bindings/lua/simgrid_lua.h
+  src/bindings/lua/lua_private.hpp
+  src/bindings/lua/lua_utils.hpp
+  src/bindings/lua/simgrid_lua.hpp
   )
 
 set(JMSG_C_SRC
   src/bindings/java/jmsg.cpp
-  src/bindings/java/jmsg.h
+  src/bindings/java/jmsg.hpp
   src/bindings/java/jmsg_as.cpp
-  src/bindings/java/jmsg_as.h
+  src/bindings/java/jmsg_as.hpp
   src/bindings/java/jmsg_comm.cpp
   src/bindings/java/jmsg_comm.h
   src/bindings/java/jmsg_file.cpp
@@ -495,7 +492,7 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_vm.cpp
   src/bindings/java/jmsg_vm.h
   src/bindings/java/jxbt_utilities.cpp
-  src/bindings/java/jxbt_utilities.h
+  src/bindings/java/jxbt_utilities.hpp
   src/bindings/java/JavaContext.cpp
   src/bindings/java/JavaContext.hpp
   src/bindings/java/jmsg_storage.cpp
@@ -549,12 +546,17 @@ set(TRACING_SRC
   src/instr/instr_config.cpp
   src/instr/instr_interface.cpp
   src/instr/instr_paje_containers.cpp
+  src/instr/instr_paje_containers.hpp
+  src/instr/instr_paje_events.cpp
+  src/instr/instr_paje_events.hpp
   src/instr/instr_paje_header.cpp
   src/instr/instr_paje_trace.cpp
   src/instr/instr_paje_types.cpp
+  src/instr/instr_paje_types.hpp
   src/instr/instr_paje_values.cpp
-  src/instr/instr_private.h
-  src/instr/instr_smpi.h
+  src/instr/instr_paje_values.hpp
+  src/instr/instr_private.hpp
+  src/instr/instr_smpi.hpp
   src/instr/instr_resource_utilization.cpp
   )
 
@@ -572,8 +574,8 @@ set(JEDULE_SRC
 set(MC_SRC_BASE
   src/mc/mc_base.cpp
   src/mc/mc_base.h
-  src/mc/mc_record.h
-  src/mc/mc_replay.h
+  src/mc/mc_record.hpp
+  src/mc/mc_replay.hpp
   src/mc/mc_record.cpp
   src/mc/mc_config.cpp
   src/mc/mc_global.cpp
@@ -616,11 +618,11 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/Session.cpp
   src/mc/Session.hpp
-  src/mc/mc_unw.h
+  src/mc/mc_unw.hpp
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
   src/mc/mc_checkpoint.cpp
-  src/mc/mc_snapshot.h
+  src/mc/mc_snapshot.hpp
   src/mc/mc_snapshot.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.cpp
@@ -640,20 +642,20 @@ set(MC_SRC
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
-  src/mc/mc_private.h
-  src/mc/mc_request.h
+  src/mc/mc_private.hpp
+  src/mc/mc_request.hpp
   src/mc/mc_request.cpp
-  src/mc/mc_safety.h
-  src/mc/mc_state.h
+  src/mc/mc_safety.hpp
+  src/mc/mc_state.hpp
   src/mc/mc_state.cpp
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/mc_client_api.cpp
-  src/mc/mc_smx.h
+  src/mc/mc_smx.hpp
   src/mc/mc_smx.cpp
   src/mc/mc_xbt.hpp
   src/mc/mc_xbt.cpp
-  src/mc/mc_exit.h
+  src/mc/mc_exit.hpp
   src/mc/Transition.hpp
   )
 
@@ -716,12 +718,11 @@ set(headers_to_install
   include/xbt/ex.hpp
   include/xbt/exception.hpp
   include/xbt/Extendable.hpp
-  include/xbt/file.h
+  include/xbt/file.hpp
   include/xbt/functional.hpp
   include/xbt/function_types.h
   include/xbt/future.hpp
   include/xbt/graph.h
-  include/xbt/heap.h
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h
@@ -766,9 +767,11 @@ else() # NOT pthread
 endif()
 
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.cpp)
+  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.hpp
+                                src/kernel/context/ContextUnix.cpp)
 else() # NOT ucontext
-  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.cpp)
+  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
+                                src/kernel/context/ContextUnix.cpp)
 endif()
 
 ### Simgrid Lib sources
