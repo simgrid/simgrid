@@ -131,6 +131,7 @@ int main(int argc, char* argv[])
   XBT_INFO("Parmap benchmark with %d workers (modes = %#x)...", nthreads, modes);
   XBT_INFO("%s", "");
 
+  SIMIX_context_set_nthreads(nthreads);
   fun_to_apply = &fun_small_comp;
 
   XBT_INFO("Benchmark for parmap create+apply+destroy (small comp):");

@@ -1,13 +1,26 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef XBT_UTILITY_HPP
+#define XBT_UTILITY_HPP
+
 #include <tuple>
 
 namespace simgrid {
 namespace xbt {
+
+/** @brief Comparator class for using with std::priority_queue or boost::heap.
+ *
+ * Compare two std::pair by their first element (of type double), and return true when the first is greater than the
+ * second.  Useful to have priority queues with the smallest element on top.
+ */
+template <class Pair> class HeapComparator {
+public:
+  bool operator()(const Pair& a, const Pair& b) const { return a.first > b.first; }
+};
 
 // integer_sequence and friends from C++14
 // We need them to implement `apply` from C++17.
@@ -78,3 +91,4 @@ static_assert(std::is_same< index_sequence_for<int,double,float>, make_index_seq
 
 }
 }
+#endif

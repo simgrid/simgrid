@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 
 /*
 This fucntion performs all-reduce operation as follow.
@@ -36,7 +36,7 @@ int Coll_allreduce_smp_rsag::allreduce(void *send_buf, void *recv_buf,
      MPI_User_function * uop = MPIR_Op_table[op % 16 - 1];
      #else
      MPI_User_function *uop;
-     struct MPIR_OP *op_ptr;
+     MPIR_OP *op_ptr;
      op_ptr = MPIR_ToPointer(op);
      uop  = op_ptr->op;
      #endif

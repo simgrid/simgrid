@@ -66,7 +66,9 @@ public:
   /** Retrieves the host on which the current actor is running */
   static s4u::Host* current();
 
+  /** Retrieves the name of that host as a C++ string */
   simgrid::xbt::string const& getName() const { return name_; }
+  /** Retrieves the name of that host as a C string */
   const char* getCname() const { return name_.c_str(); }
 
   void actorList(std::vector<ActorPtr> * whereto);
@@ -102,8 +104,8 @@ public:
    */
   std::unordered_map<std::string, Storage*> const& getMountedStorages();
 
-  void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
-  void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
+  void routeTo(Host* dest, std::vector<Link*>& links, double* latency);
+  void routeTo(Host* dest, std::vector<surf::LinkImpl*>& links, double* latency);
 
   /** Block the calling actor on an execution located on the called host
    *

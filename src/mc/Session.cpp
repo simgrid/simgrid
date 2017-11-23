@@ -16,13 +16,14 @@
 #include <simgrid/sg_config.h>
 
 #include "src/mc/Session.hpp"
-#include "src/mc/mc_state.h"
-#include "src/mc/mc_private.h"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_state.hpp"
 
 #include "src/smpi/include/private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
+extern std::string _sg_mc_dot_output_file;
 
 namespace simgrid {
 namespace mc {
@@ -122,7 +123,7 @@ void Session::logState()
 {
   mc_model_checker->getChecker()->logState();
 
-  if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0')) {
+  if (not _sg_mc_dot_output_file.empty()) {
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }

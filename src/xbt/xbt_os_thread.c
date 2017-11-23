@@ -162,7 +162,8 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
  *
  * If pthread_setaffinity_np is not usable on that (non-gnu) platform, this function does nothing.
  */
-int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
+int xbt_os_thread_bind(XBT_ATTRIB_UNUSED xbt_os_thread_t thread, XBT_ATTRIB_UNUSED int cpu)
+{
   int errcode = 0;
 #if HAVE_PTHREAD_SETAFFINITY
   pthread_t pthread = thread->t;
@@ -249,6 +250,12 @@ void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
 {
   int errcode = pthread_key_create(key, NULL);
   xbt_assert(errcode==0 , "pthread_key_create failed");
+}
+
+void xbt_os_thread_key_destroy(xbt_os_thread_key_t key)
+{
+  int errcode = pthread_key_delete(key);
+  xbt_assert(errcode == 0, "pthread_key_delete failed");
 }
 
 void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value)

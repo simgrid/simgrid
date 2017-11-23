@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2016. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <xbt/ex.h>
 
 namespace simgrid {
 namespace xbt {
@@ -33,7 +34,7 @@ class Result {
     exception,
   };
 public:
-  Result() {}
+  Result() { /* Nothing to do */}
   ~Result() { this->reset(); }
 
   // Copy (if T is copyable) and move:
@@ -47,12 +48,14 @@ public:
     switch (that.status_) {
       case ResultStatus::invalid:
         break;
-      case ResultStatus::valid:
+      case ResultStatus::value:
         new (&value_) T(that.value);
         break;
       case ResultStatus::exception:
         new (&exception_) T(that.exception);
         break;
+      default:
+        THROW_IMPOSSIBLE;
     }
     return *this;
   }
@@ -66,7 +69,7 @@ public:
     switch (that.status_) {
       case ResultStatus::invalid:
         break;
-      case ResultStatus::valid:
+      case ResultStatus::value:
         new (&value_) T(std::move(that.value));
         that.value.~T();
         break;
@@ -74,6 +77,8 @@ public:
         new (&exception_) T(std::move(that.exception));
         that.exception.~exception_ptr();
         break;
+      default:
+        THROW_IMPOSSIBLE;
     }
     that.status_ = ResultStatus::invalid;
     return *this;
@@ -94,6 +99,8 @@ public:
       case ResultStatus::exception:
         exception_.~exception_ptr();
         break;
+      default:
+        THROW_IMPOSSIBLE;
     }
     status_ = ResultStatus::invalid;
   }
@@ -123,9 +130,6 @@ public:
   T get()
   {
     switch (status_) {
-      case ResultStatus::invalid:
-      default:
-        throw std::logic_error("Invalid result");
       case ResultStatus::value: {
         T value = std::move(value_);
         value_.~T();
@@ -139,6 +143,8 @@ public:
         std::rethrow_exception(std::move(exception));
         break;
       }
+      default:
+        throw std::logic_error("Invalid result");
     }
   }
 private:

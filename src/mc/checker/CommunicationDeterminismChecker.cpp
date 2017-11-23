@@ -13,12 +13,12 @@
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_state.h"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_state.hpp"
 #include "src/mc/remote/Client.hpp"
 
 #include "smpi_request.hpp"
@@ -236,7 +236,9 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
 
     char* remote_name;
-    mc_model_checker->process().read(&remote_name, remote(comm->mbox ? &comm->mbox->name_ : &comm->mbox_cpy->name_));
+    mc_model_checker->process().read(
+        &remote_name, remote(comm->mbox ? &simgrid::xbt::string::to_string_data(comm->mbox->name_).data
+                                        : &simgrid::xbt::string::to_string_data(comm->mbox_cpy->name_).data));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
     pattern->dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc))->pid;
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
@@ -314,7 +316,6 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
 
 void CommunicationDeterminismChecker::logState() // override
 {
-  Checker::logState();
   if (_sg_mc_comms_determinism && not this->recv_deterministic && this->send_deterministic) {
     XBT_INFO("******************************************************");
     XBT_INFO("**** Only-send-deterministic communication pattern ****");

@@ -47,7 +47,7 @@ main (int argc, char **argv)
 	MPI_Send (&flipbit, 1, MPI_INT, 1, i, MPI_COMM_WORLD);
 
 	flag = 0;
-printf ("req = %0x", (unsigned int)reqs);
+	printf("req = %p", reqs);
 	while (!flag)
 	    MPI_Testany (i, reqs, &done, &flag, &status);
 

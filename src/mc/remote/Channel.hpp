@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2016. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -50,7 +50,7 @@ public:
   int send(const void* message, size_t size) const;
   int send(e_mc_message_type type) const
   {
-    s_mc_message message = {type};
+    s_mc_message_t message = {type};
     return this->send(&message, sizeof(message));
   }
   /** @brief Send a message; returns 0 on success or errno on failure */

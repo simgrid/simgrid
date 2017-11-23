@@ -174,6 +174,7 @@ public:
   static LinkImpl* byName(std::string name);
   static int linksCount();
   static LinkImpl** linksList();
+  static void linksList(std::vector<s4u::Link*>* linkList);
   static void linksExit();
 };
 
@@ -208,10 +209,10 @@ public:
   void setState(simgrid::surf::Action::State state) override;
   virtual std::list<LinkImpl*> links();
 
-  double latency_;
-  double latCurrent_;
-  double weight_;
-  double rate_;
+  double latency_    = {};
+  double latCurrent_ = {};
+  double weight_     = {};
+  double rate_       = {};
 };
 }
 }

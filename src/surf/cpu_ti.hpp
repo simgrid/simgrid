@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -88,7 +88,6 @@ public:
   void setState(simgrid::surf::Action::State state) override;
   int unref() override;
   void cancel() override;
-  void updateIndexHeap(int i) override;
   void suspend() override;
   void resume() override;
   void setMaxDuration(double duration) override;
@@ -150,7 +149,6 @@ public:
 
   ActionList *runningActionSetThatDoesNotNeedBeingChecked_;
   CpuTiList *modifiedCpu_;
-  xbt_heap_t tiActionHeap_;
 };
 
 }

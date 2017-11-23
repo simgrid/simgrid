@@ -3,8 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.h"
-#include "surf/surf.h"
+#include "include/xbt/config.hpp"
+#include "src/instr/instr_private.hpp"
+#include "surf/surf.hpp"
 #include <string>
 #include <vector>
 
@@ -36,8 +37,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_TOPOLOGY             "tracing/platform/topology"
 #define OPT_TRACING                      "tracing"
 #define OPT_TRACING_UNCATEGORIZED        "tracing/uncategorized"
-#define OPT_VIVA_CAT_CONF                "viva/categorized"
-#define OPT_VIVA_UNCAT_CONF              "viva/uncategorized"
 
 static bool trace_enabled = false;
 static bool trace_platform;
@@ -62,8 +61,6 @@ static int trace_precision;
 
 static bool trace_configured = false;
 static bool trace_active     = false;
-
-static simgrid::instr::Type* rootType = nullptr; /* the root type */
 
 instr_fmt_type_t instr_fmt_type = instr_fmt_paje;
 
@@ -105,22 +102,22 @@ int TRACE_start()
     /* init the tracing module to generate the right output */
 
     /* open the trace file(s) */
-    const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
-    XBT_DEBUG("Tracing format %s\n", format);
-    if (not strcmp(format, "Paje")) {
+    std::string format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
+    XBT_DEBUG("Tracing format %s\n", format.c_str());
+    if (format == "Paje") {
       TRACE_paje_start();
-    } else if (not strcmp(format, "TI")) {
+    } else if (format == "TI") {
       instr_fmt_type = instr_fmt_TI;
       TRACE_TI_start();
     }else{
-      xbt_die("Unknown trace format :%s ", format);
+      xbt_die("Unknown trace format :%s ", format.c_str());
     }
 
     /* activate trace */
-    if (trace_active == 1) {
+    if (trace_active) {
       THROWF(tracing_error, 0, "Tracing is already active");
     }
-    trace_active = 1;
+    trace_active = true;
     XBT_DEBUG("Tracing is on");
   }
   return 0;
@@ -134,31 +131,28 @@ int TRACE_end()
   } else {
     retval = 0;
 
-    TRACE_generate_viva_uncat_conf();
-    TRACE_generate_viva_cat_conf();
-
     /* dump trace buffer */
     TRACE_last_timestamp_to_dump = surf_get_clock();
-    TRACE_paje_dump_buffer(1);
+    TRACE_paje_dump_buffer(true);
 
+    simgrid::instr::Type* root_type = simgrid::instr::Container::getRoot()->type_;
     /* destroy all data structures of tracing (and free) */
-    PJ_container_free_all();
-    delete PJ_type_get_root();
-    rootType = nullptr;
+    delete simgrid::instr::Container::getRoot();
+    delete root_type;
 
     /* close the trace files */
-    const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
-    XBT_DEBUG("Tracing format %s\n", format);
-    if (not strcmp(format, "Paje")) {
+    std::string format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
+    XBT_DEBUG("Tracing format %s\n", format.c_str());
+    if (format == "Paje") {
       TRACE_paje_end();
-    } else if (not strcmp(format, "TI")) {
+    } else if (format == "TI") {
       TRACE_TI_end();
     }else{
-      xbt_die("Unknown trace format :%s ", format);
+      xbt_die("Unknown trace format :%s ", format.c_str());
     }
 
     /* de-activate trace */
-    trace_active = 0;
+    trace_active = false;
     XBT_DEBUG("Tracing is off");
     XBT_DEBUG("Tracing system is shutdown");
   }
@@ -271,12 +265,12 @@ bool TRACE_display_sizes ()
    return trace_display_sizes && trace_smpi_enabled && TRACE_is_enabled();
 }
 
-char *TRACE_get_comment ()
+std::string TRACE_get_comment()
 {
   return xbt_cfg_get_string(OPT_TRACING_COMMENT);
 }
 
-char *TRACE_get_comment_file ()
+std::string TRACE_get_comment_file()
 {
   return xbt_cfg_get_string(OPT_TRACING_COMMENT_FILE);
 }
@@ -286,28 +280,18 @@ int TRACE_precision ()
   return xbt_cfg_get_int(OPT_TRACING_PRECISION);
 }
 
-char *TRACE_get_filename()
+std::string TRACE_get_filename()
 {
   return xbt_cfg_get_string(OPT_TRACING_FILENAME);
 }
 
-char *TRACE_get_viva_uncat_conf ()
-{
-  return xbt_cfg_get_string(OPT_VIVA_UNCAT_CONF);
-}
-
-char *TRACE_get_viva_cat_conf ()
-{
-  return xbt_cfg_get_string(OPT_VIVA_CAT_CONF);
-}
-
 void TRACE_global_init()
 {
-  static int is_initialised = 0;
+  static bool is_initialised = false;
   if (is_initialised)
     return;
 
-  is_initialised = 1;
+  is_initialised = true;
   /* name of the tracefile */
   xbt_cfg_register_string (OPT_TRACING_FILENAME, "simgrid.trace", nullptr, "Trace file created by the instrumented SimGrid.");
   xbt_cfg_register_boolean(OPT_TRACING, "no", nullptr, "Enable Tracing.");
@@ -338,9 +322,6 @@ void TRACE_global_init()
       "The contents of the file are added to the top of the trace file as comment.");
   xbt_cfg_register_int(OPT_TRACING_PRECISION, 6, nullptr, "Numerical precision used when timestamping events "
       "(expressed in number of digits after decimal point)");
-  /* Viva graph configuration for uncategorized tracing */
-  xbt_cfg_register_string(OPT_VIVA_UNCAT_CONF, "", nullptr, "Viva Graph configuration file for uncategorized resource utilization traces.");
-  xbt_cfg_register_string(OPT_VIVA_CAT_CONF, "", nullptr, "Viva Graph configuration file for categorized resource utilization traces.");
 
   xbt_cfg_register_alias(OPT_TRACING_COMMENT_FILE,"tracing/comment_file");
   xbt_cfg_register_alias(OPT_TRACING_DISABLE_DESTROY, "tracing/disable_destroy");
@@ -351,16 +332,15 @@ void TRACE_global_init()
   xbt_cfg_register_alias(OPT_TRACING_ONELINK_ONLY, "tracing/onelink_only");
 
   /* instrumentation can be considered configured now */
-  trace_configured = 1;
+  trace_configured = true;
 }
 
 static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
 {
-  char str[INSTR_DEFAULT_STR_SIZE];
-  snprintf (str, INSTR_DEFAULT_STR_SIZE, "--cfg=%s ", option);
+  std::string str = std::string("--cfg=") + option + " ";
 
-  int len = strlen (str);
-  printf ("%s%*.*s %s\n", str, 30-len, 30-len, "", desc);
+  int len = str.size();
+  printf("%s%*.*s %s\n", str.c_str(), 30 - len, 30 - len, "", desc);
   if (longdesc != nullptr && detailed){
     printf ("%s\n\n", longdesc);
   }
@@ -379,13 +359,13 @@ void TRACE_help (int detailed)
       "  It activates the uncategorized resource utilization tracing. Use it if\n"
       "  this simulator do not use tracing categories and resource use have to be\n"
       "  traced.", detailed);
-  print_line (OPT_TRACING_FILENAME, "Filename to register traces",
-      "  A file with this name will be created to register the simulation. The file\n"
-      "  is in the Paje format and can be analyzed using Viva, Paje, and PajeNG visualization\n"
-      "  tools. More information can be found in these webpages:\n"
-      "     http://github.com/schnorr/viva/\n"
-      "     http://github.com/schnorr/pajeng/\n"
-      "     http://paje.sourceforge.net/", detailed);
+  print_line(OPT_TRACING_FILENAME, "Filename to register traces",
+             "  A file with this name will be created to register the simulation. The file\n"
+             "  is in the Paje format and can be analyzed using Paje, and PajeNG visualization\n"
+             "  tools. More information can be found in these webpages:\n"
+             "     http://github.com/schnorr/pajeng/\n"
+             "     http://paje.sourceforge.net/",
+             detailed);
   print_line (OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
       "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
       "  interface and generates a trace that can be analyzed using Gantt-like\n"
@@ -442,18 +422,6 @@ void TRACE_help (int detailed)
       "  Use this to add a comment line to the top of the trace file.", detailed);
   print_line (OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
       "  Use this to add the contents of a file to the top of the trace file as comment.", detailed);
-  print_line (OPT_VIVA_UNCAT_CONF, "Generate a graph configuration for Viva",
-      "  This option can be used in all types of simulators build with SimGrid\n"
-      "  to generate a uncategorized resource utilization graph to be used as\n"
-      "  configuration for the Viva visualization tool. This option\n"
-      "  can be used with tracing/categorized:1 and tracing:1 options to\n"
-      "  analyze an unmodified simulator before changing it to contain\n"
-      "  categories.", detailed);
-  print_line (OPT_VIVA_CAT_CONF, "Generate an uncategorized graph configuration for Viva",
-      "  This option can be used if this simulator uses tracing categories\n"
-      "  in its code. The file specified by this option holds a graph configuration\n"
-      "  file for the Viva visualization tool that can be used to analyze a categorized\n"
-      "  resource utilization.", detailed);
   print_line (OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
         "  This option (enabled by default) can be used to disable the tracing of\n"
         "  the platform topology in the trace file. Sometimes, such task is really\n"
@@ -477,116 +445,6 @@ static void output_types (const char *name, xbt_dynar_t types, FILE *file)
   xbt_dynar_free (&types);
 }
 
-static void output_categories(const char* name, FILE* file)
-{
-  unsigned int i = created_categories.size();
-  fprintf (file, "    values = (");
-  for (auto const& cat : created_categories) {
-    --i;
-    fprintf(file, "\"%s%s\"", name, cat.c_str());
-    if (i > 0) {
-      fprintf (file, ",");
-    }else{
-      fprintf (file, ");\n");
-    }
-  }
-}
-
-static void uncat_configuration (FILE *file)
-{
-  //register NODE and EDGE types
-  output_types ("node", TRACE_get_node_types(), file);
-  output_types ("edge", TRACE_get_edge_types(), file);
-  fprintf (file, "\n");
-
-  //configuration for all nodes
-  fprintf (file,
-      "  host = {\n"
-      "    type = \"square\";\n"
-      "    size = \"power\";\n"
-      "    values = (\"power_used\");\n"
-      "  };\n"
-      "  link = {\n"
-      "    type = \"rhombus\";\n"
-      "    size = \"bandwidth\";\n"
-      "    values = (\"bandwidth_used\");\n"
-      "  };\n");
-  //close
-}
-
-static void cat_configuration (FILE *file)
-{
-  //register NODE and EDGE types
-  output_types ("node", TRACE_get_node_types(), file);
-  output_types ("edge", TRACE_get_edge_types(), file);
-  fprintf (file, "\n");
-
-  //configuration for all nodes
-  fprintf (file,
-           "  host = {\n"
-           "    type = \"square\";\n"
-           "    size = \"power\";\n");
-  output_categories("p", file);
-  fprintf (file,
-           "  };\n"
-           "  link = {\n"
-           "    type = \"rhombus\";\n"
-           "    size = \"bandwidth\";\n");
-  output_categories("b", file);
-  fprintf (file, "  };\n");
-  //close
-}
-
-static void generate_uncat_configuration (const char *output, const char *name, int brackets)
-{
-  if (output && strlen(output) > 0){
-    FILE *file = fopen (output, "w");
-    if (file == nullptr){
-      THROWF (system_error, 1, "Unable to open file (%s) for writing %s graph configuration (uncategorized).",
-              output, name);
-    }
-
-    if (brackets)
-      fprintf (file, "{\n");
-    uncat_configuration (file);
-    if (brackets)
-      fprintf (file, "}\n");
-    fclose (file);
-  }
-}
-
-static void generate_cat_configuration (const char *output, const char *name, int brackets)
-{
-  if (output && strlen(output) > 0){
-    //check if we do have categories declared
-    if (created_categories.empty()) {
-      XBT_INFO("No categories declared, ignoring generation of %s graph configuration", name);
-      return;
-    }
-
-    FILE *file = fopen (output, "w");
-    if (file == nullptr){
-      THROWF (system_error, 1, "Unable to open file (%s) for writing %s graph "
-          "configuration (categorized).", output, name);
-    }
-
-    if (brackets) fprintf (file, "{\n");
-    cat_configuration (file);
-    if (brackets) fprintf (file, "}\n");
-    fclose (file);
-  }
-}
-
-void TRACE_generate_viva_uncat_conf ()
-{
-  generate_uncat_configuration (TRACE_get_viva_uncat_conf (), "viva", 0);
-}
-
-void TRACE_generate_viva_cat_conf ()
-{
-  generate_cat_configuration (TRACE_get_viva_cat_conf(), "viva", 0);
-}
-
 static int previous_trace_state = -1;
 
 void instr_pause_tracing ()
@@ -597,7 +455,7 @@ void instr_pause_tracing ()
   }else{
     XBT_DEBUG ("Tracing is being paused.");
   }
-  trace_enabled = 0;
+  trace_enabled = false;
   XBT_DEBUG ("Tracing is paused.");
 }
 
@@ -612,7 +470,7 @@ void instr_resume_tracing ()
   if (previous_trace_state != -1){
     trace_enabled = previous_trace_state;
   }else{
-    trace_enabled = 1;
+    trace_enabled = true;
   }
   XBT_DEBUG ("Tracing is resumed.");
   previous_trace_state = -1;

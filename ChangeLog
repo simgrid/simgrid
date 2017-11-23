@@ -1,11 +1,44 @@
-SimGrid (3.17) UNRELEASED (release target: September 22 2017)
+SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
+
+ S4U
+ - Link::name() is deprecated and will be removed in v3.21, use instead
+   Link::getCname().
+ - Mailbox::getName() changed to return a std::string, use instead
+   Mailbox::getCname() to get a char*.
+ - Storage::getName() changed to return a std::string, use intead
+   Storage::getCname() to get a char*.
+
+ MSG
+ - Deprecate MSG_task_get_flops_amount(). Its semantic was weird:
+    before the start it returned the total amount of flops;
+    after it returned the ratio of remaining work. Split it:
+   MSG_task_get_initial_flops_amount() for first behavior
+   MSG_task_get_remaining_work_ratio() for the second one.
+   This fixes GitHub's #223 using PR #237. Thanks Michael Mercier.
+
+ XBT
+ - Define class simgrid::xbt::Path to manage file names.
+ - Removed unused functions:
+   - xbt/file.h: xbt_basename(), xbt_dirname(), xbt_getline()
+   - xbt/str.h: xbt_str_join()
+   - xbt/heap.h: use std::priority_queue or boost::heap instead
+
+ PLUGINS:
+ - New link_energy plugin for the consumption of the links.
+
+ XML
+ - Remove the undocumented/untested tag <include>
+
+ TRACE
+ - Remove viva specific tracing as the tool is no longer maintained
+
+SimGrid (3.17) Released October 8 2017
 
  The Drained Leaks release: (almost) no known leaks despite the tests.
 
  Even very long simulations will preserve your memory: our testsuite
  stresses SimGrid for over 45mn on fast machines for a coverage of
- over 80% of our codebase, and there is only one single known leak, of
- about 4kb.
+ over 80%, and there is only one single known leak, of about 4kb.
 
 
  S4U
@@ -51,6 +84,8 @@ SimGrid (3.17) UNRELEASED (release target: September 22 2017)
    - #204: Sometimes segfault with thread contexts and mmap privatization
    - #222: Actor::kill() doesn't really kill and segfaults
    - #225: Actor::kill() doesn't really kill when victims are doing a join()
+
+----------------------------------------------------------------------------
 
 SimGrid (3.16) Released June 22. 2017.
 

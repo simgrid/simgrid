@@ -7,7 +7,7 @@
 #define SIMIX_SYNCHRO_EXEC_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 
 namespace simgrid {
 namespace kernel {

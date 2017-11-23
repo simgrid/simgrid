@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2006-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -25,9 +25,9 @@ public class Main {
     try {
         DreamMaster process1 = new DreamMaster("Jacquelin","DreamMaster");
         process1.start();
-      } catch (MsgException e){
-        System.out.println("Create processes failed!");
-      }
+    } catch (MsgException e){
+      Msg.error("Create processes failed!");
+    }
 
     /*  execute the simulation. */
     Msg.run();

@@ -55,9 +55,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-  #include "../colls_private.h"
-  #include "../coll_tuned_topo.h"
-  #define MAXTREEFANOUT 32
+#include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
+#define MAXTREEFANOUT 32
 namespace simgrid{
 namespace smpi{
 
@@ -296,7 +296,7 @@ Coll_bcast_ompi_split_bintree::bcast ( void* buffer,
                                             comm, MPI_STATUS_IGNORE);
         }
     }
-    xbt_free(tree);
+    ompi_coll_tuned_topo_destroy_tree(&tree);
     return (MPI_SUCCESS);
 
 

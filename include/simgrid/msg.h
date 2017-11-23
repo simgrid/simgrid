@@ -51,7 +51,7 @@ typedef sg_host_t msg_host_t;
 XBT_PUBLIC_DATA(int) sg_storage_max_file_descriptors;
 /* ******************************** Task ************************************ */
 
-typedef struct simdata_task *simdata_task_t;
+typedef struct s_simdata_task_t* simdata_task_t;
 
 typedef struct msg_task {
   char *name;                   /**< @brief task name if any */
@@ -169,44 +169,47 @@ XBT_PUBLIC(const char*) MSG_zone_get_property_value(msg_netzone_t as, const char
 XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value);
 XBT_PUBLIC(void) MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
-static inline XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_root() instead: v3.19 will turn this warning into an error.")
-    msg_netzone_t MSG_environment_get_routing_root()
+XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_root() instead: v3.19 will turn this warning into an error.") static inline msg_netzone_t
+    MSG_environment_get_routing_root()
 {
   return MSG_zone_get_root();
 }
-static inline XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_name() instead: v3.19 will turn this warning into an error.")
-    const char* MSG_environment_as_get_name(msg_netzone_t zone)
+XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_name() instead: v3.19 will turn this warning into an error.") static inline const
+    char* MSG_environment_as_get_name(msg_netzone_t zone)
 {
   return MSG_zone_get_name(zone);
 }
-static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_by_name() instead: v3.19 will turn this warning into an error.") msg_netzone_t
+XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_by_name() instead: v3.19 will turn this warning into an error.") static inline msg_netzone_t
     MSG_environment_as_get_by_name(const char* name)
 {
   return MSG_zone_get_by_name(name);
 }
-static inline XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_sons() instead: v3.19 will turn this warning into an error.")
-    xbt_dict_t MSG_environment_as_get_routing_sons(msg_netzone_t zone)
+XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_sons() instead: v3.19 will turn this warning into an error.") static inline xbt_dict_t
+    MSG_environment_as_get_routing_sons(msg_netzone_t zone)
 {
   xbt_dict_t res = xbt_dict_new_homogeneous(NULL);
   MSG_zone_get_sons(zone, res);
   return res;
 }
-static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_property_value() instead: v3.19 will turn this warning into an error.") const
+XBT_ATTRIB_DEPRECATED_v319(
+    "Use MSG_zone_get_property_value() instead: v3.19 will turn this warning into an error.") static inline const
     char* MSG_environment_as_get_property_value(msg_netzone_t zone, const char* name)
 {
   return MSG_zone_get_property_value(zone, name);
 }
-static inline XBT_ATTRIB_DEPRECATED_v319(
+XBT_ATTRIB_DEPRECATED_v319(
     "Use MSG_zone_set_property_value() instead: v3.19 will remove MSG_environment_as_set_property_value() "
-    "completely.") void MSG_environment_as_set_property_value(msg_netzone_t zone, const char* name, char* value)
+    "completely.") static inline void MSG_environment_as_set_property_value(msg_netzone_t zone, const char* name,
+                                                                            char* value)
 {
   MSG_zone_set_property_value(zone, name, value);
 }
-static inline XBT_ATTRIB_DEPRECATED_v319(
-    "Use MSG_zone_get_hosts() instead: v3.19 will remove MSG_environment_as_get_hosts() completely.") xbt_dynar_t
-    MSG_environment_as_get_hosts(msg_netzone_t zone)
+XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_hosts() instead: v3.19 will remove MSG_environment_as_get_hosts() "
+                           "completely.") static inline xbt_dynar_t MSG_environment_as_get_hosts(msg_netzone_t zone)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), NULL);
   MSG_zone_get_hosts(zone, res);
@@ -262,15 +265,13 @@ XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 
-static inline double
-    XBT_ATTRIB_DEPRECATED_v319("Use MSG_host_get_speed(): v3.19 will drop MSG_get_host_speed() completely.")
-        MSG_get_host_speed(msg_host_t host)
+XBT_ATTRIB_DEPRECATED_v319("Use MSG_host_get_speed(): v3.19 will drop MSG_get_host_speed() "
+                           "completely.") static inline double MSG_get_host_speed(msg_host_t host)
 {
   return MSG_host_get_speed(host);
 }
-static inline double XBT_ATTRIB_DEPRECATED_v320(
-    "Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() completely.")
-    MSG_host_get_current_power_peak(msg_host_t host)
+XBT_ATTRIB_DEPRECATED_v320("Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() "
+                           "completely.") static inline double MSG_host_get_current_power_peak(msg_host_t host)
 {
   return MSG_host_get_speed(host);
 }
@@ -378,8 +379,14 @@ XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC(void) MSG_task_set_flops_amount(msg_task_t task, double flops_amount);
-XBT_PUBLIC(double) MSG_task_get_flops_amount(msg_task_t task);
+XBT_ATTRIB_DEPRECATED_v321("Use MSG_task_get_initial_flops_amount if you want to get initial amounts of flops, or "
+                           "Use MSG_task_get_remaining_work_ratio to get task progress (in order "
+                           "to compute progress in flops)") XBT_PUBLIC(double)
+    MSG_task_get_flops_amount(msg_task_t task);
+XBT_PUBLIC(double) MSG_task_get_initial_flops_amount(msg_task_t task);
+XBT_PUBLIC(double) MSG_task_get_remaining_work_ratio(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task, double bytes_amount);
+
 
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(msg_task_t task);
 XBT_PUBLIC(int) MSG_task_is_latency_bounded(msg_task_t task);
@@ -402,11 +409,10 @@ XBT_PUBLIC(msg_error_t) MSG_task_receive_bounded(msg_task_t * task, const char *
 
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
-XBT_PUBLIC(msg_comm_t)
 XBT_ATTRIB_DEPRECATED_v320(
     "This function will be removed from SimGrid v3.20. If you really need this function, please speak up quickly.")
-    MSG_task_isend_with_matching(msg_task_t task, const char* alias, int (*match_fun)(void*, void*, void*),
-                                 void* match_data);
+    XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task, const char* alias,
+                                                        int (*match_fun)(void*, void*, void*), void* match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
 XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);
@@ -449,7 +455,8 @@ XBT_PUBLIC(void) MSG_action_exit();
  *  @ingroup msg_synchro
  *  @hideinitializer
  */
-typedef struct s_smx_sem *msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be declared here
+typedef struct s_smx_sem_t* msg_sem_t; // Yeah that's a rename of the smx_sem_t which doesnt require smx_sem_t to be
+                                       // declared here
 XBT_PUBLIC(msg_sem_t) MSG_sem_init(int initial_value);
 XBT_PUBLIC(void) MSG_sem_acquire(msg_sem_t sem);
 XBT_PUBLIC(msg_error_t) MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
@@ -464,7 +471,7 @@ XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
  */
 
 #define MSG_BARRIER_SERIAL_PROCESS -1
-typedef struct s_msg_bar* msg_bar_t;
+typedef struct s_msg_bar_t* msg_bar_t;
 XBT_PUBLIC(msg_bar_t) MSG_barrier_init( unsigned int count);
 XBT_PUBLIC(void) MSG_barrier_destroy(msg_bar_t bar);
 XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);

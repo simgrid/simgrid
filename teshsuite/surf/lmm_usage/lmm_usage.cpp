@@ -8,10 +8,11 @@
 
 #include "simgrid/msg.h"
 #include "src/surf/surf_interface.hpp"
-#include "surf/maxmin.h"
+#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h"
+#include <algorithm>
 #include <cmath>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
@@ -23,11 +24,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 /*  ==l1==  L2  ==L3==           */
 /*        ------                 */
 
-typedef enum {
-  MAXMIN,
-  LAGRANGE_RENO,
-  LAGRANGE_VEGAS
-} method_t;
+enum method_t { MAXMIN, LAGRANGE_RENO, LAGRANGE_VEGAS };
 
 static double dichotomy(double func(double), double min, double max, double min_error)
 {
@@ -149,10 +146,10 @@ static void test1(method_t method)
     lagrange_solve(Sys);
 
     double max_deviation = 0.0;
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
+    max_deviation        = std::max(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
 
     if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
       XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
@@ -219,12 +216,12 @@ static void test3(method_t method)
   int flows = 11;
   int links = 10;
 
-  double **A = xbt_new0(double *, links + 5);
+  double** A = new double*[links + 5];
   /* array to add the constraints of fictitious variables */
   double B[15] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1 };
 
   for (int i = 0; i < links + 5; i++) {
-    A[i] = xbt_new0(double, flows + 5);
+    A[i] = new double[flows + 5];
     for (int j = 0; j < flows + 5; j++) {
       A[i][j] = 0.0;
 
@@ -259,12 +256,12 @@ static void test3(method_t method)
   lmm_system_t Sys = lmm_system_new(1);
 
   /* Creates the constraints */
-  lmm_constraint_t *tmp_cnst = xbt_new0(lmm_constraint_t, 15);
+  lmm_constraint_t* tmp_cnst = new lmm_constraint_t[15];
   for (int i = 0; i < 15; i++)
     tmp_cnst[i] = lmm_constraint_new(Sys, nullptr, B[i]);
 
   /* Creates the variables */
-  lmm_variable_t *tmp_var = xbt_new0(lmm_variable_t, 16);
+  lmm_variable_t* tmp_var = new lmm_variable_t[16];
   for (int j = 0; j < 16; j++) {
     tmp_var[j] = lmm_variable_new(Sys, nullptr, 1.0, -1.0, 15);
     lmm_update_variable_weight(Sys, tmp_var[j], 1.0);
@@ -291,12 +288,12 @@ static void test3(method_t method)
 
   for (int j = 0; j < 16; j++)
     lmm_variable_free(Sys, tmp_var[j]);
-  xbt_free(tmp_var);
-  xbt_free(tmp_cnst);
+  delete[] tmp_var;
+  delete[] tmp_cnst;
   lmm_system_free(Sys);
   for (int i = 0; i < links + 5; i++)
-    xbt_free(A[i]);
-  xbt_free(A);
+    delete[] A[i];
+  delete[] A;
 }
 
 int main(int argc, char** argv)

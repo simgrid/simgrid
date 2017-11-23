@@ -65,20 +65,20 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   /* Let's find the source and the destination in our internal structure */
   auto searchedNode = this->computeNodes_.find(src->id());
   xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the source %s [%u] in the fat tree",
-             src->name().c_str(), src->id());
+             src->getCname(), src->id());
   FatTreeNode* source = searchedNode->second;
 
   searchedNode = this->computeNodes_.find(dst->id());
   xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the destination %s [%u] in the fat tree",
-             dst->name().c_str(), dst->id());
+             dst->getCname(), dst->id());
   FatTreeNode* destination = searchedNode->second;
 
-  XBT_VERB("Get route and latency from '%s' [%u] to '%s' [%u] in a fat tree", src->name().c_str(), src->id(),
-           dst->name().c_str(), dst->id());
+  XBT_VERB("Get route and latency from '%s' [%u] to '%s' [%u] in a fat tree", src->getCname(), src->id(),
+           dst->getCname(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
   if (source->id == destination->id && this->hasLoopback_) {
-    into->link_list->push_back(source->loopback);
+    into->link_list.push_back(source->loopback);
     if (latency)
       *latency += source->loopback->latency();
     return;
@@ -95,13 +95,13 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
     int k = this->upperLevelNodesNumber_[currentNode->level];
     d     = d % k;
-    into->link_list->push_back(currentNode->parents[d]->upLink);
+    into->link_list.push_back(currentNode->parents[d]->upLink);
 
     if (latency)
       *latency += currentNode->parents[d]->upLink->latency();
 
     if (this->hasLimiter_)
-      into->link_list->push_back(currentNode->limiterLink);
+      into->link_list.push_back(currentNode->limiterLink);
     currentNode = currentNode->parents[d]->upNode;
   }
 
@@ -112,12 +112,12 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->lowerLevelNodesNumber_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-        into->link_list->push_back(currentNode->children[i]->downLink);
+        into->link_list.push_back(currentNode->children[i]->downLink);
         if (latency)
           *latency += currentNode->children[i]->downLink->latency();
         currentNode = currentNode->children[i]->downNode;
         if (this->hasLimiter_)
-          into->link_list->push_back(currentNode->limiterLink);
+          into->link_list.push_back(currentNode->limiterLink);
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
       }
@@ -361,11 +361,11 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
+  const std::string error_msg {"Fat trees are defined by the levels number and 3 vectors, see the documentation for more information"};
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
   if (parameters.size() != 4) {
-    surf_parse_error(
-        "Fat trees are defined by the levels number and 3 vectors, see the documentation for more information");
+    surf_parse_error(error_msg);
   }
 
   // The first parts of topo_parameters should be the levels number
@@ -378,8 +378,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
@@ -392,8 +391,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // Then, a l-sized vector standing for the parents number by level
   boost::split(tmp, parameters[2], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
@@ -406,8 +404,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {

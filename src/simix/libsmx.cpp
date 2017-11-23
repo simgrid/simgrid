@@ -5,8 +5,7 @@
 /*                                                                            */
 /* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,12 +18,12 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "simgrid/simix.hpp"
 #include "simgrid/simix/blocking_simcall.hpp"
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 #include "xbt/ex.h"
 #include "xbt/functional.hpp"
 
@@ -35,7 +34,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 void simcall_call(smx_actor_t actor)
 {
   if (actor != simix_global->maestro_process) {
-    XBT_DEBUG("Yield actor '%s' on simcall %s (%d)", actor->cname(), SIMIX_simcall_name(actor->simcall.call),
+    XBT_DEBUG("Yield actor '%s' on simcall %s (%d)", actor->getCname(), SIMIX_simcall_name(actor->simcall.call),
               (int)actor->simcall.call);
     SIMIX_process_yield(actor);
   } else {
@@ -242,7 +241,7 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 
   if (kill_time <= SIMIX_get_clock() || simix_global->kill_process_function == nullptr)
     return;
-  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->cname(), process->host->getCname());
+  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->getCname(), process->host->getCname());
   process->kill_timer = SIMIX_timer_set(kill_time, [process] {
     simix_global->kill_process_function(process);
     process->kill_timer=nullptr;
@@ -506,9 +505,7 @@ void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
  * \ingroup simix_synchro_management
  *
  */
-void simcall_cond_wait_timeout(smx_cond_t cond,
-                                 smx_mutex_t mutex,
-                                 double timeout)
+void simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
@@ -542,22 +539,14 @@ void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
   simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
-/**
- * \ingroup simix_file_management
- *
- */
-sg_size_t simcall_file_read(surf_file_t fd, sg_size_t size)
+sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size)
 {
-  return simcall_BODY_file_read(fd, size);
+  return simcall_BODY_storage_read(st, size);
 }
 
-/**
- * \ingroup simix_file_management
- *
- */
-sg_size_t simcall_file_write(surf_file_t fd, sg_size_t size)
+sg_size_t simcall_storage_write(surf_storage_t st, sg_size_t size)
 {
-  return simcall_BODY_file_write(fd, size);
+  return simcall_BODY_storage_write(st, size);
 }
 
 void simcall_run_kernel(std::function<void()> const& code)

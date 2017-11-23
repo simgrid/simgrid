@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -39,7 +39,6 @@ private:
   std::unique_ptr<ModelChecker> modelChecker_;
   std::shared_ptr<simgrid::mc::Snapshot> initialSnapshot_;
 
-private:
   Session(pid_t pid, int socket);
 
   // No copy:
@@ -50,14 +49,13 @@ public:
   ~Session();
   void close();
 
-public:
   void initialize();
   void execute(Transition const& transition);
   void logState();
 
   void restoreInitialState();
 
-public: // static constructors
+  // static constructors
 
   /** Create a new session by forking
    *

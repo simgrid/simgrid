@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2015. The SimGrid Team.
+/* Copyright (c) 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,6 +6,9 @@
 
 #include "simgrid/msg.h"
 #include "mpi.h"
+
+#include <stdio.h>
+#include <string.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
@@ -29,10 +32,10 @@ int main(int argc, char *argv[]){
   FILE* fp = fopen(argv[1], "r");
   if (fp == NULL)
     xbt_die("Cannot open %s", argv[1]);
-  char *line = NULL;
-  size_t n   = 0;
+  char line[2048];
   const char* instance_id = NULL;
-  while (xbt_getline(&line, &n, fp) != -1 ){
+  while (fgets(line, sizeof line, fp)) {
+    xbt_assert(1 + strlen(line) < sizeof line, "input buffer too short (read: %s)", line);
     xbt_dynar_t elems = xbt_str_split_quoted_in_place(line);
     if(xbt_dynar_length(elems)<3){
       xbt_die ("Not enough elements in the line");
@@ -47,7 +50,6 @@ int main(int argc, char *argv[]){
 
     xbt_free(line_char);
   }
-  xbt_free(line);
 
   fclose(fp);
 

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "xbt/automaton.h"
+#include "xbt/backtrace.hpp"
 #include "xbt/dynar.h"
 #include "xbt/swag.h"
 
@@ -31,21 +32,23 @@
 #if SIMGRID_HAVE_MC
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_safety.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_safety.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_unw.hpp"
 #include <libunwind.h>
 #endif
 
 #include "src/mc/Transition.hpp"
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
+
+extern std::string _sg_mc_dot_output_file;
 
 namespace simgrid {
 namespace mc {
@@ -76,7 +79,7 @@ FILE *dot_output = nullptr;
 
 void MC_init_dot_output()
 {
-  dot_output = fopen(_sg_mc_dot_output_file, "w");
+  dot_output = fopen(_sg_mc_dot_output_file.c_str(), "w");
 
   if (dot_output == nullptr) {
     perror("Error open dot output file");
@@ -134,24 +137,20 @@ void dumpStack(FILE* file, unw_cursor_t cursor)
   unw_word_t off;
   do {
     const char* name = not unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
-
-    int status;
-
     // Unmangle C++ names:
-    char* realname = abi::__cxa_demangle(name, 0, 0, &status);
+    auto realname = simgrid::xbt::demangle(name);
 
 #if defined(__x86_64__)
     unw_word_t rip = 0;
     unw_word_t rsp = 0;
     unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
     unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
-    fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
-      nframe, realname ? realname : name, (std::uint64_t) rip, (std::uint64_t) rsp);
+    fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n", nframe, realname.get(), (std::uint64_t)rip,
+            (std::uint64_t)rsp);
 #else
-    fprintf(file, "  %i: %s\n", nframe, realname ? realname : name);
+    fprintf(file, "  %i: %s\n", nframe, realname.get());
 #endif
 
-    free(realname);
     ++nframe;
   } while(unw_step(&cursor));
 }
@@ -163,7 +162,8 @@ static void MC_dump_stacks(FILE* file)
 {
   int nstack = 0;
   for (auto const& stack : mc_model_checker->process().stack_areas()) {
-    fprintf(file, "Stack %i:\n", nstack++);
+    fprintf(file, "Stack %i:\n", nstack);
+    nstack++;
 
     simgrid::mc::UnwindContext context;
     unw_context_t raw_context =

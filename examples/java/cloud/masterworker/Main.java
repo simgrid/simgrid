@@ -29,8 +29,8 @@ class Main {
     
     File f = new File(platfFile); 
     if (!f.exists()) {
-    	System.err.println("File "+platfFile+" does not exist in "+System.getProperty("user.dir"));
-    	System.err.println("Usage  : Main ../platforms/platform.xml");
+      Msg.error("File " + platfFile + " does not exist in " + System.getProperty("user.dir"));
+      Msg.error("Usage  : Main ../platforms/platform.xml");
     }
     
     Msg.createEnvironment(platfFile);

@@ -24,7 +24,6 @@ void mfree(struct mdesc *mdp, void *ptr)
   size_t i;
   int it;
 
-  mmalloc_paranoia(mdp);
 //  fprintf(stderr,"free(%p)\n",ptr);
 
   if (ptr == NULL)

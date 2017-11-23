@@ -6,11 +6,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Mailbox.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup msg_mailbox_management
  * \brief Set the mailbox to receive in asynchronous mode
@@ -26,5 +26,4 @@ void MSG_mailbox_set_async(const char *alias){
   mailbox->setReceiver(simgrid::s4u::Actor::self());
   XBT_VERB("%s mailbox set to receive eagerly for myself\n",alias);
 }
-
-SG_END_DECL()
+}

@@ -95,7 +95,11 @@ static void initialize(xbt_mheap_t mdp)
   }
 }
 
-#define update_hook(a,offset) do { if (a) { a = ((char*)a +(offset));} }while(0)
+static inline void update_hook(void **a, size_t offset)
+{
+  if (*a)
+    *a = (char*)*a + offset;
+}
 
 /* Get neatly aligned memory from the low level layers, and register it
  * into the heap info table as necessary. */
@@ -124,13 +128,13 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     size_t offset=((char*)newinfo)-((char*)oldinfo);
 
     for (int i = 1 /*first element of heapinfo describes the mdesc area*/; i < mdp->heaplimit; i++) {
-      update_hook(newinfo[i].freehook.next,offset);
-      update_hook(newinfo[i].freehook.prev,offset);
+      update_hook(&newinfo[i].freehook.next, offset);
+      update_hook(&newinfo[i].freehook.prev, offset);
     }
     // also update the starting points of the swag
     for (int i = 0; i < BLOCKLOG; i++) {
-      update_hook(mdp->fraghead[i].head,offset);
-      update_hook(mdp->fraghead[i].tail,offset);
+      update_hook(&mdp->fraghead[i].head, offset);
+      update_hook(&mdp->fraghead[i].tail, offset);
     }
     mdp->heapinfo = newinfo;
 
@@ -152,7 +156,6 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
   mdp->heaplimit = BLOCK((char *) result + size);
   return (result);
 }
-#undef update_hook
 
 /* Allocate memory from the heap.  */
 void *mmalloc(xbt_mheap_t mdp, size_t size) {
@@ -162,6 +165,25 @@ void *mmalloc(xbt_mheap_t mdp, size_t size) {
   }
   return res;
 }
+
+static void mmalloc_mark_used(xbt_mheap_t mdp, size_t block, size_t nblocks, size_t requested_size)
+{
+  for (int it = 0; it < nblocks; it++) {
+    mdp->heapinfo[block + it].type                 = MMALLOC_TYPE_UNFRAGMENTED;
+    mdp->heapinfo[block + it].busy_block.busy_size = 0;
+    mdp->heapinfo[block + it].busy_block.ignore    = 0;
+    mdp->heapinfo[block + it].busy_block.size      = 0;
+  }
+  mdp->heapinfo[block].busy_block.size      = nblocks;
+  mdp->heapinfo[block].busy_block.busy_size = requested_size;
+  // mdp->heapinfo[block].busy_block.bt_size =
+  //     xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt, XBT_BACKTRACE_SIZE);
+  // mdp->heapinfo[block].busy_block.bt_size =
+  //     xbt_libunwind_backtrace(mdp->heapinfo[block].busy_block.bt, XBT_BACKTRACE_SIZE);
+  mdp->heapstats.chunks_used++;
+  mdp->heapstats.bytes_used += nblocks * BLOCKSIZE;
+}
+
 /* Spliting mmalloc this way is mandated by a trick in mrealloc, that gives
    back the memory of big blocks to the system before reallocating them: we don't
    want to loose the beginning of the area when this happens */
@@ -183,8 +205,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
   if (!(mdp->flags & MMALLOC_INITIALIZED))
     initialize(mdp);
-
-  mmalloc_paranoia(mdp);
 
   /* Determine the allocation policy based on the request size.  */
   if (size <= BLOCKSIZE / 2) {
@@ -298,18 +318,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
         result = register_morecore(mdp, blocks * BLOCKSIZE);
 
         block = BLOCK(result);
-        for (int it = 0; it < blocks; it++) {
-          mdp->heapinfo[block + it].type                 = MMALLOC_TYPE_UNFRAGMENTED;
-          mdp->heapinfo[block + it].busy_block.busy_size = 0;
-          mdp->heapinfo[block + it].busy_block.ignore    = 0;
-          mdp->heapinfo[block + it].busy_block.size      = 0;
-        }
-        mdp->heapinfo[block].busy_block.size = blocks;
-        mdp->heapinfo[block].busy_block.busy_size = requested_size;
-        //mdp->heapinfo[block].busy_block.bt_size=xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-        //mdp->heapinfo[block].busy_block.bt_size = xbt_libunwind_backtrace(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-        mdp -> heapstats.chunks_used++;
-        mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
+        mmalloc_mark_used(mdp, block, blocks, requested_size);
 
         return result;
       }
@@ -340,19 +349,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
         = mdp->heapindex = mdp->heapinfo[block].free_block.next;
     }
 
-    for (int it = 0; it < blocks; it++) {
-      mdp->heapinfo[block+it].type = MMALLOC_TYPE_UNFRAGMENTED;
-      mdp->heapinfo[block+it].busy_block.busy_size = 0;
-      mdp->heapinfo[block+it].busy_block.ignore = 0;
-      mdp->heapinfo[block+it].busy_block.size = 0;
-    }
-    mdp->heapinfo[block].busy_block.size = blocks;
-    mdp->heapinfo[block].busy_block.busy_size = requested_size;
-    //mdp->heapinfo[block].busy_block.bt_size = xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-    //mdp->heapinfo[block].busy_block.bt_size = xbt_libunwind_backtrace(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-
-    mdp -> heapstats.chunks_used++;
-    mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
+    mmalloc_mark_used(mdp, block, blocks, requested_size);
     mdp -> heapstats.bytes_free -= blocks * BLOCKSIZE;
 
   }

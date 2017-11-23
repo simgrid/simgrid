@@ -209,7 +209,7 @@ template <typename T> void Parmap<T>::apply(void (*fun)(T), const std::vector<T>
   this->fun   = fun;
   this->data  = &data;
   this->index = 0;
-  this->synchro->master_signal(); // maestro runs futex_wait to wake all the minions (the working threads)
+  this->synchro->master_signal(); // maestro runs futex_wake to wake all the minions (the working threads)
   this->work();                   // maestro works with its minions
   this->synchro->master_wait();   // When there is no more work to do, then maestro waits for the last minion to stop
   XBT_CDEBUG(xbt_parmap, "Job done"); //   ... and proceeds
@@ -266,7 +266,7 @@ template <typename T> typename Parmap<T>::Synchro* Parmap<T>::new_synchro(e_xbt_
 #if HAVE_FUTEX_H
       res = new FutexSynchro(*this);
 #else
-      xbt_die("Fute is not available on this OS.");
+      xbt_die("Futex is not available on this OS.");
 #endif
       break;
     case XBT_PARMAP_BUSY_WAIT:
@@ -338,7 +338,7 @@ template <typename T> void Parmap<T>::PosixSynchro::master_signal()
 template <typename T> void Parmap<T>::PosixSynchro::master_wait()
 {
   xbt_os_mutex_acquire(done_mutex);
-  if (this->parmap.thread_counter < this->parmap.num_workers) {
+  while (this->parmap.thread_counter < this->parmap.num_workers) {
     /* wait for all workers to be ready */
     xbt_os_cond_wait(done_cond, done_mutex);
   }
@@ -360,7 +360,7 @@ template <typename T> void Parmap<T>::PosixSynchro::worker_wait(unsigned round)
 {
   xbt_os_mutex_acquire(ready_mutex);
   /* wait for more work */
-  if (this->parmap.work_round != round) {
+  while (this->parmap.work_round != round) {
     xbt_os_cond_wait(ready_cond, ready_mutex);
   }
   xbt_os_mutex_release(ready_mutex);
@@ -381,25 +381,25 @@ template <typename T> inline void Parmap<T>::FutexSynchro::futex_wake(unsigned* 
 
 template <typename T> void Parmap<T>::FutexSynchro::master_signal()
 {
-  this->parmap.thread_counter = 1;
-  __sync_add_and_fetch(&this->parmap.work_round, 1);
+  __atomic_store_n(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
+  __atomic_add_fetch(&this->parmap.work_round, 1, __ATOMIC_SEQ_CST);
   /* wake all workers */
   futex_wake(&this->parmap.work_round, std::numeric_limits<int>::max());
 }
 
 template <typename T> void Parmap<T>::FutexSynchro::master_wait()
 {
-  unsigned count = this->parmap.thread_counter;
+  unsigned count = __atomic_load_n(&this->parmap.thread_counter, __ATOMIC_SEQ_CST);
   while (count < this->parmap.num_workers) {
     /* wait for all workers to be ready */
     futex_wait(&this->parmap.thread_counter, count);
-    count = this->parmap.thread_counter;
+    count = __atomic_load_n(&this->parmap.thread_counter, __ATOMIC_SEQ_CST);
   }
 }
 
 template <typename T> void Parmap<T>::FutexSynchro::worker_signal()
 {
-  unsigned count = __sync_add_and_fetch(&this->parmap.thread_counter, 1);
+  unsigned count = __atomic_add_fetch(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
   if (count == this->parmap.num_workers) {
     /* all workers have finished, wake the controller */
     futex_wake(&this->parmap.thread_counter, std::numeric_limits<int>::max());
@@ -408,37 +408,37 @@ template <typename T> void Parmap<T>::FutexSynchro::worker_signal()
 
 template <typename T> void Parmap<T>::FutexSynchro::worker_wait(unsigned round)
 {
-  unsigned work_round = this->parmap.work_round;
+  unsigned work_round = __atomic_load_n(&this->parmap.work_round, __ATOMIC_SEQ_CST);
   /* wait for more work */
   while (work_round != round) {
     futex_wait(&this->parmap.work_round, work_round);
-    work_round = this->parmap.work_round;
+    work_round = __atomic_load_n(&this->parmap.work_round, __ATOMIC_SEQ_CST);
   }
 }
 #endif
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::master_signal()
 {
-  this->parmap.thread_counter = 1;
-  __sync_add_and_fetch(&this->parmap.work_round, 1);
+  __atomic_store_n(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
+  __atomic_add_fetch(&this->parmap.work_round, 1, __ATOMIC_SEQ_CST);
 }
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::master_wait()
 {
-  while (this->parmap.thread_counter < this->parmap.num_workers) {
+  while (__atomic_load_n(&this->parmap.thread_counter, __ATOMIC_SEQ_CST) < this->parmap.num_workers) {
     xbt_os_thread_yield();
   }
 }
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::worker_signal()
 {
-  __sync_add_and_fetch(&this->parmap.thread_counter, 1);
+  __atomic_add_fetch(&this->parmap.thread_counter, 1, __ATOMIC_SEQ_CST);
 }
 
 template <typename T> void Parmap<T>::BusyWaitSynchro::worker_wait(unsigned round)
 {
   /* wait for more work */
-  while (this->parmap.work_round != round) {
+  while (__atomic_load_n(&this->parmap.work_round, __ATOMIC_SEQ_CST) != round) {
     xbt_os_thread_yield();
   }
 }

@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/instr/instr_private.hpp" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "xbt/log.h"
@@ -15,7 +15,7 @@
 
 #if SIMGRID_HAVE_LUA
 extern "C" {
-#include "src/bindings/lua/simgrid_lua.h"
+#include "src/bindings/lua/simgrid_lua.hpp"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */
@@ -33,7 +33,7 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_bw;
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
-SG_BEGIN_DECL()
+extern "C" {
 void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect)
 {
   xbt_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
@@ -102,73 +102,72 @@ void parse_platform_file(const char *file)
       xbt_die("Lua call failed. See Log");
     }
     lua_close(L);
+    return;
   }
-  else
 #endif
-  { // Use XML parser
 
-    int parse_status;
+  // Use XML parser
 
-    /* init the flex parser */
-    after_config_done = 0;
-    surf_parse_open(file);
+  int parse_status;
 
-    /* Do the actual parsing */
-    parse_status = surf_parse();
+  /* init the flex parser */
+  after_config_done = 0;
+  surf_parse_open(file);
 
-    /* connect all traces relative to hosts */
-    for (auto const& elm : trace_connect_list_host_avail) {
-      xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
-      tmgr_trace_t trace = traces_set_list.at(elm.first);
+  /* Do the actual parsing */
+  parse_status = surf_parse();
 
-      simgrid::s4u::Host* host = sg_host_by_name(elm.second.c_str());
-      xbt_assert(host, "Host %s undefined", elm.second.c_str());
-      simgrid::surf::Cpu *cpu = host->pimpl_cpu;
+  /* connect all traces relative to hosts */
+  for (auto const& elm : trace_connect_list_host_avail) {
+    xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
+    tmgr_trace_t trace = traces_set_list.at(elm.first);
 
-      cpu->setStateTrace(trace);
-    }
+    simgrid::s4u::Host* host = sg_host_by_name(elm.second.c_str());
+    xbt_assert(host, "Host %s undefined", elm.second.c_str());
+    simgrid::surf::Cpu* cpu = host->pimpl_cpu;
 
-    for (auto const& elm : trace_connect_list_host_speed) {
-      xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
-      tmgr_trace_t trace = traces_set_list.at(elm.first);
-
-      simgrid::s4u::Host* host = sg_host_by_name(elm.second.c_str());
-      xbt_assert(host, "Host %s undefined", elm.second.c_str());
-      simgrid::surf::Cpu *cpu = host->pimpl_cpu;
-
-      cpu->setSpeedTrace(trace);
-    }
-
-    for (auto const& elm : trace_connect_list_link_avail) {
-      xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
-      tmgr_trace_t trace = traces_set_list.at(elm.first);
-
-      sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
-      xbt_assert(link, "Link %s undefined", elm.second.c_str());
-      link->setStateTrace(trace);
-    }
-
-    for (auto const& elm : trace_connect_list_link_bw) {
-      xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
-      tmgr_trace_t trace = traces_set_list.at(elm.first);
-      sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
-      xbt_assert(link, "Link %s undefined", elm.second.c_str());
-      link->setBandwidthTrace(trace);
-    }
-
-    for (auto const& elm : trace_connect_list_link_lat) {
-      xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
-      tmgr_trace_t trace = traces_set_list.at(elm.first);
-      sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
-      xbt_assert(link, "Link %s undefined", elm.second.c_str());
-      link->setLatencyTrace(trace);
-    }
-
-    surf_parse_close();
-
-    if (parse_status)
-      surf_parse_error(std::string("Parse error in ") + file);
+    cpu->setStateTrace(trace);
   }
-}
 
-SG_END_DECL()
+  for (auto const& elm : trace_connect_list_host_speed) {
+    xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
+    tmgr_trace_t trace = traces_set_list.at(elm.first);
+
+    simgrid::s4u::Host* host = sg_host_by_name(elm.second.c_str());
+    xbt_assert(host, "Host %s undefined", elm.second.c_str());
+    simgrid::surf::Cpu* cpu = host->pimpl_cpu;
+
+    cpu->setSpeedTrace(trace);
+  }
+
+  for (auto const& elm : trace_connect_list_link_avail) {
+    xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
+    tmgr_trace_t trace = traces_set_list.at(elm.first);
+
+    sg_link_t link = simgrid::s4u::Link::byName(elm.second.c_str());
+    xbt_assert(link, "Link %s undefined", elm.second.c_str());
+    link->setStateTrace(trace);
+  }
+
+  for (auto const& elm : trace_connect_list_link_bw) {
+    xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
+    tmgr_trace_t trace = traces_set_list.at(elm.first);
+    sg_link_t link     = simgrid::s4u::Link::byName(elm.second.c_str());
+    xbt_assert(link, "Link %s undefined", elm.second.c_str());
+    link->setBandwidthTrace(trace);
+  }
+
+  for (auto const& elm : trace_connect_list_link_lat) {
+    xbt_assert(traces_set_list.find(elm.first) != traces_set_list.end(), "Trace %s undefined", elm.first.c_str());
+    tmgr_trace_t trace = traces_set_list.at(elm.first);
+    sg_link_t link     = simgrid::s4u::Link::byName(elm.second.c_str());
+    xbt_assert(link, "Link %s undefined", elm.second.c_str());
+    link->setLatencyTrace(trace);
+  }
+
+  surf_parse_close();
+
+  if (parse_status)
+    surf_parse_error(std::string("Parse error in ") + file);
+}
+}

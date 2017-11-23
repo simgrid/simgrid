@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,17 +7,17 @@
 #include "xbt/log.h"
 #include <xbt/sysdep.h>
 
+#include "src/mc/mc_replay.hpp"
 #include <mc/mc.h>
-#include "src/mc/mc_replay.h"
 
 #include <simgrid/sg_config.h>
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_safety.h"
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_safety.hpp"
 #endif
 
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_record.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc, "Configuration of the Model Checker");
 
@@ -39,7 +38,7 @@ int _sg_mc_timeout = 0;
 
 void _mc_cfg_cb_timeout(const char *name)
 {
-  if (_sg_cfg_init_status && not(_sg_do_model_check || MC_record_path))
+  if (_sg_cfg_init_status && not(_sg_do_model_check || not MC_record_path.empty()))
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
   _sg_mc_timeout = xbt_cfg_get_boolean(name);
@@ -51,11 +50,11 @@ int _sg_do_model_check_record = 0;
 int _sg_mc_checkpoint = 0;
 int _sg_mc_sparse_checkpoint = 0;
 int _sg_mc_ksm = 0;
-char *_sg_mc_property_file = nullptr;
+std::string _sg_mc_property_file;
 int _sg_mc_hash = 0;
 int _sg_mc_max_depth = 1000;
 int _sg_mc_max_visited_states = 0;
-char *_sg_mc_dot_output_file = nullptr;
+std::string _sg_mc_dot_output_file;
 int _sg_mc_comms_determinism = 0;
 int _sg_mc_send_determinism = 0;
 int _sg_mc_snapshot_fds = 0;
@@ -67,14 +66,13 @@ void _mc_cfg_cb_reduce(const char *name)
     xbt_die
         ("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcasecmp(val, "none"))
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "none")
     simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
-  else if (not strcasecmp(val, "dpor"))
+  else if (val == "dpor")
     simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::dpor;
   else
-    xbt_die("configuration option %s can only take 'none' or 'dpor' as a value",
-            name);
+    xbt_die("configuration option %s can only take 'none' or 'dpor' as a value", name);
 }
 
 void _mc_cfg_cb_checkpoint(const char *name)

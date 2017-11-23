@@ -76,8 +76,8 @@ static void test_dynamic_change(void)
   MSG_process_create("worker0", worker_busy_loop_main, &task0, (msg_host_t)vm0);
   MSG_process_create("worker1", worker_busy_loop_main, &task1, (msg_host_t)vm1);
 
-  double task0_remain_prev = MSG_task_get_flops_amount(task0);
-  double task1_remain_prev = MSG_task_get_flops_amount(task1);
+  double task0_remain_prev = MSG_task_get_remaining_work_ratio(task0);
+  double task1_remain_prev = MSG_task_get_remaining_work_ratio(task1);
 
   const double cpu_speed = MSG_host_get_speed(pm0);
   for (int i = 0; i < 10; i++) {
@@ -86,8 +86,8 @@ static void test_dynamic_change(void)
     MSG_vm_set_bound(vm1, new_bound);
     MSG_process_sleep(100);
 
-    double task0_remain_now = MSG_task_get_flops_amount(task0);
-    double task1_remain_now = MSG_task_get_flops_amount(task1);
+    double task0_remain_now = MSG_task_get_remaining_work_ratio(task0);
+    double task1_remain_now = MSG_task_get_remaining_work_ratio(task1);
 
     double task0_flops_per_sec = task0_remain_prev - task0_remain_now;
     double task1_flops_per_sec = task1_remain_prev - task1_remain_now;

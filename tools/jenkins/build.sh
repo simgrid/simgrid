@@ -83,7 +83,8 @@ echo "XX Get out of the tree"
 echo "XX"
 if [ -d $WORKSPACE/build ]
 then
-  rm -rf $WORKSPACE/build
+  # Windows cannot remove the directory if it's still used by the previous build
+  rm -rf $WORKSPACE/build || sleep 10 && rm -rf $WORKSPACE/build || sleep 10 && rm -rf $WORKSPACE/build
 fi
 mkdir $WORKSPACE/build
 cd $WORKSPACE/build

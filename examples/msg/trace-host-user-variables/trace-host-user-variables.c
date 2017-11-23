@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2016. The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2010, 2012-2017. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -77,38 +77,24 @@ int main(int argc, char *argv[])
     xbt_dynar_free (&link_variables);
   }
 
-  //create a customized viva graph configuration file
-  FILE *fp = fopen ("viva_graph.plist", "w");
-  if (fp == NULL){
-    return 1;
-  }
-  fprintf (fp, "{\n node = (");
   xbt_dynar_t nodes_type = TRACE_get_node_types ();
   if (nodes_type){
     XBT_INFO ("Node types in the trace:");
     char *node_type;
     xbt_dynar_foreach (nodes_type, cursor, node_type){
       XBT_INFO ("%s", node_type);
-      fprintf (fp, "%s, ", node_type);
     }
     xbt_dynar_free (&nodes_type);
   }
-  fprintf (fp, ");\n edge = (");
   xbt_dynar_t edges_type = TRACE_get_edge_types ();
   if (edges_type){
     XBT_INFO ("Node types in the trace:");
     char *edge_type;
     xbt_dynar_foreach (edges_type, cursor, edge_type){
       XBT_INFO ("%s", edge_type);
-      fprintf (fp, "%s, ", edge_type);
     }
     xbt_dynar_free (&edges_type);
   }
-  fprintf (fp, ");\n");
-  fprintf (fp, " host = {\n  type = square;\n  size = HDD_capacity; \n  values = (HDD_utilization);\n };\n");
-  fprintf (fp, " link = {\n  type = rhombus;\n  size = bandwidth;\n };\n");
-  fprintf (fp, "}\n");
-  fclose (fp);
 
   return 0;
 }

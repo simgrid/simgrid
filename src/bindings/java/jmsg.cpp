@@ -15,15 +15,15 @@
 
 #include "simgrid/s4u/Host.hpp"
 
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
-#include "jmsg_process.h"
-#include "jmsg_as.h"
+#include "jmsg.hpp"
+#include "jmsg_as.hpp"
 #include "jmsg_host.h"
+#include "jmsg_process.h"
 #include "jmsg_storage.h"
 #include "jmsg_task.h"
-#include "jxbt_utilities.h"
-#include "jmsg.h"
+#include "jxbt_utilities.hpp"
 
 #include "JavaContext.hpp"
 
@@ -38,7 +38,7 @@
 #endif
 /* end of eclipse-mandated pimple */
 
-SG_BEGIN_DECL()
+extern "C" {
 
 int JAVA_HOST_LEVEL = -1;
 
@@ -86,10 +86,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass
   return (jdouble) MSG_get_clock();
 }
 
-static void __JAVA_host_priv_free(void *host)
-{
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
   int argc = 0;
@@ -124,7 +120,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
 
   MSG_init(&argc, argv);
 
-  JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(__JAVA_host_priv_free);
+  JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   for (int index = 0; index < argc - 1; index++) {
     env->SetObjectArrayElement(jargs, index, (jstring)env->NewStringUTF(argv[index + 1]));
@@ -243,8 +239,7 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jde
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
   sg_host_energy_plugin_init();
 }
-
-SG_END_DECL()
+} // extern "C"
 
 /** Run a Java org.simgrid.msg.Process
  *

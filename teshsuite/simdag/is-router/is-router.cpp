@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
   std::sort(netcardList.begin(), netcardList.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
-              return a->name() < b->name();
+              return a->getName() < b->getName();
             });
 
   int it;
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
   std::printf("NetCards count: %zu\n", netcardList.size());
   for (auto const& nc : netcardList)
-    std::printf("   - Seen: \"%s\". Type: %s\n", nc->cname(),
+    std::printf("   - Seen: \"%s\". Type: %s\n", nc->getCname(),
                 nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
 
   return 0;

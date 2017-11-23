@@ -98,7 +98,7 @@ static int worker(int /*argc*/, char* /*argv*/ [])
     MSG_task_execute(task);
     double end = MSG_get_clock();
     XBT_INFO("Task \"%s\" done in %f (amount %f)", MSG_task_get_name(task), end - start,
-             MSG_task_get_flops_amount(task));
+             MSG_task_get_remaining_work_ratio(task));
 
     MSG_task_destroy(task);
   }

@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include <xbt/ex.hpp>
@@ -29,7 +29,7 @@ static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   simgrid::kernel::activity::RawImplPtr sync =
       simgrid::kernel::activity::RawImplPtr(new simgrid::kernel::activity::RawImpl());
   sync->sleep                          = smx_host->pimpl_cpu->sleep(timeout);
-  sync->sleep->setData(&*sync);
+  sync->sleep->setData(sync.get());
   XBT_OUT();
   return sync;
 }
@@ -168,7 +168,7 @@ void MutexImpl::unlock(smx_actor_t issuer)
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != this->owner)
     THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%lu), not by you.",
-           this->owner->cname(), this->owner->pid);
+           this->owner->getCname(), this->owner->pid);
 
   if (xbt_swag_size(this->sleeping) > 0) {
     /*process to wake up */
@@ -232,7 +232,7 @@ smx_cond_t SIMIX_cond_init()
 {
   XBT_IN("()");
   simgrid::simix::ActorImpl p;
-  smx_cond_t cond = new s_smx_cond();
+  smx_cond_t cond = new s_smx_cond_t();
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->refcount_ = 1;
   XBT_OUT();
@@ -364,14 +364,13 @@ void SIMIX_cond_unref(smx_cond_t cond)
 
 void intrusive_ptr_add_ref(s_smx_cond_t *cond)
 {
-  auto previous = (cond->refcount_)++;
+  auto previous = cond->refcount_.fetch_add(1);
   xbt_assert(previous != 0);
 }
 
 void intrusive_ptr_release(s_smx_cond_t *cond)
 {
-  auto count = --(cond->refcount_);
-  if (count == 0) {
+  if (cond->refcount_.fetch_sub(1) == 1) {
     xbt_assert(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
     xbt_swag_free(cond->sleeping);
@@ -386,7 +385,7 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
   XBT_IN("(%u)",value);
   simgrid::simix::ActorImpl p;
 
-  smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
+  smx_sem_t sem = new s_smx_sem_t;
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   sem->value = value;
   XBT_OUT();
@@ -402,7 +401,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
     xbt_assert(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
     xbt_swag_free(sem->sleeping);
-    xbt_free(sem);
+    delete sem;
   }
   XBT_OUT();
 }

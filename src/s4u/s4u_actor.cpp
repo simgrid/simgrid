@@ -11,7 +11,7 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 #include <sstream>
 
@@ -85,14 +85,14 @@ void Actor::daemonize()
   simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
 }
 
-const char* Actor::getCname()
+const simgrid::xbt::string& Actor::getName() const
 {
-  return this->pimpl_->name.c_str();
+  return this->pimpl_->getName();
 }
 
-simgrid::xbt::string Actor::getName()
+const char* Actor::getCname() const
 {
-  return this->pimpl_->name;
+  return this->pimpl_->getCname();
 }
 
 aid_t Actor::getPid()
@@ -232,6 +232,12 @@ void execute(double flops)
   simcall_execution_wait(s);
 }
 
+void execute(double flops,double priority)
+{
+  smx_activity_t s = simcall_execution_start(nullptr,flops,1 / priority/*priority*/,0./*bound*/);
+  simcall_execution_wait(s);
+}
+
 void* recv(MailboxPtr chan) // deprecated
 {
   return chan->get();
@@ -274,7 +280,12 @@ aid_t getPpid()
 
 std::string getName()
 {
-  return SIMIX_process_self()->name;
+  return SIMIX_process_self()->getName();
+}
+
+const char* getCname()
+{
+  return SIMIX_process_self()->getCname();
 }
 
 Host* getHost()

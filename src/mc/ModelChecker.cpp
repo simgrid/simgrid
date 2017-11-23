@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,14 +26,15 @@
 #include "src/mc/PageStore.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_record.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 ::simgrid::mc::ModelChecker* mc_model_checker = nullptr;
+extern std::string _sg_mc_dot_output_file;
 
 using simgrid::mc::remote;
 
@@ -96,7 +97,7 @@ void ModelChecker::start()
 
   process_->init();
 
-  if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0'))
+  if (not _sg_mc_dot_output_file.empty())
     MC_init_dot_output();
 
   setup_ignore();
@@ -196,7 +197,7 @@ static void MC_report_assertion_error()
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
 {
-  mc_message_t base_message;
+  s_mc_message_t base_message;
   if (size < (ssize_t) sizeof(base_message))
     xbt_die("Broken message");
   memcpy(&base_message, buffer, sizeof(base_message));
@@ -375,13 +376,8 @@ void ModelChecker::handle_waitpid()
 
 void ModelChecker::on_signal(int signo)
 {
-  switch(signo) {
-  case SIGCHLD:
+  if (signo == SIGCHLD)
     this->handle_waitpid();
-    break;
-  default:
-    break;
-  }
 }
 
 void ModelChecker::wait_for_requests()
@@ -393,7 +389,7 @@ void ModelChecker::wait_for_requests()
 
 void ModelChecker::handle_simcall(Transition const& transition)
 {
-  s_mc_message_simcall_handle m;
+  s_mc_message_simcall_handle_t m;
   memset(&m, 0, sizeof(m));
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = transition.pid;
@@ -409,7 +405,7 @@ bool ModelChecker::checkDeadlock()
   int res;
   if ((res = this->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
     xbt_die("Could not check deadlock state");
-  mc_message_int_t message;
+  s_mc_message_int_t message;
   ssize_t s = mc_model_checker->process().getChannel().receive(message);
   if (s == -1)
     xbt_die("Could not receive message");

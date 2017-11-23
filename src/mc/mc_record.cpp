@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,28 +17,26 @@
 #include "simgrid/simix.h"
 
 #include "src/kernel/context/Context.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
-#include "src/mc/mc_replay.h"
-#include "src/mc/mc_record.h"
+#include "src/simix/smx_private.hpp"
 
 #include "src/mc/mc_base.h"
 #include "src/mc/Transition.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_state.h"
-#include "src/mc/mc_smx.h"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_state.hpp"
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
 
-extern "C" {
-char* MC_record_path = nullptr;
-}
+std::string MC_record_path;
 
 namespace simgrid {
 namespace mc {
@@ -67,10 +64,10 @@ void replay(RecordTrace const& trace)
   }
 }
 
-void replay(const char* path_string)
+void replay(std::string path_string)
 {
   simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
-  simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string);
+  simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string.c_str());
   simgrid::mc::replay(trace);
   simgrid::mc::processes_time.clear();
 }
@@ -80,7 +77,7 @@ RecordTrace parseRecordTrace(const char* data)
   RecordTrace res;
   XBT_INFO("path=%s", data);
   if (data == nullptr || data[0] == '\0')
-    throw std::runtime_error("Could not parse record path");
+    throw std::invalid_argument("Could not parse record path");
 
   const char* current = data;
   while (*current) {
@@ -88,7 +85,7 @@ RecordTrace parseRecordTrace(const char* data)
     simgrid::mc::Transition item;
     int count = sscanf(current, "%d/%d", &item.pid, &item.argument);
     if(count != 2 && count != 1)
-      throw std::runtime_error("Could not parse record path");
+      throw std::invalid_argument("Could not parse record path");
     res.push_back(item);
 
     // Find next chunk:

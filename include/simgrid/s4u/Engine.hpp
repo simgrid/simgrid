@@ -58,6 +58,8 @@ public:
 
   size_t getHostCount();
   void getHostList(std::vector<Host*> * whereTo);
+  size_t getLinkCount();
+  void getLinkList(std::vector<Link*> * list);
 
   /** @brief Run the simulation */
   void run();

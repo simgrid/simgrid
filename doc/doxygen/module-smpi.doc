@@ -412,7 +412,7 @@ changed to use smpi version of the calls instead (MPI_Send will become smpi_mpi_
 
 Example: adding a "pair" version of the Alltoall collective.
 
- - Implement it in a file called alltoall-pair.c in the src/smpi/colls folder. This file should include colls_private.h.
+ - Implement it in a file called alltoall-pair.c in the src/smpi/colls folder. This file should include colls_private.hpp.
 
  - The name of the new algorithm function should be smpi_coll_tuned_alltoall_pair, with the same signature as MPI_Alltoall.
 

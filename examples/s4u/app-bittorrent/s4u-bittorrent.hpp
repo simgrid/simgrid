@@ -44,7 +44,7 @@
 #define MESSAGE_CANCEL_SIZE 17
 
 /** Types of messages exchanged between two peers. */
-typedef enum {
+enum e_message_type {
   MESSAGE_HANDSHAKE,
   MESSAGE_CHOKE,
   MESSAGE_UNCHOKE,
@@ -55,7 +55,7 @@ typedef enum {
   MESSAGE_REQUEST,
   MESSAGE_PIECE,
   MESSAGE_CANCEL
-} e_message_type;
+};
 
 class Message {
 public:

@@ -44,7 +44,7 @@ private:
   void* data_ = nullptr;
   std::size_t size_;
   Type type_ = Type::Malloc;
-private:
+
   Buffer(std::size_t size, Type type = Type::Malloc);
   Buffer(void* data, std::size_t size, Type type = Type::Malloc) :
     data_(data), size_(size), type_(type) {}
@@ -276,6 +276,6 @@ simgrid::mc::RegionSnapshot region(
 }
 }
 
-typedef class simgrid::mc::RegionSnapshot s_mc_mem_region_t;
+typedef simgrid::mc::RegionSnapshot s_mc_mem_region_t;
 typedef s_mc_mem_region_t* mc_mem_region_t;
 #endif

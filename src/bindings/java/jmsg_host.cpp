@@ -9,14 +9,14 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 
-#include "jmsg.h"
+#include "jmsg.hpp"
 #include "jmsg_host.h"
-#include "jxbt_utilities.h"
 #include "jmsg_storage.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jmethodID jhost_method_Host_constructor;
 static jfieldID jhost_field_Host_bind;
@@ -250,7 +250,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
   }
 
   for (auto const& elm : mounted_storages) {
-    jname    = env->NewStringUTF(elm.second->getName());
+    jname    = env->NewStringUTF(elm.second->getCname());
     jstorage = Java_org_simgrid_msg_Storage_getByName(env,cls,jname);
     env->SetObjectArrayElement(jtable, index, jstorage);
     index++;
@@ -374,5 +374,4 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, 
   msg_host_t host = jhost_get_native(env, jhost);
   return MSG_host_get_power_peak_at(host, pstate);
 }
-
-SG_END_DECL()
+}

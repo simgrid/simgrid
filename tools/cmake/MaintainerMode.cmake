@@ -16,7 +16,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp
 
       DEPENDS
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.py
@@ -32,11 +32,11 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.h
+      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp
       )
 
     SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-      "${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h;${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.h"
+      "${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h;${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp"
       )
   endif()
 endif()
@@ -162,7 +162,6 @@ if(enable_maintainer_mode AND NOT WIN32)
     set(string5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
     set(string9  "'s/#include <unistd.h>/#if defined(_WIN32)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
     set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
-    set(string15 "'s/FAIL(\"Premature EOF/if(!ETag_surfxml_include_state()) FAIL(\"Premature EOF/'")
 
     ADD_CUSTOM_COMMAND(
       OUTPUT 	${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h
@@ -206,7 +205,6 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
       COMMAND ${FLEX_EXE} -o src/surf/xml/simgrid_dtd.c -Psurf_parse_ --noline src/surf/xml/simgrid_dtd.l
       COMMAND ${SED_EXE} -i ${string9} src/surf/xml/simgrid_dtd.c
-      COMMAND ${SED_EXE} -i ${string15} src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i 's/int surf_parse_leng\;/unsigned int surf_parse_leng\;/' src/surf/xml/simgrid_dtd.c
       COMMAND ${SED_EXE} -i 's/n = 0\; n < max_size/n = 0\; n < (size_t) max_size/' src/surf/xml/simgrid_dtd.c

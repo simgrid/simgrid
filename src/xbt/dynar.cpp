@@ -119,7 +119,7 @@ extern "C" void xbt_dynar_free_data(xbt_dynar_t dynar)
 {
   xbt_dynar_reset(dynar);
   if (dynar)
-    free(dynar->data);
+    xbt_free(dynar->data);
 }
 
 /** @brief Destructor of the structure not touching to the content
@@ -133,8 +133,8 @@ extern "C" void xbt_dynar_free_container(xbt_dynar_t* dynar)
 {
   if (dynar && *dynar) {
     xbt_dynar_t d = *dynar;
-    free(d->data);
-    free(d);
+    xbt_free(d->data);
+    xbt_free(d);
     *dynar = nullptr;
   }
 }
@@ -627,7 +627,7 @@ extern "C" void* xbt_dynar_to_array(xbt_dynar_t dynar)
   xbt_dynar_shrink(dynar, 1);
   memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
   res = dynar->data;
-  free(dynar);
+  xbt_free(dynar);
   return res;
 }
 
@@ -1025,7 +1025,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -1048,7 +1048,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_pop(d, &s2);
     xbt_test_assert(not strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   /* 4. Free the resources */
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
@@ -1073,21 +1073,21 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2),
                     "The retrieved value is not the same than the injected one at the begining (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   for (int cpt = (NB_ELEM / 5) - 1; cpt >= 0; cpt--) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2),
                     "The retrieved value is not the same than the injected one in the middle (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   for (int cpt = NB_ELEM / 2; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2),
                     "The retrieved value is not the same than the injected one at the end (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -1104,7 +1104,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_remove_at(d, 2 * (NB_ELEM / 5), &s2);
     xbt_test_assert(not strcmp(buf, s2), "Remove a bad value. Got %s, expected %s", s2, buf);
-    free(s2);
+    xbt_free(s2);
   }
   xbt_dynar_free(&d);           /* end_of_doxygen */
 }

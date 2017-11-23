@@ -282,6 +282,7 @@ else {
         print "TAP formatted results in $tapfullfile\n";
     }
 }
+exit ($err_count > 0);
 #
 # ---------------------------------------------------------------------------
 # Routines

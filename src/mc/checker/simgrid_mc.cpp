@@ -23,34 +23,31 @@
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_safety.h"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_safety.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
+extern std::string _sg_mc_property_file;
 
 static inline
 char** argvdup(int argc, char** argv)
 {
-  char** argv_copy = xbt_new(char*, argc+1);
+  char** argv_copy = new char*[argc + 1];
   std::memcpy(argv_copy, argv, sizeof(char*) * argc);
   argv_copy[argc] = nullptr;
   return argv_copy;
 }
 
-static
-std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& session)
+static std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& session)
 {
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    return std::unique_ptr<simgrid::mc::Checker>(
-      simgrid::mc::createCommunicationDeterminismChecker(session));
-  else if (_sg_mc_property_file == nullptr || _sg_mc_property_file[0] == '\0')
-    return std::unique_ptr<simgrid::mc::Checker>(
-      simgrid::mc::createSafetyChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker(session));
+  else if (_sg_mc_property_file.empty())
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker(session));
   else
-    return std::unique_ptr<simgrid::mc::Checker>(
-      simgrid::mc::createLivenessChecker(session));
+    return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker(session));
 }
 
 int main(int argc, char** argv)
@@ -74,7 +71,7 @@ int main(int argc, char** argv)
 
     std::unique_ptr<Session> session =
       std::unique_ptr<Session>(Session::spawnvp(argv_copy[1], argv_copy+1));
-    free(argv_copy);
+    delete[] argv_copy;
 
     simgrid::mc::session = session.get();
     std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*session);

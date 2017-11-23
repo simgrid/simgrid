@@ -9,9 +9,9 @@
 #ifndef XBT_STR_H
 #define XBT_STR_H
 
-#include "xbt/misc.h"
-#include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "xbt/dynar.h"
+#include "xbt/misc.h"
 
 #include <stdarg.h>             /* va_* */
 #include <stdio.h>  /* FILE */
@@ -30,7 +30,6 @@ XBT_PUBLIC(xbt_dynar_t) xbt_str_split(const char *s, const char *sep);
 XBT_PUBLIC(xbt_dynar_t) xbt_str_split_quoted(const char *s);
 XBT_PUBLIC(xbt_dynar_t) xbt_str_split_quoted_in_place(char *s);
 
-XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join_array(const char *const *strs, const char *sep);
 
 XBT_PUBLIC(long int) xbt_str_parse_int(const char* str, const char* error_msg);

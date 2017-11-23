@@ -6,8 +6,8 @@
 
 #include "xbt/ex.hpp"
 
-#include "msg_private.h"
-#include "src/simix/smx_private.h"
+#include "msg_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include "xbt/synchro.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (synchro)");
@@ -63,16 +63,16 @@ int MSG_sem_would_block(msg_sem_t sem) {
 }
 
 /*-**** barrier related functions ****-*/
-typedef struct s_msg_bar {
+struct s_msg_bar_t {
   xbt_mutex_t mutex;
   xbt_cond_t cond;
   unsigned int arrived_processes;
   unsigned int expected_processes;
-} s_msg_bar_t;
+};
 
 /** @brief Initializes a barrier, with count elements */
 msg_bar_t MSG_barrier_init(unsigned int count) {
-  msg_bar_t bar           = xbt_new0(s_msg_bar, 1);
+  msg_bar_t bar           = new s_msg_bar_t;
   bar->expected_processes = count;
   bar->arrived_processes  = 0;
   bar->mutex              = xbt_mutex_init();
@@ -84,7 +84,7 @@ msg_bar_t MSG_barrier_init(unsigned int count) {
 void MSG_barrier_destroy(msg_bar_t bar) {
   xbt_mutex_destroy(bar->mutex);
   xbt_cond_destroy(bar->cond);
-  xbt_free(bar);
+  delete bar;
 }
 
 /** @brief Performs a barrier already initialized */

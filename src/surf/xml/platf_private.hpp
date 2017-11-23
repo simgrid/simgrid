@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-SG_BEGIN_DECL()
+extern "C" {
 #include "src/surf/xml/simgrid_dtd.h"
 
 #ifndef YY_TYPEDEF_YY_SIZE_T
@@ -23,12 +23,12 @@ SG_BEGIN_DECL()
 typedef size_t yy_size_t;
 #endif
 
-typedef enum {
-  SURF_CLUSTER_DRAGONFLY=3,
-  SURF_CLUSTER_FAT_TREE=2,
-  SURF_CLUSTER_FLAT = 1,
-  SURF_CLUSTER_TORUS = 0
-} e_surf_cluster_topology_t;
+enum e_surf_cluster_topology_t {
+  SURF_CLUSTER_DRAGONFLY = 3,
+  SURF_CLUSTER_FAT_TREE  = 2,
+  SURF_CLUSTER_FLAT      = 1,
+  SURF_CLUSTER_TORUS     = 0
+};
 
 /* ***************************************** */
 /*
@@ -41,16 +41,16 @@ typedef enum {
  * used, instead of malloced structures.
  */
 
-typedef struct {
-  const char* id;
+struct s_sg_platf_host_cbarg_t {
+  const char* id = nullptr;
   std::vector<double> speed_per_pstate;
-  int pstate;
-  int core_amount;
-  tmgr_trace_t speed_trace;
-  tmgr_trace_t state_trace;
-  const char* coord;
-  std::map<std::string, std::string>* properties;
-} s_sg_platf_host_cbarg_t;
+  int pstate               = 0;
+  int core_amount          = 0;
+  tmgr_trace_t speed_trace = nullptr;
+  tmgr_trace_t state_trace = nullptr;
+  const char* coord        = nullptr;
+  std::map<std::string, std::string>* properties = nullptr;
+};
 typedef s_sg_platf_host_cbarg_t* sg_platf_host_cbarg_t;
 
 class HostLinkCreationArgs {
@@ -83,15 +83,15 @@ public:
   tmgr_trace_t state_trace;
 };
 
-typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
-typedef struct s_sg_platf_route_cbarg {
-  bool symmetrical;
-  sg_netpoint_t src;
-  sg_netpoint_t dst;
-  sg_netpoint_t gw_src;
-  sg_netpoint_t gw_dst;
-  std::vector<simgrid::surf::LinkImpl*>* link_list;
-} s_sg_platf_route_cbarg_t;
+struct s_sg_platf_route_cbarg_t {
+  bool symmetrical     = false;
+  sg_netpoint_t src    = nullptr;
+  sg_netpoint_t dst    = nullptr;
+  sg_netpoint_t gw_src = nullptr;
+  sg_netpoint_t gw_dst = nullptr;
+  std::vector<simgrid::surf::LinkImpl*> link_list;
+};
+typedef s_sg_platf_route_cbarg_t* sg_platf_route_cbarg_t;
 
 class ClusterCreationArgs {
 public:
@@ -152,11 +152,11 @@ public:
   std::string name;
 };
 
-typedef struct s_sg_platf_prop_cbarg *sg_platf_prop_cbarg_t;
-typedef struct s_sg_platf_prop_cbarg {
+struct s_sg_platf_prop_cbarg_t {
   const char *id;
   const char *value;
-} s_sg_platf_prop_cbarg_t;
+};
+typedef s_sg_platf_prop_cbarg_t* sg_platf_prop_cbarg_t;
 
 class TraceCreationArgs {
 public:
@@ -173,17 +173,16 @@ public:
   std::string element;
 };
 
-typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
-typedef struct s_sg_platf_process_cbarg {
-  const char **argv;
-  int argc;
-  std::map<std::string, std::string>* properties;
-  const char *host;
-  const char *function;
-  double start_time;
-  double kill_time;
-  e_surf_process_on_failure_t on_failure;
-} s_sg_platf_process_cbarg_t;
+struct s_sg_platf_process_cbarg_t {
+  std::vector<std::string> args;
+  std::map<std::string, std::string>* properties = nullptr;
+  const char* host                       = nullptr;
+  const char* function                   = nullptr;
+  double start_time                      = 0.0;
+  double kill_time                       = 0.0;
+  e_surf_process_on_failure_t on_failure = {};
+};
+typedef s_sg_platf_process_cbarg_t* sg_platf_process_cbarg_t;
 
 class ZoneCreationArgs {
 public:
@@ -235,10 +234,7 @@ XBT_PUBLIC(void) surf_parse_set_out(FILE * out_str);
 XBT_PUBLIC(int) surf_parse_get_debug();
 XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
 XBT_PUBLIC(int) surf_parse_lex_destroy();
-
-XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
-
-SG_END_DECL()
+}
 
 namespace simgrid {
 namespace surf {

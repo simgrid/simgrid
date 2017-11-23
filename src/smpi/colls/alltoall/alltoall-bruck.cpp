@@ -25,7 +25,7 @@
 
  ****************************************************************************/
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 
 namespace simgrid{
 namespace smpi{

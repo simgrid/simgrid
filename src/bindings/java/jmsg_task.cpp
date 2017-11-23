@@ -7,15 +7,15 @@
 
 #include "simgrid/s4u/Host.hpp"
 
-#include "jmsg.h"
+#include "jmsg.hpp"
 #include "jmsg_host.h"
-#include "jmsg_task.h"
 #include "jmsg_process.h"
-#include "jxbt_utilities.h"
+#include "jmsg_task.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jmethodID jtask_method_Comm_constructor;
 
@@ -76,8 +76,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
   int host_count = static_cast<int>(env->GetArrayLength(jhosts));
 
   jdouble* jcomputeDurations = env->GetDoubleArrayElements(jcomputeDurations_arg, 0);
-  msg_host_t* hosts          = xbt_new0(msg_host_t, host_count);
-  double* computeDurations   = xbt_new0(double, host_count);
+  msg_host_t* hosts          = new msg_host_t[host_count];
+  double* computeDurations   = new double[host_count];
   for (int index = 0; index < host_count; index++) {
     jobject jhost           = env->GetObjectArrayElement(jhosts, index);
     hosts[index] = jhost_get_native(env, jhost);
@@ -86,7 +86,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
   env->ReleaseDoubleArrayElements(jcomputeDurations_arg, jcomputeDurations, 0);
 
   jdouble* jmessageSizes = env->GetDoubleArrayElements(jmessageSizes_arg, 0);
-  double* messageSizes   = xbt_new0(double, host_count* host_count);
+  double* messageSizes   = new double[host_count * host_count];
   for (int index = 0; index < host_count * host_count; index++) {
     messageSizes[index] = jmessageSizes[index];
   }
@@ -99,6 +99,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env, jo
 
   /* associate the java task object and the native task */
   jtask_bind(jtask, task, env);
+
+  delete[] hosts;
+  delete[] computeDurations;
+  delete[] messageSizes;
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel(JNIEnv * env, jobject jtask)
@@ -201,7 +205,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env,
     jxbt_throw_notbound(env, "task", jtask);
     return -1;
   }
-  return (jdouble) MSG_task_get_flops_amount(ptask);
+  return (jdouble)MSG_task_get_remaining_work_ratio(ptask);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {
@@ -303,8 +307,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass c
     return nullptr;
 
   //pointer to store the task object pointer.
-  msg_task_t *task = xbt_new(msg_task_t,1);
-  *task = nullptr;
+  msg_task_t* task = new msg_task_t(nullptr);
   /* There should be a cache here */
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
@@ -358,7 +361,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, j
     return nullptr;
 
   // pointer to store the task object pointer.
-  msg_task_t* task = xbt_new0(msg_task_t, 1);
+  msg_task_t* task = new msg_task_t(nullptr);
 
   jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
   if (not jcomm) {
@@ -525,5 +528,4 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass
 
   return (jint) rv;
 }
-
-SG_END_DECL()
+}

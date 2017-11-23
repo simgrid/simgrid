@@ -17,9 +17,9 @@ $ java -classpath ${classpath:=.} async/dsend/Main ${srcdir:=.}/../platforms/sma
 > [  0.000000] (1:Sender@Boivin) Sending "Task_5" to "Jupiter"
 > [  0.000000] (1:Sender@Boivin) Sending "Task_6" to "Tremblay"
 > [  0.000000] (1:Sender@Boivin) All tasks have been (asynchronously) dispatched. Let's sleep for 20s so that nobody gets a message from a terminated process.
-> [  1.933362] (2:Receiver@Bourassa) Received a task. I'm done. See you!
-> [  1.933362] (4:Receiver@Ginette) Received a task. I'm done. See you!
 > [  1.933362] (6:Receiver@Jupiter) Received a task. I'm done. See you!
+> [  1.933362] (4:Receiver@Ginette) Received a task. I'm done. See you!
+> [  1.933362] (2:Receiver@Bourassa) Received a task. I'm done. See you!
 > [  2.449247] (7:Receiver@Tremblay) Received a task. I'm done. See you!
 > [  2.964768] (3:Receiver@Fafard) Received a task. I'm done. See you!
 > [  4.162002] (5:Receiver@Jacquelin) Received a task. I'm done. See you!

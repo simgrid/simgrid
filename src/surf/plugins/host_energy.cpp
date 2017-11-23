@@ -110,7 +110,7 @@ before you can get accurate energy predictions.
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
 
 namespace simgrid {
-namespace energy {
+namespace plugin {
 
 class PowerRange {
 public:
@@ -200,7 +200,7 @@ void HostEnergy::update()
 
     double energy_this_step = instantaneous_consumption * (finish_time - start_time);
 
-    // TODO Trace: Trace energy_this_step from start_time to finish_time in host->name()
+    // TODO Trace: Trace energy_this_step from start_time to finish_time in host->getName()
 
     this->total_energy = previous_energy + energy_this_step;
     this->last_updated = finish_time;
@@ -355,7 +355,7 @@ void HostEnergy::initWattsRangeList()
 }
 }
 
-using simgrid::energy::HostEnergy;
+using simgrid::plugin::HostEnergy;
 
 /* **************************** events  callback *************************** */
 static void onCreation(simgrid::s4u::Host& host)
@@ -363,7 +363,7 @@ static void onCreation(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  //TODO Trace: set to zero the energy variable associated to host->name()
+  // TODO Trace: set to zero the energy variable associated to host->getName()
 
   host.extension_set(new HostEnergy(&host));
 }
@@ -432,7 +432,7 @@ static void onSimulationEnd()
 }
 
 /* **************************** Public interface *************************** */
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup plugin_energy
  * \brief Enable host energy plugin
@@ -513,5 +513,4 @@ double sg_host_get_current_consumption(sg_host_t host)
   double cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->getSpeed();
   return host->extension<HostEnergy>()->getCurrentWattsValue(cpu_load);
 }
-
-SG_END_DECL()
+}

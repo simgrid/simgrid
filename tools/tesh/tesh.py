@@ -65,7 +65,7 @@ SIGNALS_TO_NAMES_DICT = dict((getattr(signal, n), n) \
 
 
 #exit correctly
-def exit(errcode):
+def tesh_exit(errcode):
     #If you do not flush some prints are skipped
     sys.stdout.flush()
     #os._exit exit even when executed within a thread
@@ -74,7 +74,7 @@ def exit(errcode):
 
 def fatal_error(msg):
     print("[Tesh/CRITICAL] "+str(msg))
-    exit(1)
+    tesh_exit(1)
 
 
 #Set an environment variable.
@@ -224,7 +224,7 @@ class Cmd(object):
         except FileNotFoundError:
             print("Chdir to "+args[1]+" failed: No such file or directory")
             print("Test suite `"+FileReader().filename+"': NOK (system error)")
-            exit(4)
+            tesh_exit(4)
 
 
     #Run the Cmd if possible.
@@ -293,7 +293,7 @@ class Cmd(object):
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
-            exit(3)
+            tesh_exit(3)
         except OSError as osE:
             if osE.errno == 8:
                 osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
@@ -305,7 +305,7 @@ class Cmd(object):
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
             proc.kill()
-            exit(3)
+            tesh_exit(3)
 
         if self.output_display:
             print(stdout_data)
@@ -363,7 +363,7 @@ class Cmd(object):
                         f.write("> "+line+"\n")
                     f.close()
                     print("Obtained output kept as requested: "+os.path.abspath("obtained"))
-                exit(2)
+                tesh_exit(2)
 
         #print ((proc.returncode, self.expect_return))
 
@@ -371,11 +371,11 @@ class Cmd(object):
             if proc.returncode >= 0:
                 print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> returned code "+str(proc.returncode)+")")
                 if lock is not None: lock.release()
-                exit(2)
+                tesh_exit(2)
             else:
                 print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> got signal "+SIGNALS_TO_NAMES_DICT[-proc.returncode]+")")
                 if lock is not None: lock.release()
-                exit(-proc.returncode)
+                tesh_exit(-proc.returncode)
 
         if lock is not None: lock.release()
 
@@ -410,8 +410,8 @@ if __name__ == '__main__':
 
     try:
         options = parser.parse_args()
-    except:
-        exit(1)
+    except SystemExit:
+        tesh_exit(1)
 
     if options.cd is not None:
         os.chdir(options.cd)
@@ -431,6 +431,7 @@ if __name__ == '__main__':
            re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail\\?id=189"),
            re.compile("For details see https://github.com/google/sanitizers/issues/189"),
            re.compile("Python runtime initialized with LC_CTYPE=C .*"),
+           re.compile("^cmake: .*? no version information available (required by cmake)"), # Seen on CircleCI
            ]
         TeshState().jenkins = True # This is a Jenkins build
 
@@ -440,7 +441,7 @@ if __name__ == '__main__':
     else:
         if not os.path.isfile(options.teshfile):
             print("Cannot open teshfile '"+options.teshfile+"': File not found")
-            exit(3)
+            tesh_exit(3)
         f = FileReader(options.teshfile)
         print("Test suite '"+f.abspath+"'")
 

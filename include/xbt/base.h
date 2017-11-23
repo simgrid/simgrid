@@ -45,10 +45,35 @@
      __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
 #endif
 
+#if defined(__cplusplus)
+#if __cplusplus >= 201103L
+#define XBT_ATTRIB_NORETURN [[noreturn]]
+#endif
+#if __cplusplus >= 201703L
+#define XBT_ATTRIB_UNUSED [[maybe_unused]]
+#endif
+#if __cplusplus >= 201402L
+#define XBT_ATTRIB_DEPRECATED(msg) [[deprecated(msg)]]
+#endif
+#elif defined(__STDC_VERSION__)
+#if __STDC_VERSION__ >= 201112L
+#define XBT_ATTRIB_NORETURN _Noreturn
+#endif
+#endif
+
+#ifndef XBT_ATTRIB_NORETURN
 #define XBT_ATTRIB_NORETURN __attribute__((noreturn))
+#endif
+#ifndef XBT_ATTRIB_UNUSED
 #define XBT_ATTRIB_UNUSED  __attribute__((unused))
-#define XBT_ATTRIB_DEPRECATED_v319(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.19 */
-#define XBT_ATTRIB_DEPRECATED_v320(msg) __attribute__((deprecated(msg))) /* Will be dropped in v3.20 */
+#endif
+#ifndef XBT_ATTRIB_DEPRECATED
+#define XBT_ATTRIB_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#endif
+
+#define XBT_ATTRIB_DEPRECATED_v319(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.19 */
+#define XBT_ATTRIB_DEPRECATED_v320(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.20 */
+#define XBT_ATTRIB_DEPRECATED_v321(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.21 */
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */

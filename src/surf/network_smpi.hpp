@@ -19,7 +19,6 @@ namespace simgrid {
       double latencyFactor(double size);
       double bandwidthFactor(double size);
       double bandwidthConstraint(double rate, double bound, double size);
-      void communicateCallBack() {};
     };
   }
 }

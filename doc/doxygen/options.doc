@@ -1272,10 +1272,10 @@ is registered and will clean up some variables and terminate/cleanup the tracing
 
 TODO: Add when this should be used.
 
-\subsection options_generic_path XML file inclusion path
+\subsection options_generic_path Profile files' search path
 
 It is possible to specify a list of directories to search into for the
-\<include\> tag in XML files by using the \b path configuration
+trace files (see @ref pf_trace) by using the \b path configuration
 item. To add several directory to the path, set the configuration
 item several times, as in \verbatim
 --cfg=path:toto --cfg=path:tutu

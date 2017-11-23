@@ -1,5 +1,4 @@
-/* Copyright (c) 2011-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,16 +22,17 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/Transition.hpp"
 #include "src/mc/checker/LivenessChecker.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_replay.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_replay.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/remote/Client.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
+extern std::string _sg_mc_property_file;
 
 /********* Static functions *********/
 
@@ -76,6 +76,7 @@ static bool evaluate_label(xbt_automaton_exp_label_t l, std::vector<int> const& 
           return values[cursor] != 0;
       }
       xbt_die("Missing predicate");
+      break;
     }
   case xbt_automaton_exp_label::AUT_ONE:
     return true;
@@ -266,7 +267,6 @@ RecordTrace LivenessChecker::getRecordTrace() // override
 
 void LivenessChecker::logState() // override
 {
-  Checker::logState();
   XBT_INFO("Expanded pairs = %lu", expandedPairsCount_);
   XBT_INFO("Visited pairs = %lu", visitedPairsCount_);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
@@ -301,7 +301,8 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
 std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton_state_t state,
                                                std::shared_ptr<const std::vector<int>> propositions)
 {
-  std::shared_ptr<Pair> next_pair = std::make_shared<Pair>(++expandedPairsCount_);
+  expandedPairsCount_++;
+  std::shared_ptr<Pair> next_pair = std::make_shared<Pair>(expandedPairsCount_);
   next_pair->automaton_state      = state;
   next_pair->graph_state          = std::shared_ptr<simgrid::mc::State>(new simgrid::mc::State(++expandedStatesCount_));
   next_pair->atomic_propositions  = std::move(propositions);
@@ -346,8 +347,8 @@ void LivenessChecker::backtrack()
 
 void LivenessChecker::run()
 {
-  XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
-  MC_automaton_load(_sg_mc_property_file);
+  XBT_INFO("Check the liveness property %s", _sg_mc_property_file.c_str());
+  MC_automaton_load(_sg_mc_property_file.c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
   simgrid::mc::session->initialize();

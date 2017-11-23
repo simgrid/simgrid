@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <boost/heap/fibonacci_heap.hpp>
 #include <functional>
 #include <memory>
 
@@ -12,18 +13,19 @@
 
 #include <xbt/algorithm.hpp>
 #include <xbt/functional.hpp>
+#include <xbt/utility.hpp>
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 
+#include "smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf.hpp"
-#include "smx_private.h"
-#include "xbt/ex.h"             /* ex_backtrace_display */
+#include "xbt/ex.h" /* ex_backtrace_display */
 
 #include "mc/mc.h"
 #include "simgrid/sg_config.h"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/surf/StorageImpl.hpp"
 
 #include "src/smpi/include/smpi_process.hpp"
@@ -35,15 +37,14 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #endif
 
-#include "src/mc/mc_record.h"
+#include "src/mc/mc_record.hpp"
 
 #if HAVE_SMPI
-#include "src/smpi/include/private.h"
 #include "src/smpi/include/private.hpp"
 #endif
 
@@ -51,23 +52,27 @@ XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
 
 std::unique_ptr<simgrid::simix::Global> simix_global;
-static xbt_heap_t simix_timers = nullptr;
+
+namespace {
+typedef std::pair<double, smx_timer_t> TimerQelt;
+boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<simgrid::xbt::HeapComparator<TimerQelt>>> simix_timers;
+}
 
 /** @brief Timer datatype */
-typedef class s_smx_timer {
+class s_smx_timer_t {
   double date = 0.0;
-  s_smx_timer() = default;
 
 public:
+  decltype(simix_timers)::handle_type handle_;
   simgrid::xbt::Task<void()> callback;
   double getDate() { return date; }
-  s_smx_timer(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
-} s_smx_timer_t;
+  s_smx_timer_t(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
+};
 
 void (*SMPI_switch_data_segment)(int) = nullptr;
 
 int _sg_do_verbose_exit = 1;
-static void inthandler(int ignored)
+static void inthandler(int)
 {
   if ( _sg_do_verbose_exit ) {
      XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option 'verbose-exit').");
@@ -80,7 +85,7 @@ static void inthandler(int ignored)
 }
 
 #ifndef _WIN32
-static void segvhandler(int signum, siginfo_t *siginfo, void *context)
+static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
 {
   if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
     fprintf(stderr, "Access violation detected.\n"
@@ -157,7 +162,7 @@ static void install_segvhandler()
 /********************************* SIMIX **************************************/
 double SIMIX_timer_next()
 {
-  return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
+  return simix_timers.empty() ? -1.0 : simix_timers.top().first;
 }
 
 static void kill_process(smx_actor_t process)
@@ -236,15 +241,10 @@ void SIMIX_global_init(int *argc, char **argv)
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::StorageImpl* storage) {
-      sg_storage_t s = simgrid::s4u::Storage::byName(storage->cname());
-      xbt_assert(s != nullptr, "Storage not found for name %s", storage->cname());
+      sg_storage_t s = simgrid::s4u::Storage::byName(storage->getCname());
+      xbt_assert(s != nullptr, "Storage not found for name %s", storage->getCname());
     });
   }
-
-  if (not simix_timers)
-    simix_timers = xbt_heap_new(8, [](void* p) {
-      delete static_cast<smx_timer_t>(p);
-    });
 
   if (xbt_cfg_get_boolean("clean-atexit"))
     atexit(SIMIX_clean);
@@ -265,6 +265,15 @@ void SIMIX_clean()
   if (smx_cleaned)
     return; // to avoid double cleaning by java and C
 
+  smx_cleaned = 1;
+  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
+  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
+    XBT_CRITICAL("   ");
+    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
+    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
+  }
+
 #if HAVE_SMPI
   if (SIMIX_process_count()>0){
     if(smpi_process()->initialized()){
@@ -276,14 +285,6 @@ void SIMIX_clean()
   }
 #endif
 
-  smx_cleaned = 1;
-  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (not simix_global->process_to_run.empty() && SIMIX_get_clock() <= 0.0) {
-    XBT_CRITICAL("   ");
-    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
-    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
-    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
-  }
   /* Kill all processes (but maestro) */
   SIMIX_process_killall(simix_global->maestro_process, 1);
   SIMIX_context_runall();
@@ -292,8 +293,10 @@ void SIMIX_clean()
   /* Exit the SIMIX network module */
   SIMIX_mailbox_exit();
 
-  xbt_heap_free(simix_timers);
-  simix_timers = nullptr;
+  while (not simix_timers.empty()) {
+    delete simix_timers.top().second;
+    simix_timers.pop();
+  }
   /* Free the remaining data structures */
   simix_global->process_to_run.clear();
   simix_global->process_that_ran.clear();
@@ -363,18 +366,18 @@ static void SIMIX_wake_processes()
 static bool SIMIX_execute_timers()
 {
   bool result = false;
-  while (xbt_heap_size(simix_timers) > 0 && SIMIX_get_clock() >= SIMIX_timer_next()) {
+  while (not simix_timers.empty() && SIMIX_get_clock() >= simix_timers.top().first) {
     result = true;
-     //FIXME: make the timers being real callbacks
-     // (i.e. provide dispatchers that read and expand the args)
-     smx_timer_t timer = (smx_timer_t) xbt_heap_pop(simix_timers);
-     try {
-       timer->callback();
-     }
-     catch(...) {
-       xbt_die("Exception throwed ouf of timer callback");
-     }
-     delete timer;
+    // FIXME: make the timers being real callbacks
+    // (i.e. provide dispatchers that read and expand the args)
+    smx_timer_t timer = simix_timers.top().second;
+    simix_timers.pop();
+    try {
+      timer->callback();
+    } catch (...) {
+      xbt_die("Exception thrown ouf of timer callback");
+    }
+    delete timer;
   }
   return result;
 }
@@ -411,7 +414,7 @@ static bool SIMIX_execute_tasks()
  */
 void SIMIX_run()
 {
-  if (MC_record_path) {
+  if (not MC_record_path.empty()) {
     simgrid::mc::replay(MC_record_path);
     return;
   }
@@ -498,7 +501,7 @@ void SIMIX_run()
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == simix_global->daemons.size())
         for (auto const& dmon : simix_global->daemons) {
-          XBT_DEBUG("Kill %s", dmon->cname());
+          XBT_DEBUG("Kill %s", dmon->getCname());
           SIMIX_process_kill(dmon, simix_global->maestro_process);
         }
     }
@@ -564,20 +567,21 @@ void SIMIX_run()
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
   smx_timer_t timer = new s_smx_timer_t(date, [callback, arg]() { callback(arg); });
-  xbt_heap_push(simix_timers, timer, date);
+  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
 
 smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 {
   smx_timer_t timer = new s_smx_timer_t(date, std::move(callback));
-  xbt_heap_push(simix_timers, timer, date);
+  timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
 
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
-  delete static_cast<smx_timer_t>(xbt_heap_rm_elm(simix_timers, timer, timer->getDate()));
+  simix_timers.erase(timer->handle_);
+  delete timer;
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
@@ -654,11 +658,11 @@ void SIMIX_display_process_status()
         synchro_description = "I/O";
 
       XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
-               process->cname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),
+               process->getCname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),
                process->waiting_synchro->name.c_str(), (int)process->waiting_synchro->state);
     }
     else {
-      XBT_INFO("Process %lu (%s@%s)", process->pid, process->cname(), process->host->getCname());
+      XBT_INFO("Process %lu (%s@%s)", process->pid, process->getCname(), process->host->getCname());
     }
   }
 }

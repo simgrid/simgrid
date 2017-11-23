@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2011, 2013-2016. The SimGrid Team.
+/* Copyright (c) 2009-2011, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,6 +8,7 @@
 #include "cpu_ti.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
 
@@ -19,8 +20,7 @@ void surf_cpu_model_init_Cas01()
   xbt_assert(not surf_cpu_model_pm);
   xbt_assert(not surf_cpu_model_vm);
 
-  char *optim = xbt_cfg_get_string("cpu/optim");
-  if (not strcmp(optim, "TI")) {
+  if (xbt_cfg_get_string("cpu/optim") == "TI") {
     surf_cpu_model_init_ti();
     return;
   }
@@ -37,27 +37,25 @@ namespace surf {
 
 CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 {
-  char *optim = xbt_cfg_get_string("cpu/optim");
+  std::string optim = xbt_cfg_get_string("cpu/optim");
   bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
-  if (not strcmp(optim, "Full")) {
-    updateMechanism_ = UM_FULL;
+  if (optim == "Full") {
+    setUpdateMechanism(UM_FULL);
     selectiveUpdate_ = select;
-  } else if (not strcmp(optim, "Lazy")) {
-    updateMechanism_ = UM_LAZY;
+  } else if (optim == "Lazy") {
+    setUpdateMechanism(UM_LAZY);
     selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
-    xbt_die("Unsupported optimization (%s) for this model", optim);
+    xbt_die("Unsupported optimization (%s) for this model", optim.c_str());
   }
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    actionHeap_ = xbt_heap_new(8, nullptr);
-    xbt_heap_set_update_callback(actionHeap_,  surf_action_lmm_update_index_heap);
     modifiedSet_ = new ActionLmmList();
     maxminSystem_->keep_track = modifiedSet_;
   }
@@ -67,7 +65,6 @@ CpuCas01Model::~CpuCas01Model()
 {
   lmm_system_free(maxminSystem_);
   maxminSystem_ = nullptr;
-  xbt_heap_free(actionHeap_);
   delete modifiedSet_;
 
   surf_cpu_model_pm = nullptr;
@@ -177,13 +174,13 @@ CpuAction* CpuCas01::execution_start(double size, int requestedCores)
 CpuAction *CpuCas01::sleep(double duration)
 {
   if (duration > 0)
-    duration = MAX(duration, sg_surf_precision);
+    duration = std::max(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", cname(), duration);
+  XBT_IN("(%s,%g)", getCname(), duration);
   CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
-  action->maxDuration_ = duration;
+  action->setMaxDuration(duration);
   action->suspended_ = 2;
   if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
@@ -214,9 +211,8 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
     , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
-    indexHeap_ = -1;
-    lastUpdate_ = surf_get_clock();
-    lastValue_ = 0.0;
+    refreshLastUpdate();
+    setLastValue(0.0);
   }
   lmm_expand(model->getMaxminSystem(), constraint, getVariable(), 1.0);
 }

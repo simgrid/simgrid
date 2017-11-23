@@ -21,7 +21,7 @@ extern "C" {
 
 const char* sg_link_name(sg_link_t link)
 {
-  return link->name();
+  return link->getCname();
 }
 sg_link_t sg_link_by_name(const char* name)
 {
@@ -82,9 +82,17 @@ Link* Link::byName(const char* name)
     return nullptr;
   return &res->piface_;
 }
+const std::string& Link::getName() const
+{
+  return this->pimpl_->getName();
+}
+const char* Link::getCname() const
+{
+  return this->pimpl_->getCname();
+}
 const char* Link::name()
 {
-  return this->pimpl_->cname();
+  return getCname();
 }
 bool Link::isUsed()
 {
@@ -104,6 +112,11 @@ double Link::bandwidth()
 int Link::sharingPolicy()
 {
   return this->pimpl_->sharingPolicy();
+}
+
+double Link::getUsage()
+{
+  return lmm_constraint_get_usage(this->pimpl_->constraint());
 }
 
 void Link::turnOn()
@@ -147,6 +160,15 @@ void Link::setLatencyTrace(tmgr_trace_t trace)
   simgrid::simix::kernelImmediate([this, trace]() {
     this->pimpl_->setLatencyTrace(trace);
   });
+}
+
+const char* Link::getProperty(const char* key)
+{
+  return this->pimpl_->getProperty(key);
+}
+void Link::setProperty(std::string key, std::string value)
+{
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 /*************

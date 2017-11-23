@@ -5,7 +5,7 @@
     <argument value="50"/>
     <argument value="2.5"/>
   </actor>
-  <actor host="Cpu B" function="test_trace" start_time="10">
+  <actor host="Cpu B" function="test_trace" start_time="10.5">
     <argument value="70"/>
     <argument value="1.5"/>
   </actor>

@@ -7,8 +7,10 @@
 #ifndef SMPI_WIN_HPP_INCLUDED
 #define SMPI_WIN_HPP_INCLUDED
 
+#include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
 #include "xbt/synchro.h"
+#include <simgrid/msg.h>
 
 #include <vector>
 #include <list>

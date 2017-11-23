@@ -1,4 +1,4 @@
-/* Copyright (c) 2014. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -24,7 +24,7 @@ public class Daemon extends Process {
     } catch (HostFailureException e) {
       e.printStackTrace();
     } catch (TaskCancelledException e) {
-      System.out.println("task cancelled");
+      Msg.info("task cancelled");
       suspend(); // Suspend the process
     }
     currentTask = new Task(this.getHost().getName()+"-daemon-"+(i++), this.getHost().getSpeed()*100, 0);

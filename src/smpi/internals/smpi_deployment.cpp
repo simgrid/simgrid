@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h" /* barrier */
 #include "SmpiHost.hpp"
-#include "private.h"
+#include "private.hpp"
+#include "simgrid/msg.h" /* barrier */
 #include "smpi_comm.hpp"
 #include <map>
 
@@ -56,7 +56,9 @@ extern int* index_to_process_data;
  */
 void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes)
 {
-  SIMIX_function_register(name, code);
+  if (code != nullptr) { // When started with smpirun, we will not execute a function
+    SIMIX_function_register(name, code);
+  }
 
   static int already_called = 0;
   if (not already_called) {
@@ -68,6 +70,9 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   }
 
   Instance instance(name, num_processes, process_count, MPI_COMM_NULL, MSG_barrier_init(num_processes));
+  MPI_Group group     = new simgrid::smpi::Group(instance.size);
+  instance.comm_world = new simgrid::smpi::Comm(group, nullptr);
+  MPI_Attr_put(instance.comm_world, MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));
 
   process_count+=num_processes;
 
@@ -84,10 +89,6 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
 
   Instance& instance = smpi_instances.at(instance_id);
 
-  if (instance.comm_world == MPI_COMM_NULL) {
-    MPI_Group group     = new simgrid::smpi::Group(instance.size);
-    instance.comm_world = new simgrid::smpi::Comm(group, nullptr);
-  }
   instance.present_processes++;
   index_to_process_data[index] = instance.index + rank;
   instance.comm_world->group()->set_mapping(index, rank);
@@ -115,9 +116,8 @@ msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id)
 void smpi_deployment_cleanup_instances(){
   for (auto const& item : smpi_instances) {
     Instance instance = item.second;
-    if (instance.comm_world != MPI_COMM_NULL)
-      delete instance.comm_world->group();
-    delete instance.comm_world;
     MSG_barrier_destroy(instance.finalization_barrier);
+    simgrid::smpi::Comm::destroy(instance.comm_world);
   }
+  smpi_instances.clear();
 }

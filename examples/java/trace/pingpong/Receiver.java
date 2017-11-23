@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2007, 2012-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2006-2007, 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,6 +15,7 @@ import org.simgrid.trace.Trace;
 public class Receiver extends Process {
   private static final double COMM_SIZE_LAT = 1;
   private static final double COMM_SIZE_BW = 100000000;
+  private static final String PM_STATE = Main.PM_STATE;
 
   public Receiver(String hostname, String name, String[]args) throws HostNotFoundException {
     super(hostname,name,args);
@@ -22,7 +23,7 @@ public class Receiver extends Process {
 
   public void main(String[] args) throws MsgException {
     Msg.info("hello!");
-    Trace.hostPushState (getHost().getName(), "PM_STATE", "waitingPing");
+    Trace.hostPushState (getHost().getName(), PM_STATE, "waitingPing");
 
     /* Wait for the ping */ 
     Msg.info("try to get a task");
@@ -41,15 +42,15 @@ public class Receiver extends Process {
     Msg.info(" --- bw "+ COMM_SIZE_BW/communicationTime + " ----");
 
     /* Send the pong */
-    Trace.hostPushState (getHost().getName(), "PM_STATE", "sendingPong");
+    Trace.hostPushState (getHost().getName(), PM_STATE, "sendingPong");
     double computeDuration = 0;
     PingPongTask pong = new PingPongTask("no name",computeDuration,COMM_SIZE_LAT);
     pong.setTime(time);
     pong.send(ping.getSource().getName());
 
     /* Pop the two states */
-    Trace.hostPopState (getHost().getName(), "PM_STATE");
-    Trace.hostPopState (getHost().getName(), "PM_STATE");
+    Trace.hostPopState (getHost().getName(), PM_STATE);
+    Trace.hostPopState (getHost().getName(), PM_STATE);
 
     Msg.info("goodbye!");
   }

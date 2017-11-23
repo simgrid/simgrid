@@ -1,62 +1,33 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
-
-#include "src/instr/instr_private.h"
+#include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
+extern FILE* tracing_file;
 
-simgrid::instr::Value::Value(const char* name, const char* color, simgrid::instr::Type* father)
+namespace simgrid {
+namespace instr {
+
+EntityValue::EntityValue(std::string name, std::string color, Type* father)
+    : id_(instr_new_paje_id()), name_(name), color_(color), father_(father){};
+
+void EntityValue::print()
 {
-  if (name == nullptr || father == nullptr){
-    THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
-  }
-  this->name_   = xbt_strdup(name);
-  this->father_ = father;
-  this->color_  = xbt_strdup(color);
-
-  this->id_ = bprintf("%lld", instr_new_paje_id());
-
-  xbt_dict_set(father->values_, name, this, nullptr);
-  XBT_DEBUG("new value %s, child of %s", name_, father_->name_);
-  LogEntityValue(this);
-};
-
-simgrid::instr::Value::~Value()
-{
-  xbt_free(name_);
-  xbt_free(color_);
-  xbt_free(id_);
+  if (instr_fmt_type != instr_fmt_paje)
+    return;
+  std::stringstream stream;
+  XBT_DEBUG("%s: event_type=%u", __FUNCTION__, PAJE_DefineEntityValue);
+  stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineEntityValue;
+  stream << " " << id_ << " " << father_->getId() << " " << name_;
+  if (not color_.empty())
+    stream << " \"" << color_ << "\"";
+  XBT_DEBUG("Dump %s", stream.str().c_str());
+  fprintf(tracing_file, "%s\n", stream.str().c_str());
 }
 
-simgrid::instr::Value* simgrid::instr::Value::get_or_new(const char* name, const char* color,
-                                                         simgrid::instr::Type* father)
-{
-  Value* ret = 0;
-  try {
-    ret = Value::get(name, father);
-  }
-  catch(xbt_ex& e) {
-    ret = new Value(name, color, father);
-  }
-  return ret;
 }
-
-simgrid::instr::Value* simgrid::instr::Value::get(const char* name, Type* father)
-{
-  if (name == nullptr || father == nullptr){
-    THROWF (tracing_error, 0, "can't get a value with a nullptr name (or a nullptr father)");
-  }
-
-  if (father->kind_ == TYPE_VARIABLE)
-    THROWF(tracing_error, 0, "variables can't have different values (%s)", father->name_);
-  Value* ret = (Value*)xbt_dict_get_or_null(father->values_, name);
-  if (ret == nullptr) {
-    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name, father->name_);
-  }
-  return ret;
 }

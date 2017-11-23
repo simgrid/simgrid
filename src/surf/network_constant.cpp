@@ -32,43 +32,33 @@ LinkImpl* NetworkConstantModel::createLink(const std::string& name, double bw, d
 double NetworkConstantModel::nextOccuringEvent(double /*now*/)
 {
   double min = -1.0;
-
-  ActionList* actionSet = getRunningActionSet();
-  ActionList::iterator it(actionSet->begin());
-  ActionList::iterator itend(actionSet->end());
-  for (; it != itend; ++it) {
-    NetworkConstantAction* action = static_cast<NetworkConstantAction*>(&*it);
-    if (action->latency_ > 0 && (min < 0 || action->latency_ < min))
-      min = action->latency_;
+  for (Action const& action : *getRunningActionSet()) {
+    const NetworkConstantAction& net_action = static_cast<const NetworkConstantAction&>(action);
+    if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min))
+      min = net_action.latency_;
   }
-
   return min;
 }
 
 void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 {
-  NetworkConstantAction* action = nullptr;
-  ActionList* actionSet         = getRunningActionSet();
-  ActionList::iterator it(actionSet->begin());
-  ActionList::iterator itNext = it;
-  ActionList::iterator itend(actionSet->end());
-  for (; it != itend; it = itNext) {
-    ++itNext;
-    action = static_cast<NetworkConstantAction*>(&*it);
-    if (action->latency_ > 0) {
-      if (action->latency_ > delta) {
-        double_update(&(action->latency_), delta, sg_surf_precision);
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    NetworkConstantAction& action = static_cast<NetworkConstantAction&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
+    if (action.latency_ > 0) {
+      if (action.latency_ > delta) {
+        double_update(&action.latency_, delta, sg_surf_precision);
       } else {
-        action->latency_ = 0.0;
+        action.latency_ = 0.0;
       }
     }
-    action->updateRemains(action->getCost() * delta / action->initialLatency_);
-    if (action->getMaxDuration() != NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    action.updateRemains(action.getCost() * delta / action.initialLatency_);
+    if (action.getMaxDuration() != NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    if (((action->getRemainsNoUpdate() <= 0) ||
-         ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0)))) {
-      action->finish(Action::State::done);
+    if ((action.getRemainsNoUpdate() <= 0) ||
+        ((action.getMaxDuration() != NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     }
   }
 }

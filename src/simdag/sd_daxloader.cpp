@@ -6,7 +6,7 @@
 
 #include "simdag_private.hpp"
 #include "simgrid/simdag.h"
-#include "xbt/file.h" /* xbt_basename() */
+#include "xbt/file.hpp"
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include <map>
@@ -14,11 +14,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
 extern "C" {
-# undef CLEANUP
-# include "dax_dtd.h"
-# define register /* g++ don't like register, so don't say it */
-# include "dax_dtd.c"
-# undef register
+#include "dax_dtd.h"
+#include "dax_dtd.c"
 }
 
 /* Ensure that transfer tasks have unique names even though a file is used several times */
@@ -244,9 +241,8 @@ xbt_dynar_t SD_daxload(const char *filename)
   }
 
   if (not acyclic_graph_detail(result)) {
-    char* base = xbt_basename(filename);
-    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", base);
-    free(base);
+    std::string base = simgrid::xbt::Path(filename).getBasename();
+    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", base.c_str());
     xbt_dynar_foreach(result, cpt, file)
       SD_task_destroy(file);
     xbt_dynar_free_container(&result);

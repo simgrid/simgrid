@@ -33,6 +33,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/process-startkilltime ${srcdir:=.}/cluster.xml ${s
 
 p Test1 Process with kill time
 
+! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/process-startkilltime ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/process-startkilltime/kill_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-1.acme.org) Hello! I go to sleep.
 > [  0.000000] (2:sleeper@node-2.acme.org) Hello! I go to sleep.
@@ -45,6 +46,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/process-startkilltime ${srcdir:=.}/cluster.xml ${s
 
 p Test2 Process with start and kill times
 
+! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/process-startkilltime ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/process-startkilltime/start_kill_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
 > [  1.000000] (2:sleeper@node-1.acme.org) Hello! I go to sleep.

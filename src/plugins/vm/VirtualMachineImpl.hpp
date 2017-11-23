@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,17 +16,10 @@
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
 
-typedef struct dirty_page* dirty_page_t;
+typedef struct s_dirty_page* dirty_page_t;
 
 namespace simgrid {
 namespace vm {
-
-/***********
- * Classes *
- ***********/
-
-class XBT_PRIVATE VMModel;
-XBT_PUBLIC_CLASS VirtualMachineImpl; // Made visible to the Java plugin
 
 /*************
  * Callbacks *
@@ -93,10 +86,6 @@ public:
   int dp_enabled                     = 0;
   double dp_updated_by_deleted_tasks = 0;
 
-protected:
-  simgrid::s4u::Host* hostPM_;
-
-public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<s4u::VirtualMachine*> allVms_;
@@ -105,10 +94,9 @@ public:
   bool isMigrating = false;
 
 private:
+  simgrid::s4u::Host* hostPM_;
   s_vm_params_t params_;
   int coreAmount_;
-
-protected:
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
 };
 
@@ -119,7 +107,7 @@ protected:
  * @brief SURF VM model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class VMModel : public surf::HostModel {
+class XBT_PRIVATE VMModel : public surf::HostModel {
 public:
   VMModel();
   void ignoreEmptyVmInPmLMM() override{};

@@ -3,8 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi_comm.hpp"
 #include "smpi_group.hpp"
+#include "smpi_comm.hpp"
+#include <string>
+#include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
 
@@ -17,64 +19,54 @@ namespace smpi{
 Group::Group()
 {
   size_              = 0;       /* size */
-  rank_to_index_map_ = nullptr; /* rank_to_index_map_ */
   refcount_          = 1;       /* refcount_: start > 0 so that this group never gets freed */
 }
 
-Group::Group(int n) : size_(n)
+Group::Group(int n) : size_(n), rank_to_index_map_(size_, MPI_UNDEFINED)
 {
-  rank_to_index_map_ = new int[size_];
   refcount_ = 1;
-  for (int i              = 0; i < size_; i++)
-    rank_to_index_map_[i] = MPI_UNDEFINED;
 }
 
 Group::Group(MPI_Group origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();
-    rank_to_index_map_ = new int[size_];
     refcount_          = 1;
-    for (int i = 0; i < size_; i++) {
-      rank_to_index_map_[i] = origin->rank_to_index_map_[i];
-    }
-
-    for (auto const& elm : origin->index_to_rank_map_) {
-      index_to_rank_map_.insert({elm.first, elm.second});
-    }
+    rank_to_index_map_ = origin->rank_to_index_map_;
+    index_to_rank_map_ = origin->index_to_rank_map_;
   }
-}
-
-Group::~Group()
-{
-  delete[] rank_to_index_map_;
 }
 
 void Group::set_mapping(int index, int rank)
 {
-  if (rank < size_) {
+  if (0 <= rank && rank < size_) {
     rank_to_index_map_[rank] = index;
-    if (index != MPI_UNDEFINED)
-      index_to_rank_map_.insert({index, rank});
+    if (index != MPI_UNDEFINED) {
+      if ((unsigned)index >= index_to_rank_map_.size())
+        index_to_rank_map_.resize(index + 1, MPI_UNDEFINED);
+      index_to_rank_map_[index] = rank;
+    }
   }
 }
 
 int Group::index(int rank)
 {
-  int index = MPI_UNDEFINED;
-
-  if (0 <= rank && rank < size_) {
+  int index;
+  if (0 <= rank && rank < size_)
     index = rank_to_index_map_[rank];
-  }
+  else
+    index = MPI_UNDEFINED;
   return index;
 }
 
 int Group::rank(int index)
 {
-  if (this == MPI_GROUP_EMPTY)
-    return MPI_UNDEFINED;
-  auto rank = index_to_rank_map_.find(index);
-  return rank == index_to_rank_map_.end() ? MPI_UNDEFINED : rank->second;
+  int rank;
+  if (0 <= index && (unsigned)index < index_to_rank_map_.size())
+    rank = index_to_rank_map_[index];
+  else
+    rank = MPI_UNDEFINED;
+  return rank;
 }
 
 void Group::ref()
@@ -224,7 +216,7 @@ int Group::excl(int n, int *ranks, MPI_Group * newgroup){
   int oldsize = size_;
   int newsize = oldsize - n;
   *newgroup = new  Group(newsize);
-  int* to_exclude=xbt_new0(int, size_);
+  int* to_exclude = new int[size_];
   for (int i     = 0; i < oldsize; i++)
     to_exclude[i]=0;
   for (int i            = 0; i < n; i++)
@@ -237,9 +229,17 @@ int Group::excl(int n, int *ranks, MPI_Group * newgroup){
       j++;
     }
   }
-  xbt_free(to_exclude);
+  delete[] to_exclude;
   return MPI_SUCCESS;
 
+}
+
+static bool is_rank_in_range(int rank, int first, int last)
+{
+  if (first < last)
+    return rank <= last;
+  else
+    return rank >= last;
 }
 
 int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
@@ -253,13 +253,8 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
         break;
       }
       rank += ranges[i][2]; /* Stride */
-      if (ranges[i][0] < ranges[i][1]) {
-        if (rank > ranges[i][1])
-          break;
-      } else {
-        if (rank < ranges[i][1])
-          break;
-      }
+      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+        break;
     }
   }
   *newgroup = new  Group(newsize);
@@ -275,13 +270,8 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
         break;
       }
       rank += ranges[i][2]; /* Stride */
-      if (ranges[i][0] < ranges[i][1]) {
-        if (rank > ranges[i][1])
-          break;
-      } else {
-        if (rank < ranges[i][1])
-          break;
-      }
+      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+        break;
     }
   }
   return MPI_SUCCESS;
@@ -298,13 +288,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
         break;
       }
       rank += ranges[i][2]; /* Stride */
-      if (ranges[i][0] < ranges[i][1]) {
-        if (rank > ranges[i][1])
-          break;
-      } else {
-        if (rank < ranges[i][1])
-          break;
-      }
+      if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+        break;
     }
   }
   if (newsize == 0) {
@@ -325,13 +310,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
             break;
           }
           rank += ranges[i][2]; /* Stride */
-          if (ranges[i][0]<ranges[i][1]){
-            if (rank > ranges[i][1])
-              break;
-          }else{
-            if (rank < ranges[i][1])
-              break;
-          }
+          if (not is_rank_in_range(rank, ranges[i][0], ranges[i][1]))
+            break;
         }
       }
       if(add==1){

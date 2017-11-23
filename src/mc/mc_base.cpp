@@ -7,8 +7,8 @@
 
 #include "mc/mc.h"
 #include "src/mc/mc_base.h"
-#include "src/mc/mc_replay.h"
-#include "src/simix/smx_private.h"
+#include "src/mc/mc_replay.hpp"
+#include "src/simix/smx_private.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
@@ -111,8 +111,7 @@ bool actor_is_enabled(smx_actor_t actor)
 
       if (mutex->owner == nullptr)
         return true;
-      else
-        return mutex->owner->pid == req->issuer->pid;
+      return mutex->owner->pid == req->issuer->pid;
     }
 
     case SIMCALL_SEM_ACQUIRE: {
@@ -176,7 +175,7 @@ static int prng_random(int min, int max)
 
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
-  if (not MC_is_active() && not MC_record_path)
+  if (not MC_is_active() && MC_record_path.empty())
     return prng_random(min, max);
   return simcall->mc_value;
 }

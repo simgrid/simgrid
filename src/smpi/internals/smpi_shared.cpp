@@ -36,7 +36,6 @@
 #include <map>
 #include <cstring>
 
-#include "private.h"
 #include "private.hpp"
 #include <cerrno>
 
@@ -68,6 +67,7 @@ namespace{
 
 class smpi_source_location : public std::string {
 public:
+  smpi_source_location() = default;
   smpi_source_location(const char* filename, int line) : std::string(std::string(filename) + ":" + std::to_string(line))
   {
   }
@@ -149,7 +149,7 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
   auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
   auto data = res.first;
   if (res.second) {
-    // The insertion did not take place.
+    // The new element was inserted.
     // Generate a shared memory name from the address of the shared_data:
     char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
     snprintf(shmname, 31, "/shmalloc%p", &*data);
@@ -191,8 +191,8 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 
 void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
 {
-  char *huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
-  bool use_huge_page = huge_page_mount_point[0] != '\0';
+  std::string huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
+  bool use_huge_page                = not huge_page_mount_point.empty();
 #ifndef MAP_HUGETLB /* If the system header don't define that mmap flag */
   xbt_assert(not use_huge_page,
              "Huge pages are not available on your system, you cannot use the smpi/shared-malloc-hugepage option.");
@@ -232,23 +232,21 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
    * We cannot use a same file for the two type of calls, since the first one needs to be
    * opened in a hugetlbfs mount point whereas the second needs to be a "classical" file. */
   if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
-    char* huge_page_filename               = bprintf("%s/simgrid-shmalloc-XXXXXX", huge_page_mount_point);
-    smpi_shared_malloc_bogusfile_huge_page = mkstemp(huge_page_filename);
-    XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename);
-    unlink(huge_page_filename);
-    xbt_free(huge_page_filename);
+    std::string huge_page_filename         = huge_page_mount_point + "/simgrid-shmalloc-XXXXXX";
+    smpi_shared_malloc_bogusfile_huge_page = mkstemp((char*)huge_page_filename.c_str());
+    XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename.c_str());
+    unlink(huge_page_filename.c_str());
   }
   if(smpi_shared_malloc_bogusfile == -1) {
-    char *name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
+    char name[]                  = "/tmp/simgrid-shmalloc-XXXXXX";
     smpi_shared_malloc_bogusfile = mkstemp(name);
     XBT_DEBUG("bogusfile         : %s\n", name);
     unlink(name);
-    xbt_free(name);
-    char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
+    char* dumb  = new char[smpi_shared_malloc_blocksize](); // zero initialized
     ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
     if(err<0)
       xbt_die("Could not write bogus file for shared malloc");
-    xbt_free(dumb);
+    delete[] dumb;
   }
 
   int mmap_base_flag = MAP_FIXED | MAP_SHARED | MAP_POPULATE;
@@ -273,9 +271,9 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
               "stop_offset (%zu) should be lower than its successor start offset (%zu)", stop_offset, shared_block_offsets[2*i_block+2]);
     size_t start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     size_t stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
-    for (unsigned block_id=0, i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; block_id++, i++) {
-      XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %u", block_id);
-      void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
+    for (size_t offset = start_block_offset; offset < stop_block_offset; offset += smpi_shared_malloc_blocksize) {
+      XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %zx", offset);
+      void* pos = (void*)((unsigned long)mem + offset);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, mmap_flag,
                        huge_fd, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
@@ -314,7 +312,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
 
   shared_metadata_t newmeta;
   //register metadata for memcpy avoidance
-  shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
+  shared_data_key_type* data = new shared_data_key_type;
   data->second.fd = -1;
   data->second.count = 1;
   newmeta.size = size;
@@ -347,8 +345,8 @@ void *smpi_shared_malloc(size_t size, const char *file, int line) {
     size_t shared_block_offsets[2] = {0, size};
     return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
   }
-  XBT_DEBUG("Classic malloc %zu", size);
-  return xbt_malloc(size);
+  XBT_DEBUG("Classic allocation of %zu bytes", size);
+  return ::operator new(size);
 }
 
 int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
@@ -442,13 +440,13 @@ void smpi_shared_free(void *ptr)
     if (meta != allocs_metadata.end()){
       meta->second.data->second.count--;
       if(meta->second.data->second.count==0)
-        xbt_free(meta->second.data);
+        delete meta->second.data;
     }
 
     munmap(ptr, meta->second.size);
   } else {
-    XBT_DEBUG("Classic free of %p", ptr);
-    xbt_free(ptr);
+    XBT_DEBUG("Classic deallocation of %p", ptr);
+    ::operator delete(ptr);
   }
 }
 #endif

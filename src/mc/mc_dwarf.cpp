@@ -22,11 +22,12 @@
 
 #include "src/simgrid/util.hpp"
 #include "xbt/log.h"
+#include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 #include <simgrid_config.h>
 
-#include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
+#include "src/mc/mc_private.hpp"
 
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
@@ -532,13 +533,10 @@ static void MC_dwarf_fill_member_location(
                 (uint64_t) type->id, type->name.c_str());
       break;
     }
-  case simgrid::dwarf::FormClass::LocListPtr:
-    // Reference to a location list:
-    // TODO
-  case simgrid::dwarf::FormClass::Reference:
-    // It's supposed to be possible in DWARF2 but I couldn't find its semantic
-    // in the spec.
+
   default:
+    // includes FormClass::LocListPtr (reference to a location list: TODO) and FormClass::Reference (it's supposed to be
+    // possible in DWARF2 but I couldn't find its semantic in the spec)
     xbt_die("Can't handle form class (%d) / form 0x%x as DW_AT_member_location", (int)form_class, (unsigned)form);
   }
 
@@ -657,10 +655,10 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name != nullptr) {
-    char* full_name = ns ? bprintf("%s%s::%s", prefix, ns, name) :
-      bprintf("%s%s", prefix, name);
-    type.name = std::string(full_name);
-    free(full_name);
+    if (ns)
+      type.name = simgrid::xbt::string_printf("%s%s::%s", prefix, ns, name);
+    else
+      type.name = simgrid::xbt::string_printf("%s%s", prefix, name);
   }
 
   type.type_id = MC_dwarf_at_type(die);
@@ -683,6 +681,10 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   }
 
   switch (type.type) {
+  default:
+    XBT_DEBUG("Unhandled type: %d (%s)", type.type, simgrid::dwarf::tagname(type.type));
+    break;
+
   case DW_TAG_array_type:
     type.element_count = MC_dwarf_array_element_count(die, unit);
     // TODO, handle DW_byte_stride and (not) DW_bit_stride
@@ -697,10 +699,8 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   case DW_TAG_union_type:
   case DW_TAG_class_type:
     MC_dwarf_add_members(info, die, unit, &type);
-    char *new_ns = ns == nullptr ? xbt_strdup(type.name.c_str())
-        : bprintf("%s::%s", ns, name);
-    MC_dwarf_handle_children(info, die, unit, frame, new_ns);
-    free(new_ns);
+    std::string new_ns = ns ? simgrid::xbt::string_printf("%s::%s", ns, name) : type.name;
+    MC_dwarf_handle_children(info, die, unit, frame, new_ns.c_str());
     break;
   }
 
@@ -776,7 +776,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
         variable->address = (void *) (base + offset);
       } else
         variable->location_list = {
-          simgrid::dwarf::DwarfExpression(expr, expr + len) };
+            simgrid::dwarf::LocationListEntry(simgrid::dwarf::DwarfExpression(expr, expr + len))};
 
       break;
     }
@@ -799,17 +799,11 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     dwarf_attr(die, DW_AT_start_scope, &attr);
     int form = dwarf_whatform(&attr);
     simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
-    switch (form_class) {
-    case simgrid::dwarf::FormClass::Constant:
-      {
-        Dwarf_Word value;
-        variable->start_scope =
-            dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
-        break;
-      }
-
-    case simgrid::dwarf::FormClass::RangeListPtr:     // TODO
-    default:
+    if (form_class == simgrid::dwarf::FormClass::Constant) {
+      Dwarf_Word value;
+      variable->start_scope = dwarf_formudata(&attr, &value) == 0 ? (size_t)value : 0;
+    } else {
+      // TODO: FormClass::RangeListPtr
       xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s", (unsigned)form,
               (unsigned)form_class, name == nullptr ? "?" : name);
     }
@@ -821,10 +815,10 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
 
   // The current code needs a variable name,
   // generate a fake one:
-  if (variable->name.empty())
-    variable->name =
-      "@anonymous#" + std::to_string(mc_anonymous_variable_index++);
-
+  if (variable->name.empty()) {
+    variable->name = "@anonymous#" + std::to_string(mc_anonymous_variable_index);
+    mc_anonymous_variable_index++;
+  }
   return variable;
 }
 
@@ -837,7 +831,7 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
   if (not variable)
     return;
   // Those arrays are sorted later:
-  else if (variable->global)
+  if (variable->global)
     info->global_variables.push_back(std::move(*variable));
   else if (frame != nullptr)
     frame->variables.push_back(std::move(*variable));

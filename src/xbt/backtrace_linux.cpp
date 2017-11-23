@@ -6,6 +6,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cerrno>
+#include <cstring>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -38,10 +41,9 @@ struct trace_arg {
   int size;
 };
 
-static _Unwind_Reason_Code
-backtrace_helper (struct _Unwind_Context *ctx, void *a)
+static _Unwind_Reason_Code backtrace_helper(_Unwind_Context* ctx, void* a)
 {
-  struct trace_arg *arg = (struct trace_arg *) a;
+  trace_arg* arg = static_cast<trace_arg*>(a);
 
   /* We are first called with address in the __backtrace function.
      Skip it.  */
@@ -216,17 +218,19 @@ std::vector<std::string> resolveBacktrace(
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
 
-      char maps_buff[512];
       unsigned long int offset = 0;
-      char* p;
       int found = 0;
 
       /* let's look for the offset of this library in our addressing space */
-      char* maps_name = bprintf("/proc/%d/maps", (int) getpid());
-      FILE* maps = fopen(maps_name, "r");
-
-      unsigned long int addr = strtoul(addrs[i].c_str(), &p, 16);
-      if (*p != '\0') {
+      std::string maps_name = std::string("/proc/") + std::to_string(getpid()) + "/maps";
+      std::ifstream maps(maps_name);
+      if (not maps) {
+        XBT_CRITICAL("open(\"%s\") failed: %s", maps_name.c_str(), strerror(errno));
+        continue;
+      }
+      size_t pos;
+      unsigned long int addr = std::stoul(addrs[i], &pos, 16);
+      if (pos != addrs[i].length()) {
         XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)", addrs[i].c_str(), addr);
       }
       XBT_DEBUG("addr=%s (as string) =%#lx (as number)", addrs[i].c_str(), addr);
@@ -235,15 +239,15 @@ std::vector<std::string> resolveBacktrace(
         unsigned long int first;
         unsigned long int last;
 
-        if (fgets(maps_buff, 512, maps) == nullptr)
+        std::string maps_buff;
+        if (not std::getline(maps, maps_buff))
           break;
         if (i == 0) {
-          maps_buff[strlen(maps_buff) - 1] = '\0';
-          XBT_DEBUG("map line: %s", maps_buff);
+          XBT_DEBUG("map line: %s", maps_buff.c_str());
         }
-        sscanf(maps_buff, "%lx", &first);
-        p = strchr(maps_buff, '-') + 1;
-        sscanf(p, "%lx", &last);
+        first = std::stoul(maps_buff, &pos, 16);
+        maps_buff.erase(0, pos + 1);
+        last = std::stoul(maps_buff, nullptr, 16);
         if (first < addr && addr < last) {
           offset = first;
           found = 1;
@@ -253,8 +257,7 @@ std::vector<std::string> resolveBacktrace(
           XBT_DEBUG("Symbol found, map lines not further displayed (even if looking for next ones)");
         }
       }
-      fclose(maps);
-      free(maps_name);
+      maps.close();
       addrs[i].clear();
 
       if (not found) {
@@ -272,41 +275,35 @@ std::vector<std::string> resolveBacktrace(
       XBT_DEBUG("offset=%#lx new addr=%s", offset, addrs[i].c_str());
 
       /* Got it. We have our new address. Let's get the library path and we are set */
-      p = xbt_strdup(backtrace_syms[i]);
+      std::string p(backtrace_syms[i]);
       if (p[0] == '[') {
         /* library path not displayed in the map file either... */
-        free(p);
-        snprintf(line_func,3, "??");
+        snprintf(line_func, 3, "??");
       } else {
-        char* p2 = strrchr(p, '(');
-        if (p2)
-          *p2 = '\0';
-        p2 = strrchr(p, ' ');
-        if (p2)
-          *p2 = '\0';
+        size_t p2 = p.find_first_of("( ");
+        if (p2 != std::string::npos)
+          p.erase(p2);
 
         /* Here we go, fire an addr2line up */
-        char* subcmd = bprintf("%s -f -e %s %s", ADDR2LINE, p, addrs[i].c_str());
-        free(p);
-        XBT_VERB("Fire a new command: '%s'", subcmd);
-        FILE* subpipe = popen(subcmd, "r");
+        std::string subcmd = std::string(ADDR2LINE) + " -f -e " + p + " " + addrs[i];
+        XBT_VERB("Fire a new command: '%s'", subcmd.c_str());
+        FILE* subpipe = popen(subcmd.c_str(), "r");
         if (not subpipe) {
           xbt_die("Cannot fork addr2line to display the backtrace");
         }
         if (fgets(line_func, 1024, subpipe)) {
           line_func[strlen(line_func) - 1] = '\0';
         } else {
-          XBT_VERB("Cannot read result of subcommand %s", subcmd);
+          XBT_VERB("Cannot read result of subcommand %s", subcmd.c_str());
           strncpy(line_func, "???",3);
         }
         if (fgets(line_pos, 1024, subpipe)) {
           line_pos[strlen(line_pos) - 1] = '\0';
         } else {
-          XBT_VERB("Cannot read result of subcommand %s", subcmd);
+          XBT_VERB("Cannot read result of subcommand %s", subcmd.c_str());
           strncpy(line_pos, backtrace_syms[i],1024);
         }
         pclose(subpipe);
-        free(subcmd);
       }
 
       /* check whether the trick worked */
@@ -325,9 +322,19 @@ std::vector<std::string> resolveBacktrace(
     addrs[i].clear();
 
     /* Mask the bottom of the stack */
-    if (not strncmp("main", line_func, strlen("main")) ||
-        not strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper")) ||
-        not strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper")))
+    const char* const breakers[] = {
+        "main",
+        "_ZN7simgrid6kernel7context13ThreadContext7wrapperE", // simgrid::kernel::context::ThreadContext::wrapper
+        "_ZN7simgrid6kernel7context8UContext7wrapperE"        // simgrid::kernel::context::UContext::wrapper
+    };
+    bool do_break = false;
+    for (const char* b : breakers) {
+      if (strncmp(b, line_func, strlen(b)) == 0) {
+        do_break = true;
+        break;
+      }
+    }
+    if (do_break)
       break;
   }
   pclose(pipe);
