@@ -31,10 +31,10 @@ int s_lmm_constraint_t::Global_debug_id = 1;
 static int lmm_can_enable_var(lmm_variable_t var);
 static int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var);
 
-static inline int lmm_element_concurrency(lmm_element_t elem)
+int s_lmm_element_t::get_concurrency() const
 {
   //Ignore element with weight less than one (e.g. cross-traffic)
-  return (elem->consumption_weight >= 1) ? 1 : 0;
+  return (consumption_weight >= 1) ? 1 : 0;
   //There are other alternatives, but they will change the behaviour of the model..
   //So do not use it unless you want to make a new model.
   //If you do, remember to change the variables concurrency share to reflect it.
@@ -43,22 +43,21 @@ static inline int lmm_element_concurrency(lmm_element_t elem)
   //return (int)ceil(elem->weight);//Include element as the rounded-up integer value of the element weight
 }
 
-static inline void lmm_decrease_concurrency(lmm_element_t elem)
+void s_lmm_element_t::decrease_concurrency()
 {
-  xbt_assert(elem->constraint->concurrency_current>=lmm_element_concurrency(elem));
-  elem->constraint->concurrency_current-=lmm_element_concurrency(elem);
+  xbt_assert(constraint->concurrency_current >= get_concurrency());
+  constraint->concurrency_current -= get_concurrency();
 }
 
-static inline void lmm_increase_concurrency(lmm_element_t elem)
+void s_lmm_element_t::increase_concurrency()
 {
-  elem->constraint->concurrency_current+= lmm_element_concurrency(elem);
+  constraint->concurrency_current += get_concurrency();
 
-  lmm_constraint_t cnstr=elem->constraint;
+  if (constraint->concurrency_current > constraint->concurrency_maximum)
+    constraint->concurrency_maximum = constraint->concurrency_current;
 
-  if(cnstr->concurrency_current > cnstr->concurrency_maximum)
-    cnstr->concurrency_maximum= cnstr->concurrency_current;
-
-  xbt_assert(cnstr->get_concurrency_limit() < 0 || cnstr->concurrency_current <= cnstr->get_concurrency_limit(),
+  xbt_assert(constraint->get_concurrency_limit() < 0 ||
+                 constraint->concurrency_current <= constraint->get_concurrency_limit(),
              "Concurrency limit overflow!");
 }
 
@@ -78,7 +77,7 @@ void s_lmm_system_t::check_concurrency()
     {
       lmm_element_t elem = (lmm_element_t)elemIt;
       xbt_assert(elem->variable->sharing_weight > 0);
-      concurrency += lmm_element_concurrency(elem);
+      concurrency += elem->get_concurrency();
     }
 
     xbt_swag_foreach(elemIt, &(cnst->disabled_element_set))
@@ -132,7 +131,7 @@ void s_lmm_system_t::var_free(lmm_variable_t var)
 
   for (s_lmm_element_t& elem : var->cnsts) {
     if (var->sharing_weight > 0)
-      lmm_decrease_concurrency(&elem);
+      elem.decrease_concurrency();
     xbt_swag_remove(&elem, &(elem.constraint->enabled_element_set));
     xbt_swag_remove(&elem, &(elem.constraint->disabled_element_set));
     xbt_swag_remove(&elem, &(elem.constraint->active_element_set));
@@ -307,7 +306,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
   if(var->concurrency_share>1){
     for (s_lmm_element_t& elem : var->cnsts) {
       if (elem.constraint == cnst && xbt_swag_belongs(&elem, &(elem.constraint->enabled_element_set)))
-        current_share += lmm_element_concurrency(&elem);
+        current_share += elem.get_concurrency();
     }
   }
 
@@ -333,7 +332,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
 
   if (var->sharing_weight) {
     xbt_swag_insert_at_head(&elem, &(elem.constraint->enabled_element_set));
-    lmm_increase_concurrency(&elem);
+    elem.increase_concurrency();
   } else
     xbt_swag_insert_at_tail(&elem, &(elem.constraint->disabled_element_set));
 
@@ -362,7 +361,7 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
   if (elem_it != end(var->cnsts)) {
     s_lmm_element_t& elem = *elem_it;
     if (var->sharing_weight)
-      lmm_decrease_concurrency(&elem);
+      elem.decrease_concurrency();
 
     if (cnst->sharing_policy)
       elem.consumption_weight += value;
@@ -371,7 +370,7 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
 
     //We need to check that increasing value of the element does not cross the concurrency limit
     if (var->sharing_weight) {
-      if (cnst->get_concurrency_slack() < lmm_element_concurrency(&elem)) {
+      if (cnst->get_concurrency_slack() < elem.get_concurrency()) {
         double weight = var->sharing_weight;
         disable_var(var);
         for (s_lmm_element_t const& elem2 : var->cnsts)
@@ -379,7 +378,7 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
         var->staged_weight=weight;
         xbt_assert(not var->sharing_weight);
       }
-      lmm_increase_concurrency(&elem);
+      elem.increase_concurrency();
     }
     update_modified_set(cnst);
   } else
@@ -627,7 +626,7 @@ void s_lmm_system_t::solve()
         else if (cnst->usage < elem->consumption_weight / elem->variable->sharing_weight)
           cnst->usage = elem->consumption_weight / elem->variable->sharing_weight;
 
-        make_elem_active(elem);
+        elem->make_active();
         simgrid::surf::Action *action = static_cast<simgrid::surf::Action*>(elem->variable->id);
         if (keep_track && not action->is_linked())
           keep_track->push_back(*action);
@@ -715,11 +714,11 @@ void s_lmm_system_t::solve()
           } else {
             cnst->cnst_light->remaining_over_usage = cnst->remaining / cnst->usage;
           }
-          make_elem_inactive(&elem);
+          elem.make_inactive();
         } else {
           // Remember: non-shared constraints only require that max(elem.value * var->value) < cnst->bound
           cnst->usage = 0.0;
-          make_elem_inactive(&elem);
+          elem.make_inactive();
           xbt_swag_t elem_list = &(cnst->enabled_element_set);
           xbt_swag_foreach(_elem, elem_list) {
             lmm_element_t elem2 = static_cast<lmm_element_t>(_elem);
@@ -851,7 +850,7 @@ void s_lmm_system_t::enable_var(lmm_variable_t var)
   for (s_lmm_element_t& elem : var->cnsts) {
     xbt_swag_remove(&elem, &(elem.constraint->disabled_element_set));
     xbt_swag_insert_at_head(&elem, &(elem.constraint->enabled_element_set));
-    lmm_increase_concurrency(&elem);
+    elem.increase_concurrency();
   }
   if (not var->cnsts.empty())
     update_modified_set(var->cnsts[0].constraint);
@@ -876,7 +875,7 @@ void s_lmm_system_t::disable_var(lmm_variable_t var)
 
     xbt_swag_remove(&elem, &(elem.constraint->active_element_set));
 
-    lmm_decrease_concurrency(&elem);
+    elem.decrease_concurrency();
   }
 
   var->sharing_weight = 0.0;

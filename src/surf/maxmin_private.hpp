@@ -17,9 +17,18 @@
  * @brief LMM element
  * Elements can be seen as glue between constraint objects and variable objects.
  * Basically, each variable will have a set of elements, one for each constraint where it is involved.
- * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or vice-versa list all constraints for a given variable.
+ * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or
+ * vice-versa list all constraints for a given variable.
  */
-struct s_lmm_element_t {
+class s_lmm_element_t {
+public:
+  int get_concurrency() const;
+  void decrease_concurrency();
+  void increase_concurrency();
+
+  void make_active();
+  void make_inactive();
+
   /* hookup to constraint */
   s_xbt_swag_hookup_t enabled_element_set_hookup;
   s_xbt_swag_hookup_t disabled_element_set_hookup;
@@ -33,8 +42,6 @@ struct s_lmm_element_t {
   //   - If network, then 1 in forward direction and 0.05 backward for the ACKs
   double consumption_weight;
 };
-#define make_elem_active(elem) xbt_swag_insert_at_head((elem), &((elem)->constraint->active_element_set))
-#define make_elem_inactive(elem) xbt_swag_remove((elem), &((elem)->constraint->active_element_set))
 
 struct s_lmm_constraint_light_t {
   double remaining_over_usage;
@@ -195,6 +202,15 @@ struct s_lmm_variable_t {
   double (*func_fpi)(s_lmm_variable_t* var, double x); /* (f')^{-1}    */
   /* \end{For Lagrange only} */
 };
+
+inline void s_lmm_element_t::make_active()
+{
+  xbt_swag_insert_at_head(this, &constraint->active_element_set);
+}
+inline void s_lmm_element_t::make_inactive()
+{
+  xbt_swag_remove(this, &constraint->active_element_set);
+}
 
 /** @ingroup SURF_lmm
  * @brief LMM system
