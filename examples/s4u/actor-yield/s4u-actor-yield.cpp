@@ -8,11 +8,11 @@
 #include "src/simix/smx_private.h"
 #include <string>
 
-/* This example does not much: It just spans over-polite processes that yield a large amount
+/* This example does not much: It just spans over-polite actor that yield a large amount
 * of time before ending.
 *
-* This serves as an example for the s4u-actor-yield() function, with which a process can request
-* to be rescheduled after the other processes that are ready at the current timestamp.
+* This serves as an example for the s4u-actor-yield() function, with which an actor can request
+* to be rescheduled after the other actor that are ready at the current timestamp.
 *
 * It can also be used to benchmark our context-switching mechanism.
 */
@@ -28,9 +28,8 @@ public:
 }
 void operator()()
 {
- simgrid::s4u::ActorPtr actor;
  for (int i = 0; i < number_of_yields; i++)
- actor->yield();
+ simgrid::s4u::this_actor::yield();
  XBT_INFO("I yielded %ld times. Goodbye now!", number_of_yields);
 }
 };
@@ -40,7 +39,7 @@ int main(int argc, char* argv[])
  simgrid::s4u::Engine e(&argc, argv);
  
  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
- "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+ "\tExample: %s platform.xml deployment.xml\n",
  argv[0], argv[0]);
  
  e.loadPlatform(argv[1]);  /* - Load the platform description */

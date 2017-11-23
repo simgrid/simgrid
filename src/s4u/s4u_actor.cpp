@@ -120,11 +120,6 @@ int Actor::isSuspended()
   return simgrid::simix::kernelImmediate([this] { return pimpl_->suspended; });
 }
 
-void Actor::yield()
-{
-  simgrid::simix::kernelImmediate([] { /* do nothing*/ });
-}
-
 void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
@@ -217,6 +212,11 @@ void sleep_for(double duration)
 {
   if (duration > 0)
     simcall_process_sleep(duration);
+}
+
+void yield()
+{
+  simgrid::simix::kernelImmediate([] { /* do nothing*/ });
 }
 
 XBT_PUBLIC(void) sleep_until(double timeout)
