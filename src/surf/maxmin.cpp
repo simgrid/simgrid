@@ -154,13 +154,6 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
       lmm_on_disabled_var(sys, elem.constraint);
   }
 
-  // Check if we can enable new variables going through the constraints where var was.
-  // Do it after removing all elements, so the first disabled variables get priority over those with smaller requirement
-  for (s_lmm_element_t& elem : var->cnsts) {
-    if (xbt_swag_size(&(elem.constraint->disabled_element_set)))
-      lmm_on_disabled_var(sys, elem.constraint);
-  }
-
   var->cnsts.clear();
 
   lmm_check_concurrency(sys);
