@@ -901,7 +901,7 @@ int lmm_can_enable_var(lmm_variable_t var){
 //A priori not a big performance issue, but we might do better by calling lmm_update_modified_set within the for loops
 // (after doing the first for enabling==1, and before doing the last for disabling==1)
 void lmm_enable_var(lmm_system_t sys, lmm_variable_t var){
-  xbt_assert(lmm_can_enable_var(var));
+  xbt_assert(not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug) || lmm_can_enable_var(var));
 
   var->sharing_weight = var->staged_weight;
   var->staged_weight = 0;
