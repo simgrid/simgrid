@@ -7,9 +7,9 @@
  * Modeling the proportional fairness using the Lagrangian Optimization Approach. For a detailed description see:
  * "ssh://username@scm.gforge.inria.fr/svn/memo/people/pvelho/lagrange/ppf.ps".
  */
+#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include "maxmin_private.hpp"
 
 #include <algorithm>
 #include <cstdlib>

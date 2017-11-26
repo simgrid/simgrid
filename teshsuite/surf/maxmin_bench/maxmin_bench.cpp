@@ -8,7 +8,6 @@
 
 #include "surf/maxmin.hpp"
 #include "simgrid/msg.h"
-#include "src/surf/maxmin_private.hpp"
 #include "xbt/module.h"
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"

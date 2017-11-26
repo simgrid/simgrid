@@ -38,7 +38,6 @@ set(EXTRA_DIST
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
-  src/surf/maxmin_private.hpp
   src/surf/network_cm02.hpp
   src/surf/network_constant.hpp
   src/surf/network_interface.hpp

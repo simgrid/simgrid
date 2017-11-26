@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "maxmin_private.hpp"
 #include "network_interface.hpp"
 #include "simgrid/sg_config.h"
 

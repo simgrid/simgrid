@@ -5,7 +5,7 @@
 
 /* \file callbacks.h */
 
-#include "maxmin_private.hpp"
+#include "surf/maxmin.hpp"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"

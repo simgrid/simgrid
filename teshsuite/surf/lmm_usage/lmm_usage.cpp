@@ -7,7 +7,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
-#include "src/surf/maxmin_private.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/maxmin.hpp"
 #include "xbt/log.h"

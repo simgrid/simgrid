@@ -8,9 +8,9 @@
 
 #include "simgrid/sg_config.h"
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/maxmin_private.hpp"
 #include "src/surf/network_ib.hpp"
 #include "src/surf/xml/platf.hpp"
+#include "surf/maxmin.hpp"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
