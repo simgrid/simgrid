@@ -433,7 +433,7 @@ public:
    * @brief Create a new Linear MaxMim system
    * @param selective_update whether we should do lazy updates
    */
-  s_lmm_system_t(bool selective_update);
+  explicit s_lmm_system_t(bool selective_update);
   /** @brief Free an existing Linear MaxMin system */
   ~s_lmm_system_t();
 
