@@ -51,7 +51,6 @@ public:
   explicit LinkEnergy(simgrid::s4u::Link* ptr);
   ~LinkEnergy();
 
-  double getALinkTotalPower();
   void initWattsRangeList();
   double getTotalEnergy();
   void update();
@@ -59,19 +58,19 @@ public:
 private:
   double getPower();
 
-  simgrid::s4u::Link* link{};
+  simgrid::s4u::Link* link_{};
 
-  bool inited{false};
-  double idle{0.0};
-  double busy{0.0};
+  bool inited_{false};
+  double idle_{0.0};
+  double busy_{0.0};
 
-  double total_energy{0.0};
-  double last_updated{0.0}; /*< Timestamp of the last energy update event*/
+  double totalEnergy_{0.0};
+  double lastUpdated_{0.0}; /*< Timestamp of the last energy update event*/
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID;
 
-LinkEnergy::LinkEnergy(simgrid::s4u::Link* ptr) : link(ptr), last_updated(surf_get_clock())
+LinkEnergy::LinkEnergy(simgrid::s4u::Link* ptr) : link_(ptr), lastUpdated_(surf_get_clock())
 {
 }
 
@@ -81,18 +80,18 @@ void LinkEnergy::update()
 {
   double power = getPower();
   double now   = surf_get_clock();
-  total_energy += power * (now - last_updated);
-  last_updated = now;
+  totalEnergy_ += power * (now - lastUpdated_);
+  lastUpdated_ = now;
 }
 
 void LinkEnergy::initWattsRangeList()
 {
 
-  if (inited)
+  if (inited_)
     return;
-  inited = true;
+  inited_ = true;
 
-  const char* all_power_values_str = this->link->getProperty("watt_range");
+  const char* all_power_values_str = this->link_->getProperty("watt_range");
 
   if (all_power_values_str == nullptr)
     return;
@@ -106,15 +105,15 @@ void LinkEnergy::initWattsRangeList()
     boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
     xbt_assert(current_power_values.size() == 2,
                "Power properties incorrectly defined - could not retrieve idle and busy power values for link %s",
-               this->link->getCname());
+               this->link_->getCname());
 
     /* min_power corresponds to the idle power (link load = 0) */
     /* max_power is the power consumed at 100% link load       */
-    char* idleMsg = bprintf("Invalid idle power value for link%s", this->link->getCname());
-    char* busyMsg = bprintf("Invalid busy power value for %s", this->link->getCname());
+    char* idleMsg = bprintf("Invalid idle power value for link%s", this->link_->getCname());
+    char* busyMsg = bprintf("Invalid busy power value for %s", this->link_->getCname());
 
-    idle = xbt_str_parse_double((current_power_values.at(0)).c_str(), idleMsg);
-    busy = xbt_str_parse_double((current_power_values.at(1)).c_str(), busyMsg);
+    idle_ = xbt_str_parse_double((current_power_values.at(0)).c_str(), idleMsg);
+    busy_ = xbt_str_parse_double((current_power_values.at(1)).c_str(), busyMsg);
 
     xbt_free(idleMsg);
     xbt_free(busyMsg);
@@ -125,21 +124,21 @@ void LinkEnergy::initWattsRangeList()
 double LinkEnergy::getPower()
 {
 
-  if (!inited)
+  if (!inited_)
     return 0.0;
 
-  double power_slope = busy - idle;
+  double power_slope = busy_ - idle_;
 
-  double normalized_link_usage = link->getUsage() / link->bandwidth();
+  double normalized_link_usage = link_->getUsage() / link_->bandwidth();
   double dynamic_power         = power_slope * normalized_link_usage;
 
-  return idle + dynamic_power;
+  return idle_ + dynamic_power;
 }
 
 double LinkEnergy::getTotalEnergy()
 {
   update();
-  return this->total_energy;
+  return this->totalEnergy_;
 }
 }
 }
