@@ -6,6 +6,7 @@
 #include "private.hpp"
 #include "simgrid/modelchecker.h"
 #include "smpi_comm.hpp"
+#include "simgrid/host.h"
 #include "smpi_process.hpp"
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
@@ -69,7 +70,8 @@ void smpi_execute(double duration)
 void smpi_execute_benched(double duration)
 {
   smpi_bench_end();
-  smpi_execute(duration);
+  double speed = sg_host_speed(sg_host_self());
+  smpi_execute_flops(duration*speed);
   smpi_bench_begin();
 }
 
