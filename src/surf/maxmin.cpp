@@ -148,13 +148,12 @@ void s_lmm_system_t::var_free(lmm_variable_t var)
   XBT_OUT();
 }
 
-s_lmm_system_t::s_lmm_system_t(bool selective_update)
+s_lmm_system_t::s_lmm_system_t(bool selective_update) : selective_update_active(selective_update)
 {
   s_lmm_variable_t var;
   s_lmm_constraint_t cnst;
 
   modified                = false;
-  selective_update_active = selective_update;
   visited_counter         = 1;
 
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
@@ -197,11 +196,10 @@ void s_lmm_system_t::cnst_free(lmm_constraint_t cnst)
   delete cnst;
 }
 
-s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value)
+s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value) : bound(bound_value), id(id_value)
 {
   s_lmm_element_t elem;
 
-  id     = id_value;
   id_int = Global_debug_id++;
   xbt_swag_init(&enabled_element_set, xbt_swag_offset(elem, enabled_element_set_hookup));
   xbt_swag_init(&disabled_element_set, xbt_swag_offset(elem, disabled_element_set_hookup));
@@ -209,7 +207,6 @@ s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value)
 
   remaining           = 0.0;
   usage               = 0.0;
-  bound               = bound_value;
   concurrency_limit   = sg_concurrency_limit;
   concurrency_current = 0;
   concurrency_maximum = 0;
