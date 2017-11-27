@@ -406,25 +406,25 @@ lmm_variable_t s_lmm_constraint_t::get_variable_safe(lmm_element_t* elem, lmm_el
     return nullptr;
 }
 
-static inline void saturated_constraint_set_update(double usage, int cnst_light_num,
-                                                   dyn_light_t& saturated_constraint_set, double* min_usage)
+static inline void saturated_constraints_update(double usage, int cnst_light_num, dyn_light_t& saturated_constraints,
+                                                double* min_usage)
 {
   xbt_assert(usage > 0,"Impossible");
 
   if (*min_usage < 0 || *min_usage > usage) {
     *min_usage = usage;
     XBT_HERE(" min_usage=%f (cnst->remaining / cnst->usage =%f)", *min_usage, usage);
-    saturated_constraint_set.assign(1, cnst_light_num);
+    saturated_constraints.assign(1, cnst_light_num);
   } else if (*min_usage == usage) {
-    saturated_constraint_set.emplace_back(cnst_light_num);
+    saturated_constraints.emplace_back(cnst_light_num);
   }
 }
 
 static inline void saturated_variable_set_update(s_lmm_constraint_light_t* cnst_light_tab,
-                                                 const dyn_light_t& saturated_constraint_set, lmm_system_t sys)
+                                                 const dyn_light_t& saturated_constraints, lmm_system_t sys)
 {
   /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate (cnst_light_tab)*/
-  for (int const& saturated_cnst : saturated_constraint_set) {
+  for (int const& saturated_cnst : saturated_constraints) {
     lmm_constraint_light_t cnst = &cnst_light_tab[saturated_cnst];
     void* _elem;
     xbt_swag_t elem_list = &(cnst->cnst->active_element_set);
@@ -543,7 +543,7 @@ void s_lmm_system_t::solve()
 
   s_lmm_constraint_light_t* cnst_light_tab = new s_lmm_constraint_light_t[xbt_swag_size(cnst_list)]();
   int cnst_light_num = 0;
-  dyn_light_t saturated_constraint_set;
+  dyn_light_t saturated_constraints;
 
   xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
     lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
@@ -577,14 +577,14 @@ void s_lmm_system_t::solve()
       cnst_light_tab[cnst_light_num].cnst = cnst;
       cnst->cnst_light = &(cnst_light_tab[cnst_light_num]);
       cnst_light_tab[cnst_light_num].remaining_over_usage = cnst->remaining / cnst->usage;
-      saturated_constraint_set_update(cnst_light_tab[cnst_light_num].remaining_over_usage,
-        cnst_light_num, saturated_constraint_set, &min_usage);
+      saturated_constraints_update(cnst_light_tab[cnst_light_num].remaining_over_usage, cnst_light_num,
+                                   saturated_constraints, &min_usage);
       xbt_assert(cnst->active_element_set.count>0, "There is no sense adding a constraint that has no active element!");
       cnst_light_num++;
     }
   }
 
-  saturated_variable_set_update(cnst_light_tab, saturated_constraint_set, this);
+  saturated_variable_set_update(cnst_light_tab, saturated_constraints, this);
 
   /* Saturated variables update */
   do {
@@ -691,7 +691,7 @@ void s_lmm_system_t::solve()
     /* Find out which variables reach the maximum */
     min_usage = -1;
     min_bound = -1;
-    saturated_constraint_set.clear();
+    saturated_constraints.clear();
     int pos;
     for(pos=0; pos<cnst_light_num; pos++){
       xbt_assert(cnst_light_tab[pos].cnst->active_element_set.count>0, "Cannot saturate more a constraint that has"
@@ -699,11 +699,10 @@ void s_lmm_system_t::solve()
                  " because of possible rounding effects.\n\tFor the record, the usage of this constraint is %g while "
                  "the maxmin precision to which it is compared is %g.\n\tThe usage of the previous constraint is %g.",
                  cnst_light_tab[pos].cnst->usage, sg_maxmin_precision, cnst_light_tab[pos-1].cnst->usage);
-      saturated_constraint_set_update(cnst_light_tab[pos].remaining_over_usage, pos, saturated_constraint_set,
-                                      &min_usage);
+      saturated_constraints_update(cnst_light_tab[pos].remaining_over_usage, pos, saturated_constraints, &min_usage);
     }
 
-    saturated_variable_set_update(cnst_light_tab, saturated_constraint_set, this);
+    saturated_variable_set_update(cnst_light_tab, saturated_constraints, this);
 
   } while (cnst_light_num > 0);
 
