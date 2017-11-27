@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d",expr);
 #define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p",expr);
 
-void bottleneck_solve(lmm_system_t sys)
+void simgrid::surf::bottleneck_solve(lmm_system_t sys)
 {
   void *_var;
   void *_var_next;

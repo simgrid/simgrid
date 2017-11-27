@@ -19,11 +19,14 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
-typedef std::vector<int> dyn_light_t;
-
 double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */
 double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:VALUE */
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
+
+namespace simgrid {
+namespace surf {
+
+typedef std::vector<int> dyn_light_t;
 
 int s_lmm_variable_t::Global_debug_id   = 1;
 int s_lmm_constraint_t::Global_debug_id = 1;
@@ -744,7 +747,7 @@ void s_lmm_variable_t::initialize(simgrid::surf::Action* id_value, double sharin
                                   int number_of_constraints, unsigned visited_value)
 {
   id     = id_value;
-  id_int = s_lmm_variable_t::Global_debug_id++;
+  id_int = Global_debug_id++;
   cnsts.reserve(number_of_constraints);
   sharing_weight    = sharing_weight_value;
   staged_weight     = 0.0;
@@ -1016,4 +1019,6 @@ int s_lmm_constraint_t::get_variable_amount() const
       result++;
   }
   return result;
+}
+}
 }

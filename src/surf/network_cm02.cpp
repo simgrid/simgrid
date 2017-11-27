@@ -87,13 +87,14 @@ void surf_network_model_init_Reno()
   if (surf_network_model)
     return;
 
-  lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
+  lmm_set_default_protocol_function(simgrid::surf::func_reno_f, simgrid::surf::func_reno_fp,
+                                    simgrid::surf::func_reno_fpi);
 
   xbt_cfg_setdefault_double("network/latency-factor", 13.01);
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::surf::lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -103,13 +104,14 @@ void surf_network_model_init_Reno2()
   if (surf_network_model)
     return;
 
-  lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp, func_reno2_fpi);
+  lmm_set_default_protocol_function(simgrid::surf::func_reno2_f, simgrid::surf::func_reno2_fp,
+                                    simgrid::surf::func_reno2_fpi);
 
   xbt_cfg_setdefault_double("network/latency-factor", 13.01);
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::surf::lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -118,13 +120,14 @@ void surf_network_model_init_Vegas()
   if (surf_network_model)
     return;
 
-  lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
+  lmm_set_default_protocol_function(simgrid::surf::func_vegas_f, simgrid::surf::func_vegas_fp,
+                                    simgrid::surf::func_vegas_fpi);
 
   xbt_cfg_setdefault_double("network/latency-factor", 13.01);
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::surf::lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 }
 

@@ -6,10 +6,14 @@
 #ifndef MAXMIN_DATATYPES_HPP
 #define MAXMIN_DATATYPES_HPP
 
+namespace simgrid {
+namespace surf {
 typedef struct s_lmm_element_t* lmm_element_t;
 typedef struct s_lmm_variable_t* lmm_variable_t;
 typedef struct s_lmm_constraint_t* lmm_constraint_t;
 typedef struct s_lmm_constraint_light_t* lmm_constraint_light_t;
 typedef struct s_lmm_system_t* lmm_system_t;
+}
+}
 
 #endif

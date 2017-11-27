@@ -18,6 +18,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+using namespace simgrid::surf;
+
 double date;
 int64_t seedx = 0;
 

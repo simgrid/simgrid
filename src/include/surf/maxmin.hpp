@@ -17,6 +17,9 @@
 #include <limits>
 #include <vector>
 
+namespace simgrid {
+namespace surf {
+
 /** @addtogroup SURF_lmm
  * @details
  * A linear maxmin solver to resolve inequations systems.
@@ -574,5 +577,7 @@ extern XBT_PRIVATE double (*func_fp_def)(lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fpi_def)(lmm_variable_t, double);
 
 /** @} */
+}
+}
 
 #endif

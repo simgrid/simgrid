@@ -22,6 +22,9 @@ XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf_lagrange, "Logging specifi
 
 #define SHOW_EXPR(expr) XBT_CDEBUG(surf_lagrange,#expr " = %g",expr);
 
+namespace simgrid {
+namespace surf {
+
 double (*func_f_def) (lmm_variable_t, double);
 double (*func_fp_def) (lmm_variable_t, double);
 double (*func_fpi_def) (lmm_variable_t, double);
@@ -560,4 +563,6 @@ double func_reno2_fpi(lmm_variable_t var, double x)
 
   res_fpi = RENO2_SCALING * (-3.0 * tmp + sqrt(res_fpi)) / (4.0 * tmp);
   return res_fpi;
+}
+}
 }
