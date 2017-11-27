@@ -127,6 +127,12 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
   return jprocess;
 }
 
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_nativeGetPID(JNIEnv* env, jobject jprocess)
+{
+  msg_process_t process = jprocess_to_native(jprocess, env);
+  return MSG_process_get_PID(process);
+}
+
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject jname) {
   msg_process_t process = jprocess_to_native(jprocess, env);
 
