@@ -356,7 +356,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
   latency_.peak  = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    constraint()->shared();
+    constraint()->unshare();
 
   simgrid::s4u::Link::onCreation(this->piface_);
 }

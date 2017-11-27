@@ -262,7 +262,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
   latency_.peak   = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    constraint()->shared();
+    constraint()->unshare();
 
   s4u::Link::onCreation(this->piface_);
 }

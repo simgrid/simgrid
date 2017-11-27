@@ -205,8 +205,8 @@ public:
   s_lmm_constraint_t() = default;
   s_lmm_constraint_t(void* id_value, double bound_value);
 
-  /** @brief Share a constraint. FIXME: name is misleading */
-  void shared() { sharing_policy = 0; }
+  /** @brief Unshare a constraint. */
+  void unshare() { sharing_policy = 0; }
 
   /**
    * @brief Check if a constraint is shared (shared by default)
