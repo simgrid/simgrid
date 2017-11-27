@@ -24,6 +24,7 @@ static void sender(std::vector<std::string> args)
 
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::string("message"));
 
+  /* Sleep a while before starting the example */
   simgrid::s4u::this_actor::sleep_for(10);
 
   /* - Send the task to the @ref worker */
