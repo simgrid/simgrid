@@ -103,9 +103,9 @@ documentation, but it should remain readable directly.
 
   - <b>Yielding to other actor</b>.
     @ref examples/s4u/actor-yield/s4u-actor-yield.c\n
-    The @ref yield function interrupts the execution of the
-    current actor, leaving a chance to run to the other actor
-    that are ready to run at the exact same timestamp
+    The simgrid::s4u::this_actor::yield() function interrupts the
+    execution of the current actor, leaving a chance to the other actors
+    that are ready to run at this timestamp.
 
 @section s4u_ex_synchro Inter-Actor Synchronization 
 

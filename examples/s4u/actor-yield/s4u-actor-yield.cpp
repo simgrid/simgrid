@@ -8,7 +8,7 @@
 /* This example does not much: It just spans over-polite actor that yield a large amount
 * of time before ending.
 *
-* This serves as an example for the s4u-actor-yield() function, with which an actor can request
+* This serves as an example for the simgrid::s4u::this_actor::yield() function, with which an actor can request
 * to be rescheduled after the other actor that are ready at the current timestamp.
 *
 * It can also be used to benchmark our context-switching mechanism.
