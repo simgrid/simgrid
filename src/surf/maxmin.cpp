@@ -119,7 +119,7 @@ void s_lmm_system_t::check_concurrency()
 void s_lmm_system_t::var_free(lmm_variable_t var)
 {
   XBT_IN("(sys=%p, var=%p)", this, var);
-  modified = 1;
+  modified = true;
 
   // TODOLATER Can do better than that by leaving only the variable in only one enabled_element_set, call
   // update_modified_set, and then remove it..
@@ -153,7 +153,7 @@ s_lmm_system_t::s_lmm_system_t(bool selective_update)
   s_lmm_variable_t var;
   s_lmm_constraint_t cnst;
 
-  modified                = 0;
+  modified                = false;
   selective_update_active = selective_update;
   visited_counter         = 1;
 
@@ -261,7 +261,7 @@ void s_lmm_system_t::variable_free(lmm_variable_t var)
 
 void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
 {
-  modified = 1;
+  modified = true;
 
   //Check if this variable already has an active element in this constraint
   //If it does, substract it from the required slack
@@ -314,7 +314,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
 
 void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value)
 {
-  modified = 1;
+  modified = true;
 
   check_concurrency();
 
@@ -706,7 +706,7 @@ void s_lmm_system_t::solve()
 
   } while (cnst_light_num > 0);
 
-  modified = 0;
+  modified = false;
   if (selective_update_active)
     remove_all_modified_set();
 
@@ -736,7 +736,7 @@ void lmm_solve(lmm_system_t sys)
  */
 void s_lmm_system_t::update_variable_bound(lmm_variable_t var, double bound)
 {
-  modified   = 1;
+  modified   = true;
   var->bound = bound;
 
   if (not var->cnsts.empty())
@@ -892,7 +892,7 @@ void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
 
   XBT_IN("(sys=%p, var=%p, weight=%f)", this, var, weight);
 
-  modified = 1;
+  modified = true;
 
   //Are we enabling this variable?
   if (enabling_var){
@@ -919,7 +919,7 @@ void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
 
 void s_lmm_system_t::update_constraint_bound(lmm_constraint_t cnst, double bound)
 {
-  modified = 1;
+  modified = true;
   update_modified_set(cnst);
   cnst->bound = bound;
 }

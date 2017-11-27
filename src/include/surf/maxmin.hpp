@@ -550,7 +550,7 @@ private:
   void check_concurrency();
 
 public:
-  int modified;
+  bool modified;
   s_xbt_swag_t variable_set;             /* a list of lmm_variable_t */
   s_xbt_swag_t active_constraint_set;    /* a list of lmm_constraint_t */
   s_xbt_swag_t saturated_variable_set;   /* a list of lmm_variable_t */
