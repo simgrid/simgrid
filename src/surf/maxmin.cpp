@@ -991,7 +991,7 @@ void s_lmm_system_t::remove_all_modified_set()
  */
 double s_lmm_constraint_t::get_usage() const
 {
-  double usage         = 0.0;
+  double result              = 0.0;
   const_xbt_swag_t elem_list = &enabled_element_set;
   void* _elem;
 
@@ -1000,24 +1000,24 @@ double s_lmm_constraint_t::get_usage() const
     lmm_element_t elem = (lmm_element_t)_elem;
     if (elem->consumption_weight > 0) {
       if (sharing_policy)
-        usage += elem->consumption_weight * elem->variable->value;
-      else if (usage < elem->consumption_weight * elem->variable->value)
-        usage = std::max(usage, elem->consumption_weight * elem->variable->value);
+        result += elem->consumption_weight * elem->variable->value;
+      else if (result < elem->consumption_weight * elem->variable->value)
+        result = std::max(result, elem->consumption_weight * elem->variable->value);
     }
   }
-  return usage;
+  return result;
 }
 
 int s_lmm_constraint_t::get_variable_amount() const
 {
-  int usage = 0;
+  int result                 = 0;
   const_xbt_swag_t elem_list = &enabled_element_set;
   void *_elem;
 
   xbt_swag_foreach(_elem, elem_list) {
     lmm_element_t elem = (lmm_element_t)_elem;
     if (elem->consumption_weight > 0)
-      usage++;
+      result++;
   }
- return usage;
+  return result;
 }
