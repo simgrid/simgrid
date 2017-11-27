@@ -18,15 +18,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_yield, "Messages specific for this s4u ex
 class yielder {
  long number_of_yields;
 public: 
- explicit yielder() = default;
  explicit yielder(std::vector<std::string> args)
-{ 
+{
  number_of_yields = std::stod(args[1]);
 }
 void operator()()
 {
- for (int i = 0; i < number_of_yields; i++)
- simgrid::s4u::this_actor::yield();
+  for (int i = 0; i < number_of_yields; i++)
+   simgrid::s4u::this_actor::yield();
  XBT_INFO("I yielded %ld times. Goodbye now!", number_of_yields);
 }
 };
@@ -34,14 +33,13 @@ void operator()()
 int main(int argc, char* argv[])
 {
  simgrid::s4u::Engine e(&argc, argv);
- 
+
  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
  "\tExample: %s platform.xml deployment.xml\n",
  argv[0], argv[0]);
- 
+
  e.loadPlatform(argv[1]);  /* - Load the platform description */
  e.registerFunction<yielder>("yielder");
- std::vector<std::string> args; 
 
  e.loadDeployment(argv[2]);
 
