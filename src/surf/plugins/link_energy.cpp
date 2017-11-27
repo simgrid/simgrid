@@ -17,14 +17,14 @@
 /** @addtogroup SURF_plugin_energy
 
 
- This is the energy plugin, enabling to account for the dissipated energy in the simulated platform.
+ This is the link energy plugin, accounting for the dissipated energy in the simulated platform.
 
  The energy consumption of a link depends directly on its current traffic load. Specify that consumption in your
  platform file as follows:
 
  \verbatim
- <link id="SWITCH1" bandwidth="125000000" latency="5E-5" sharing_policy="SHARED" >
- <prop id="watts" value="100.0:200.0" />
+ <link id="SWITCH1" bandwidth="125Mbps" latency="5us" sharing_policy="SHARED" >
+ <prop id="watt_range" value="100.0:200.0" />
  <prop id="watt_off" value="10" />
  </link>
  \endverbatim
@@ -36,21 +36,13 @@
 
  To simulate the energy-related elements, first call the simgrid#energy#sg_link_energy_plugin_init() before your
  #MSG_init(),
- and then use the following function to retrieve the consumption of a given link: MSG_link_get_consumed_energy().
+ and then use the following function to retrieve the consumption of a given link: sg_link_get_consumed_energy().
  */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy, surf, "Logging specific to the SURF LinkEnergy plugin");
 
 namespace simgrid {
 namespace plugin {
-
-class LinkPowerRange {
-public:
-  double idle;
-  double busy;
-
-  LinkPowerRange(double idle, double busy) : idle(idle), busy(busy) {}
-};
 
 class LinkEnergy {
 public:
@@ -69,7 +61,9 @@ private:
 
   simgrid::s4u::Link* link{};
 
-  std::vector<LinkPowerRange> power_range_watts_list{};
+  bool inited{false};
+  double idle{0.0};
+  double busy{0.0};
 
   double total_energy{0.0};
   double last_updated{0.0}; /*< Timestamp of the last energy update event*/
@@ -94,8 +88,9 @@ void LinkEnergy::update()
 void LinkEnergy::initWattsRangeList()
 {
 
-  if (!power_range_watts_list.empty())
+  if (inited)
     return;
+  inited = true;
 
   const char* all_power_values_str = this->link->getProperty("watt_range");
 
@@ -109,23 +104,20 @@ void LinkEnergy::initWattsRangeList()
     /* retrieve the power values associated */
     std::vector<std::string> current_power_values;
     boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
-    xbt_assert(current_power_values.size() == 2, "Power properties incorrectly defined - "
-                                                 "could not retrieve idle and busy power values for link %s",
+    xbt_assert(current_power_values.size() == 2,
+               "Power properties incorrectly defined - could not retrieve idle and busy power values for link %s",
                this->link->getCname());
 
     /* min_power corresponds to the idle power (link load = 0) */
     /* max_power is the power consumed at 100% link load       */
-    char* idle = bprintf("Invalid idle power value for link%s", this->link->getCname());
-    char* busy = bprintf("Invalid busy power value for %s", this->link->getCname());
+    char* idleMsg = bprintf("Invalid idle power value for link%s", this->link->getCname());
+    char* busyMsg = bprintf("Invalid busy power value for %s", this->link->getCname());
 
-    double idleVal = xbt_str_parse_double((current_power_values.at(0)).c_str(), idle);
+    idle = xbt_str_parse_double((current_power_values.at(0)).c_str(), idleMsg);
+    busy = xbt_str_parse_double((current_power_values.at(1)).c_str(), busyMsg);
 
-    double busyVal = xbt_str_parse_double((current_power_values.at(1)).c_str(), busy);
-
-    this->power_range_watts_list.push_back(LinkPowerRange(idleVal, busyVal));
-
-    xbt_free(idle);
-    xbt_free(busy);
+    xbt_free(idleMsg);
+    xbt_free(busyMsg);
     update();
   }
 }
@@ -133,13 +125,8 @@ void LinkEnergy::initWattsRangeList()
 double LinkEnergy::getPower()
 {
 
-  if (power_range_watts_list.empty())
+  if (!inited)
     return 0.0;
-
-  auto range = power_range_watts_list[0];
-
-  double busy = range.busy;
-  double idle = range.idle;
 
   double power_slope = busy - idle;
 
