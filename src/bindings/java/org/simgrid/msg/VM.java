@@ -13,14 +13,33 @@ public class VM extends Host {
 	private Host currentHost; 
 	private int coreAmount = 1;
 
-	/** Create a `basic' VM (i.e. 1GB of RAM, other values are not taken into account). */
+	/**
+	 * Create a `basic' VM : 1 core and 1GB of RAM.
+	 * @param host Host node
+	 * @param name name of the machine
+	 */	
 	public VM(Host host, String name) {
 		this(host,name, /*coreAmount*/1, 1024, 0, 0);
 	}
-	
+
+	/**
+	 * Create a VM without useless values (for humans)
+	 * @param host Host node
+	 * @param name name of the machine
+	 * @param coreAmount the amount of cores of the VM
+	 */	
 	public VM(Host host, String name, int coreAmount) {
 		this(host,name, coreAmount, 1024, 0, 0);
 	}
+
+	/**
+	 * Create a VM with 1 core
+	 * @param host Host node
+	 * @param name name of the machine
+	 * @param ramSize size of the RAM that should be allocated (in MBytes)
+	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
+	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
+	 */	
 	public VM(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity){
 		this(host, name, /*coreAmount*/1, ramSize, migNetSpeed, dpIntensity);
 	}
@@ -29,6 +48,7 @@ public class VM extends Host {
 	 * Create a VM
 	 * @param host Host node
 	 * @param name name of the machine
+	 * @param coreAmount the amount of cores of the VM
 	 * @param ramSize size of the RAM that should be allocated (in MBytes)
 	 * @param migNetSpeed (network bandwith allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
