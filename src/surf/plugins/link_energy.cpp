@@ -146,12 +146,6 @@ double LinkEnergy::getTotalEnergy()
 using simgrid::plugin::LinkEnergy;
 
 /* **************************** events  callback *************************** */
-static void onCreation(simgrid::s4u::Link& link)
-{
-  XBT_DEBUG("onCreation is called for link: %s", link.getCname());
-  link.extension_set(new LinkEnergy(&link));
-}
-
 static void onCommunicate(simgrid::surf::NetworkAction* action, simgrid::s4u::Host* src, simgrid::s4u::Host* dst)
 {
   XBT_DEBUG("onCommunicate is called");
@@ -161,64 +155,26 @@ static void onCommunicate(simgrid::surf::NetworkAction* action, simgrid::s4u::Ho
       continue;
 
     XBT_DEBUG("Update link %s", link->getCname());
-    // Get the link_energy extension for the relevant link
     LinkEnergy* link_energy = link->piface_.extension<LinkEnergy>();
     link_energy->initWattsRangeList();
     link_energy->update();
   }
 }
 
-static void onActionStateChange(simgrid::surf::NetworkAction* action)
+static void onSimulationEnd()
 {
-  XBT_DEBUG("onActionStateChange is called");
-  for (simgrid::surf::LinkImpl* link : action->links()) {
+  std::vector<simgrid::s4u::Link*> links;
+  simgrid::s4u::Engine::getInstance()->getLinkList(&links);
 
-    if (link == nullptr)
-      continue;
-
-    // Get the link_energy extension for the relevant link
-    LinkEnergy* link_energy = link->piface_.extension<LinkEnergy>();
-    link_energy->update();
-  }
-}
-
-static void onLinkStateChange(simgrid::s4u::Link& link)
-{
-  XBT_DEBUG("onLinkStateChange is called for link: %s", link.getCname());
-
-  LinkEnergy* link_energy = link.extension<LinkEnergy>();
-  link_energy->update();
-}
-
-static void onLinkDestruction(simgrid::s4u::Link& link)
-{
-  XBT_DEBUG("onLinkDestruction is called for link: %s", link.getCname());
-
-  LinkEnergy* link_energy = link.extension<LinkEnergy>();
-  link_energy->update();
-}
-
-static void computeAndDisplayTotalEnergy()
-{
-  std::vector<simgrid::s4u::Link*> link_list;
-  simgrid::s4u::Engine::getInstance()->getLinkList(&link_list);
   double total_energy = 0.0; // Total dissipated energy (whole platform)
-  for (const auto link : link_list) {
-    LinkEnergy* link_energy = link->extension<LinkEnergy>();
-
-    double a_link_total_energy = link_energy->getTotalEnergy();
-    total_energy += a_link_total_energy;
-    const char* name = link->getCname();
-    if (strcmp(name, "__loopback__"))
-      XBT_INFO("Link '%s' total consumption: %f", name, a_link_total_energy);
+  for (const auto link : links) {
+    double link_energy = link->extension<LinkEnergy>()->getTotalEnergy();
+    if (strcmp(link->getCname(), "__loopback__"))
+      XBT_INFO("Link '%s' total consumption: %f", link->getCname(), link_energy);
+    total_energy += link_energy;
   }
 
   XBT_INFO("Total energy over all links: %f", total_energy);
-}
-
-static void onSimulationEnd()
-{
-  computeAndDisplayTotalEnergy();
 }
 /* **************************** Public interface *************************** */
 SG_BEGIN_DECL()
@@ -234,10 +190,25 @@ void sg_link_energy_plugin_init()
     return;
   LinkEnergy::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkEnergy>();
 
-  simgrid::s4u::Link::onCreation.connect(&onCreation);
-  simgrid::s4u::Link::onStateChange.connect(&onLinkStateChange);
-  simgrid::s4u::Link::onDestruction.connect(&onLinkDestruction);
-  simgrid::s4u::Link::onCommunicationStateChange.connect(&onActionStateChange);
+  simgrid::s4u::Link::onCreation.connect([](simgrid::s4u::Link& link) {
+    link.extension_set(new LinkEnergy(&link));
+  });
+
+  simgrid::s4u::Link::onStateChange.connect([](simgrid::s4u::Link& link) {
+    link.extension<LinkEnergy>()->update();
+  });
+
+  simgrid::s4u::Link::onDestruction.connect([](simgrid::s4u::Link& link) {
+    link.extension<LinkEnergy>()->update();
+  });
+
+  simgrid::s4u::Link::onCommunicationStateChange.connect([](simgrid::surf::NetworkAction* action) {
+    for (simgrid::surf::LinkImpl* link : action->links()) {
+      if (link != nullptr)
+        link->piface_.extension<LinkEnergy>()->update();
+    }
+  });
+
   simgrid::s4u::Link::onCommunicate.connect(&onCommunicate);
   simgrid::s4u::onSimulationEnd.connect(&onSimulationEnd);
 }
