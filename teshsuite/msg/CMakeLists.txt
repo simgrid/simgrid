@@ -1,5 +1,6 @@
 # C examples
-foreach(x actions-comm actions-storage cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes 
+foreach(x actions-comm actions-storage cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes
+          process-yield
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
@@ -38,7 +39,8 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
+				   ${CMAKE_CURRENT_SOURCE_DIR}/process-yield/process-yield_d.xml				   
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.5-hbp1.5.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1-c0s0-c0s1.xml
@@ -52,7 +54,9 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp2.5-hbp1.5.xml    PARENT_SCOPE)
 
 foreach(x get_sender host_on_off host_on_off_processes host_on_off_recv
-    task_destroy_cancel task_listen_from task_progress trace_integration)
+    task_destroy_cancel task_listen_from task_progress 
+    process-yield 
+    trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()
 
