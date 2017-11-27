@@ -19,11 +19,14 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
 
-typedef std::vector<int> dyn_light_t;
-
 double sg_maxmin_precision = 0.00001; /* Change this with --cfg=maxmin/precision:VALUE */
 double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:VALUE */
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
+
+namespace simgrid {
+namespace surf {
+
+typedef std::vector<int> dyn_light_t;
 
 int s_lmm_variable_t::Global_debug_id   = 1;
 int s_lmm_constraint_t::Global_debug_id = 1;
@@ -119,7 +122,7 @@ void s_lmm_system_t::check_concurrency()
 void s_lmm_system_t::var_free(lmm_variable_t var)
 {
   XBT_IN("(sys=%p, var=%p)", this, var);
-  modified = 1;
+  modified = true;
 
   // TODOLATER Can do better than that by leaving only the variable in only one enabled_element_set, call
   // update_modified_set, and then remove it..
@@ -148,13 +151,12 @@ void s_lmm_system_t::var_free(lmm_variable_t var)
   XBT_OUT();
 }
 
-s_lmm_system_t::s_lmm_system_t(bool selective_update)
+s_lmm_system_t::s_lmm_system_t(bool selective_update) : selective_update_active(selective_update)
 {
   s_lmm_variable_t var;
   s_lmm_constraint_t cnst;
 
-  modified                = 0;
-  selective_update_active = selective_update;
+  modified                = false;
   visited_counter         = 1;
 
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
@@ -197,11 +199,10 @@ void s_lmm_system_t::cnst_free(lmm_constraint_t cnst)
   delete cnst;
 }
 
-s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value)
+s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value) : bound(bound_value), id(id_value)
 {
   s_lmm_element_t elem;
 
-  id     = id_value;
   id_int = Global_debug_id++;
   xbt_swag_init(&enabled_element_set, xbt_swag_offset(elem, enabled_element_set_hookup));
   xbt_swag_init(&disabled_element_set, xbt_swag_offset(elem, disabled_element_set_hookup));
@@ -209,7 +210,6 @@ s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value)
 
   remaining           = 0.0;
   usage               = 0.0;
-  bound               = bound_value;
   concurrency_limit   = sg_concurrency_limit;
   concurrency_current = 0;
   concurrency_maximum = 0;
@@ -261,7 +261,7 @@ void s_lmm_system_t::variable_free(lmm_variable_t var)
 
 void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
 {
-  modified = 1;
+  modified = true;
 
   //Check if this variable already has an active element in this constraint
   //If it does, substract it from the required slack
@@ -314,7 +314,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
 
 void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value)
 {
-  modified = 1;
+  modified = true;
 
   check_concurrency();
 
@@ -406,25 +406,25 @@ lmm_variable_t s_lmm_constraint_t::get_variable_safe(lmm_element_t* elem, lmm_el
     return nullptr;
 }
 
-static inline void saturated_constraint_set_update(double usage, int cnst_light_num,
-                                                   dyn_light_t& saturated_constraint_set, double* min_usage)
+static inline void saturated_constraints_update(double usage, int cnst_light_num, dyn_light_t& saturated_constraints,
+                                                double* min_usage)
 {
   xbt_assert(usage > 0,"Impossible");
 
   if (*min_usage < 0 || *min_usage > usage) {
     *min_usage = usage;
     XBT_HERE(" min_usage=%f (cnst->remaining / cnst->usage =%f)", *min_usage, usage);
-    saturated_constraint_set.assign(1, cnst_light_num);
+    saturated_constraints.assign(1, cnst_light_num);
   } else if (*min_usage == usage) {
-    saturated_constraint_set.emplace_back(cnst_light_num);
+    saturated_constraints.emplace_back(cnst_light_num);
   }
 }
 
 static inline void saturated_variable_set_update(s_lmm_constraint_light_t* cnst_light_tab,
-                                                 const dyn_light_t& saturated_constraint_set, lmm_system_t sys)
+                                                 const dyn_light_t& saturated_constraints, lmm_system_t sys)
 {
   /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate (cnst_light_tab)*/
-  for (int const& saturated_cnst : saturated_constraint_set) {
+  for (int const& saturated_cnst : saturated_constraints) {
     lmm_constraint_light_t cnst = &cnst_light_tab[saturated_cnst];
     void* _elem;
     xbt_swag_t elem_list = &(cnst->cnst->active_element_set);
@@ -543,7 +543,7 @@ void s_lmm_system_t::solve()
 
   s_lmm_constraint_light_t* cnst_light_tab = new s_lmm_constraint_light_t[xbt_swag_size(cnst_list)]();
   int cnst_light_num = 0;
-  dyn_light_t saturated_constraint_set;
+  dyn_light_t saturated_constraints;
 
   xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
     lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
@@ -577,14 +577,14 @@ void s_lmm_system_t::solve()
       cnst_light_tab[cnst_light_num].cnst = cnst;
       cnst->cnst_light = &(cnst_light_tab[cnst_light_num]);
       cnst_light_tab[cnst_light_num].remaining_over_usage = cnst->remaining / cnst->usage;
-      saturated_constraint_set_update(cnst_light_tab[cnst_light_num].remaining_over_usage,
-        cnst_light_num, saturated_constraint_set, &min_usage);
+      saturated_constraints_update(cnst_light_tab[cnst_light_num].remaining_over_usage, cnst_light_num,
+                                   saturated_constraints, &min_usage);
       xbt_assert(cnst->active_element_set.count>0, "There is no sense adding a constraint that has no active element!");
       cnst_light_num++;
     }
   }
 
-  saturated_variable_set_update(cnst_light_tab, saturated_constraint_set, this);
+  saturated_variable_set_update(cnst_light_tab, saturated_constraints, this);
 
   /* Saturated variables update */
   do {
@@ -691,7 +691,7 @@ void s_lmm_system_t::solve()
     /* Find out which variables reach the maximum */
     min_usage = -1;
     min_bound = -1;
-    saturated_constraint_set.clear();
+    saturated_constraints.clear();
     int pos;
     for(pos=0; pos<cnst_light_num; pos++){
       xbt_assert(cnst_light_tab[pos].cnst->active_element_set.count>0, "Cannot saturate more a constraint that has"
@@ -699,15 +699,14 @@ void s_lmm_system_t::solve()
                  " because of possible rounding effects.\n\tFor the record, the usage of this constraint is %g while "
                  "the maxmin precision to which it is compared is %g.\n\tThe usage of the previous constraint is %g.",
                  cnst_light_tab[pos].cnst->usage, sg_maxmin_precision, cnst_light_tab[pos-1].cnst->usage);
-      saturated_constraint_set_update(cnst_light_tab[pos].remaining_over_usage, pos, saturated_constraint_set,
-                                      &min_usage);
+      saturated_constraints_update(cnst_light_tab[pos].remaining_over_usage, pos, saturated_constraints, &min_usage);
     }
 
-    saturated_variable_set_update(cnst_light_tab, saturated_constraint_set, this);
+    saturated_variable_set_update(cnst_light_tab, saturated_constraints, this);
 
   } while (cnst_light_num > 0);
 
-  modified = 0;
+  modified = false;
   if (selective_update_active)
     remove_all_modified_set();
 
@@ -737,7 +736,7 @@ void lmm_solve(lmm_system_t sys)
  */
 void s_lmm_system_t::update_variable_bound(lmm_variable_t var, double bound)
 {
-  modified   = 1;
+  modified   = true;
   var->bound = bound;
 
   if (not var->cnsts.empty())
@@ -748,7 +747,7 @@ void s_lmm_variable_t::initialize(simgrid::surf::Action* id_value, double sharin
                                   int number_of_constraints, unsigned visited_value)
 {
   id     = id_value;
-  id_int = s_lmm_variable_t::Global_debug_id++;
+  id_int = Global_debug_id++;
   cnsts.reserve(number_of_constraints);
   sharing_weight    = sharing_weight_value;
   staged_weight     = 0.0;
@@ -893,7 +892,7 @@ void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
 
   XBT_IN("(sys=%p, var=%p, weight=%f)", this, var, weight);
 
-  modified = 1;
+  modified = true;
 
   //Are we enabling this variable?
   if (enabling_var){
@@ -920,7 +919,7 @@ void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
 
 void s_lmm_system_t::update_constraint_bound(lmm_constraint_t cnst, double bound)
 {
-  modified = 1;
+  modified = true;
   update_modified_set(cnst);
   cnst->bound = bound;
 }
@@ -991,7 +990,7 @@ void s_lmm_system_t::remove_all_modified_set()
  */
 double s_lmm_constraint_t::get_usage() const
 {
-  double usage         = 0.0;
+  double result              = 0.0;
   const_xbt_swag_t elem_list = &enabled_element_set;
   void* _elem;
 
@@ -1000,24 +999,26 @@ double s_lmm_constraint_t::get_usage() const
     lmm_element_t elem = (lmm_element_t)_elem;
     if (elem->consumption_weight > 0) {
       if (sharing_policy)
-        usage += elem->consumption_weight * elem->variable->value;
-      else if (usage < elem->consumption_weight * elem->variable->value)
-        usage = std::max(usage, elem->consumption_weight * elem->variable->value);
+        result += elem->consumption_weight * elem->variable->value;
+      else if (result < elem->consumption_weight * elem->variable->value)
+        result = std::max(result, elem->consumption_weight * elem->variable->value);
     }
   }
-  return usage;
+  return result;
 }
 
 int s_lmm_constraint_t::get_variable_amount() const
 {
-  int usage = 0;
+  int result                 = 0;
   const_xbt_swag_t elem_list = &enabled_element_set;
   void *_elem;
 
   xbt_swag_foreach(_elem, elem_list) {
     lmm_element_t elem = (lmm_element_t)_elem;
     if (elem->consumption_weight > 0)
-      usage++;
+      result++;
   }
- return usage;
+  return result;
+}
+}
 }

@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d",expr);
 #define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p",expr);
 
-void bottleneck_solve(lmm_system_t sys)
+void simgrid::surf::bottleneck_solve(lmm_system_t sys)
 {
   void *_var;
   void *_var_next;
@@ -169,7 +169,7 @@ void bottleneck_solve(lmm_system_t sys)
   } while (xbt_swag_size(var_list));
 
   xbt_swag_reset(cnst_list);
-  sys->modified = 0;
+  sys->modified = true;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     XBT_DEBUG("Fair bottleneck done");
     sys->print();

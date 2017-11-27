@@ -17,6 +17,9 @@
 #include <limits>
 #include <vector>
 
+namespace simgrid {
+namespace surf {
+
 /** @addtogroup SURF_lmm
  * @details
  * A linear maxmin solver to resolve inequations systems.
@@ -163,7 +166,7 @@ XBT_PUBLIC(double) func_vegas_fpi(lmm_variable_t var, double x);
  * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or
  * vice-versa list all constraints for a given variable.
  */
-class s_lmm_element_t {
+XBT_PUBLIC_CLASS s_lmm_element_t {
 public:
   int get_concurrency() const;
   void decrease_concurrency();
@@ -200,13 +203,13 @@ struct s_lmm_constraint_light_t {
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero.
  *     LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
  */
-class s_lmm_constraint_t {
+XBT_PUBLIC_CLASS s_lmm_constraint_t {
 public:
   s_lmm_constraint_t() = default;
   s_lmm_constraint_t(void* id_value, double bound_value);
 
-  /** @brief Share a constraint. FIXME: name is misleading */
-  void shared() { sharing_policy = 0; }
+  /** @brief Unshare a constraint. */
+  void unshare() { sharing_policy = 0; }
 
   /**
    * @brief Check if a constraint is shared (shared by default)
@@ -320,7 +323,7 @@ private:
  * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as
  * soon as possible we enable the variable with desired weight
  */
-class s_lmm_variable_t {
+XBT_PUBLIC_CLASS s_lmm_variable_t {
 public:
   void initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
                   int number_of_constraints, unsigned visited_value);
@@ -427,13 +430,13 @@ inline void s_lmm_element_t::make_inactive()
 /**
  * @brief LMM system
  */
-class s_lmm_system_t {
+XBT_PUBLIC_CLASS s_lmm_system_t {
 public:
   /**
    * @brief Create a new Linear MaxMim system
    * @param selective_update whether we should do lazy updates
    */
-  s_lmm_system_t(bool selective_update);
+  explicit s_lmm_system_t(bool selective_update);
   /** @brief Free an existing Linear MaxMin system */
   ~s_lmm_system_t();
 
@@ -523,11 +526,6 @@ private:
     xbt_swag_remove(var, &variable_set);
     xbt_swag_remove(var, &saturated_variable_set);
   }
-  void remove_constraint(lmm_constraint_t cnst) // FIXME: unused
-  {
-    xbt_swag_remove(cnst, &constraint_set);
-    xbt_swag_remove(cnst, &saturated_constraint_set);
-  }
   void make_constraint_active(lmm_constraint_t cnst) { xbt_swag_insert(cnst, &active_constraint_set); }
   void make_constraint_inactive(lmm_constraint_t cnst)
   {
@@ -555,7 +553,7 @@ private:
   void check_concurrency();
 
 public:
-  int modified;
+  bool modified;
   s_xbt_swag_t variable_set;             /* a list of lmm_variable_t */
   s_xbt_swag_t active_constraint_set;    /* a list of lmm_constraint_t */
   s_xbt_swag_t saturated_variable_set;   /* a list of lmm_variable_t */
@@ -579,5 +577,7 @@ extern XBT_PRIVATE double (*func_fp_def)(lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fpi_def)(lmm_variable_t, double);
 
 /** @} */
+}
+}
 
 #endif

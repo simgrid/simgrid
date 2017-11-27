@@ -6,7 +6,7 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.h
-  src/include/surf/datatypes.h
+  src/include/surf/datatypes.hpp
   src/include/surf/maxmin.hpp
   src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
