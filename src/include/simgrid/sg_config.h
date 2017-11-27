@@ -7,6 +7,7 @@
 #define SIMGRID_CONFIG_H
 
 #include "xbt/config.h"
+#include "xbt/config.hpp"
 
 /** Config Globals */
 SG_BEGIN_DECL()

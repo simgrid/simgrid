@@ -51,7 +51,7 @@ public:
    * instead of passing by an upper level switch.
    */
   surf::LinkImpl* loopback;
-  FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position);
+  FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int position);
 };
 
 /** \brief Link in a fat tree (@ref FatTreeZone).
@@ -61,7 +61,7 @@ public:
  */
 class FatTreeLink {
 public:
-  FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* source, FatTreeNode* destination);
+  FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* source, FatTreeNode* destination);
   /** Link going up in the tree */
   surf::LinkImpl* upLink;
   /** Link going down in the tree */
@@ -83,7 +83,7 @@ public:
  * which are not currently enforced.
  *
  * The exact topology is described in the mandatory topo_parameters
- * field, and follow the "h ; m_h, ..., m_1 ; w_h, ..., w_1 ; p_h, ..., p_1" format.
+ * field, and follow the "h ; m_1, ..., m_h ; w_1, ..., w_h ; p_1, ..., p_h" format.
  * h stands for the switches levels number, i.e. the fat tree is of height h,
  * without the processing nodes. m_i stands for the number of lower level nodes
  * connected to a node in level i. w_i stands for the number of upper levels
@@ -98,7 +98,7 @@ public:
  */
 class XBT_PRIVATE FatTreeZone : public ClusterZone {
 public:
-  explicit FatTreeZone(NetZone* father, const char* name);
+  explicit FatTreeZone(NetZone* father, std::string name);
   ~FatTreeZone() override;
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
 
@@ -113,13 +113,13 @@ public:
    *
    * It will also store the cluster for future use.
    */
-  void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
+  void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void addProcessingNode(int id);
   void generateDotFile(const std::string& filename = "fatTree.dot") const;
 
 private:
   // description of a PGFT (TODO : better doc)
-  unsigned int levels_ = 0;
+  unsigned long levels_ = 0;
   std::vector<unsigned int> lowerLevelNodesNumber_; // number of children by node
   std::vector<unsigned int> upperLevelNodesNumber_; // number of parents by node
   std::vector<unsigned int> lowerLevelPortsNumber_; // ports between each level l and l-1
@@ -129,7 +129,7 @@ private:
   std::vector<FatTreeLink*> links_;
   std::vector<unsigned int> nodesByLevel_;
 
-  sg_platf_cluster_cbarg_t cluster_ = nullptr;
+  ClusterCreationArgs* cluster_ = nullptr;
 
   void addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort);
   int getLevelPosition(const unsigned int level);

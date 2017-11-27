@@ -7,9 +7,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
+  include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h.in ${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h @ONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/typeaints.h.in typeaints.h @ONLY)
 
 #  add_executable(allctypesf allctypesf.f)
   add_executable(gaddressf gaddressf.f)

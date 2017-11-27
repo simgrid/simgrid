@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 #include "smpi_process.hpp"
 
 namespace simgrid{
@@ -213,6 +213,8 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
 
   int rank = comm->rank();
   int size = comm->size();
+  if(size==0)
+    return MPI_ERR_COMM;
   //non commutative case, use a working algo from openmpi
   if (op != MPI_OP_NULL && not op->is_commutative()) {
     return Coll_reduce_ompi_basic_linear::reduce(sendtmpbuf, recvbuf, count, datatype, op, root, comm);

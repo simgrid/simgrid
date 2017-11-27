@@ -1,12 +1,12 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
-#include "src/instr/instr_private.h"
-#include "src/msg/msg_private.h"
+#include "src/instr/instr_private.hpp"
+#include "src/msg/msg_private.hpp"
 
 #include <atomic>
 
@@ -48,29 +48,18 @@ void TRACE_msg_task_execute_start(msg_task_t task)
 {
   XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
-    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("task_execute", type);
-    new PushStateEvent (MSG_get_clock(), process_container, type, value);
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))
+        ->getState("MSG_PROCESS_STATE")
+        ->pushEvent("task_execute");
 }
 
 void TRACE_msg_task_execute_end(msg_task_t task)
 {
   XBT_DEBUG("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
-    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new PopStateEvent (MSG_get_clock(), process_container, type);
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->popEvent();
 }
 
 /* MSG_task_destroy related functions */
@@ -88,33 +77,22 @@ void TRACE_msg_task_get_start()
 {
   XBT_DEBUG("GET,in");
 
-  if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
-    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("receive", type);
-    new PushStateEvent (MSG_get_clock(), process_container, type, value);
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))
+        ->getState("MSG_PROCESS_STATE")
+        ->pushEvent("receive");
 }
 
-void TRACE_msg_task_get_end(double start_time, msg_task_t task)
+void TRACE_msg_task_get_end(msg_task_t task)
 {
   XBT_DEBUG("GET,out %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
+    container_t process_container = simgrid::instr::Container::byName(instr_pid(MSG_process_self()));
+    process_container->getState("MSG_PROCESS_STATE")->popEvent();
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
-    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new PopStateEvent (MSG_get_clock(), process_container, type);
-
-    char key[INSTR_DEFAULT_STR_SIZE];
-    snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);
-    type = PJ_type_get ("MSG_PROCESS_TASK_LINK", PJ_type_get_root());
-    new EndLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
+    std::string key = std::string("p") + std::to_string(task->counter);
+    simgrid::instr::Container::getRoot()->getLink("MSG_PROCESS_TASK_LINK")->endEvent(process_container, "SR", key);
   }
 }
 
@@ -124,18 +102,11 @@ int TRACE_msg_task_put_start(msg_task_t task)
   XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
+    container_t process_container = simgrid::instr::Container::byName(instr_pid(MSG_process_self()));
+    process_container->getState("MSG_PROCESS_STATE")->pushEvent("send");
 
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
-    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = PJ_value_get ("send", type);
-    new PushStateEvent (MSG_get_clock(), process_container, type, value);
-
-    char key[INSTR_DEFAULT_STR_SIZE];
-    snprintf (key, INSTR_DEFAULT_STR_SIZE, "p%lld", task->counter);
-    type = PJ_type_get ("MSG_PROCESS_TASK_LINK", PJ_type_get_root());
-    new StartLinkEvent(MSG_get_clock(), PJ_container_get_root(), type, process_container, "SR", key);
+    std::string key = std::string("p") + std::to_string(task->counter);
+    simgrid::instr::Container::getRoot()->getLink("MSG_PROCESS_TASK_LINK")->startEvent(process_container, "SR", key);
   }
 
   return 1;
@@ -145,12 +116,6 @@ void TRACE_msg_task_put_end()
 {
   XBT_DEBUG("PUT,out");
 
-  if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t process_container = PJ_container_get (instr_process_id(MSG_process_self(), str, len));
-    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
-    new PopStateEvent (MSG_get_clock(), process_container, type);
-  }
+  if (TRACE_msg_process_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->popEvent();
 }

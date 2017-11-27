@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
-#include "smpi_comm.hpp"
+#include "private.hpp"
 #include "smpi_coll.hpp"
+#include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
 #include "smpi_process.hpp"
@@ -136,9 +136,8 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   } else {
     if (n == 0) {
       *newgroup = group;
-      if (group != MPI_COMM_WORLD->group()
-                && group != MPI_COMM_SELF->group() && group != MPI_GROUP_EMPTY)
-      group->ref();
+      if (group != MPI_COMM_WORLD->group() && group != MPI_COMM_SELF->group() && group != MPI_GROUP_EMPTY)
+        group->ref();
       return MPI_SUCCESS;
     } else if (n == group->size()) {
       *newgroup = MPI_GROUP_EMPTY;

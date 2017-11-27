@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -281,11 +280,10 @@ public abstract class Process implements Runnable {
 	/**
 	 * This method actually creates and run the process.
 	 * It is a noop if the process is already launched.
-	 * @throws HostNotFoundException
 	 */
-	public final void start() throws HostNotFoundException {
-		if (bind == 0)
-			 create(host);
+	public final void start() {
+	   if (bind == 0)
+	     create(host);
 	}
 
 	/** This method runs the process. It calls the method function that you must overwrite. */

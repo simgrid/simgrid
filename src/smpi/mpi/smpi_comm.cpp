@@ -3,47 +3,27 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Host.hpp"
-#include <climits>
-
-#include "src/simix/smx_private.h"
-#include "private.h"
-#include "private.hpp"
 #include "smpi_comm.hpp"
+#include "private.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_process.hpp"
 #include "smpi_request.hpp"
 #include "smpi_status.hpp"
 #include "smpi_win.hpp"
+#include "src/simix/smx_private.hpp"
+#include <algorithm>
+#include <climits>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
- simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
+simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
 MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field SMPI_Topo_type, and replace the MPI_Topology field by an union. */
-
-static int smpi_compare_rankmap(const void *a, const void *b)
-{
-  const int* x = static_cast<const int*>(a);
-  const int* y = static_cast<const int*>(b);
-
-  if (x[1] < y[1]) {
-    return -1;
-  }
-  if (x[1] == y[1]) {
-    if (x[0] < y[0]) {
-      return -1;
-    }
-    if (x[0] == y[0]) {
-      return 0;
-    }
-    return 1;
-  }
-  return 1;
-}
 
 namespace simgrid{
 namespace smpi{
@@ -75,8 +55,8 @@ void Comm::destroy(Comm* comm)
 
 int Comm::dup(MPI_Comm* newcomm){
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
   MPI_Group cp = new  Group(this->group());
   (*newcomm) = new  Comm(cp, this->topo());
   int ret = MPI_SUCCESS;
@@ -84,7 +64,7 @@ int Comm::dup(MPI_Comm* newcomm){
   if (not attributes()->empty()) {
     int flag;
     void* value_out;
-    for(auto it : *attributes()){
+    for (auto const& it : *attributes()) {
       smpi_key_elem elem = keyvals_.at(it.first);
       if (elem != nullptr && elem->copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
         ret = elem->copy_fn.comm_copy_fn(this, it.first, nullptr, it.second, &value_out, &flag);
@@ -98,8 +78,8 @@ int Comm::dup(MPI_Comm* newcomm){
           (*newcomm)->attributes()->insert({it.first, value_out});
         }
       }
-      }
     }
+  }
   return ret;
 }
 
@@ -216,38 +196,35 @@ MPI_Comm Comm::split(int color, int key)
   /* Do the actual job */
   if(rank == 0) {
     MPI_Group* group_snd = xbt_new(MPI_Group, size);
-    int* rankmap         = xbt_new(int, 2 * size);
+    std::vector<std::pair<int, int>> rankmap;
+    rankmap.reserve(size);
     for (int i = 0; i < size; i++) {
       if (recvbuf[2 * i] != MPI_UNDEFINED) {
-        int count = 0;
+        rankmap.clear();
         for (int j = i + 1; j < size; j++) {
           if(recvbuf[2 * i] == recvbuf[2 * j]) {
             recvbuf[2 * j] = MPI_UNDEFINED;
-            rankmap[2 * count] = j;
-            rankmap[2 * count + 1] = recvbuf[2 * j + 1];
-            count++;
+            rankmap.push_back({recvbuf[2 * j + 1], j});
           }
         }
         /* Add self in the group */
         recvbuf[2 * i] = MPI_UNDEFINED;
-        rankmap[2 * count] = i;
-        rankmap[2 * count + 1] = recvbuf[2 * i + 1];
-        count++;
-        qsort(rankmap, count, 2 * sizeof(int), &smpi_compare_rankmap);
-        group_out = new  Group(count);
+        rankmap.push_back({recvbuf[2 * i + 1], i});
+        std::sort(begin(rankmap), end(rankmap));
+        group_out = new Group(rankmap.size());
         if (i == 0) {
           group_root = group_out; /* Save root's group */
         }
-        for (int j = 0; j < count; j++) {
-          int index = group->index(rankmap[2 * j]);
+        for (unsigned j = 0; j < rankmap.size(); j++) {
+          int index = group->index(rankmap[j].second);
           group_out->set_mapping(index, j);
         }
-        MPI_Request* requests = xbt_new(MPI_Request, count);
+        MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
         int reqs              = 0;
-        for (int j = 0; j < count; j++) {
-          if(rankmap[2 * j] != 0) {
+        for (auto const& rank : rankmap) {
+          if (rank.second != 0) {
             group_snd[reqs]=new  Group(group_out);
-            requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, this);
+            requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rank.second, system_tag, this);
             reqs++;
           }
         }
@@ -259,7 +236,6 @@ MPI_Comm Comm::split(int color, int key)
       }
     }
     xbt_free(recvbuf);
-    xbt_free(rankmap);
     xbt_free(group_snd);
     group_out = group_root; /* exit with root's group */
   } else {
@@ -287,7 +263,7 @@ void Comm::cleanup_smp(){
   if (non_uniform_map_ != nullptr)
     xbt_free(non_uniform_map_);
   if (leaders_map_ != nullptr)
-    xbt_free(leaders_map_);
+    delete[] leaders_map_;
 }
 
 void Comm::unref(Comm* comm){
@@ -305,14 +281,6 @@ void Comm::unref(Comm* comm){
   }
 }
 
-static int compare_ints (const void *a, const void *b)
-{
-  const int *da = static_cast<const int *>(a);
-  const int *db = static_cast<const int *>(b);
-
-  return static_cast<int>(*da > *db) - static_cast<int>(*da < *db);
-}
-
 void Comm::init_smp(){
   int leader = -1;
 
@@ -325,29 +293,29 @@ void Comm::init_smp(){
   // tell SimGrid we are not in replay for a while, because we need the buffers to be copied for the following calls
   bool replaying = false; //cache data to set it back again after
   if(smpi_process()->replaying()){
-   replaying=true;
-   smpi_process()->set_replaying(false);
+    replaying = true;
+    smpi_process()->set_replaying(false);
   }
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
   //identify neighbours in comm
   //get the indexes of all processes sharing the same simix host
-   xbt_swag_t process_list = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
-   int intra_comm_size     = 0;
-   int min_index           = INT_MAX; // the minimum index will be the leader
-   smx_actor_t actor       = nullptr;
-   xbt_swag_foreach(actor, process_list)
-   {
-     int index = actor->pid - 1;
+  xbt_swag_t process_list = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
+  int intra_comm_size     = 0;
+  int min_index           = INT_MAX; // the minimum index will be the leader
+  smx_actor_t actor       = nullptr;
+  xbt_swag_foreach(actor, process_list)
+  {
+    int index = actor->pid - 1;
 
-     if (this->group()->rank(index) != MPI_UNDEFINED) {
-       intra_comm_size++;
-       // the process is in the comm
-       if (index < min_index)
-         min_index = index;
-     }
+    if (this->group()->rank(index) != MPI_UNDEFINED) {
+      intra_comm_size++;
+      // the process is in the comm
+      if (index < min_index)
+        min_index = index;
+    }
   }
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
   MPI_Group group_intra = new  Group(intra_comm_size);
@@ -364,38 +332,37 @@ void Comm::init_smp(){
   MPI_Comm comm_intra = new  Comm(group_intra, nullptr);
   leader=min_index;
 
-  int * leaders_map= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
-  int * leader_list= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
-  for(i=0; i<comm_size; i++){
-      leader_list[i]=-1;
-  }
+  int* leaders_map = new int[comm_size];
+  int* leader_list = new int[comm_size];
+  std::fill_n(leaders_map, comm_size, 0);
+  std::fill_n(leader_list, comm_size, -1);
 
   Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
 
   if(leaders_map_==nullptr){
     leaders_map_= leaders_map;
   }else{
-    xbt_free(leaders_map);
+    delete[] leaders_map;
   }
   int j=0;
   int leader_group_size = 0;
   for(i=0; i<comm_size; i++){
-      int already_done=0;
-      for(j=0;j<leader_group_size; j++){
-        if(leaders_map_[i]==leader_list[j]){
-            already_done=1;
-        }
+    int already_done = 0;
+    for (j = 0; j < leader_group_size; j++) {
+      if (leaders_map_[i] == leader_list[j]) {
+        already_done = 1;
       }
-      if(already_done==0){
-        leader_list[leader_group_size]=leaders_map_[i];
-        leader_group_size++;
-      }
+    }
+    if (already_done == 0) {
+      leader_list[leader_group_size] = leaders_map_[i];
+      leader_group_size++;
+    }
   }
-  qsort(leader_list, leader_group_size, sizeof(int),compare_ints);
+  std::sort(leader_list, leader_list + leader_group_size);
 
   MPI_Group leaders_group = new  Group(leader_group_size);
 
@@ -408,7 +375,7 @@ void Comm::init_smp(){
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
 
-   //create intracommunicator
+    // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
       leaders_group->set_mapping(leader_list[i], i);
@@ -437,27 +404,27 @@ void Comm::init_smp(){
       }
     }
     if(is_uniform==0 && this->is_uniform()!=0){
-        non_uniform_map_= non_uniform_map;
+      non_uniform_map_ = non_uniform_map;
     }else{
-        xbt_free(non_uniform_map);
+      xbt_free(non_uniform_map);
     }
     is_uniform_=is_uniform;
   }
   Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-     smpi_switch_data_segment(smpi_process()->index());
-   }
+    smpi_switch_data_segment(smpi_process()->index());
+  }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
   int prev=this->group()->rank(comm_intra->group()->index(0));
-    for (i=1; i<my_local_size; i++){
-      int that=this->group()->rank(comm_intra->group()->index(i));
-      if(that!=prev+1){
-        is_blocked=0;
-        break;
-      }
-      prev = that;
+  for (i = 1; i < my_local_size; i++) {
+    int that = this->group()->rank(comm_intra->group()->index(i));
+    if (that != prev + 1) {
+      is_blocked = 0;
+      break;
+    }
+    prev = that;
   }
 
   int global_blocked;
@@ -465,12 +432,12 @@ void Comm::init_smp(){
 
   if(MPI_COMM_WORLD==MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD){
     if(this->rank()==0){
-        is_blocked_=global_blocked;
+      is_blocked_ = global_blocked;
     }
   }else{
     is_blocked_=global_blocked;
   }
-  xbt_free(leader_list);
+  delete[] leader_list;
 
   if(replaying)
     smpi_process()->set_replaying(true);
@@ -482,9 +449,10 @@ MPI_Comm Comm::f2c(int id) {
   } else if(id==0){
     return MPI_COMM_WORLD;
   } else if(F2C::f2c_lookup() != nullptr && id >= 0) {
-      char key[KEY_SIZE];
-      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(F2C::f2c_lookup(),get_key_id(key, id)));
-      return tmp != nullptr ? tmp : MPI_COMM_NULL ;
+    char key[KEY_SIZE];
+    const auto& lookup = F2C::f2c_lookup();
+    auto comm          = lookup->find(get_key_id(key, id));
+    return comm == lookup->end() ? MPI_COMM_NULL : static_cast<MPI_Comm>(comm->second);
   } else {
     return MPI_COMM_NULL;
   }
@@ -492,19 +460,18 @@ MPI_Comm Comm::f2c(int id) {
 
 void Comm::free_f(int id) {
   char key[KEY_SIZE];
-  xbt_dict_remove(F2C::f2c_lookup(), id==0? get_key(key, id) : get_key_id(key, id));
+  F2C::f2c_lookup()->erase(id == 0 ? get_key(key, id) : get_key_id(key, id));
 }
 
 int Comm::add_f() {
   if(F2C::f2c_lookup()==nullptr){
-    F2C::set_f2c_lookup(xbt_dict_new_homogeneous(nullptr));
+    F2C::set_f2c_lookup(new std::unordered_map<std::string, F2C*>);
   }
   char key[KEY_SIZE];
-  xbt_dict_set(F2C::f2c_lookup(), this==MPI_COMM_WORLD? get_key(key, F2C::f2c_id()) : get_key_id(key,F2C::f2c_id()), this, nullptr);
+  (*(F2C::f2c_lookup()))[this == MPI_COMM_WORLD ? get_key(key, F2C::f2c_id()) : get_key_id(key, F2C::f2c_id())] = this;
   f2c_id_increment();
   return F2C::f2c_id()-1;
 }
-
 
 void Comm::add_rma_win(MPI_Win win){
   rma_wins_.push_back(win);
@@ -515,14 +482,13 @@ void Comm::remove_rma_win(MPI_Win win){
 }
 
 void Comm::finish_rma_calls(){
-  for(auto it : rma_wins_){
+  for (auto const& it : rma_wins_) {
     if(it->rank()==this->rank()){//is it ours (for MPI_COMM_WORLD)?
       int finished = it->finish_comms();
       XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls",this->rank(), finished);
     }
   }
 }
-
 
 }
 }

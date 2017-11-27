@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,11 +8,11 @@
 #undef NDEBUG
 #endif
 
-#include <string.h>
-#include <assert.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
 
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Type.hpp"
@@ -56,12 +56,15 @@ void basic_test(simgrid::dwarf::ExpressionContext const& state) {
 
   simgrid::dwarf::ExpressionStack stack;
 
+  bool caught_ex = false;
   try {
     ops[0].atom = DW_OP_drop;
     simgrid::dwarf::execute(ops, 1, state, stack);
-    fprintf(stderr,"Exception expected");
+  } catch (simgrid::dwarf::evaluation_error& e) {
+    caught_ex = true;
   }
-  catch(simgrid::dwarf::evaluation_error& e) {}
+  if (not caught_ex)
+    fprintf(stderr, "Exception expected");
 
   ops[0].atom = DW_OP_lit21;
   simgrid::dwarf::execute(ops, 1, state, stack);

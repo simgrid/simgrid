@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,12 +6,12 @@
 
 #include "xbt/mmalloc.h"
 #include "xbt.h"
-#include <stdio.h>
-#include <assert.h>
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include <xbt/ex.hpp>
@@ -21,6 +21,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 #define BUFFSIZE 204800
 #define TESTSIZE 100
 #define size_of_block(i) (((i % 50)+1)* 100)
+
+static void check_block(const void* s, int c, int n)
+{
+  const unsigned char* p = static_cast<const unsigned char*>(s);
+  unsigned char b        = static_cast<unsigned char>(c);
+  for (int i = 0; i < n; i++)
+    if (p[i] != b)
+      xbt_die("value mismatch: %p[%d] = %#hhx, expected %#hhx", p, i, p[i], b);
+}
 
 int main(int argc, char**argv)
 {
@@ -45,7 +54,7 @@ int main(int argc, char**argv)
   for (i = 0; i < TESTSIZE; i++) {
     size = size_of_block(i);
     pointers[i] = mmalloc(heapA, size);
-    XBT_INFO("%d bytes allocated with offset %tx", size, ((char*)pointers[i])-((char*)heapA));
+    XBT_INFO("%d bytes allocated with offset %zx", size, (size_t)((char*)pointers[i] - (char*)heapA));
   }
   XBT_INFO("All blocks were correctly allocated. Free every second block");
   for (i = 0; i < TESTSIZE; i+=2) {
@@ -85,6 +94,21 @@ int main(int argc, char**argv)
     }
     if (not gotit)
       xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
+  }
+
+  XBT_INFO("Let's try different codepaths for mrealloc");
+  for (i = 0; i < TESTSIZE; i++) {
+    const std::vector<std::pair<int, int>> requests = {
+        {size_of_block(i) / 2, 0x77}, {size_of_block(i) * 2, 0xaa}, {1, 0xc0}, {0, 0}};
+    pointers[i] = nullptr;
+    for (unsigned k = 0; k < requests.size(); ++k) {
+      size        = requests[k].first;
+      pointers[i] = mrealloc(heapA, pointers[i], size);
+      if (k > 0)
+        check_block(pointers[i], requests[k - 1].second, std::min(size, requests[k - 1].first));
+      if (size > 0)
+        memset(pointers[i], requests[k].second, size);
+    }
   }
 
   XBT_INFO("Damnit, I cannot break mmalloc this time. That's SO disappointing.");

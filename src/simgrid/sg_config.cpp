@@ -1,28 +1,26 @@
-/* Copyright (c) 2009-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* sg_config: configuration infrastructure for the simulation world       */
+/* sg_config: configuration infrastructure for the simulation world         */
 
-#include "xbt/misc.h"
+#include "simgrid/sg_config.h"
+#include "instr/instr_interface.h"
+#include "mc/mc.h"
+#include "simgrid/instr.h"
+#include "simgrid/simix.h"
+#include "simgrid_config.h" /* what was compiled in? */
+#include "src/mc/mc_replay.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "surf/maxmin.hpp"
+#include "surf/surf.hpp"
 #include "xbt/config.h"
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
-#include "xbt/str.h"
+#include "xbt/misc.h"
 #include "xbt/sysdep.h"
-#include "surf/surf.h"
-#include "surf/maxmin.h"
-#include "instr/instr_interface.h"
-#include "simgrid/simix.h"
-#include "simgrid/sg_config.h"
-#include "simgrid_config.h" /* what was compiled in? */
-#include "mc/mc.h"
-#include "simgrid/instr.h"
-#include "src/mc/mc_replay.h"
-#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
@@ -113,11 +111,11 @@ static void _sg_cfg_cb__plugin(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot load a plugin after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (val==nullptr || val[0] == '\0')
+  std::string val = xbt_cfg_get_string(name);
+  if (val.empty())
     return;
 
-  if (not strcmp(val, "help")) {
+  if (val == "help") {
     model_help("plugin", surf_plugin_description);
     sg_cfg_exit_early();
   }
@@ -131,8 +129,8 @@ static void _sg_cfg_cb__host_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("host", surf_host_model_description);
     sg_cfg_exit_early();
   }
@@ -146,8 +144,8 @@ static void _sg_cfg_cb__cpu_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("CPU", surf_cpu_model_description);
     sg_cfg_exit_early();
   }
@@ -161,8 +159,8 @@ static void _sg_cfg_cb__optimization_mode(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("optimization", surf_optimization_mode_description);
     sg_cfg_exit_early();
   }
@@ -176,8 +174,8 @@ static void _sg_cfg_cb__storage_mode(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("storage", surf_storage_model_description);
     sg_cfg_exit_early();
   }
@@ -190,8 +188,8 @@ static void _sg_cfg_cb__network_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  char *val = xbt_cfg_get_string(name);
-  if (not strcmp(val, "help")) {
+  std::string val = xbt_cfg_get_string(name);
+  if (val == "help") {
     model_help("network", surf_network_model_description);
     sg_cfg_exit_early();
   }
@@ -204,8 +202,6 @@ static void _sg_cfg_cb__network_model(const char *name)
 
 static void _sg_cfg_cb_model_check_replay(const char *name) {
   MC_record_path = xbt_cfg_get_string(name);
-  if (MC_record_path[0] == '\0')
-    MC_record_path = nullptr;
 }
 
 #if SIMGRID_HAVE_MC
@@ -251,15 +247,14 @@ static void _sg_cfg_cb_contexts_parallel_threshold(const char *name)
 
 static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
 {
-  const char* mode_name = xbt_cfg_get_string(name);
-  if (not strcmp(mode_name, "posix")) {
+  std::string mode_name = xbt_cfg_get_string(name);
+  if (mode_name == "posix") {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
-  } else if (not strcmp(mode_name, "futex")) {
+  } else if (mode_name == "futex") {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_FUTEX);
-  } else if (not strcmp(mode_name, "busy_wait")) {
+  } else if (mode_name == "busy_wait") {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
-  }
-  else {
+  } else {
     xbt_die("Command line setting of the parallel synchronization mode should "
             "be one of \"posix\", \"futex\" or \"busy_wait\"");
   }
@@ -301,7 +296,7 @@ void sg_config_init(int *argc, char **argv)
 
   /* Plugins configuration */
   describe_model(description, descsize, surf_plugin_description, "plugin", "The plugins");
-  xbt_cfg_register_string("plugin", nullptr, &_sg_cfg_cb__plugin, description);
+  xbt_cfg_register_string("plugin", "", &_sg_cfg_cb__plugin, description);
 
   describe_model(description, descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
   xbt_cfg_register_string("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, description);
@@ -340,11 +335,6 @@ void sg_config_init(int *argc, char **argv)
   xbt_cfg_register_alias("maxmin/concurrency-limit", "maxmin/concurrency_limit");
 
   /* The parameters of network models */
-
-  // real default for "network/sender-gap" is set in network_smpi.cpp:
-  sg_sender_gap = NAN;
-  simgrid::config::bindFlag(sg_sender_gap, {"network/sender-gap", "network/sender_gap"},
-                            "Minimum gap between two overlapping sends");
 
   sg_latency_factor = 13.01; // comes from the default LV08 network model
   simgrid::config::bindFlag(sg_latency_factor, {"network/latency-factor", "network/latency_factor"},
@@ -391,8 +381,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("model-check/sparse-checkpoint", "no", _mc_cfg_cb_sparse_checkpoint, "Use sparse per-page snapshots.");
     xbt_cfg_register_boolean("model-check/ksm", "no", _mc_cfg_cb_ksm, "Kernel same-page merging");
 
-    xbt_cfg_register_string("model-check/property","", _mc_cfg_cb_property,
-        "Name of the file containing the property, as formated by the ltl2ba program.");
+    xbt_cfg_register_string("model-check/property", "", _mc_cfg_cb_property,
+                            "Name of the file containing the property, as formatted by the ltl2ba program.");
     xbt_cfg_register_boolean("model-check/communications-determinism", "no", _mc_cfg_cb_comms_determinism,
         "Whether to enable the detection of communication determinism");
     xbt_cfg_register_alias("model-check/communications-determinism","model-check/communications_determinism");
@@ -457,7 +447,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("network/crosstraffic", "yes", _sg_cfg_cb__surf_network_crosstraffic,
         "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)");
 
-    //For smpi/bw_factor and smpi/lat_factor
+    // For smpi/bw-factor and smpi/lat-factor
     // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
     xbt_cfg_register_string("smpi/bw-factor",
         "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", nullptr,
@@ -561,13 +551,8 @@ void sg_config_init(int *argc, char **argv)
         "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
     xbt_cfg_register_alias("clean-atexit","clean_atexit");
 
-    if (surf_path.empty()) {
-      /* retrieves the current directory of the current process */
-      const char *initial_path = __surf_get_initial_path();
-      xbt_assert((initial_path), "__surf_get_initial_path() failed! Can't resolve current Windows directory");
-
-      xbt_cfg_setdefault_string("path", initial_path);
-    }
+    if (surf_path.empty())
+      xbt_cfg_setdefault_string("path", "./");
 
     _sg_cfg_init_status = 1;
 

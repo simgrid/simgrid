@@ -1,7 +1,6 @@
 /* function_type.h - classical types for pointer to function                */
 
-/* Copyright (c) 2006-2007, 2009-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,8 +16,6 @@ typedef void (*void_f_pvoid_t) (void *);
 typedef void *(*pvoid_f_void_t) (void);
 typedef void *(*pvoid_f_pvoid_t) (void *);
 typedef void (*void_f_void_t) (void);
-
-typedef int (*int_f_pvoid_t) (void*);
 
 typedef int (*int_f_pvoid_pvoid_t) (void *, void *);
 typedef int (*int_f_cpvoid_cpvoid_t) (const void *, const void *);

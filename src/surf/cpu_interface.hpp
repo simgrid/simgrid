@@ -7,7 +7,7 @@
 #define SURF_CPU_INTERFACE_HPP_
 
 #include "simgrid/s4u/Host.hpp"
-#include "src/surf/maxmin_private.hpp"
+#include "surf/maxmin.hpp"
 
 #include <list>
 
@@ -17,10 +17,6 @@
 
 namespace simgrid {
 namespace surf {
-
-class CpuModel;
-class Cpu;
-class CpuAction;
 
  /** @ingroup SURF_cpu_interface
  * @brief SURF cpu model interface class
@@ -168,6 +164,9 @@ static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
 
   void updateRemainingLazy(double now) override;
   std::list<Cpu*> cpus();
+  
+  void suspend() override;
+  void resume() override;
 };
 
 }

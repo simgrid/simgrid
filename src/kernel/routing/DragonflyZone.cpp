@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +17,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-DragonflyZone::DragonflyZone(NetZone* father, const char* name) : ClusterZone(father, name)
+DragonflyZone::DragonflyZone(NetZone* father, std::string name) : ClusterZone(father, name)
 {
 }
 
@@ -25,8 +25,8 @@ DragonflyZone::~DragonflyZone()
 {
   if (this->routers_ != nullptr) {
     for (unsigned int i = 0; i < this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_; i++)
-      delete (routers_[i]);
-    xbt_free(routers_);
+      delete routers_[i];
+    delete[] routers_;
   }
 }
 
@@ -41,14 +41,13 @@ void DragonflyZone::rankId_to_coords(int rankId, unsigned int (*coords)[4])
   (*coords)[3]         = rankId % numNodesPerBlade_;
 }
 
-void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
 
-  // TODO : we have to check for zeros and negative numbers, or it might crash
-  if (parameters.size() != 4) {
+  if (parameters.size() != 4 || parameters.empty()) {
     surf_parse_error(
         "Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
   }
@@ -59,17 +58,34 @@ void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numGroups_    = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksBlue_ = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the blue level: %s");
+  try {
+    this->numGroups_ = std::stoi(tmp[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+  }
 
+  try {
+    this->numLinksBlue_ = std::stoi(tmp[1]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of links for the blue level:") + tmp[1]);
+  }
   // Black network : number of chassis/group, number of links between each router on the black network
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if (tmp.size() != 2) {
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numChassisPerGroup_ = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksBlack_      = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links  for the black level: %s");
+  try {
+    this->numChassisPerGroup_ = std::stoi(tmp[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+  }
+
+  try {
+    this->numLinksBlack_ = std::stoi(tmp[1]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of links for the black level:") + tmp[1]);
+  }
 
   // Green network : number of blades/chassis, number of links between each router on the green network
   boost::split(tmp, parameters[2], boost::is_any_of(","));
@@ -77,18 +93,32 @@ void DragonflyZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");
   }
 
-  this->numBladesPerChassis_ = xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
-  this->numLinksGreen_       = xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the green level: %s");
+  try {
+    this->numBladesPerChassis_ = std::stoi(tmp[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+  }
+
+  try {
+    this->numLinksGreen_ = std::stoi(tmp[1]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Invalid number of links for the green level:") + tmp[1]);
+  }
 
   // The last part of topo_parameters should be the number of nodes per blade
-  this->numNodesPerBlade_ =
-      xbt_str_parse_int(parameters[3].c_str(), "Last parameter is not the amount of nodes per blade: %s");
+  try {
+    this->numNodesPerBlade_ = std::stoi(parameters[3]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
+  }
+
+  if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX)
+    this->numLinksperLink_ = 2;
+
   this->cluster_ = cluster;
 }
 
-/*
-* Generate the cluster once every node is created
-*/
+/* Generate the cluster once every node is created */
 void DragonflyZone::seal()
 {
   if (this->numNodesPerBlade_ == 0) {
@@ -105,20 +135,15 @@ DragonflyRouter::DragonflyRouter(int group, int chassis, int blade) : group_(gro
 
 DragonflyRouter::~DragonflyRouter()
 {
-  if (this->myNodes_ != nullptr)
-    xbt_free(myNodes_);
-  if (this->greenLinks_ != nullptr)
-    xbt_free(greenLinks_);
-  if (this->blackLinks_ != nullptr)
-    xbt_free(blackLinks_);
-  if (this->blueLinks_ != nullptr)
-    xbt_free(blueLinks_);
+  delete[] myNodes_;
+  delete[] greenLinks_;
+  delete[] blackLinks_;
+  delete blueLinks_;
 }
 
 void DragonflyZone::generateRouters()
 {
-  this->routers_ = static_cast<DragonflyRouter**>(xbt_malloc0(this->numGroups_ * this->numChassisPerGroup_ *
-                                                              this->numBladesPerChassis_ * sizeof(DragonflyRouter*)));
+  this->routers_ = new DragonflyRouter*[this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_];
 
   for (unsigned int i = 0; i < this->numGroups_; i++) {
     for (unsigned int j = 0; j < this->numChassisPerGroup_; j++) {
@@ -131,7 +156,7 @@ void DragonflyZone::generateRouters()
   }
 }
 
-void DragonflyZone::createLink(std::string id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown)
+void DragonflyZone::createLink(const std::string& id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown)
 {
   *linkup   = nullptr;
   *linkdown = nullptr;
@@ -143,16 +168,11 @@ void DragonflyZone::createLink(std::string id, int numlinks, surf::LinkImpl** li
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", id.c_str());
   surf::LinkImpl* link;
-  std::string tmpID;
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
-    tmpID     = linkTemplate.id + "_UP";
-    link      = surf::LinkImpl::byName(tmpID.c_str());
-    *linkup   = link; // check link?
-    tmpID     = linkTemplate.id + "_DOWN";
-    link      = surf::LinkImpl::byName(tmpID.c_str());
-    *linkdown = link; // check link ?
+    *linkup   = surf::LinkImpl::byName(linkTemplate.id + "_UP");   // check link?
+    *linkdown = surf::LinkImpl::byName(linkTemplate.id + "_DOWN"); // check link ?
   } else {
-    link      = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    link      = surf::LinkImpl::byName(linkTemplate.id);
     *linkup   = link;
     *linkdown = link;
   }
@@ -166,30 +186,22 @@ void DragonflyZone::generateLinks()
 
   unsigned int numRouters = this->numGroups_ * this->numChassisPerGroup_ * this->numBladesPerChassis_;
 
-  if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
-    numLinksperLink_ = 2;
-
   // Links from routers to their local nodes.
   for (unsigned int i = 0; i < numRouters; i++) {
     // allocate structures
-    this->routers_[i]->myNodes_ = static_cast<surf::LinkImpl**>(
-        xbt_malloc0(numLinksperLink_ * this->numNodesPerBlade_ * sizeof(surf::LinkImpl*)));
-    this->routers_[i]->greenLinks_ =
-        static_cast<surf::LinkImpl**>(xbt_malloc0(this->numBladesPerChassis_ * sizeof(surf::LinkImpl*)));
-    this->routers_[i]->blackLinks_ =
-        static_cast<surf::LinkImpl**>(xbt_malloc0(this->numChassisPerGroup_ * sizeof(surf::LinkImpl*)));
+    this->routers_[i]->myNodes_    = new surf::LinkImpl*[numLinksperLink_ * this->numNodesPerBlade_];
+    this->routers_[i]->greenLinks_ = new surf::LinkImpl*[this->numBladesPerChassis_];
+    this->routers_[i]->blackLinks_ = new surf::LinkImpl*[this->numChassisPerGroup_];
 
     for (unsigned int j = 0; j < numLinksperLink_ * this->numNodesPerBlade_; j += numLinksperLink_) {
       std::string id = "local_link_from_router_"+ std::to_string(i) + "_to_node_" +
           std::to_string(j / numLinksperLink_) + "_" + std::to_string(uniqueId);
       this->createLink(id, 1, &linkup, &linkdown);
 
-      if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
-        this->routers_[i]->myNodes_[j]     = linkup;
+      this->routers_[i]->myNodes_[j] = linkup;
+      if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
         this->routers_[i]->myNodes_[j + 1] = linkdown;
-      } else {
-        this->routers_[i]->myNodes_[j] = linkup;
-      }
+
       uniqueId++;
     }
   }
@@ -235,8 +247,8 @@ void DragonflyZone::generateLinks()
     for (unsigned int j = i + 1; j < this->numGroups_; j++) {
       unsigned int routernumi                = i * numBladesPerChassis_ * numChassisPerGroup_ + j;
       unsigned int routernumj                = j * numBladesPerChassis_ * numChassisPerGroup_ + i;
-      this->routers_[routernumi]->blueLinks_ = static_cast<surf::LinkImpl**>(xbt_malloc0(sizeof(surf::LinkImpl*)));
-      this->routers_[routernumj]->blueLinks_ = static_cast<surf::LinkImpl**>(xbt_malloc0(sizeof(surf::LinkImpl*)));
+      this->routers_[routernumi]->blueLinks_ = new surf::LinkImpl*;
+      this->routers_[routernumj]->blueLinks_ = new surf::LinkImpl*;
       std::string id = "blue_link_between_group_"+ std::to_string(i) +"_and_" + std::to_string(j) +"_routers_" +
           std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" + std::to_string(uniqueId);
       this->createLink(id, this->numLinksBlue_, &linkup, &linkdown);
@@ -256,13 +268,12 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   if (dst->isRouter() || src->isRouter())
     return;
 
-  XBT_VERB("dragonfly getLocalRout from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
-           dst->id());
+  XBT_VERB("dragonfly getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePosition(src->id()));
 
-    route->link_list->push_back(info.first);
+    route->link_list.push_back(info.first);
     if (latency)
       *latency += info.first->latency();
     return;
@@ -283,13 +294,13 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
   DragonflyRouter* currentRouter = myRouter;
 
   // node->router local link
-  route->link_list->push_back(myRouter->myNodes_[myCoords[3] * numLinksperLink_]);
+  route->link_list.push_back(myRouter->myNodes_[myCoords[3] * numLinksperLink_]);
   if (latency)
     *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
 
   if (hasLimiter_) { // limiter for sender
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
-    route->link_list->push_back(info.first);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(src->id()));
+    route->link_list.push_back(info.first);
   }
 
   if (targetRouter != myRouter) {
@@ -299,7 +310,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
       // go to the router of our group connected to this one.
       if (currentRouter->blade_ != targetCoords[0]) {
         // go to the nth router in our chassis
-        route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]]);
+        route->link_list.push_back(currentRouter->greenLinks_[targetCoords[0]]);
         if (latency)
           *latency += currentRouter->greenLinks_[targetCoords[0]]->latency();
         currentRouter = routers_[myCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
@@ -308,14 +319,14 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
 
       if (currentRouter->chassis_ != 0) {
         // go to the first chassis of our group
-        route->link_list->push_back(currentRouter->blackLinks_[0]);
+        route->link_list.push_back(currentRouter->blackLinks_[0]);
         if (latency)
           *latency += currentRouter->blackLinks_[0]->latency();
         currentRouter = routers_[myCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + targetCoords[0]];
       }
 
       // go to destination group - the only optical hop
-      route->link_list->push_back(currentRouter->blueLinks_[0]);
+      route->link_list.push_back(currentRouter->blueLinks_[0]);
       if (latency)
         *latency += currentRouter->blueLinks_[0]->latency();
       currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + myCoords[0]];
@@ -323,7 +334,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
 
     // same group, but same blade ?
     if (targetRouter->blade_ != currentRouter->blade_) {
-      route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]]);
+      route->link_list.push_back(currentRouter->greenLinks_[targetCoords[2]]);
       if (latency)
         *latency += currentRouter->greenLinks_[targetCoords[2]]->latency();
       currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) + targetCoords[2]];
@@ -331,21 +342,19 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_c
 
     // same blade, but same chassis ?
     if (targetRouter->chassis_ != currentRouter->chassis_) {
-      route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
+      route->link_list.push_back(currentRouter->blackLinks_[targetCoords[1]]);
       if (latency)
         *latency += currentRouter->blackLinks_[targetCoords[1]]->latency();
-      currentRouter = routers_[targetCoords[0] * (numChassisPerGroup_ * numBladesPerChassis_) +
-                               targetCoords[1] * numBladesPerChassis_ + targetCoords[2]];
     }
   }
 
   if (hasLimiter_) { // limiter for receiver
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
-    route->link_list->push_back(info.first);
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(dst->id()));
+    route->link_list.push_back(info.first);
   }
 
   // router->node local link
-  route->link_list->push_back(targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]);
+  route->link_list.push_back(targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]);
   if (latency)
     *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
 }

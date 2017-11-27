@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +21,6 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.File;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.MsgException;
 
 public class Node extends Process {
@@ -33,17 +31,16 @@ public class Node extends Process {
 
   protected int rank;
 
-  public Node(Host host, int number) throws HostNotFoundException {
+  public Node(Host host, int number) {
     super(host, Integer.toString(number), null);
     this.rank = number;
   }
 
   public void main(String[] args) throws MsgException {
-    String mount;
+    String mount = "/home";
     String fileName;
     switch (rank) {
       case 4:
-        mount = "/home";
         fileName = mount + file1;
       break;
       case 0:
@@ -51,16 +48,14 @@ public class Node extends Process {
         fileName = mount + file2;
       break;
       case 2:
-        mount = "/home";
         fileName = mount + file3;
       break;
       case 1:
-        mount = "/home";
         fileName = mount + file4;
       break;
       default:
-        mount = "/home";
         fileName = mount + file1;
+      break;
     }
 
     Msg.info("Open file " + fileName);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, 2014-2016. The SimGrid Team.
+/* Copyright (c) 2010-2012, 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,16 +6,13 @@
 
 #ifndef JEDULE_HPP_
 #define JEDULE_HPP_
-#include <stdio.h>
 #include "simgrid_config.h"
+#include <cstdio>
 
 #include "jedule_events.hpp"
 #include "jedule_platform.hpp"
 
 #if SIMGRID_HAVE_JEDULE
-
-XBT_ATTRIB_UNUSED static std::unordered_map <const char *, jed_container_t> host2_simgrid_parent_container;
-XBT_ATTRIB_UNUSED static std::unordered_map <std::string, jed_container_t> container_name2container;
 
 namespace simgrid {
 namespace jedule{
@@ -36,11 +33,9 @@ public:
 }
 }
 
-SG_BEGIN_DECL()
-
+extern "C" {
 typedef simgrid::jedule::Jedule *jedule_t;
-
-SG_END_DECL()
+}
 #endif
 
 #endif /* JEDULE_HPP_ */

@@ -1,5 +1,4 @@
 # Smpi Allreduce collectives tests
-! setenv LD_LIBRARY_PATH=../../lib
 
 p Test allreduce
 ! output sort

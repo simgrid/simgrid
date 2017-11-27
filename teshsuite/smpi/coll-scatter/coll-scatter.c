@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,7 +15,6 @@ int main(int argc, char **argv)
    int retval;
    int sendcount = 1;            // one double to each process
    int recvcount = 1;
-   int i;
    double *sndbuf = NULL;
    double rcvd;
    int root = 0;                 // arbitrary choice
@@ -27,7 +26,7 @@ int main(int argc, char **argv)
    // on root, initialize sendbuf
    if (root == rank) {
      sndbuf = malloc(size * sizeof(double));
-     for (i = 0; i < size; i++) {
+     for (int i = 0; i < size; i++) {
        sndbuf[i] = (double) i;
      }
    }

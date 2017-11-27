@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -20,23 +20,29 @@ namespace simgrid {
   /* List of links */
   std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
 
-  LinkImpl* LinkImpl::byName(const char* name)
+  LinkImpl* LinkImpl::byName(std::string name)
   {
-    if (links->find(name) == links->end())
-      return nullptr;
-    return links->at(name);
+    auto link = links->find(name);
+    return link == links->end() ? nullptr : link->second;
   }
   /** @brief Returns the amount of links in the platform */
   int LinkImpl::linksCount()
   {
     return links->size();
   }
+  void LinkImpl::linksList(std::vector<s4u::Link*>* linkList)
+  {
+    for (auto const& kv : *links) {
+      linkList->push_back(&kv.second->piface_);
+    }
+  }
+
   /** @brief Returns a list of all existing links */
   LinkImpl** LinkImpl::linksList()
   {
     LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
     int i          = 0;
-    for (auto kv : *links) {
+    for (auto const& kv : *links) {
       res[i] = kv.second;
       i++;
     }
@@ -45,7 +51,7 @@ namespace simgrid {
   /** @brief destructor of the static data */
   void LinkImpl::linksExit()
   {
-    for (auto kv : *links)
+    for (auto const& kv : *links)
       (kv.second)->destroy();
     delete links;
   }
@@ -63,8 +69,7 @@ namespace simgrid {
 
     NetworkModel::~NetworkModel()
     {
-      lmm_system_free(maxminSystem_);
-      xbt_heap_free(actionHeap_);
+      delete maxminSystem_;
       delete modifiedSet_;
     }
 
@@ -84,10 +89,10 @@ namespace simgrid {
     {
       double minRes = Model::nextOccuringEventFull(now);
 
-      for(auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; it++) {
-        NetworkAction *action = static_cast<NetworkAction*>(&*it);
-        if (action->latency_ > 0)
-          minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
+      for (Action const& action : *getRunningActionSet()) {
+        const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
+        if (net_action.latency_ > 0)
+          minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);
       }
 
       XBT_DEBUG("Min of share resources %f", minRes);
@@ -99,19 +104,18 @@ namespace simgrid {
      * Resource *
      ************/
 
-    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
+    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, lmm_constraint_t constraint)
         : Resource(model, name, constraint), piface_(this)
     {
 
-      if (strcmp(name,"__loopback__"))
-        xbt_assert(not LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name);
+      if (name != "__loopback__")
+        xbt_assert(not LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name.c_str());
 
       latency_.scale   = 1;
       bandwidth_.scale = 1;
 
       links->insert({name, this});
-      XBT_DEBUG("Create link '%s'",name);
-
+      XBT_DEBUG("Create link '%s'", name.c_str());
     }
 
     /** @brief use destroy() instead of this destructor */
@@ -134,7 +138,7 @@ namespace simgrid {
 
     bool LinkImpl::isUsed()
     {
-      return lmm_constraint_used(model()->getMaxminSystem(), constraint());
+      return model()->getMaxminSystem()->constraint_used(constraint());
     }
 
     double LinkImpl::latency()
@@ -149,7 +153,7 @@ namespace simgrid {
 
     int LinkImpl::sharingPolicy()
     {
-      return lmm_constraint_sharing_policy(constraint());
+      return constraint()->get_sharing_policy();
     }
 
     void LinkImpl::turnOn()
@@ -168,17 +172,17 @@ namespace simgrid {
     }
     void LinkImpl::setStateTrace(tmgr_trace_t trace)
     {
-      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", cname());
+      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", getCname());
       stateEvent_ = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", cname());
+      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", getCname());
       bandwidth_.event = future_evt_set->add_trace(trace, this);
     }
     void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", cname());
+      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", getCname());
       latency_.event = future_evt_set->add_trace(trace, this);
     }
 
@@ -197,13 +201,12 @@ namespace simgrid {
     std::list<LinkImpl*> NetworkAction::links()
     {
       std::list<LinkImpl*> retlist;
-      lmm_system_t sys = getModel()->getMaxminSystem();
-      int llen         = lmm_get_number_of_cnst_from_var(sys, variable_);
+      int llen = getVariable()->get_number_of_constraint();
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */
         // extra pb: we cannot dynamic_cast from void*...
-        Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+        Resource* resource = static_cast<Resource*>(getVariable()->get_constraint(i)->get_id());
         LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
         if (link != nullptr)
           retlist.push_back(link);

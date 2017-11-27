@@ -1,7 +1,6 @@
 /* JNI interface to C code for MSG. */
 
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,6 +40,7 @@ public final class Msg {
 	
 	/** Tell the kernel that you want to use the energy plugin */
 	public static final native void energyInit();
+	public static final native void fileSystemInit();
 
 	/** Run the MSG simulation.
 	 *
@@ -59,9 +59,8 @@ public final class Msg {
 
 	/** Example launcher. You can use it or provide your own launcher, as you wish
 	 * @param args
-	 * @throws MsgException
 	 */
-	public static void main(String[]args) throws MsgException {
+	public static void main(String[]args) {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */
 		Msg.init(args);
 

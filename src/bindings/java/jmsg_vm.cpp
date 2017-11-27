@@ -7,13 +7,13 @@
 
 #include "jmsg_vm.h"
 #include "jmsg_host.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/ex.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 extern int JAVA_HOST_LEVEL;
 static jfieldID jvm_field_bind;
@@ -77,7 +77,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_create(JNIEnv* env, jobject jVm, 
   env->ReleaseStringUTFChars(jname, name);
 
   jvm_bind(env, jVm, vm);
-  jVm = env->NewWeakGlobalRef(jVm);
+  jVm = env->NewGlobalRef(jVm);
   // We use the extension level of the host, even if that's somehow disturbing
   vm->extension_set(JAVA_HOST_LEVEL, (void*)jVm);
 }
@@ -136,11 +136,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm
   if (vm) {
     MSG_vm_shutdown(vm);
     auto vmList = &simgrid::vm::VirtualMachineImpl::allVms_;
-    vmList->erase(
-        std::remove_if(vmList->begin(), vmList->end(), [vm](simgrid::s4u::VirtualMachine* it) {
-          return vm == it;
-        }),
-        vmList->end());
+    vmList->erase(std::remove(vmList->begin(), vmList->end(), vm), vmList->end());
   }
 }
 
@@ -174,7 +170,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
 
   /* get the C string from the java string */
   if (jname == nullptr) {
-    jxbt_throw_null(env, bprintf("No VM can have a null name"));
+    jxbt_throw_null(env, "No VM can have a null name");
     return nullptr;
   }
   const char* name = env->GetStringUTFChars(jname, 0);
@@ -190,4 +186,4 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
 
   return static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
 }
-SG_END_DECL()
+}

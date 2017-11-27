@@ -5,9 +5,9 @@
 
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_network_private.h"
+#include "src/simix/smx_network_private.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
@@ -16,9 +16,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
 namespace simgrid {
 namespace s4u {
 
-const char* Mailbox::getName()
+const simgrid::xbt::string& Mailbox::getName() const
 {
-  return pimpl_->name_;
+  return pimpl_->getName();
+}
+
+const char* Mailbox::getCname() const
+{
+  return pimpl_->getCname();
 }
 
 MailboxPtr Mailbox::byName(const char*name)
@@ -53,9 +58,7 @@ smx_activity_t Mailbox::front()
 }
 
 void Mailbox::setReceiver(ActorPtr actor) {
-  simix::kernelImmediate([this, actor]() {
-    this->pimpl_->setReceiver(actor);
-  });
+  simix::kernelImmediate([this, actor]() { this->pimpl_->setReceiver(actor); });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */

@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/sysdep.h"
 #include "smpi/smpi.h"
-#include "private.h"
-#include <vector>
-#include <math.h>
+#include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_topo.hpp"
+#include "xbt/sysdep.h"
+#include <cmath>
+#include <vector>
 
 /* static functions */
 static int assignnodes(int ndim, int nfactor, int *pfacts,int **pdims);
@@ -94,7 +94,7 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], in
       *comm_cart = MPI_COMM_NULL;
     }
   }
-  comm_=*comm_cart;
+  setComm(*comm_cart);
 }
 
 Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
@@ -125,7 +125,7 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
       }
     }
   }
-  return new Topo_Cart(comm_, newNDims, newDims, newPeriodic, 0, newcomm);
+  return new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
 }
 
 int Topo_Cart::coords(int rank, int maxdims, int coords[]) {
@@ -195,7 +195,7 @@ int Topo_Cart::shift(int direction, int disp, int *rank_source, int *rank_dest) 
     return MPI_ERR_DIMS;
   }
 
-  this->coords(comm_->rank(),ndims_, position);
+  this->coords(getComm()->rank(), ndims_, position);
   position[direction] += disp;
 
   if(position[direction] < 0 ||

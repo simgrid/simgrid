@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 
 #include "mc/mc.h"
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 #include "src/xbt/mmalloc/mmprivate.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
@@ -24,11 +24,6 @@ void MC_memory_init()
 {
   if (not malloc_use_mmalloc())
     xbt_die("Model-checking support is not enabled: run with simgrid-mc.");
-}
-
-/* Finalize the memory subsystem */
-void MC_memory_exit()
-{
 }
 
 }

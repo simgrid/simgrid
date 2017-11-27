@@ -1,6 +1,6 @@
 /* A thread pool.                                          */
 
-/* Copyright (c) 2007, 2009-2014. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,27 +9,18 @@
 #ifndef XBT_PARMAP_H
 #define XBT_PARMAP_H
 
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
-#include "xbt/function_types.h"
-#include "xbt/dynar.h"
-
-SG_BEGIN_DECL()
-
 /** \addtogroup XBT_parmap
   * \ingroup XBT_misc
   * \brief Parallel map.
   *
-  * A function is applied to all elements of a dynar in parallel with n worker threads.
-  * The worker threads are persistent until the destruction of the parmap.
+  * A function is applied to all elements of a std::vector in parallel with n worker threads.  The worker threads are
+  * persistent until the destruction of the parmap.
   *
-  * If there are more than n elements in the dynar, the worker threads are allowed to fetch themselves remaining work
-  * with xbt_parmap_next() and execute it.
+  * If there are more than n elements in the vector, the worker threads are allowed to fetch themselves remaining work
+  * with method next() and execute it.
   *
   * \{
   */
-
-/** \brief Parallel map data type (opaque type) */
-typedef struct s_xbt_parmap *xbt_parmap_t;
 
 /** \brief Synchronization mode of the worker threads of a parmap. */
 typedef enum {
@@ -39,13 +30,6 @@ typedef enum {
   XBT_PARMAP_DEFAULT         /**< futex if available, posix otherwise */
 } e_xbt_parmap_mode_t;
 
-XBT_PUBLIC(xbt_parmap_t) xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode);
-XBT_PUBLIC(void) xbt_parmap_destroy(xbt_parmap_t parmap);
-XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data);
-XBT_PUBLIC(void*) xbt_parmap_next(xbt_parmap_t parmap);
-
 /** \} */
-
-SG_END_DECL()
 
 #endif

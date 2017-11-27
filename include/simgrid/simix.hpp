@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,12 +7,13 @@
 #ifndef SIMGRID_SIMIX_HPP
 #define SIMGRID_SIMIX_HPP
 
-//#include <xbt/function_types.h>
-#include <xbt/future.hpp>
+#include <simgrid/simix.h>
 #include <xbt/functional.hpp>
+#include <xbt/future.hpp>
 #include <xbt/signal.hpp>
 
-#include <simgrid/simix.h>
+#include <map>
+#include <string>
 
 XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
 
@@ -68,6 +69,7 @@ typename std::result_of<F()>::type kernelImmediate(F&& code)
   return result.get();
 }
 
+XBT_PUBLIC(const std::vector<smx_actor_t>&) process_get_runnable();
 
 XBT_PUBLIC(void) set_maestro(std::function<void()> code);
 XBT_PUBLIC(void) create_maestro(std::function<void()> code);
@@ -97,21 +99,21 @@ extern simgrid::xbt::signal<void()> onDeadlock;
  * void *data: data a pointer to any data one may want to attach to the new object.
  * sg_host_t host: the location where the new process is executed
  * int argc, char **argv: parameters passed to code
- * xbt_dict_t pros: properties
+ * std::map<std::string, std::string>* props: properties
  */
-typedef smx_actor_t (*smx_creation_func_t) (
-                                      /* name */ const char*,
-                                      std::function<void()> code,
-                                      /* userdata */ void*,
-                                      /* hostname */ sg_host_t,
-                                      /* props */ xbt_dict_t,
-                                      /* parent_process */ smx_actor_t);
+typedef smx_actor_t (*smx_creation_func_t)(
+    /* name */ const char*, std::function<void()> code,
+    /* userdata */ void*,
+    /* hostname */ sg_host_t,
+    /* props */ std::map<std::string, std::string>*,
+    /* parent_process */ smx_actor_t);
 
 extern "C"
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
 
 XBT_PUBLIC(smx_actor_t)
-simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host, xbt_dict_t properties);
+simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+                       std::map<std::string, std::string>* properties);
 
 XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 

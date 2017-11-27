@@ -1,0 +1,26 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} async/waitall/Main ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (1:Sender@Boivin) I have 6 receivers to contact
+> [  0.000000] (1:Sender@Boivin) Start the Sending 'Task_1' to 'Bourassa'
+> [  0.000000] (1:Sender@Boivin) Start the Sending 'Task_2' to 'Fafard'
+> [  0.000000] (2:Receiver@Bourassa) I started receiving on 'Bourassa. Wait 0.1 second, and block on the communication.
+> [  0.000000] (3:Receiver@Fafard) I started receiving on 'Fafard. Wait 0.1 second, and block on the communication.
+> [  0.000000] (4:Receiver@Ginette) I started receiving on 'Ginette. Wait 0.1 second, and block on the communication.
+> [  0.000000] (5:Receiver@Jacquelin) I started receiving on 'Jacquelin. Wait 0.1 second, and block on the communication.
+> [  0.000000] (6:Receiver@Jupiter) I started receiving on 'Jupiter. Wait 0.1 second, and block on the communication.
+> [  0.000000] (7:Receiver@Tremblay) I started receiving on 'Tremblay. Wait 0.1 second, and block on the communication.
+> [  0.000000] (1:Sender@Boivin) Start the Sending 'Task_3' to 'Ginette'
+> [  0.000000] (1:Sender@Boivin) Start the Sending 'Task_4' to 'Jacquelin'
+> [  0.000000] (1:Sender@Boivin) Start the Sending 'Task_5' to 'Jupiter'
+> [  0.000000] (1:Sender@Boivin) Start the Sending 'Task_6' to 'Tremblay'
+> [  0.000000] (1:Sender@Boivin) All tasks have been (asynchronously) dispatched. Let's wait for their completion.
+> [  1.933362] (6:Receiver@Jupiter) I got my task, good bye.
+> [  1.933362] (4:Receiver@Ginette) I got my task, good bye.
+> [  1.933362] (2:Receiver@Bourassa) I got my task, good bye.
+> [  2.449247] (7:Receiver@Tremblay) I got my task, good bye.
+> [  2.964768] (3:Receiver@Fafard) I got my task, good bye.
+> [  4.162002] (5:Receiver@Jacquelin) I got my task, good bye.
+> [  4.162002] (1:Sender@Boivin) Goodbye now!
+> [  4.162002] (0:maestro@) MSG_main finished; Cleaning up the simulation...

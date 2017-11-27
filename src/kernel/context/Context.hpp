@@ -14,24 +14,22 @@
 #include <xbt/functional.hpp>
 
 #include "simgrid/simix.h"
-#include "src/instr/instr_private.h"
+#include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
-#include "src/simix/popping_private.h"
-#include "src/simix/smx_host_private.h"
-#include "src/simix/smx_io_private.h"
-#include "src/simix/smx_network_private.h"
+#include "src/simix/popping_private.hpp"
+#include "src/simix/smx_host_private.hpp"
+#include "src/simix/smx_io_private.hpp"
+#include "src/simix/smx_network_private.hpp"
 #include "src/simix/smx_synchro_private.hpp"
-#include "surf/surf.h"
+#include "surf/surf.hpp"
 #include "xbt/base.h"
 #include "xbt/config.h"
-#include "xbt/dict.h"
 #include "xbt/function_types.h"
 #include "xbt/mallocator.h"
-#include "xbt/swag.h"
 #include "xbt/xbt_os_time.h"
 
-#include <signal.h>
 #include "src/simix/ActorImpl.hpp"
+#include <csignal>
 
 #include <simgrid/simix.hpp>
 
@@ -82,6 +80,13 @@ namespace context {
     void_pfn_smxprocess_t cleanup_func_ = nullptr;
     smx_actor_t process_ = nullptr;
   public:
+    class StopRequest {
+      /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
+       *
+       * Nope, Sonar, this should not inherit of std::exception.
+       * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
+       */
+    };
     bool iwannadie;
 
     Context(std::function<void()> code,
@@ -143,16 +148,13 @@ XBT_PRIVATE ContextFactory* boost_factory();
 
 typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
 
-SG_BEGIN_DECL()
-
+extern "C" {
 
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
 
-XBT_PRIVATE smx_context_t SIMIX_context_new(
-  std::function<void()> code,
-  void_pfn_smxprocess_t cleanup_func,
-  smx_actor_t simix_process);
+XBT_PUBLIC(smx_context_t)
+SIMIX_context_new(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t simix_process);
 
 #ifndef WIN32
 XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
@@ -160,12 +162,12 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 
 /* We are using the bottom of the stack to save some information, like the
  * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
- * size for the stack. */
+ * size for the stack. Round its value to a multiple of 16 (asan wants the stacks to be aligned this way). */
 #if HAVE_VALGRIND_H
-# define smx_context_usable_stack_size                                  \
-  (smx_context_stack_size - sizeof(unsigned int)) /* for valgrind_stack_id */
+#define smx_context_usable_stack_size                                                                                  \
+  ((smx_context_stack_size - sizeof(unsigned int)) & ~0xf) /* for valgrind_stack_id */
 #else
-# define smx_context_usable_stack_size smx_context_stack_size
+#define smx_context_usable_stack_size (smx_context_stack_size & ~0xf)
 #endif
 
 /** @brief Executes all the processes to run (in parallel if possible). */
@@ -176,14 +178,13 @@ XBT_PUBLIC(smx_context_t) SIMIX_context_self(); // public because it's used in s
 XBT_PRIVATE void *SIMIX_context_stack_new();
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 
-XBT_PRIVATE void SIMIX_context_set_current(smx_context_t context);
+XBT_PUBLIC(void) SIMIX_context_set_current(smx_context_t context);
 XBT_PRIVATE smx_context_t SIMIX_context_get_current();
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid();
 
 XBT_PRIVATE void SIMIX_post_create_environment();
-
-SG_END_DECL()
+}
 
 XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name);
 

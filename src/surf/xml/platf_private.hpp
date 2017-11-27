@@ -1,6 +1,6 @@
 /* platf_private.h - Interface to the SimGrid platforms which visibility should be limited to this directory */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-SG_BEGIN_DECL()
+extern "C" {
 #include "src/surf/xml/simgrid_dtd.h"
 
 #ifndef YY_TYPEDEF_YY_SIZE_T
@@ -23,12 +23,12 @@ SG_BEGIN_DECL()
 typedef size_t yy_size_t;
 #endif
 
-typedef enum {
-  SURF_CLUSTER_DRAGONFLY=3,
-  SURF_CLUSTER_FAT_TREE=2,
-  SURF_CLUSTER_FLAT = 1,
-  SURF_CLUSTER_TORUS = 0
-} e_surf_cluster_topology_t;
+enum e_surf_cluster_topology_t {
+  SURF_CLUSTER_DRAGONFLY = 3,
+  SURF_CLUSTER_FAT_TREE  = 2,
+  SURF_CLUSTER_FLAT      = 1,
+  SURF_CLUSTER_TORUS     = 0
+};
 
 /* ***************************************** */
 /*
@@ -41,24 +41,24 @@ typedef enum {
  * used, instead of malloced structures.
  */
 
-typedef struct {
-  const char* id;
+struct s_sg_platf_host_cbarg_t {
+  const char* id = nullptr;
   std::vector<double> speed_per_pstate;
-  int pstate;
-  int core_amount;
-  tmgr_trace_t speed_trace;
-  tmgr_trace_t state_trace;
-  const char* coord;
-  xbt_dict_t properties;
-} s_sg_platf_host_cbarg_t;
+  int pstate               = 0;
+  int core_amount          = 0;
+  tmgr_trace_t speed_trace = nullptr;
+  tmgr_trace_t state_trace = nullptr;
+  const char* coord        = nullptr;
+  std::map<std::string, std::string>* properties = nullptr;
+};
 typedef s_sg_platf_host_cbarg_t* sg_platf_host_cbarg_t;
 
-typedef struct {
-  const char* id;
-  const char* link_up;
-  const char* link_down;
-} s_sg_platf_host_link_cbarg_t;
-typedef s_sg_platf_host_link_cbarg_t* sg_platf_host_link_cbarg_t;
+class HostLinkCreationArgs {
+public:
+  std::string id;
+  std::string link_up;
+  std::string link_down;
+};
 
 class LinkCreationArgs {
 public:
@@ -69,129 +69,126 @@ public:
   tmgr_trace_t latency_trace          = nullptr;
   tmgr_trace_t state_trace            = nullptr;
   e_surf_link_sharing_policy_t policy = SURF_LINK_FATPIPE;
-  xbt_dict_t properties               = nullptr;
+  std::map<std::string, std::string>* properties = nullptr;
 };
 
-typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
-typedef struct s_sg_platf_peer_cbarg {
-  const char* id;
+class PeerCreationArgs {
+public:
+  std::string id;
   double speed;
   double bw_in;
   double bw_out;
-  const char* coord;
+  std::string coord;
   tmgr_trace_t speed_trace;
   tmgr_trace_t state_trace;
-} s_sg_platf_peer_cbarg_t;
+};
 
-typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
-typedef struct s_sg_platf_route_cbarg {
-  bool symmetrical;
-  sg_netpoint_t src;
-  sg_netpoint_t dst;
-  sg_netpoint_t gw_src;
-  sg_netpoint_t gw_dst;
-  std::vector<simgrid::surf::LinkImpl*>* link_list;
-} s_sg_platf_route_cbarg_t;
+struct s_sg_platf_route_cbarg_t {
+  bool symmetrical     = false;
+  sg_netpoint_t src    = nullptr;
+  sg_netpoint_t dst    = nullptr;
+  sg_netpoint_t gw_src = nullptr;
+  sg_netpoint_t gw_dst = nullptr;
+  std::vector<simgrid::surf::LinkImpl*> link_list;
+};
+typedef s_sg_platf_route_cbarg_t* sg_platf_route_cbarg_t;
 
-typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
-typedef struct s_sg_platf_cluster_cbarg {
-  const char* id;
-  const char* prefix;
-  const char* suffix;
-  std::vector<int>* radicals;
+class ClusterCreationArgs {
+public:
+  std::string id;
+  std::string prefix;
+  std::string suffix;
+  std::vector<int>* radicals = nullptr;
   std::vector<double> speeds;
-  int core_amount;
-  double bw;
-  double lat;
-  double bb_bw;
-  double bb_lat;
-  double loopback_bw;
-  double loopback_lat;
-  double limiter_link;
+  int core_amount     = 0;
+  double bw           = 0;
+  double lat          = 0;
+  double bb_bw        = 0;
+  double bb_lat       = 0;
+  double loopback_bw  = 0;
+  double loopback_lat = 0;
+  double limiter_link = 0;
   e_surf_cluster_topology_t topology;
-  const char* topo_parameters;
-  xbt_dict_t properties;
-  const char* router_id;
+  std::string topo_parameters;
+  std::map<std::string, std::string>* properties;
+  std::string router_id;
   e_surf_link_sharing_policy_t sharing_policy;
   e_surf_link_sharing_policy_t bb_sharing_policy;
-} s_sg_platf_cluster_cbarg_t;
+};
 
-typedef struct s_sg_platf_cabinet_cbarg* sg_platf_cabinet_cbarg_t;
-typedef struct s_sg_platf_cabinet_cbarg {
-  const char* id;
-  const char* prefix;
-  const char* suffix;
+class CabinetCreationArgs {
+public:
+  std::string id;
+  std::string prefix;
+  std::string suffix;
   std::vector<int>* radicals;
   double speed;
   double bw;
   double lat;
-} s_sg_platf_cabinet_cbarg_t;
+};
 
-typedef struct s_sg_platf_storage_cbarg* sg_platf_storage_cbarg_t;
-typedef struct s_sg_platf_storage_cbarg {
-  const char* id;
-  const char* type_id;
-  const char* content;
-  xbt_dict_t properties;
-  const char* attach;
-} s_sg_platf_storage_cbarg_t;
+class StorageCreationArgs {
+public:
+  std::string id;
+  std::string type_id;
+  std::string content;
+  std::map<std::string, std::string>* properties;
+  std::string attach;
+};
 
-typedef struct s_sg_platf_storage_type_cbarg* sg_platf_storage_type_cbarg_t;
-typedef struct s_sg_platf_storage_type_cbarg {
-  const char* id;
-  const char* model;
-  const char* content;
-  xbt_dict_t properties;
+class StorageTypeCreationArgs {
+public:
+  std::string id;
+  std::string model;
+  std::string content;
+  std::map<std::string, std::string>* properties;
   std::map<std::string, std::string>* model_properties;
   sg_size_t size;
-} s_sg_platf_storage_type_cbarg_t;
+};
 
-typedef struct s_sg_platf_mount_cbarg* sg_platf_mount_cbarg_t;
-typedef struct s_sg_platf_mount_cbarg {
-  const char* storageId;
-  const char* name;
-} s_sg_platf_mount_cbarg_t;
+class MountCreationArgs {
+public:
+  std::string storageId;
+  std::string name;
+};
 
-typedef struct s_sg_platf_prop_cbarg *sg_platf_prop_cbarg_t;
-typedef struct s_sg_platf_prop_cbarg {
+struct s_sg_platf_prop_cbarg_t {
   const char *id;
   const char *value;
-} s_sg_platf_prop_cbarg_t;
+};
+typedef s_sg_platf_prop_cbarg_t* sg_platf_prop_cbarg_t;
 
-typedef struct s_sg_platf_trace_cbarg *sg_platf_trace_cbarg_t;
-typedef struct s_sg_platf_trace_cbarg {
-  const char *id;
-  const char *file;
+class TraceCreationArgs {
+public:
+  std::string id;
+  std::string file;
   double periodicity;
-  const char *pc_data;
-} s_sg_platf_trace_cbarg_t;
+  std::string pc_data;
+};
 
-typedef struct s_sg_platf_trace_connect_cbarg *sg_platf_trace_connect_cbarg_t;
-typedef struct s_sg_platf_trace_connect_cbarg {
+class TraceConnectCreationArgs {
+public:
   e_surf_trace_connect_kind_t kind;
-  const char *trace;
-  const char *element;
-} s_sg_platf_trace_connect_cbarg_t;
+  std::string trace;
+  std::string element;
+};
 
-typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
-typedef struct s_sg_platf_process_cbarg {
-  const char **argv;
-  int argc;
-  xbt_dict_t properties;
-  const char *host;
-  const char *function;
-  double start_time;
-  double kill_time;
-  e_surf_process_on_failure_t on_failure;
-} s_sg_platf_process_cbarg_t;
+struct s_sg_platf_process_cbarg_t {
+  std::vector<std::string> args;
+  std::map<std::string, std::string>* properties = nullptr;
+  const char* host                       = nullptr;
+  const char* function                   = nullptr;
+  double start_time                      = 0.0;
+  double kill_time                       = 0.0;
+  e_surf_process_on_failure_t on_failure = {};
+};
+typedef s_sg_platf_process_cbarg_t* sg_platf_process_cbarg_t;
 
-typedef struct s_sg_platf_AS_cbarg *sg_platf_AS_cbarg_t;
-typedef struct s_sg_platf_AS_cbarg {
-  const char *id;
+class ZoneCreationArgs {
+public:
+  std::string id;
   int routing;
-} s_sg_platf_AS_cbarg_t;
-
-#define SG_PLATF_AS_INITIALIZER {nullptr,0}
+};
 
 /********** Routing **********/
 void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
@@ -200,29 +197,29 @@ void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
 XBT_PUBLIC(void) sg_platf_begin();  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(); // Finish the creation of the platform
 
-XBT_PUBLIC(simgrid::s4u::NetZone*) sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS); // Begin description of new AS
-XBT_PUBLIC(void) sg_platf_new_AS_seal();                     // That AS is fully described
+XBT_PUBLIC(simgrid::s4u::NetZone*) sg_platf_new_Zone_begin(ZoneCreationArgs* zone); // Begin description of new Zone
+XBT_PUBLIC(void) sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
-XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
-XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)
-sg_platf_new_router(const char* name, const char* coords);             // Add a router  to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link    to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_host(sg_platf_host_cbarg_t host);        // Add a host      to the current Zone
+XBT_PUBLIC(void) sg_platf_new_hostlink(HostLinkCreationArgs* h);       // Add a host_link to the current Zone
+XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link      to the current Zone
+XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer      to the current Zone
+XBT_PUBLIC(void) sg_platf_new_cluster(ClusterCreationArgs* clust);     // Add a cluster   to the current Zone
+XBT_PUBLIC(void) sg_platf_new_cabinet(CabinetCreationArgs* cabinet);   // Add a cabinet   to the current Zone
+XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)                        // Add a router    to the current Zone
+sg_platf_new_router(std::string, const char* coords);
 
 XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
 XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
 
-XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
+XBT_PUBLIC(void) sg_platf_new_trace(TraceCreationArgs* trace);
 
-XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type);
-XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
+XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the current Zone
+XBT_PUBLIC(void) sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
+XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
-XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
+XBT_PRIVATE void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex();
@@ -237,16 +234,12 @@ XBT_PUBLIC(void) surf_parse_set_out(FILE * out_str);
 XBT_PUBLIC(int) surf_parse_get_debug();
 XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
 XBT_PUBLIC(int) surf_parse_lex_destroy();
-
-XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
-
-SG_END_DECL()
+}
 
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
-
+extern XBT_PRIVATE simgrid::xbt::signal<void(ClusterCreationArgs*)> on_cluster;
 }
 }
 

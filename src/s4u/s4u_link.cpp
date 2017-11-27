@@ -9,6 +9,7 @@
 #include "simgrid/sg_config.h"
 #include "simgrid/simix.hpp"
 #include "src/surf/network_interface.hpp"
+#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U links");
@@ -21,7 +22,7 @@ extern "C" {
 
 const char* sg_link_name(sg_link_t link)
 {
-  return link->name();
+  return link->getCname();
 }
 sg_link_t sg_link_by_name(const char* name)
 {
@@ -82,9 +83,17 @@ Link* Link::byName(const char* name)
     return nullptr;
   return &res->piface_;
 }
+const std::string& Link::getName() const
+{
+  return this->pimpl_->getName();
+}
+const char* Link::getCname() const
+{
+  return this->pimpl_->getCname();
+}
 const char* Link::name()
 {
-  return this->pimpl_->cname();
+  return getCname();
 }
 bool Link::isUsed()
 {
@@ -104,6 +113,11 @@ double Link::bandwidth()
 int Link::sharingPolicy()
 {
   return this->pimpl_->sharingPolicy();
+}
+
+double Link::getUsage()
+{
+  return this->pimpl_->constraint()->get_usage();
 }
 
 void Link::turnOn()
@@ -147,6 +161,15 @@ void Link::setLatencyTrace(tmgr_trace_t trace)
   simgrid::simix::kernelImmediate([this, trace]() {
     this->pimpl_->setLatencyTrace(trace);
   });
+}
+
+const char* Link::getProperty(const char* key)
+{
+  return this->pimpl_->getProperty(key);
+}
+void Link::setProperty(std::string key, std::string value)
+{
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 /*************

@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <string.h>
+#include <cstring>
 
 #include "xbt/dynar.h"
 #include "xbt/sysdep.h"
@@ -11,7 +11,7 @@
 
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_xbt.hpp"
 
 using simgrid::mc::remote;

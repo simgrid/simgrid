@@ -180,14 +180,14 @@ static DGraph *buildSH(const char cls){
   tmpS>>=1;
   }
   for(i=0;i<numSources;i++){
-  snprintf(nm,BLOCK_SIZE,"Source.%d",i);
-  nd=newNode(nm);
-  AttachNode(dg,nd);
+    snprintf(nm, BLOCK_SIZE, "Source.%u", i);
+    nd = newNode(nm);
+    AttachNode(dg, nd);
   }
   for(j=0;j<numOfLayers;j++){
     mask=0x00000001<<j;
     for(i=0;i<numSources;i++){
-      snprintf(nm,BLOCK_SIZE,"Comparator.%d",(i+j*firstLayerNode));
+      snprintf(nm, BLOCK_SIZE, "Comparator.%u", (i + j * firstLayerNode));
       nd=newNode(nm);
       AttachNode(dg,nd);
       ndoff=i&(~mask);
@@ -203,7 +203,7 @@ static DGraph *buildSH(const char cls){
   }
   mask=0x00000001<<numOfLayers;
   for(i=0;i<numSources;i++){
-    snprintf(nm,BLOCK_SIZE,"Sink.%d",i);
+    snprintf(nm, BLOCK_SIZE, "Sink.%u", i);
     nd=newNode(nm);
     AttachNode(dg,nd);
     ndoff=i&(~mask);
@@ -240,7 +240,6 @@ static DGraph *buildWH(const char cls){
     AttachNode(dg,nd);
   }
   totComparators=0;
-  numPrevLayerNodes=numLayerNodes;
   while(numLayerNodes>maxInDeg){
     numLayerNodes=numLayerNodes/maxInDeg;
     if(numLayerNodes*maxInDeg<numPrevLayerNodes)
@@ -452,7 +451,6 @@ static Arr* WindowFilter(Arr *a, Arr* b,int w){
     }
     if(rmsm1<rms0) k=-1;
     if(k==0){
-      j=i+fielddim;
       a->val[i]=weight*b->val[i];
       a->val[i+1]=weight*b->val[i+1];
       a->val[i+2]=weight*b->val[i+2];
@@ -668,7 +666,7 @@ int main(int argc,char **argv ){
     dg=buildBH(class);
   }else if(strncmp(argv[3],"WH",2)==0){
     dg=buildWH(class);
-  }else if(strncmp(argv[3],"SH",2)==0){
+  }else /* (strncmp(argv[3],"SH",2)==0) */ {
     dg=buildSH(class);
   }
 
@@ -677,7 +675,7 @@ int main(int argc,char **argv ){
     if(my_rank==0)
     fprintf(stderr,"Not enough timers. Node timeing is off. \n");
   }
-  if(dg->numNodes>comm_size){
+  if(dg->numNodes && dg->numNodes>comm_size){
     if(my_rank==0){
     fprintf(stderr,"**  The number of MPI processes should not be less than \n");
     fprintf(stderr,"**  the number of nodes in the graph\n");

@@ -31,8 +31,8 @@ public:
 
   virtual ~Comm();
 
-  /*! take a range of s4u::CommPtr (last excluded) and return when one of them is finished. The return value is an
-   * iterator on the finished Comms. */
+  /*! take a vector s4u::CommPtr and return when one of them is finished.
+   * The return value is the rank of the first finished CommPtr. */
   static int wait_any(std::vector<CommPtr> * comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static int wait_any_for(std::vector<CommPtr> * comms_in, double timeout)
@@ -41,7 +41,7 @@ public:
     xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void*ptr){
       intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
     });
-    for (auto comm : *comms_in) {
+    for (auto const& comm : *comms_in) {
       if (comm->state_ == inited)
         comm->start();
       xbt_assert(comm->state_ == started);
@@ -54,35 +54,44 @@ public:
     xbt_dynar_free(&comms);
     return idx;
   }
+
+  /*! take a vector s4u::CommPtr and return when all of them is finished. */
+  static void wait_all(std::vector<CommPtr> * comms)
+  {
+    // TODO: this should be a simcall or something
+    // TODO: we are missing a version with timeout
+    for (CommPtr comm : *comms) {
+      comm->wait();
+    }
+  }
+
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
-      send_init(MailboxPtr dest)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.") static CommPtr
+  send_init(MailboxPtr dest)
   {
     return dest->put_init();
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will remove Comm::send_init() completely.")
-      send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.") static CommPtr
+  send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
     return dest->put_init(data, simulatedByteAmount);
   }
   /** Creates and start an async send to the mailbox @p dest */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
-      "Use Mailbox::put_async(): v3.20 will remove Comm::send_async() completely.")
-      send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.") static CommPtr
+  send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
   {
     return dest->put_async(data, simulatedByteAmount);
   }
   /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_init(): v3.20 will remove Comm::recv_init() completely.")
-      recv_init(MailboxPtr from)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_init(): v3.20 will turn this warning into an error.") static CommPtr
+  recv_init(MailboxPtr from)
   {
     return from->get_init();
   }
   /** Creates and start an async recv to the mailbox @p from */
-  static CommPtr XBT_ATTRIB_DEPRECATED_v320(
-      "Use Mailbox::get_async(): v3.20 will remove Comm::recv_async() completely.")
-      recv_async(MailboxPtr from, void** data)
+  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_async(): v3.20 will turn this warning into an error.") static CommPtr
+  recv_async(MailboxPtr from, void** data)
   {
     return from->get_async(data);
   }
@@ -93,6 +102,12 @@ public:
 
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
   void detach();
+  /** Start the comm, and ignore its result. It can be completely forgotten after that. */
+  void detach(void (*cleanFunction)(void*))
+  {
+    cleanFunction_ = cleanFunction;
+    detach();
+  }
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   void setRate(double rate);

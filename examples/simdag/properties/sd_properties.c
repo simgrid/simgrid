@@ -29,30 +29,33 @@ int main(int argc, char **argv)
   const char *name1 = sg_host_get_name(h1);
   const char *name2 = sg_host_get_name(h2);
 
-  /* Get the property list of 'host1' */
+  /* Trying to set a new property */
+  sg_host_set_property_value(h1, "NewProp", "newValue");
+
+  /* Get the property list of 'host1'. This is only a copy of the internal data structure.*/
   XBT_INFO("Property list for host %s", name1);
   xbt_dict_t props = sg_host_get_properties(h1);
 
-  /* Trying to set a new property */
-  xbt_dict_set(props, "NewProp", strdup("newValue"), NULL);
 
   /* Print the properties of 'host1' */
-  xbt_dict_foreach(props, cursor, key, data) {
+  xbt_dict_foreach (props, cursor, key, data)
     XBT_INFO("\tProperty: %s has value: %s", key, data);
-  }
 
   /* Try to get a property that does not exist */
   value = sg_host_get_property_value(h1, noexist);
   XBT_INFO("\tProperty: %s has value: %s", noexist, value?value:"Undefined (NULL)");
+
+  xbt_dict_free(&props);
 
   /* Get the property list of 'host2' */
   XBT_INFO("Property list for host %s", name2);
   props = sg_host_get_properties(h2);
 
   /* Print the properties of 'host2' */
-  xbt_dict_foreach(props, cursor, key, data) {
+  xbt_dict_foreach (props, cursor, key, data)
     XBT_INFO("\tProperty: %s on host: %s", key, data);
-  }
+
+  xbt_dict_free(&props);
 
   /* Modify an existing property test. First check it exists */
   XBT_INFO("Modify an existing property");
@@ -62,7 +65,7 @@ int main(int argc, char **argv)
     XBT_INFO("\tProperty: %s is undefined", exist);
   else {
     XBT_INFO("\tProperty: %s old value: %s", exist, value);
-    xbt_dict_set(props, exist, strdup("250"), NULL);
+    sg_host_set_property_value(h2, exist, "250");
   }
 
   /* Test if we have changed the value */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,15 +7,16 @@
 #define SIMIX_ACTORIMPL_H
 
 #include "simgrid/s4u/Actor.hpp"
-#include "src/simix/popping_private.h"
+#include "src/simix/popping_private.hpp"
+#include "src/surf/PropertyHolder.hpp"
 #include "xbt/swag.h"
 #include <list>
+#include <map>
 
-typedef struct s_smx_process_exit_fun {
+struct s_smx_process_exit_fun_t {
   int_f_pvoid_pvoid_t fun;
   void *arg;
-} s_smx_process_exit_fun_t;
-typedef s_smx_process_exit_fun_t* smx_process_exit_fun_t;
+};
 
 namespace simgrid {
 namespace simix {
@@ -27,11 +28,11 @@ public:
   void *data            = nullptr;
   sg_host_t host        = nullptr;
   double kill_time      = 0.0;
-  xbt_dict_t properties = nullptr;
+  std::shared_ptr<std::map<std::string, std::string>> properties;
   bool auto_restart     = false;
 };
 
-class ActorImpl {
+class ActorImpl : public simgrid::surf::PropertyHolder {
 public:
   ActorImpl() : piface_(this) {}
   ~ActorImpl();
@@ -45,7 +46,8 @@ public:
   aid_t pid  = 0;
   aid_t ppid = -1;
   simgrid::xbt::string name;
-  const char* cname() { return name.c_str(); }
+  const simgrid::xbt::string& getName() const { return name; }
+  const char* getCname() const { return name.c_str(); }
   s4u::Host* host       = nullptr; /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
@@ -59,7 +61,6 @@ public:
   sg_host_t new_host             = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
-  xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
   void* userdata = nullptr;                      /* kept for compatibility, it should be replaced with moddata */
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
@@ -106,7 +107,7 @@ public:
   void daemonize();
   bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
   bool isSuspended() { return suspended; }
-  ActorImpl* restart(ActorImpl* issuer);
+  simgrid::s4u::Actor* restart();
   smx_activity_t suspend(ActorImpl* issuer);
   void resume();
   smx_activity_t sleep(double duration);
@@ -121,15 +122,11 @@ typedef simgrid::simix::ProcessArg *smx_process_arg_t;
 
 typedef simgrid::simix::ActorImpl* smx_actor_t;
 
-SG_BEGIN_DECL()
+extern "C" {
 
-XBT_PRIVATE smx_actor_t SIMIX_process_create(
-                          const char *name,
-                          std::function<void()> code,
-                          void *data,
-                          sg_host_t host,
-                          xbt_dict_t properties,
-                          smx_actor_t parent_process);
+XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+                                             std::map<std::string, std::string>* properties,
+                                             smx_actor_t parent_process);
 
 XBT_PRIVATE void SIMIX_process_runall();
 XBT_PRIVATE void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer);
@@ -145,8 +142,7 @@ XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
 
 extern void (*SMPI_switch_data_segment)(int dest);
-
-SG_END_DECL()
+}
 
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
 XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);

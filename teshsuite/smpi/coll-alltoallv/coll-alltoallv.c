@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -44,16 +44,14 @@
    <2> rbuf: (#9):   [3][4][103][104][203][204][-1][-1][-1]
 */
 
-static void print_buffer_int(void *buf, int len, char *msg, int rank)
+static void print_buffer_int(void *buf, int len, const char *msg, int rank)
 {
-  int* v;
   printf("[%d] %s (#%d): ", rank, msg, len);
   for (int tmp = 0; tmp < len; tmp++) {
-    v = buf;
+    int* v = buf;
     printf("[%d]", v[tmp]);
   }
   printf("\n");
-  free(msg);
 }
 
 int main(int argc, char **argv)
@@ -69,12 +67,17 @@ int main(int argc, char **argv)
 
   /* Create the buffer */
   MPI_Comm_size(comm, &size);
+  if(size<=0){
+    printf("error : comm size <= 0, run with mpirun\n");
+    return -1;
+  }
   MPI_Comm_rank(comm, &rank);
-  int* sbuf = (int *) xbt_malloc(size * size * sizeof(int));
-  int* rbuf = (int *) xbt_malloc(size * size * sizeof(int));
+  int size2 = size * size;
+  int* sbuf = (int*)xbt_malloc(size2 * sizeof(int));
+  int* rbuf = (int*)xbt_malloc(size2 * sizeof(int));
 
   /* Load up the buffers */
-  for (i = 0; i < size * size; i++) {
+  for (i = 0; i < size2; i++) {
     sbuf[i] = i + 100 * rank;
     rbuf[i] = -1;
   }
@@ -91,15 +94,15 @@ int main(int argc, char **argv)
     sdispls[i] = (i * (i + 1)) / 2;
   }
 
-  print_buffer_int( sbuf, size*size, strdup("sbuf:"),rank);
-  print_buffer_int( sendcounts, size, strdup("scount:"),rank);
-  print_buffer_int( recvcounts, size, strdup("rcount:"),rank);
-  print_buffer_int( sdispls, size, strdup("sdisp:"),rank);
-  print_buffer_int( rdispls, size, strdup("rdisp:"),rank);
+  print_buffer_int(sbuf, size2, "sbuf:", rank);
+  print_buffer_int(sendcounts, size, "scount:", rank);
+  print_buffer_int(recvcounts, size, "rcount:", rank);
+  print_buffer_int(sdispls, size, "sdisp:", rank);
+  print_buffer_int(rdispls, size, "rdisp:", rank);
 
   MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, comm);
 
-  print_buffer_int( rbuf, size*size, strdup("rbuf:"),rank);
+  print_buffer_int(rbuf, size2, "rbuf:", rank);
 
   MPI_Barrier(MPI_COMM_WORLD);
   if (0 == rank) {

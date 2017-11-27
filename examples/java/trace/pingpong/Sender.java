@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2006-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -16,7 +16,7 @@ import org.simgrid.trace.Trace;
 public class Sender extends Process {
   private static final double COMM_SIZE_LAT = 1;
   private static final double COMM_SIZE_BW = 100000000;
-  private static final String PM_STATE = "PM_STATE";
+  private static final String PM_STATE = Main.PM_STATE;
 
   public Sender(String hostname, String name, String[] args) throws HostNotFoundException {
     super(hostname,name,args);

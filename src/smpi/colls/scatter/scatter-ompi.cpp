@@ -19,9 +19,8 @@
  * Additional copyrights may follow
  */
 
-
-#include "../colls_private.h"
-#include "../coll_tuned_topo.h"
+#include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
 
 namespace simgrid{
 namespace smpi{
@@ -160,7 +159,7 @@ int Coll_scatter_ompi_binomial::scatter(void* sbuf, int scount, MPI_Datatype sdt
     if (NULL != tempbuf)
       smpi_free_tmp_buffer(tempbuf);
     // not FIXME : store the tree, as done in ompi, instead of calculating it each time ?
-    xbt_free(bmtree);
+    ompi_coll_tuned_topo_destroy_tree(&bmtree);
 
     return MPI_SUCCESS;
 

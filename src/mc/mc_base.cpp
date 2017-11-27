@@ -7,8 +7,8 @@
 
 #include "mc/mc.h"
 #include "src/mc/mc_base.h"
-#include "src/mc/mc_replay.h"
-#include "src/simix/smx_private.h"
+#include "src/mc/mc_replay.hpp"
+#include "src/simix/smx_private.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
@@ -35,13 +35,9 @@ void wait_for_requests()
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This must be called from the client");
 #endif
-
-  smx_actor_t process;
-  unsigned int iter;
-
-  while (not xbt_dynar_is_empty(simix_global->process_to_run)) {
+  while (not simix_global->process_to_run.empty()) {
     SIMIX_process_runall();
-    xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
+    for (smx_actor_t const& process : simix_global->process_that_ran) {
       smx_simcall_t req = &process->simcall;
       if (req->call != SIMCALL_NONE && not simgrid::mc::request_is_visible(req))
         SIMIX_simcall_handle(req, 0);
@@ -49,7 +45,7 @@ void wait_for_requests()
   }
 #if SIMGRID_HAVE_MC
   xbt_dynar_reset(simix_global->actors_vector);
-  for (std::pair<aid_t, smx_actor_t> kv : simix_global->process_list) {
+  for (std::pair<aid_t, smx_actor_t> const& kv : simix_global->process_list) {
     xbt_dynar_push_as(simix_global->actors_vector, smx_actor_t, kv.second);
   }
 #endif
@@ -101,14 +97,9 @@ bool actor_is_enabled(smx_actor_t actor)
     }
 
     case SIMCALL_COMM_WAITANY: {
-      xbt_dynar_t comms;
-      simgrid::kernel::activity::CommImpl* act =
-          static_cast<simgrid::kernel::activity::CommImpl*>(simcall_comm_wait__getraw__comm(req));
-
-      comms = simcall_comm_waitany__get__comms(req);
-
+      xbt_dynar_t comms = simcall_comm_waitany__get__comms(req);
       for (unsigned int index = 0; index < comms->used; ++index) {
-        act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::CommImpl*);
+        simgrid::kernel::activity::CommImpl* act = xbt_dynar_get_as(comms, index, simgrid::kernel::activity::CommImpl*);
         if (act->src_proc && act->dst_proc)
           return true;
       }
@@ -120,8 +111,7 @@ bool actor_is_enabled(smx_actor_t actor)
 
       if (mutex->owner == nullptr)
         return true;
-      else
-        return mutex->owner->pid == req->issuer->pid;
+      return mutex->owner->pid == req->issuer->pid;
     }
 
     case SIMCALL_SEM_ACQUIRE: {
@@ -155,16 +145,10 @@ bool request_is_visible(smx_simcall_t req)
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
 #endif
 
-  return req->call == SIMCALL_COMM_ISEND
-      || req->call == SIMCALL_COMM_IRECV
-      || req->call == SIMCALL_COMM_WAIT
-      || req->call == SIMCALL_COMM_WAITANY
-      || req->call == SIMCALL_COMM_TEST
-      || req->call == SIMCALL_COMM_TESTANY
-      || req->call == SIMCALL_MC_RANDOM
-      || req->call == SIMCALL_MUTEX_LOCK
-      || req->call == SIMCALL_MUTEX_TRYLOCK
-      ;
+  return req->call == SIMCALL_COMM_ISEND || req->call == SIMCALL_COMM_IRECV || req->call == SIMCALL_COMM_WAIT ||
+         req->call == SIMCALL_COMM_WAITANY || req->call == SIMCALL_COMM_TEST || req->call == SIMCALL_COMM_TESTANY ||
+         req->call == SIMCALL_MC_RANDOM || req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK ||
+         req->call == SIMCALL_MUTEX_UNLOCK;
 }
 
 }
@@ -191,7 +175,7 @@ static int prng_random(int min, int max)
 
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
-  if (not MC_is_active() && not MC_record_path)
+  if (not MC_is_active() && MC_record_path.empty())
     return prng_random(min, max);
   return simcall->mc_value;
 }

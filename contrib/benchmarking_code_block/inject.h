@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -66,7 +66,8 @@ static inline void xbt_inject_init(char *inputfile)
   if (fgets(line, 200, fpInput) == NULL)
     printf("Error input file is empty!"); // Skipping first row
   while (fgets(line, 200, fpInput) != NULL) {
-    key = strtok(line, "\t");
+    char *saveptr = NULL; /* for strtok_r() */
+    key = strtok_r(line, "\t", &saveptr);
 
     xbt_hist_t* data = xbt_dict_get_or_null(mydict, key);
     if (data)
@@ -75,20 +76,20 @@ static inline void xbt_inject_init(char *inputfile)
     data = (xbt_hist_t*)xbt_new(xbt_hist_t, 1);
 
     data->block_id = key;
-    data->counts   = atoi(strtok(NULL, "\t"));
-    data->mean     = atof(strtok(NULL, "\t"));
-    data->n        = atoi(strtok(NULL, "\t"));
+    data->counts   = atoi(strtok_r(NULL, "\t", &saveptr));
+    data->mean     = atof(strtok_r(NULL, "\t", &saveptr));
+    data->n        = atoi(strtok_r(NULL, "\t", &saveptr));
 
     data->breaks     = (double*)malloc(sizeof(double) * data->n);
     data->percentage = (double*)malloc(sizeof(double) * (data->n - 1));
     for (int i        = 0; i < data->n; i++)
-      data->breaks[i] = atof(strtok(NULL, "\t"));
+      data->breaks[i] = atof(strtok_r(NULL, "\t", &saveptr));
     for (int i            = 0; i < (data->n - 1); i++)
-      data->percentage[i] = atof(strtok(NULL, "\t"));
+      data->percentage[i] = atof(strtok_r(NULL, "\t", &saveptr));
 
     xbt_dict_set(mydict, key, data, NULL);
   }
-  fclose(fInput);
+  fclose(fpInput);
 }
 
 /* Initializing xbt dictionary for StarPU version, reading xbt_hist_t entries line by line */
@@ -113,11 +114,13 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
 
   if (fgets(line, MAX_LINE_INJ, fpInput) == NULL) {
     printf("Error input file is empty!"); // Skipping first row
+    fclose(fpInput);
     return;
   }
 
   while (fgets(line, MAX_LINE_INJ, fpInput) != NULL) {
-    key = strtok(line, "\t");
+    char *saveptr = NULL; /* for strtok_r() */
+    key = strtok_r(line, "\t", &saveptr);
 
     xbt_hist_t* data = xbt_dict_get_or_null(mydict, key);
     if (data)
@@ -125,21 +128,21 @@ static inline void inject_init_starpu(char *inputfile, xbt_dict_t *dict, RngStre
 
     data             = (xbt_hist_t*)xbt_new(xbt_hist_t, 1);
     data->block_id   = key;
-    data->counts     = atoi(strtok(NULL, "\t"));
-    data->mean       = atof(strtok(NULL, "\t"));
-    data->n          = atoi(strtok(NULL, "\t"));
+    data->counts     = atoi(strtok_r(NULL, "\t", &saveptr));
+    data->mean       = atof(strtok_r(NULL, "\t", &saveptr));
+    data->n          = atoi(strtok_r(NULL, "\t", &saveptr));
     data->breaks     = (double*)malloc(sizeof(double) * data->n);
     data->percentage = (double*)malloc(sizeof(double) * (data->n - 1));
 
     for (int i        = 0; i < data->n; i++)
-      data->breaks[i] = atof(strtok(NULL, "\t"));
+      data->breaks[i] = atof(strtok_r(NULL, "\t", &saveptr));
     for (int i = 0; i < (data->n - 1); i++) {
-      data->percentage[i] = atof(strtok(NULL, "\t"));
+      data->percentage[i] = atof(strtok_r(NULL, "\t", &saveptr));
     }
 
     xbt_dict_set(mydict, key, data, NULL);
   }
-  fclose(fInput);
+  fclose(fpInput);
 }
 
 /* Injecting time */

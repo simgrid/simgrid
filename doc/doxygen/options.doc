@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 - \c contexts/factory: \ref options_virt_factory
 - \c contexts/guard-size: \ref options_virt_guard_size
 - \c contexts/nthreads: \ref options_virt_parallel
-- \c contexts/parallel_threshold: \ref options_virt_parallel
+- \c contexts/parallel-threshold: \ref options_virt_parallel
 - \c contexts/stack-size: \ref options_virt_stacksize
 - \c contexts/synchro: \ref options_virt_parallel
 
@@ -112,7 +112,6 @@ int main(int argc, char *argv[]) {
 - \c network/maxmin-selective-update: \ref options_model_optim
 - \c network/model: \ref options_model_select
 - \c network/optim: \ref options_model_optim
-- \c network/sender_gap: \ref options_model_network_sendergap
 - \c network/TCP-gamma: \ref options_model_network_gamma
 - \c network/weight-S: \ref options_model_network_coefs
 
@@ -317,7 +316,7 @@ setting on regular (less constrained) scenarios so it is off by default.
 \subsubsection options_model_network_gamma Maximal TCP window size
 
 The analytical models need to know the maximal TCP window size to take
-the TCP congestion mechanism into account. This is set to 20000 by
+the TCP congestion mechanism into account. This is set to 4194304 by
 default, but can be changed using the \b network/TCP-gamma item.
 
 On linux, this value can be retrieved using the following
@@ -372,15 +371,6 @@ This is activated through the \b network/crosstraffic item, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
 Note that with the default host model this option is activated by default.
-
-\subsubsection options_model_network_sendergap Simulating sender gap
-
-(this configuration item is experimental and may change or disapear)
-
-It is possible to specify a timing gap between consecutive emission on
-the same network card through the \b network/sender-gap item. This
-is still under investigation as of writting, and the default value is
-to wait 10 microseconds (1e-5 seconds) between emissions.
 
 \subsubsection options_model_network_asyncsend Simulating asyncronous send
 
@@ -515,7 +505,7 @@ liveness violation) as well as the cycle for liveness properties. This dot file
 can then fed to the graphviz dot tool to generate an corresponding graphical
 representation.
 
-\subsection options_modelchecking_max_depth model-check/max_depth, Depth limit
+\subsection options_modelchecking_max_depth model-check/max-depth, Depth limit
 
 The \b model-checker/max-depth can set the maximum depth of the exploration
 graph of the model-checker. If this limit is reached, a logging message is
@@ -1282,10 +1272,10 @@ is registered and will clean up some variables and terminate/cleanup the tracing
 
 TODO: Add when this should be used.
 
-\subsection options_generic_path XML file inclusion path
+\subsection options_generic_path Profile files' search path
 
 It is possible to specify a list of directories to search into for the
-\<include\> tag in XML files by using the \b path configuration
+trace files (see @ref pf_trace) by using the \b path configuration
 item. To add several directory to the path, set the configuration
 item several times, as in \verbatim
 --cfg=path:toto --cfg=path:tutu
@@ -1302,7 +1292,7 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 \subsection options_exception_cutpath Truncate local path from exception backtrace
 
 \verbatim
---cfg=exceptions/cutpath:1
+--cfg=exception/cutpath:1
 \endverbatim
 
 This configuration option is used to remove the path from the

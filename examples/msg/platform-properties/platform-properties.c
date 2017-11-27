@@ -33,7 +33,7 @@ static void test_host(const char*hostname)
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   XBT_INFO("== Trying to modify a host property");
-  MSG_host_set_property_value(thehost, exist, xbt_strdup("250"));
+  MSG_host_set_property_value(thehost, exist, (char*)"250");
 
   /* Test if we have changed the value */
   value = MSG_host_get_property_value(thehost, exist);
@@ -42,7 +42,9 @@ static void test_host(const char*hostname)
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   /* Restore the value for the next test */
-  MSG_host_set_property_value(thehost, exist, xbt_strdup("180"));
+  MSG_host_set_property_value(thehost, exist, (char*)"180");
+
+  xbt_dict_free(&props);
 }
 
 static int alice(int argc, char *argv[]) { /* Dump what we have on the current host */
@@ -87,6 +89,7 @@ static int bob(int argc, char *argv[])
 
   value = MSG_process_get_property_value(MSG_process_self(), noexist);
   xbt_assert(!value, "The property is defined (it shouldnt)");
+  xbt_dict_free(&props);
 
   return 0;
 }

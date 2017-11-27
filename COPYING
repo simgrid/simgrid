@@ -17,7 +17,27 @@ Copyright:
   Copyright (c) 2002-2004 The OSSP Project <http://www.ossp.org/>
   Copyright (c) 2002-2004 Cable & Wireless <http://www.cw.com/>
   Copyright (c) 2005-2015. The SimGrid Team.  
-Copyright: Expat
+License: Expat
+ This file is part of OSSP ex, an exception handling library
+ which can be found at http://www.ossp.org/pkg/lib/ex/.
+ .
+ Permission to use, copy, modify, and distribute this software for
+ any purpose with or without fee is hereby granted, provided that
+ the above copyright notice and this permission notice appear in all
+ copies.
+ .
+ THIS SOFTWARE IS PROVIDED AS IS'' AND ANY EXPRESSED OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHORS AND COPYRIGHT HOLDERS AND THEIR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
 Comment: Adapted from code from Ralf S. Engelschall and others in the OSSP project, remains under the original license.
 
 Files: src/xbt/mmalloc/* include/xbt/mmalloc.h
@@ -80,7 +100,6 @@ Comment: The author granted us the right to distribute this files under the LGPL
 
 Files:
  src/simdag/dax_dtd.c
- src/simdag/dax_dtd.l
  src/simdag/dax_dtd.h
  src/surf/xml/simgrid_dtd.c
  src/surf/xml/simgrid_dtd.h
@@ -102,7 +121,6 @@ Files:
  src/smpi/colls/allgatherv-ring.c
  src/smpi/colls/alltoall-2dmesh.c
  src/smpi/colls/alltoall-3dmesh.c
- src/smpi/colls/alltoall-bruck.c
  src/smpi/colls/alltoall-pair.c
  src/smpi/colls/alltoall-pair-light-barrier.c
  src/smpi/colls/alltoall-pair-mpi-barrier.c
@@ -125,6 +143,31 @@ Files:
  src/smpi/colls/bcast-scatter-rdb-allgather.c
 Copyright: Copyright (c) 2006, Ahmad Faraj & Xin Yuan
 License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+  * Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+ .
+  * Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+ .
+  * Neither the name of the Florida State University nor the names of its
+    contributors may be used to endorse or promote products derived from this
+    software without specific prior written permission.
+ .
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+    ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 Comment: Borrowed from StarMPI.
 
 Files:

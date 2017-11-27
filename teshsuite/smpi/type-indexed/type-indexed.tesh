@@ -1,5 +1,4 @@
 p Test indexed
-! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/type-indexed -q --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 > [rank 0] -> Tremblay

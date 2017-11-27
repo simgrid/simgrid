@@ -6,22 +6,23 @@
 #include "storage_n11.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
-#include <math.h> /*ceil*/
+#include "surf/maxmin.hpp"
+#include <cmath> /*ceil*/
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 
 /*************
  * CallBacks *
  *************/
-extern std::map<std::string, storage_type_t> storage_types;
+extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
 static void check_disk_attachment()
 {
-  for (auto s : *simgrid::surf::StorageImpl::storagesMap()) {
+  for (auto const& s : *simgrid::surf::StorageImpl::storagesMap()) {
     simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
     if (not host_elm)
-      surf_parse_error("Unable to attach storage %s: host %s does not exist.", s.second->cname(),
-                       s.second->getHost().c_str());
+      surf_parse_error(std::string("Unable to attach storage ") + s.second->getCname() + ": host " +
+                       s.second->getHost() + " does not exist.");
     else
       s.second->piface_.attached_to_ = sg_host_by_name(s.second->getHost().c_str());
   }
@@ -46,21 +47,22 @@ void surf_storage_model_init_default()
 namespace simgrid {
 namespace surf {
 
-StorageImpl* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
-                                            const char* attach)
+StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id, std::string content_name,
+                                            std::string attach)
 {
-  storage_type_t storage_type = storage_types.at(type_id);
+  StorageType* storage_type = storage_types.at(type_id);
 
-  double Bread =
-      surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(), "property Bread, storage", type_id);
+  double Bread = surf_parse_get_bandwidth(storage_type->model_properties->at("Bread").c_str(),
+                                          "property Bread, storage", type_id.c_str());
   double Bwrite = surf_parse_get_bandwidth(storage_type->model_properties->at("Bwrite").c_str(),
-                                           "property Bwrite, storage", type_id);
+                                           "property Bwrite, storage", type_id.c_str());
 
-  StorageImpl* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, (char*)content_name,
-                                        storage_type->size, (char*)attach);
+  StorageImpl* storage =
+      new StorageN11(this, id, maxminSystem_, Bread, Bwrite, type_id, content_name, storage_type->size, attach);
   storageCreatedCallbacks(storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id, type_id, Bread);
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
+            Bread);
 
   p_storageList.push_back(storage);
 
@@ -74,35 +76,17 @@ double StorageN11Model::nextOccuringEvent(double now)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  ActionList *actionSet = getRunningActionSet();
-  for (ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end()); it != itend; it = itNext) {
-    ++itNext;
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    StorageAction& action = static_cast<StorageAction&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
+    action.updateRemains(lrint(action.getVariable()->get_value() * delta));
 
-    StorageAction *action = static_cast<StorageAction*>(&*it);
+    if (action.getMaxDuration() > NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    double current_progress = lrint(lmm_variable_getvalue(action->getVariable()) * delta);
-
-    action->updateRemains(current_progress);
-    if (action->type_ == WRITE) {
-      action->storage_->usedSize_ += current_progress;
-      action->file_->incrPosition(current_progress);
-      action->file_->setSize(action->file_->tell());
-
-      action->storage_->getContent()->erase(action->file_->cname());
-      action->storage_->getContent()->insert({action->file_->cname(), action->file_->size()});
-    }
-
-    if (action->getMaxDuration() > NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
-
-    if (action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->storage_->usedSize_ == action->storage_->getSize()) {
-      action->finish();
-      action->setState(Action::State::failed);
-    } else if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-               ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish();
-      action->setState(Action::State::done);
+    if (((action.getRemainsNoUpdate() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+        ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     }
   }
 }
@@ -111,8 +95,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
-                       const char* type_id, char* content_name, sg_size_t size, char* attach)
+StorageN11::StorageN11(StorageModel* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
+                       std::string type_id, std::string content_name, sg_size_t size, std::string attach)
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
@@ -135,18 +119,18 @@ StorageAction* StorageN11::write(sg_size_t size)
 
 StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage,
                                    e_surf_action_storage_type_t type)
-    : StorageAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0, 3), storage, type)
+    : StorageAction(model, cost, failed, model->getMaxminSystem()->variable_new(this, 1.0, -1.0, 3), storage, type)
 {
-  XBT_IN("(%s,%g", storage->cname(), cost);
+  XBT_IN("(%s,%g", storage->getCname(), cost);
 
   // Must be less than the max bandwidth for all actions
-  lmm_expand(model->getMaxminSystem(), storage->constraint(), getVariable(), 1.0);
+  model->getMaxminSystem()->expand(storage->constraint(), getVariable(), 1.0);
   switch(type) {
   case READ:
-    lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
+    model->getMaxminSystem()->expand(storage->constraintRead_, getVariable(), 1.0);
     break;
   case WRITE:
-    lmm_expand(model->getMaxminSystem(), storage->constraintWrite_, getVariable(), 1.0);
+    model->getMaxminSystem()->expand(storage->constraintWrite_, getVariable(), 1.0);
     break;
   default:
     THROW_UNIMPLEMENTED;
@@ -161,7 +145,7 @@ int StorageN11Action::unref()
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
-      lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+      getModel()->getMaxminSystem()->variable_free(getVariable());
     xbt_free(getCategory());
     delete this;
     return 1;
@@ -178,7 +162,7 @@ void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
+    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
     suspended_ = 1;
   }
   XBT_OUT();

@@ -1,16 +1,16 @@
-/* Copyright (c) 2009-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "xbt/replay.hpp"
 
-#include <errno.h>
+#include <cerrno>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg, "MSG actions for trace driven simulation");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 void MSG_action_init()
 {
@@ -40,7 +40,7 @@ msg_error_t MSG_action_trace_run(char *path)
     XBT_WARN("Not all actions got consumed. If the simulation ended successfully (without deadlock),"
              " you may want to add new processes to your deployment file.");
 
-    for (auto actions_of : simgrid::xbt::action_queues) {
+    for (auto const& actions_of : simgrid::xbt::action_queues) {
       XBT_WARN("Still %zu actions for %s", actions_of.second->size(), actions_of.first.c_str());
     }
   }
@@ -52,5 +52,4 @@ msg_error_t MSG_action_trace_run(char *path)
 
   return res;
 }
-
-SG_END_DECL()
+}

@@ -93,7 +93,6 @@ XBT_PUBLIC(signed int) xbt_dynar_search_or_negative(xbt_dynar_t const dynar, voi
 XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
 XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t compar_fn);
 XBT_PUBLIC(xbt_dynar_t) xbt_dynar_sort_strings(xbt_dynar_t dynar);
-XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pvoid_t color);
 XBT_PUBLIC(int) xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2, int(*compar)(const void *, const void *));
 XBT_PUBLIC(void *) xbt_dynar_to_array (xbt_dynar_t dynar);
 

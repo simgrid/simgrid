@@ -1,0 +1,10 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-create
+> [Tremblay:sender1:(1) 0.000000] [s4u_actor_create/INFO] Hello s4u, I have something to send
+> [Jupiter:sender2:(2) 0.000000] [s4u_actor_create/INFO] Hello s4u, I have something to send
+> [Fafard:receiver:(3) 0.000000] [s4u_actor_create/INFO] Hello s4u, I'm ready to get any message you'd want on mb42
+> [Tremblay:sender1:(1) 0.025709] [s4u_actor_create/INFO] I'm done. See you.
+> [Jupiter:sender2:(2) 0.070434] [s4u_actor_create/INFO] I'm done. See you.
+> [Fafard:receiver:(3) 0.070434] [s4u_actor_create/INFO] I received 'GaBuZoMeu' and 'GloubiBoulga'
+> [Fafard:receiver:(3) 0.070434] [s4u_actor_create/INFO] I'm done. See you.

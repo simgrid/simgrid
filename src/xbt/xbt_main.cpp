@@ -7,14 +7,14 @@
 
 #define XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL /* MSVC don't want it to be declared extern in headers and local here */
 
-#include <math.h>
-#include "xbt/misc.h"
 #include "simgrid_config.h"
-#include "xbt/sysdep.h"
+#include "xbt/config.h"
+#include "xbt/dynar.h"
 #include "xbt/log.h"
 #include "xbt/log.hpp"
-#include "xbt/dynar.h"
-#include "xbt/config.h"
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
+#include <cmath>
 
 #include "xbt/module.h"         /* this module */
 
@@ -23,12 +23,12 @@
 #include "simgrid/sg_config.h"
 
 #include "src/internal_config.h"
-#include <stdio.h>
+#include <cstdio>
 #ifdef _WIN32
-#include <signal.h> /* To silence MSVC on abort() */
+# include <csignal> /* To silence MSVC on abort() */
 #endif
 #if HAVE_UNISTD_H
-#  include <unistd.h>
+# include <unistd.h>
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
@@ -85,7 +85,7 @@ static void xbt_preinit()
 #elif HAVE_SYSCONF
   xbt_pagesize = sysconf(_SC_PAGESIZE);
 #else
-  #error Cannot get page size.
+# error Cannot get page size.
 #endif
 
   xbt_pagebits = log2(xbt_pagesize);
@@ -114,7 +114,6 @@ static void xbt_postexit()
   xbt_os_thread_mod_postexit();
   xbt_dynar_free(&xbt_cmdline);
   xbt_log_postexit();
-  free(xbt_binary_name);
 #if SIMGRID_HAVE_MC
   mmalloc_postexit();
 #endif
@@ -125,13 +124,13 @@ void xbt_init(int *argc, char **argv)
 {
   simgrid::xbt::installExceptionHandler();
 
-  if (xbt_initialized) {
-    xbt_initialized++;
+  xbt_initialized++;
+  if (xbt_initialized > 1) {
     XBT_DEBUG("XBT has been initialized %d times.", xbt_initialized);
     return;
   }
 
-  xbt_binary_name = xbt_strdup(argv[0]);
+  xbt_binary_name = argv[0];
   xbt_cmdline     = xbt_dynar_new(sizeof(char*), NULL);
   for (int i = 0; i < *argc; i++)
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
@@ -140,16 +139,16 @@ void xbt_init(int *argc, char **argv)
 }
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
-/** @brief like free, but you can be sure that it is a function  */
+/** @brief like xbt_free, but you can be sure that it is a function  */
 void xbt_free_f(void *p)
 {
-  free(p);
+  xbt_free(p);
 }
 
 /** @brief should be given a pointer to pointer, and frees the second one */
 void xbt_free_ref(void *d)
 {
-  free(*(void **) d);
+  xbt_free(*(void**)d);
 }
 
 /** @brief Kill the program in silence */

@@ -1,11 +1,11 @@
-/* Copyright (c) 2004-2007, 2009-2015. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRId_XBT_DYNAR_HPP
-#define SIMGRId_XBT_DYNAR_HPP
+#ifndef SIMGRID_XBT_DYNAR_HPP
+#define SIMGRID_XBT_DYNAR_HPP
 
 #include <boost/range/iterator_range.hpp>
 #include <xbt/asserts.h>

@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
+#include <algorithm>
 
 static inline int MPIU_Mirror_permutation(unsigned int x, int bits)
 {
@@ -64,7 +65,7 @@ int Coll_reduce_scatter_mpich_pair::reduce_scatter(void *sendbuf, void *recvbuf,
         }
 
         /* allocate temporary buffer to store incoming data */
-        tmp_recvbuf = (void*)smpi_get_tmp_recvbuffer(recvcounts[rank]*(MAX(true_extent,extent))+1);
+        tmp_recvbuf = (void*)smpi_get_tmp_recvbuffer(recvcounts[rank] * std::max(true_extent, extent) + 1);
         /* adjust for potential negative lower bound in datatype */
         tmp_recvbuf = (void *)((char*)tmp_recvbuf - true_lb);
 
@@ -295,13 +296,13 @@ int Coll_reduce_scatter_mpich_rdb::reduce_scatter(void *sendbuf, void *recvbuf, 
             /* noncommutative and (non-pof2 or block irregular), use recursive doubling. */
 
             /* need to allocate temporary buffer to receive incoming data*/
-            tmp_recvbuf= (void *) smpi_get_tmp_recvbuffer( total_count*(MAX(true_extent,extent)));
+            tmp_recvbuf= (void*)smpi_get_tmp_recvbuffer(total_count * std::max(true_extent, extent));
             /* adjust for potential negative lower bound in datatype */
             tmp_recvbuf = (void *)((char*)tmp_recvbuf - true_lb);
 
             /* need to allocate another temporary buffer to accumulate
                results */
-            tmp_results = (void *)smpi_get_tmp_sendbuffer( total_count*(MAX(true_extent,extent)));
+            tmp_results = (void*)smpi_get_tmp_sendbuffer(total_count * std::max(true_extent, extent));
             /* adjust for potential negative lower bound in datatype */
             tmp_results = (void *)((char*)tmp_results - true_lb);
 

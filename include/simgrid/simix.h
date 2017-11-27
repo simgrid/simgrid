@@ -11,6 +11,9 @@
 #include "simgrid/host.h"
 #include "xbt/ex.h"
 #include "xbt/parmap.h"
+#ifdef __cplusplus
+#include <map>
+#endif
 
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
@@ -46,11 +49,11 @@ typedef enum {
 /**
  * \ingroup simix_synchro_management
  */
-typedef struct s_smx_cond *smx_cond_t;
+typedef struct s_smx_cond_t* smx_cond_t;
 /**
  * \ingroup simix_synchro_management
  */
-typedef struct s_smx_sem *smx_sem_t;
+typedef struct s_smx_sem_t* smx_sem_t;
 
 /* ****************************** Process *********************************** */
 
@@ -65,16 +68,14 @@ typedef enum {
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_actor_t);
 
-extern int smx_context_stack_size;
+extern unsigned smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
-extern int smx_context_guard_size;
+extern unsigned smx_context_guard_size;
 extern int smx_context_guard_size_was_set;
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable();
 XBT_PUBLIC(smx_actor_t) SIMIX_process_from_PID(aid_t PID);
-XBT_PUBLIC(xbt_dynar_t) SIMIX_processes_as_dynar();
 
 /* parallelism */
 XBT_PUBLIC(int) SIMIX_context_is_parallel();
@@ -105,7 +106,7 @@ XBT_PUBLIC(void) SIMIX_run();
 XBT_PUBLIC(double) SIMIX_get_clock();
 
 /* Timer functions FIXME: should these be public? */
-typedef struct s_smx_timer* smx_timer_t;
+typedef struct s_smx_timer_t* smx_timer_t;
 
 XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, void (*function)(void*), void *arg);
 XBT_PUBLIC(void) SIMIX_timer_remove(smx_timer_t timer);
@@ -140,12 +141,11 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
  */
 
 XBT_PUBLIC(void) SIMIX_maestro_create(void (*code)(void*), void* data);
-XBT_PUBLIC(smx_actor_t) SIMIX_process_attach(
-  const char* name,
-  void *data,
-  const char* hostname,
-  xbt_dict_t properties,
-  smx_actor_t parent_process);
+#ifdef __cplusplus
+XBT_PUBLIC(smx_actor_t)
+SIMIX_process_attach(const char* name, void* data, const char* hostname, std::map<std::string, std::string>* properties,
+                     smx_actor_t parent_process);
+#endif
 XBT_PUBLIC(void) SIMIX_process_detach();
 
 /*********************************** Host *************************************/
@@ -191,7 +191,7 @@ XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double priority, double bound);
 XBT_PUBLIC(smx_activity_t)
 simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                                 double* bytes_amount, double amount, double rate, double timeout);
+                                 double* bytes_amount, double rate, double timeout);
 XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
@@ -200,11 +200,12 @@ XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 /**************************** Process simcalls ********************************/
 SG_BEGIN_DECL()
 /* Constructor and Destructor */
+#ifdef __cplusplus
 XBT_PUBLIC(smx_actor_t)
 simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc, char** argv,
-                       xbt_dict_t properties);
+                       std::map<std::string, std::string>* properties);
+#endif
 
-XBT_PUBLIC(void) simcall_process_kill(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
 XBT_PUBLIC(void) SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char *msg);
 
@@ -216,11 +217,8 @@ XBT_PUBLIC(void) simcall_process_suspend(smx_actor_t process);
 /* Getters and Setters */
 XBT_PUBLIC(int) simcall_process_count();
 XBT_PUBLIC(void) simcall_process_set_data(smx_actor_t process, void *data);
-XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_actor_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data);
-XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_actor_t process, int auto_restart);
-XBT_PUBLIC(smx_actor_t) simcall_process_restart(smx_actor_t process);
 XBT_PUBLIC(void) simcall_process_join(smx_actor_t process, double timeout);
 /* Sleep control */
 XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
@@ -228,6 +226,7 @@ SG_END_DECL()
 
 /************************** Comunication simcalls *****************************/
 
+#ifdef __cplusplus
 XBT_PUBLIC(void)
 simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                   size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -252,6 +251,7 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
 XBT_PUBLIC(smx_activity_t)
 simcall_comm_iprobe(smx_mailbox_t mbox, int type, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                     void* data);
+#endif
 XBT_PUBLIC(void) simcall_comm_cancel(smx_activity_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */
@@ -280,17 +280,13 @@ XBT_PUBLIC(void) simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
 XBT_PUBLIC(void) simcall_cond_broadcast(smx_cond_t cond);
 
-XBT_PUBLIC(smx_sem_t) simcall_sem_init(int capacity);
 XBT_PUBLIC(void) SIMIX_sem_destroy(smx_sem_t sem);
-XBT_PUBLIC(void) simcall_sem_release(smx_sem_t sem);
-XBT_PUBLIC(int) simcall_sem_would_block(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
-XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
-/*****************************   File   **********************************/
-XBT_PUBLIC(sg_size_t) simcall_file_read(surf_file_t fd, sg_size_t size);
-XBT_PUBLIC(sg_size_t) simcall_file_write(surf_file_t fd, sg_size_t size);
+/*****************************   Storage   **********************************/
+XBT_PUBLIC(sg_size_t) simcall_storage_read(surf_storage_t st, sg_size_t size);
+XBT_PUBLIC(sg_size_t) simcall_storage_write(surf_storage_t fd, sg_size_t size);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 

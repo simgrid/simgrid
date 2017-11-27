@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +12,6 @@ package async.dsend;
  */
 
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
 
 class Main {
@@ -22,7 +20,7 @@ class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws HostNotFoundException {
+  public static void main(String[] args) {
     Msg.init(args);
 
     String platform = "../platforms/small_platform.xml";

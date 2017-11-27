@@ -29,7 +29,7 @@ static int server(int argc, char *argv[])
   MSG_comm_wait(comm2, -1);
 
   long val1 = xbt_str_parse_int(MSG_task_get_name(task1), "Task name is not a numerical ID: %s");
-  XBT_INFO("Received %lu", val1);
+  XBT_INFO("Received %ld", val1);
 
   MC_assert(val1 == 2);
 

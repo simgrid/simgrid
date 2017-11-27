@@ -8,6 +8,8 @@
 Please apply the following checklist before releasing.
 
 - Sources
+  - The external patches (Debian, etc) are integrated.
+    The COPYING file is aligned with Debian's copyright file.
   - The version number is correctly marked in CMakeLists.txt, in macros
     SIMGRID_VERSION_MAJOR and friends. 
   - The "make distcheck" target works (testing that every files needed
@@ -33,7 +35,7 @@ This should be done from a clean git repository because some files are
 included through globbing. The best is to use a clean checkout:
 \verbatim
 cd /tmp
-git clone ~/Code/simgrid
+git clone --depth=1 ~/Code/simgrid
 cd simgrid
 cmake . && make dist
 \endverbatim
@@ -90,14 +92,16 @@ the settings icon of the release you want to change.
   - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
   - emacs org/site/documentation.org and edit the version links.
   - make -C org all sync
-  - git commit && git push
+  - git commit -a && git push
 - Announce the release
+ - Document the tag on https://github.com/simgrid/simgrid/releases
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
-- Release the debian package   
+- Release the debian package
+- Update the simgrid/package.py for spack: https://github.com/solverstack/spack
 - Create the template for the next release in ChangeLog and NEWS files
 - Change the release number in CMakeLists.txt
 

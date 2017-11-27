@@ -1,11 +1,10 @@
-
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include <xbt/ex.hpp>
@@ -30,7 +29,7 @@ static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   simgrid::kernel::activity::RawImplPtr sync =
       simgrid::kernel::activity::RawImplPtr(new simgrid::kernel::activity::RawImpl());
   sync->sleep                          = smx_host->pimpl_cpu->sleep(timeout);
-  sync->sleep->setData(&*sync);
+  sync->sleep->setData(sync.get());
   XBT_OUT();
   return sync;
 }
@@ -80,7 +79,6 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
 
     case SIMIX_FAILED:
         simcall->issuer->context->iwannadie = 1;
-//      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
       break;
 
     default:
@@ -169,8 +167,8 @@ void MutexImpl::unlock(smx_actor_t issuer)
 
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != this->owner)
-    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
-           this->owner->cname(), this->owner->pid);
+    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%lu), not by you.",
+           this->owner->getCname(), this->owner->pid);
 
   if (xbt_swag_size(this->sleeping) > 0) {
     /*process to wake up */
@@ -204,11 +202,6 @@ void SIMIX_mutex_unref(smx_mutex_t mutex)
     intrusive_ptr_release(mutex);
 }
 
-smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall)
-{
-  return new simgrid::simix::MutexImpl();
-}
-
 // Simcall handlers:
 
 void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
@@ -239,7 +232,7 @@ smx_cond_t SIMIX_cond_init()
 {
   XBT_IN("()");
   simgrid::simix::ActorImpl p;
-  smx_cond_t cond = new s_smx_cond();
+  smx_cond_t cond = new s_smx_cond_t();
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->refcount_ = 1;
   XBT_OUT();
@@ -371,14 +364,13 @@ void SIMIX_cond_unref(smx_cond_t cond)
 
 void intrusive_ptr_add_ref(s_smx_cond_t *cond)
 {
-  auto previous = (cond->refcount_)++;
+  auto previous = cond->refcount_.fetch_add(1);
   xbt_assert(previous != 0);
 }
 
 void intrusive_ptr_release(s_smx_cond_t *cond)
 {
-  auto count = --(cond->refcount_);
-  if (count == 0) {
+  if (cond->refcount_.fetch_sub(1) == 1) {
     xbt_assert(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
     xbt_swag_free(cond->sleeping);
@@ -393,7 +385,7 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
   XBT_IN("(%u)",value);
   simgrid::simix::ActorImpl p;
 
-  smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
+  smx_sem_t sem = new s_smx_sem_t;
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   sem->value = value;
   XBT_OUT();
@@ -409,14 +401,11 @@ void SIMIX_sem_destroy(smx_sem_t sem)
     xbt_assert(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
     xbt_swag_free(sem->sleeping);
-    xbt_free(sem);
+    delete sem;
   }
   XBT_OUT();
 }
 
-void simcall_HANDLER_sem_release(smx_simcall_t simcall, smx_sem_t sem){
-  SIMIX_sem_release(sem);
-}
 /** @brief release the semaphore
  *
  * Unlock a process waiting on the semaphore.
@@ -445,9 +434,6 @@ int SIMIX_sem_would_block(smx_sem_t sem)
   return (sem->value <= 0);
 }
 
-int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem){
-  return SIMIX_sem_get_capacity(sem);
-}
 /** @brief Returns the current capacity of the semaphore */
 int SIMIX_sem_get_capacity(smx_sem_t sem)
 {
@@ -495,7 +481,4 @@ void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, d
   XBT_IN("(%p)",simcall);
   _SIMIX_sem_wait(sem, timeout, simcall->issuer, simcall);
   XBT_OUT();
-}
-int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t sem) {
-  return SIMIX_sem_would_block(sem);
 }

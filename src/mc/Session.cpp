@@ -1,11 +1,11 @@
-/* Copyright (c) 2015-2016. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <csignal>
 #include <fcntl.h>
-#include <signal.h>
 
 #include <functional>
 
@@ -16,13 +16,14 @@
 #include <simgrid/sg_config.h>
 
 #include "src/mc/Session.hpp"
-#include "src/mc/mc_state.h"
-#include "src/mc/mc_private.h"
 #include "src/mc/checker/Checker.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_state.hpp"
 
 #include "src/smpi/include/private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
+extern std::string _sg_mc_dot_output_file;
 
 namespace simgrid {
 namespace mc {
@@ -122,7 +123,7 @@ void Session::logState()
 {
   mc_model_checker->getChecker()->logState();
 
-  if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0')) {
+  if (not _sg_mc_dot_output_file.empty()) {
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }
@@ -140,7 +141,7 @@ Session* Session::fork(std::function<void()> code)
   // process:
   int res;
   int sockets[2];
-  res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
+  res = socketpair(AF_LOCAL, SOCK_SEQPACKET | SOCK_CLOEXEC, 0, sockets);
   if (res == -1)
     throw simgrid::xbt::errno_error("Could not create socketpair");
 

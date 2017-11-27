@@ -15,7 +15,7 @@ bool init_unit_test(); // boost forget to give this prototype on NetBSD, which d
 #include "xbt/log.h"
 #include "xbt/misc.h"
 
-#include <math.h>
+#include <cmath>
 
 namespace utf  = boost::unit_test;
 namespace tmgr = simgrid::trace_mgr;
@@ -28,7 +28,7 @@ public:
   explicit MockedResource() : simgrid::surf::Resource(nullptr, "fake", nullptr) {}
   void apply_event(tmgr_trace_event_t event, double value)
   {
-    XBT_VERB("t=%.1f: Change value to %lg (idx: %d)", thedate, value, event->idx);
+    XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", thedate, value, event->idx);
     tmgr_trace_event_unref(&event);
   }
   bool isUsed() { return true; }
@@ -39,7 +39,7 @@ static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto
   simgrid::trace_mgr::trace* trace = tmgr_trace_new_from_string("TheName", str, 0);
   XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
-  for (auto evt : trace->event_list)
+  for (auto const& evt : trace->event_list)
     XBT_VERB("event: d:%lg v:%lg", evt.date_, evt.value_);
 
   MockedResource daResource;
@@ -59,7 +59,7 @@ static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto
       res->apply_event(it, value);
       whereto->push_back(tmgr::DatedValue(thedate, value));
     } else {
-      XBT_DEBUG("%.1f: ignore an event (idx: %d)\n", thedate, it->idx);
+      XBT_DEBUG("%.1f: ignore an event (idx: %u)\n", thedate, it->idx);
     }
   }
   tmgr_finalize();
@@ -157,6 +157,7 @@ static bool init_function()
 
 int main(int argc, char** argv)
 {
+  XBT_LOG_CONNECT(unit);
   xbt_log_init(&argc, argv);
   return ::boost::unit_test::unit_test_main(&init_function, argc, argv);
 }

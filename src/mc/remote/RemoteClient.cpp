@@ -5,17 +5,19 @@
 
 #define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
 
-#include <assert.h>
-#include <errno.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <algorithm>
+#include <cassert>
+#include <cerrno>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 #include <sys/ptrace.h>
 
 #include <cstdio>
 
 #include <fcntl.h>
-#include <regex.h>
 #include <sys/mman.h> // PROT_*
 #include <sys/types.h>
 #include <unistd.h>
@@ -28,12 +30,13 @@
 #include <libunwind.h>
 
 #include "xbt/base.h"
+#include "xbt/file.hpp"
 #include "xbt/log.h"
 #include <xbt/mmalloc.h>
 
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_unw.hpp"
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ObjectInformation.hpp"
@@ -44,16 +47,13 @@ using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc, "MC process information");
 
-// ***** Helper stuff
-
 namespace simgrid {
 namespace mc {
 
-#define SO_RE "\\.so[\\.0-9]*$"
-#define VERSION_RE "-[\\.0-9-]*$"
+// ***** Helper stuff
 
 // List of library which memory segments are not considered:
-static const char* const filtered_libraries[] = {
+static const std::vector<std::string> filtered_libraries = {
 #ifdef __linux__
     "ld",
 #elif defined __FreeBSD__
@@ -98,43 +98,34 @@ static const char* const filtered_libraries[] = {
     "libunwind-ptrace",
     "libz"};
 
-static bool is_simgrid_lib(const char* libname)
+static bool is_simgrid_lib(const std::string& libname)
 {
-  return not strcmp(libname, "libsimgrid");
+  return libname == "libsimgrid";
 }
 
-static bool is_filtered_lib(const char* libname)
+static bool is_filtered_lib(const std::string& libname)
 {
-  for (const char* filtered_lib : filtered_libraries)
-    if (strcmp(libname, filtered_lib) == 0)
-      return true;
-  return false;
+  return std::find(begin(filtered_libraries), end(filtered_libraries), libname) != end(filtered_libraries);
 }
 
-struct s_mc_memory_map_re {
-  regex_t so_re;
-  regex_t version_re;
-};
-
-static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
+static std::string get_lib_name(const std::string& pathname)
 {
-  char* map_basename = xbt_basename(pathname);
+  constexpr char digits[]  = ".0123456789";
+  std::string map_basename = simgrid::xbt::Path(pathname).getBasename();
+  std::string libname;
 
-  regmatch_t match;
-  if (regexec(&res->so_re, map_basename, 1, &match, 0)) {
-    free(map_basename);
-    return nullptr;
-  }
+  size_t pos = map_basename.rfind(".so");
+  if (pos != std::string::npos && map_basename.find_first_not_of(digits, pos + 3) == std::string::npos) {
+    // strip the extension (matching regex "\.so[.0-9]*$")
+    libname.assign(map_basename, 0, pos);
 
-  char* libname = strndup(map_basename, match.rm_so);
-  free(map_basename);
-  map_basename = nullptr;
-
-  // Strip the version suffix:
-  if (libname && not regexec(&res->version_re, libname, 1, &match, 0)) {
-    char* temp = libname;
-    libname    = strndup(temp, match.rm_so);
-    free(temp);
+    // strip the version suffix (matching regex "-[.0-9-]*$")
+    while (true) {
+      pos = libname.rfind('-');
+      if (pos == std::string::npos || libname.find_first_not_of(digits, pos + 1) != std::string::npos)
+        break;
+      libname.erase(pos);
+    }
   }
 
   return libname;
@@ -227,7 +218,7 @@ void RemoteClient::init()
     xbt_die("No heap information in the target process");
   if (not std_heap_var->address)
     xbt_die("No constant address for this variable");
-  this->read_bytes(&this->heap_address, sizeof(struct mdesc*), remote(std_heap_var->address),
+  this->read_bytes(&this->heap_address, sizeof(mdesc*), remote(std_heap_var->address),
                    simgrid::mc::ProcessIndexDisabled);
 
   this->smx_actors_infos.clear();
@@ -262,8 +253,7 @@ void RemoteClient::refresh_heap()
   // Read/dereference/refresh the std_heap pointer:
   if (not this->heap)
     this->heap = std::unique_ptr<s_xbt_mheap_t>(new s_xbt_mheap_t());
-  this->read_bytes(this->heap.get(), sizeof(struct mdesc), remote(this->heap_address),
-                   simgrid::mc::ProcessIndexDisabled);
+  this->read_bytes(this->heap.get(), sizeof(mdesc), remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
   this->cache_flags_ |= RemoteClient::cache_heap;
 }
 
@@ -294,11 +284,6 @@ void RemoteClient::init_memory_map_info()
   this->object_infos.resize(0);
   this->binary_info     = nullptr;
   this->libsimgrid_info = nullptr;
-
-  struct s_mc_memory_map_re res;
-
-  if (regcomp(&res.so_re, SO_RE, 0) || regcomp(&res.version_re, VERSION_RE, 0))
-    xbt_die(".so regexp did not compile");
 
   std::vector<simgrid::xbt::VmMap> const& maps = this->memory_map_;
 
@@ -334,13 +319,10 @@ void RemoteClient::init_memory_map_info()
       continue;
 
     const bool is_executable = not i;
-    char* libname            = nullptr;
+    std::string libname;
     if (not is_executable) {
-      libname = get_lib_name(pathname, &res);
-      if (not libname)
-        continue;
+      libname = get_lib_name(pathname);
       if (is_filtered_lib(libname)) {
-        free(libname);
         continue;
       }
     }
@@ -350,13 +332,9 @@ void RemoteClient::init_memory_map_info()
     this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;
-    else if (libname && is_simgrid_lib(libname))
+    else if (is_simgrid_lib(libname))
       this->libsimgrid_info = info;
-    free(libname);
   }
-
-  regfree(&res.so_re);
-  regfree(&res.version_re);
 
   // Resolve time (including across different objects):
   for (auto const& object_info : this->object_infos)
@@ -427,7 +405,7 @@ void RemoteClient::read_variable(const char* name, void* target, size_t size) co
   simgrid::mc::Variable* var = this->find_variable(name);
   xbt_assert(var->address, "No simple location for this variable");
   xbt_assert(var->type->full_type, "Partial type for %s, cannot check size", name);
-  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zi, was %zi)", name,
+  xbt_assert((size_t)var->type->full_type->byte_size == size, "Unexpected size for %s (expected %zu, was %zu)", name,
              size, (size_t)var->type->full_type->byte_size);
   this->read_bytes(target, size, remote(var->address));
 }
@@ -437,7 +415,6 @@ std::string RemoteClient::read_string(RemotePtr<char> address) const
   if (not address)
     return {};
 
-  // TODO, use std::vector with .data() in C++17 to avoid useless copies
   std::vector<char> res(128);
   off_t off = 0;
 
@@ -608,10 +585,7 @@ void RemoteClient::unignore_heap(void* address, size_t size)
   while (start <= end) {
     cursor       = (start + end) / 2;
     auto& region = ignored_heap_[cursor];
-    if (region.address == address) {
-      ignored_heap_.erase(ignored_heap_.begin() + cursor);
-      return;
-    } else if (region.address < address)
+    if (region.address < address)
       start = cursor + 1;
     else if ((char*)region.address <= ((char*)address + size)) {
       ignored_heap_.erase(ignored_heap_.begin() + cursor);
@@ -671,17 +645,16 @@ void RemoteClient::dumpStack()
 
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
-  return;
 }
 
 bool RemoteClient::actor_is_enabled(aid_t pid)
 {
-  s_mc_message_actor_enabled msg{MC_MESSAGE_ACTOR_ENABLED, pid};
+  s_mc_message_actor_enabled_t msg{MC_MESSAGE_ACTOR_ENABLED, pid};
   process()->getChannel().send(msg);
   char buff[MC_MESSAGE_LENGTH];
   ssize_t received = process()->getChannel().receive(buff, MC_MESSAGE_LENGTH, true);
-  xbt_assert(received == sizeof(s_mc_message_int), "Unexpected size in answer to ACTOR_ENABLED");
-  return ((mc_message_int_t*)buff)->value;
+  xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
+  return ((s_mc_message_int_t*)buff)->value;
 }
 }
 }

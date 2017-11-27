@@ -7,10 +7,11 @@
 #define S4U_LINK_HPP_
 
 #include <simgrid/link.h>
+#include <string>
+#include <unordered_map>
+#include <xbt/Extendable.hpp>
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
-
-#include <unordered_map>
 
 /***********
  * Classes *
@@ -22,7 +23,7 @@ class NetworkAction;
 };
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
-XBT_PUBLIC_CLASS Link
+XBT_PUBLIC_CLASS Link : public simgrid::xbt::Extendable<Link>
 {
   friend simgrid::surf::LinkImpl;
 
@@ -36,8 +37,10 @@ public:
   /** @brief Retrieve a link from its name */
   static Link* byName(const char* name);
 
-  /** @brief Get da name */
-  const char* name();
+  /** @brief Retrieves the name of that link as a C++ string */
+  const std::string& getName() const;
+  /** @brief Retrieves the name of that link as a C string */
+  const char* getCname() const;
 
   /** @brief Get the bandwidth in bytes per second of current Link */
   double bandwidth();
@@ -48,6 +51,9 @@ public:
   /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX)
    */
   int sharingPolicy();
+
+  /** @brief Returns the current load (in flops per second) */
+  double getUsage();
 
   /** @brief Check if the Link is used */
   bool isUsed();
@@ -65,6 +71,9 @@ public:
   void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to
                                                external load). Trace must contain absolute values */
 
+  const char* getProperty(const char* key);
+  void setProperty(std::string key, std::string value);
+
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
   static simgrid::xbt::signal<void(s4u::Link&)> onCreation;
@@ -80,6 +89,8 @@ public:
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static simgrid::xbt::signal<void(surf::NetworkAction*)> onCommunicationStateChange;
+
+  XBT_ATTRIB_DEPRECATED_v321("Use getCname(): v3.21 will turn this warning into an error.") const char* name();
 };
 }
 }

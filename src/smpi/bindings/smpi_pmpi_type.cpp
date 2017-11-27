@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "private.hpp"
 #include "smpi_datatype_derived.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
@@ -338,7 +338,7 @@ int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int out
     return MPI_ERR_TYPE;
   if(comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
-  return type->pack(inbuf, incount, outbuf,outcount,position, comm);
+  return type->pack(inbuf == MPI_BOTTOM ? nullptr : inbuf, incount, outbuf, outcount, position, comm);
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {

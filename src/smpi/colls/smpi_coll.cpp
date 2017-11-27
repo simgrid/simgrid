@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
 #include "smpi_coll.hpp"
+#include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_op.hpp"
@@ -14,22 +14,21 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll)");
 
-#define COLL_SETTER(cat, ret, args, args2)\
-int (*Colls::cat ) args;\
-void Colls::set_##cat (const char * name){\
-    int id = find_coll_description(mpi_coll_## cat ##_description,\
-                                             name,#cat);\
-    cat = reinterpret_cast<ret (*) args>\
-        (mpi_coll_## cat ##_description[id].coll);\
-    if (cat == nullptr)\
-      xbt_die("Collective "#cat" set to nullptr!");\
-}
+#define COLL_SETTER(cat, ret, args, args2)                                                                             \
+  int(*Colls::cat) args;                                                                                               \
+  void Colls::set_##cat(std::string name)                                                                              \
+  {                                                                                                                    \
+    int id = find_coll_description(mpi_coll_##cat##_description, name, #cat);                                          \
+    cat    = reinterpret_cast<ret(*) args>(mpi_coll_##cat##_description[id].coll);                                     \
+    if (cat == nullptr)                                                                                                \
+      xbt_die("Collective " #cat " set to nullptr!");                                                                  \
+  }
 
-#define SET_COLL(coll)\
-    name = xbt_cfg_get_string("smpi/"#coll);\
-    if (name==nullptr || name[0] == '\0')\
-        name = selector_name;\
-    set_##coll(name);
+#define SET_COLL(coll)                                                                                                 \
+  name = xbt_cfg_get_string("smpi/" #coll);                                                                            \
+  if (name.empty())                                                                                                    \
+    name = selector_name;                                                                                              \
+  set_##coll(name);
 
 namespace simgrid{
 namespace smpi{
@@ -68,29 +67,24 @@ void Colls::coll_help(const char *category, s_mpi_coll_description_t * table)
     XBT_WARN("  %s: %s\n", table[i].name, table[i].description);
 }
 
-int Colls::find_coll_description(s_mpi_coll_description_t * table, const char *name, const char *desc)
+int Colls::find_coll_description(s_mpi_coll_description_t* table, std::string name, const char* desc)
 {
-  char *name_list = nullptr;
   for (int i = 0; table[i].name; i++)
-    if (not strcmp(name, table[i].name)) {
+    if (name == table[i].name) {
       if (strcmp(table[i].name,"default"))
         XBT_INFO("Switch to algorithm %s for collective %s",table[i].name,desc);
       return i;
     }
 
   if (not table[0].name)
-    xbt_die("No collective is valid for '%s'! This is a bug.",name);
-  name_list = xbt_strdup(table[0].name);
-  for (int i = 1; table[i].name; i++) {
-    name_list = static_cast<char*>(xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 3));
-    strncat(name_list, ", ",2);
-    strncat(name_list, table[i].name, strlen(table[i].name));
-  }
-  xbt_die("Collective '%s' is invalid! Valid collectives are: %s.", name, name_list);
+    xbt_die("No collective is valid for '%s'! This is a bug.", name.c_str());
+  std::string name_list = std::string(table[0].name);
+  for (int i = 1; table[i].name; i++)
+    name_list = name_list + ", " + table[i].name;
+
+  xbt_die("Collective '%s' is invalid! Valid collectives are: %s.", name.c_str(), name_list.c_str());
   return -1;
 }
-
-
 
 COLL_APPLY(COLL_SETTER,COLL_GATHER_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_ALLGATHER_SIG,"");
@@ -106,23 +100,23 @@ COLL_APPLY(COLL_SETTER,COLL_ALLTOALLV_SIG,"");
 
 
 void Colls::set_collectives(){
-    const char* selector_name = static_cast<char*>(xbt_cfg_get_string("smpi/coll-selector"));
-    if (selector_name==nullptr || selector_name[0] == '\0')
-        selector_name = "default";
+  std::string selector_name = xbt_cfg_get_string("smpi/coll-selector");
+  if (selector_name.empty())
+    selector_name = "default";
 
-    const char* name;
+  std::string name;
 
-    SET_COLL(gather);
-    SET_COLL(allgather);
-    SET_COLL(allgatherv);
-    SET_COLL(allreduce);
-    SET_COLL(alltoall);
-    SET_COLL(alltoallv);
-    SET_COLL(reduce);
-    SET_COLL(reduce_scatter);
-    SET_COLL(scatter);
-    SET_COLL(bcast);
-    SET_COLL(barrier);
+  SET_COLL(gather);
+  SET_COLL(allgather);
+  SET_COLL(allgatherv);
+  SET_COLL(allreduce);
+  SET_COLL(alltoall);
+  SET_COLL(alltoallv);
+  SET_COLL(reduce);
+  SET_COLL(reduce_scatter);
+  SET_COLL(scatter);
+  SET_COLL(bcast);
+  SET_COLL(barrier);
 }
 
 

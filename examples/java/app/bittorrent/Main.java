@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014,2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,7 +6,6 @@
 package app.bittorrent;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.MsgException;
 import org.simgrid.msg.RngStream;
 
 class Main{
@@ -15,7 +13,7 @@ class Main{
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws MsgException {
+  public static void main(String[] args) {
     int[] seed = { 12345, 12345, 12345, 12345, 12345, 12345 };
     RngStream.setPackageSeed(seed);
 

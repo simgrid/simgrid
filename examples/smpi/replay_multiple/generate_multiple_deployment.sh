@@ -146,15 +146,15 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         HAVE_SEQ=$(which seq 2>/dev/null)
 
         if [ -n "${HAVE_SEQ}" ]; then
-            SEQ1=$( ${HAVE_SEQ} 0 $(( $NUMPROCSMINE - 1 )) )
+            SEQ1=$( ${HAVE_SEQ} 0 $(( NUMPROCSMINE - 1 )) )
         else
             cnt=0
-            while (( $cnt < $NUMPROCSMINE )) ; do
-            SEQ1="$SEQ1 $cnt"
-            cnt=$((cnt + 1));
+            while (( cnt < NUMPROCSMINE )) ; do
+                SEQ1="$SEQ1 $cnt"
+                cnt=$((cnt + 1))
             done
         fi
-        #NUMPROCS=$((${NUMPROCS}+${NUMPROCSMINE}));
+        #NUMPROCS=$(( NUMPROCS + NUMPROCSMINE ));
         for i in $SEQ1
 ##----------------------------------------------------------
 ##  generate application.xml with hostnames from hostfile:
@@ -166,7 +166,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
 ##---- generate <actor> tags------------------------------
         do
 	    if [ -n "${HOSTFILE}" ]; then
-		j=$(( $NUMPROCS % $NUMHOSTS +1))
+		j=$(( NUMPROCS % NUMHOSTS + 1))
             fi
             hostname=$(echo $hostnames|cut -d' ' -f$j)
             if [ -z "${hostname}" ]; then
@@ -178,11 +178,11 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
             echo "  <actor host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"${instance}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
             echo "    <argument value=\"${i}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-            echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$(($i+1)))\"/>" >> ${APPLICATIONTMP}
+            echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$((i+1)))\"/>" >> ${APPLICATIONTMP}
 	    
             echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
             echo "  </actor>" >> ${APPLICATIONTMP}
-            NUMPROCS=$(( $NUMPROCS +1))
+            NUMPROCS=$(( NUMPROCS + 1))
         done
         # return IFS back to newline for "for" loop
         IFS_OLD=$IFS

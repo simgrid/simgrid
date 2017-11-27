@@ -8,17 +8,17 @@
 
 #include <simgrid_config.h>
 
-#include <string>
 #include <cstdarg>
-#include <stdlib.h>
+#include <cstdlib>
+#include <string>
 
 #if SIMGRID_HAVE_MC
 
-#include <stdexcept>
+#include <algorithm>
 #include <cstddef>
-#include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <stdexcept>
 
 #include <xbt/sysdep.h>
 
@@ -55,9 +55,9 @@ struct string_data {
  *    does not use refcouting/COW but has a small string optimization.
  */
 XBT_PUBLIC_CLASS string : private string_data {
-  static const char NUL;
-public:
+  static char NUL;
 
+public:
   // Types
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
@@ -72,7 +72,7 @@ public:
   ~string()
   {
     if (string_data::data != &NUL)
-      std::free(string_data::data);
+      delete[] string_data::data;
   }
 
   // Ctors
@@ -80,15 +80,15 @@ public:
   {
     if (size == 0) {
       string_data::len = 0;
-      string_data::data = const_cast<char*>(&NUL);
+      string_data::data = &NUL;
     } else {
       string_data::len = size;
-      string_data::data = static_cast<char*>(std::malloc(string_data::len + 1));
-      memcpy(string_data::data, s, string_data::len);
+      string_data::data = new char[string_data::len + 1];
+      std::copy_n(s, string_data::len, string_data::data);
       string_data::data[string_data::len] = '\0';
     }
   }
-  string() : string (const_cast<char*>(&NUL), 0) {}
+  string() : string(&NUL, 0) {}
   string(const char* s) : string(s, strlen(s)) {}
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
@@ -96,22 +96,22 @@ public:
     string_data::len = s.string_data::len;
     string_data::data = s.string_data::data;
     s.string_data::len = 0;
-    s.string_data::data = const_cast<char*>(&NUL);
+    s.string_data::data = &NUL;
   }
-  string(std::string const& s) : string(s.c_str(), s.size()) {}
+  explicit string(std::string const& s) : string(s.c_str(), s.size()) {}
 
   // Assign
   void assign(const char* s, size_t size)
   {
     if (string_data::data != &NUL) {
-      std::free(string_data::data);
+      delete[] string_data::data;
       string_data::data = nullptr;
       string_data::len = 0;
     }
     if (size != 0) {
       string_data::len = size;
-      string_data::data = (char*) std::malloc(string_data::len + 1);
-      std::memcpy(string_data::data, s, string_data::len);
+      string_data::data = new char[string_data::len + 1];
+      std::copy_n(s, string_data::len, string_data::data);
       string_data::data[string_data::len] = '\0';
     }
   }
@@ -137,7 +137,7 @@ public:
   size_t size() const   { return len; }
   size_t length() const { return len; }
   bool empty() const    { return len != 0; }
-  void shrink_to_fit() {}
+  void shrink_to_fit() { /* Being there, but doing nothing */}
 
   // Alement access
   char* data()              { return string_data::data; }
@@ -165,6 +165,7 @@ public:
     return data()[i];
   }
   // Conversion
+  static string_data& to_string_data(string& s) { return s; }
   operator std::string() const { return std::string(this->c_str(), this->size()); }
 
   // Iterators
@@ -180,7 +181,7 @@ public:
   void clear()
   {
     string_data::len = 0;
-    string_data::data = const_cast<char*>(&NUL);
+    string_data::data = &NUL;
   }
 
   bool equals(const char* data, std::size_t len) const
@@ -299,14 +300,13 @@ typedef std::string string;
  *
  * @ingroup XBT_str
 */
-std::string string_printf(const char *fmt, ...);
+XBT_PUBLIC(std::string) string_printf(const char* fmt, ...);
 
 /** Create a C++ string from a C-style format
  *
  * @ingroup XBT_str
 */
-std::string string_vprintf(const char *fmt, va_list ap);
-
+XBT_PUBLIC(std::string) string_vprintf(const char* fmt, va_list ap);
 }
 }
 

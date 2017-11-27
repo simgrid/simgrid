@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,12 +13,12 @@
 #include "xbt/sysdep.h"
 
 #include "src/internal_config.h"
-#include "src/smpi/include/private.h"
+#include "src/smpi/include/private.hpp"
 
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_mmu.h"
 #include "src/mc/PageStore.hpp"
+#include "src/mc/mc_mmu.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_snapshot.hpp"
 
 extern "C" {
 
@@ -123,8 +123,8 @@ int MC_snapshot_region_memcmp(
   bool stack_alloc = size < 64;
   const bool region1_need_buffer = region1==nullptr || region1->storage_type()==simgrid::mc::StorageType::Flat;
   const bool region2_need_buffer = region2==nullptr || region2->storage_type()==simgrid::mc::StorageType::Flat;
-  void* buffer1a = region1_need_buffer ? nullptr : stack_alloc ? alloca(size) : malloc(size);
-  void* buffer2a = region2_need_buffer ? nullptr : stack_alloc ? alloca(size) : malloc(size);
+  void* buffer1a                 = region1_need_buffer ? nullptr : stack_alloc ? alloca(size) : ::operator new(size);
+  void* buffer2a                 = region2_need_buffer ? nullptr : stack_alloc ? alloca(size) : ::operator new(size);
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
   const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
   int res;
@@ -133,8 +133,8 @@ int MC_snapshot_region_memcmp(
   else
     res = memcmp(buffer1, buffer2, size);
   if (not stack_alloc) {
-    free(buffer1a);
-    free(buffer2a);
+    ::operator delete(buffer1a);
+    ::operator delete(buffer2a);
   }
   return res;
 }
@@ -155,6 +155,8 @@ int MC_snapshot_memcmp(
   mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2, process_index);
   return MC_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
 }
+
+} // extern "C"
 
 namespace simgrid {
 namespace mc {
@@ -192,18 +194,16 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 }
 }
 
-}
-
 #ifdef SIMGRID_TEST
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstring>
 
 #include <sys/mman.h>
 
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_mmu.h"
+#include "src/mc/mc_mmu.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_snapshot.hpp"
 
 XBT_TEST_SUITE("mc_snapshot", "Snapshots");
 

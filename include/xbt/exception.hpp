@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2016. The SimGrid Team.All rights reserved. */
+/* Copyright (c) 2005-2017. The SimGrid Team.All rights reserved. */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -72,16 +72,10 @@ public:
     procname_(xbt_procname()),
     pid_(xbt_getpid())
   {}
-  WithContextException(Backtrace bt) :
-    backtrace_(std::move(bt)),
-    procname_(xbt_procname()),
-    pid_(xbt_getpid())
+  explicit WithContextException(Backtrace bt) : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid())
   {}
-  WithContextException(ThrowPoint throwpoint, Backtrace bt) :
-    backtrace_(std::move(bt)),
-    procname_(xbt_procname()),
-    pid_(xbt_getpid()),
-    throwpoint_(throwpoint)
+  explicit WithContextException(ThrowPoint throwpoint, Backtrace bt)
+      : backtrace_(std::move(bt)), procname_(xbt_procname()), pid_(xbt_getpid()), throwpoint_(throwpoint)
   {}
   virtual ~WithContextException();
   Backtrace const& backtrace() const
@@ -105,8 +99,7 @@ class WithContext : public E, public WithContextException
 public:
   static_assert(not std::is_base_of<WithContextException, E>::value, "Trying to appli WithContext twice");
 
-  WithContext(E exception) :
-    E(std::move(exception)) {}
+  explicit WithContext(E exception) : E(std::move(exception)) {}
   WithContext(E exception, ThrowPoint throwpoint, Backtrace backtrace) :
     E(std::move(exception)),
     WithContextException(throwpoint, std::move(backtrace)) {}
@@ -116,7 +109,7 @@ public:
   WithContext(E exception, WithContextException context) :
     E(std::move(exception)),
     WithContextException(std::move(context)) {}
-  ~WithContext() override {}
+  ~WithContext() override = default;
 };
 
 /** Throw a C++ exception with some context

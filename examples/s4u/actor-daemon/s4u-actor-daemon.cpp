@@ -1,0 +1,42 @@
+/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include "simgrid/s4u.hpp"
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_daemon, "Messages specific for this s4u example");
+
+/* The worker process, working for a while before leaving */
+static void worker()
+{
+  XBT_INFO("Let's do some work (for 10 sec on Boivin).");
+  simgrid::s4u::this_actor::execute(980.95e6);
+
+  XBT_INFO("I'm done now. I leave even if it makes the daemon die.");
+}
+
+/* The daemon, displaying a message every 3 seconds until all other processes stop */
+static void my_daemon()
+{
+  simgrid::s4u::Actor::self()->daemonize();
+
+  while (1) {
+    XBT_INFO("Hello from the infinite loop");
+    simgrid::s4u::this_actor::sleep_for(3.0);
+  }
+
+  XBT_INFO("I will never reach that point: daemons are killed when regular processes are done");
+}
+
+int main(int argc, char* argv[])
+{
+  simgrid::s4u::Engine e(&argc, argv);
+
+  e.loadPlatform(argv[1]);
+  simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Boivin"), worker);
+  simgrid::s4u::Actor::createActor("daemon", simgrid::s4u::Host::by_name("Tremblay"), my_daemon);
+
+  e.run();
+  return 0;
+}

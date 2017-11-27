@@ -8,7 +8,7 @@
 #include "simgrid/simdag.h"
 #include "src/kernel/routing/NetPoint.hpp"
 #include <algorithm>
-#include <stdio.h>
+#include <cstdio>
 
 int main(int argc, char **argv)
 {
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
   std::sort(netcardList.begin(), netcardList.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
-              return a->name() < b->name();
+              return a->getName() < b->getName();
             });
 
   int it;
@@ -41,8 +41,8 @@ int main(int argc, char **argv)
   xbt_dynar_free(&hosts);
 
   std::printf("NetCards count: %zu\n", netcardList.size());
-  for (auto nc : netcardList)
-    std::printf("   - Seen: \"%s\". Type: %s\n", nc->cname(),
+  for (auto const& nc : netcardList)
+    std::printf("   - Seen: \"%s\". Type: %s\n", nc->getCname(),
                 nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
 
   return 0;

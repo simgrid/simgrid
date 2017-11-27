@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,12 @@
 /******************************************************************************/
 
 /* Run :
-  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send-is-detached-thresh:0 --cfg=contexts/stack_size:128 --cfg=model-check/visited:100000 --cfg=model-check/max_depth:100000 ./bugged1_liveness */
+  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" \
+    ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml \
+    --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none \
+    --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send-is-detached-thresh:0 \
+    --cfg=contexts/stack-size:128 --cfg=model-check/visited:100000 --cfg=model-check/max-depth:100000 ./bugged1_liveness
+*/
 
 #include <stdio.h>
 #include <mpi.h>
@@ -21,7 +26,8 @@
 #define REQUEST_TAG 1
 #define RELEASE_TAG 2
 
-int r, cs;
+int r;
+int cs;
 
 int main(int argc, char **argv){
   int size;

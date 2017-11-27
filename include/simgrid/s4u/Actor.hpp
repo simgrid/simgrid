@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -109,17 +109,17 @@ namespace s4u {
  * <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
  * <platform version="4">
  *
- *   <!-- Start a process called 'master' on the host called 'Tremblay' -->
- *   <process host="Tremblay" function="master">
+ *   <!-- Start an actor called 'master' on the host called 'Tremblay' -->
+ *   <actor host="Tremblay" function="master">
  *      <!-- Here come the parameter that you want to feed to this instance of master -->
  *      <argument value="20"/>        <!-- argv[1] -->
  *      <argument value="50000000"/>  <!-- argv[2] -->
  *      <argument value="1000000"/>   <!-- argv[3] -->
  *      <argument value="5"/>         <!-- argv[4] -->
- *   </process>
+ *   </actor>
  *
- *   <!-- Start a process called 'worker' on the host called 'Jupiter' -->
- *   <process host="Jupiter" function="worker"/> <!-- Don't provide any parameter ->>
+ *   <!-- Start an actor called 'worker' on the host called 'Jupiter' -->
+ *   <actor host="Jupiter" function="worker"/> <!-- Don't provide any parameter ->>
  *
  * </platform>
  * @endcode
@@ -176,7 +176,7 @@ public:
   /** Create an actor using code
    *
    *  Using this constructor, move-only type can be used. The consequence is
-   *  that we cannot copy the value and restart the process in its initial
+   *  that we cannot copy the value and restart the actor in its initial
    *  state. In order to use auto-restart, an explicit `function` must be passed
    *  instead.
    */
@@ -194,13 +194,13 @@ public:
   static ActorPtr createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
 
   // ***** Methods *****
-  /** This actor will be automatically terminated when the last non-daemon process finishes **/
+  /** This actor will be automatically terminated when the last non-daemon actor finishes **/
   void daemonize();
 
-  /** Retrieves the name of that actor as a C string */
-  const char* getCname();
   /** Retrieves the name of that actor as a C++ string */
-  simgrid::xbt::string getName();
+  const simgrid::xbt::string& getName() const;
+  /** Retrieves the name of that actor as a C string */
+  const char* getCname() const;
   /** Retrieves the host on which that actor is running */
   s4u::Host* getHost();
   /** Retrieves the PID of that actor
@@ -215,17 +215,17 @@ public:
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
   void suspend();
 
-  /** Resume a suspended process by resuming the task on which it was waiting for the completion. */
+  /** Resume a suspended actor by resuming the task on which it was waiting for the completion. */
   void resume();
 
-  /** Returns true if the process is suspended. */
+  /** Returns true if the actor is suspended. */
   int isSuspended();
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
 
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
-   * executed when your actor is killed. You should use them to free the data used by your process.
+   * executed when your actor is killed. You should use them to free the data used by your actor.
    */
   void onExit(int_f_pvoid_pvoid_t fun, void* data);
 
@@ -269,6 +269,7 @@ public:
   /** Retrieve the property value (or nullptr if not set) */
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
+  Actor* restart();
 };
 
 /** @ingroup s4u_api
@@ -285,79 +286,81 @@ template <class Rep, class Period> inline void sleep_for(std::chrono::duration<R
 {
   auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
   this_actor::sleep_for(seconds.count());
-  }
-  template<class Duration>
-  inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
-  {
-    auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
-    this_actor::sleep_until(timeout_native.time_since_epoch().count());
-  }
+}
 
-  XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will drop sleep() completely.") inline void sleep(double duration)
-  {
-    return sleep_for(duration);
-  }
+template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
+{
+  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
+  this_actor::sleep_until(timeout_native.time_since_epoch().count());
+}
 
-  /** Block the actor, computing the given amount of flops */
-  XBT_PUBLIC(void) execute(double flop);
+XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into an error.") inline void sleep(
+    double duration)
+{
+  return sleep_for(duration);
+}
 
-  /** Block the actor until it gets a message from the given mailbox.
-   *
-   * See \ref Comm for the full communication API (including non blocking communications).
-   */
-  XBT_PUBLIC(void*)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will remove Actor::recv() completely.") recv(MailboxPtr chan);
-  XBT_PUBLIC(void*)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will remove Actor::recv() completely.")
-      recv(MailboxPtr chan, double timeout);
-  XBT_PUBLIC(CommPtr)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will remove Actor::irecv() completely.")
-      irecv(MailboxPtr chan, void** data);
+/** Block the actor, computing the given amount of flops */
+XBT_PUBLIC(void) execute(double flop);
+/** Block the actor, computing the given amount of flops at the given priority.
+ *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
+XBT_PUBLIC(void) execute(double flop, double priority);
 
-  /** Block the actor until it delivers a message of the given simulated size to the given mailbox
-   *
-   * See \ref Comm for the full communication API (including non blocking communications).
-  */
-  XBT_PUBLIC(void)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will remove Actor::send() completely.")
-      send(MailboxPtr chan, void* payload, double simulatedSize); // 3.17
-  XBT_PUBLIC(void)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will remove Actor::send() completely.")
-      send(MailboxPtr chan, void* payload, double simulatedSize, double timeout); // 3.17
+/** Block the actor until it gets a message from the given mailbox.
+ *
+ * See \ref Comm for the full communication API (including non blocking communications).
+ */
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void*)
+    recv(MailboxPtr chan);
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void*)
+    recv(MailboxPtr chan, double timeout);
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC(CommPtr)
+    irecv(MailboxPtr chan, void** data);
 
-  XBT_PUBLIC(CommPtr)
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will remove Actor::isend() completely.")
-      isend(MailboxPtr chan, void* payload, double simulatedSize);
+/** Block the actor until it delivers a message of the given simulated size to the given mailbox
+ *
+ * See \ref Comm for the full communication API (including non blocking communications).
+*/
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void)
+    send(MailboxPtr chan, void* payload, double simulatedSize);
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void)
+    send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
 
-  /** @brief Returns the actor ID of the current actor (same as pid). */
-  XBT_PUBLIC(aid_t) getPid();
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC(CommPtr)
+    isend(MailboxPtr chan, void* payload, double simulatedSize);
 
-  /** @brief Returns the ancestor's actor ID of the current actor (same as ppid). */
-  XBT_PUBLIC(aid_t) getPpid();
+/** @brief Returns the actor ID of the current actor). */
+XBT_PUBLIC(aid_t) getPid();
 
-  /** @brief Returns the name of the current actor. */
-  XBT_PUBLIC(std::string) getName();
+/** @brief Returns the ancestor's actor ID of the current actor. */
+XBT_PUBLIC(aid_t) getPpid();
 
-  /** @brief Returns the name of the host on which the process is running. */
-  XBT_PUBLIC(Host*) getHost();
+/** @brief Returns the name of the current actor. */
+XBT_PUBLIC(std::string) getName();
 
-  /** @brief Suspend the actor. */
-  XBT_PUBLIC(void) suspend();
+/** @brief Returns the name of the current actor as a C string. */
+XBT_PUBLIC(const char*) getCname();
 
-  /** @brief Resume the actor. */
-  XBT_PUBLIC(void) resume();
+/** @brief Returns the name of the host on which the actor is running. */
+XBT_PUBLIC(Host*) getHost();
 
-  XBT_PUBLIC(bool) isSuspended();
+/** @brief Suspend the actor. */
+XBT_PUBLIC(void) suspend();
 
-  /** @brief kill the actor. */
-  XBT_PUBLIC(void) kill();
+/** @brief Resume the actor. */
+XBT_PUBLIC(void) resume();
 
-  /** @brief Add a function to the list of "on_exit" functions. */
-  XBT_PUBLIC(void) onExit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_PUBLIC(bool) isSuspended();
 
-  /** @brief Migrate the actor to a new host. */
-  XBT_PUBLIC(void) migrate(Host* new_host);
-};
+/** @brief kill the actor. */
+XBT_PUBLIC(void) kill();
+
+/** @brief Add a function to the list of "on_exit" functions. */
+XBT_PUBLIC(void) onExit(int_f_pvoid_pvoid_t fun, void* data);
+
+/** @brief Migrate the actor to a new host. */
+XBT_PUBLIC(void) migrate(Host* new_host);
+}
 
 /** @} */
 

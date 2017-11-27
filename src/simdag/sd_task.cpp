@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2016. The SimGrid Team.
+/* Copyright (c) 2006-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,6 +7,7 @@
 #include "simdag_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_interface.hpp"
+#include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd, "Logging specific to SimDag (task)");
 
@@ -336,9 +337,9 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
 {
   xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
-  for (auto it : *task->predecessors)
+  for (auto const& it : *task->predecessors)
     xbt_dynar_push(parents, &it);
-  for (auto it : *task->inputs)
+  for (auto const& it : *task->inputs)
     xbt_dynar_push(parents, &it);
 
   return parents;
@@ -353,9 +354,9 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
 {
   xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
-  for (auto it : *task->successors)
+  for (auto const& it : *task->successors)
     xbt_dynar_push(children, &it);
-  for (auto it : *task->outputs)
+  for (auto const& it : *task->outputs)
     xbt_dynar_push(children, &it);
 
   return children;
@@ -380,7 +381,7 @@ int SD_task_get_workstation_count(SD_task_t task)
  */
 sg_host_t *SD_task_get_workstation_list(SD_task_t task)
 {
-  return &(*(task->allocation))[0];
+  return task->allocation->data();
 }
 
 /**
@@ -480,18 +481,18 @@ void SD_task_dump(SD_task_t task)
   XBT_INFO("  - Dependencies to satisfy: %zu", task->inputs->size()+ task->predecessors->size());
   if ((task->inputs->size()+ task->predecessors->size()) > 0) {
     XBT_INFO("  - pre-dependencies:");
-    for (auto it : *task->predecessors)
+    for (auto const& it : *task->predecessors)
       XBT_INFO("    %s", it->name);
 
-    for (auto it: *task->inputs)
+    for (auto const& it : *task->inputs)
       XBT_INFO("    %s", it->name);
   }
   if ((task->outputs->size() + task->successors->size()) > 0) {
     XBT_INFO("  - post-dependencies:");
 
-    for (auto it : *task->successors)
+    for (auto const& it : *task->successors)
       XBT_INFO("    %s", it->name);
-    for (auto it : *task->outputs)
+    for (auto const& it : *task->outputs)
       XBT_INFO("    %s", it->name);
   }
 }
@@ -514,9 +515,9 @@ void SD_task_dotty(SD_task_t task, void *out)
     xbt_die("Unknown task type!");
   }
   fprintf(fout, "];\n");
-  for (auto it : *task->predecessors)
+  for (auto const& it : *task->predecessors)
     fprintf(fout, " T%p -> T%p;\n", it, task);
-  for (auto it : *task->inputs)
+  for (auto const& it : *task->inputs)
     fprintf(fout, " T%p -> T%p;\n", it, task);
 }
 
@@ -798,20 +799,16 @@ void SD_task_run(SD_task_t task)
 
   /* Copy the elements of the task into the action */
   int host_nb = task->allocation->size();
-  sg_host_t *hosts = xbt_new(sg_host_t, host_nb);
-  int i =0;
-  for (auto host: *task->allocation){
-    hosts[i] = host;
-    i++;
-  }
+  sg_host_t* hosts = new sg_host_t[host_nb];
+  std::copy_n(task->allocation->begin(), host_nb, hosts);
 
-  double *flops_amount = xbt_new0(double, host_nb);
-  double *bytes_amount = xbt_new0(double, host_nb * host_nb);
+  double* flops_amount = new double[host_nb]();
+  double* bytes_amount = new double[host_nb * host_nb]();
 
   if(task->flops_amount)
-    memcpy(flops_amount, task->flops_amount, sizeof(double) * host_nb);
+    std::copy_n(task->flops_amount, host_nb, flops_amount);
   if(task->bytes_amount)
-    memcpy(bytes_amount, task->bytes_amount, sizeof(double) * host_nb * host_nb);
+    std::copy_n(task->bytes_amount, host_nb * host_nb, bytes_amount);
 
   task->surf_action = surf_host_model->executeParallelTask(host_nb, hosts, flops_amount, bytes_amount, task->rate);
 
@@ -885,7 +882,8 @@ void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb){
       XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
       task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
       if ((src_end > dst_start) && (dst_end > src_start)) { /* There is something to send */
-        task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j] = MIN(src_end, dst_end)- MAX(src_start, dst_start);
+        task->bytes_amount[i * (src_nb + dst_nb) + src_nb + j] =
+            std::min(src_end, dst_end) - std::max(src_start, dst_start);
         XBT_VERB("==> %.2f", task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
       }
     }
@@ -926,7 +924,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   SD_task_do_schedule(task);
 
   /* Iterate over all inputs and outputs to say where I am located (and start them if runnable) */
-  for (auto input : *task->inputs){
+  for (auto const& input : *task->inputs) {
     int src_nb = input->allocation->size();
     int dst_nb = count;
     if (input->allocation->empty())
@@ -945,7 +943,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
     }
   }
 
-  for (auto output : *task->outputs){
+  for (auto const& output : *task->outputs) {
     int src_nb = count;
     int dst_nb = output->allocation->size();
     if (output->allocation->empty())
@@ -973,12 +971,12 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 void SD_task_schedulel(SD_task_t task, int count, ...)
 {
   va_list ap;
-  sg_host_t *list = xbt_new(sg_host_t, count);
+  sg_host_t* list = new sg_host_t[count];
   va_start(ap, count);
   for (int i=0; i<count; i++)
     list[i] = va_arg(ap, sg_host_t);
 
   va_end(ap);
   SD_task_schedulev(task, count, list);
-  xbt_free(list);
+  delete[] list;
 }

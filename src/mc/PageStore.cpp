@@ -1,11 +1,11 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstring> // memcpy, memcmp
 #include <unistd.h>
-#include <string.h> // memcpy, memcmp
 
 #include <sys/mman.h>
 #ifdef __FreeBSD__
@@ -20,10 +20,9 @@
 
 #include "src/mc/PageStore.hpp"
 
-#include "src/mc/mc_mmu.h"
+#include "src/mc/mc_mmu.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
-                                "Logging specific to mc_page_snapshot");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc, "Logging specific to mc_page_snapshot");
 
 namespace simgrid {
 namespace mc {
@@ -50,18 +49,14 @@ static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 
 // ***** snapshot_page_manager
 
-PageStore::PageStore(size_t size) :
-  memory_(nullptr), capacity_(0), top_index_(0)
+PageStore::PageStore(size_t size) : memory_(nullptr), capacity_(size), top_index_(0)
 {
-  // Using mmap in order to be able to expand the region
-  // by relocating it somewhere else in the virtual memory
-  // space:
+  // Using mmap in order to be able to expand the region by relocating it somewhere else in the virtual memory space:
   void* memory = ::mmap(nullptr, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
   if (memory == MAP_FAILED)
     xbt_die("Could not mmap initial snapshot pages.");
 
   this->top_index_ = 0;
-  this->capacity_ = size;
   this->memory_ = memory;
   this->page_counts_.resize(size);
 }
@@ -143,7 +138,6 @@ std::size_t PageStore::alloc_page()
     size_t res = this->free_pages_[this->free_pages_.size() - 1];
     this->free_pages_.pop_back();
     return res;
-
   }
 }
 
@@ -160,29 +154,26 @@ std::size_t PageStore::store_page(void* page)
 {
   xbt_assert(top_index_ <= this->capacity_, "top_index is not consistent");
 
-  // First, we check if a page with the same content is already in the page
-  // store:
-  //  1. compute the hash of the page;
-  //  2. find pages with the same hash using `hash_index_`;
-  //  3. find a page with the same content.
+  // First, we check if a page with the same content is already in the page store:
+  //  1. compute the hash of the page
+  //  2. find pages with the same hash using `hash_index_`
+  //  3. find a page with the same content
   hash_type hash = mc_hash_page(page);
 
   // Try to find a duplicate in set of pages with the same hash:
   page_set_type& page_set = this->hash_index_[hash];
-  for (size_t pageno : page_set) {
+  for (size_t const& pageno : page_set) {
     const void* snapshot_page = this->get_page(pageno);
     if (memcmp(page, snapshot_page, xbt_pagesize) == 0) {
 
-      // If a page with the same content is already in the page store it is
-      // reused and its reference count is incremented.
+      // If a page with the same content is already in the page store it's reused and its refcount is incremented.
       page_counts_[pageno]++;
       return pageno;
 
     }
   }
 
-  // Otherwise, a new page is allocated in the page store and the content
-  // of the page is `memcpy()`-ed to this new page.
+  // Otherwise, a new page is allocated in the page store and the content of the page is `memcpy()`-ed to this new page.
   std::size_t pageno = alloc_page();
   xbt_assert(this->page_counts_[pageno]==0, "Allocated page is already used");
   void* snapshot_page = (void*) this->get_page(pageno);
@@ -227,8 +218,7 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
 
   xbt_test_add("Init");
   std::size_t pagesize = (size_t) getpagesize();
-  std::unique_ptr<PageStore> store
-    = std::unique_ptr<PageStore>(new simgrid::mc::PageStore(500));
+  std::unique_ptr<PageStore> store = std::unique_ptr<PageStore>(new simgrid::mc::PageStore(500));
   void* data = getpage();
   xbt_test_assert(store->size()==0, "Bad size");
 

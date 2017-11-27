@@ -14,9 +14,9 @@
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "xbt/log.h"
@@ -87,9 +87,8 @@ Host* Host::by_name_or_null(const char* name)
 }
 Host* Host::by_name_or_null(std::string name)
 {
-  if (host_list.find(name) == host_list.end())
-    return nullptr;
-  return host_list.at(name);
+  auto host = host_list.find(name);
+  return host == host_list.end() ? nullptr : host->second;
 }
 
 Host *Host::current(){
@@ -154,32 +153,30 @@ void Host::actorList(std::vector<ActorPtr>* whereto)
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
  */
-void Host::routeTo(Host* dest, std::vector<Link*>* links, double* latency)
+void Host::routeTo(Host* dest, std::vector<Link*>& links, double* latency)
 {
   std::vector<surf::LinkImpl*> linkImpls;
-  this->routeTo(dest, &linkImpls, latency);
-  for (surf::LinkImpl* l : linkImpls)
-    links->push_back(&l->piface_);
+  this->routeTo(dest, linkImpls, latency);
+  for (surf::LinkImpl* const& l : linkImpls)
+    links.push_back(&l->piface_);
 }
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
-void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>* links, double* latency)
+void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>& links, double* latency)
 {
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
     XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", getCname(), dest->getCname(),
                (latency == nullptr ? -1 : *latency));
-    for (auto link : *links)
-      XBT_CDEBUG(surf_route, "Link %s", link->cname());
+    for (auto const& link : links)
+      XBT_CDEBUG(surf_route, "Link %s", link->getCname());
   }
 }
 
 /** Get the properties assigned to a host */
-xbt_dict_t Host::getProperties()
+std::map<std::string, std::string>* Host::getProperties()
 {
-  return simgrid::simix::kernelImmediate([this] {
-    return this->pimpl_->getProperties();
-  });
+  return simgrid::simix::kernelImmediate([this] { return this->pimpl_->getProperties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -188,7 +185,7 @@ const char* Host::getProperty(const char* key)
   return this->pimpl_->getProperty(key);
 }
 
-void Host::setProperty(const char* key, const char* value)
+void Host::setProperty(std::string key, std::string value)
 {
   simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
@@ -251,11 +248,20 @@ std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()
 {
   if (mounts == nullptr) {
     mounts = new std::unordered_map<std::string, Storage*>();
-    for (auto m : this->pimpl_->storage_) {
+    for (auto const& m : this->pimpl_->storage_) {
       mounts->insert({m.first, &m.second->piface_});
     }
   }
   return *mounts;
+}
+
+void Host::execute(double flops)
+{
+  Host* host_list[1]   = {this};
+  double flops_list[1] = {flops};
+  smx_activity_t s     = simcall_execution_parallel_start(nullptr /*name*/, 1, host_list, flops_list,
+                                                      nullptr /*comm_sizes */, -1.0, -1 /*timeout*/);
+  simcall_execution_wait(s);
 }
 
 } // namespace simgrid

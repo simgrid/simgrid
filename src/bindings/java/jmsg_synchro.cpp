@@ -7,14 +7,14 @@
 
 #include <xbt/ex.hpp>
 
-#include "jmsg.h"
+#include "jmsg.hpp"
 #include "jmsg_synchro.h"
-#include "jxbt_utilities.h"
+#include "jxbt_utilities.hpp"
 #include "xbt/synchro.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 static jfieldID jsynchro_field_Mutex_bind;
 
@@ -33,9 +33,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject 
   xbt_mutex_t mutex = (xbt_mutex_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Mutex_bind);
   try {
     xbt_mutex_acquire(mutex);
-  }
-  catch(xbt_ex& e) {
-    // Nothing to do
+  } catch (xbt_ex const& e) {
+    XBT_DEBUG("Caught an exception: %s", e.what());
   }
 }
 
@@ -95,5 +94,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * en
   sem = (msg_sem_t)(uintptr_t)env->GetLongField(obj, jsynchro_field_Semaphore_bind);
   MSG_sem_destroy(sem);
 }
-
-SG_END_DECL()
+}

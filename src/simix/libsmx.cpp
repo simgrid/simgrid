@@ -5,8 +5,7 @@
 /*                                                                            */
 /* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,12 +18,12 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "simgrid/simix.hpp"
 #include "simgrid/simix/blocking_simcall.hpp"
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 #include "xbt/ex.h"
 #include "xbt/functional.hpp"
 
@@ -35,7 +34,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 void simcall_call(smx_actor_t actor)
 {
   if (actor != simix_global->maestro_process) {
-    XBT_DEBUG("Yield actor '%s' on simcall %s (%d)", actor->cname(), SIMIX_simcall_name(actor->simcall.call),
+    XBT_DEBUG("Yield actor '%s' on simcall %s (%d)", actor->getCname(), SIMIX_simcall_name(actor->simcall.call),
               (int)actor->simcall.call);
     SIMIX_process_yield(actor);
   } else {
@@ -84,8 +83,7 @@ smx_activity_t simcall_execution_start(const char *name,
  * \return A new SIMIX execution synchronization
  */
 smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
-                                                double* flops_amount, double* bytes_amount, double amount, double rate,
-                                                double timeout)
+                                                double* flops_amount, double* bytes_amount, double rate, double timeout)
 {
   /* checking for infinite values */
   for (int i = 0 ; i < host_nb ; ++i) {
@@ -98,11 +96,9 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
     }
   }
 
-  xbt_assert(std::isfinite(amount), "amount is not finite!");
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  return simcall_BODY_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate,
-                                               timeout);
+  return simcall_BODY_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
 }
 
 /**
@@ -114,7 +110,14 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
  */
 void simcall_execution_cancel(smx_activity_t execution)
 {
-  simcall_BODY_execution_cancel(execution);
+  simgrid::simix::kernelImmediate([execution] {
+    XBT_DEBUG("Cancel synchro %p", execution.get());
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
+
+    if (exec->surf_exec)
+      exec->surf_exec->cancel();
+  });
 }
 
 /**
@@ -129,8 +132,13 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(priority), "priority is not finite!");
+  simgrid::simix::kernelImmediate([execution, priority] {
 
-  simcall_BODY_execution_set_priority(execution, priority);
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
+    if (exec->surf_exec)
+      exec->surf_exec->setSharingWeight(priority);
+  });
 }
 
 /**
@@ -143,7 +151,12 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
  */
 void simcall_execution_set_bound(smx_activity_t execution, double bound)
 {
-  simcall_BODY_execution_set_bound(execution, bound);
+  simgrid::simix::kernelImmediate([execution, bound] {
+    simgrid::kernel::activity::ExecImplPtr exec =
+        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
+    if (exec->surf_exec)
+      static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
+  });
 }
 
 /**
@@ -155,19 +168,6 @@ void simcall_execution_set_bound(smx_activity_t execution, double bound)
 e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 {
   return (e_smx_state_t) simcall_BODY_execution_wait(execution);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Kills a SIMIX process.
- *
- * This function simply kills a  process.
- *
- * \param process poor victim
- */
-void simcall_process_kill(smx_actor_t process)
-{
-  simcall_BODY_process_kill(process);
 }
 
 /**
@@ -241,23 +241,13 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 
   if (kill_time <= SIMIX_get_clock() || simix_global->kill_process_function == nullptr)
     return;
-  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->cname(), process->host->getCname());
-  process->kill_timer = SIMIX_timer_set(kill_time, [=] {
+  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->getCname(), process->host->getCname());
+  process->kill_timer = SIMIX_timer_set(kill_time, [process] {
     simix_global->kill_process_function(process);
     process->kill_timer=nullptr;
   });
 }
 
-/**
- * \ingroup simix_process_management
- * \brief Return the properties
- *
- * This function returns the properties associated with this process
- */
-xbt_dict_t simcall_process_get_properties(smx_actor_t process)
-{
-  return process->properties;
-}
 /**
  * \ingroup simix_process_management
  * \brief Add an on_exit function
@@ -267,25 +257,7 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_
 {
   simcall_BODY_process_on_exit(process, fun, data);
 }
-/**
- * \ingroup simix_process_management
- * \brief Sets the process to be auto-restarted or not by SIMIX when its host comes back up.
- * Will restart the process when the host comes back up if auto_restart is set to 1.
- */
 
-XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_actor_t process, int auto_restart)
-{
-  simcall_BODY_process_auto_restart_set(process, auto_restart);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Restarts the process, killing it and starting it again from scratch.
- */
-XBT_PUBLIC(smx_actor_t) simcall_process_restart(smx_actor_t process)
-{
-  return (smx_actor_t) simcall_BODY_process_restart(process);
-}
 /**
  * \ingroup simix_process_management
  * \brief Creates a new sleep SIMIX synchro.
@@ -472,7 +444,7 @@ smx_mutex_t simcall_mutex_init()
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
     xbt_abort();
   }
-  return simcall_BODY_mutex_init();
+  return simgrid::simix::kernelImmediate([] { return new simgrid::simix::MutexImpl(); });
 }
 
 /**
@@ -533,9 +505,7 @@ void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
  * \ingroup simix_synchro_management
  *
  */
-void simcall_cond_wait_timeout(smx_cond_t cond,
-                                 smx_mutex_t mutex,
-                                 double timeout)
+void simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
@@ -548,33 +518,6 @@ void simcall_cond_wait_timeout(smx_cond_t cond,
 void simcall_cond_broadcast(smx_cond_t cond)
 {
   simcall_BODY_cond_broadcast(cond);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-smx_sem_t simcall_sem_init(int capacity)
-{
-  return simcall_BODY_sem_init(capacity);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-void simcall_sem_release(smx_sem_t sem)
-{
-  simcall_BODY_sem_release(sem);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-int simcall_sem_would_block(smx_sem_t sem)
-{
-  return simcall_BODY_sem_would_block(sem);
 }
 
 /**
@@ -596,31 +539,14 @@ void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
   simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
-/**
- * \ingroup simix_synchro_management
- *
- */
-int simcall_sem_get_capacity(smx_sem_t sem)
+sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size)
 {
-  return simcall_BODY_sem_get_capacity(sem);
+  return simcall_BODY_storage_read(st, size);
 }
 
-/**
- * \ingroup simix_file_management
- *
- */
-sg_size_t simcall_file_read(surf_file_t fd, sg_size_t size)
+sg_size_t simcall_storage_write(surf_storage_t st, sg_size_t size)
 {
-  return simcall_BODY_file_read(fd, size);
-}
-
-/**
- * \ingroup simix_file_management
- *
- */
-sg_size_t simcall_file_write(surf_file_t fd, sg_size_t size)
-{
-  return simcall_BODY_file_write(fd, size);
+  return simcall_BODY_storage_write(st, size);
 }
 
 void simcall_run_kernel(std::function<void()> const& code)

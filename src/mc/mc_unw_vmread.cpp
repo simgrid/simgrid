@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 
 /** \file
@@ -28,7 +28,7 @@
  */
 struct _UPT_info {
   pid_t pid;
-  // Other things;
+  // Other things...
 };
 
 /** Get the PID of a `libunwind-ptrace` context
@@ -36,7 +36,7 @@ struct _UPT_info {
 static inline
 pid_t _UPT_getpid(void* arg)
 {
-  struct _UPT_info* info = (_UPT_info*) arg;
+  _UPT_info* info = static_cast<_UPT_info*>(arg);
   return info->pid;
 }
 

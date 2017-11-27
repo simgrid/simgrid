@@ -11,7 +11,7 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 #include <sstream>
 
@@ -62,7 +62,7 @@ void Actor::join() {
 }
 
 void Actor::setAutoRestart(bool autorestart) {
-  simcall_process_auto_restart_set(pimpl_,autorestart);
+  simgrid::simix::kernelImmediate([this, autorestart]() { pimpl_->auto_restart = autorestart; });
 }
 
 void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
@@ -85,14 +85,14 @@ void Actor::daemonize()
   simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
 }
 
-const char* Actor::getCname()
+const simgrid::xbt::string& Actor::getName() const
 {
-  return this->pimpl_->name.c_str();
+  return this->pimpl_->getName();
 }
 
-simgrid::xbt::string Actor::getName()
+const char* Actor::getCname() const
 {
-  return this->pimpl_->name;
+  return this->pimpl_->getCname();
 }
 
 aid_t Actor::getPid()
@@ -134,7 +134,7 @@ void Actor::kill(aid_t pid)
 {
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if(process != nullptr) {
-    simcall_process_kill(process);
+    simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
   } else {
     std::ostringstream oss;
     oss << "kill: ("<< pid <<") - No such process" << std::endl;
@@ -147,7 +147,9 @@ smx_actor_t Actor::getImpl() {
 }
 
 void Actor::kill() {
-  simcall_process_kill(pimpl_);
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate(
+      [this, process] { SIMIX_process_kill(pimpl_, (pimpl_ == simix_global->maestro_process) ? pimpl_ : process); });
 }
 
 // ***** Static functions *****
@@ -174,14 +176,17 @@ void Actor::killAll(int resetPid)
 /** Retrieve the property value (or nullptr if not set) */
 const char* Actor::getProperty(const char* key)
 {
-  return (char*)xbt_dict_get_or_null(simcall_process_get_properties(pimpl_), key);
+  return simgrid::simix::kernelImmediate([this, key] { return pimpl_->getProperty(key); });
 }
 
 void Actor::setProperty(const char* key, const char* value)
 {
-  simgrid::simix::kernelImmediate([this, key, value] {
-    xbt_dict_set(simcall_process_get_properties(pimpl_), key, (char*)value, (void_f_pvoid_t) nullptr);
-  });
+  simgrid::simix::kernelImmediate([this, key, value] { pimpl_->setProperty(key, value); });
+}
+
+Actor* Actor::restart()
+{
+  return simgrid::simix::kernelImmediate([this]() { return pimpl_->restart(); });
 }
 
 // ***** this_actor *****
@@ -222,31 +227,38 @@ void execute(double flops)
   simcall_execution_wait(s);
 }
 
-void* recv(MailboxPtr chan) {
+void execute(double flops,double priority)
+{
+  smx_activity_t s = simcall_execution_start(nullptr,flops,1 / priority/*priority*/,0./*bound*/);
+  simcall_execution_wait(s);
+}
+
+void* recv(MailboxPtr chan) // deprecated
+{
   return chan->get();
 }
 
-void* recv(MailboxPtr chan, double timeout)
+void* recv(MailboxPtr chan, double timeout) // deprecated
 {
   return chan->get(timeout);
 }
 
-void send(MailboxPtr chan, void* payload, double simulatedSize)
+void send(MailboxPtr chan, void* payload, double simulatedSize) // deprecated
 {
   chan->put(payload, simulatedSize);
 }
 
-void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout)
+void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout) // deprecated
 {
   chan->put(payload, simulatedSize, timeout);
 }
 
-CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize)
+CommPtr isend(MailboxPtr chan, void* payload, double simulatedSize) // deprecated
 {
   return chan->put_async(payload, simulatedSize);
 }
 
-CommPtr irecv(MailboxPtr chan, void** data)
+CommPtr irecv(MailboxPtr chan, void** data) // deprecated
 {
   return chan->get_async(data);
 }
@@ -263,7 +275,12 @@ aid_t getPpid()
 
 std::string getName()
 {
-  return SIMIX_process_self()->name;
+  return SIMIX_process_self()->getName();
+}
+
+const char* getCname()
+{
+  return SIMIX_process_self()->getCname();
 }
 
 Host* getHost()
@@ -290,7 +307,8 @@ bool isSuspended()
 
 void kill()
 {
-  simcall_process_kill(SIMIX_process_self());
+  smx_actor_t process = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
 }
 
 void onExit(int_f_pvoid_pvoid_t fun, void* data)

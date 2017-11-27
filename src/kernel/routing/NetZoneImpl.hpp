@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,13 +53,13 @@ XBT_PUBLIC_CLASS NetZoneImpl : public s4u::NetZone
   friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:
-  explicit NetZoneImpl(NetZone * father, const char* name);
+  explicit NetZoneImpl(NetZone * father, std::string name);
   virtual ~NetZoneImpl();
 
 public:
   /** @brief Make an host within that NetZone */
   simgrid::s4u::Host* createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
-                                 std::unordered_map<std::string, std::string>* props);
+                                 std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
   void addBypassRoute(sg_platf_route_cbarg_t e_route) override;
 
@@ -76,7 +76,7 @@ protected:
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
   bool getBypassRoute(routing::NetPoint * src, routing::NetPoint * dst,
-                      /* OUT */ std::vector<surf::LinkImpl*> * links, double* latency);
+                      /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency);
 
 public:
   /* @brief get the route between two nodes in the full platform
@@ -87,9 +87,10 @@ public:
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
   static void getGlobalRoute(routing::NetPoint * src, routing::NetPoint * dst,
-                             /* OUT */ std::vector<surf::LinkImpl*> * links, double* latency);
+                             /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency);
 
-  virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) = 0;
+  virtual void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t> * nodes,
+                        std::map<std::string, xbt_edge_t> * edges) = 0;
   enum class RoutingMode {
     unset = 0, /**< Undefined type                                   */
     base,      /**< Base case: use simple link lists for routing     */

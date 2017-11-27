@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -39,15 +39,15 @@ int main(int argc, char *argv[])
   int* sb = (int *) xbt_malloc(recv_counts[rank] * sizeof(int));
   int* rb = (int *) xbt_malloc(recv_sb_size * sizeof(int));
 
-  for (i = 0; i < recv_counts[rank]; ++i)
-    sb[i] = recv_disps[rank] + i;
-  for (i = 0; i < recv_sb_size; ++i)
-    rb[i] = -1;
-
   printf("[%d] sndbuf=[", rank);
-  for (i = 0; i < recv_counts[rank]; i++)
+  for (i = 0; i < recv_counts[rank]; i++){
+    sb[i] = recv_disps[rank] + i;
     printf("%d ", sb[i]);
+  }
   printf("]\n");
+
+  for (i = 0; i < recv_sb_size; i++)
+    rb[i] = -1;
 
   status = MPI_Allgatherv(sb, recv_counts[rank], MPI_INT, rb, recv_counts, recv_disps, MPI_INT, MPI_COMM_WORLD);
 
@@ -56,11 +56,9 @@ int main(int argc, char *argv[])
     printf("%d ", rb[i]);
   printf("]\n");
 
-  if (rank == 0) {
-    if (status != MPI_SUCCESS) {
-      printf("allgatherv returned %d\n", status);
-      fflush(stdout);
-    }
+  if (rank == 0 && status != MPI_SUCCESS) {
+    printf("allgatherv returned %d\n", status);
+    fflush(stdout);
   }
   xbt_free(sb);
   xbt_free(rb);

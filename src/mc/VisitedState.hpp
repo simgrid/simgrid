@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,13 +11,14 @@
 
 #include <memory>
 
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_state.h"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_state.hpp"
 
 namespace simgrid {
 namespace mc {
 
-struct XBT_PRIVATE VisitedState {
+class XBT_PRIVATE VisitedState {
+public:
   std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
   std::size_t heap_bytes_used = 0;
   int actors_count            = 0;
@@ -25,7 +26,7 @@ struct XBT_PRIVATE VisitedState {
   int original_num = 0; // num field of the VisitedState to which I was declared equal to (used for dot_output)
 
   explicit VisitedState(unsigned long state_number);
-  ~VisitedState();
+  ~VisitedState() = default;
 };
 
 class XBT_PRIVATE VisitedStates {

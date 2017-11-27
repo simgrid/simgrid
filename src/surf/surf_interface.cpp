@@ -7,12 +7,18 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.h"
-#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <fstream>
+#include <set>
+#include <string>
 #include <vector>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (kernel)");
@@ -26,8 +32,9 @@ std::vector<surf_model_t> * all_existing_models = nullptr; /* to destroy models 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
-xbt_dict_t watched_hosts_lib;
-extern std::map<std::string, storage_type_t> storage_types;
+/**  set of hosts for which one want to be notified if they ever restart. */
+std::set<std::string> watched_hosts;
+extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
 namespace simgrid {
 namespace surf {
@@ -36,8 +43,8 @@ simgrid::xbt::signal<void()> surfExitCallbacks;
 }
 }
 
-#include <simgrid/plugins/energy.h> // FIXME: this plugin should not be linked to the core
-#include <simgrid/plugins/load.h>   // FIXME: this plugin should not be linked to the core
+#include <simgrid/plugins/energy.h> // FIXME: this plug-in should not be linked to the core
+#include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
 
 s_surf_model_description_t surf_plugin_description[] = {
     {"Energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
@@ -112,10 +119,6 @@ s_surf_model_description_t surf_storage_model_description[] = {
   {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
-#if HAVE_THREAD_CONTEXTS
-static xbt_parmap_t surf_parmap = nullptr; /* parallel map on models */
-#endif
-
 double NOW = 0;
 
 double surf_get_clock()
@@ -129,16 +132,16 @@ double surf_get_clock()
 # define FILE_DELIM "/"         /* FIXME: move to better location */
 #endif
 
-std::ifstream* surf_ifsopen(const char* name)
+std::ifstream* surf_ifsopen(std::string name)
 {
   std::ifstream* fs = new std::ifstream();
-  xbt_assert(name);
-  if (__surf_is_absolute_file_path(name)) { /* don't mess with absolute file names */
-    fs->open(name, std::ifstream::in);
+  xbt_assert(not name.empty());
+  if (__surf_is_absolute_file_path(name.c_str())) { /* don't mess with absolute file names */
+    fs->open(name.c_str(), std::ifstream::in);
   }
 
   /* search relative files in the path */
-  for (auto path_elm : surf_path) {
+  for (auto const& path_elm : surf_path) {
     std::string buff = path_elm + FILE_DELIM + name;
     fs->open(buff.c_str(), std::ifstream::in);
 
@@ -150,6 +153,7 @@ std::ifstream* surf_ifsopen(const char* name)
 
   return fs;
 }
+
 FILE *surf_fopen(const char *name, const char *mode)
 {
   FILE *file = nullptr;
@@ -160,56 +164,14 @@ FILE *surf_fopen(const char *name, const char *mode)
     return fopen(name, mode);
 
   /* search relative files in the path */
-  for (auto path_elm : surf_path) {
-    char* buff = bprintf("%s" FILE_DELIM "%s", path_elm.c_str(), name);
-    file = fopen(buff, mode);
-    free(buff);
+  for (auto const& path_elm : surf_path) {
+    std::string buff = path_elm + FILE_DELIM + name;
+    file             = fopen(buff.c_str(), mode);
 
     if (file)
       return file;
   }
   return nullptr;
-}
-
-#ifdef _WIN32
-#include <windows.h>
-#define MAX_DRIVE 26
-static const char *disk_drives_letter_table[MAX_DRIVE] = {
-  "A:\\","B:\\","C:\\","D:\\","E:\\","F:\\","G:\\","H:\\","I:\\","J:\\","K:\\","L:\\","M:\\",
-  "N:\\","O:\\","P:\\","Q:\\","R:\\","S:\\","T:\\","U:\\","V:\\","W:\\","X:\\","Y:\\","Z:\\"
-};
-#endif
-
-/*
- * Returns the initial path. On Windows the initial path is
- * the current directory for the current process in the other
- * case the function returns "./" that represents the current
- * directory on Unix/Linux platforms.
- */
-
-const char *__surf_get_initial_path()
-{
-
-#ifdef _WIN32
-  unsigned i;
-  char current_directory[MAX_PATH + 1] = { 0 };
-  unsigned int len = GetCurrentDirectory(MAX_PATH + 1, current_directory);
-  char root[4] = { 0 };
-
-  if (not len)
-    return nullptr;
-
-  strncpy(root, current_directory, 3);
-
-  for (i = 0; i < MAX_DRIVE; i++) {
-    if (toupper(root[0]) == disk_drives_letter_table[i][0])
-      return disk_drives_letter_table[i];
-  }
-
-  return nullptr;
-#else
-  return "./";
-#endif
 }
 
 /* The __surf_is_absolute_file_path() returns 1 if
@@ -240,25 +202,20 @@ void model_help(const char *category, s_surf_model_description_t * table)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
 
-int find_model_description(s_surf_model_description_t * table,
-                           const char *name)
+int find_model_description(s_surf_model_description_t* table, std::string name)
 {
-  int i;
-  char *name_list = nullptr;
-
-  for (i = 0; table[i].name; i++)
-    if (not strcmp(name, table[i].name)) {
+  for (int i = 0; table[i].name; i++)
+    if (name == table[i].name)
       return i;
-    }
+
   if (not table[0].name)
     xbt_die("No model is valid! This is a bug.");
-  name_list = xbt_strdup(table[0].name);
-  for (i = 1; table[i].name; i++) {
-    name_list = (char *) xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 3);
-    strncat(name_list, ", ", 2);
-    strncat(name_list, table[i].name, strlen(table[i].name));
-  }
-  xbt_die("Model '%s' is invalid! Valid models are: %s.", name, name_list);
+
+  std::string name_list = std::string(table[0].name);
+  for (int i = 1; table[i].name; i++)
+    name_list = name_list + ", " + table[i].name;
+
+  xbt_die("Model '%s' is invalid! Valid models are: %s.", name.c_str(), name_list.c_str());
   return -1;
 }
 
@@ -346,16 +303,11 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Create all Libs");
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
-  watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
-
   xbt_init(argc, argv);
   if (not all_existing_models)
     all_existing_models = new std::vector<simgrid::surf::Model*>();
   if (not future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
-
-  TRACE_surf_alloc();
-  simgrid::surf::surfExitCallbacks.connect(TRACE_surf_release);
 
   sg_config_init(argc, argv);
 
@@ -369,21 +321,17 @@ void surf_exit()
 
   sg_host_exit();
   sg_link_exit();
-  xbt_dict_free(&watched_hosts_lib);
-  for (auto e : storage_types) {
-    storage_type_t stype = e.second;
-    free(stype->model);
-    free(stype->type_id);
-    free(stype->content);
-    xbt_dict_free(&(stype->properties));
+  for (auto const& e : storage_types) {
+    simgrid::surf::StorageType* stype = e.second;
+    delete stype->properties;
     delete stype->model_properties;
-    free(stype);
+    delete stype;
   }
-  for (auto s : *simgrid::surf::StorageImpl::storages)
+  for (auto const& s : *simgrid::surf::StorageImpl::storagesMap())
     delete s.second;
-  delete simgrid::surf::StorageImpl::storages;
+  delete simgrid::surf::StorageImpl::storagesMap();
 
-  for (auto model : *all_existing_models)
+  for (auto const& model : *all_existing_models)
     delete model;
   delete all_existing_models;
 
@@ -393,10 +341,6 @@ void surf_exit()
     delete future_evt_set;
     future_evt_set = nullptr;
   }
-
-#if HAVE_THREAD_CONTEXTS
-  xbt_parmap_destroy(surf_parmap);
-#endif
 
   tmgr_finalize();
   sg_platf_exit();
@@ -421,7 +365,6 @@ Model::Model()
   doneActionSet_ = new ActionList();
 
   modifiedSet_ = nullptr;
-  actionHeap_ = nullptr;
   updateMechanism_ = UM_UNDEFINED;
   selectiveUpdate_ = 0;
 }
@@ -431,6 +374,14 @@ Model::~Model(){
   delete runningActionSet_;
   delete failedActionSet_;
   delete doneActionSet_;
+}
+
+Action* Model::actionHeapPop()
+{
+  Action* action = actionHeap_.top().second;
+  actionHeap_.pop();
+  action->clearHeapHandle();
+  return action;
 }
 
 double Model::nextOccuringEvent(double now)
@@ -446,9 +397,9 @@ double Model::nextOccuringEvent(double now)
 
 double Model::nextOccuringEventLazy(double now)
 {
-  XBT_DEBUG("Before share resources, the size of modified actions set is %zd", modifiedSet_->size());
+  XBT_DEBUG("Before share resources, the size of modified actions set is %zu", modifiedSet_->size());
   lmm_solve(maxminSystem_);
-  XBT_DEBUG("After share resources, The size of modified actions set is %zd", modifiedSet_->size());
+  XBT_DEBUG("After share resources, The size of modified actions set is %zu", modifiedSet_->size());
 
   while (not modifiedSet_->empty()) {
     Action *action = &(modifiedSet_->front());
@@ -465,7 +416,7 @@ double Model::nextOccuringEventLazy(double now)
     action->updateRemainingLazy(now);
 
     double min = -1;
-    double share = lmm_variable_getvalue(action->getVariable());
+    double share = action->getVariable()->get_value();
 
     if (share > 0) {
       double time_to_completion;
@@ -498,8 +449,8 @@ double Model::nextOccuringEventLazy(double now)
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(actionHeap_) > 0) {
-    double min = xbt_heap_maxkey(actionHeap_) - now;
+  if (not actionHeapIsEmpty()) {
+    double min = actionHeapTopDate() - now;
     XBT_DEBUG("minimum with the HEAP %f", min);
     return min;
   } else {
@@ -512,22 +463,22 @@ double Model::nextOccuringEventFull(double /*now*/) {
   maxminSystem_->solve_fun(maxminSystem_);
 
   double min = -1;
-  for (auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; ++it) {
-    Action *action = &*it;
-    double value = lmm_variable_getvalue(action->getVariable());
+
+  for (Action& action : *getRunningActionSet()) {
+    double value = action.getVariable()->get_value();
     if (value > 0) {
-      if (action->getRemains() > 0)
-        value = action->getRemainsNoUpdate() / value;
+      if (action.getRemains() > 0)
+        value = action.getRemainsNoUpdate() / value;
       else
         value = 0.0;
       if (min < 0 || value < min) {
         min = value;
-        XBT_DEBUG("Updating min (value) with %p: %f", action, min);
+        XBT_DEBUG("Updating min (value) with %p: %f", &action, min);
       }
     }
-    if ((action->getMaxDuration() >= 0) && (min<0 || action->getMaxDuration() < min)) {
-      min = action->getMaxDuration();
-      XBT_DEBUG("Updating min (duration) with %p: %f", action, min);
+    if ((action.getMaxDuration() >= 0) && (min < 0 || action.getMaxDuration() < min)) {
+      min = action.getMaxDuration();
+      XBT_DEBUG("Updating min (duration) with %p: %f", &action, min);
     }
   }
   XBT_DEBUG("min value : %f", min);
@@ -565,7 +516,7 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 namespace simgrid {
 namespace surf {
 
-Resource::Resource(Model* model, const char* name, lmm_constraint_t constraint)
+Resource::Resource(Model* model, const std::string& name, lmm_constraint_t constraint)
     : name_(name), model_(model), constraint_(constraint)
 {}
 
@@ -593,7 +544,12 @@ Model* Resource::model() const
   return model_;
 }
 
-const char* Resource::cname() const
+const std::string& Resource::getName() const
+{
+  return name_;
+}
+
+const char* Resource::getCname() const
 {
   return name_.c_str();
 }
@@ -623,11 +579,6 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-/* added to manage the communication action's heap */
-void surf_action_lmm_update_index_heap(void *action, int i) {
-  static_cast<simgrid::surf::Action*>(action)->updateIndexHeap(i);
-}
-
 namespace simgrid {
 namespace surf {
 
@@ -650,11 +601,13 @@ Action::~Action() {
   xbt_free(category_);
 }
 
-void Action::finish() {
-    finishTime_ = surf_get_clock();
+void Action::finish(Action::State state)
+{
+  finishTime_ = surf_get_clock();
+  setState(state);
 }
 
-Action::State Action::getState()
+Action::State Action::getState() const
 {
   if (stateSet_ == model_->getReadyActionSet())
     return Action::State::ready;
@@ -691,36 +644,20 @@ void Action::setState(Action::State state)
     stateSet_->push_back(*this);
 }
 
-double Action::getBound()
+double Action::getBound() const
 {
-  return (variable_) ? lmm_variable_getbound(variable_) : 0;
+  return variable_ ? variable_->get_bound() : 0;
 }
 
 void Action::setBound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
   if (variable_)
-    lmm_update_variable_bound(getModel()->getMaxminSystem(), variable_, bound);
+    getModel()->getMaxminSystem()->update_variable_bound(variable_, bound);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
     heapRemove(getModel()->getActionHeap());
   XBT_OUT();
-}
-
-double Action::getStartTime()
-{
-  return start_;
-}
-
-double Action::getFinishTime()
-{
-  /* keep the function behavior, some models (cpu_ti) change the finish time before the action end */
-  return remains_ <= 0 ? finishTime_ : -1;
-}
-
-void Action::setData(void* data)
-{
-  data_ = data;
 }
 
 void Action::setCategory(const char *category)
@@ -739,13 +676,11 @@ void Action::setMaxDuration(double duration)
     heapRemove(getModel()->getActionHeap());
 }
 
-void Action::gapRemove() {}
-
 void Action::setSharingWeight(double weight)
 {
   XBT_IN("(%p,%g)", this, weight);
   sharingWeight_ = weight;
-  lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), weight);
+  getModel()->getMaxminSystem()->update_variable_weight(getVariable(), weight);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY)
     heapRemove(getModel()->getActionHeap());
@@ -767,7 +702,7 @@ int Action::unref(){
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
-      lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+      getModel()->getMaxminSystem()->variable_free(getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
       /* remove from heap */
       heapRemove(getModel()->getActionHeap());
@@ -784,7 +719,7 @@ void Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
+    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
     if (getModel()->getUpdateMechanism() == UM_LAZY){
       heapRemove(getModel()->getActionHeap());
       if (getModel()->getUpdateMechanism() == UM_LAZY && stateSet_ == getModel()->getRunningActionSet() &&
@@ -802,7 +737,7 @@ void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), sharingWeight_);
+    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), getPriority());
     suspended_ = 0;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
       heapRemove(getModel()->getActionHeap());
@@ -821,32 +756,29 @@ bool Action::isSuspended()
  * LATENCY = this is a heap entry to warn us when the latency is payed
  * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
  */
-void Action::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapInsert(heap_type& heap, double key, enum heap_action_type hat)
 {
   hat_ = hat;
-  xbt_heap_push(heap, this, key);
+  heapHandle_ = heap.emplace(std::make_pair(key, this));
 }
 
-void Action::heapRemove(xbt_heap_t heap)
+void Action::heapRemove(heap_type& heap)
 {
   hat_ = NOTSET;
-  if (indexHeap_ >= 0) {
-    xbt_heap_remove(heap, indexHeap_);
+  if (heapHandle_) {
+    heap.erase(*heapHandle_);
+    clearHeapHandle();
   }
 }
 
-void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
+void Action::heapUpdate(heap_type& heap, double key, enum heap_action_type hat)
 {
   hat_ = hat;
-  if (indexHeap_ >= 0) {
-    xbt_heap_update(heap, indexHeap_, key);
-  }else{
-    xbt_heap_push(heap, this, key);
+  if (heapHandle_) {
+    heap.update(*heapHandle_, std::make_pair(key, this));
+  } else {
+    heapHandle_ = heap.emplace(std::make_pair(key, this));
   }
-}
-
-void Action::updateIndexHeap(int i) {
-  indexHeap_ = i;
 }
 
 double Action::getRemains()
@@ -857,59 +789,6 @@ double Action::getRemains()
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
   return remains_;
-}
-
-double Action::getRemainsNoUpdate()
-{
-  return remains_;
-}
-
-//FIXME split code in the right places
-void Action::updateRemainingLazy(double now)
-{
-  double delta = 0.0;
-
-  if(getModel() == surf_network_model)
-  {
-    if (suspended_ != 0)
-      return;
-  }
-  else
-  {
-    xbt_assert(stateSet_ == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
-    xbt_assert(sharingWeight_ > 0, "You're updating an action that seems suspended.");
-  }
-
-  delta = now - lastUpdate_;
-
-  if (remains_ > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, remains_, lastUpdate_);
-    double_update(&remains_, lastValue_ * delta, sg_surf_precision*sg_maxmin_precision);
-
-    if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
-      simgrid::surf::Resource *cpu = static_cast<simgrid::surf::Resource*>(
-        lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->cname(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
-    }
-    XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
-  }
-
-  if(getModel() == surf_network_model)
-  {
-    if (maxDuration_ != NO_MAX_DURATION)
-      double_update(&maxDuration_, delta, sg_surf_precision);
-
-    //FIXME: duplicated code
-    if (((remains_ <= 0) && (lmm_get_variable_weight(getVariable()) > 0)) ||
-        ((maxDuration_ > NO_MAX_DURATION) && (maxDuration_ <= 0))) {
-      finish();
-      setState(Action::State::done);
-      heapRemove(getModel()->getActionHeap());
-    }
-  }
-
-  lastUpdate_ = now;
-  lastValue_ = lmm_variable_getvalue(getVariable());
 }
 
 }

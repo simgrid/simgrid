@@ -3,16 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
-#include "src/mc/mc_replay.h"
-#include "src/msg/msg_private.h"
-#include "src/simix/smx_private.h"
-#include "private.h"
-#include "private.hpp"
 #include "smpi_process.hpp"
-#include "smpi_group.hpp"
+#include "mc/mc.h"
+#include "private.hpp"
 #include "smpi_comm.hpp"
-
+#include "smpi_group.hpp"
+#include "src/mc/mc_replay.hpp"
+#include "src/msg/msg_private.hpp"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
@@ -24,13 +22,13 @@ extern int* index_to_process_data;
 
 static char *get_mailbox_name(char *str, int index)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int> (sizeof(int) * 2), index);
+  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
   return str;
 }
 
 static char *get_mailbox_name_small(char *str, int index)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int> (sizeof(int) * 2), index);
+  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
   return str;
 }
 
@@ -70,12 +68,12 @@ Process::Process(int index, msg_bar_t finalization_barrier)
 void Process::set_data(int index, int* argc, char*** argv)
 {
     char* instance_id = (*argv)[1];
-    comm_world_         = smpi_deployment_comm_world(instance_id);
-    msg_bar_t bar = smpi_deployment_finalization_barrier(instance_id);
-    if (bar!=nullptr) // don't overwrite the default one
+    comm_world_       = smpi_deployment_comm_world(instance_id);
+    msg_bar_t bar     = smpi_deployment_finalization_barrier(instance_id);
+    if (bar != nullptr) // don't overwrite the current one if the instance has none
       finalization_barrier_ = bar;
     instance_id_ = instance_id;
-    index_ = index;
+    index_       = index;
 
     static_cast<simgrid::msg::ActorExt*>(SIMIX_process_self()->userdata)->data = this;
 
@@ -158,16 +156,24 @@ smx_actor_t Process::process(){
   return process_;
 }
 
-
 /**
- * \brief Returns a structure that stores the location (filename + linenumber)
- *        of the last calls to MPI_* functions.
+ * \brief Returns a structure that stores the location (filename + linenumber) of the last calls to MPI_* functions.
  *
  * \see smpi_trace_set_call_location
  */
 smpi_trace_call_location_t* Process::call_location()
 {
   return &trace_call_loc_;
+}
+
+void Process::set_privatized_region(smpi_privatization_region_t region)
+{
+  privatized_region_ = region;
+}
+
+smpi_privatization_region_t Process::privatized_region()
+{
+  return privatized_region_;
 }
 
 int Process::index()
@@ -274,24 +280,31 @@ void Process::init(int *argc, char ***argv){
     smx_actor_t proc = SIMIX_process_self();
     proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
-    int index = proc->pid - 1;
+    int index = proc->pid - 1; // The maestro process has always ID 0 but we don't need that process here
 
     if(index_to_process_data == nullptr){
       index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
     }
 
     char* instance_id = (*argv)[1];
-    int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
-    smpi_deployment_register_process(instance_id, rank, index);
+    try {
+      int rank = std::stoi(std::string((*argv)[2]));
+      smpi_deployment_register_process(instance_id, rank, index);
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid rank: ") + (*argv)[2]);
+    }
 
+    // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
+    // this up here so that I can set the privatized region before the switch.
+    Process* process = smpi_process_remote(index);
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using segment index of the process  */
       index = proc->segment_index;
+      process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
       SMPI_switch_data_segment(index);
     }
 
-    Process* process = smpi_process_remote(index);
     process->set_data(index, argc, argv);
   }
   xbt_assert(smpi_process(),

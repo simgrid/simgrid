@@ -33,7 +33,7 @@ namespace s4u {
 XBT_PUBLIC_CLASS ConditionVariable
 {
 private:
-  friend s_smx_cond;
+  friend s_smx_cond_t;
   smx_cond_t cond_;
   explicit ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:
@@ -104,7 +104,10 @@ public:
   void notify_one();
   void notify_all();
 
-  XBT_ATTRIB_DEPRECATED_v319("Use notify_one(): v3.19 will remove notify() completely.") void notify() { notify_one(); }
+  XBT_ATTRIB_DEPRECATED_v319("Use notify_one(): v3.19 will change this warning into an error.") void notify()
+  {
+    notify_one();
+  }
 };
 
 using ConditionVariablePtr = ConditionVariable::Ptr;

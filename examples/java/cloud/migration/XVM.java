@@ -1,5 +1,4 @@
-/* Copyright (c) 2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,7 +8,6 @@ package cloud.migration;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.VM;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.HostFailureException;
 
 public class XVM extends VM {
@@ -30,7 +28,6 @@ public class XVM extends VM {
   public void setLoad(int load){  
     if (load >0) {
       this.setBound(this.getSpeed()*load/100);
-      //    this.getDaemon().setLoad(load);
       daemon.resume();
     } else{
       daemon.suspend();
@@ -38,13 +35,10 @@ public class XVM extends VM {
     currentLoad = load ;
   }
 
-  public void start(){
+  @Override
+  public void start() {
     super.start();
-    try {
-      daemon.start();
-    } catch (HostNotFoundException e) {
-      e.printStackTrace();
-    }
+    daemon.start();
     this.setLoad(0);
   }
 
@@ -53,10 +47,11 @@ public class XVM extends VM {
   }
 
   public int getLoad(){
-    System.out.println("Remaining comp:" + this.daemon.getRemaining());
+    Msg.info("Remaining comp:" + this.daemon.getRemaining());
     return this.currentLoad;
   }
 
+  @Override
   public void migrate(Host host) throws HostFailureException {
     Msg.info("Start migration of VM " + this.getName() + " to " + host.getName());
     Msg.info("    currentLoad:" + this.currentLoad + "/ramSize:" + this.ramsize + "/dpIntensity:" + this.dpIntensity 

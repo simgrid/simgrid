@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,7 +38,8 @@ static int runner(int argc, char *argv[])
     MSG_parallel_task_create("parallel task", hosts_count, hosts, computation_amounts, communication_amounts, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
-  /* The arrays communication_amounts and computation_amounts are not to be freed manually */
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("We can do the same with a timeout of one second enabled.");
   computation_amounts   = xbt_new0(double, hosts_count);
@@ -53,6 +54,8 @@ static int runner(int argc, char *argv[])
   msg_error_t errcode = MSG_parallel_task_execute_with_timeout(ptask, 1 /* timeout (in seconds)*/);
   xbt_assert(errcode == MSG_TIMEOUT, "Woops, this did not timeout as expected... Please report that bug.");
   MSG_task_destroy(ptask);
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
   computation_amounts = xbt_new0(double, hosts_count);
@@ -61,6 +64,7 @@ static int runner(int argc, char *argv[])
   ptask = MSG_parallel_task_create("parallel exec", hosts_count, hosts, computation_amounts, NULL/* no comm */, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
   computation_amounts = xbt_new0(double, hosts_count);
@@ -68,8 +72,10 @@ static int runner(int argc, char *argv[])
   ptask = MSG_parallel_task_create("parallel sync", hosts_count, hosts, computation_amounts, communication_amounts, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
+  xbt_free(communication_amounts);
+  xbt_free(computation_amounts);
 
-   XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", MSG_host_get_name(hosts[1]));
+  XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", MSG_host_get_name(hosts[1]));
   computation_amounts = xbt_new0(double, 1);
   computation_amounts[0] = 1e9; // 1 Gflop
   msg_host_t *remote = xbt_new(msg_host_t,1);
@@ -77,10 +83,11 @@ static int runner(int argc, char *argv[])
   ptask = MSG_parallel_task_create("remote exec", 1, remote, computation_amounts, NULL/* no comm */, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
-  free(remote);
+  xbt_free(remote);
+  xbt_free(computation_amounts);
 
   XBT_INFO("Goodbye now!");
-  free(hosts);
+  xbt_free(hosts);
   return 0;
 }
 

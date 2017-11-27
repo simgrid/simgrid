@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2006-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -32,7 +32,6 @@ public class Connection {
   // Add a new value to the peer speed average
   public void addSpeedValue(double speed) {
     peerSpeed = peerSpeed * 0.55 + speed * 0.45;
-    // peerSpeed = (peerSpeed * messagesCount + speed) / (++messagesCount);    
   }
 
   @Override

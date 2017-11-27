@@ -17,7 +17,7 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
-#include "surf/surf.h" // routing_platf. FIXME:KILLME. SOON
+#include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 
@@ -32,11 +32,11 @@ Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see
 
 Engine::Engine(int *argc, char **argv) {
   xbt_assert(s4u::Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
-  s4u::Engine::instance_ = this;
-  pimpl                  = new kernel::EngineImpl();
-
-  TRACE_global_init(argc, argv);
+  TRACE_global_init();
   SIMIX_global_init(argc, argv);
+
+  pimpl                  = new kernel::EngineImpl();
+  s4u::Engine::instance_ = this;
 }
 
 Engine::~Engine()
@@ -48,12 +48,14 @@ Engine::~Engine()
 Engine* Engine::getInstance()
 {
   if (s4u::Engine::instance_ == nullptr)
-    new Engine(0,nullptr);
-  return s4u::Engine::instance_;
+    return new Engine(0, nullptr);
+  else
+    return s4u::Engine::instance_;
 }
 
 void Engine::shutdown() {
   delete s4u::Engine::instance_;
+  s4u::Engine::instance_ = nullptr;
 }
 
 double Engine::getClock()
@@ -88,8 +90,18 @@ size_t Engine::getHostCount()
 /** @brief Fills the passed list with all hosts found in the platform */
 void Engine::getHostList(std::vector<Host*>* list)
 {
-  for (auto kv : host_list)
+  for (auto const& kv : host_list)
     list->push_back(kv.second);
+}
+/** @brief Returns the amount of links in the platform */
+size_t Engine::getLinkCount()
+{
+  return simgrid::surf::LinkImpl::linksCount();
+}
+/** @brief Fills the passed list with all hosts found in the platform */
+void Engine::getLinkList(std::vector<Link*>* list)
+{
+  simgrid::surf::LinkImpl::linksList(list);
 }
 
 void Engine::run() {
@@ -110,7 +122,7 @@ static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* n
   if (not strcmp(current->getCname(), name))
     return current;
 
-  for (auto elem : *(current->getChildren())) {
+  for (auto const& elem : *(current->getChildren())) {
     simgrid::s4u::NetZone* tmp = netzoneByNameRecursive(elem, name);
     if (tmp != nullptr) {
       return tmp;
@@ -126,30 +138,30 @@ NetZone* Engine::getNetzoneByNameOrNull(const char* name)
 }
 
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
-simgrid::kernel::routing::NetPoint* Engine::getNetpointByNameOrNull(const char* name)
+simgrid::kernel::routing::NetPoint* Engine::getNetpointByNameOrNull(std::string name)
 {
-  if (pimpl->netpoints_.find(name) == pimpl->netpoints_.end())
-    return nullptr;
-  return pimpl->netpoints_.at(name);
+  auto netp = pimpl->netpoints_.find(name);
+  return netp == pimpl->netpoints_.end() ? nullptr : netp->second;
 }
+
 /** @brief Fill the provided vector with all existing netpoints */
 void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* list)
 {
-  for (auto kv : pimpl->netpoints_)
+  for (auto const& kv : pimpl->netpoints_)
     list->push_back(kv.second);
 }
 /** @brief Register a new netpoint to the system */
 void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
 {
-//  simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
-  pimpl->netpoints_[point->name()] = point;
-//  });
+  // simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
+  pimpl->netpoints_[point->getName()] = point;
+  // });
 }
 /** @brief Unregister a given netpoint */
 void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
 {
   simgrid::simix::kernelImmediate([this, point] {
-    pimpl->netpoints_.erase(point->name());
+    pimpl->netpoints_.erase(point->getName());
     delete point;
   });
 }

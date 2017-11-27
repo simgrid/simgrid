@@ -1,12 +1,12 @@
 /* A crash few tests for the maxmin library                                 */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf/maxmin.h"
+#include "surf/maxmin.hpp"
 #include "simgrid/msg.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
@@ -14,9 +14,11 @@
 
 #define MYRANDMAX 1000
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+
+using namespace simgrid::surf;
 
 double date;
 int64_t seedx = 0;
@@ -43,10 +45,10 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   lmm_variable_t var[nb_var];
   int used[nb_cnst];
 
-  lmm_system_t Sys = lmm_system_new(1);
+  lmm_system_t Sys = new s_lmm_system_t(true);
 
   for (int i = 0; i < nb_cnst; i++) {
-    cnst[i] = lmm_constraint_new(Sys, NULL, float_random(10.0));
+    cnst[i] = Sys->constraint_new(NULL, float_random(10.0));
     int l;
     if(rate_no_limit>float_random(1.0))
       //Look at what happens when there is no concurrency limit
@@ -55,14 +57,14 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
       //Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
       l=(1<<pw_base_limit)+(1<<int_random(pw_max_limit));
 
-    lmm_constraint_concurrency_limit_set(cnst[i],l );
+    cnst[i]->set_concurrency_limit(l);
   }
 
   for (int i = 0; i < nb_var; i++) {
-    var[i] = lmm_variable_new(Sys, NULL, 1.0, -1.0, nb_elem);
+    var[i] = Sys->variable_new(NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     int concurrency_share = 1 + int_random(max_share);
-    lmm_variable_concurrency_share_set(var[i],concurrency_share);
+    var[i]->set_concurrency_share(concurrency_share);
 
     for (int j = 0; j < nb_cnst; j++)
       used[j] = 0;
@@ -72,8 +74,8 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
         j--;
         continue;
       }
-      lmm_expand(Sys, cnst[k], var[i], float_random(1.5));
-      lmm_expand_add(Sys, cnst[k], var[i], float_random(1.5));
+      Sys->expand(cnst[k], var[i], float_random(1.5));
+      Sys->expand_add(cnst[k], var[i], float_random(1.5));
       used[k]++;
     }
   }
@@ -87,25 +89,25 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     fprintf(stderr,"Max concurrency:\n");
     int l=0;
     for (int i = 0; i < nb_cnst; i++) {
-      int j=lmm_constraint_concurrency_maximum_get(cnst[i]);
-      int k=lmm_constraint_concurrency_limit_get(cnst[i]);
+      int j = cnst[i]->get_concurrency_maximum();
+      int k = cnst[i]->get_concurrency_limit();
       xbt_assert(k<0 || j<=k);
       if(j>l)
         l=j;
       fprintf(stderr,"(%i):%i/%i ",i,j,k);
-      lmm_constraint_concurrency_maximum_reset(cnst[i]);
-      xbt_assert(not lmm_constraint_concurrency_maximum_get(cnst[i]));
+      cnst[i]->reset_concurrency_maximum();
+      xbt_assert(not cnst[i]->get_concurrency_maximum());
       if(i%10==9)
         fprintf(stderr,"\n");
     }
     fprintf(stderr,"\nTotal maximum concurrency is %i\n",l);
 
-    lmm_print(Sys);
+    Sys->print();
   }
 
   for (int i = 0; i < nb_var; i++)
-    lmm_variable_free(Sys, var[i]);
-  lmm_system_free(Sys);
+    Sys->variable_free(var[i]);
+  delete Sys;
 }
 
 unsigned int TestClasses [][4]=
@@ -167,7 +169,7 @@ int main(int argc, char **argv)
   unsigned int nb_var= TestClasses[testclass][1];
   unsigned int pw_base_limit= TestClasses[testclass][2];
   unsigned int pw_max_limit= TestClasses[testclass][3];
-  unsigned int max_share=2; //1<<(pw_base_limit/2+1);
+  unsigned int max_share    = 2; // 1<<(pw_base_limit/2+1)
 
   //If you want to test concurrency, you need nb_elem >> 2^pw_base_limit:
   unsigned int nb_elem= (1<<pw_base_limit)+(1<<(8*pw_max_limit/10));
@@ -185,10 +187,10 @@ int main(int argc, char **argv)
   float mean_date= acc_date/(float)testcount;
   float stdev_date= sqrt(acc_date2/(float)testcount-mean_date*mean_date);
 
-  fprintf(stderr,
-         "%ix One shot execution time for a total of %d constraints, "
-         "%d variables with %d active constraint each, concurrency in [%i,%i] and max concurrency share %i\n",
-         testcount,nb_cnst, nb_var, nb_elem, (1<<pw_base_limit), (1<<pw_base_limit)+(1<<pw_max_limit), max_share);
+  fprintf(stderr, "%ix One shot execution time for a total of %u constraints, "
+                  "%u variables with %u active constraint each, concurrency in [%i,%i] and max concurrency share %u\n",
+          testcount, nb_cnst, nb_var, nb_elem, (1 << pw_base_limit), (1 << pw_base_limit) + (1 << pw_max_limit),
+          max_share);
   if(mode==3)
     fprintf(stderr, "Execution time: %g +- %g  microseconds \n",mean_date, stdev_date);
 

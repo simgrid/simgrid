@@ -20,9 +20,8 @@
  * Additional copyrights may follow
  */
 
-#include "../colls_private.h"
-#include "../coll_tuned_topo.h"
-
+#include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
 
 /*
  * Barrier is ment to be a synchronous operation, as some BTLs can mark
@@ -266,7 +265,7 @@ int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
     else {
         MPI_Request* requests;
 
-        requests = (MPI_Request*)malloc( size * sizeof(MPI_Request) );
+        requests = new MPI_Request[size];
         for (i = 1; i < size; ++i) {
             requests[i] = Request::irecv(NULL, 0, MPI_BYTE, MPI_ANY_SOURCE,
                                      COLL_TAG_BARRIER, comm
@@ -281,7 +280,7 @@ int Coll_barrier_ompi_basic_linear::barrier(MPI_Comm comm)
                                      );
         }
         Request::waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
-        free( requests );
+        delete[] requests;
     }
 
     /* All done */

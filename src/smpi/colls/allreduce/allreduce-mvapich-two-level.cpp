@@ -35,7 +35,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 
 #define MPIR_Allreduce_pt2pt_rd_MV2 Coll_allreduce_rdb::allreduce
 #define MPIR_Allreduce_pt2pt_rs_MV2 Coll_allreduce_mvapich2_rs::allreduce

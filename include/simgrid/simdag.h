@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010, 2012-2016. The SimGrid Team.
+/* Copyright (c) 2006-2010, 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ typedef sg_link_t SD_link_t;
     Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
 
     */
-typedef struct SD_task *SD_task_t;
+typedef struct s_SD_task_t* SD_task_t;
 
 /** @brief Task states
     @ingroup SD_task_api */
@@ -158,13 +158,6 @@ XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
-#ifdef __cplusplus
-namespace simgrid {
-namespace sd {
-XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
-}
-}
-#endif
 /** @} */
 
 /* Support some backward compatibility */
@@ -203,4 +196,13 @@ XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
 //SD_route_get_list
 //TRACE_sd_set_task_category
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace sd {
+XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
+}
+}
+#endif
+
 #endif

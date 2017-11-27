@@ -35,7 +35,6 @@
 # Last but not the least, you should declare the new simix call in
 # ./include/simgrid/simix.h (otherwise you will get a warning at compile time)
 
-void process_kill(smx_actor_t process);
 void process_killall(int reset_pid);
 void process_cleanup(smx_actor_t process) [[nohandler]];
 void process_suspend(smx_actor_t process) [[block]];
@@ -43,15 +42,10 @@ int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 
 boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> execution_start(const char* name, double flops_amount, double priority, double bound);
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate, double timeout) [[nohandler]];
-void          execution_cancel(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution) [[nohandler]];
-void          execution_set_priority(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution, double priority) [[nohandler]];
-void          execution_set_bound(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution, double bound) [[nohandler]];
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double rate, double timeout) [[nohandler]];
 int           execution_wait(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution) [[block]];
 
 void          process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data) [[nohandler]];
-void          process_auto_restart_set(smx_actor_t process, int auto_restart) [[nohandler]];
-smx_actor_t   process_restart(smx_actor_t process);
 
 boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm_iprobe(smx_mailbox_t mbox, int type, simix_match_func_t match_fun, void* data);
 void           comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
@@ -63,7 +57,6 @@ void           comm_wait(boost::intrusive_ptr<simgrid::kernel::activity::Activit
 int            comm_test(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm) [[block]];
 int            comm_testany(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>* comms, size_t count) [[block]];
 
-smx_mutex_t mutex_init();
 void        mutex_lock(smx_mutex_t mutex) [[block]];
 int         mutex_trylock(smx_mutex_t mutex);
 void        mutex_unlock(smx_mutex_t mutex);
@@ -74,15 +67,11 @@ void       cond_wait(smx_cond_t cond, smx_mutex_t mutex) [[block]];
 void       cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) [[block]];
 void       cond_broadcast(smx_cond_t cond) [[nohandler]];
 
-smx_sem_t sem_init(unsigned int capacity) [[nohandler]];
-void      sem_release(smx_sem_t sem);
-int       sem_would_block(smx_sem_t sem);
 void      sem_acquire(smx_sem_t sem) [[block]];
 void      sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
-int       sem_get_capacity(smx_sem_t sem);
 
-sg_size_t   file_read(surf_file_t fd, sg_size_t size) [[block]];
-sg_size_t   file_write(surf_file_t fd, sg_size_t size) [[block]];
+sg_size_t   storage_read(surf_storage_t st, sg_size_t size) [[block]];
+sg_size_t   storage_write(surf_storage_t st, sg_size_t size) [[block]];
 
 int        mc_random(int min, int max);
 void       set_category(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> synchro, const char* category) [[nohandler]];

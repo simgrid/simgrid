@@ -38,6 +38,7 @@ public:
     fs = new std::ifstream(filename, std::ifstream::in);
     xbt_assert(fs->is_open(), "Cannot read replay file '%s'", filename);
   }
+  ReplayReader(const ReplayReader&) = delete;
   ~ReplayReader()
   {
     delete fs;
@@ -78,9 +79,10 @@ static ReplayAction* get_action(char* name)
       } else {
         // Else, I have to store it for the relevant colleague
         std::queue<ReplayAction*>* otherqueue = nullptr;
-        if (action_queues.find(evtname) != action_queues.end())
-          otherqueue = action_queues.at(evtname);
-        else { // Damn. Create the queue of that guy
+        auto act                              = action_queues.find(evtname);
+        if (act != action_queues.end()) {
+          otherqueue = act->second;
+        } else { // Damn. Create the queue of that guy
           otherqueue = new std::queue<ReplayAction*>();
           action_queues.insert({evtname, otherqueue});
         }
@@ -103,7 +105,7 @@ static void handle_action(ReplayAction* action)
   char** c_action     = new char*[action->size() + 1];
   action_fun function = action_funs.at(action->at(1));
   int i               = 0;
-  for (auto arg : *action) {
+  for (auto const& arg : *action) {
     c_action[i] = xbt_strdup(arg.c_str());
     i++;
   }
@@ -177,7 +179,7 @@ int replay_runner(int argc, char* argv[])
  */
 void xbt_replay_action_register(const char* action_name, action_fun function)
 {
-  simgrid::xbt::action_funs.insert({std::string(action_name), function});
+  simgrid::xbt::action_funs[std::string(action_name)] = function;
 }
 
 /**

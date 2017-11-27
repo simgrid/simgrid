@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,7 +17,7 @@ namespace mc {
 
 /* For an executable object, addresses are virtual address
  * (there is no offset) i.e.
- * \f$\text{virtual address} = \{dwarf address}\f$;
+ * \f$\text{virtual address} = \{dwarf address}\f$
  *
  * For a shared object, the addreses are offset from the begining
  * of the shared object (the base address of the mapped shared

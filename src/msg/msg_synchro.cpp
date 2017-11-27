@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,7 +6,8 @@
 
 #include "xbt/ex.hpp"
 
-#include "msg_private.h"
+#include "msg_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include "xbt/synchro.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (synchro)");
@@ -18,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (sync
 
 /** @brief creates a semaphore object of the given initial capacity */
 msg_sem_t MSG_sem_init(int initial_value) {
-  return simcall_sem_init(initial_value);
+  return simgrid::simix::kernelImmediate([initial_value] { return SIMIX_sem_init(initial_value); });
 }
 
 /** @brief locks on a semaphore object */
@@ -41,11 +42,11 @@ msg_error_t MSG_sem_acquire_timeout(msg_sem_t sem, double timeout) {
 
 /** @brief releases the semaphore object */
 void MSG_sem_release(msg_sem_t sem) {
-  simcall_sem_release(sem);
+  simgrid::simix::kernelImmediate([sem] { SIMIX_sem_release(sem); });
 }
 
 int MSG_sem_get_capacity(msg_sem_t sem) {
-  return simcall_sem_get_capacity(sem);
+  return simgrid::simix::kernelImmediate([sem] { return SIMIX_sem_get_capacity(sem); });
 }
 
 void MSG_sem_destroy(msg_sem_t sem) {
@@ -58,20 +59,20 @@ void MSG_sem_destroy(msg_sem_t sem) {
  * But that's a classical semaphore issue, and SimGrid's semaphore are not different to usual ones here.
  */
 int MSG_sem_would_block(msg_sem_t sem) {
-  return simcall_sem_would_block(sem);
+  return simgrid::simix::kernelImmediate([sem] { return SIMIX_sem_would_block(sem); });
 }
 
 /*-**** barrier related functions ****-*/
-typedef struct s_msg_bar {
+struct s_msg_bar_t {
   xbt_mutex_t mutex;
   xbt_cond_t cond;
   unsigned int arrived_processes;
   unsigned int expected_processes;
-} s_msg_bar_t;
+};
 
 /** @brief Initializes a barrier, with count elements */
 msg_bar_t MSG_barrier_init(unsigned int count) {
-  msg_bar_t bar           = xbt_new0(s_msg_bar, 1);
+  msg_bar_t bar           = new s_msg_bar_t;
   bar->expected_processes = count;
   bar->arrived_processes  = 0;
   bar->mutex              = xbt_mutex_init();
@@ -83,14 +84,14 @@ msg_bar_t MSG_barrier_init(unsigned int count) {
 void MSG_barrier_destroy(msg_bar_t bar) {
   xbt_mutex_destroy(bar->mutex);
   xbt_cond_destroy(bar->cond);
-  xbt_free(bar);
+  delete bar;
 }
 
 /** @brief Performs a barrier already initialized */
 int MSG_barrier_wait(msg_bar_t bar) {
   xbt_mutex_acquire(bar->mutex);
   bar->arrived_processes++;
-  XBT_DEBUG("waiting %p %d/%d", bar, bar->arrived_processes, bar->expected_processes);
+  XBT_DEBUG("waiting %p %u/%u", bar, bar->arrived_processes, bar->expected_processes);
   if (bar->arrived_processes == bar->expected_processes) {
     xbt_cond_broadcast(bar->cond);
     xbt_mutex_release(bar->mutex);

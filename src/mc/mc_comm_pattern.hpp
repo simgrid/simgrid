@@ -11,7 +11,7 @@
 #include "smpi/smpi.h"
 #include "xbt/dynar.h"
 
-#include "src/mc/mc_state.h"
+#include "src/mc/mc_state.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -23,7 +23,7 @@ struct PatternCommunicationList {
 }
 }
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /**
  *  Type: `xbt_dynar_t<mc_list_comm_pattern_t>`
@@ -35,15 +35,15 @@ extern XBT_PRIVATE xbt_dynar_t initial_communications_pattern;
  */
 extern XBT_PRIVATE xbt_dynar_t incomplete_communications_pattern;
 
-typedef enum {
+enum e_mc_call_type_t {
   MC_CALL_TYPE_NONE,
   MC_CALL_TYPE_SEND,
   MC_CALL_TYPE_RECV,
   MC_CALL_TYPE_WAIT,
   MC_CALL_TYPE_WAITANY,
-} e_mc_call_type_t;
+};
 
-typedef enum {
+enum e_mc_comm_pattern_difference_t {
   NONE_DIFF,
   TYPE_DIFF,
   RDV_DIFF,
@@ -52,7 +52,7 @@ typedef enum {
   DST_PROC_DIFF,
   DATA_SIZE_DIFF,
   DATA_DIFF,
-} e_mc_comm_pattern_difference_t;
+};
 
 static inline e_mc_call_type_t MC_get_call_type(smx_simcall_t req)
 {
@@ -77,7 +77,6 @@ XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
 XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);
 XBT_PRIVATE void MC_state_copy_index_communications_pattern(simgrid::mc::State* state);
-
-SG_END_DECL()
+}
 
 #endif

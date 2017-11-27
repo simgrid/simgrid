@@ -1,22 +1,23 @@
-/* Copyright (c) 2007-2011, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2007-2011, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "maxmin_private.hpp"
+#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-#include <float.h>
-#include <math.h>
-#include <stdlib.h>
+#include <algorithm>
+#include <cfloat>
+#include <cmath>
+#include <cstdlib>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_G(expr) XBT_DEBUG(#expr " = %g",expr);
 #define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d",expr);
 #define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p",expr);
 
-void bottleneck_solve(lmm_system_t sys)
+void simgrid::surf::bottleneck_solve(lmm_system_t sys)
 {
   void *_var;
   void *_var_next;
@@ -43,15 +44,12 @@ void bottleneck_solve(lmm_system_t sys)
   XBT_DEBUG("Variable set : %d", xbt_swag_size(var_list));
   xbt_swag_foreach(_var, var_list) {
     var = static_cast<lmm_variable_t>(_var);
-    int nb = 0;
     var->value = 0.0;
     XBT_DEBUG("Handling variable %p", var);
     xbt_swag_insert(var, &(sys->saturated_variable_set));
-    for (int i = 0; i < var->cnsts_number; i++) {
-      if (var->cnsts[i].consumption_weight == 0.0)
-        nb++;
-    }
-    if ((nb == var->cnsts_number) && (var->sharing_weight > 0.0)) {
+    auto weighted = std::find_if(begin(var->cnsts), end(var->cnsts),
+                                 [](s_lmm_element_t const& x) { return x.consumption_weight != 0.0; });
+    if (weighted == end(var->cnsts) && var->sharing_weight > 0.0) {
       XBT_DEBUG("Err, finally, there is no need to take care of variable %p", var);
       xbt_swag_remove(var, &(sys->saturated_variable_set));
       var->value = 1.0;
@@ -84,7 +82,7 @@ void bottleneck_solve(lmm_system_t sys)
   do {
     if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
       XBT_DEBUG("Fair bottleneck done");
-      lmm_print(sys);
+      sys->print();
     }
     XBT_DEBUG("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
     xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
@@ -115,13 +113,12 @@ void bottleneck_solve(lmm_system_t sys)
     xbt_swag_foreach_safe(_var, _var_next, var_list) {
       var = static_cast<lmm_variable_t>(_var);
       double min_inc = DBL_MAX;
-      for (int i = 0; i < var->cnsts_number; i++) {
-        lmm_element_t elm = &var->cnsts[i];
-        if (elm->consumption_weight > 0)
-          min_inc = MIN(min_inc, elm->constraint->usage / elm->consumption_weight);
+      for (s_lmm_element_t const& elm : var->cnsts) {
+        if (elm.consumption_weight > 0)
+          min_inc = std::min(min_inc, elm.constraint->usage / elm.consumption_weight);
       }
       if (var->bound > 0)
-        min_inc = MIN(min_inc, var->bound - var->value);
+        min_inc = std::min(min_inc, var->bound - var->value);
       var->mu = min_inc;
       XBT_DEBUG("Updating variable %p maximum increment: %g", var, var->mu);
       var->value += var->mu;
@@ -144,7 +141,7 @@ void bottleneck_solve(lmm_system_t sys)
         } else {
           XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g",
               cnst, cnst->usage, elem->variable, elem->variable->mu);
-          cnst->usage = MIN(cnst->usage, elem->consumption_weight * elem->variable->mu);
+          cnst->usage = std::min(cnst->usage, elem->consumption_weight * elem->variable->mu);
         }
       }
       if (not cnst->sharing_policy) {
@@ -172,9 +169,9 @@ void bottleneck_solve(lmm_system_t sys)
   } while (xbt_swag_size(var_list));
 
   xbt_swag_reset(cnst_list);
-  sys->modified = 0;
+  sys->modified = true;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     XBT_DEBUG("Fair bottleneck done");
-    lmm_print(sys);
+    sys->print();
   }
 }

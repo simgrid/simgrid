@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,7 +20,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FatTreeZone::FatTreeZone(NetZone* father, const char* name) : ClusterZone(father, name)
+FatTreeZone::FatTreeZone(NetZone* father, std::string name) : ClusterZone(father, name)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }
@@ -64,21 +64,21 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
   /* Let's find the source and the destination in our internal structure */
   auto searchedNode = this->computeNodes_.find(src->id());
-  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the source %s [%d] in the fat tree",
-             src->name().c_str(), src->id());
+  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the source %s [%u] in the fat tree",
+             src->getCname(), src->id());
   FatTreeNode* source = searchedNode->second;
 
   searchedNode = this->computeNodes_.find(dst->id());
-  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the destination %s [%d] in the fat tree",
-             dst->name().c_str(), dst->id());
+  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the destination %s [%u] in the fat tree",
+             dst->getCname(), dst->id());
   FatTreeNode* destination = searchedNode->second;
 
-  XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree", src->name().c_str(), src->id(),
-           dst->name().c_str(), dst->id());
+  XBT_VERB("Get route and latency from '%s' [%u] to '%s' [%u] in a fat tree", src->getCname(), src->id(),
+           dst->getCname(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
   if (source->id == destination->id && this->hasLoopback_) {
-    into->link_list->push_back(source->loopback);
+    into->link_list.push_back(source->loopback);
     if (latency)
       *latency += source->loopback->latency();
     return;
@@ -95,13 +95,13 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
 
     int k = this->upperLevelNodesNumber_[currentNode->level];
     d     = d % k;
-    into->link_list->push_back(currentNode->parents[d]->upLink);
+    into->link_list.push_back(currentNode->parents[d]->upLink);
 
     if (latency)
       *latency += currentNode->parents[d]->upLink->latency();
 
     if (this->hasLimiter_)
-      into->link_list->push_back(currentNode->limiterLink);
+      into->link_list.push_back(currentNode->limiterLink);
     currentNode = currentNode->parents[d]->upNode;
   }
 
@@ -112,12 +112,12 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cba
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->lowerLevelNodesNumber_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-        into->link_list->push_back(currentNode->children[i]->downLink);
+        into->link_list.push_back(currentNode->children[i]->downLink);
         if (latency)
           *latency += currentNode->children[i]->downLink->latency();
         currentNode = currentNode->children[i]->downNode;
         if (this->hasLimiter_)
-          into->link_list->push_back(currentNode->limiterLink);
+          into->link_list.push_back(currentNode->limiterLink);
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
       }
@@ -241,9 +241,9 @@ void FatTreeZone::generateSwitches()
     this->nodesByLevel_[0] *= this->lowerLevelNodesNumber_[i];
 
   if (this->nodesByLevel_[0] != this->nodes_.size()) {
-    surf_parse_error("The number of provided nodes does not fit with the wanted topology."
-                     " Please check your platform description (We need %d nodes, we got %zu)",
-                     this->nodesByLevel_[0], this->nodes_.size());
+    surf_parse_error(std::string("The number of provided nodes does not fit with the wanted topology.") +
+                     " Please check your platform description (We need " + std::to_string(this->nodesByLevel_[0]) +
+                     "nodes, we got " + std::to_string(this->nodes_.size()));
     return;
   }
 
@@ -264,7 +264,7 @@ void FatTreeZone::generateSwitches()
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodesByLevel_[i + 1]; j++) {
       FatTreeNode* newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
-      XBT_DEBUG("We create the switch %d(%d,%d)", newNode->id, newNode->level, newNode->position);
+      XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
       newNode->children.resize(this->lowerLevelNodesNumber_[i] * this->lowerLevelPortsNumber_[i]);
       if (i != this->levels_ - 1) {
         newNode->parents.resize(this->upperLevelNodesNumber_[i + 1] * this->lowerLevelPortsNumber_[i + 1]);
@@ -348,7 +348,7 @@ void FatTreeZone::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeN
 {
   FatTreeLink* newLink;
   newLink = new FatTreeLink(this->cluster_, child, parent);
-  XBT_DEBUG("Creating a link between the parent (%d,%d,%u) and the child (%d,%d,%u)", parent->level, parent->position,
+  XBT_DEBUG("Creating a link between the parent (%u,%u,%u) and the child (%u,%u,%u)", parent->level, parent->position,
             parentPort, child->level, child->position, childPort);
   parent->children[parentPort] = newLink;
   child->parents[childPort]    = newLink;
@@ -356,49 +356,62 @@ void FatTreeZone::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeN
   this->links_.push_back(newLink);
 }
 
-void FatTreeZone::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
 {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
+  const std::string error_msg {"Fat trees are defined by the levels number and 3 vectors, see the documentation for more information"};
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
   if (parameters.size() != 4) {
-    surf_parse_error(
-        "Fat trees are defined by the levels number and 3 vectors, see the documentation for more information");
+    surf_parse_error(error_msg);
   }
 
   // The first parts of topo_parameters should be the levels number
-  this->levels_ = xbt_str_parse_int(parameters[0].c_str(), "First parameter is not the amount of levels: %s");
+  try {
+    this->levels_ = std::stoi(parameters[0]);
+  } catch (std::invalid_argument& ia) {
+    throw std::invalid_argument(std::string("First parameter is not the amount of levels:") + parameters[0]);
+  }
 
   // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
-    this->lowerLevelNodesNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid lower level node number: %s"));
+    try {
+      this->lowerLevelNodesNumber_.push_back(std::stoi(tmp[i]));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid lower level node number:") + tmp[i]);
+    }
   }
 
   // Then, a l-sized vector standing for the parents number by level
   boost::split(tmp, parameters[2], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
-    this->upperLevelNodesNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid upper level node number: %s"));
+    try {
+      this->upperLevelNodesNumber_.push_back(std::stoi(tmp[i]));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid upper level node number:") + tmp[i]);
+    }
   }
 
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
   if (tmp.size() != this->levels_) {
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors"
-                     ", see the documentation for more information");
+    surf_parse_error(error_msg);
   }
   for (size_t i = 0; i < tmp.size(); i++) {
-    this->lowerLevelPortsNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid lower level node number: %s"));
+    try {
+      this->lowerLevelPortsNumber_.push_back(std::stoi(tmp[i]));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid lower level port number:") + tmp[i]);
+    }
   }
   this->cluster_ = cluster;
 }
@@ -425,7 +438,7 @@ void FatTreeZone::generateDotFile(const std::string& filename) const
   file.close();
 }
 
-FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position)
+FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int position)
     : id(id), level(level), position(position)
 {
   LinkCreationArgs linkTemplate;
@@ -435,7 +448,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.policy    = SURF_LINK_SHARED;
     linkTemplate.id        = "limiter_"+std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id);
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
     linkTemplate.bandwidth = cluster->loopback_bw;
@@ -443,11 +456,11 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, in
     linkTemplate.policy    = SURF_LINK_FATPIPE;
     linkTemplate.id        = "loopback_"+ std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    this->loopback = surf::LinkImpl::byName(linkTemplate.id);
   }
 }
 
-FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode, FatTreeNode* upNode)
+FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, FatTreeNode* upNode)
     : upNode(upNode), downNode(downNode)
 {
   static int uniqueId = 0;
@@ -461,11 +474,11 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode* downNode
 
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
     std::string tmpID = std::string(linkTemplate.id) + "_UP";
-    this->upLink      = surf::LinkImpl::byName(tmpID.c_str()); // check link?
+    this->upLink      = surf::LinkImpl::byName(tmpID); // check link?
     tmpID          = std::string(linkTemplate.id) + "_DOWN";
-    this->downLink    = surf::LinkImpl::byName(tmpID.c_str()); // check link ?
+    this->downLink    = surf::LinkImpl::byName(tmpID); // check link ?
   } else {
-    this->upLink   = surf::LinkImpl::byName(linkTemplate.id.c_str());
+    this->upLink   = surf::LinkImpl::byName(linkTemplate.id);
     this->downLink = this->upLink;
   }
   uniqueId++;

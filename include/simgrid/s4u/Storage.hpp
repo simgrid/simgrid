@@ -7,6 +7,7 @@
 #ifndef INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
+#include "xbt/Extendable.hpp"
 #include <map>
 #include <simgrid/s4u/forward.hpp>
 #include <simgrid/simix.h>
@@ -15,11 +16,14 @@
 #include <xbt/base.h>
 
 namespace simgrid {
+namespace xbt {
+extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Storage>;
+}
 namespace s4u {
 
 XBT_ATTRIB_PUBLIC std::map<std::string, Storage*>* allStorages();
 
-XBT_PUBLIC_CLASS Storage
+XBT_PUBLIC_CLASS Storage : public simgrid::xbt::Extendable<Storage>
 {
   friend s4u::Engine;
   friend simgrid::surf::StorageImpl;
@@ -28,22 +32,29 @@ public:
   explicit Storage(surf::StorageImpl * pimpl) : pimpl_(pimpl) {}
   virtual ~Storage() = default;
   /** Retrieve a Storage by its name. It must exist in the platform file */
-  static Storage* byName(const char* name);
-  const char* getName();
+  static Storage* byName(std::string name);
+  /** @brief Retrieves the name of that storage as a C++ string */
+  std::string const& getName() const;
+  /** @brief Retrieves the name of that storage as a C string */
+  const char* getCname() const;
   const char* getType();
   Host* getHost();
   sg_size_t getSize(); /** Retrieve the total amount of space of this storage element */
   sg_size_t getSizeFree();
   sg_size_t getSizeUsed();
+  void decrUsedSize(sg_size_t size);
+  void incrUsedSize(sg_size_t size);
 
-  xbt_dict_t getProperties();
-  const char* getProperty(const char* key);
-  void setProperty(const char* key, const char* value);
+  std::map<std::string, std::string>* getProperties();
+  const char* getProperty(std::string key);
+  void setProperty(std::string, std::string value);
   std::map<std::string, sg_size_t>* getContent();
 
   void setUserdata(void* data) { userdata_ = data; }
   void* getUserdata() { return userdata_; }
 
+  sg_size_t read(sg_size_t size);
+  sg_size_t write(sg_size_t size);
   surf::StorageImpl* getImpl() { return pimpl_; }
 
   /* The signals */

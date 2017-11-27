@@ -19,14 +19,14 @@
 
 #include "src/internal_config.h"
 
-#include "src/mc/mc_request.h"
+#include "src/mc/mc_request.hpp"
 #include "src/mc/remote/Client.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 #include "src/smpi/include/private.hpp"
 
 // We won't need those once the separation MCer/MCed is complete:
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_smx.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
@@ -61,7 +61,7 @@ Client* Client::initialize()
   socklen_t socklen = sizeof(type);
   if (getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &socklen) != 0)
     xbt_die("Could not check socket type");
-  if (type != SOCK_DGRAM)
+  if (type != SOCK_SEQPACKET)
     xbt_die("Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
@@ -83,12 +83,12 @@ Client* Client::initialize()
   return instance_.get();
 }
 
-void Client::handleDeadlockCheck(mc_message_t* msg)
+void Client::handleDeadlockCheck(s_mc_message_t* msg)
 {
   bool deadlock = false;
   if (not simix_global->process_list.empty()) {
     deadlock = true;
-    for (auto kv : simix_global->process_list)
+    for (auto const& kv : simix_global->process_list)
       if (simgrid::mc::actor_is_enabled(kv.second)) {
         deadlock = false;
         break;
@@ -96,10 +96,10 @@ void Client::handleDeadlockCheck(mc_message_t* msg)
   }
 
   // Send result:
-  mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
+  s_mc_message_int_t answer{MC_MESSAGE_DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void Client::handleContinue(mc_message_t* msg)
+void Client::handleContinue(s_mc_message_t* msg)
 {
   /* Nothing to do */
 }
@@ -121,7 +121,7 @@ void Client::handleRestore(s_mc_message_restore_t* message)
 void Client::handleActorEnabled(s_mc_message_actor_enabled_t* msg)
 {
   bool res = simgrid::mc::actor_is_enabled(SIMIX_process_from_PID(msg->aid));
-  s_mc_message_int answer{MC_MESSAGE_ACTOR_ENABLED_REPLY, res};
+  s_mc_message_int_t answer{MC_MESSAGE_ACTOR_ENABLED_REPLY, res};
   channel_.send(answer);
 }
 
@@ -136,37 +136,37 @@ void Client::handleMessages()
     if (received_size < 0)
       xbt_die("Could not receive commands from the model-checker");
 
-    mc_message_t* message = (mc_message_t*)message_buffer;
+    s_mc_message_t* message = (s_mc_message_t*)message_buffer;
     switch (message->type) {
 
       case MC_MESSAGE_DEADLOCK_CHECK:
-        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zu != %zu)",
-                   received_size, sizeof(mc_message_t));
+        xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for DEADLOCK_CHECK (%zd != %zu)",
+                   received_size, sizeof(s_mc_message_t));
         handleDeadlockCheck(message);
         break;
 
       case MC_MESSAGE_CONTINUE:
-        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_CONTINUE (%zu != %zu)",
-                   received_size, sizeof(mc_message_t));
+        xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for MESSAGE_CONTINUE (%zd != %zu)",
+                   received_size, sizeof(s_mc_message_t));
         handleContinue(message);
         return;
 
       case MC_MESSAGE_SIMCALL_HANDLE:
         xbt_assert(received_size == sizeof(s_mc_message_simcall_handle_t),
-                   "Unexpected size for SIMCALL_HANDLE (%zu != %zu)", received_size,
+                   "Unexpected size for SIMCALL_HANDLE (%zd != %zu)", received_size,
                    sizeof(s_mc_message_simcall_handle_t));
         handleSimcall((s_mc_message_simcall_handle_t*)message_buffer);
         break;
 
       case MC_MESSAGE_RESTORE:
-        xbt_assert(received_size == sizeof(mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zu != %zu)",
-                   received_size, sizeof(mc_message_t));
+        xbt_assert(received_size == sizeof(s_mc_message_t), "Unexpected size for MESSAGE_RESTORE (%zd != %zu)",
+                   received_size, sizeof(s_mc_message_t));
         handleRestore((s_mc_message_restore_t*)message_buffer);
         break;
 
       case MC_MESSAGE_ACTOR_ENABLED:
         xbt_assert(received_size == sizeof(s_mc_message_actor_enabled_t),
-                   "Unexpected size for ACTOR_ENABLED (%zu != %zu)", received_size,
+                   "Unexpected size for ACTOR_ENABLED (%zd != %zu)", received_size,
                    sizeof(s_mc_message_actor_enabled_t));
         handleActorEnabled((s_mc_message_actor_enabled_t*)message_buffer);
         break;

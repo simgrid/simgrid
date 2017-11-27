@@ -81,7 +81,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=OFF \
       -Denable_fortran=OFF ${SANITIZER_OPTIONS} $WORKSPACE
 
 make -j$NUMPROC
-ctest -D ExperimentalTest || true
+ctest --no-compress-output -D ExperimentalTest || true
 
 if [ -f Testing/TAG ] ; then
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$(head -n 1 < Testing/TAG)/Test.xml > CTestResults_${SANITIZER}.xml

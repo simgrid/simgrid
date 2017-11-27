@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,15 +15,16 @@
 
 package io.storage;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Storage;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.MsgException;
 
 public class Client extends Process {
-  public Client(Host host, int number) throws HostNotFoundException {
+  public Client(Host host, int number) {
     super(host, Integer.toString(number), null);
   }
 
@@ -32,6 +32,11 @@ public class Client extends Process {
    // Retrieve all mount points of current host
     Storage[] storages = getHost().getMountedStorage();
 
+    Arrays.sort(storages, new Comparator<Storage>() {
+        public int compare(Storage a, Storage b) {
+          return a.getName().compareTo(b.getName());
+        }
+      });
     for (int i = 0; i < storages.length; i++) {
       // For each disk mounted on host
       Msg.info("------------------------------------");

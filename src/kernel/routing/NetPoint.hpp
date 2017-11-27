@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,10 +11,7 @@
 #include <xbt/signal.hpp>
 
 #include "src/kernel/routing/NetZoneImpl.hpp"
-/*
-#include <float.h>
-#include <vector>
-*/
+
 namespace simgrid {
 namespace kernel {
 namespace routing {
@@ -34,8 +31,8 @@ public:
 
   // Our rank in the vertices_ array of the netzone that contains us.
   unsigned int id() { return id_; }
-  std::string name() { return name_; }
-  const char* cname() { return name_.c_str(); }
+  const std::string& getName() const { return name_; }
+  const char* getCname() const { return name_.c_str(); }
   /** @brief the NetZone in which this NetPoint is included */
   NetZoneImpl* netzone() { return netzone_; }
 

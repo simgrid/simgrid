@@ -7,7 +7,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
 #  add_executable(allocmemf allocmemf.f)
 #  add_executable(c2f2cf c2f2cf.f c2f2c.c)

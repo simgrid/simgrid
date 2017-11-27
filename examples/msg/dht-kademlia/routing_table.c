@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team.
+/* Copyright (c) 2012-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -51,9 +51,9 @@ void routing_table_print(routing_table_t table)
 
   for (unsigned int i = 0; i <= identifier_size; i++) {
     if (!xbt_dynar_is_empty(table->buckets[i].nodes)) {
-      XBT_INFO("Bucket number %d: ", i);
+      XBT_INFO("Bucket number %u: ", i);
       xbt_dynar_foreach(table->buckets[i].nodes, j, value) {
-        XBT_INFO("Element %d: %08x", j, value);
+        XBT_INFO("Element %u: %08x", j, value);
       }
     }
   }
@@ -90,7 +90,7 @@ bucket_t routing_table_find_bucket(routing_table_t table, unsigned int id)
 {
   unsigned int xor_number = table->id ^ id;
   unsigned int prefix = get_node_prefix(xor_number, identifier_size);
-  xbt_assert(prefix >= 0 && prefix <= identifier_size, "Tried to return a  bucket that doesn't exist.");
+  xbt_assert(prefix <= identifier_size, "Tried to return a  bucket that doesn't exist.");
   bucket_t bucket = &table->buckets[prefix];
   return bucket;
 }

@@ -9,7 +9,7 @@
 #include "xbt/base.h"
 
 #include "network_interface.hpp"
-#include "src/surf/ns3/ns3_interface.h"
+#include "src/surf/ns3/ns3_interface.hpp"
 
 namespace simgrid {
 namespace surf {
@@ -18,11 +18,11 @@ class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
   ~NetworkNS3Model();
-  LinkImpl* createLink(const char* name, double bandwidth, double latency,
+  LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double nextOccuringEvent(double now) override;
-  bool nextOccuringEventIsIdempotent() {return false;}
+  bool nextOccuringEventIsIdempotent() override { return false; }
   void updateActionsState(double now, double delta) override;
 };
 
@@ -31,7 +31,7 @@ public:
  ************/
 class LinkNS3 : public LinkImpl {
 public:
-  explicit LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, double latency);
+  explicit LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwidth, double latency);
   ~LinkNS3();
 
   void apply_event(tmgr_trace_event_t event, double value) override;
@@ -48,7 +48,7 @@ class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
   NetworkNS3Action(Model* model, double cost, s4u::Host* src, s4u::Host* dst);
 
-  bool isSuspended();
+  bool isSuspended() override;
   int unref() override;
   void suspend() override;
   void resume() override;

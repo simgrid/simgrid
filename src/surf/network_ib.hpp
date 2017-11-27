@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,7 +10,8 @@
 #include "src/surf/network_smpi.hpp"
 #include "xbt/base.h"
 
-#include <map>
+#include <unordered_map>
+#include <vector>
 
 namespace simgrid {
   namespace surf {
@@ -42,7 +43,7 @@ namespace simgrid {
 
     class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
     private:
-      void updateIBfactors_rec(IBNode *root, bool* updatedlist);
+      void updateIBfactors_rec(IBNode* root, std::vector<bool>& updatedlist);
       void computeIBfactors(IBNode *root);
     public:
       NetworkIBModel();
@@ -50,8 +51,8 @@ namespace simgrid {
       ~NetworkIBModel() override;
       void updateIBfactors(NetworkAction *action, IBNode *from, IBNode * to, int remove);
 
-      xbt_dict_t active_nodes;
-      std::map<NetworkAction *, std::pair<IBNode*,IBNode*> > active_comms;
+      std::unordered_map<std::string, IBNode*> active_nodes;
+      std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
 
       double Bs;
       double Be;

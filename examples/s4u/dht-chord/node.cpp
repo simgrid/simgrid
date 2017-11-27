@@ -1,9 +1,9 @@
-/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "s4u_dht-chord.hpp"
+#include "s4u-dht-chord.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(s4u_chord);
 
@@ -38,6 +38,11 @@ static int is_in_interval(int id, int start, int end)
   }
 
   return i <= e;
+}
+
+void ChordMessage::destroy(void* message)
+{
+  delete static_cast<ChordMessage*>(message);
 }
 
 /* Initializes the current node as the first one of the system */
@@ -120,8 +125,8 @@ void Node::notifyAndQuit()
     }
   }
 
-  if (pred_id_ != -1) {
-    // send the SUCCESSOR_LEAVING to our predecessor (only if I have one)
+  if (pred_id_ != -1 && pred_id_ != id_) {
+    // send the SUCCESSOR_LEAVING to our predecessor (only if I have one that is not me)
     ChordMessage* succ_msg = new ChordMessage(SUCCESSOR_LEAVING);
     succ_msg->request_id   = fingers_[0];
     succ_msg->answer_to    = mailbox_;
@@ -230,19 +235,19 @@ void Node::checkPredecessor()
   }
   // receive the answer
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
-            message->answer_to->getName());
+            message->answer_to->getCname());
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
     comm->wait(timeout);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
+    delete static_cast<ChordMessage*>(data);
   } catch (xbt_ex& e) {
     if (e.category == timeout_error) {
       XBT_DEBUG("Failed to receive the answer to my 'Predecessor Alive' request");
       pred_id_ = -1;
     }
   }
-  delete message;
 }
 
 /* Asks its predecessor to a remote node
@@ -275,7 +280,7 @@ int Node::remoteGetPredecessor(int ask_to)
 
   // receive the answer
   XBT_DEBUG("Sent 'Get Predecessor' request to %d, waiting for the answer on my mailbox '%s'", ask_to,
-            message->answer_to->getName());
+            message->answer_to->getCname());
   simgrid::s4u::CommPtr comm = return_mailbox->get_async(&data);
 
   try {
@@ -389,7 +394,7 @@ void Node::remoteNotify(int notify_id, int predecessor_candidate_id)
   // send a "Notify" request to notify_id
   XBT_DEBUG("Sending a 'Notify' request to %d", notify_id);
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(notify_id));
-  mailbox->put_init(message, 10)->detach();
+  mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
 }
 
 /* This function is called periodically. It checks the immediate successor of the current node. */
@@ -398,13 +403,10 @@ void Node::stabilize()
   XBT_DEBUG("Stabilizing node");
 
   // get the predecessor of my immediate successor
-  int candidate_id;
+  int candidate_id = pred_id_;
   int successor_id = fingers_[0];
-  if (successor_id != id_) {
+  if (successor_id != id_)
     candidate_id = remoteGetPredecessor(successor_id);
-  } else {
-    candidate_id = pred_id_;
-  }
 
   // this node is a candidate to become my new successor
   if (candidate_id != -1 && is_in_interval(candidate_id, id_ + 1, successor_id - 1)) {
@@ -430,16 +432,16 @@ void Node::handleMessage(ChordMessage* message)
       message->type = FIND_SUCCESSOR_ANSWER;
       message->answer_id = fingers_[0];
       XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
-                message->issuer_host_name.c_str(), message->answer_to->getName(), message->request_id,
+                message->issuer_host_name.c_str(), message->answer_to->getCname(), message->request_id,
                 message->answer_id);
-      message->answer_to->put_init(message, 10)->detach();
+      message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     } else {
       // otherwise, forward the request to the closest preceding finger in my table
       int closest = closestPrecedingFinger(message->request_id);
       XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
           message->request_id, closest);
       simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(closest));
-      mailbox->put_init(message, 10)->detach();
+      mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
     }
     break;
 
@@ -448,8 +450,8 @@ void Node::handleMessage(ChordMessage* message)
     message->type = GET_PREDECESSOR_ANSWER;
     message->answer_id = pred_id_;
     XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
-              message->issuer_host_name.c_str(), message->answer_to->getName(), message->answer_id);
-    message->answer_to->put_init(message, 10)->detach();
+              message->issuer_host_name.c_str(), message->answer_to->getCname(), message->answer_id);
+    message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     break;
 
   case NOTIFY:
@@ -486,8 +488,8 @@ void Node::handleMessage(ChordMessage* message)
     XBT_DEBUG("Receiving a 'Predecessor Alive' request from %s", message->issuer_host_name.c_str());
     message->type = PREDECESSOR_ALIVE_ANSWER;
     XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)", message->issuer_host_name.c_str(),
-              message->answer_to->getName());
-    message->answer_to->put_init(message, 10)->detach();
+              message->answer_to->getCname());
+    message->answer_to->put_init(message, 10)->detach(ChordMessage::destroy);
     break;
 
   default:

@@ -55,7 +55,7 @@ namespace surf {
   class LinkImpl;
   class HostImpl;
   class StorageImpl;
-  class FileImpl;
+  class StorageType;
 }
 namespace trace_mgr {
   class trace;
@@ -79,7 +79,7 @@ typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::simix::ActorImpl* smx_actor_t;
 typedef simgrid::simix::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
-typedef simgrid::surf::FileImpl* surf_file_t;
+typedef simgrid::surf::StorageImpl* surf_storage_t;
 
 #else
 
@@ -99,6 +99,7 @@ typedef struct s_smx_context* smx_context_t;
 typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_mutex* smx_mutex_t;
 typedef struct s_smx_mailbox* smx_mailbox_t;
+typedef struct s_surf_storage* surf_storage_t;
 
 #endif
 

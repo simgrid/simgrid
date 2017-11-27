@@ -20,7 +20,7 @@
 // Define a new category
 XBT_LOG_NEW_DEFAULT_CATEGORY (jtrace, "TRACE for Java(TM)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare(JNIEnv * env, jclass cls, jstring js)
 {
@@ -178,16 +178,24 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSet
   env->ReleaseStringUTFChars(jvar, variable);
 }
 /* Missing calls
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAdd (JNIEnv *, jclass, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSub (JNIEnv *env, jclass cls, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSetWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAddWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSubWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSub (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSetWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcdstVariableAddWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAdd(JNIEnv *, jclass, jstring, jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSub(JNIEnv *env, jclass cls, jstring, jstring,
+                                                                       jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSetWithTime(JNIEnv *, jclass, jdouble, jstring,
+                                                                               jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAddWithTime(JNIEnv *, jclass, jdouble, jstring,
+                                                                               jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSubWithTime(JNIEnv *, jclass, jdouble, jstring,
+                                                                               jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd(JNIEnv *, jclass, jstring, jstring,
+                                                                             jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSub(JNIEnv *, jclass, jstring, jstring,
+                                                                             jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSetWithTime(JNIEnv *env, jclass cls, jdouble,
+                                                                                     jstring, jstring, jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcdstVariableAddWithTime(JNIEnv *env, jclass cls, jdouble,
+                                                                                     jstring, jstring, jstring, jdouble)
+   JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime(JNIEnv *env, jclass cls, jdouble,
+                                                                                     jstring, jstring, jstring, jdouble)
 */
-
-SG_END_DECL()
+}

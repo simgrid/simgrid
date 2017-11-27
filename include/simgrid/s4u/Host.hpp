@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,11 +6,11 @@
 #ifndef SIMGRID_S4U_HOST_HPP
 #define SIMGRID_S4U_HOST_HPP
 
+#include <map>
 #include <string>
 #include <unordered_map>
 
 #include "xbt/Extendable.hpp"
-#include "xbt/dict.h"
 #include "xbt/signal.hpp"
 #include "xbt/string.hpp"
 #include "xbt/swag.h"
@@ -66,8 +66,10 @@ public:
   /** Retrieves the host on which the current actor is running */
   static s4u::Host* current();
 
+  /** Retrieves the name of that host as a C++ string */
   simgrid::xbt::string const& getName() const { return name_; }
-  const char* getCname() { return name_.c_str(); }
+  /** Retrieves the name of that host as a C string */
+  const char* getCname() const { return name_.c_str(); }
 
   void actorList(std::vector<ActorPtr> * whereto);
 
@@ -86,9 +88,9 @@ public:
 
   double getSpeed();
   int getCoreCount();
-  xbt_dict_t getProperties();
+  std::map<std::string, std::string>* getProperties();
   const char* getProperty(const char* key);
-  void setProperty(const char* key, const char* value);
+  void setProperty(std::string key, std::string value);
   void getProcesses(std::vector<ActorPtr> * list);
   double getPstateSpeed(int pstate_index);
   int getPstatesCount() const;
@@ -102,8 +104,15 @@ public:
    */
   std::unordered_map<std::string, Storage*> const& getMountedStorages();
 
-  void routeTo(Host * dest, std::vector<Link*> * links, double* latency);
-  void routeTo(Host * dest, std::vector<surf::LinkImpl*> * links, double* latency);
+  void routeTo(Host* dest, std::vector<Link*>& links, double* latency);
+  void routeTo(Host* dest, std::vector<surf::LinkImpl*>& links, double* latency);
+
+  /** Block the calling actor on an execution located on the called host
+   *
+   * It is not a problem if the actor is not located on the called host.
+   * The actor will not be migrated in this case. Such remote execution are easy in simulation.
+   */
+  void execute(double flops);
 
 private:
   simgrid::xbt::string name_ = "noname";

@@ -17,11 +17,11 @@
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/SafetyChecker.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_smx.h"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_smx.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -48,7 +48,7 @@ void SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
       XBT_INFO("******************************************");
       XBT_INFO("Counter-example execution trace:");
-      for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
+      for (auto const& s : mc_model_checker->getChecker()->getTextualTrace())
         XBT_INFO("%s", s.c_str());
       simgrid::mc::session->logState();
 
@@ -79,7 +79,6 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
 
 void SafetyChecker::logState() // override
 {
-  Checker::logState();
   XBT_INFO("Expanded states = %lu", expandedStatesCount_);
   XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
@@ -97,8 +96,8 @@ void SafetyChecker::run()
     simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zi (state=%p, num %d)(%zu interleave)",
-      stack_.size(), state, state->num, state->interleaveSize());
+    XBT_DEBUG("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num,
+              state->interleaveSize());
 
     mc_model_checker->visited_states++;
 
@@ -125,7 +124,7 @@ void SafetyChecker::run()
     // req is now the transition of the process that was selected to be executed
 
     if (req == nullptr) {
-      XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size() + 1);
+      XBT_DEBUG("There are no more processes to interleave. (depth %zu)", stack_.size() + 1);
 
       this->backtrack();
       continue;
@@ -259,15 +258,13 @@ void SafetyChecker::backtrack()
     if (state->interleaveSize()
         && stack_.size() < (std::size_t) _sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
-      XBT_DEBUG("Back-tracking to state %d at depth %zi", state->num, stack_.size() + 1);
+      XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num, stack_.size() + 1);
       stack_.push_back(std::move(state));
       this->restoreState();
-      XBT_DEBUG("Back-tracking to state %d at depth %zi done",
-        stack_.back()->num, stack_.size());
+      XBT_DEBUG("Back-tracking to state %d at depth %zu done", stack_.back()->num, stack_.size());
       break;
     } else {
-      XBT_DEBUG("Delete state %d at depth %zi",
-        state->num, stack_.size() + 1);
+      XBT_DEBUG("Delete state %d at depth %zu", state->num, stack_.size() + 1);
     }
   }
 }

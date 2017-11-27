@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "private.hpp"
 #include <stack>
-#include "private.h"
 
-typedef struct s_smpi_static {
+struct s_smpi_static_t {
   void *ptr;
   void_f_pvoid_t free_fn;
-} s_smpi_static_t;
+};
 
 /**
  * \brief Holds a reference to all static variables that were registered

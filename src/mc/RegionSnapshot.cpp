@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,7 +12,7 @@
 #endif
 
 #include "mc/mc.h"
-#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_snapshot.hpp"
 
 #include "src/mc/ChunkedData.hpp"
 #include "src/mc/RegionSnapshot.hpp"
@@ -42,7 +42,7 @@ Buffer::Buffer(std::size_t size, Type type) : size_(size), type_(type)
 {
   switch(type_) {
   case Type::Malloc:
-    data_ = ::malloc(size_);
+    data_ = ::operator new(size_);
     break;
   case Type::Mmap:
     data_ = ::mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
@@ -62,7 +62,7 @@ void Buffer::clear() noexcept
 {
   switch(type_) {
   case Type::Malloc:
-    std::free(data_);
+    ::operator delete(data_);
     break;
   case Type::Mmap:
     if (munmap(data_, size_) != 0)
@@ -81,8 +81,8 @@ RegionSnapshot dense_region(
   void *start_addr, void* permanent_addr, size_t size)
 {
   // When KSM support is enables, we allocate memory using mmap:
-  // * we don't want to advise bits of the heap as mergable;
-  // * mmap gives data aligned on page boundaries which is merge friendly.
+  // * we don't want to advise bits of the heap as mergable
+  // * mmap gives data aligned on page boundaries which is merge friendly
   simgrid::mc::Buffer data;
   if (_sg_mc_ksm)
     data = Buffer::mmap(size);

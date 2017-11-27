@@ -14,7 +14,7 @@ namespace jedule {
 
 Jedule::~Jedule() {
   delete this->root_container;
-  for (auto evt: this->event_set)
+  for (auto const& evt : this->event_set)
     delete evt;
   this->event_set.clear();
 }
@@ -32,7 +32,7 @@ void Jedule::writeOutput(FILE *file) {
 
     if (not this->meta_info.empty()) {
       fprintf(file, "  <jedule_meta>\n");
-      for (auto elm: this->meta_info)
+      for (auto const& elm : this->meta_info)
         fprintf(file, "        <prop key=\"%s\" value=\"%s\" />\n",elm.first,elm.second);
       fprintf(file, "  </jedule_meta>\n");
     }
@@ -42,8 +42,8 @@ void Jedule::writeOutput(FILE *file) {
     fprintf(file, "  </platform>\n");
 
     fprintf(file, "  <events>\n");
-    for (auto event :this->event_set)
-        event->print(file);
+    for (auto const& event : this->event_set)
+      event->print(file);
     fprintf(file, "  </events>\n");
 
     fprintf(file, "</jedule>\n");

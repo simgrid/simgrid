@@ -34,7 +34,7 @@ run() {
     ${srcdir:=.}/deploy_bugged1_liveness.xml \
     "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" \
     --cfg=contexts/factory:ucontext \
-    --cfg=contexts/stack_size:256
+    --cfg=contexts/stack-size:256
   assert 'test $? = 134'
 }
 

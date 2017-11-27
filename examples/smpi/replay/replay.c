@@ -28,9 +28,12 @@ int main(int argc, char *argv[]) {
   xbt_replay_action_register("blah", action_blah);
 
   /* The send action is an override, so we have to first save its previous value in a global */
-  previous_send = xbt_replay_action_get("send");
-  xbt_replay_action_register("send", overriding_send);
-
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  if (rank == 0) {
+    previous_send = xbt_replay_action_get("send");
+    xbt_replay_action_register("send", overriding_send);
+  }
   /* The regular run of the replayer */
   smpi_replay_main(&argc, &argv);
   return 0;

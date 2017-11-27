@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,8 +6,8 @@
 
 /* SimGrid Lua bindings                                                     */
 
-#include "lua_private.h"
-#include "lua_utils.h"
+#include "lua_private.hpp"
+#include "lua_utils.hpp"
 #include "src/surf/xml/platf.hpp"
 
 

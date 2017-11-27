@@ -6,9 +6,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 
-#include "smpi_mvapich2_selector_stampede.h"
+#include "smpi_mvapich2_selector_stampede.hpp"
 
 namespace simgrid{
 namespace smpi{
@@ -64,7 +64,7 @@ int Coll_alltoall_mvapich2::alltoall( void *sendbuf, int sendcount,
           ||nbytes > mv2_alltoall_thresholds_table[conf_index][range].in_place_algo_table[range_threshold].max
       ) {
           tmp_buf = (char *)smpi_get_tmp_sendbuffer( comm_size * recvcount * recvtype_size );
-          mpi_errno = Datatype::copy((char *)recvbuf,
+          Datatype::copy((char *)recvbuf,
               comm_size*recvcount, recvtype,
               (char *)tmp_buf,
               comm_size*recvcount, recvtype);
@@ -622,11 +622,9 @@ int Coll_bcast_mvapich2::bcast(void *buffer,
         {
             shmem_comm = comm->get_intra_comm();
             if (not is_contig || not is_homogeneous) {
-              mpi_errno = MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
+              MPIR_Bcast_tune_inter_node_helper_MV2(tmp_buf, nbytes, MPI_BYTE, root, comm);
             } else {
-                mpi_errno =
-                    MPIR_Bcast_tune_inter_node_helper_MV2(buffer, count, datatype, root,
-                                                          comm);
+              MPIR_Bcast_tune_inter_node_helper_MV2(buffer, count, datatype, root, comm);
             }
 
             /* We are now done with the inter-node phase */
@@ -797,7 +795,7 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, i
   int range = 0;
   int range_threshold = 0;
   int is_commutative = 0;
-  int *disps = static_cast<int*>(xbt_malloc(comm_size * sizeof (int)));
+  int* disps          = new int[comm_size];
 
   if(mv2_red_scat_thresholds_table==NULL)
     init_mv2_reduce_scatter_tables_stampede();
@@ -847,7 +845,7 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, i
       while (pof2 < comm_size) pof2 <<= 1;
       if (pof2 == comm_size && is_block_regular) {
           /* noncommutative, pof2 size, and block regular */
-          mpi_errno = MPIR_Reduce_scatter_non_comm_MV2(sendbuf, recvbuf,
+          MPIR_Reduce_scatter_non_comm_MV2(sendbuf, recvbuf,
               recvcnts, datatype,
               op, comm);
       }
@@ -855,7 +853,7 @@ int Coll_reduce_scatter_mvapich2::reduce_scatter(void *sendbuf, void *recvbuf, i
           recvcnts, datatype,
           op, comm);
   }
-  xbt_free(disps);
+  delete[] disps;
   return mpi_errno;
 
 }
@@ -1000,28 +998,27 @@ int Coll_scatter_mvapich2::scatter(void *sendbuf,
 
 void smpi_coll_cleanup_mvapich2()
 {
-  int i = 0;
   if (mv2_alltoall_thresholds_table)
-    xbt_free(mv2_alltoall_thresholds_table[i]);
-  xbt_free(mv2_alltoall_thresholds_table);
-  xbt_free(mv2_size_alltoall_tuning_table);
-  xbt_free(mv2_alltoall_table_ppn_conf);
+    delete[] mv2_alltoall_thresholds_table[0];
+  delete[] mv2_alltoall_thresholds_table;
+  delete[] mv2_size_alltoall_tuning_table;
+  delete[] mv2_alltoall_table_ppn_conf;
 
-  xbt_free(mv2_gather_thresholds_table);
+  delete[] mv2_gather_thresholds_table;
   if (mv2_allgather_thresholds_table)
-    xbt_free(mv2_allgather_thresholds_table[0]);
-  xbt_free(mv2_size_allgather_tuning_table);
-  xbt_free(mv2_allgather_table_ppn_conf);
-  xbt_free(mv2_allgather_thresholds_table);
+    delete[] mv2_allgather_thresholds_table[0];
+  delete[] mv2_size_allgather_tuning_table;
+  delete[] mv2_allgather_table_ppn_conf;
+  delete[] mv2_allgather_thresholds_table;
 
-  xbt_free(mv2_allgatherv_thresholds_table);
-  xbt_free(mv2_reduce_thresholds_table);
-  xbt_free(mv2_red_scat_thresholds_table);
-  xbt_free(mv2_allreduce_thresholds_table);
-  xbt_free(mv2_bcast_thresholds_table);
+  delete[] mv2_allgatherv_thresholds_table;
+  delete[] mv2_reduce_thresholds_table;
+  delete[] mv2_red_scat_thresholds_table;
+  delete[] mv2_allreduce_thresholds_table;
+  delete[] mv2_bcast_thresholds_table;
   if (mv2_scatter_thresholds_table)
-    xbt_free(mv2_scatter_thresholds_table[0]);
-  xbt_free(mv2_scatter_thresholds_table);
-  xbt_free(mv2_size_scatter_tuning_table);
-  xbt_free(mv2_scatter_table_ppn_conf);
+    delete[] mv2_scatter_thresholds_table[0];
+  delete[] mv2_scatter_thresholds_table;
+  delete[] mv2_size_scatter_tuning_table;
+  delete[] mv2_scatter_table_ppn_conf;
 }

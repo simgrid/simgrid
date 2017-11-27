@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, 2016. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -77,6 +77,7 @@ public class Node extends Process {
         }
       }
       catch (Exception e) {
+        Msg.debug("Caught exception: " + e);
       }
     }
     Msg.info(findNodeSuccedded + "/"  + (findNodeSuccedded + findNodeFailed) + " FIND_NODE have succedded.");
@@ -256,6 +257,7 @@ public class Node extends Process {
         waitFor(1);
       }
       catch (Exception ex) {
+        Msg.debug("Caught exception: " + ex);
       }
     } while (Msg.getClock() < timeout && !destinationFound);
   }

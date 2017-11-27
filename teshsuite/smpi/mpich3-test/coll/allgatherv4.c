@@ -60,9 +60,9 @@ int main(int argc, char **argv)
         if (!rbuf)
             fprintf(stderr, "\trbuf of %d bytes\n", MAX_BUF);
         if (!recvcounts)
-            fprintf(stderr, "\trecvcounts of %zd bytes\n", comm_size * sizeof(int));
+          fprintf(stderr, "\trecvcounts of %zu bytes\n", comm_size * sizeof(int));
         if (!displs)
-            fprintf(stderr, "\tdispls of %zd bytes\n", comm_size * sizeof(int));
+          fprintf(stderr, "\tdispls of %zu bytes\n", comm_size * sizeof(int));
         fflush(stderr);
         MPI_Abort(MPI_COMM_WORLD, -1);
     }

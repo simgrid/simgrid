@@ -1,16 +1,16 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
+/* Copyright (c) 2006-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/simdag.h"
 #include "simgrid/s4u.hpp"
+#include "simgrid/simdag.h"
 #include "xbt/ex.h"
-#include <xbt/ex.hpp>
 #include "xbt/log.h"
-#include <math.h>
+#include <cmath>
 #include <set>
+#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");
 
@@ -40,9 +40,9 @@ int main(int argc, char **argv)
   XBT_INFO("Route between %s and %s:", h1->getCname(), h2->getCname());
   std::vector<sg_link_t> route;
   double latency = 0;
-  h1->routeTo(h2, &route, &latency);
+  h1->routeTo(h2, route, &latency);
 
-  for (auto link : route)
+  for (auto const& link : route)
     XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(link), sg_link_latency(link),
              sg_link_bandwidth(link));
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
   SD_task_schedule(taskD, 2, host_list, computation_amount, communication_amount, -1);
 
   std::set<SD_task_t> *changed_tasks = simgrid::sd::simulate(-1.0);
-  for (auto task: *changed_tasks){
+  for (auto const& task : *changed_tasks) {
     XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task),
           SD_task_get_start_time(task), SD_task_get_finish_time(task));
   }

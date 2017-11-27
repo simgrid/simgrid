@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,20 +14,17 @@
 #include <memory>
 #include <vector>
 
-#include <simgrid_config.h>
-#include <xbt/base.h>
-#include <xbt/automaton.h>
-#include "src/mc/mc_state.h"
 #include "src/mc/checker/Checker.hpp"
-
-SG_BEGIN_DECL()
-
-SG_END_DECL()
+#include "src/mc/mc_state.hpp"
+#include <simgrid_config.h>
+#include <xbt/automaton.h>
+#include <xbt/base.h>
 
 namespace simgrid {
 namespace mc {
 
-struct XBT_PRIVATE Pair {
+class XBT_PRIVATE Pair {
+public:
   int num = 0;
   bool search_cycle = false;
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
@@ -44,11 +41,12 @@ struct XBT_PRIVATE Pair {
   Pair& operator=(Pair const&) = delete;
 };
 
-struct XBT_PRIVATE VisitedPair {
-  int num = 0;
+class XBT_PRIVATE VisitedPair {
+public:
+  int num;
   int other_num = 0; /* Dot output for */
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
-  xbt_automaton_state_t automaton_state = nullptr;
+  xbt_automaton_state_t automaton_state;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   std::size_t heap_bytes_used = 0;
   int actors_count            = 0;
@@ -79,7 +77,7 @@ private:
   void purgeVisitedPairs();
   void backtrack();
   std::shared_ptr<Pair> newPair(Pair* pair, xbt_automaton_state_t state, std::shared_ptr<const std::vector<int>> propositions);
-private:
+
   // A stack of (application_state, automaton_state) pairs for DFS exploration:
   std::list<std::shared_ptr<Pair>> explorationStack_;
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;

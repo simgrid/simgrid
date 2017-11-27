@@ -5,16 +5,15 @@
 
 #include "smpi_request.hpp"
 
-#include "mc/mc.h"
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/mc/mc_replay.h"
 #include "SmpiHost.hpp"
-#include "private.h"
+#include "mc/mc.h"
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_op.hpp"
 #include "smpi_process.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 
 #include <algorithm>
 
@@ -32,7 +31,8 @@ extern void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t);
 namespace simgrid{
 namespace smpi{
 
-Request::Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags) : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
+Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags)
+    : buf_(buf), old_type_(datatype), src_(src), dst_(dst), tag_(tag), comm_(comm), flags_(flags)
 {
   void *old_buf = nullptr;
 // FIXME Handle the case of a partial shared malloc.
@@ -221,11 +221,11 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   if(op==MPI_OP_NULL){
-    request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype,  src, dst, tag,
-                            comm, RMA | NON_PERSISTENT | RECV | PREPARED);
+    request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, src, dst, tag, comm,
+                          RMA | NON_PERSISTENT | RECV | PREPARED);
   }else{
-    request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype,  src, dst, tag,
-                            comm, RMA | NON_PERSISTENT | RECV | PREPARED | ACCUMULATE);
+    request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, src, dst, tag, comm,
+                          RMA | NON_PERSISTENT | RECV | PREPARED | ACCUMULATE);
     request->op_ = op;
   }
   return request;
@@ -233,16 +233,16 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 
 MPI_Request Request::irecv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
-  return new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
-                          comm->group()->index(src), smpi_process()->index(), tag,
-                          comm, PERSISTENT | RECV | PREPARED);
+  return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype,
+                     src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->index(src), smpi_process()->index(), tag,
+                     comm, PERSISTENT | RECV | PREPARED);
 }
 
 MPI_Request Request::isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request =  new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                           comm->group()->index(dst), tag, comm, NON_PERSISTENT | ISEND | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | ISEND | SEND);
   request->start();
   return request;
 }
@@ -250,8 +250,8 @@ MPI_Request Request::isend(void *buf, int count, MPI_Datatype datatype, int dst,
 MPI_Request Request::issend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                        comm->group()->index(dst), tag,comm, NON_PERSISTENT | ISEND | SSEND | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | ISEND | SSEND | SEND);
   request->start();
   return request;
 }
@@ -260,9 +260,9 @@ MPI_Request Request::issend(void *buf, int count, MPI_Datatype datatype, int dst
 MPI_Request Request::irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
-                          comm->group()->index(src), smpi_process()->index(), tag, comm,
-                          NON_PERSISTENT | RECV);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype,
+                        src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->index(src), smpi_process()->index(),
+                        tag, comm, NON_PERSISTENT | RECV);
   request->start();
   return request;
 }
@@ -278,8 +278,8 @@ void Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag
 void Request::send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                          comm->group()->index(dst), tag, comm, NON_PERSISTENT | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | SEND);
 
   request->start();
   wait(&request, MPI_STATUS_IGNORE);
@@ -289,8 +289,8 @@ void Request::send(void *buf, int count, MPI_Datatype datatype, int dst, int tag
 void Request::ssend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
-  request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
-                          comm->group()->index(dst), tag, comm, NON_PERSISTENT | SSEND | SEND);
+  request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, smpi_process()->index(),
+                        comm->group()->index(dst), tag, comm, NON_PERSISTENT | SSEND | SEND);
 
   request->start();
   wait(&request,MPI_STATUS_IGNORE);
@@ -401,9 +401,8 @@ void Request::start()
       if (not(old_type_->flags() & DT_FLAG_DERIVED)) {
         oldbuf = buf_;
         if (not process->replaying() && oldbuf != nullptr && size_ != 0) {
-          if((smpi_privatize_global_variables != 0)
-            && (static_cast<char*>(buf_) >= smpi_start_data_exe)
-            && (static_cast<char*>(buf_) < smpi_start_data_exe + smpi_size_data_exe )){
+          if ((smpi_privatize_global_variables != 0) && (static_cast<char*>(buf_) >= smpi_data_exe_start) &&
+              (static_cast<char*>(buf_) < smpi_data_exe_start + smpi_data_exe_size)) {
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
             smpi_switch_data_segment(src_);
           }
@@ -508,8 +507,8 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
     if (flag) {
       finish_wait(request,status);
       nsleeps=1;//reset the number of sleeps we will do next time
-      if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & PERSISTENT)==0)
-      *request = MPI_REQUEST_NULL;
+      if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & PERSISTENT) == 0)
+        *request = MPI_REQUEST_NULL;
     } else if (xbt_cfg_get_boolean("smpi/grow-injected-times")){
       nsleeps++;
     }
@@ -693,12 +692,11 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
     if (((req->flags_ & ACCUMULATE) != 0) ||
         (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
 
-      if (not smpi_process()->replaying()) {
-        if( smpi_privatize_global_variables != 0 && (static_cast<char*>(req->old_buf_) >= smpi_start_data_exe)
-            && ((char*)req->old_buf_ < smpi_start_data_exe + smpi_size_data_exe )){
-            XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
-            smpi_switch_data_segment(smpi_process()->index());
-        }
+      if (not smpi_process()->replaying() && smpi_privatize_global_variables != 0 &&
+          static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
+          static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
+        XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
+        smpi_switch_data_segment(smpi_process()->index());
       }
 
       if(datatype->flags() & DT_FLAG_DERIVED){
@@ -719,7 +717,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if (TRACE_smpi_view_internals() && ((req->flags_ & RECV) != 0)){
     int rank = smpi_process()->index();
     int src_traced = (req->src_ == MPI_ANY_SOURCE ? req->real_src_ : req->src_);
-    TRACE_smpi_recv(rank, src_traced, rank,req->tag_);
+    TRACE_smpi_recv(src_traced, rank,req->tag_);
   }
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
@@ -862,7 +860,7 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
 
   if (not accumulates.empty()) {
     std::sort(accumulates.begin(), accumulates.end(), sort_accumulates);
-    for (auto req : accumulates) {
+    for (auto& req : accumulates) {
       finish_wait(&req, status);
     }
   }
@@ -885,7 +883,7 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
         status[index] = *pstat;
       }
      if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags_ & NON_PERSISTENT))
-     requests[index]=MPI_REQUEST_NULL;
+       requests[index] = MPI_REQUEST_NULL;
     }else{
       return MPI_UNDEFINED;
     }
@@ -897,28 +895,27 @@ MPI_Request Request::f2c(int id) {
   char key[KEY_SIZE];
   if(id==MPI_FORTRAN_REQUEST_NULL)
     return static_cast<MPI_Request>(MPI_REQUEST_NULL);
-  return static_cast<MPI_Request>(xbt_dict_get(F2C::f2c_lookup(), get_key_id(key, id)));
+  return static_cast<MPI_Request>(F2C::f2c_lookup()->at(get_key_id(key, id)));
 }
 
-int Request::add_f() {
-  if(F2C::f2c_lookup()==nullptr){
-    F2C::set_f2c_lookup(xbt_dict_new_homogeneous(nullptr));
+int Request::add_f()
+{
+  if (F2C::f2c_lookup() == nullptr) {
+    F2C::set_f2c_lookup(new std::unordered_map<std::string, F2C*>);
   }
   char key[KEY_SIZE];
-  xbt_dict_set(F2C::f2c_lookup(), get_key_id(key, F2C::f2c_id()), this, nullptr);
+  (*(F2C::f2c_lookup()))[get_key_id(key, F2C::f2c_id())] = this;
   F2C::f2c_id_increment();
   return F2C::f2c_id()-1;
 }
 
-void Request::free_f(int id) {
+void Request::free_f(int id)
+{
   if (id != MPI_FORTRAN_REQUEST_NULL) {
     char key[KEY_SIZE];
-    xbt_dict_remove(F2C::f2c_lookup(), get_key_id(key, id));
+    F2C::f2c_lookup()->erase(get_key_id(key, id));
   }
 }
 
 }
 }
-
-
-

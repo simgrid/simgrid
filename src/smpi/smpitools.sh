@@ -69,5 +69,5 @@ list_set () {
 # $1: list
 # usage:  eval $(list_get list)
 list_get () {
-    printf 'IFS="$LISTSEP"; eval set -- \\$%s; IFS="$SAVEIFS"' "$1"
+    printf 'IFS="'\$'LISTSEP"; eval set -- \$%s; IFS="'\$'SAVEIFS"\n' "$1"
 }

@@ -2,7 +2,7 @@
 /* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
 /* in SG, when using HAVE_UCONTEXT_CONTEXTS, xbt_os_thread_stub is used instead   */
 
-/* Copyright (c) 2007-2015. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -52,7 +52,6 @@ static xbt_os_mutex_t next_sem_ID_lock;
 
 typedef struct xbt_os_thread_ {
   pthread_t t;
-  int detached;
   char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
@@ -77,14 +76,6 @@ static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
   free(thread);
 }
 
-/* callback: termination */
-static void _os_thread_ex_terminate(xbt_ex_t * e)
-{
-  xbt_ex_display(e);
-  xbt_abort();
-  /* FIXME: there should be a configuration variable to choose to kill everyone or only this one */
-}
-
 void xbt_os_thread_mod_preinit(void)
 {
   if (thread_mod_inited)
@@ -95,7 +86,6 @@ void xbt_os_thread_mod_preinit(void)
 
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
   main_thread->name = NULL;
-  main_thread->detached = 0;
   main_thread->name = xbt_strdup("main");
   main_thread->param = NULL;
   main_thread->start_routine = NULL;
@@ -151,16 +141,12 @@ static void *wrapper_start_routine(void *s)
   int errcode = pthread_setspecific(xbt_self_thread_key, t);
   xbt_assert(errcode == 0, "pthread_setspecific failed for xbt_self_thread_key");
 
-  void *res = t->start_routine(t->param);
-  if (t->detached)
-    xbt_os_thread_free_thread_data(t);
-  return res;
+  return t->start_routine(t->param);
 }
 
 xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_routine, void *param, void *extra_data)
 {
   xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
-  res_thread->detached = 0;
   res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
@@ -176,7 +162,8 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
  *
  * If pthread_setaffinity_np is not usable on that (non-gnu) platform, this function does nothing.
  */
-int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
+int xbt_os_thread_bind(XBT_ATTRIB_UNUSED xbt_os_thread_t thread, XBT_ATTRIB_UNUSED int cpu)
+{
   int errcode = 0;
 #if HAVE_PTHREAD_SETAFFINITY
   pthread_t pthread = thread->t;
@@ -208,16 +195,16 @@ void xbt_os_thread_setstacksize(int stack_size)
     size_t rem = sz % alignment[i];
     if (rem != 0 || sz == 0) {
       size_t sz2 = sz - rem + alignment[i];
-      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd", sz, sz2);
+      XBT_DEBUG("pthread_attr_setstacksize failed for %zu, try again with %zu", sz, sz2);
       sz = sz2;
       res = pthread_attr_setstacksize(&thread_attr, sz);
     }
   }
 
   if (res == EINVAL)
-    XBT_WARN("invalid stack size (maybe too big): %zd", sz);
+    XBT_WARN("invalid stack size (maybe too big): %zu", sz);
   else if (res != 0)
-    XBT_WARN("unknown error %d in pthread stacksize setting: %zd", res, sz);
+    XBT_WARN("unknown error %d in pthread stacksize setting: %zu", res, sz);
 }
 
 void xbt_os_thread_setguardsize(int guard_size)
@@ -228,7 +215,7 @@ void xbt_os_thread_setguardsize(int guard_size)
   size_t sz = guard_size;
   int res = pthread_attr_setguardsize(&thread_attr, sz);
   if (res)
-    XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zd", res, sz);
+    XBT_WARN("pthread_attr_setguardsize failed (%d) for size: %zu", res, sz);
 #endif
 }
 
@@ -265,6 +252,12 @@ void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
   xbt_assert(errcode==0 , "pthread_key_create failed");
 }
 
+void xbt_os_thread_key_destroy(xbt_os_thread_key_t key)
+{
+  int errcode = pthread_key_delete(key);
+  xbt_assert(errcode == 0, "pthread_key_delete failed");
+}
+
 void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value)
 {
   int errcode = pthread_setspecific(key, value);
@@ -276,21 +269,10 @@ void* xbt_os_thread_get_specific(xbt_os_thread_key_t key)
   return pthread_getspecific(key);
 }
 
-void xbt_os_thread_detach(xbt_os_thread_t thread)
-{
-  thread->detached = 1;
-  pthread_detach(thread->t);
-}
-
 #include <sched.h>
 void xbt_os_thread_yield(void)
 {
   sched_yield();
-}
-
-void xbt_os_thread_cancel(xbt_os_thread_t t)
-{
-  pthread_cancel(t->t);
 }
 
 /****** mutex related functions ******/

@@ -1,112 +1,73 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.h"
+#include "src/instr/instr_private.hpp"
+#include <set>
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
 //to check if variables were previously set to 0, otherwise paje won't simulate them
-static xbt_dict_t platform_variables;
+static std::set<std::string> platform_variables;
 
-//used by all methods
-static void __TRACE_surf_check_variable_set_to_zero(double now, const char *variable, const char *resource)
+static void instr_event(double now, double delta, simgrid::instr::VariableType* variable, container_t resource,
+                        double value)
 {
-  /* To trace resource utilization, we use pajeAddVariable and pajeSubVariable only.
-   * The Paje simulator needs a pajeSetVariable in the first place so it knows the initial value of all variables for
-   * subsequent adds/subs. If we don't do so, the first pajeAddVariable is added to a non-determined value within
-   * the Paje simulator, causing analysis problems.
+  /* To trace resource utilization, we use AddEvent and SubEvent only. This implies to add a SetEvent first to set the
+   * initial value of all variables for subsequent adds/subs. If we don't do so, the first AddEvent would be added to a
+   * non-determined value, hence causing analysis problems.
    */
 
   // create a key considering the resource and variable
-  int n = strlen(variable)+strlen(resource)+1;
-  char *key = (char*)xbt_malloc(n*sizeof(char));
-  snprintf (key, n, "%s%s", resource, variable);
+  std::string key = resource->getName() + variable->getName();
 
-  // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
-  if (not xbt_dict_get_or_null(platform_variables, key)) {
-    container_t container = PJ_container_get (resource);
-    type_t type = PJ_type_get (variable, container->type);
-    new SetVariableEvent (now, container, type, 0);
-    xbt_dict_set(platform_variables, key, (char*)"", nullptr);
-  }
-  xbt_free(key);
-}
-
-static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
-{
-  __TRACE_surf_check_variable_set_to_zero(now, variable->name, resource->name);
-  new AddVariableEvent(now, resource, variable, value);
-  new SubVariableEvent(now + delta, resource, variable, value);
-}
-
-/* TRACE_surf_link_set_utilization: entry point from SimGrid */
-void TRACE_surf_link_set_utilization(const char *resource, const char *category, double value, double now, double delta)
-{
-  //only trace link utilization if link is known by tracing mechanism
-  if (not PJ_container_get_or_null(resource))
-    return;
-  if (not value)
-    return;
-
-  //trace uncategorized link utilization
-  if (TRACE_uncategorized()){
-    XBT_DEBUG("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
-    container_t container = PJ_container_get (resource);
-    type_t type = PJ_type_get ("bandwidth_used", container->type);
-    instr_event (now, delta, type, container, value);
+  // check if key exists: if it doesn't, set the variable to zero and mark this in the global map.
+  if (platform_variables.find(key) == platform_variables.end()) {
+    variable->setEvent(now, 0);
+    platform_variables.insert(key);
   }
 
-  //trace categorized utilization
-  if (TRACE_categorized()){
-    if (not category)
-      return;
-    //variable of this category starts by 'b', because we have a link here
-    char category_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", category);
-    XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
-    container_t container = PJ_container_get (resource);
-    type_t type = PJ_type_get (category_type, container->type);
-    instr_event (now, delta, type, container, value);
-  }
+  variable->addEvent(now, value);
+  variable->subEvent(now + delta, value);
 }
 
-/* TRACE_surf_host_set_utilization: entry point from SimGrid */
-void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now, double delta)
+static void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
+                                                const char* category, double value, double now, double delta)
 {
-  //only trace host utilization if host is known by tracing mechanism
-  container_t container = PJ_container_get_or_null(resource);
+  // only trace resource utilization if resource is known by tracing mechanism
+  container_t container = simgrid::instr::Container::byNameOrNull(resource);
   if (not container || not value)
     return;
 
-  //trace uncategorized host utilization
+  // trace uncategorized resource utilization
   if (TRACE_uncategorized()){
-    XBT_DEBUG("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    type_t type = PJ_type_get ("power_used", container->type);
-    instr_event (now, delta, type, container, value);
+    XBT_DEBUG("UNCAT %s [%f - %f] %s %s %f", type, now, now + delta, resource, name, value);
+    simgrid::instr::VariableType* variable = container->getVariable(name);
+    instr_event(now, delta, variable, container, value);
   }
 
-  //trace categorized utilization
+  // trace categorized resource utilization
   if (TRACE_categorized()){
     if (not category)
       return;
-    //variable of this category starts by 'p', because we have a host here
-    char category_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", category);
-    XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
-    type_t type = PJ_type_get (category_type, container->type);
-    instr_event (now, delta, type, container, value);
+    std::string category_type = name[0] + std::string(category);
+    XBT_DEBUG("CAT %s [%f - %f] %s %s %f", type, now, now + delta, resource, category_type.c_str(), value);
+    simgrid::instr::VariableType* variable = container->getVariable(category_type);
+    instr_event(now, delta, variable, container, value);
   }
 }
 
-void TRACE_surf_resource_utilization_alloc()
+/* TRACE_surf_link_set_utilization: entry point from SimGrid */
+void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now, double delta)
 {
-  platform_variables = xbt_dict_new_homogeneous(nullptr);
+  TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", resource, category, value, now, delta);
 }
 
-void TRACE_surf_resource_utilization_release()
+/* TRACE_surf_host_set_utilization: entry point from SimGrid */
+void TRACE_surf_host_set_utilization(const char* resource, const char* category, double value, double now, double delta)
 {
-  xbt_dict_free(&platform_variables);
+  TRACE_surf_resource_set_utilization("HOST", "power_used", resource, category, value, now, delta);
 }

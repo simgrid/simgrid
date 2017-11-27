@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -178,8 +178,8 @@ typedef enum {
 #if defined(XBT_LOG_MAYDAY) /*|| defined (NLOG) * turning logging off */
 # define XBT_LOG_DEFAULT_CATEGORY(cname)
 #else
-# define XBT_LOG_DEFAULT_CATEGORY(cname) \
-   static xbt_log_category_t _XBT_LOGV(default) XBT_ATTRIB_UNUSED = &_XBT_LOGV(cname)
+#define XBT_LOG_DEFAULT_CATEGORY(cname)                                                                                \
+  XBT_ATTRIB_UNUSED static xbt_log_category_t _XBT_LOGV(default) = &_XBT_LOGV(cname)
 #endif
 
 /**

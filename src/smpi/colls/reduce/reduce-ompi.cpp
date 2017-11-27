@@ -19,8 +19,8 @@
  * Additional copyrights may follow
  */
 
-#include "../colls_private.h"
-#include "../coll_tuned_topo.h"
+#include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
 
 namespace simgrid{
 namespace smpi{
@@ -68,7 +68,9 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         sendtmpbuf = (char *)recvbuf;
     }
 
-    XBT_DEBUG( "coll:tuned:reduce_generic count %d, msg size %ld, segsize %ld, max_requests %d", original_count, (unsigned long)(num_segments * segment_increment), (unsigned long)segment_increment, max_outstanding_reqs);
+    XBT_DEBUG("coll:tuned:reduce_generic count %d, msg size %lu, segsize %lu, max_requests %d", original_count,
+              (unsigned long)(num_segments * segment_increment), (unsigned long)segment_increment,
+              max_outstanding_reqs);
 
     rank = comm->rank();
 
@@ -259,10 +261,7 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
         else {
 
             int creq = 0;
-            MPI_Request* sreq = NULL;
-
-            sreq = (MPI_Request*) calloc( max_outstanding_reqs,
-                                              sizeof(MPI_Request ) );
+            MPI_Request* sreq = new (std::nothrow) MPI_Request[max_outstanding_reqs];
             if (NULL == sreq) { line = __LINE__; ret = -1; goto error_hndl; }
 
             /* post first group of requests */
@@ -301,10 +300,10 @@ int smpi_coll_tuned_ompi_reduce_generic( void* sendbuf, void* recvbuf, int origi
                                          MPI_STATUSES_IGNORE );
 
             /* free requests */
-            free(sreq);
+            delete[] sreq;
         }
     }
-    free(tree);
+    ompi_coll_tuned_topo_destroy_tree(&tree);
     return MPI_SUCCESS;
 
  error_hndl:  /* error handler */
@@ -335,7 +334,7 @@ int Coll_reduce_ompi_chain::reduce( void *sendbuf, void *recvbuf, int count,
     size_t typelng;
     int fanout = comm->size()/2;
 
-    XBT_DEBUG("coll:tuned:reduce_intra_chain rank %d fo %d ss %5d", comm->rank(), fanout, segsize);
+    XBT_DEBUG("coll:tuned:reduce_intra_chain rank %d fo %d ss %5u", comm->rank(), fanout, segsize);
 
     /**
      * Determine number of segments and number of elements
@@ -386,8 +385,7 @@ int Coll_reduce_ompi_pipeline::reduce( void *sendbuf, void *recvbuf,
         segsize = 64*1024;
     }
 
-    XBT_DEBUG("coll:tuned:reduce_intra_pipeline rank %d ss %5d",
-                 comm->rank(), segsize);
+    XBT_DEBUG("coll:tuned:reduce_intra_pipeline rank %d ss %5u", comm->rank(), segsize);
 
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
@@ -417,8 +415,7 @@ int Coll_reduce_ompi_binary::reduce( void *sendbuf, void *recvbuf,
         // Binary_32K
     segsize = 32*1024;
 
-    XBT_DEBUG("coll:tuned:reduce_intra_binary rank %d ss %5d",
-                 comm->rank(), segsize);
+    XBT_DEBUG("coll:tuned:reduce_intra_binary rank %d ss %5u", comm->rank(), segsize);
 
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
@@ -459,8 +456,7 @@ int Coll_reduce_ompi_binomial::reduce( void *sendbuf, void *recvbuf,
         segsize = 1024;
     }
 
-    XBT_DEBUG("coll:tuned:reduce_intra_binomial rank %d ss %5d",
-                 comm->rank(), segsize);
+    XBT_DEBUG("coll:tuned:reduce_intra_binomial rank %d ss %5u", comm->rank(), segsize);
     COLL_TUNED_COMPUTED_SEGCOUNT( segsize, typelng, segcount );
 
     return smpi_coll_tuned_ompi_reduce_generic( sendbuf, recvbuf, count, datatype,
@@ -491,8 +487,7 @@ int Coll_reduce_ompi_in_order_binary::reduce( void *sendbuf, void *recvbuf,
 
     rank = comm->rank();
     size = comm->size();
-    XBT_DEBUG("coll:tuned:reduce_intra_in_order_binary rank %d ss %5d",
-                 rank, segsize);
+    XBT_DEBUG("coll:tuned:reduce_intra_in_order_binary rank %d ss %5u", rank, segsize);
 
     /**
      * Determine number of segments and number of elements

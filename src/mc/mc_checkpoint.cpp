@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,36 +6,37 @@
 
 #include <unistd.h>
 
-#include <fcntl.h>
-#include <string.h>
-#include <link.h>
+#include <cstring>
 #include <dirent.h>
+#include <fcntl.h>
+#include <link.h>
 
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
 
 #include "src/internal_config.h"
-#include "src/mc/mc_private.h"
-#include "src/smpi/include/private.h"
+#include "src/mc/mc_private.hpp"
+#include "src/smpi/include/private.hpp"
+#include "xbt/file.hpp"
 #include "xbt/mmalloc.h"
 #include "xbt/module.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 #include <libunwind.h>
 #include <libelf.h>
 
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 #include <mc/mc.h>
 
 #include "src/mc/mc_hash.hpp"
-#include "src/mc/mc_mmu.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_mmu.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 #include "src/mc/RegionSnapshot.hpp"
@@ -46,6 +47,12 @@
 using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc, "Logging specific to mc_checkpoint");
+
+#define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
+#define PROT_RW (PROT_READ | PROT_WRITE)
+#define PROT_RX (PROT_READ | PROT_EXEC)
+extern std::string _sg_mc_property_file;
+extern std::string _sg_mc_dot_output_file;
 
 namespace simgrid {
 namespace mc {
@@ -60,11 +67,6 @@ namespace mc {
 static void restore(mc_mem_region_t region)
 {
   switch(region->storage_type()) {
-  case simgrid::mc::StorageType::NoData:
-  default:
-    xbt_die("Storage type not supported");
-    break;
-
   case simgrid::mc::StorageType::Flat:
     mc_model_checker->process().write_bytes(region->flat_data().get(),
       region->size(), region->permanent_address());
@@ -77,6 +79,10 @@ static void restore(mc_mem_region_t region)
   case simgrid::mc::StorageType::Privatized:
     for (auto& p : region->privatized_data())
       restore(&p);
+    break;
+
+  default: // includes StorageType::NoData
+    xbt_die("Storage type not supported");
     break;
   }
 }
@@ -139,7 +145,6 @@ void add_region(int index, simgrid::mc::Snapshot* snapshot,
   snapshot->snapshot_regions[index]
     = std::unique_ptr<simgrid::mc::RegionSnapshot>(
       new simgrid::mc::RegionSnapshot(std::move(region)));
-  return;
 }
 
 static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::Snapshot* snapshot)
@@ -175,10 +180,6 @@ static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::
     snapshot->privatization_index = simgrid::mc::ProcessIndexMissing;
 }
 
-#define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
-#define PROT_RW (PROT_READ | PROT_WRITE)
-#define PROT_RX (PROT_READ | PROT_EXEC)
-
 /** \brief Fills the position of the segments (executable, read-only, read/write).
  * */
 // TODO, use the ELF segment information for more robustness
@@ -186,18 +187,15 @@ void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
 {
-  char* name = xbt_basename(result->file_name.c_str());
+  std::string name = simgrid::xbt::Path(result->file_name).getBasename();
 
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty())
       continue;
-    char* map_basename = xbt_basename(maps[i].pathname.c_str());
-    if (strcmp(name, map_basename) != 0) {
-      free(map_basename);
+    std::string map_basename = simgrid::xbt::Path(maps[i].pathname).getBasename();
+    if (map_basename != name)
       continue;
-    }
-    free(map_basename);
 
     // This is the non-GNU_RELRO-part of the data segment:
     if (reg.prot == PROT_RW) {
@@ -251,8 +249,6 @@ void find_object_address(
     result->end = result->end_exec;
 
   xbt_assert(result->start_exec || result->start_rw || result->start_ro);
-
-  free(name);
 }
 
 /************************************* Take Snapshot ************************************/
@@ -278,18 +274,15 @@ static bool valid_variable(simgrid::mc::Variable* var,
     return true;
 }
 
-static void fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           simgrid::mc::Frame* scope,
-                                           int process_index,
-                                           std::vector<s_local_variable>& result)
+static void fill_local_variables_values(mc_stack_frame_t stack_frame, simgrid::mc::Frame* scope, int process_index,
+                                        std::vector<s_local_variable_t>& result)
 {
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
   if (not scope || not scope->range.contain(stack_frame->ip))
     return;
 
-  for(simgrid::mc::Variable& current_variable :
-      scope->variables) {
+  for (simgrid::mc::Variable& current_variable : scope->variables) {
 
     if (not valid_variable(&current_variable, scope, (void*)stack_frame->ip))
       continue;
@@ -331,15 +324,15 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 
   // Recursive processing of nested scopes:
-  for(simgrid::mc::Frame& nested_scope : scope->scopes)
+  for (simgrid::mc::Frame& nested_scope : scope->scopes)
     fill_local_variables_values(
       stack_frame, &nested_scope, process_index, result);
 }
 
-static std::vector<s_local_variable> get_local_variables_values(
-  std::vector<s_mc_stack_frame_t>& stack_frames, int process_index)
+static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_mc_stack_frame_t>& stack_frames,
+                                                                  int process_index)
 {
-  std::vector<s_local_variable> variables;
+  std::vector<s_local_variable_t> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
     fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
   return variables;
@@ -453,7 +446,7 @@ static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
   }
 
   // Zero the memory:
-  for(auto const& region : mc_model_checker->process().ignored_regions())
+  for (auto const& region : mc_model_checker->process().ignored_regions())
     snapshot->process()->clear_bytes(remote(region.addr), region.size);
 
 }
@@ -526,12 +519,9 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 
     // If dot_output enabled, do not handle the corresponding file
     if (dot_output != nullptr) {
-      char* link_basename = xbt_basename(link);
-      if (strcmp(link_basename, _sg_mc_dot_output_file) == 0) {
-        free(link_basename);
+      std::string link_basename = simgrid::xbt::Path(link).getBasename();
+      if (link_basename == _sg_mc_dot_output_file)
         continue;
-      }
-      free(link_basename);
     }
 
     // This is probably a shared memory used by lttng-ust:
@@ -559,7 +549,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   std::shared_ptr<simgrid::mc::Snapshot> snapshot = std::make_shared<simgrid::mc::Snapshot>(mc_process, num_state);
 
-  for (auto& p : mc_model_checker->process().actors())
+  for (auto const& p : mc_model_checker->process().actors())
     snapshot->enabled_processes.insert(p.copy.getBuffer()->pid);
 
   snapshot_handle_ignore(snapshot.get());
@@ -572,7 +562,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   snapshot->to_ignore = mc_model_checker->process().ignored_heap();
 
-  if (_sg_mc_max_visited_states > 0 || strcmp(_sg_mc_property_file, "")) {
+  if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.empty()) {
     snapshot->stacks = take_snapshot_stacks(snapshot.get());
     if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);
@@ -588,7 +578,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 static inline
 void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 {
-  for(std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
+  for (std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
     if (region)
       restore(region.get());
@@ -597,7 +587,7 @@ void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 #if HAVE_SMPI
   if(snapshot->privatization_index >= 0) {
     // Fix the privatization mmap:
-    s_mc_message_restore message{MC_MESSAGE_RESTORE, snapshot->privatization_index};
+    s_mc_message_restore_t message{MC_MESSAGE_RESTORE, snapshot->privatization_index};
     mc_model_checker->process().getChannel().send(message);
   }
 #endif

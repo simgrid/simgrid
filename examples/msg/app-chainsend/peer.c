@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -29,11 +29,11 @@ int peer_execute_task(peer_t peer, msg_task_t task)
   int done = 0;
   message_t msg = MSG_task_get_data(task);
 
-  XBT_DEBUG("Peer %s got message of type %d\n", peer->me, msg->type);
+  XBT_DEBUG("Peer %s got message of type %u\n", peer->me, msg->type);
   if (msg->type == MESSAGE_BUILD_CHAIN)
     peer_init_chain(peer, msg);
   else if (msg->type == MESSAGE_SEND_DATA) {
-    xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
+    xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %u before initialization", msg->type);
     if (peer->next != NULL)
       peer_forward_msg(peer, msg);
     peer->pieces++;
@@ -63,7 +63,7 @@ msg_error_t peer_wait_for_message(peer_t peer)
     if (idx != -1) {
       comm = xbt_dynar_get_as(peer->pending_recvs, idx, msg_comm_t);
       status = MSG_comm_get_status(comm);
-      XBT_DEBUG("peer_wait_for_message: error code = %d", status);
+      XBT_DEBUG("peer_wait_for_message: error code = %u", status);
       xbt_assert(status == MSG_OK, "peer_wait_for_message() failed");
 
       task = MSG_comm_get_task(comm);

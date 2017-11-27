@@ -3,9 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #include <sys/types.h>
 
@@ -45,7 +48,6 @@
 
 #include <xbt/sysdep.h>
 #include <xbt/base.h>
-#include <xbt/file.h>
 #include <xbt/log.h>
 
 #include "memory_map.hpp"
@@ -168,37 +170,32 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 #elif defined __linux__
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */
-  char* path = bprintf("/proc/%i/maps", (int) pid);
-  FILE *fp = std::fopen(path, "r");
-  if (fp == nullptr) {
-    std::perror("fopen failed");
-    xbt_die("Cannot open %s to investigate the memory map of the process.", path);
+  std::string path = std::string("/proc/") + std::to_string(pid) + "/maps";
+  std::ifstream fp;
+  fp.rdbuf()->pubsetbuf(0, 0);
+  fp.open(path);
+  if (not fp) {
+    std::perror("open failed");
+    xbt_die("Cannot open %s to investigate the memory map of the process.", path.c_str());
   }
-  free(path);
-  setbuf(fp, nullptr);
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
-  ssize_t read; /* Number of bytes readed */
-  char* line = nullptr;
-  std::size_t n = 0; /* Amount of bytes to read by xbt_getline */
-  while ((read = xbt_getline(&line, &n, fp)) != -1) {
+  std::string sline;
+  while (std::getline(fp, sline)) {
     /**
      * The lines that we read have this format: (This is just an example)
      * 00602000-00603000 rw-p 00002000 00:28 1837264                            <complete-path-to-file>
      */
-
-    //fprintf(stderr,"%s", line);
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
+    char* line = &sline[0];
 
     /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens for 6 fields */
+    char* saveptr = nullptr; // for strtok_r()
     char* lfields[6];
-    lfields[0] = strtok(line, " ");
+    lfields[0] = strtok_r(line, " ", &saveptr);
 
     int i;
     for (i = 1; i < 6 && lfields[i - 1] != nullptr; i++) {
-      lfields[i] = std::strtok(nullptr, " ");
+      lfields[i] = strtok_r(nullptr, " ", &saveptr);
     }
 
     /* Check to see if we got the expected amount of columns */
@@ -207,7 +204,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
-    char *tok = std::strtok(lfields[0], "-");
+    char* tok = strtok_r(lfields[0], "-", &saveptr);
     if (tok == nullptr)
       xbt_die("Start and end address of the map are not concatenated by a hyphen (-). Recovery impossible.");
 
@@ -218,7 +215,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = std::strtok(nullptr, "-");
+    tok = strtok_r(nullptr, "-", &saveptr);
     if (tok == nullptr)
       xbt_abort();
 
@@ -268,7 +265,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
       xbt_abort();
 
     /* Get the device major:minor bytes */
-    tok = std::strtok(lfields[3], ":");
+    tok = strtok_r(lfields[3], ":", &saveptr);
     if (tok == nullptr)
       xbt_abort();
 
@@ -277,7 +274,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = std::strtok(nullptr, ":");
+    tok = strtok_r(nullptr, ":", &saveptr);
     if (tok == nullptr)
       xbt_abort();
 
@@ -302,8 +299,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     ret.push_back(std::move(memreg));
   }
 
-  std::free(line);
-  std::fclose(fp);
+  fp.close();
 #elif defined __FreeBSD__
   struct procstat *prstat;
   struct kinfo_proc *proc;

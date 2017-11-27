@@ -7,7 +7,7 @@
  * Associated data and metadata are used as follows:
  *
  *                                                                    mmap #1
- *    `allocs' dict                                                     ---- -.
+ *    `allocs' map                                                      ---- -.
  *    ----------      shared_data_t               shared_metadata_t   / |  |  |
  * .->| <name> | ---> -------------------- <--.   -----------------   | |  |  |
  * |  ----------      | fd of <name>     |    |   | size of mmap  | --| |  |  |
@@ -15,7 +15,7 @@
  * `----------------- | <name>           |    |   -----------------     ----  |
  *                    --------------------    |   ^                           |
  *                                            |   |                           |
- *                                            |   |   `allocs_metadata' dict  |
+ *                                            |   |   `allocs_metadata' map   |
  *                                            |   |   ----------------------  |
  *                                            |   `-- | <addr of mmap #1>  |<-'
  *                                            |   .-- | <addr of mmap #2>  |<-.
@@ -36,20 +36,16 @@
 #include <map>
 #include <cstring>
 
-#include "private.h"
 #include "private.hpp"
-#include "xbt/dict.h"
-#include "xbt/ex.hpp"
-#include <errno.h>
+#include <cerrno>
 
 #include <sys/types.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
-#include <sys/stat.h>
+#include <cstdio>
 #include <fcntl.h>
-#include <string.h>
-#include <stdio.h>
+#include <sys/stat.h>
 
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
@@ -69,61 +65,33 @@ namespace{
  *  This information is used by SMPI_SHARED_MALLOC to allocate  some shared memory for all simulated processes.
  */
 
-class smpi_source_location {
+class smpi_source_location : public std::string {
 public:
-  smpi_source_location(const char* filename, int line)
-      : filename(xbt_strdup(filename)), filename_length(strlen(filename)), line(line)
+  smpi_source_location() = default;
+  smpi_source_location(const char* filename, int line) : std::string(std::string(filename) + ":" + std::to_string(line))
   {
-  }
-
-  /** Pointer to a static string containing the file name */
-  char* filename      = nullptr;
-  int filename_length = 0;
-  int line            = 0;
-
-  bool operator==(smpi_source_location const& that) const
-  {
-    return filename_length == that.filename_length && line == that.line &&
-           std::memcmp(filename, that.filename, filename_length) == 0;
-  }
-  bool operator!=(smpi_source_location const& that) const { return not(*this == that); }
-};
-}
-
-namespace std {
-
-template <> class hash<smpi_source_location> {
-public:
-  typedef smpi_source_location argument_type;
-  typedef std::size_t result_type;
-  result_type operator()(smpi_source_location const& loc) const
-  {
-    return xbt_str_hash_ext(loc.filename, loc.filename_length) ^
-           xbt_str_hash_ext((const char*)&loc.line, sizeof(loc.line));
   }
 };
-}
 
-namespace{
-
-typedef struct {
+struct shared_data_t {
   int fd    = -1;
   int count = 0;
-} shared_data_t;
+};
 
-std::unordered_map<smpi_source_location, shared_data_t> allocs;
-typedef std::unordered_map<smpi_source_location, shared_data_t>::value_type shared_data_key_type;
+std::unordered_map<smpi_source_location, shared_data_t, std::hash<std::string>> allocs;
+typedef decltype(allocs)::value_type shared_data_key_type;
 
-typedef struct {
+struct shared_metadata_t {
   size_t size;
   size_t allocated_size;
   void *allocated_ptr;
   std::vector<std::pair<size_t, size_t>> private_blocks;
   shared_data_key_type* data;
-} shared_metadata_t;
+};
 
 std::map<void*, shared_metadata_t> allocs_metadata;
-xbt_dict_t calls = nullptr;           /* Allocated on first use */
+std::map<std::string, void*> calls;
+
 #ifndef WIN32
 static int smpi_shared_malloc_bogusfile           = -1;
 static int smpi_shared_malloc_bogusfile_huge_page  = -1;
@@ -136,7 +104,7 @@ void smpi_shared_destroy()
 {
   allocs.clear();
   allocs_metadata.clear();
-  xbt_dict_free(&calls);
+  calls.clear();
 }
 
 static size_t shm_size(int fd) {
@@ -181,7 +149,7 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
   auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
   auto data = res.first;
   if (res.second) {
-    // The insertion did not take place.
+    // The new element was inserted.
     // Generate a shared memory name from the address of the shared_data:
     char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
     snprintf(shmname, 31, "/shmalloc%p", &*data);
@@ -223,8 +191,8 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 
 void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
 {
-  char *huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
-  bool use_huge_page = huge_page_mount_point[0] != '\0';
+  std::string huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
+  bool use_huge_page                = not huge_page_mount_point.empty();
 #ifndef MAP_HUGETLB /* If the system header don't define that mmap flag */
   xbt_assert(not use_huge_page,
              "Huge pages are not available on your system, you cannot use the smpi/shared-malloc-hugepage option.");
@@ -264,24 +232,21 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
    * We cannot use a same file for the two type of calls, since the first one needs to be
    * opened in a hugetlbfs mount point whereas the second needs to be a "classical" file. */
   if(use_huge_page && smpi_shared_malloc_bogusfile_huge_page == -1) {
-    const char *const array[] = {huge_page_mount_point, "simgrid-shmalloc-XXXXXX", nullptr};
-    char *huge_page_filename = xbt_str_join_array(array, "/");
-    smpi_shared_malloc_bogusfile_huge_page = mkstemp(huge_page_filename);
-    XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename);
-    unlink(huge_page_filename);
-    xbt_free(huge_page_filename);
+    std::string huge_page_filename         = huge_page_mount_point + "/simgrid-shmalloc-XXXXXX";
+    smpi_shared_malloc_bogusfile_huge_page = mkstemp((char*)huge_page_filename.c_str());
+    XBT_DEBUG("bogusfile_huge_page: %s\n", huge_page_filename.c_str());
+    unlink(huge_page_filename.c_str());
   }
   if(smpi_shared_malloc_bogusfile == -1) {
-    char *name                   = xbt_strdup("/tmp/simgrid-shmalloc-XXXXXX");
+    char name[]                  = "/tmp/simgrid-shmalloc-XXXXXX";
     smpi_shared_malloc_bogusfile = mkstemp(name);
     XBT_DEBUG("bogusfile         : %s\n", name);
     unlink(name);
-    xbt_free(name);
-    char* dumb = (char*)calloc(1, smpi_shared_malloc_blocksize);
+    char* dumb  = new char[smpi_shared_malloc_blocksize](); // zero initialized
     ssize_t err = write(smpi_shared_malloc_bogusfile, dumb, smpi_shared_malloc_blocksize);
     if(err<0)
       xbt_die("Could not write bogus file for shared malloc");
-    xbt_free(dumb);
+    delete[] dumb;
   }
 
   int mmap_base_flag = MAP_FIXED | MAP_SHARED | MAP_POPULATE;
@@ -306,9 +271,9 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
               "stop_offset (%zu) should be lower than its successor start offset (%zu)", stop_offset, shared_block_offsets[2*i_block+2]);
     size_t start_block_offset = ALIGN_UP(start_offset, smpi_shared_malloc_blocksize);
     size_t stop_block_offset = ALIGN_DOWN(stop_offset, smpi_shared_malloc_blocksize);
-    for (unsigned block_id=0, i = start_block_offset / smpi_shared_malloc_blocksize; i < stop_block_offset / smpi_shared_malloc_blocksize; block_id++, i++) {
-      XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %d", block_id);
-      void* pos = (void*)((unsigned long)mem + i * smpi_shared_malloc_blocksize);
+    for (size_t offset = start_block_offset; offset < stop_block_offset; offset += smpi_shared_malloc_blocksize) {
+      XBT_DEBUG("\t\tglobal shared allocation, mmap block offset %zx", offset);
+      void* pos = (void*)((unsigned long)mem + offset);
       void* res = mmap(pos, smpi_shared_malloc_blocksize, PROT_READ | PROT_WRITE, mmap_flag,
                        huge_fd, 0);
       xbt_assert(res == pos, "Could not map folded virtual memory (%s). Do you perhaps need to increase the "
@@ -347,7 +312,7 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
 
   shared_metadata_t newmeta;
   //register metadata for memcpy avoidance
-  shared_data_key_type* data = (shared_data_key_type*)xbt_malloc(sizeof(shared_data_key_type));
+  shared_data_key_type* data = new shared_data_key_type;
   data->second.fd = -1;
   data->second.count = 1;
   newmeta.size = size;
@@ -380,8 +345,8 @@ void *smpi_shared_malloc(size_t size, const char *file, int line) {
     size_t shared_block_offsets[2] = {0, size};
     return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
   }
-  XBT_DEBUG("Classic malloc %zu", size);
-  return xbt_malloc(size);
+  XBT_DEBUG("Classic allocation of %zu bytes", size);
+  return ::operator new(size);
 }
 
 int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
@@ -390,7 +355,7 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_bl
     return 0;
   if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
     auto low = allocs_metadata.lower_bound(ptr);
-    if (low->first==ptr) {
+    if (low != allocs_metadata.end() && low->first == ptr) {
       private_blocks = low->second.private_blocks;
       *offset = 0;
       return 1;
@@ -412,11 +377,11 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_bl
 
 std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>> vec, size_t offset, size_t buff_size) {
     std::vector<std::pair<size_t, size_t>> result;
-    for(auto block: vec) {
-        auto new_block = std::make_pair(std::min(std::max((size_t)0, block.first-offset), buff_size),
-                                        std::min(std::max((size_t)0, block.second-offset), buff_size));
-        if(new_block.second > 0 && new_block.first < buff_size)
-            result.push_back(new_block);
+    for (auto const& block : vec) {
+      auto new_block = std::make_pair(std::min(std::max((size_t)0, block.first - offset), buff_size),
+                                      std::min(std::max((size_t)0, block.second - offset), buff_size));
+      if (new_block.second > 0 && new_block.first < buff_size)
+        result.push_back(new_block);
     }
     return result;
 }
@@ -475,59 +440,31 @@ void smpi_shared_free(void *ptr)
     if (meta != allocs_metadata.end()){
       meta->second.data->second.count--;
       if(meta->second.data->second.count==0)
-        xbt_free(meta->second.data);
+        delete meta->second.data;
     }
 
     munmap(ptr, meta->second.size);
   } else {
-    XBT_DEBUG("Classic free of %p", ptr);
-    xbt_free(ptr);
+    XBT_DEBUG("Classic deallocation of %p", ptr);
+    ::operator delete(ptr);
   }
 }
 #endif
 
 int smpi_shared_known_call(const char* func, const char* input)
 {
-  char* loc = bprintf("%s:%s", func, input);
-  int known = 0;
-
-  if (calls==nullptr) {
-    calls = xbt_dict_new_homogeneous(nullptr);
-  }
-  try {
-    xbt_dict_get(calls, loc); /* Succeed or throw */
-    known = 1;
-    xbt_free(loc);
-  }
-  catch (xbt_ex& ex) {
-    xbt_free(loc);
-    if (ex.category != not_found_error)
-      throw;
-  }
-  catch(...) {
-    xbt_free(loc);
-    throw;
-  }
-  return known;
+  std::string loc = std::string(func) + ":" + input;
+  return calls.find(loc) != calls.end();
 }
 
 void* smpi_shared_get_call(const char* func, const char* input) {
-  char* loc = bprintf("%s:%s", func, input);
+  std::string loc = std::string(func) + ":" + input;
 
-  if (calls == nullptr)
-    calls    = xbt_dict_new_homogeneous(nullptr);
-  void* data = xbt_dict_get(calls, loc);
-  xbt_free(loc);
-  return data;
+  return calls.at(loc);
 }
 
 void* smpi_shared_set_call(const char* func, const char* input, void* data) {
-  char* loc = bprintf("%s:%s", func, input);
-
-  if (calls == nullptr)
-    calls = xbt_dict_new_homogeneous(nullptr);
-  xbt_dict_set(calls, loc, data, nullptr);
-  xbt_free(loc);
+  std::string loc = std::string(func) + ":" + input;
+  calls[loc]      = data;
   return data;
 }
-

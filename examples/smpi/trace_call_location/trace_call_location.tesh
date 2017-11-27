@@ -4,7 +4,7 @@
 
 p Test SMPI with call-location tracing. This means that the binary must have
 p already been compiled with the -trace-call-location switch.
-$ ../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/trace_call_location/smpi_trace_call_location --cfg=smpi/host-speed:-1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
+$ ../../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ./smpi_trace_call_location --cfg=smpi/host-speed:-1 --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
 
 $ grep --quiet "12 0.* 2 1 5 .*trace_call_location\.c\" 14$" ./smpi_trace.trace 
 

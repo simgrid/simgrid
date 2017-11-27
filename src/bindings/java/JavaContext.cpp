@@ -6,8 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "JavaContext.hpp"
-#include "jxbt_utilities.h"
-#include "src/simix/smx_private.h"
+#include "jxbt_utilities.hpp"
+#include "src/simix/smx_private.hpp"
 #include "xbt/ex.hpp"
 
 #include <functional>
@@ -47,10 +47,7 @@ JavaContext* JavaContextFactory::create_context(
 
 void JavaContextFactory::run_all()
 {
-  xbt_dynar_t processes = SIMIX_process_get_runnable();
-  smx_actor_t process;
-  unsigned int cursor;
-  xbt_dynar_foreach(processes, cursor, process) {
+  for (smx_actor_t const& process : simgrid::simix::process_get_runnable()) {
     static_cast<JavaContext*>(process->context)->resume();
   }
 }
@@ -133,7 +130,7 @@ void JavaContext::stop()
     // (as the ones created for the VM migration). The Java exception will not be catched anywhere.
     // Bad things happen currently if these actors get killed, unfortunately.
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError",
-                       std::string("Process ") + this->process()->cname() + " killed from file JavaContext.cpp");
+                       std::string("Process ") + this->process()->getCname() + " killed from file JavaContext.cpp");
 
     // (remember that throwing a java exception from C does not break the C execution path.
     //  Instead, it marks the exception to be raised when returning to the Java world and

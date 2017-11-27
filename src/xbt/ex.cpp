@@ -41,8 +41,8 @@
 /* The extensions made for the SimGrid project can either be distributed    */
 /* under the same license, or under the LGPL v2.1                           */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include <xbt/backtrace.hpp>
 #include "src/internal_config.h"           /* execinfo when available */
@@ -52,17 +52,20 @@
 #include "xbt/log.hpp"
 #include "xbt/backtrace.h"
 #include "xbt/backtrace.hpp"
-#include "xbt/str.h"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
 
 #include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 
+// Don't define ~xbt_ex() in ex.hpp.  It is defined here to ensure that there is an unique definition of xt_ex in
+// libsimgrid, but not in libsimgrid-java.  Otherwise, sone tests are broken (seen with clang/libc++ on freebsd).
+xbt_ex::~xbt_ex() = default;
+
 void _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func)
 {
   xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func), message);
-  free(message);
+  xbt_free(message);
   e.category = errcat;
   e.value = value;
   throw e;
@@ -113,8 +116,8 @@ const char *xbt_ex_catname(xbt_errcat_t cat)
 }
 
 #ifdef SIMGRID_TEST
-#include <stdio.h>
 #include "xbt/ex.h"
+#include <cstdio>
 #include <xbt/ex.hpp>
 
 XBT_TEST_SUITE("xbt_ex", "Exception Handling");
@@ -186,7 +189,7 @@ XBT_TEST_UNIT("variables", test_variables, "variable value preservation")
 {
   xbt_ex_t ex;
   int r1;
-  int XBT_ATTRIB_UNUSED r2;
+  XBT_ATTRIB_UNUSED int r2;
   int v1;
   int v2;
 

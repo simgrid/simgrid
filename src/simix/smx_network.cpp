@@ -15,8 +15,8 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
-#include "src/mc/mc_replay.h"
-#include "src/simix/smx_private.h"
+#include "src/mc/mc_replay.hpp"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 
@@ -84,7 +84,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
-    smx_simcall_t simcall, smx_actor_t src_proc, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
+    smx_simcall_t /*simcall*/, smx_actor_t src_proc, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
     size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
     void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
     void (*copy_data_fun)(smx_activity_t, void*, size_t), // used to copy data if not default one
@@ -163,8 +163,8 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
-                                                      void* dst_buff, size_t* dst_buff_size,
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver,
+                                                      smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
                                                       simix_match_func_t match_fun,
                                                       void (*copy_data_fun)(smx_activity_t, void*, size_t), void* data,
                                                       double rate)
@@ -315,9 +315,10 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   /* otherwise set up a waiting timeout on the right side          */
   if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
-  } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
+  } else { /* we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host
+              fails */
     surf_action_t sleep = simcall->issuer->host->pimpl_cpu->sleep(timeout);
-    sleep->setData(&*synchro);
+    sleep->setData(synchro.get());
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
@@ -475,11 +476,11 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
       if (comm->src_proc->isSuspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->src_proc->cname(), comm->src_proc->host->getCname());
+                  comm->src_proc->getCname(), comm->src_proc->host->getCname());
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->dst_proc->cname(), comm->dst_proc->host->getCname());
+                  comm->dst_proc->getCname(), comm->dst_proc->host->getCname());
 
       comm->surf_comm->suspend();
     }
@@ -546,7 +547,6 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_SRC_HOST_FAILURE:
           if (simcall->issuer == comm->src_proc)
             simcall->issuer->context->iwannadie = 1;
-          //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
           else
             SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
           break;
@@ -554,7 +554,6 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_DST_HOST_FAILURE:
           if (simcall->issuer == comm->dst_proc)
             simcall->issuer->context->iwannadie = 1;
-          //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
           else
             SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
           break;
@@ -563,7 +562,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
                     "detached:%d",
                     synchro.get(), comm->src_proc ? comm->src_proc->host->getCname() : nullptr,
-                    comm->dst_proc ? comm->dst_proc->host->getCname() : nullptr, simcall->issuer->cname(),
+                    comm->dst_proc ? comm->dst_proc->host->getCname() : nullptr, simcall->issuer->getCname(),
                     simcall->issuer, comm->detached);
           if (comm->src_proc == simcall->issuer) {
             XBT_DEBUG("I'm source");
@@ -691,7 +690,7 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->dst_buff_size)
-    buff_size = MIN(buff_size, *(comm->dst_buff_size));
+    buff_size = std::min(buff_size, *(comm->dst_buff_size));
 
   /* Update the receiver's buffer size to the copied amount */
   if (comm->dst_buff_size)

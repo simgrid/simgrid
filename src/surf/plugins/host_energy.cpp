@@ -18,16 +18,14 @@
 
 /** @addtogroup plugin_energy
 
+This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
+simulated platform.
+To activate this plugin, first call sg_host_energy_plugin_init() before your #MSG_init(), and then use
+MSG_host_get_consumed_energy() to retrieve the consumption of a given host.
 
-This is the energy plugin, enabling to account not only for computation time,
-but also for the dissipated energy in the simulated platform.
-To activate this plugin, first call sg_host_energy_plugin_init() before your #MSG_init(),
-and then use MSG_host_get_consumed_energy() to retrieve the consumption of a given host.
-
-When the host is on, this energy consumption naturally depends on both the
-current CPU load and the host energy profile. According to our measurements,
-the consumption is somehow linear in the amount of cores at full speed,
-with an abnormality when all the cores are idle. The full details are in
+When the host is on, this energy consumption naturally depends on both the current CPU load and the host energy profile.
+According to our measurements, the consumption is somehow linear in the amount of cores at full speed, with an
+abnormality when all the cores are idle. The full details are in
 <a href="https://hal.inria.fr/hal-01523608">our scientific paper</a> on that topic.
 
 As a result, our energy model takes 4 parameters:
@@ -61,15 +59,14 @@ This is enough to compute the consumption as a function of the amount of loaded 
 
 ### What if a given core is only at load 50%?
 
-This is impossible in SimGrid because we recompute everything each time
-that the CPU starts or stops doing something. So if a core is at load 50% over
-a period, it means that it is at load 100% half of the time and at load 0% the
-rest of the time, and our model holds.
+This is impossible in SimGrid because we recompute everything each time that the CPU starts or stops doing something.
+So if a core is at load 50% over a period, it means that it is at load 100% half of the time and at load 0% the rest of
+the time, and our model holds.
 
 ### What if the host has only one core?
 
 In this case, the parameters \b OneCore and \b AllCores are obviously the same.
-Actually, SimGrid expect an energetic profile formated as 'Idle:Running' for mono-cores hosts.
+Actually, SimGrid expect an energetic profile formatted as 'Idle:Running' for mono-cores hosts.
 If you insist on passing 3 parameters in this case, then you must have the same value for \b OneCore and \b AllCores.
 
 \code{.xml}
@@ -81,8 +78,7 @@ If you insist on passing 3 parameters in this case, then you must have the same 
 
 ### How does DVFS interact with the host energy model?
 
-If your host has several DVFS levels (several pstates), then you should
-give the energetic profile of each pstate level:
+If your host has several DVFS levels (several pstates), then you should give the energetic profile of each pstate level:
 
 \code{.xml}
 <host id="HostC" power="100.0Mf,50.0Mf,20.0Mf" cores="4">
@@ -104,20 +100,17 @@ To change the pstate of a given CPU, use the following functions:
 
 ### How accurate are these models?
 
-This model cannot be more accurate than your instantiation:
-with the default values, your result will not be accurate at all. You can still get
-accurate energy prediction, provided that you carefully instantiate the model.
-The first step is to ensure that your timing prediction match perfectly. But this
-is only the first step of the path, and you really want to read
-<a href="https://hal.inria.fr/hal-01523608">this paper</a> to see all what you need
-to do before you can get accurate energy predictions.
-
+This model cannot be more accurate than your instantiation: with the default values, your result will not be accurate at
+all. You can still get accurate energy prediction, provided that you carefully instantiate the model.
+The first step is to ensure that your timing prediction match perfectly. But this is only the first step of the path,
+and you really want to read <a href="https://hal.inria.fr/hal-01523608">this paper</a> to see all what you need to do
+before you can get accurate energy predictions.
  */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
 
 namespace simgrid {
-namespace energy {
+namespace plugin {
 
 class PowerRange {
 public:
@@ -147,9 +140,8 @@ private:
   std::vector<PowerRange>
       power_range_watts_list; /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
 
-  /* We need to keep track of what pstate has been used, as we will sometimes
-   * be notified only *after* a pstate has been used (but we need to update the energy consumption
-   * with the old pstate!)
+  /* We need to keep track of what pstate has been used, as we will sometimes be notified only *after* a pstate has been
+   * used (but we need to update the energy consumption with the old pstate!)
    */
   int pstate = 0;
   const int pstate_off = -1;
@@ -162,7 +154,7 @@ public:
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
 
-/* Computes the consumption so far.  Called lazily on need. */
+/* Computes the consumption so far. Called lazily on need. */
 void HostEnergy::update()
 {
   double start_time  = this->last_updated;
@@ -182,7 +174,7 @@ void HostEnergy::update()
       // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
       cpu_load = 1;
     else
-      cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / current_speed;
+      cpu_load = host->pimpl_cpu->constraint()->get_usage() / current_speed;
 
     /** Divide by the number of cores here **/
     cpu_load /= host->pimpl_cpu->coreCount();
@@ -208,7 +200,7 @@ void HostEnergy::update()
 
     double energy_this_step = instantaneous_consumption * (finish_time - start_time);
 
-    // TODO Trace: Trace energy_this_step from start_time to finish_time in host->name()
+    // TODO Trace: Trace energy_this_step from start_time to finish_time in host->getName()
 
     this->total_energy = previous_energy + energy_this_step;
     this->last_updated = finish_time;
@@ -229,9 +221,12 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_g
 
   const char* off_power_str = host->getProperty("watt_off");
   if (off_power_str != nullptr) {
-    char* msg       = bprintf("Invalid value for property watt_off of host %s: %%s", host->getCname());
-    this->watts_off = xbt_str_parse_double(off_power_str, msg);
-    xbt_free(msg);
+    try {
+      this->watts_off = std::stod(std::string(off_power_str));
+    } catch (std::invalid_argument& ia) {
+      throw std::invalid_argument(std::string("Invalid value for property watt_off of host ") + host->getCname() +
+                                  ": " + off_power_str);
+    }
   }
   /* watts_off is 0 by default */
 }
@@ -254,6 +249,14 @@ double HostEnergy::getWattMaxAt(int pstate)
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
   xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->getCname());
+
+ /*
+  *    * Return watts_off if pstate == pstate_off
+  *       * this happens when host is off
+  */
+  if (this->pstate == pstate_off) {
+    return watts_off;
+  }
 
   /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */
@@ -315,7 +318,7 @@ void HostEnergy::initWattsRangeList()
   XBT_DEBUG("%s: profile: %s, cores: %d", host->getCname(), all_power_values_str, host->getCoreCount());
 
   int i = 0;
-  for (auto current_power_values_str : all_power_values) {
+  for (auto const& current_power_values_str : all_power_values) {
     /* retrieve the power values associated with the current pstate */
     std::vector<std::string> current_power_values;
     boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
@@ -330,7 +333,7 @@ void HostEnergy::initWattsRangeList()
       } else { // size == 3
         xbt_assert((current_power_values.at(1)) == (current_power_values.at(2)),
                    "Power properties incorrectly defined for host %s.\n"
-                   "The energy profile of mono-cores should be formated as 'Idle:FullSpeed' only.\n"
+                   "The energy profile of mono-cores should be formatted as 'Idle:FullSpeed' only.\n"
                    "If you go for a 'Idle:OneCore:AllCores' power profile on mono-cores, then OneCore and AllCores "
                    "must be equal.",
                    host->getCname());
@@ -360,7 +363,7 @@ void HostEnergy::initWattsRangeList()
 }
 }
 
-using simgrid::energy::HostEnergy;
+using simgrid::plugin::HostEnergy;
 
 /* **************************** events  callback *************************** */
 static void onCreation(simgrid::s4u::Host& host)
@@ -368,14 +371,14 @@ static void onCreation(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  //TODO Trace: set to zero the energy variable associated to host->name()
+  // TODO Trace: set to zero the energy variable associated to host->getName()
 
   host.extension_set(new HostEnergy(&host));
 }
 
 static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf::Action::State previous)
 {
-  for (simgrid::surf::Cpu* cpu : action->cpus()) {
+  for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
     if (host != nullptr) {
 
@@ -437,7 +440,7 @@ static void onSimulationEnd()
 }
 
 /* **************************** Public interface *************************** */
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup plugin_energy
  * \brief Enable host energy plugin
@@ -469,7 +472,7 @@ void sg_host_energy_update_all()
   simgrid::simix::kernelImmediate([]() {
     std::vector<simgrid::s4u::Host*> list;
     simgrid::s4u::Engine::getInstance()->getHostList(&list);
-    for (auto host : list)
+    for (auto const& host : list)
       if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) // Ignore virtual machines
         host->extension<HostEnergy>()->update();
   });
@@ -515,8 +518,7 @@ double sg_host_get_current_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  double cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->getSpeed();
+  double cpu_load = host->pimpl_cpu->constraint()->get_usage() / host->getSpeed();
   return host->extension<HostEnergy>()->getCurrentWattsValue(cpu_load);
 }
-
-SG_END_DECL()
+}

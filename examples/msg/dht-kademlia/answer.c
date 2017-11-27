@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -35,9 +35,9 @@ void answer_print(answer_t answer)
 {
   unsigned int cpt;
   node_contact_t contact;
-  XBT_INFO("Searching %08x, size %d", answer->destination_id, answer->size);
+  XBT_INFO("Searching %08x, size %u", answer->destination_id, answer->size);
   xbt_dynar_foreach(answer->nodes, cpt, contact) {
-    XBT_INFO("Node %08x: %08x is at distance %d", cpt, contact->id, contact->distance);
+    XBT_INFO("Node %08x: %08x is at distance %u", cpt, contact->id, contact->distance);
   }
 }
 

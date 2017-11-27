@@ -6,8 +6,9 @@
 /* Short or medium size message and power-of-two no. of processes. Use
  * recursive doubling algorithm */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
 #include "smpi_status.hpp"
+#include <algorithm>
 
 namespace simgrid{
 namespace smpi{
@@ -48,7 +49,7 @@ int Coll_allgatherv_mpich_rdb::allgatherv (
 
   recvtype->extent(&recvtype_true_lb, &recvtype_true_extent);
 
-  tmp_buf_rl= (void*)smpi_get_tmp_sendbuffer(total_count*(MAX(recvtype_true_extent,recvtype_extent)));
+  tmp_buf_rl = (void*)smpi_get_tmp_sendbuffer(total_count * std::max(recvtype_true_extent, recvtype_extent));
 
   /* adjust for potential negative lower bound in datatype */
   tmp_buf = (void *)((char*)tmp_buf_rl - recvtype_true_lb);

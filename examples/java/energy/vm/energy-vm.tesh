@@ -1,0 +1,21 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} energy/vm/Main ${srcdir:=.}/../platforms/energy_platform.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [MyHost1:energy VM runner:(1) 0.000000] [java/INFO] Creating and starting two VMs
+> [MyHost1:energy VM runner:(1) 0.000000] [java/INFO] Create two tasks on Host1: one inside a VM, the other directly on the host
+> [MyHost1:energy VM runner:(1) 0.000000] [java/INFO] Create two tasks on Host2: both directly on the host
+> [MyHost1:energy VM runner:(1) 0.000000] [java/INFO] Create two tasks on Host3: both inside a VM
+> [MyHost1:energy VM runner:(1) 0.000000] [java/INFO] Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, so they run for 6 seconds)
+> [MyHost1:energy VM runner:(1) 5.000000] [java/INFO] Wait another 5 seconds. The tasks stop at some point in between
+> [MyHost2:p22:(5) 6.000000] [java/INFO] This worker is done.
+> [MyHost3:p312:(7) 6.000000] [java/INFO] This worker is done.
+> [MyHost3:p31:(6) 6.000000] [java/INFO] This worker is done.
+> [vmHost1:p12:(3) 6.000000] [java/INFO] This worker is done.
+> [vmHost1:p11:(2) 6.000000] [java/INFO] This worker is done.
+> [vmHost3:p21:(4) 6.000000] [java/INFO] This worker is done.
+> [10.000000] [surf_energy/INFO] Total energy consumption: 4320.000000 Joules (used hosts: 4320.000000 Joules; unused/idle hosts: 0.000000)
+> [10.000000] [java/INFO] MSG_main finished; Cleaning up the simulation...
+> [10.000000] [surf_energy/INFO] Energy consumption of host MyHost1: 1120.000000 Joules
+> [10.000000] [surf_energy/INFO] Energy consumption of host MyHost2: 1600.000000 Joules
+> [10.000000] [surf_energy/INFO] Energy consumption of host MyHost3: 1600.000000 Joules

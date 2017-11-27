@@ -60,7 +60,7 @@ make -j$NUMPROC
 JACOCO_PATH="/usr/local/share/jacoco"
 export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/lib/jacocoagent.jar"
 
-ctest -D ExperimentalTest -j$NUMPROC || true
+ctest --no-compress-output -D ExperimentalTest -j$NUMPROC || true
 ctest -D ExperimentalCoverage || true
 
 unset JAVA_TOOL_OPTIONS
@@ -75,7 +75,7 @@ if [ -f Testing/TAG ] ; then
     ant -f $WORKSPACE/tools/jenkins/jacoco.xml -Dexamplesrcdir=$WORKSPACE -Dbuilddir=$BUILDFOLDER/${sourcepath} -Djarfile=$BUILDFOLDER/simgrid.jar -Djacocodir=${JACOCO_PATH}/lib
     #convert jacoco xml reports in cobertura xml reports
     cover2cover.py $BUILDFOLDER/${sourcepath}/report.xml .. ../src/bindings/java src/bindings/java > $WORKSPACE/java_coverage_${i}.xml
-    i=$(($i + 1))
+    i=$((i + 1))
   done
 
    #convert all gcov reports to xml cobertura reports

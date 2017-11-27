@@ -10,7 +10,7 @@
 #define XBT_CONFIG_H
 
 #include <stdarg.h>
-#include <xbt/dynar.h>
+#include <xbt/base.h>
 
 /** @addtogroup XBT_config
  *  @brief Changing the configuration of SimGrid components (grounding feature)
@@ -72,8 +72,8 @@ XBT_PUBLIC(void) xbt_cfg_set_parse(const char *options);
 /* Set the value of the cell \a name in \a cfg with the provided value.*/
 XBT_PUBLIC(void) xbt_cfg_set_int       (const char *name, int val);
 XBT_PUBLIC(void) xbt_cfg_set_double    (const char *name, double val);
-XBT_PUBLIC(void) xbt_cfg_set_string    (const char *name, const char *val);
 XBT_PUBLIC(void) xbt_cfg_set_boolean   (const char *name, const char *val);
+XBT_PUBLIC(void) xbt_cfg_set_string(const char* name, const char* val);
 XBT_PUBLIC(void) xbt_cfg_set_as_string(const char *name, const char *val);
 
 /*
@@ -137,7 +137,6 @@ XBT_PUBLIC(void) xbt_cfg_help();
 
 XBT_PUBLIC(int)    xbt_cfg_get_int(const char *name);
 XBT_PUBLIC(double) xbt_cfg_get_double(const char *name);
-XBT_PUBLIC(char *) xbt_cfg_get_string(const char *name);
 XBT_PUBLIC(int)    xbt_cfg_get_boolean(const char *name);
 
 /** @} */

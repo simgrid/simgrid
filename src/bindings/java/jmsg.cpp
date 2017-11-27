@@ -5,23 +5,26 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <locale.h>
+#include <algorithm>
+#include <clocale>
+#include <string>
 
 #include "simgrid/msg.h"
 #include "simgrid/plugins/energy.h"
+#include "simgrid/plugins/file_system.h"
 #include "simgrid/simix.h"
 
 #include "simgrid/s4u/Host.hpp"
 
-#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
-#include "jmsg_process.h"
-#include "jmsg_as.h"
+#include "jmsg.hpp"
+#include "jmsg_as.hpp"
 #include "jmsg_host.h"
+#include "jmsg_process.h"
 #include "jmsg_storage.h"
 #include "jmsg_task.h"
-#include "jxbt_utilities.h"
-#include "jmsg.h"
+#include "jxbt_utilities.hpp"
 
 #include "JavaContext.hpp"
 
@@ -36,7 +39,7 @@
 #endif
 /* end of eclipse-mandated pimple */
 
-SG_BEGIN_DECL()
+extern "C" {
 
 int JAVA_HOST_LEVEL = -1;
 
@@ -84,10 +87,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass
   return (jdouble) MSG_get_clock();
 }
 
-static void __JAVA_host_priv_free(void *host)
-{
-}
-
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
   int argc = 0;
@@ -122,7 +121,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
 
   MSG_init(&argc, argv);
 
-  JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(__JAVA_host_priv_free);
+  JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   for (int index = 0; index < argc - 1; index++) {
     env->SetObjectArrayElement(jargs, index, (jstring)env->NewStringUTF(argv[index + 1]));
@@ -154,7 +153,7 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass
   xbt_dynar_free(&hosts);
 
   /* Cleanup java storages */
-  for (auto elm : java_storage_map)
+  for (auto const& elm : java_storage_map)
     jstorage_unref(env, elm.second);
 }
 
@@ -242,7 +241,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
   sg_host_energy_plugin_init();
 }
 
-SG_END_DECL()
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit()
+{
+  sg_storage_file_system_init();
+}
+} // extern "C"
 
 /** Run a Java org.simgrid.msg.Process
  *
@@ -269,9 +272,9 @@ static int java_main(int argc, char *argv[])
   simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
 
   //Change the "." in class name for "/".
-  xbt_str_subst(argv[0],'.','/',0);
-  jclass class_Process = env->FindClass(argv[0]);
-  xbt_str_subst(argv[0],'/','.',0);
+  std::string arg0 = argv[0];
+  std::replace(begin(arg0), end(arg0), '.', '/');
+  jclass class_Process = env->FindClass(arg0.c_str());
   //Retrieve the methodID for the constructor
   xbt_assert((class_Process != nullptr), "Class not found (%s). The deployment file must use the fully qualified class name, including the package. The case is important.", argv[0]);
   jmethodID constructor_Process = env->GetMethodID(class_Process, "<init>", "(Lorg/simgrid/msg/Host;Ljava/lang/String;[Ljava/lang/String;)V");

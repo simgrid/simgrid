@@ -1,4 +1,4 @@
-$ ${bindir:=.}/../../examples/msg/app-masterworker/app-masterworker ${srcdir:=.}/../../examples/platforms/small_platform.lua ${srcdir:=.}/../../examples/msg/app-masterworker/app-masterworker_d.xml
+$ ${bindir:=.}/msg/app-masterworker/app-masterworker ${srcdir:=.}/../../examples/platforms/small_platform.lua ${srcdir:=.}/../../examples/msg/app-masterworker/app-masterworker_d.xml
 > [Tremblay:master:(1) 0.000000] [msg_app_masterworker/INFO] Got 5 workers and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_app_masterworker/INFO] Sending "Task_0" (of 20) to mailbox "worker-0"
 > [Tremblay:master:(1) 0.002265] [msg_app_masterworker/INFO] Sending "Task_1" (of 20) to mailbox "worker-1"
@@ -28,7 +28,7 @@ $ ${bindir:=.}/../../examples/msg/app-masterworker/app-masterworker ${srcdir:=.}
 > [Bourassa:worker:(6) 5.133855] [msg_app_masterworker/INFO] I'm done. See you!
 > [5.133855] [msg_app_masterworker/INFO] Simulation time 5.13386
 
-$ $SG_TEST_EXENV ${bindir:=.}/../../examples/msg/app-token-ring/app-token-ring ${srcdir:=.}/../../examples/platforms/routing_cluster.lua "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/msg/app-token-ring/app-token-ring ${srcdir:=.}/../../examples/platforms/routing_cluster.lua "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Number of hosts '6'
 > [  0.000000] (1:0@host1) Host "0" send 'Token' to Host "1"
 > [  0.017354] (2:1@host2) Host "1" received "Token"

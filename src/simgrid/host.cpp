@@ -12,7 +12,7 @@
 #include "xbt/dict.h"
 
 #include "src/kernel/routing/NetPoint.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -37,12 +37,12 @@ void sg_host_exit()
    * the tests.
    */
   std::vector<std::string> names = std::vector<std::string>();
-  for (auto kv : simgrid::s4u::host_list)
+  for (auto const& kv : simgrid::s4u::host_list)
     names.push_back(kv.second->getName());
 
   std::sort(names.begin(), names.end());
 
-  for (auto name : names)
+  for (auto const& name : names)
     simgrid::s4u::host_list.at(name)->destroy();
 
   // host_list.clear(); This would be sufficient if the dict would contain smart_ptr. It's now useless
@@ -97,7 +97,7 @@ xbt_dynar_t sg_hosts_as_dynar()
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
-  for (auto kv : simgrid::s4u::host_list) {
+  for (auto const& kv : simgrid::s4u::host_list) {
     simgrid::s4u::Host* host = kv.second;
     if (host && host->pimpl_netpoint && host->pimpl_netpoint->isHost())
       xbt_dynar_push(res, &host);
@@ -123,10 +123,10 @@ void sg_host_user_destroy(sg_host_t host) {
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
-  for (auto elm : host->getMountedStorages()) {
+  for (auto const& elm : host->getMountedStorages()) {
     const char* mount_name = elm.first.c_str();
     sg_storage_t storage   = elm.second;
-    xbt_dict_set(res, mount_name, (void*)storage->getName(), nullptr);
+    xbt_dict_set(res, mount_name, (void*)storage->getCname(), nullptr);
   }
 
   return res;
@@ -136,7 +136,7 @@ xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
   std::vector<const char*>* storage_vector = new std::vector<const char*>();
   xbt_dynar_t storage_dynar = xbt_dynar_new(sizeof(const char*), nullptr);
   host->getAttachedStorages(storage_vector);
-  for (auto name : *storage_vector)
+  for (auto const& name : *storage_vector)
     xbt_dynar_push(storage_dynar, &name);
   delete storage_vector;
   return storage_dynar;
@@ -180,7 +180,14 @@ void sg_host_set_pstate(sg_host_t host,int pstate) {
 
 /** @brief Get the properties of an host */
 xbt_dict_t sg_host_get_properties(sg_host_t host) {
-  return host->getProperties();
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::map<std::string, std::string>* props = host->getProperties();
+  if (props == nullptr)
+    return nullptr;
+  for (auto const& elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
 }
 
 /** \ingroup m_host_management
@@ -192,8 +199,14 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
 */
 const char *sg_host_get_property_value(sg_host_t host, const char *name)
 {
-  return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
+  return host->getProperty(name);
 }
+
+void sg_host_set_property_value(sg_host_t host, const char* name, const char* value)
+{
+  host->setProperty(name, value);
+}
+
 /**
  * \brief Find a route between two hosts
  *
@@ -204,8 +217,8 @@ const char *sg_host_get_property_value(sg_host_t host, const char *name)
 void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, &vlinks, nullptr);
-  for (auto link : vlinks)
+  from->routeTo(to, vlinks, nullptr);
+  for (auto const& link : vlinks)
     xbt_dynar_push(links, &link);
 }
 /**
@@ -218,7 +231,7 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   double res = 0;
-  from->routeTo(to, &vlinks, &res);
+  from->routeTo(to, vlinks, &res);
   return res;
 }
 /**
@@ -232,8 +245,8 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
   double min_bandwidth = -1.0;
 
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, &vlinks, nullptr);
-  for (auto link : vlinks) {
+  from->routeTo(to, vlinks, nullptr);
+  for (auto const& link : vlinks) {
     double bandwidth = link->bandwidth();
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
       min_bandwidth = bandwidth;
@@ -244,21 +257,15 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 /** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
 {
-  xbt_dict_t props;
-
   XBT_INFO("Displaying host %s", host->getCname());
   XBT_INFO("  - speed: %.0f", host->getSpeed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  props = host->getProperties();
+  std::map<std::string, std::string>* props = host->getProperties();
 
-  if (not xbt_dict_is_empty(props)) {
+  if (not props->empty()) {
     XBT_INFO("  - properties:");
-    xbt_dict_cursor_t cursor = nullptr;
-    char* key;
-    char* data;
-
-    xbt_dict_foreach(props,cursor,key,data) {
-      XBT_INFO("    %s->%s",key,data);
+    for (auto const& elm : *props) {
+      XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
     }
   }
 }

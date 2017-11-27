@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
- #include "../colls_private.h"
- #include "../coll_tuned_topo.h"
+#include "../coll_tuned_topo.hpp"
+#include "../colls_private.hpp"
 
 #define MAXTREEFANOUT 32
 
@@ -85,7 +85,7 @@ int Coll_bcast_ompi_pipeline::bcast( void* buffer,
     tmpbuf = (char *) buffer;
 
     if( tree->tree_nextsize != 0 ) {
-        send_reqs = xbt_new(MPI_Request, tree->tree_nextsize  );
+      send_reqs = new MPI_Request[tree->tree_nextsize];
     }
 
     /* Root code */
@@ -205,8 +205,8 @@ int Coll_bcast_ompi_pipeline::bcast( void* buffer,
         Request::wait( &recv_reqs[req_index], MPI_STATUS_IGNORE );
     }
 
-    if( NULL != send_reqs ) free(send_reqs);
-    xbt_free(tree);
+    delete[] send_reqs;
+    ompi_coll_tuned_topo_destroy_tree(&tree);
 
     return (MPI_SUCCESS);
 }

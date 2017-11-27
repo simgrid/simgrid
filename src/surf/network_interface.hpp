@@ -9,6 +9,7 @@
 #include "simgrid/s4u/Link.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "surf/maxmin.hpp"
 #include "xbt/base.h"
 #include <list>
 #include <unordered_map>
@@ -43,7 +44,7 @@ public:
    * @param latency The initial latency of the Link in seconds
    * @param policy The sharing policy of the Link
    */
-  virtual LinkImpl* createLink(const char* name, double bandwidth, double latency,
+  virtual LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                                e_surf_link_sharing_policy_t policy) = 0;
 
   /**
@@ -114,7 +115,7 @@ public:
  */
 class LinkImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 protected:
-  LinkImpl(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
+  LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, lmm_constraint_t constraint);
   ~LinkImpl() override;
 
 public:
@@ -171,9 +172,10 @@ private:
   static std::unordered_map<std::string, LinkImpl*>* links;
 
 public:
-  static LinkImpl* byName(const char* name);
+  static LinkImpl* byName(std::string name);
   static int linksCount();
   static LinkImpl** linksList();
+  static void linksList(std::vector<s4u::Link*>* linkList);
   static void linksExit();
 };
 
@@ -208,10 +210,10 @@ public:
   void setState(simgrid::surf::Action::State state) override;
   virtual std::list<LinkImpl*> links();
 
-  double latency_;
-  double latCurrent_;
-  double weight_;
-  double rate_;
+  double latency_    = {};
+  double latCurrent_ = {};
+  double weight_     = {};
+  double rate_       = {};
 };
 }
 }

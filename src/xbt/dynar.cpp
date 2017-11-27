@@ -1,6 +1,6 @@
 /* a generic DYNamic ARray implementation.                                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
+/* Copyright (c) 2004-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -119,7 +119,7 @@ extern "C" void xbt_dynar_free_data(xbt_dynar_t dynar)
 {
   xbt_dynar_reset(dynar);
   if (dynar)
-    free(dynar->data);
+    xbt_free(dynar->data);
 }
 
 /** @brief Destructor of the structure not touching to the content
@@ -133,8 +133,8 @@ extern "C" void xbt_dynar_free_container(xbt_dynar_t* dynar)
 {
   if (dynar && *dynar) {
     xbt_dynar_t d = *dynar;
-    free(d->data);
-    free(d);
+    xbt_free(d->data);
+    xbt_free(d);
     *dynar = nullptr;
   }
 }
@@ -614,53 +614,6 @@ extern "C" xbt_dynar_t xbt_dynar_sort_strings(xbt_dynar_t dynar)
   return dynar; // to enable functional uses
 }
 
-/** @brief Sorts a dynar according to their color assuming elements can have only three colors.
- * Since there are only three colors, it is linear and much faster than a classical sort.
- * See for example http://en.wikipedia.org/wiki/Dutch_national_flag_problem
- *
- * \param dynar the dynar to sort
- * \param color the color function of type (int (compar_fn*) (void*) (void*)). The return value of color is assumed to
- *        be 0, 1, or 2.
- *
- * At the end of the call, elements with color 0 are at the beginning of the dynar, elements with color 2 are at the
- * end and elements with color 1 are in the middle.
- *
- * Remark: if the elements stored in the dynar are structures, the color function has to retrieve the field to sort
- * first.
- */
-extern "C" void xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pvoid_t color)
-{
-  unsigned long int i;
-  unsigned long int p = -1;
-  unsigned long int q = dynar->used;
-  const unsigned long elmsize = dynar->elmsize;
-  char* tmp[elmsize];
-  void *elm;
-
-  for (i = 0; i < q;) {
-    void *elmi = _xbt_dynar_elm(dynar, i);
-    int colori = color(elmi);
-
-    if (colori == 1) {
-      ++i;
-    } else {
-      if (colori == 0) {
-        ++p;
-        elm = _xbt_dynar_elm(dynar, p);
-        ++i;
-      } else {                  /* colori == 2 */
-        --q;
-        elm = _xbt_dynar_elm(dynar, q);
-      }
-      if (elm != elmi) {
-        memcpy(tmp,  elm,  elmsize);
-        memcpy(elm,  elmi, elmsize);
-        memcpy(elmi, tmp,  elmsize);
-      }
-    }
-  }
-}
-
 /** @brief Transform a dynar into a nullptr terminated array.
  *
  *  \param dynar the dynar to transform
@@ -674,7 +627,7 @@ extern "C" void* xbt_dynar_to_array(xbt_dynar_t dynar)
   xbt_dynar_shrink(dynar, 1);
   memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
   res = dynar->data;
-  free(dynar);
+  xbt_free(dynar);
   return res;
 }
 
@@ -776,7 +729,6 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 
   for (int cpt = 0; cpt < NB_ELEM; cpt++)
     *(int *) xbt_dynar_get_ptr(d, cpt) = cpt;
-  /*     xbt_dynar_set(d,cpt,&cpt); */
 
   for (int cpt = 0; cpt < NB_ELEM; cpt++)
     *(int *) xbt_dynar_get_ptr(d, cpt) = cpt;
@@ -1073,7 +1025,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -1096,7 +1048,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_pop(d, &s2);
     xbt_test_assert(not strcmp(buf, s2), "The retrieved value is not the same than the injected one (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   /* 4. Free the resources */
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
@@ -1121,21 +1073,21 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2),
                     "The retrieved value is not the same than the injected one at the begining (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   for (int cpt = (NB_ELEM / 5) - 1; cpt >= 0; cpt--) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2),
                     "The retrieved value is not the same than the injected one in the middle (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   for (int cpt = NB_ELEM / 2; cpt < NB_ELEM; cpt++) {
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_shift(d, &s2);
     xbt_test_assert(not strcmp(buf, s2),
                     "The retrieved value is not the same than the injected one at the end (%s!=%s)", buf, s2);
-    free(s2);
+    xbt_free(s2);
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -1152,7 +1104,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
     snprintf(buf,1023, "%d", cpt);
     xbt_dynar_remove_at(d, 2 * (NB_ELEM / 5), &s2);
     xbt_test_assert(not strcmp(buf, s2), "Remove a bad value. Got %s, expected %s", s2, buf);
-    free(s2);
+    xbt_free(s2);
   }
   xbt_dynar_free(&d);           /* end_of_doxygen */
 }

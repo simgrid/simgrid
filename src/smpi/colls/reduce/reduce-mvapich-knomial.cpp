@@ -38,7 +38,9 @@
  *
  */
 
-#include "../colls_private.h"
+#include "../colls_private.hpp"
+#include <algorithm>
+
 extern int mv2_reduce_intra_knomial_factor;
 extern int mv2_reduce_inter_knomial_factor;
 
@@ -150,7 +152,7 @@ int Coll_reduce_mvapich2_knomial::reduce (
     is_commutative =  (op==MPI_OP_NULL || op->is_commutative());
 
     if (rank != root) {
-        recvbuf=(void *)smpi_get_tmp_recvbuffer(count*(MAX(extent,true_extent)));
+        recvbuf = (void*)smpi_get_tmp_recvbuffer(count * std::max(extent, true_extent));
         recvbuf = (void *)((char*)recvbuf - true_lb);
     }
 
@@ -177,7 +179,7 @@ int Coll_reduce_mvapich2_knomial::reduce (
         tmp_buf  = static_cast<void**>(xbt_malloc(sizeof(void *)*expected_recv_count));
         requests = static_cast<MPI_Request*>(xbt_malloc(sizeof(MPI_Request)*expected_recv_count));
         for(k=0; k < expected_recv_count; k++ ) {
-            tmp_buf[k] = smpi_get_tmp_sendbuffer(count*(MAX(extent,true_extent)));
+            tmp_buf[k] = smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
             tmp_buf[k] = (void *)((char*)tmp_buf[k] - true_lb);
         }
 

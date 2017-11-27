@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "simgrid/plugins/file_system.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(io_file, "Messages specific for this io example");
 
@@ -88,6 +89,8 @@ static int host(int argc, char *argv[])
 int main(int argc, char **argv)
 {
   MSG_init(&argc, argv);
+  MSG_storage_file_system_init();
+
   MSG_create_environment(argv[1]);
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
   MSG_function_register("host", host);

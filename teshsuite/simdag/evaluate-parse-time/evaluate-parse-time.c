@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +12,6 @@
 #endif
 
 #include "simgrid/simdag.h"
-#include "surf/surf.h"
 #include "xbt/xbt_os_time.h"
 
 int main(int argc, char **argv)

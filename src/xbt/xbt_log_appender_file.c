@@ -1,21 +1,19 @@
 /* file_appender - a dumb log appender which simply prints to a file        */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
-#include "xbt/sysdep.h"
 #include "src/xbt/log_private.h"
+#include "xbt/sysdep.h"
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
 static void append_file(xbt_log_appender_t this_, char *str) {
-  fputs(str, (FILE *) this_->data);
-}
-
-static void smpi_append_file(xbt_log_appender_t this_, char *str) {
   fputs(str, (FILE *) this_->data);
 }
 
@@ -24,20 +22,18 @@ static void free_(xbt_log_appender_t this_) {
     fclose(this_->data);
 }
 
-XBT_LOG_EXTERNAL_CATEGORY(smpi); // To detect if SMPI is inited
-
 xbt_log_appender_t xbt_log_appender_file_new(char *arg) {
 
   xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
-  if (_XBT_LOGV(smpi).initialized) // HACK to detect if we run in SMPI mode. Relies on MAIN__ source disposition
-    res->do_append = &smpi_append_file;
-  else
-    res->do_append = &append_file;
-  res->free_       = &free_;
-  if (arg)
+  res->do_append         = &append_file;
+  res->free_             = &free_;
+  if (arg) {
     res->data = (void *) fopen(arg, "w");
-  else
+    if (res->data == NULL)
+      xbt_die("Cannot open file: %s: %s", arg, strerror(errno));
+  } else {
     res->data = (void *) stderr;
+  }
   return res;
 }
 
@@ -55,14 +51,15 @@ typedef struct xbt_log_append2_file_s* xbt_log_append2_file_t;
 static void open_append2_file(xbt_log_append2_file_t data){
   if(data->count<0) {
     //Roll
-    if(!data->file)
+    if (!data->file) {
       data->file= fopen(data->filename, "w");
-    else{
+      if (data->file == NULL)
+        xbt_die("Cannot open file: %s: %s", data->filename, strerror(errno));
+    } else {
       fputs(APPEND2_END_TOKEN_CLEAR,data->file);
       fseek(data->file,0,SEEK_SET);
     }
   } else{
-    //printf("Splitting\n");
     //Split
     if(data->file)
       fclose(data->file);
@@ -76,7 +73,9 @@ static void open_append2_file(xbt_log_append2_file_t data){
     snprintf(newname,511,"%s%i%s",pre,data->count,post);
     data->count++;
     data->file= fopen(newname, "w");
-    xbt_assert(data->file);
+    if (data->file == NULL)
+      xbt_die("Cannot open file: %s: %s", newname, strerror(errno));
+    xbt_free(pre);
   }
 }
 
@@ -93,14 +92,13 @@ static void append2_file(xbt_log_appender_t this_, char *str) {
    }
 }
 
-static void smpi_append2_file(xbt_log_appender_t this_, char *str) {
-  append2_file(this_,str);
-}
-
-static void free_append2_(xbt_log_appender_t this_) {
-  FILE* f=((xbt_log_append2_file_t)(this_->data))->file;
-  if (f)
-    fclose(f);
+static void free_append2_(xbt_log_appender_t this_)
+{
+  xbt_log_append2_file_t data = this_->data;
+  if (data->file)
+    fclose(data->file);
+  xbt_free(data->filename);
+  xbt_free(data);
 }
 
 
@@ -109,11 +107,8 @@ static void free_append2_(xbt_log_appender_t this_) {
 //For split, replace %  in the file by the current count
 xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
 
-  xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
-  if (_XBT_LOGV(smpi).initialized) // HACK to detect if we run in SMPI mode. Relies on MAIN__ source disposition
-    res->do_append = &smpi_append2_file;
-  else
-    res->do_append            = &append2_file;
+  xbt_log_appender_t res      = xbt_new0(s_xbt_log_appender_t, 1);
+  res->do_append              = &append2_file;
   res->free_                  = &free_append2_;
   xbt_log_append2_file_t data = xbt_new0(struct xbt_log_append2_file_s, 1);
   xbt_assert(arg);

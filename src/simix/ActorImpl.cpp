@@ -5,12 +5,12 @@
 
 #include <exception>
 #include <functional>
+#include <map>
 #include <string>
 #include <utility>
 
 #include <boost/range/algorithm.hpp>
 
-#include "xbt/dict.h"
 #include "xbt/ex.hpp"
 #include "xbt/functional.hpp"
 #include "xbt/log.h"
@@ -20,13 +20,13 @@
 
 #include "mc/mc.h"
 
-#include "smx_private.h"
+#include "smx_private.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/mc/mc_replay.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 
@@ -73,14 +73,17 @@ void SIMIX_process_cleanup(smx_actor_t process)
   SIMIX_process_on_exit_runall(process);
 
   /* Unregister from the kill timer if any */
-  if (process->kill_timer != nullptr)
+  if (process->kill_timer != nullptr) {
     SIMIX_timer_remove(process->kill_timer);
+    process->kill_timer = nullptr;
+  }
 
   xbt_os_mutex_acquire(simix_global->mutex);
 
   /* cancel non-blocking communications */
-  smx_activity_t synchro = process->comms.front();
   while (not process->comms.empty()) {
+    smx_activity_t synchro = process->comms.front();
+    process->comms.pop_front();
     simgrid::kernel::activity::CommImplPtr comm =
         boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
 
@@ -104,8 +107,6 @@ void SIMIX_process_cleanup(smx_actor_t process)
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro.get());
     }
-    process->comms.pop_front();
-    synchro = process->comms.front();
     comm->cancel();
   }
 
@@ -141,7 +142,6 @@ namespace simix {
 ActorImpl::~ActorImpl()
 {
   delete this->context;
-  xbt_dict_free(&this->properties);
 }
 
 static int dying_daemon(void* exit_status, void* data)
@@ -167,9 +167,9 @@ void ActorImpl::daemonize()
   }
 }
 
-ActorImpl* ActorImpl::restart(ActorImpl* issuer)
+simgrid::s4u::Actor* ActorImpl::restart()
 {
-  XBT_DEBUG("Restarting process %s on %s", cname(), host->getCname());
+  XBT_DEBUG("Restarting process %s on %s", getCname(), host->getCname());
 
   // retrieve the arguments of the old process
   // FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
@@ -183,17 +183,17 @@ ActorImpl* ActorImpl::restart(ActorImpl* issuer)
   arg.auto_restart = auto_restart;
 
   // kill the old process
-  SIMIX_process_kill(this, issuer);
+  SIMIX_process_kill(this, (this == simix_global->maestro_process) ? this : SIMIX_process_self());
 
   // start the new process
   ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
-                                                           arg.properties, nullptr);
+                                                           arg.properties.get(), nullptr);
   if (arg.kill_time >= 0)
     simcall_process_set_kill_time(actor, arg.kill_time);
   if (arg.auto_restart)
-    simcall_process_auto_restart_set(actor, arg.auto_restart);
+    actor->auto_restart = arg.auto_restart;
 
-  return actor;
+  return actor->ciface();
 }
 
 smx_activity_t ActorImpl::suspend(ActorImpl* issuer)
@@ -265,8 +265,7 @@ void create_maestro(std::function<void()> code)
   } else {
     if (not simix_global)
       xbt_die("simix is not initialized, please call MSG_init first");
-    maestro->context =
-      simix_global->context_factory->create_maestro(code, maestro);
+    maestro->context = simix_global->context_factory->create_maestro(code, maestro);
   }
 
   maestro->simcall.issuer = maestro;
@@ -292,7 +291,7 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  * \return the process created
  */
 smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, simgrid::s4u::Host* host,
-                                 xbt_dict_t properties, smx_actor_t parent_process)
+                                 std::map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
 
   XBT_DEBUG("Start process %s on host '%s'", name, host->getCname());
@@ -332,7 +331,9 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   process->context = SIMIX_context_new(std::move(code), simix_global->cleanup_process_function, process);
 
   /* Add properties */
-  process->properties = properties;
+  if (properties != nullptr)
+    for (auto const& kv : *properties)
+      process->setProperty(kv.first, kv.second);
 
   /* Make sure that the process is initialized for simix, in case we are called from the Host::onCreation signal */
   if (host->extension<simgrid::simix::Host>() == nullptr)
@@ -345,18 +346,18 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
-  xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->getCname(), host->getCname());
+  simix_global->process_to_run.push_back(process);
   intrusive_ptr_add_ref(process);
 
   /* Tracing the process creation */
-  TRACE_msg_process_create(process->cname(), process->pid, process->host);
+  TRACE_msg_process_create(process->getName(), process->pid, process->host);
 
   return process;
 }
 
-smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname, xbt_dict_t properties,
-                                 smx_actor_t parent_process)
+smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
+                                 std::map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
   // This is mostly a copy/paste from SIMIX_process_new(),
   // it'd be nice to share some code between those two functions.
@@ -365,8 +366,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   XBT_DEBUG("Attach process %s on host '%s'", name, hostname);
 
   if (host->isOff()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'",
-      name, hostname);
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, hostname);
     return nullptr;
   }
 
@@ -398,22 +398,23 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   XBT_VERB("Create context %s", process->name.c_str());
   if (not simix_global)
     xbt_die("simix is not initialized, please call MSG_init first");
-  process->context = simix_global->context_factory->attach(
-    simix_global->cleanup_process_function, process);
+  process->context = simix_global->context_factory->attach(simix_global->cleanup_process_function, process);
 
   /* Add properties */
-  process->properties = properties;
+  if (properties != nullptr)
+    for (auto const& kv : *properties)
+      process->setProperty(kv.first, kv.second);
 
   /* Add the process to it's host process list */
   xbt_swag_insert(process, host->extension<simgrid::simix::Host>()->process_list);
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid] = process;
-  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->cname(), host->getCname());
-  xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->getCname(), host->getCname());
+  simix_global->process_to_run.push_back(process);
 
   /* Tracing the process creation */
-  TRACE_msg_process_create(process->cname(), process->pid, process->host);
+  TRACE_msg_process_create(process->getName(), process->pid, process->host);
 
   auto context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context);
   if (not context)
@@ -429,16 +430,10 @@ void SIMIX_process_detach()
   if (not context)
     xbt_die("Not a suitable context");
 
-  simix_global->cleanup_process_function(context->process());
-
-  // Let maestro ignore we are still alive:
-  // xbt_swag_remove(context->process(), simix_global->process_list);
-
-  // TODO, Remove from proces list:
-  //   xbt_swag_remove(process, sg_host_simix(host)->process_list);
-
+  auto process = context->process();
+  simix_global->cleanup_process_function(process);
   context->attach_stop();
-  // delete context;
+  delete process;
 }
 
 /**
@@ -454,15 +449,10 @@ void SIMIX_process_runall()
 {
   SIMIX_context_runall();
 
-  xbt_dynar_t tmp = simix_global->process_that_ran;
-  simix_global->process_that_ran = simix_global->process_to_run;
-  simix_global->process_to_run = tmp;
-  xbt_dynar_reset(simix_global->process_to_run);
+  simix_global->process_to_run.swap(simix_global->process_that_ran);
+  simix_global->process_to_run.clear();
 }
 
-void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process) {
-  SIMIX_process_kill(process, simcall->issuer);
-}
 /**
  * \brief Internal function to kill a SIMIX process.
  *
@@ -474,7 +464,7 @@ void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process) {
  */
 void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
-  XBT_DEBUG("Killing process %s@%s", process->cname(), process->host->getCname());
+  XBT_DEBUG("Killing process %s@%s", process->getCname(), process->host->getCname());
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -516,18 +506,13 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       xbt_die("Unknown type of activity");
     }
 
-    /*
-    switch (process->waiting_synchro->type) {
-    case SIMIX_SYNC_JOIN:
-      SIMIX_process_sleep_destroy(process->waiting_synchro);
-      break;
-    } */
-
     process->waiting_synchro = nullptr;
   }
-  if (not xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {
+  if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), process) ==
+          end(simix_global->process_to_run) &&
+      process != issuer) {
     XBT_DEBUG("Inserting %s in the to_run list", process->name.c_str());
-    xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+    simix_global->process_to_run.push_back(process);
   }
 }
 
@@ -549,9 +534,8 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
-    if (exec != nullptr) {
-      SIMIX_execution_cancel(process->waiting_synchro);
-    }
+    if (exec != nullptr && exec->surf_exec)
+      exec->surf_exec->cancel();
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro);
@@ -564,9 +548,11 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
         boost::dynamic_pointer_cast<simgrid::kernel::activity::SleepImpl>(process->waiting_synchro);
     if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
-      if (not xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self()) {
+      if (std::find(begin(simix_global->process_to_run), end(simix_global->process_to_run), process) ==
+              end(simix_global->process_to_run) &&
+          process != SIMIX_process_self()) {
         XBT_DEBUG("Inserting %s in the to_run list", process->name.c_str());
-        xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, process);
+        simix_global->process_to_run.push_back(process);
       }
     }
 
@@ -595,16 +581,12 @@ void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid) {
  */
 void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
 {
-  for (auto kv : simix_global->process_list)
+  for (auto const& kv : simix_global->process_list)
     if (kv.second != issuer)
       SIMIX_process_kill(kv.second, issuer);
 
   if (reset_pid > 0)
     simix_process_maxpid = reset_pid;
-
-  SIMIX_context_runall();
-
-  SIMIX_process_empty_trash();
 }
 
 void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
@@ -667,7 +649,7 @@ const char* SIMIX_process_self_get_name() {
 
 smx_actor_t SIMIX_process_get_by_name(const char* name)
 {
-  for (auto kv : simix_global->process_list)
+  for (auto const& kv : simix_global->process_list)
     if (kv.second->name == name)
       return kv.second;
   return nullptr;
@@ -686,44 +668,19 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
   simcall->issuer->waiting_synchro = sync;
 }
 
-static int SIMIX_process_join_finish(smx_process_exit_status_t status, void* synchro)
-{
-  simgrid::kernel::activity::SleepImpl* sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(synchro);
-
-  if (sleep->surf_sleep) {
-    sleep->surf_sleep->cancel();
-
-    while (not sleep->simcalls.empty()) {
-      smx_simcall_t simcall = sleep->simcalls.front();
-      sleep->simcalls.pop_front();
-      simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-      simcall->issuer->waiting_synchro = nullptr;
-      if (simcall->issuer->suspended) {
-        XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
-        simcall->issuer->suspended = 0;
-        simcall_HANDLER_process_suspend(simcall, simcall->issuer);
-      } else {
-        SIMIX_simcall_answer(simcall);
-      }
-    }
-    sleep->surf_sleep->unref();
-    sleep->surf_sleep = nullptr;
-  }
-  // intrusive_ptr_release(process); // FIXME: We are leaking here. See comment in SIMIX_process_join()
-  return 0;
-}
-
 smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout)
 {
   smx_activity_t res = issuer->sleep(timeout);
   intrusive_ptr_add_ref(res.get());
-  /* We are leaking the process here, but if we don't take the ref, we get a "use after free".
-   * The correct solution would be to derivate the type SynchroSleep into a SynchroProcessJoin,
-   * but the code is not clean enough for now for this.
-   * The C API should first be properly replaced with the C++ one, which is a fair amount of work.
-   */
-  intrusive_ptr_add_ref(process);
-  SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, &*res);
+  SIMIX_process_on_exit(process,
+                        [](void*, void* arg) {
+                          auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
+                          if (sleep->surf_sleep)
+                            sleep->surf_sleep->finish(simgrid::surf::Action::State::done);
+                          intrusive_ptr_release(sleep);
+                          return 0;
+                        },
+                        res.get());
   return res;
 }
 
@@ -755,14 +712,13 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 /**
  * \brief Calling this function makes the process to yield.
  *
- * Only the current process can call this function, giving back the control to
- * maestro.
+ * Only the current process can call this function, giving back the control to maestro.
  *
  * \param self the current process
  */
 void SIMIX_process_yield(smx_actor_t self)
 {
-  XBT_DEBUG("Yield actor '%s'", self->cname());
+  XBT_DEBUG("Yield actor '%s'", self->getCname());
 
   /* Go into sleep and return control to maestro */
   self->context->suspend();
@@ -782,10 +738,11 @@ void SIMIX_process_yield(smx_actor_t self)
     SIMIX_process_on_exit_runall(self);
     /* Add the process to the list of process to restart, only if the host is down */
     if (self->auto_restart && self->host->isOff()) {
-      SIMIX_host_add_auto_restart_process(self->host, self->cname(), self->code, self->userdata,
-                                          SIMIX_timer_get_date(self->kill_timer), self->properties, self->auto_restart);
+      SIMIX_host_add_auto_restart_process(self->host, self->getCname(), self->code, self->userdata,
+                                          SIMIX_timer_get_date(self->kill_timer), self->getProperties(),
+                                          self->auto_restart);
     }
-    XBT_DEBUG("Process %s@%s is dead", self->cname(), self->host->getCname());
+    XBT_DEBUG("Process %s@%s is dead", self->getCname(), self->host->getCname());
     self->context->stop();
   }
 
@@ -815,40 +772,25 @@ void SIMIX_process_exception_terminate(xbt_ex_t * e)
   xbt_abort();
 }
 
-/**
- * \brief Returns the list of processes to run.
- */
-xbt_dynar_t SIMIX_process_get_runnable()
+/** @brief Returns the list of processes to run. */
+const std::vector<smx_actor_t>& simgrid::simix::process_get_runnable()
 {
   return simix_global->process_to_run;
 }
 
-/**
- * \brief Returns the process from PID.
- */
+/** @brief Returns the process from PID. */
 smx_actor_t SIMIX_process_from_PID(aid_t PID)
 {
-  if (simix_global->process_list.find(PID) == simix_global->process_list.end())
-    return nullptr;
-  return simix_global->process_list.at(PID);
-}
-
-/** @brief returns a dynar containing all currently existing processes */
-xbt_dynar_t SIMIX_processes_as_dynar() {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t),nullptr);
-  for (auto kv : simix_global->process_list) {
-    smx_actor_t proc = kv.second;
-    xbt_dynar_push(res,&proc);
-  }
-  return res;
+  auto process = simix_global->process_list.find(PID);
+  return process == simix_global->process_list.end() ? nullptr : process->second;
 }
 
 void SIMIX_process_on_exit_runall(smx_actor_t process) {
   smx_process_exit_status_t exit_status = (process->context->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not process->on_exit.empty()) {
     s_smx_process_exit_fun_t exit_fun = process->on_exit.back();
-    (exit_fun.fun)((void*)exit_status, exit_fun.arg);
     process->on_exit.pop_back();
+    (exit_fun.fun)((void*)exit_status, exit_fun.arg);
   }
 }
 
@@ -862,15 +804,10 @@ void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *d
 
 /**
  * \brief Sets the auto-restart status of the process.
- * If set to 1, the process will be automatically restarted when its host
- * comes back.
+ * If set to 1, the process will be automatically restarted when its host comes back.
  */
 void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
   process->auto_restart = auto_restart;
-}
-
-smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t process) {
-  return process->restart(simcall->issuer);
 }
 
 /** @brief Restart a process, starting it again from the beginning. */
@@ -892,9 +829,8 @@ smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t p
  * \param properties the properties of the process
  * \param auto_restart either it is autorestarting or not.
  */
-extern "C"
-smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
-                                   char** argv, xbt_dict_t properties)
+extern "C" smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host,
+                                              int argc, char** argv, std::map<std::string, std::string>* properties)
 {
   if (name == nullptr)
     name = "";
@@ -907,7 +843,7 @@ smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void*
 }
 
 smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                   xbt_dict_t properties)
+                                   std::map<std::string, std::string>* properties)
 {
   if (name == nullptr)
     name = "";

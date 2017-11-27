@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -34,7 +34,7 @@ namespace simgrid {
 namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
-  maxminSystem_ = lmm_system_new(true /* lazy */);
+  maxminSystem_            = new s_lmm_system_t(true /* lazy */);
   maxminSystem_->solve_fun = &bottleneck_solve;
   surf_network_model = new NetworkL07Model(this,maxminSystem_);
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
@@ -42,7 +42,7 @@ HostL07Model::HostL07Model() : HostModel() {
 
 HostL07Model::~HostL07Model()
 {
-  lmm_system_free(maxminSystem_);
+  delete maxminSystem_;
   maxminSystem_ = nullptr;
   delete surf_network_model;
   delete surf_cpu_model_pm;
@@ -65,7 +65,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   , hostModel_(hmodel)
 {
   maxminSystem_ = sys;
-  loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
+  loopback_     = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
@@ -76,13 +76,11 @@ NetworkL07Model::~NetworkL07Model()
 double HostL07Model::nextOccuringEvent(double now)
 {
   double min = HostModel::nextOccuringEventFull(now);
-  ActionList::iterator it(getRunningActionSet()->begin());
-  ActionList::iterator itend(getRunningActionSet()->end());
-  for (; it != itend; ++it) {
-    L07Action *action = static_cast<L07Action*>(&*it);
-    if (action->latency_ > 0 && (min < 0 || action->latency_ < min)) {
-      min = action->latency_;
-      XBT_DEBUG("Updating min with %p (start %f): %f", action, action->getStartTime(), min);
+  for (Action const& action : *getRunningActionSet()) {
+    const L07Action& net_action = static_cast<const L07Action&>(action);
+    if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min)) {
+      min = net_action.latency_;
+      XBT_DEBUG("Updating min with %p (start %f): %f", &net_action, net_action.getStartTime(), min);
     }
   }
   XBT_DEBUG("min value: %f", min);
@@ -90,36 +88,30 @@ double HostL07Model::nextOccuringEvent(double now)
   return min;
 }
 
-void HostL07Model::updateActionsState(double /*now*/, double delta) {
-
-  L07Action *action;
-  ActionList *actionSet = getRunningActionSet();
-  ActionList::iterator it(actionSet->begin());
-  ActionList::iterator itNext = it;
-  ActionList::iterator itend(actionSet->end());
-
-  for (; it != itend; it = itNext) {
-    ++itNext;
-    action = static_cast<L07Action*>(&*it);
-    if (action->latency_ > 0) {
-      if (action->latency_ > delta) {
-        double_update(&(action->latency_), delta, sg_surf_precision);
+void HostL07Model::updateActionsState(double /*now*/, double delta)
+{
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    L07Action& action = static_cast<L07Action&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
+    if (action.latency_ > 0) {
+      if (action.latency_ > delta) {
+        double_update(&(action.latency_), delta, sg_surf_precision);
       } else {
-        action->latency_ = 0.0;
+        action.latency_ = 0.0;
       }
-      if ((action->latency_ <= 0.0) && (action->isSuspended() == 0)) {
-        action->updateBound();
-        lmm_update_variable_weight(maxminSystem_, action->getVariable(), 1.0);
+      if ((action.latency_ <= 0.0) && (action.isSuspended() == 0)) {
+        action.updateBound();
+        maxminSystem_->update_variable_weight(action.getVariable(), 1.0);
       }
     }
-    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.",
-           action, action->getRemains(), lmm_variable_getvalue(action->getVariable()) * delta);
-    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
+    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.getRemains(),
+              action.getVariable()->get_value() * delta);
+    action.updateRemains(action.getVariable()->get_value() * delta);
 
-    if (action->getMaxDuration() > NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    if (action.getMaxDuration() > NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    XBT_DEBUG("Action (%p) : remains (%g).", action, action->getRemains());
+    XBT_DEBUG("Action (%p) : remains (%g).", &action, action.getRemains());
 
     /* In the next if cascade, the action can be finished either because:
      *  - The amount of remaining work reached 0
@@ -127,24 +119,22 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
      * If it's not done, it may have failed.
      */
 
-    if (((action->getRemains() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-        ((action->getMaxDuration() > NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish();
-      action->setState(Action::State::done);
+    if (((action.getRemains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+        ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
-      lmm_constraint_t cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
+      lmm_constraint_t cnst = action.getVariable()->get_constraint(i);
       while (cnst != nullptr) {
         i++;
-        void *constraint_id = lmm_constraint_id(cnst);
+        void* constraint_id = cnst->get_id();
         if (static_cast<simgrid::surf::Resource*>(constraint_id)->isOff()) {
-          XBT_DEBUG("Action (%p) Failed!!", action);
-          action->finish();
-          action->setState(Action::State::failed);
+          XBT_DEBUG("Action (%p) Failed!!", &action);
+          action.finish(Action::State::failed);
           break;
         }
-        cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
+        cnst = action.getVariable()->get_constraint(i);
       }
     }
   }
@@ -184,11 +174,11 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
           double lat=0.0;
 
           std::vector<LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
-          latency = MAX(latency, lat);
+          hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
+          latency = std::max(latency, lat);
 
-          for (auto link : route)
-            affected_links.insert(link->cname());
+          for (auto const& link : route)
+            affected_links.insert(link->getCname());
         }
       }
     }
@@ -197,28 +187,26 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
   }
 
   XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
-  this->latency_ = latency;
+  latency_ = latency;
 
-  this->variable_ = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
-      (rate > 0 ? rate : -1.0),
-      host_nb + nb_link);
+  setVariable(model->getMaxminSystem()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + nb_link));
 
-  if (this->latency_ > 0)
-    lmm_update_variable_weight(model->getMaxminSystem(), this->getVariable(), 0.0);
+  if (latency_ > 0)
+    model->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
 
   for (int i = 0; i < host_nb; i++)
-    lmm_expand(model->getMaxminSystem(), host_list[i]->pimpl_cpu->constraint(), this->getVariable(), flops_amount[i]);
+    model->getMaxminSystem()->expand(host_list[i]->pimpl_cpu->constraint(), getVariable(), flops_amount[i]);
 
   if(bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
         if (bytes_amount[i * host_nb + j] > 0.0) {
           std::vector<LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), &route, nullptr);
+          hostList_->at(i)->routeTo(hostList_->at(j), route, nullptr);
 
-          for (auto link : route)
-            lmm_expand_add(model->getMaxminSystem(), link->constraint(), this->getVariable(),
-                           bytes_amount[i * host_nb + j]);
+          for (auto const& link : route)
+            model->getMaxminSystem()->expand_add(link->constraint(), this->getVariable(),
+                                                 bytes_amount[i * host_nb + j]);
         }
       }
     }
@@ -228,14 +216,14 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
     this->setCost(1.0);
     this->setRemains(0.0);
   }
-  xbt_free(host_list);
+  delete[] host_list;
 }
 
 Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
-  sg_host_t*host_list = xbt_new0(sg_host_t, 2);
-  double *flops_amount = xbt_new0(double, 2);
-  double *bytes_amount = xbt_new0(double, 4);
+  sg_host_t* host_list = new sg_host_t[2]();
+  double* flops_amount = new double[2]();
+  double* bytes_amount = new double[4]();
 
   host_list[0]    = src;
   host_list[1]    = dst;
@@ -249,7 +237,7 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  std::vector<double> *spee
   return new CpuL07(this, host, speedPerPstate, core);
 }
 
-LinkImpl* NetworkL07Model::createLink(const char* name, double bandwidth, double latency,
+LinkImpl* NetworkL07Model::createLink(const std::string& name, double bandwidth, double latency,
                                       e_surf_link_sharing_policy_t policy)
 {
   return new LinkL07(this, name, bandwidth, latency, policy);
@@ -260,30 +248,29 @@ LinkImpl* NetworkL07Model::createLink(const char* name, double bandwidth, double
  ************/
 
 CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core)
-    : Cpu(model, host, lmm_constraint_new(model->getMaxminSystem(), this, speedPerPstate->front()), speedPerPstate,
-          core)
+    : Cpu(model, host, model->getMaxminSystem()->constraint_new(this, speedPerPstate->front()), speedPerPstate, core)
 {
 }
 
 CpuL07::~CpuL07()=default;
 
-LinkL07::LinkL07(NetworkL07Model* model, const char* name, double bandwidth, double latency,
+LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
                  e_surf_link_sharing_policy_t policy)
-    : LinkImpl(model, name, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth))
+    : LinkImpl(model, name, model->getMaxminSystem()->constraint_new(this, bandwidth))
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    lmm_constraint_shared(constraint());
+    constraint()->unshare();
 
   s4u::Link::onCreation(this->piface_);
 }
 
 Action *CpuL07::execution_start(double size)
 {
-  sg_host_t*host_list = xbt_new0(sg_host_t, 1);
-  double *flops_amount = xbt_new0(double, 1);
+  sg_host_t* host_list = new sg_host_t[1]();
+  double* flops_amount = new double[1]();
 
   host_list[0] = getHost();
   flops_amount[0] = size;
@@ -294,15 +281,15 @@ Action *CpuL07::execution_start(double size)
 Action *CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
-  action->maxDuration_ = duration;
+  action->setMaxDuration(duration);
   action->suspended_ = 2;
-  lmm_update_variable_weight(model()->getMaxminSystem(), action->getVariable(), 0.0);
+  model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);
 
   return action;
 }
 
 bool CpuL07::isUsed(){
-  return lmm_constraint_used(model()->getMaxminSystem(), constraint());
+  return model()->getMaxminSystem()->constraint_used(constraint());
 }
 
 /** @brief take into account changes of speed (either load or max) */
@@ -310,11 +297,11 @@ void CpuL07::onSpeedChange() {
   lmm_variable_t var = nullptr;
   lmm_element_t elem = nullptr;
 
-  lmm_update_constraint_bound(model()->getMaxminSystem(), constraint(), speed_.peak * speed_.scale);
-  while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
-    Action* action = static_cast<Action*>(lmm_variable_id(var));
+  model()->getMaxminSystem()->update_constraint_bound(constraint(), speed_.peak * speed_.scale);
+  while ((var = constraint()->get_variable(&elem))) {
+    Action* action = static_cast<Action*>(var->get_id());
 
-    lmm_update_variable_bound(model()->getMaxminSystem(), action->getVariable(), speed_.scale * speed_.peak);
+    model()->getMaxminSystem()->update_variable_bound(action->getVariable(), speed_.scale * speed_.peak);
   }
 
   Cpu::onSpeedChange();
@@ -322,12 +309,12 @@ void CpuL07::onSpeedChange() {
 
 
 bool LinkL07::isUsed(){
-  return lmm_constraint_used(model()->getMaxminSystem(), constraint());
+  return model()->getMaxminSystem()->constraint_used(constraint());
 }
 
 void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
 {
-  XBT_DEBUG("Updating cpu %s (%p) with value %g", cname(), this, value);
+  XBT_DEBUG("Updating cpu %s (%p) with value %g", getCname(), this, value);
   if (triggered == speed_.event) {
     speed_.scale = value;
     onSpeedChange();
@@ -347,7 +334,7 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
 
 void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 {
-  XBT_DEBUG("Updating link %s (%p) with value=%f", cname(), this, value);
+  XBT_DEBUG("Updating link %s (%p) with value=%f", getCname(), this, value);
   if (triggered == bandwidth_.event) {
     setBandwidth(value);
     tmgr_trace_event_unref(&bandwidth_.event);
@@ -371,7 +358,7 @@ void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 void LinkL07::setBandwidth(double value)
 {
   bandwidth_.peak = value;
-  lmm_update_constraint_bound(model()->getMaxminSystem(), constraint(), bandwidth_.peak * bandwidth_.scale);
+  model()->getMaxminSystem()->update_constraint_bound(constraint(), bandwidth_.peak * bandwidth_.scale);
 }
 
 void LinkL07::setLatency(double value)
@@ -381,8 +368,8 @@ void LinkL07::setLatency(double value)
   lmm_element_t elem = nullptr;
 
   latency_.peak = value;
-  while ((var = lmm_get_var_from_cnst(model()->getMaxminSystem(), constraint(), &elem))) {
-    action = static_cast<L07Action*>(lmm_variable_id(var));
+  while ((var = constraint()->get_variable(&elem))) {
+    action = static_cast<L07Action*>(var->get_id());
     action->updateBound();
   }
 }
@@ -394,8 +381,8 @@ LinkL07::~LinkL07() = default;
 
 L07Action::~L07Action(){
   delete hostList_;
-  free(communicationAmount_);
-  free(computationAmount_);
+  delete[] communicationAmount_;
+  delete[] computationAmount_;
 }
 
 void L07Action::updateBound()
@@ -411,9 +398,9 @@ void L07Action::updateBound()
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
           std::vector<LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), &route, &lat);
+          hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
 
-          lat_current = MAX(lat_current, lat * communicationAmount_[i * hostNb + j]);
+          lat_current = std::max(lat_current, lat * communicationAmount_[i * hostNb + j]);
         }
       }
     }
@@ -422,9 +409,9 @@ void L07Action::updateBound()
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
   if ((latency_ <= 0.0) && (suspended_ == 0)) {
     if (rate_ < 0)
-      lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), lat_bound);
+      getModel()->getMaxminSystem()->update_variable_bound(getVariable(), lat_bound);
     else
-      lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), std::min(rate_, lat_bound));
+      getModel()->getMaxminSystem()->update_variable_bound(getVariable(), std::min(rate_, lat_bound));
   }
 }
 
@@ -435,7 +422,7 @@ int L07Action::unref()
     if (action_hook.is_linked())
       stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
-      lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
+      getModel()->getMaxminSystem()->variable_free(getVariable());
     delete this;
     return 1;
   }

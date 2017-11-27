@@ -22,15 +22,6 @@ if(WIN32)
   endif()
 endif()
 
-# find_package(SWIG)
-# if(${SWIG_FOUND})
-#   include(UseSWIG)
-#   message("-- [Java] Swig found: version ${SWIG_VERSION}")
-# else()
-#   message("-- [Java] Swig NOT FOUND. That's fine unless you work on this part yourself.")
-# endif()
-#mark_as_advanced(SWIG_EXECUTABLE)
-
 # Rules to build libsimgrid-java
 ################################
 

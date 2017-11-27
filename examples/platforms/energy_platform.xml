@@ -24,8 +24,11 @@
       <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
       <prop id="watt_off" value="10" />
     </host>
-
-    <link id="bus" bandwidth="100kBps" latency="0"/>
+ 
+    <link id="bus" bandwidth="100kBps" latency="0" sharing_policy="SHARED">
+<!--   REALISTIC VALUES                    <prop id="watt_range" value="10.3581:10.7479" /> -->
+<!--  IREALISTIC VALUES FOR THE TEST -->   <prop id="watt_range" value="1:3" /> 
+    </link>
     <route src="MyHost1" dst="MyHost2">
       <link_ctn id="bus"/>
     </route>

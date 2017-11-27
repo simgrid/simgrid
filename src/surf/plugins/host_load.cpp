@@ -54,7 +54,7 @@ HostLoad::HostLoad(simgrid::s4u::Host* ptr)
     : host(ptr)
     , last_updated(surf_get_clock())
     , last_reset(surf_get_clock())
-    , current_flops(lmm_constraint_get_usage(host->pimpl_cpu->constraint()))
+    , current_flops(host->pimpl_cpu->constraint()->get_usage())
 {
 }
 
@@ -66,7 +66,7 @@ void HostLoad::update()
   if (last_updated < now) {
     /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k \in {0, 1, ..., cores}
      * number of active cores */
-    current_flops = lmm_constraint_get_usage(host->pimpl_cpu->constraint());
+    current_flops = host->pimpl_cpu->constraint()->get_usage();
 
     /* flops == pstate_speed * cores_being_currently_used */
     computed_flops += (now - last_updated) * current_flops;
@@ -106,13 +106,6 @@ void HostLoad::reset()
 using simgrid::plugin::HostLoad;
 
 /* **************************** events  callback *************************** */
-static void on_host_added(simgrid::s4u::Host& host)
-{
-  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
-    return;
-  host.extension_set(new HostLoad(&host));
-}
-
 /* This callback is fired either when the host changes its state (on/off) or its speed
  * (because the user changed the pstate, or because of external trace events) */
 static void onHostChange(simgrid::s4u::Host& host)
@@ -120,14 +113,13 @@ static void onHostChange(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  HostLoad* host_load = host.extension<HostLoad>();
-  host_load->update();
+  host.extension<HostLoad>()->update();
 }
 
 /* This callback is called when an action (computation, idle, ...) terminates */
-static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf::Action::State previous)
+static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf::Action::State /*previous*/)
 {
-  for (simgrid::surf::Cpu* cpu : action->cpus()) {
+  for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
 
     if (host != nullptr) {
@@ -139,7 +131,7 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
 }
 
 /* **************************** Public interface *************************** */
-SG_BEGIN_DECL()
+extern "C" {
 
 /** \ingroup plugin_load
  * \brief Initializes the HostLoad plugin
@@ -152,7 +144,14 @@ void sg_host_load_plugin_init()
 
   HostLoad::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostLoad>();
 
-  simgrid::s4u::Host::onCreation.connect(&on_host_added);
+  /* When attaching a callback into a signal, you can use a lambda as follows, or a regular function as done below */
+
+  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
+      return;
+    host.extension_set(new HostLoad(&host));
+  });
+
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
   simgrid::s4u::Host::onStateChange.connect(&onHostChange);
   simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
@@ -185,5 +184,4 @@ void sg_host_load_reset(sg_host_t host)
 
   host->extension<HostLoad>()->reset();
 }
-
-SG_END_DECL()
+}

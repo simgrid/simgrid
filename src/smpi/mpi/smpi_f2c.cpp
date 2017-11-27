@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
 #include "smpi_f2c.hpp"
+#include "private.hpp"
 #include "smpi_process.hpp"
 
 #include <cstdio>
@@ -12,15 +12,17 @@
 namespace simgrid{
 namespace smpi{
 
-xbt_dict_t F2C::f2c_lookup_=nullptr;
-int F2C::f2c_id_=0;
+std::unordered_map<std::string, F2C*>* F2C::f2c_lookup_ = nullptr;
+int F2C::f2c_id_ = 0;
 
-xbt_dict_t F2C::f2c_lookup(){
+std::unordered_map<std::string, F2C*>* F2C::f2c_lookup()
+{
   return f2c_lookup_;
 }
 
-void F2C::set_f2c_lookup(xbt_dict_t dict){
-  f2c_lookup_=dict;
+void F2C::set_f2c_lookup(std::unordered_map<std::string, F2C*>* map)
+{
+  f2c_lookup_ = map;
 }
 
 void F2C::f2c_id_increment(){
@@ -32,59 +34,66 @@ int F2C::f2c_id(){
 };
 
 char* F2C::get_key(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%x",id);
+  std::snprintf(key, KEY_SIZE, "%x", static_cast<unsigned>(id));
   return key;
 }
 
 char* F2C::get_key_id(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%x_%d",id, smpi_process()->index());
+  std::snprintf(key, KEY_SIZE, "%x_%d", static_cast<unsigned>(id), smpi_process()->index());
   return key;
 }
 
 void F2C::delete_lookup(){
-  xbt_dict_free(&f2c_lookup_);
+  delete f2c_lookup_;
 }
 
-xbt_dict_t F2C::lookup(){
+std::unordered_map<std::string, F2C*>* F2C::lookup()
+{
   return f2c_lookup_;
 }
 
-void F2C::free_f(int id){
+void F2C::free_f(int id)
+{
   char key[KEY_SIZE];
-  xbt_dict_remove(f2c_lookup_, get_key(key, id));
+  f2c_lookup_->erase(get_key(key, id));
 }
 
-int F2C::add_f(){
-  if(f2c_lookup_==nullptr){
-    f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
-  }
+int F2C::add_f()
+{
+  if (f2c_lookup_ == nullptr)
+    f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
+
   char key[KEY_SIZE];
-  xbt_dict_set(f2c_lookup_, get_key(key, f2c_id_), this, nullptr);
+  (*f2c_lookup_)[get_key(key, f2c_id_)] = this;
   f2c_id_increment();
   return f2c_id_-1;
 }
 
-int F2C::c2f(){
-  if(f2c_lookup_==nullptr){
-    f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
+int F2C::c2f()
+{
+  if (f2c_lookup_ == nullptr) {
+    f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
   }
 
-  char* existing_key = xbt_dict_get_key(f2c_lookup_, this);
-  if(existing_key!=nullptr){
-    return atoi(existing_key);}
-  else{
-    return this->add_f();}
+  for (auto const& elm : *f2c_lookup_)
+    if (elm.second == this)
+      return std::stoi(elm.first);
+
+  /* this function wasn't found, add it */
+  return this->add_f();
 }
 
-F2C* F2C::f2c(int id){
-  if(f2c_lookup_==nullptr){
-    f2c_lookup_=xbt_dict_new_homogeneous(nullptr);
-  }
+F2C* F2C::f2c(int id)
+{
+  if (f2c_lookup_ == nullptr)
+    f2c_lookup_ = new std::unordered_map<std::string, F2C*>;
+
   if(id >= 0){
     char key[KEY_SIZE];
-    return static_cast<F2C*>(xbt_dict_get_or_null(f2c_lookup_, get_key(key, id)));
+    auto comm = f2c_lookup_->find(get_key(key, id));
+    return comm == f2c_lookup_->end() ? nullptr : comm->second;
   }else
-    return NULL;
+    return nullptr;
 }
 
 }

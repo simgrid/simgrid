@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -181,7 +181,7 @@ public:
     xbt_assert(this->value_);
     T* result = value_;
     value_ = nullptr;
-    return *value_;
+    return *result;
   }
 
 private:
@@ -207,7 +207,7 @@ public:
 template<class T>
 void bindPromise(Promise<T> promise, Future<T> future)
 {
-  struct PromiseBinder {
+  class PromiseBinder {
   public:
     PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
     void operator()(Future<T> future)

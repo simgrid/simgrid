@@ -21,7 +21,7 @@ namespace routing {
 
 class XBT_PRIVATE EmptyZone : public NetZoneImpl {
 public:
-  explicit EmptyZone(NetZone* father, const char* name);
+  explicit EmptyZone(NetZone* father, std::string name);
   ~EmptyZone() override;
 
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override
@@ -29,7 +29,8 @@ public:
     /* There can't be route in an Empty zone */
   }
 
-  void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
+  void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* /*nodes*/,
+                std::map<std::string, xbt_edge_t>* /*edges*/) override;
 };
 }
 }

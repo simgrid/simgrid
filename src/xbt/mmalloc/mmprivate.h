@@ -294,12 +294,6 @@ XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, ssize_t size);
 #define LOCK(mdp) pthread_mutex_lock(&mdp->mutex)
 #define UNLOCK(mdp) pthread_mutex_unlock(&mdp->mutex)
 
-static inline void  mmalloc_paranoia(struct mdesc *mdp){
-
-  /* nothing to fear for no */
-
-}
-
 static inline int mmalloc_get_increment(malloc_info* heapinfo) {
   if (heapinfo->type < 0) {
     return heapinfo->free_block.size;
@@ -309,8 +303,6 @@ static inline int mmalloc_get_increment(malloc_info* heapinfo) {
     return 1;
   }
 }
-
-XBT_PRIVATE void mmcheck(xbt_mheap_t heap);
 
 XBT_PRIVATE int malloc_use_mmalloc(void);
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -67,13 +67,14 @@ namespace routing {
 
 class XBT_PRIVATE ClusterZone : public NetZoneImpl {
 public:
-  explicit ClusterZone(NetZone* father, const char* name);
+  explicit ClusterZone(NetZone* father, std::string name);
 
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
-  void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
+  void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                std::map<std::string, xbt_edge_t>* edges) override;
 
-  virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
-  virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster)
+  virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position);
+  virtual void parse_specific_arguments(ClusterCreationArgs* cluster)
   {
     /* this routing method does not require any specific argument */
   }
@@ -81,6 +82,10 @@ public:
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {linkUp, linkDown} */
   std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> privateLinks_;
+
+  unsigned int nodePosition(int id) { return id * linkCountPerNode_; }
+  unsigned int nodePositionWithLoopback(int id) { return nodePosition(id) + (hasLoopback_ ? 1 : 0); }
+  unsigned int nodePositionWithLimiter(int id) { return nodePositionWithLoopback(id) + (hasLimiter_ ? 1 : 0); }
 
   surf::LinkImpl* backbone_      = nullptr;
   void* loopback_                = nullptr;

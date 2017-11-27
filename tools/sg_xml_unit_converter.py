@@ -12,7 +12,7 @@
 import sys
 import fnmatch
 import os
-from decimal import Decimal
+from decimal import Decimal, DecimalException
 import re
 
 
@@ -20,7 +20,7 @@ def to_str(dec):
     return re.sub(r"(\.\d*?)0*$", r"\1", dec.to_eng_string()).rstrip(".")
 
 
-def format(xml, formats, attrib):
+def convert(xml, formats, attrib):
     res = []
     m = re.search(r'%s="(.*?)"' % attrib, xml)
     while m:
@@ -37,7 +37,7 @@ def format(xml, formats, attrib):
                     tmp = "%s%s" % (to_str(d), f)
                     break
             res.append(tmp)
-        except:
+        except DecimalException:
             print "Error with:", val
             res.append(val)
         m = re.search(r'%s="(.*?)"' % attrib, xml)
@@ -63,18 +63,18 @@ for root, dirnames, filenames in os.walk(sys.argv[1]):
                                  ("1E15", "Pt"),
                                  ("1E18", "Ef"),
                                  ("1E21", "Zf")])
-        xml = format(xml, power_formats, "power")
+        xml = convert(xml, power_formats, "power")
 
         bandwidth_formats = formats([("1E0", "Bps"),
                                      ("1E3", "kBps"),
                                      ("1E6", "MBps"),
                                      ("1E9", "GBps"),
                                      ("1E12", "TBps")])
-        xml = format(xml, bandwidth_formats, "bandwidth")
-        xml = format(xml, bandwidth_formats, "bw")
-        xml = format(xml, bandwidth_formats, "bb_bw")
-        xml = format(xml, bandwidth_formats, "bw_in")
-        xml = format(xml, bandwidth_formats, "bw_out")
+        xml = convert(xml, bandwidth_formats, "bandwidth")
+        xml = convert(xml, bandwidth_formats, "bw")
+        xml = convert(xml, bandwidth_formats, "bb_bw")
+        xml = convert(xml, bandwidth_formats, "bw_in")
+        xml = convert(xml, bandwidth_formats, "bw_out")
 
         time_formats = formats([("1E-12", "ps"),
                                 ("1E-9", "ns"),
@@ -85,9 +85,9 @@ for root, dirnames, filenames in os.walk(sys.argv[1]):
                                 ("3600E0", "h"),
                                 ("86400E0", "d"),
                                 ("604800E0", "w")])
-        xml = format(xml, time_formats, "latency")
-        xml = format(xml, time_formats, "lat")
-        xml = format(xml, time_formats, "bb_lat")
+        xml = convert(xml, time_formats, "latency")
+        xml = convert(xml, time_formats, "lat")
+        xml = convert(xml, time_formats, "bb_lat")
 
         # print xml
         outfile = open(path, "w")

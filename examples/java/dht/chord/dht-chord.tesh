@@ -1,0 +1,16 @@
+#! tesh
+
+! output sort 19
+
+$ java -classpath ${classpath:=.} dht/chord/Main ${srcdir:=.}/../platforms/cluster.xml ${srcdir:=.}/dht/chord/chord.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [1046.732943] [java/INFO] MSG_main finished; Cleaning up the simulation...
+> [node-1.acme.org:dht.chord.Node:(2) 0.000000] [java/INFO] Joining the ring with id 366680 knowing node 42
+> [node-2.acme.org:dht.chord.Node:(3) 0.000000] [java/INFO] Joining the ring with id 533744 knowing node 366680
+> [node-3.acme.org:dht.chord.Node:(4) 0.000000] [java/INFO] Joining the ring with id 1319738 knowing node 42
+> [node-4.acme.org:dht.chord.Node:(5) 0.000000] [java/INFO] Joining the ring with id 16509405 knowing node 366680
+> [node-5.acme.org:dht.chord.Node:(6) 0.000000] [java/INFO] Joining the ring with id 10874876 knowing node 533744
+> [node-6.acme.org:dht.chord.Node:(7) 0.000000] [java/INFO] Joining the ring with id 16728096 knowing node 1319738
+> [node-7.acme.org:dht.chord.Node:(8) 0.000000] [java/INFO] Joining the ring with id 10004760 knowing node 16509405
+> [node-8.acme.org:dht.chord.Node:(9) 0.000000] [java/INFO] Joining the ring with id 6518808 knowing node 42
+> [node-9.acme.org:dht.chord.Node:(10) 0.000000] [java/INFO] Joining the ring with id 2015253 knowing node 1319738

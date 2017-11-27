@@ -1,26 +1,25 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* SimGrid Lua bindings                                                     */
 
-#include "lua_private.h"
+#include "lua_private.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include <ctype.h>
-#include <string.h>
+#include <cctype>
+#include <cstring>
 
 extern "C" {
 #include <lauxlib.h>
 }
 
-#include "src/surf/surf_private.h"
+#include "src/surf/surf_private.hpp"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <simgrid/host.h>
+#include <simgrid/s4u/Host.hpp>
 #include <string>
 #include <vector>
 
@@ -91,8 +90,9 @@ int console_add_backbone(lua_State *L) {
   lua_pop(L, 1);
 
   lua_pushstring(L, "sharing_policy");
-  type = lua_gettable(L, -2);
+  lua_gettable(L, -2);
   const char* policy = lua_tostring(L, -1);
+  lua_pop(L, 1);
   if (policy && not strcmp(policy, "FULLDUPLEX")) {
     link.policy = SURF_LINK_FULLDUPLEX;
   } else if (policy && not strcmp(policy, "FATPIPE")) {
@@ -102,18 +102,16 @@ int console_add_backbone(lua_State *L) {
   }
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id.c_str()));
+  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(link.id));
 
   return 0;
 }
 
 int console_add_host___link(lua_State *L) {
-  s_sg_platf_host_link_cbarg_t hostlink;
-  memset(&hostlink,0,sizeof(hostlink));
+  HostLinkCreationArgs hostlink;
   int type;
 
-  lua_ensure(lua_istable(L, -1),
-      "Bad Arguments to create host_link in Lua. Should be a table with named arguments.");
+  lua_ensure(lua_istable(L, -1), "Bad Arguments to create host_link in Lua. Should be a table with named arguments.");
 
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
@@ -135,7 +133,7 @@ int console_add_host___link(lua_State *L) {
   hostlink.link_down = lua_tostring(L, -1);
   lua_pop(L, 1);
 
-  XBT_DEBUG("Create a host_link for host %s", hostlink.id);
+  XBT_DEBUG("Create a host_link for host %s", hostlink.id.c_str());
   sg_platf_new_hostlink(&hostlink);
 
   return 0;
@@ -143,7 +141,6 @@ int console_add_host___link(lua_State *L) {
 
 int console_add_host(lua_State *L) {
   s_sg_platf_host_cbarg_t host;
-  memset(&host,0,sizeof(host));
   int type;
 
   // we get values from the table passed as argument
@@ -285,8 +282,7 @@ int  console_add_link(lua_State *L) {
  * add Router to AS components
  */
 int console_add_router(lua_State* L) {
-  lua_ensure(lua_istable(L, -1),
-      "Bad Arguments to create router, Should be a table with named arguments");
+  lua_ensure(lua_istable(L, -1), "Bad Arguments to create router, Should be a table with named arguments");
 
   lua_pushstring(L, "id");
   int type = lua_gettable(L, -2);
@@ -307,7 +303,6 @@ int console_add_router(lua_State* L) {
 int console_add_route(lua_State *L) {
   XBT_DEBUG("Adding route");
   s_sg_platf_route_cbarg_t route;
-  memset(&route,0,sizeof(route));
   int type;
 
   lua_ensure(lua_istable(L, -1), "Bad Arguments to add a route. Should be a table with named arguments");
@@ -332,19 +327,18 @@ int console_add_route(lua_State *L) {
   type = lua_gettable(L,-2);
   lua_ensure(type == LUA_TSTRING,
       "Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
-  route.link_list   = new std::vector<simgrid::surf::LinkImpl*>();
   std::vector<std::string> names;
   const char* str = lua_tostring(L, -1);
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name */
-    route.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
+    route.link_list.push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
-    for (auto name : names) {
+    for (auto const& name : names) {
       if (name.length() > 0) {
-        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name.c_str());
-        route.link_list->push_back(link);
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
+        route.link_list.push_back(link);
       }
     }
   }
@@ -374,14 +368,12 @@ int console_add_route(lua_State *L) {
   route.gw_dst = nullptr;
 
   sg_platf_new_route(&route);
-  delete route.link_list;
 
   return 0;
 }
 
 int console_add_ASroute(lua_State *L) {
   s_sg_platf_route_cbarg_t ASroute;
-  memset(&ASroute,0,sizeof(ASroute));
 
   lua_pushstring(L, "src");
   lua_gettable(L, -2);
@@ -413,19 +405,18 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
-  ASroute.link_list = new std::vector<simgrid::surf::LinkImpl*>();
   std::vector<std::string> names;
   const char* str = lua_tostring(L, -1);
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name with no comma */
-    ASroute.link_list->push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
+    ASroute.link_list.push_back(simgrid::surf::LinkImpl::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
-    for (auto name : names) {
+    for (auto const& name : names) {
       if (name.length() > 0) {
-        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name.c_str());
-        ASroute.link_list->push_back(link);
+        simgrid::surf::LinkImpl* link = simgrid::surf::LinkImpl::byName(name);
+        ASroute.link_list.push_back(link);
       }
     }
   }
@@ -446,29 +437,24 @@ int console_add_ASroute(lua_State *L) {
   lua_pop(L,1);
 
   sg_platf_new_route(&ASroute);
-  delete ASroute.link_list;
 
   return 0;
 }
 
 int console_AS_open(lua_State *L) {
- const char *id;
- const char *mode;
- int type;
-
  XBT_DEBUG("Opening AS");
 
  lua_ensure(lua_istable(L, 1), "Bad Arguments to AS_open, Should be a table with named arguments");
 
  lua_pushstring(L, "id");
- type = lua_gettable(L, -2);
+ int type = lua_gettable(L, -2);
  lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for any AS and must be a string.");
- id = lua_tostring(L, -1);
+ const char* id = lua_tostring(L, -1);
  lua_pop(L, 1);
 
  lua_pushstring(L, "mode");
  lua_gettable(L, -2);
- mode = lua_tostring(L, -1);
+ const char* mode = lua_tostring(L, -1);
  lua_pop(L, 1);
 
  int mode_int = A_surfxml_AS_routing_None;
@@ -488,10 +474,10 @@ int console_AS_open(lua_State *L) {
    mode_int = A_surfxml_AS_routing_None;
  else xbt_die("Don't have the model name '%s'",mode);
 
- s_sg_platf_AS_cbarg_t AS;
+ ZoneCreationArgs AS;
  AS.id = id;
  AS.routing = mode_int;
- simgrid::s4u::NetZone* new_as = sg_platf_new_AS_begin(&AS);
+ simgrid::s4u::NetZone* new_as = sg_platf_new_Zone_begin(&AS);
 
  /* Build a Lua representation of the new AS on the stack */
  lua_newtable(L);
@@ -506,37 +492,33 @@ int console_AS_open(lua_State *L) {
 }
 int console_AS_seal(lua_State *L) {
   XBT_DEBUG("Sealing AS");
-  sg_platf_new_AS_seal();
+  sg_platf_new_Zone_seal();
   return 0;
 }
 
 int console_host_set_property(lua_State *L) {
-  const char* name ="";
-  const char* prop_id = "";
-  const char* prop_value = "";
   lua_ensure(lua_istable(L, -1), "Bad Arguments to create link, Should be a table with named arguments");
 
   // get Host id
   lua_pushstring(L, "host");
   lua_gettable(L, -2);
-  name = lua_tostring(L, -1);
+  const char* name = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   // get prop Name
   lua_pushstring(L, "prop");
   lua_gettable(L, -2);
-  prop_id = lua_tostring(L, -1);
+  const char* prop_id = lua_tostring(L, -1);
   lua_pop(L, 1);
   //get args
   lua_pushstring(L,"value");
   lua_gettable(L, -2);
-  prop_value = lua_tostring(L,-1);
+  const char* prop_value = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   sg_host_t host = sg_host_by_name(name);
   lua_ensure(host, "no host '%s' found",name);
-  xbt_dict_t props = sg_host_get_properties(host);
-  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),nullptr);
+  host->setProperty(prop_id, prop_value);
 
   return 0;
 }

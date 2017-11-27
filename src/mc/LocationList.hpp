@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,11 +33,13 @@ private:
   // By default, the expression is always valid:
   range_type range_ = {0, UINT64_MAX};
 public:
-  LocationListEntry() {}
+  LocationListEntry() = default;
   LocationListEntry(DwarfExpression expression, range_type range)
     : expression_(std::move(expression)), range_(range)
   {}
-  LocationListEntry(DwarfExpression expression) : expression_(std::move(expression)), range_({0, UINT64_MAX}) {}
+  explicit LocationListEntry(DwarfExpression expression) : expression_(std::move(expression)), range_({0, UINT64_MAX})
+  {
+  }
 
   DwarfExpression& expression()
   {
@@ -63,7 +64,8 @@ typedef std::vector<LocationListEntry> LocationList;
 class Location {
 private:
   void* memory_;
-  int register_id_;
+  int register_id_ = 0;
+
 public:
   explicit Location(void* x) : memory_(x) {}
   explicit Location(int register_id) : memory_(nullptr), register_id_(register_id) {}

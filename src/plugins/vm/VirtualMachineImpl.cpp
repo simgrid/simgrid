@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,7 +6,9 @@
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_host_private.h"
+#include "src/simix/smx_host_private.hpp"
+
+#include <xbt/asserts.h> // xbt_log_no_loc
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
@@ -41,8 +43,24 @@ std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
  * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system.
  * FIXME: add a configuration flag for this
  */
-// const double virt_overhead = 0.95;
-const double virt_overhead = 1;
+const double virt_overhead = 1; // 0.95
+
+static void hostStateChange(s4u::Host& host)
+{
+  if (host.isOff()) { // just turned off.
+    std::vector<s4u::VirtualMachine*> trash;
+    /* Find all VMs living on that host */
+    for (s4u::VirtualMachine* const& vm : VirtualMachineImpl::allVms_)
+      if (vm->getPm() == &host)
+        trash.push_back(vm);
+    for (s4u::VirtualMachine* vm : trash)
+      vm->pimpl_vm_->shutdown(SIMIX_process_self());
+  }
+}
+VMModel::VMModel()
+{
+  s4u::Host::onStateChange.connect(hostStateChange);
+}
 
 double VMModel::nextOccuringEvent(double now)
 {
@@ -71,19 +89,17 @@ double VMModel::nextOccuringEvent(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (s4u::VirtualMachine* ws_vm : VirtualMachineImpl::allVms_) {
+  for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
     surf::Cpu* cpu = ws_vm->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
-    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()
-                              ->value; // this is X1 in comment above, what this VM got in the sharing on the PM
+    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()->get_value(); // this is X1 in comment above, what
+                                                                                 // this VM got in the sharing on the PM
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->pimpl_vm_->getPm()->getCname());
 
-    // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
-    // cpu_cas01->constraint->bound = solved_value;
     xbt_assert(cpu->model() == surf_cpu_model_vm);
-    lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
-    lmm_update_constraint_bound(vcpu_system, cpu->constraint(), virt_overhead * solved_value);
+    surf::lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
+    vcpu_system->update_constraint_bound(cpu->constraint(), virt_overhead * solved_value);
   }
 
   /* 2. Calculate resource share at the virtual machine layer. */
@@ -114,8 +130,6 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   XBT_VERB("Create VM(%s)@PM(%s)", piface->getCname(), hostPM_->getCname());
 }
 
-extern "C" int
-    xbt_log_no_loc; /* ugly pimpl to ensure that the debug info in the known issue below don't break the test */
 /** @brief A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation */
 VirtualMachineImpl::~VirtualMachineImpl()
 {
@@ -160,7 +174,7 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
   if (getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->getCname());
   if (issuer->host == piface_)
-    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->cname(), piface_->getCname());
+    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->getCname(), piface_->getCname());
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
   XBT_DEBUG("suspend VM(%s), where %d processes exist", piface_->getCname(), xbt_swag_size(process_list));
@@ -192,7 +206,7 @@ void VirtualMachineImpl::resume()
   smx_actor_t smx_process;
   smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("resume %s", smx_process->cname());
+    XBT_DEBUG("resume %s", smx_process->getCname());
     smx_process->resume();
   }
 
@@ -224,7 +238,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
         THROW_IMPOSSIBLE;
         break;
     }
-    XBT_VERB("Shuting down the VM %s even if it's not running but %s", piface_->getCname(), stateName);
+    XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->getCname(), stateName);
   }
 
   xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
@@ -233,7 +247,8 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
   smx_actor_t smx_process;
   smx_actor_t smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("kill %s", smx_process->cname());
+    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process->getCname(),
+              smx_process->host->getCname(), issuer->getCname());
     SIMIX_process_kill(smx_process, issuer);
   }
 

@@ -4,26 +4,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <float.h>
-
+#include <cfloat>
 #include <exception>
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 #include "smpi_process.hpp"
 
-
 //attempt to do a quick autotuning version of the collective,
-
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    type_t type = PJ_type_get_or_null(#cat, PJ_type_get_root());                                                       \
-    if (not type) {                                                                                                    \
-      type = PJ_type_event_new(#cat, PJ_type_get_root());                                                              \
-    }                                                                                                                  \
-    char cont_name[25];                                                                                                \
-    snprintf(cont_name, 25, "rank-%d", smpi_process()->index());                                                       \
-    val_t value = PJ_value_get_or_new(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0", type);               \
-    new NewEvent(SIMIX_get_clock(), PJ_container_get(cont_name), type, value);                                         \
+    simgrid::instr::EventType* type = simgrid::instr::Container::getRoot()->type_->getOrCreateEventType(#cat);         \
+                                                                                                                       \
+    std::string cont_name = std::string("rank-" + std::to_string(smpi_process()->index()));                            \
+    type->addEntityValue(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                  \
+    new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::byName(cont_name), type,                \
+                                 type->getEntityValue(Colls::mpi_coll_##cat##_description[i].name));                   \
   }
 
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)                                                                    \

@@ -1,18 +1,17 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi/smpi_utils.hpp"
-#include "xbt/sysdep.h"
+#include "smpi_utils.hpp"
 #include "xbt/log.h"
-#include "xbt/str.h"
+#include "xbt/sysdep.h"
 #include <boost/tokenizer.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 
-std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
+std::vector<s_smpi_factor_t> parse_factor(std::string smpi_coef_string)
 {
   std::vector<s_smpi_factor_t> smpi_factor;
 
@@ -20,8 +19,7 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
   typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
   boost::char_separator<char> sep(";");
   boost::char_separator<char> factor_separator(":");
-  std::string tmp_string(smpi_coef_string);
-  Tokenizer tokens(tmp_string, sep);
+  Tokenizer tokens(smpi_coef_string, sep);
 
   /**
    * Iterate over patterns like A:B:C:D;E:F;G:H
@@ -30,26 +28,32 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
    * E --> F
    * G --> H
    */
-  for (Tokenizer::iterator token_iter = tokens.begin(); token_iter != tokens.end(); token_iter++) {
+  for (Tokenizer::iterator token_iter = tokens.begin(); token_iter != tokens.end(); ++token_iter) {
     XBT_DEBUG("token : %s", token_iter->c_str());
     Tokenizer factor_values(*token_iter, factor_separator);
     s_smpi_factor_t fact;
     if (factor_values.begin() == factor_values.end()) {
-      xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
+      xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string.c_str());
     }
     unsigned int iteration = 0;
-    for (Tokenizer::iterator factor_iter = factor_values.begin(); factor_iter != factor_values.end(); factor_iter++) {
+    for (Tokenizer::iterator factor_iter = factor_values.begin(); factor_iter != factor_values.end(); ++factor_iter) {
       iteration++;
-      char *errmsg;
 
       if (factor_iter == factor_values.begin()) { /* first element */
-        errmsg = bprintf("Invalid factor in chunk #%zu: %%s", smpi_factor.size()+1);
-        fact.factor = xbt_str_parse_int(factor_iter->c_str(), errmsg);
+        try {
+          fact.factor = std::stoi(*factor_iter);
+        } catch (std::invalid_argument& ia) {
+          throw std::invalid_argument(std::string("Invalid factor in chunk ") + std::to_string(smpi_factor.size() + 1) +
+                                      ": " + *factor_iter);
+        }
       } else {
-        errmsg = bprintf("Invalid factor value %d in chunk #%zu: %%s", iteration, smpi_factor.size()+1);
-        fact.values.push_back(xbt_str_parse_double(factor_iter->c_str(), errmsg));
+        try {
+          fact.values.push_back(std::stod(*factor_iter));
+        } catch (std::invalid_argument& ia) {
+          throw std::invalid_argument(std::string("Invalid factor value ") + std::to_string(iteration) + " in chunk " +
+                                      std::to_string(smpi_factor.size() + 1) + ": " + *factor_iter);
+        }
       }
-      xbt_free(errmsg);
     }
 
     smpi_factor.push_back(fact);
@@ -58,7 +62,7 @@ std::vector<s_smpi_factor_t> parse_factor(const char *smpi_coef_string)
   std::sort(smpi_factor.begin(), smpi_factor.end(), [](const s_smpi_factor_t &pa, const s_smpi_factor_t &pb) {
     return (pa.factor < pb.factor);
   });
-  for (auto& fact : smpi_factor) {
+  for (auto const& fact : smpi_factor) {
     XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
   }
   smpi_factor.shrink_to_fit();

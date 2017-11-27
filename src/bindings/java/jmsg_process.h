@@ -47,6 +47,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jcla
 /* Implement the Java API */
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject jprocess_arg, jobject jhostname);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_daemonize(JNIEnv* env, jobject jprocess);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv* env, jclass cls, jint jresetPID);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv* env, jclass cls, jint pid);
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv* env, jobject jprocess, jobject jname);

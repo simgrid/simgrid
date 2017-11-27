@@ -1,13 +1,13 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cerrno>
 #include <cstddef> // std::size_t
-#include <errno.h>
-#include <stdio.h> // perror
-#include <string.h>
+#include <cstdio>  // perror
+#include <cstring>
 
 #include <sys/socket.h>
 #include <sys/types.h>

@@ -6,8 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <string.h>
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 
 #include "xbt/dict.h"
 #include "xbt/ex.h"
@@ -20,14 +20,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
 
-/**
- * \brief Constructor
- * \return pointer to the destination
- * \see xbt_dict_new_homogenous(), xbt_dict_free()
- *
- * Creates and initialize a new dictionary with a default hashtable size.
- * The dictionary is heterogeneous: each element can have a different free function.
- */
 xbt_dict_t xbt_dict_new()
 {
   XBT_WARN("Function xbt_dict_new() will soon be dropped. Please switch to xbt_dict_new_homogeneous()");
@@ -111,7 +103,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   newsize--;
   dict->table_size = newsize;
   dict->table = currcell;
-  XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
+  XBT_DEBUG("REHASH (%u->%u)", oldsize, newsize);
 
   for (unsigned i = 0; i < oldsize; i++, currcell++) {
     if (*currcell == nullptr) /* empty cell */
@@ -562,11 +554,11 @@ void xbt_dict_postexit()
 }
 
 #ifdef SIMGRID_TEST
-#include <time.h>
+#include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/ex.h"
+#include <ctime>
 #include <xbt/ex.hpp>
-#include "src/internal_config.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 
@@ -630,7 +622,6 @@ static void debugged_remove(xbt_dict_t head, const char* key)
 {
   xbt_test_add("Remove '%s'", key);
   xbt_dict_remove(head, key);
-  /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 }
 
 static void traverse(xbt_dict_t head)
@@ -646,7 +637,7 @@ static void traverse(xbt_dict_t head)
     } else {
       xbt_test_log("Seen #%d:  %s", ++i, key);
     }
-    xbt_test_assert(not data || not strcmp(key, data), "Key(%s) != value(%s). Aborting", key, data);
+    xbt_test_assert(key && data && strcmp(key, data) == 0, "Key(%s) != value(%s). Aborting", key, data);
   }
 }
 
@@ -758,8 +749,7 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve and trave
   /* RETRIEVE */
   xbt_test_add("Search 123");
   char* data = (char*)xbt_dict_get(head, "123");
-  xbt_test_assert(data);
-  xbt_test_assert(not strcmp("123", data));
+  xbt_test_assert(data && strcmp("123", data) == 0);
 
   search_not_found(head, "Can't be found");
   search_not_found(head, "123 Can't be found");
@@ -774,8 +764,6 @@ XBT_TEST_UNIT("basic", test_dict_basic, "Basic usage: change, retrieve and trave
 
   xbt_test_add("Traverse the resulting dictionary");
   traverse(head);
-
-  /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 
   xbt_test_add("Free the dictionary twice");
   xbt_dict_free(&head);
@@ -872,7 +860,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "nullptr data management")
         xbt_test_log("Seen:  %s", key);
       }
 
-      if (not strcmp(key, "null"))
+      if (key && strcmp(key, "null") == 0)
         found = 1;
     }
     xbt_test_assert(found, "the key 'null', associated to nullptr is not found");
@@ -904,7 +892,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     xbt_test_log("Fill the struct, count its elems and frees the structure");
     xbt_test_log("using 1000 elements with %d chars long randomized keys.", SIZEOFKEY);
     xbt_dict_t head = xbt_dict_new_homogeneous(free);
-    /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (int j = 0; j < 1000; j++) {
       char* data = nullptr;
       char* key  = (char*)xbt_malloc(SIZEOFKEY);
@@ -913,7 +900,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
         for (int k         = 0; k < SIZEOFKEY - 1; k++)
           key[k] = rand() % ('z' - 'a') + 'a';
         key[SIZEOFKEY - 1] = '\0';
-        /*      printf("[%d %s]\n",j,key); */
         data = (char*) xbt_dict_get_or_null(head, key);
       } while (data != nullptr);
 
@@ -923,7 +909,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
       count(head, j + 1);
     }
-    /*    xbt_dict_dump(head,(void (*)(void*))&printf); */
     traverse(head);
     xbt_dict_free(&head);
     xbt_dict_free(&head);
@@ -937,7 +922,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     snprintf(key,10, "%d", j);
     xbt_dict_set(head, key, key, nullptr);
   }
-  /*xbt_dict_dump(head,(void (*)(void*))&printf); */
 
   xbt_test_add("Count the elements (retrieving the key and data for each)");
   xbt_test_log("There is %d elements", countelems(head));
@@ -945,7 +929,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Search my %d elements 20 times", NB_ELM);
   char* key = (char*)xbt_malloc(10);
   for (int i = 0; i < 20; i++) {
-    /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (int j = 0; j < NB_ELM; j++) {
       snprintf(key,10, "%d", j);
       void* data = xbt_dict_get(head, key);

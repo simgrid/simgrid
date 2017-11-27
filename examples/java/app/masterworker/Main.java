@@ -21,8 +21,8 @@ class Main {
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
     Msg.init(args);
 
-    String platf  = args.length > 1 ? args[0] : "examples/java/platform.xml";
-    String deploy =  args.length > 1 ? args[1] : "examples/java/masterworker/masterworkerDeployment.xml";
+    String platf  = args.length > 1 ? args[0] : "../platforms/small_platform.xml";
+    String deploy =  args.length > 1 ? args[1] : "app/masterworker/masterworker.xml";
 
     Msg.verb("Platform: "+platf+"; Deployment:"+deploy+"; Current directory: "+new File(".").getAbsolutePath());
 

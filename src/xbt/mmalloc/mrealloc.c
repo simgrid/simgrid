@@ -36,9 +36,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   if ((char *) ptr < (char *) mdp->heapbase || BLOCK(ptr) > mdp->heapsize) {
     printf("FIXME. Ouch, this pointer is not mine, refusing to proceed (another solution would be to malloc "
            "it instead of reallocing it, see source code)\n");
-    result = mmalloc(mdp, size);
     abort();
-    return result;
   }
 
   size_t requested_size = size; // The amount of memory requested by user, for real

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* Copyright (c) 2014-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,13 +8,13 @@
 #undef NDEBUG
 #endif
 
-#include <string.h>
-#include <assert.h>
+#include <cassert>
+#include <cstring>
 
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"
-#include "src/mc/mc_private.h"
+#include "src/mc/mc_private.hpp"
 
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Type.hpp"
@@ -25,7 +25,8 @@ int test_some_array[4][5][6];
 struct some_struct {
   int first;
   int second[4][5];
-} test_some_struct;
+};
+some_struct test_some_struct;
 
 static simgrid::mc::Type* find_type_by_name(simgrid::mc::ObjectInformation* info, const char* name)
 {
@@ -105,11 +106,13 @@ static simgrid::mc::Member* find_member(simgrid::mc::Type& type, const char* nam
 
 int some_local_variable = 0;
 
-typedef struct foo {int i;} s_foo;
+struct s_foo {
+  int i;
+};
 
-static void test_type_by_name(simgrid::mc::RemoteClient& process, s_foo my_foo)
+static void test_type_by_name(simgrid::mc::RemoteClient& process, s_foo /*my_foo*/)
 {
-  assert(process.binary_info->full_types_by_name.find("struct foo") != process.binary_info->full_types_by_name.end());
+  assert(process.binary_info->full_types_by_name.find("struct s_foo") != process.binary_info->full_types_by_name.end());
 }
 
 int main(int argc, char** argv)
@@ -153,7 +156,7 @@ int main(int argc, char** argv)
   int lexical_block_variable = 50;
   test_local_variable(process.binary_info.get(), "main", "lexical_block_variable", &lexical_block_variable, &cursor);
 
-  s_foo my_foo;
+  s_foo my_foo = {0};
   test_type_by_name(process, my_foo);
 
   _exit(0);

@@ -15,7 +15,6 @@ main (int argc, char **argv)
   char processor_name[128];
   int namelen = 128;
   int buf0[buf_size];
-  int buf1[buf_size];
   MPI_Status status;
   MPI_Request req;
 

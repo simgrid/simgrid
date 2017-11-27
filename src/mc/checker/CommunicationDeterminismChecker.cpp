@@ -13,12 +13,12 @@
 #include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
-#include "src/mc/mc_exit.h"
-#include "src/mc/mc_private.h"
-#include "src/mc/mc_record.h"
-#include "src/mc/mc_request.h"
-#include "src/mc/mc_smx.h"
-#include "src/mc/mc_state.h"
+#include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_request.hpp"
+#include "src/mc/mc_smx.hpp"
+#include "src/mc/mc_state.hpp"
 #include "src/mc/remote/Client.hpp"
 
 #include "smpi_request.hpp"
@@ -67,25 +67,25 @@ static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int p
 
   switch(diff) {
   case TYPE_DIFF:
-    res = bprintf("%s Different type for communication #%d", type, cursor);
+    res = bprintf("%s Different type for communication #%u", type, cursor);
     break;
   case RDV_DIFF:
-    res = bprintf("%s Different rdv for communication #%d", type, cursor);
+    res = bprintf("%s Different rdv for communication #%u", type, cursor);
     break;
   case TAG_DIFF:
-    res = bprintf("%s Different tag for communication #%d", type, cursor);
+    res = bprintf("%s Different tag for communication #%u", type, cursor);
     break;
   case SRC_PROC_DIFF:
-      res = bprintf("%s Different source for communication #%d", type, cursor);
+    res = bprintf("%s Different source for communication #%u", type, cursor);
     break;
   case DST_PROC_DIFF:
-      res = bprintf("%s Different destination for communication #%d", type, cursor);
+    res = bprintf("%s Different destination for communication #%u", type, cursor);
     break;
   case DATA_SIZE_DIFF:
-    res = bprintf("%s\n Different data size for communication #%d", type, cursor);
+    res = bprintf("%s\n Different data size for communication #%u", type, cursor);
     break;
   case DATA_DIFF:
-    res = bprintf("%s\n Different data for communication #%d", type, cursor);
+    res = bprintf("%s\n Different data for communication #%u", type, cursor);
     break;
   default:
     res = nullptr;
@@ -236,7 +236,9 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
 
     char* remote_name;
-    mc_model_checker->process().read(&remote_name, remote(comm->mbox ? &comm->mbox->name_ : &comm->mbox_cpy->name_));
+    mc_model_checker->process().read(
+        &remote_name, remote(comm->mbox ? &simgrid::xbt::string::to_string_data(comm->mbox->name_).data
+                                        : &simgrid::xbt::string::to_string_data(comm->mbox_cpy->name_).data));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
     pattern->dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc))->pid;
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
@@ -314,7 +316,6 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
 
 void CommunicationDeterminismChecker::logState() // override
 {
-  Checker::logState();
   if (_sg_mc_comms_determinism && not this->recv_deterministic && this->send_deterministic) {
     XBT_INFO("******************************************************");
     XBT_INFO("**** Only-send-deterministic communication pattern ****");
@@ -390,7 +391,6 @@ void CommunicationDeterminismChecker::restoreState()
   /* Restore the initial state */
   simgrid::mc::session->restoreInitialState();
 
-  // int n = xbt_dynar_length(incomplete_communications_pattern);
   unsigned n = MC_smx_get_maxpid();
   assert(n == xbt_dynar_length(incomplete_communications_pattern));
   assert(n == xbt_dynar_length(initial_communications_pattern));
@@ -436,14 +436,18 @@ void CommunicationDeterminismChecker::main()
     simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth = %zi (state = %d, interleaved processes = %zd)", stack_.size(), state->num,
+    XBT_DEBUG("Exploration depth = %zu (state = %d, interleaved processes = %zu)", stack_.size(), state->num,
               state->interleaveSize());
 
     /* Update statistics */
     mc_model_checker->visited_states++;
 
-    if (stack_.size() <= (std::size_t)_sg_mc_max_depth && (req = MC_state_get_request(state)) != nullptr &&
-        (visited_state == nullptr)) {
+    if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
+      req = MC_state_get_request(state);
+    else
+      req = nullptr;
+
+    if (req != nullptr && visited_state == nullptr) {
 
       int req_num = state->transition.argument;
 
@@ -481,9 +485,12 @@ void CommunicationDeterminismChecker::main()
        * with the initial pattern. */
       bool compare_snapshots = all_communications_are_finished() && this->initial_communications_pattern_done;
 
-      if (_sg_mc_max_visited_states == 0 ||
-          (visited_state = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), compare_snapshots)) ==
-              nullptr) {
+      if (_sg_mc_max_visited_states != 0)
+        visited_state = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), compare_snapshots);
+      else
+        visited_state = nullptr;
+
+      if (visited_state == nullptr) {
 
         /* Get enabled actors and insert them in the interleave set of the next state */
         for (auto& actor : mc_model_checker->process().actors())
@@ -508,13 +515,13 @@ void CommunicationDeterminismChecker::main()
         XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
             visited_state->original_num == -1 ? visited_state->num : visited_state->original_num);
       else
-        XBT_DEBUG("There are no more processes to interleave. (depth %zi)", stack_.size());
+        XBT_DEBUG("There are no more processes to interleave. (depth %zu)", stack_.size());
 
       if (not this->initial_communications_pattern_done)
         this->initial_communications_pattern_done = 1;
 
       /* Trash the current state, no longer needed */
-      XBT_DEBUG("Delete state %d at depth %zi", state->num, stack_.size());
+      XBT_DEBUG("Delete state %d at depth %zu", state->num, stack_.size());
       stack_.pop_back();
 
       visited_state = nullptr;
@@ -522,7 +529,7 @@ void CommunicationDeterminismChecker::main()
       /* Check for deadlocks */
       if (mc_model_checker->checkDeadlock()) {
         MC_show_deadlock();
-        throw new simgrid::mc::DeadlockError();
+        throw simgrid::mc::DeadlockError();
       }
 
       while (not stack_.empty()) {
@@ -530,16 +537,16 @@ void CommunicationDeterminismChecker::main()
         stack_.pop_back();
         if (state->interleaveSize() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
-          XBT_DEBUG("Back-tracking to state %d at depth %zi", state->num, stack_.size() + 1);
+          XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num, stack_.size() + 1);
           stack_.push_back(std::move(state));
 
           this->restoreState();
 
-          XBT_DEBUG("Back-tracking to state %d at depth %zi done", stack_.back()->num, stack_.size());
+          XBT_DEBUG("Back-tracking to state %d at depth %zu done", stack_.back()->num, stack_.size());
 
           break;
         } else {
-          XBT_DEBUG("Delete state %d at depth %zi", state->num, stack_.size() + 1);
+          XBT_DEBUG("Delete state %d at depth %zu", state->num, stack_.size() + 1);
         }
       }
     }

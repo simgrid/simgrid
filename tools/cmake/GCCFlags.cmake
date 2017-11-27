@@ -15,6 +15,9 @@ set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
   set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  if(CMAKE_COMPILER_IS_GNUCC AND (NOT (CMAKE_C_COMPILER_VERSION VERSION_LESS "5.0")))
+    set(warnCFLAGS "${warnCFLAGS} -Wformat-signedness")
+  endif()
   if(CMAKE_C_COMPILER_ID MATCHES "Clang|GCC")
     set(warnCFLAGS "${warnCFLAGS} -Wno-format-nonliteral")
   endif()
@@ -22,7 +25,10 @@ if(enable_compile_warnings)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
 
-  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  if(CMAKE_COMPILER_IS_GNUCXX AND (NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")))
+    set(warnCFLAGS "${warnCFLAGS} -Wformat-signedness")
+  endif()
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GCC")
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-format-nonliteral")
   endif()
@@ -38,10 +44,10 @@ if(enable_compile_warnings)
   # the one specific to C but refused by C++
   set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
-  if(CMAKE_Fotran_COMPILER_ID MATCHES "GCC|PGI")
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "GCC|PGI")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
   endif()
-  if(CMAKE_Fotran_COMPILER_ID MATCHES "Intel")
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
   endif()
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
@@ -71,6 +77,11 @@ if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
     AND (NOT enable_model-checking))
   # This is redundant (already in -03):
   set(optCFLAGS "${optCFLAGS} -finline-functions ")
+endif()
+
+# Do not leak the current directory into the binaries
+if(CMAKE_COMPILER_IS_GNUCC)
+  set(optCFLAGS "${optCFLAGS} -fdebug-prefix-map=${CMAKE_SOURCE_DIR}=.")
 endif()
 
 # Configure LTO
@@ -134,11 +145,10 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/log.c src/xbt/xbt_log_appender_file.c
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
       src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
-      src/xbt/dynar.cpp src/xbt/heap.c src/xbt/swag.c
-      src/xbt/str.c src src/xbt/snprintf.c
-      src/xbt/queue.c
+      src/xbt/dynar.cpp src/xbt/swag.c
+      src/xbt/xbt_str.cpp src/xbt/snprintf.c
       src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
-      src/xbt/backtrace_linux.c
+      src/xbt/backtrace_linux.cpp
       ${MC_SRC_BASE} ${MC_SRC})
       set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")
        if(CMAKE_COMPILER_IS_GNUCC)
@@ -166,12 +176,12 @@ if(enable_coverage)
   find_program(GCOV_PATH gcov)
   if(GCOV_PATH)
     set(COVERAGE_COMMAND "${GCOV_PATH}" CACHE TYPE FILEPATH FORCE)
+    set(COVERAGE_EXTRA_FLAGS "-l -p")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCOVERAGE")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fprofile-arcs -ftest-coverage")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-    set(TESH_OPTION --enable-coverage)
     add_definitions(-fprofile-arcs -ftest-coverage)
   endif()
 endif()
@@ -181,6 +191,12 @@ if(enable_address_sanitizer)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
     set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=address")
     set(TESH_OPTION --enable-sanitizers)
+    try_compile(HAVE_SANITIZE_ADDRESS ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_asan.cpp)
+    try_compile(HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_asan.cpp
+      COMPILE_DEFINITIONS -DCHECK_FIBER_SUPPORT)
+else()
+    set(HAVE_SANITIZE_ADDRESS FALSE CACHE INTERNAL "")
+    set(HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT FALSE CACHE INTERNAL "")
 endif()
 
 if(enable_thread_sanitizer)

@@ -9,14 +9,14 @@
 
 #include "jmsg_process.h"
 
-#include "jmsg.h"
-#include "jmsg_host.h"
-#include "jxbt_utilities.h"
 #include "JavaContext.hpp"
+#include "jmsg.hpp"
+#include "jmsg_host.h"
+#include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-SG_BEGIN_DECL()
+extern "C" {
 
 jfieldID jprocess_field_Process_bind;
 jfieldID jprocess_field_Process_host;
@@ -91,6 +91,18 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
 }
 
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_daemonize(JNIEnv* env, jobject jprocess)
+{
+  msg_process_t process = jprocess_to_native(jprocess, env);
+
+  if (not process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  MSG_process_daemonize(process);
+}
+
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv * env, jclass cls, jint jresetPID)
 {
   return (jint) MSG_process_killall((int) jresetPID);
@@ -101,7 +113,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
   msg_process_t process = MSG_process_from_PID(pid);
 
   if (not process) {
-    jxbt_throw_process_not_found(env, bprintf("PID = %d",static_cast<int>(pid)));
+    jxbt_throw_process_not_found(env, std::string("PID = ") + std::to_string(static_cast<int>(pid)));
     return nullptr;
   }
 
@@ -156,7 +168,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_suspend(JNIEnv * env, jobjec
   /* try to suspend the process */
   msg_error_t rv = MSG_process_suspend(process);
 
-  jxbt_check_res("MSG_process_suspend()", rv, MSG_OK, bprintf("unexpected error , please report this bug"));
+  jxbt_check_res("MSG_process_suspend()", rv, MSG_OK, "unexpected error , please report this bug");
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject jprocess)
@@ -170,7 +182,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject
 
   /* try to resume the process */
   msg_error_t res = MSG_process_resume(process);
-  jxbt_check_res("MSG_process_resume()", res, MSG_OK, bprintf("unexpected error , please report this bug"));
+  jxbt_check_res("MSG_process_resume()", res, MSG_OK, "unexpected error , please report this bug");
 }
 
 JNIEXPORT void
@@ -187,21 +199,15 @@ JNICALL Java_org_simgrid_msg_Process_setAutoRestart (JNIEnv *env, jobject jproce
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart (JNIEnv *env, jobject jprocess) {
   msg_process_t process = jprocess_to_native(jprocess, env);
-  xbt_ex_t e;
 
   if (not process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
 
-  try {
-    MSG_process_restart(process);
-  }
-  catch (xbt_ex& e) {
-    // Nothing to do
-  }
-
+  MSG_process_restart(process);
 }
+
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env, jobject jprocess)
 {
   msg_process_t process = jprocess_to_native(jprocess, env);
@@ -222,13 +228,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
   rv = MSG_process_sleep(time);
   if (rv != MSG_OK) {
     XBT_DEBUG("Something during the MSG_process_sleep invocation was wrong, trigger a HostFailureException");
-
-    //jmsg_throw_status(env,rv);
-
-    // adsein, the code above as been replaced by the code below. Indeed, according to the documentation, a sleep can only
-    // trigger a host_failure exception. When the sleep crashes due to a host shutdown, the exception thrown by smx_context_java.c
-    // is a cancelled_error, see bindings/java/smx_context_java.c, function void smx_ctx_java_stop(smx_context_t context) and src/msg/msg_gos.c
-    // function  msg_error_t MSG_process_sleep(double nb_sec)
 
     jxbt_throw_host_failure(env, "");
   }
@@ -302,5 +301,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , j
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls) {
   return (jint) MSG_process_get_number();
 }
-
-SG_END_DECL()
+}

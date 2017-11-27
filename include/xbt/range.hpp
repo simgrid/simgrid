@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team.
+/* Copyright (c) 2016-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,7 +17,7 @@ template<class T> class Range {
 public:
   Range()               : begin_(), end_() {}
   Range(T begin, T end) : begin_(std::move(begin)), end_(std::move(end)) {}
-  Range(T value) : begin_(value), end_(value + 1) {}
+  explicit Range(T value) : begin_(value), end_(value + 1) {}
   T& begin()             { return begin_; }
   T& end()               { return end_; }
   const T& begin() const { return begin_; }

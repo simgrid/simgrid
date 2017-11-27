@@ -18,12 +18,12 @@ namespace s4u {
 
 simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                           kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                          std::vector<surf::LinkImpl*>* link_list)>
+                          std::vector<surf::LinkImpl*>& link_list)>
     NetZone::onRouteCreation;
 simgrid::xbt::signal<void(NetZone&)> NetZone::onCreation;
 simgrid::xbt::signal<void(NetZone&)> NetZone::onSeal;
 
-NetZone::NetZone(NetZone* father, const char* name) : father_(father), name_(xbt_strdup(name))
+NetZone::NetZone(NetZone* father, std::string name) : father_(father), name_(name)
 {
   children_ = new std::vector<NetZone*>();
 }
@@ -35,10 +35,9 @@ void NetZone::seal()
 
 NetZone::~NetZone()
 {
-  for (auto nz : *children_)
+  for (auto const& nz : *children_)
     delete nz;
   delete children_;
-  xbt_free(name_);
 }
 
 std::unordered_map<std::string, std::string>* NetZone::getProperties()
@@ -64,9 +63,9 @@ std::vector<NetZone*>* NetZone::getChildren()
 {
   return children_;
 }
-char* NetZone::getCname()
+const char* NetZone::getCname() const
 {
-  return name_;
+  return name_.c_str();
 }
 NetZone* NetZone::getFather()
 {
@@ -75,8 +74,8 @@ NetZone* NetZone::getFather()
 
 void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
 {
-  for (auto card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->name());
+  for (auto const& card : vertices_) {
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->getName());
     if (host != nullptr)
       whereto->push_back(host);
   }
@@ -90,7 +89,7 @@ int NetZone::addComponent(kernel::routing::NetPoint* elm)
 
 void NetZone::addRoute(sg_platf_route_cbarg_t /*route*/)
 {
-  xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_);
+  xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
 }
 }
 }; // namespace simgrid::s4u

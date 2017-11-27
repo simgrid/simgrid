@@ -1,4 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
+/* Copyright (c) 2015-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@
 // We need this for the register indices:
 // #define _GNU_SOURCE
 
-#include <string.h>
+#include <cstring>
 
 // On x86_64, libunwind unw_context_t has the same layout as ucontext_t:
 #include <sys/types.h>
@@ -23,7 +23,7 @@ typedef register_t greg_t;
 #include <libunwind.h>
 
 #include "src/mc/Frame.hpp"
-#include "src/mc/mc_unw.h"
+#include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
 
 using simgrid::mc::remote;
@@ -251,15 +251,12 @@ void UnwindContext::initialize(simgrid::mc::RemoteClient* process, unw_context_t
   // We don't really need support for FR registers as they are caller saved
   // and probably never use those fields as libunwind-x86_64 does not read
   // FP registers from the unw_context_t
-  // but we fix the pointer in order to avoid dangling pointers:
-  // context->context_.uc_mcontext.fpregs = &(context->context.__fpregs_mem);
-
   // Let's ignore this and see what happens:
   this->unwindContext_.uc_mcontext.fpregs = nullptr;
 # endif
 #else
   // Do we need to do any fixup like this?
-  #error Target CPU type is not handled.
+# error Target CPU type is not handled.
 #endif
 }
 

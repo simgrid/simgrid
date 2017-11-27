@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "colls_private.h"
+#include "colls_private.hpp"
 
 // This selector is based on information gathered on the Stampede cluster, with Intel MPI 4.1.3.049, and from the intel reference manual. The data was gathered launching runs with 1,2,4,8,16 processes per node.
 
@@ -14,21 +14,21 @@
 #define INTEL_MAX_NB_NUMPROCS  12
 #define INTEL_MAX_NB_PPN  5  /* 1 2 4 8 16 ppn */
 
-typedef struct {
+struct intel_tuning_table_size_element {
   unsigned int max_size;
   int algo;
-} intel_tuning_table_size_element;
+};
 
-typedef struct {
+struct intel_tuning_table_numproc_element {
   int max_num_proc;
   int num_elems;
   intel_tuning_table_size_element elems[INTEL_MAX_NB_THRESHOLDS];
-} intel_tuning_table_numproc_element;
+};
 
-typedef struct {
+struct intel_tuning_table_element {
   int ppn;
   intel_tuning_table_numproc_element elems[INTEL_MAX_NB_NUMPROCS];
-} intel_tuning_table_element;
+};
 
 /*
 I_MPI_ADJUST_ALLREDUCE

@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2017. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,11 +22,12 @@
 
 #include "src/simgrid/util.hpp"
 #include "xbt/log.h"
+#include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 #include <simgrid_config.h>
 
-#include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
+#include "src/mc/mc_private.hpp"
 
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
@@ -532,15 +533,11 @@ static void MC_dwarf_fill_member_location(
                 (uint64_t) type->id, type->name.c_str());
       break;
     }
-  case simgrid::dwarf::FormClass::LocListPtr:
-    // Reference to a location list:
-    // TODO
-  case simgrid::dwarf::FormClass::Reference:
-    // It's supposed to be possible in DWARF2 but I couldn't find its semantic
-    // in the spec.
+
   default:
-    xbt_die("Can't handle form class (%i) / form 0x%x as DW_AT_member_location",
-            (int) form_class, form);
+    // includes FormClass::LocListPtr (reference to a location list: TODO) and FormClass::Reference (it's supposed to be
+    // possible in DWARF2 but I couldn't find its semantic in the spec)
+    xbt_die("Can't handle form class (%d) / form 0x%x as DW_AT_member_location", (int)form_class, (unsigned)form);
   }
 
 }
@@ -624,7 +621,7 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
 /** \brief Create a MC type object from a DIE
  *
  *  \param info current object info object
- *  \param DIE (for a given type);
+ *  \param DIE (for a given type)
  *  \param unit compilation unit of the current DIE
  *  \return MC representation of the type
  */
@@ -658,10 +655,10 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name != nullptr) {
-    char* full_name = ns ? bprintf("%s%s::%s", prefix, ns, name) :
-      bprintf("%s%s", prefix, name);
-    type.name = std::string(full_name);
-    free(full_name);
+    if (ns)
+      type.name = simgrid::xbt::string_printf("%s%s::%s", prefix, ns, name);
+    else
+      type.name = simgrid::xbt::string_printf("%s%s", prefix, name);
   }
 
   type.type_id = MC_dwarf_at_type(die);
@@ -672,7 +669,7 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   if (type.type == DW_TAG_pointer_type)
     type.byte_size = sizeof(void*);
 
-  // Computation of the byte_size;
+  // Computation of the byte_size
   if (dwarf_hasattr_integrate(die, DW_AT_byte_size))
     type.byte_size = MC_dwarf_attr_integrate_uint(die, DW_AT_byte_size, 0);
   else if (type.type == DW_TAG_array_type
@@ -684,6 +681,10 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   }
 
   switch (type.type) {
+  default:
+    XBT_DEBUG("Unhandled type: %d (%s)", type.type, simgrid::dwarf::tagname(type.type));
+    break;
+
   case DW_TAG_array_type:
     type.element_count = MC_dwarf_array_element_count(die, unit);
     // TODO, handle DW_byte_stride and (not) DW_bit_stride
@@ -698,10 +699,8 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   case DW_TAG_union_type:
   case DW_TAG_class_type:
     MC_dwarf_add_members(info, die, unit, &type);
-    char *new_ns = ns == nullptr ? xbt_strdup(type.name.c_str())
-        : bprintf("%s::%s", ns, name);
-    MC_dwarf_handle_children(info, die, unit, frame, new_ns);
-    free(new_ns);
+    std::string new_ns = ns ? simgrid::xbt::string_printf("%s::%s", ns, name) : type.name;
+    MC_dwarf_handle_children(info, die, unit, frame, new_ns.c_str());
     break;
   }
 
@@ -777,7 +776,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
         variable->address = (void *) (base + offset);
       } else
         variable->location_list = {
-          simgrid::dwarf::DwarfExpression(expr, expr + len) };
+            simgrid::dwarf::LocationListEntry(simgrid::dwarf::DwarfExpression(expr, expr + len))};
 
       break;
     }
@@ -790,11 +789,8 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     break;
 
   default:
-    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location "
-            "in <%" PRIx64 ">%s",
-            form, form, (int) form_class, (int) form_class,
-            (uint64_t) variable->id,
-            variable->name.c_str());
+    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%" PRIx64 ">%s", (unsigned)form, form,
+            (unsigned)form_class, (int)form_class, (uint64_t)variable->id, variable->name.c_str());
   }
 
   // Handle start_scope:
@@ -803,20 +799,13 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     dwarf_attr(die, DW_AT_start_scope, &attr);
     int form = dwarf_whatform(&attr);
     simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
-    switch (form_class) {
-    case simgrid::dwarf::FormClass::Constant:
-      {
-        Dwarf_Word value;
-        variable->start_scope =
-            dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
-        break;
-      }
-
-    case simgrid::dwarf::FormClass::RangeListPtr:     // TODO
-    default:
-      xbt_die
-          ("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
-           form, (int) form_class, name == nullptr ? "?" : name);
+    if (form_class == simgrid::dwarf::FormClass::Constant) {
+      Dwarf_Word value;
+      variable->start_scope = dwarf_formudata(&attr, &value) == 0 ? (size_t)value : 0;
+    } else {
+      // TODO: FormClass::RangeListPtr
+      xbt_die("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s", (unsigned)form,
+              (unsigned)form_class, name == nullptr ? "?" : name);
     }
   }
 
@@ -826,10 +815,10 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
 
   // The current code needs a variable name,
   // generate a fake one:
-  if (variable->name.empty())
-    variable->name =
-      "@anonymous#" + std::to_string(mc_anonymous_variable_index++);
-
+  if (variable->name.empty()) {
+    variable->name = "@anonymous#" + std::to_string(mc_anonymous_variable_index);
+    mc_anonymous_variable_index++;
+  }
   return variable;
 }
 
@@ -842,7 +831,7 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
   if (not variable)
     return;
   // Those arrays are sorted later:
-  else if (variable->global)
+  if (variable->global)
     info->global_variables.push_back(std::move(*variable));
   else if (frame != nullptr)
     frame->variables.push_back(std::move(*variable));
@@ -1139,7 +1128,7 @@ std::string find_by_build_id(std::vector<char> id)
 {
   std::string filename;
   std::string hex = to_hex(id);
-  for (const char* debug_path : debug_paths) {
+  for (const char* const& debug_path : debug_paths) {
     // Example:
     filename = std::string(debug_path) + ".build-id/"
       + to_hex(id.data(), 1) + '/'
@@ -1194,8 +1183,8 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 
   // If there was no DWARF in the file, try to find it in a separate file.
   // Different methods might be used to store the DWARF informations:
-  //  * GNU NT_GNU_BUILD_ID;
-  //  * .gnu_debuglink.
+  //  * GNU NT_GNU_BUILD_ID
+  //  * .gnu_debuglink
   // See https://sourceware.org/gdb/onlinedocs/gdb/Separate-Debug-Files.html
   // for reference of what we are doing.
 
@@ -1282,7 +1271,7 @@ static void MC_post_process_variables(simgrid::mc::ObjectInformation* info)
   // Someone needs this to be sorted but who?
   boost::range::sort(info->global_variables, MC_compare_variable);
 
-  for(simgrid::mc::Variable& variable : info->global_variables)
+  for (simgrid::mc::Variable& variable : info->global_variables)
     if (variable.type_id)
       variable.type = simgrid::util::find_map_ptr(
         info->types, variable.type_id);
@@ -1308,8 +1297,7 @@ static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid:
 
   // Recursive post-processing of nested-scopes:
   for (simgrid::mc::Frame& nested_scope : scope->scopes)
-      mc_post_process_scope(info, &nested_scope);
-
+    mc_post_process_scope(info, &nested_scope);
 }
 
 static
@@ -1342,7 +1330,7 @@ simgrid::mc::Type* MC_resolve_type(
 static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 {
   // Lookup "subtype" field:
-  for(auto& i : info->types) {
+  for (auto& i : info->types) {
     i.second.subtype = MC_resolve_type(info, i.second.type_id);
     for (simgrid::mc::Member& member : i.second.members)
       member.type = MC_resolve_type(info, member.type_id);

@@ -5,16 +5,15 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/msg/msg_private.h"
+#include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_host_private.h"
-
+#include "src/simix/smx_host_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
 simgrid::xbt::Extension<simgrid::s4u::Host, simgrid::MsgHostExt> simgrid::MsgHostExt::EXTENSION_ID;
 
-SG_BEGIN_DECL()
+extern "C" {
 
 int sg_storage_max_file_descriptors = 1024;
 
@@ -153,7 +152,7 @@ void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
  */
 const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 {
-  return static_cast<const char*>(xbt_dict_get_or_null(MSG_host_get_properties(host), name));
+  return host->getProperty(name);
 }
 
 /** \ingroup m_host_management
@@ -165,7 +164,14 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  return host->getProperties();
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::map<std::string, std::string>* props = host->getProperties();
+  if (props == nullptr)
+    return nullptr;
+  for (auto const& elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
 }
 
 /** \ingroup m_host_management
@@ -177,7 +183,7 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
  */
 void MSG_host_set_property_value(msg_host_t host, const char* name, char* value)
 {
-  xbt_dict_set(MSG_host_get_properties(host), name, value, nullptr);
+  host->setProperty(name, value);
 }
 
 /** @ingroup m_host_management
@@ -255,10 +261,9 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
-  for (auto elm : host->getMountedStorages())
+  for (auto const& elm : host->getMountedStorages())
     xbt_dict_set(contents, elm.first.c_str(), MSG_storage_get_content(elm.second), nullptr);
 
   return contents;
 }
-
-SG_END_DECL()
+}

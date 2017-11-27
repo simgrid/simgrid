@@ -3,13 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.h"
+#include "msg_private.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /** @addtogroup m_process_management
  *
@@ -39,7 +40,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
     simcall_process_set_data(smx_actor, nullptr);
   }
 
-  TRACE_msg_process_destroy(smx_actor->name.c_str(), smx_actor->pid);
+  TRACE_msg_process_destroy(smx_actor->name, smx_actor->pid);
   // free the data if a function was provided
   if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_actor->data);
@@ -51,7 +52,8 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                          xbt_dict_t properties, smx_actor_t parent_process)
+                                          std::map<std::string, std::string>* properties,
+                                          smx_actor_t /*parent_process*/)
 {
   msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
   return p == nullptr ? nullptr : p->getImpl();
@@ -123,17 +125,24 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   if (code)
     function = simgrid::xbt::wrapMain(code, argc, static_cast<const char* const*>(argv));
 
-  msg_process_t res = MSG_process_create_from_stdfunc(name, std::move(function), data, host, properties);
+  std::map<std::string, std::string> props;
+  xbt_dict_cursor_t cursor = nullptr;
+  char* key;
+  char* value;
+  xbt_dict_foreach (properties, cursor, key, value)
+    props[key] = value;
+  xbt_dict_free(&properties);
+
+  msg_process_t res = MSG_process_create_from_stdfunc(name, std::move(function), data, host, &props);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
   return res;
 }
-
-SG_END_DECL()
+}
 
 msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
-                                              xbt_dict_t properties)
+                                              std::map<std::string, std::string>* properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
   simgrid::msg::ActorExt* msgExt = new simgrid::msg::ActorExt(data);
@@ -149,7 +158,7 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
   return process->ciface();
 }
 
-SG_BEGIN_DECL()
+extern "C" {
 
 /* Become a process in the simulation
  *
@@ -161,10 +170,16 @@ SG_BEGIN_DECL()
 msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
+  std::map<std::string, std::string> props;
+  xbt_dict_cursor_t cursor = nullptr;
+  char* key;
+  char* value;
+  xbt_dict_foreach (properties, cursor, key, value)
+    props[key] = value;
+  xbt_dict_free(&properties);
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t process =
-      SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->getCname(), properties, nullptr);
+  smx_actor_t process = SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->getCname(), &props, nullptr);
   if (not process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
@@ -189,7 +204,7 @@ void MSG_process_detach()
  */
 void MSG_process_kill(msg_process_t process)
 {
-  simcall_process_kill(process->getImpl());
+  process->kill();
 }
 
 /**
@@ -211,7 +226,7 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
  */
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
-  TRACE_msg_process_change_host(process, MSG_process_get_host(process), host);
+  TRACE_msg_process_change_host(process, host);
   process->migrate(host);
   return MSG_OK;
 }
@@ -290,7 +305,12 @@ msg_process_t MSG_process_from_PID(int PID)
 
 /** @brief returns a list of all currently existing processes */
 xbt_dynar_t MSG_processes_as_dynar() {
-  return SIMIX_processes_as_dynar();
+  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+  for (auto const& kv : simix_global->process_list) {
+    smx_actor_t actor = kv.second;
+    xbt_dynar_push(res, &actor);
+  }
+  return res;
 }
 
 /** @brief Return the current number MSG processes. */
@@ -355,7 +375,7 @@ const char *MSG_process_get_name(msg_process_t process)
  */
 const char *MSG_process_get_property_value(msg_process_t process, const char *name)
 {
-  return (char*) xbt_dict_get_or_null(MSG_process_get_properties(process), name);
+  return process->getProperty(name);
 }
 
 /** \ingroup m_process_management
@@ -366,7 +386,15 @@ const char *MSG_process_get_property_value(msg_process_t process, const char *na
 xbt_dict_t MSG_process_get_properties(msg_process_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  return simcall_process_get_properties(process->getImpl());
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::map<std::string, std::string>* props =
+      simgrid::simix::kernelImmediate([process] { return process->getImpl()->getProperties(); });
+  if (props == nullptr)
+    return nullptr;
+  for (auto const& elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
 }
 
 /** \ingroup m_process_management
@@ -464,14 +492,14 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
  * If the flag is set to 1, the process will be automatically restarted when its host comes back up.
  */
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart) {
-  simcall_process_auto_restart_set(process->getImpl(), auto_restart);
+  process->setAutoRestart(auto_restart);
 }
 /**
  * \ingroup m_process_management
  * \brief Restarts a process from the beginning.
  */
 XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
-  return simcall_process_restart(process->getImpl())->ciface();
+  return process->restart();
 }
 
 /** @ingroup m_process_management
@@ -479,7 +507,7 @@ XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
  */
 XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
 {
-  simgrid::simix::kernelImmediate([process]() { process->getImpl()->daemonize(); });
+  process->daemonize();
 }
 
 /** @ingroup m_process_management
@@ -496,5 +524,4 @@ XBT_PUBLIC(void) MSG_process_unref(msg_process_t process)
 {
   intrusive_ptr_release(process);
 }
-
-SG_END_DECL()
+}

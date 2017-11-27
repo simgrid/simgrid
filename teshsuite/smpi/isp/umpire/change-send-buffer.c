@@ -34,7 +34,6 @@ main (int argc, char **argv)
   MPI_Get_processor_name (processor_name, &namelen);
   printf ("(%d) is alive on %s\n", rank, processor_name);
   fflush (stdout);
-int j, k;
   for (i = 0; i < 128; i++)
     {
       buf0[i] = i;
