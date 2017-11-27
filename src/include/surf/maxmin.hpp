@@ -523,11 +523,6 @@ private:
     xbt_swag_remove(var, &variable_set);
     xbt_swag_remove(var, &saturated_variable_set);
   }
-  void remove_constraint(lmm_constraint_t cnst) // FIXME: unused
-  {
-    xbt_swag_remove(cnst, &constraint_set);
-    xbt_swag_remove(cnst, &saturated_constraint_set);
-  }
   void make_constraint_active(lmm_constraint_t cnst) { xbt_swag_insert(cnst, &active_constraint_set); }
   void make_constraint_inactive(lmm_constraint_t cnst)
   {
