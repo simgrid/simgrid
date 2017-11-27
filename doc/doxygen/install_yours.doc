@@ -97,9 +97,7 @@ If you wish to develop your plugin or modify SimGrid using Eclipse. You have to 
 
 Next you have to activate C++11 in your build settings, add -std=c++11 in the CDT GCC Built-in compiler settings.
 
- \image html eclipseScreenShot.png "Eclipse preference page" width=10cm
-
-
+![Eclipse preference page.](eclipseScreenShot.png)
 
 @section install_yours_javaexample  Building the Java examples in Eclipse
 

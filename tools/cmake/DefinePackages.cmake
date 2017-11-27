@@ -922,6 +922,7 @@ set(DOC_TOOLS
 set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/eclipseScreenShot.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
