@@ -13,23 +13,23 @@
 #include <cstdlib>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
-#define SHOW_EXPR_G(expr) XBT_DEBUG(#expr " = %g",expr);
-#define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d",expr);
-#define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p",expr);
+#define SHOW_EXPR_G(expr) XBT_DEBUG(#expr " = %g", expr);
+#define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d", expr);
+#define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p", expr);
 
 void simgrid::surf::bottleneck_solve(lmm_system_t sys)
 {
-  void *_var;
-  void *_var_next;
-  void *_cnst;
-  void *_cnst_next;
-  void *_elem;
-  lmm_variable_t var = nullptr;
+  void* _var;
+  void* _var_next;
+  void* _cnst;
+  void* _cnst_next;
+  void* _elem;
+  lmm_variable_t var    = nullptr;
   lmm_constraint_t cnst = nullptr;
   s_lmm_constraint_t s_cnst;
-  lmm_element_t elem = nullptr;
+  lmm_element_t elem   = nullptr;
   xbt_swag_t cnst_list = nullptr;
-  xbt_swag_t var_list = nullptr;
+  xbt_swag_t var_list  = nullptr;
   xbt_swag_t elem_list = nullptr;
 
   static s_xbt_swag_t cnst_to_update;
@@ -42,8 +42,9 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
 
   var_list = &(sys->variable_set);
   XBT_DEBUG("Variable set : %d", xbt_swag_size(var_list));
-  xbt_swag_foreach(_var, var_list) {
-    var = static_cast<lmm_variable_t>(_var);
+  xbt_swag_foreach(_var, var_list)
+  {
+    var        = static_cast<lmm_variable_t>(_var);
     var->value = 0.0;
     XBT_DEBUG("Handling variable %p", var);
     xbt_swag_insert(var, &(sys->saturated_variable_set));
@@ -63,15 +64,17 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
 
   cnst_list = &(sys->active_constraint_set);
   XBT_DEBUG("Active constraints : %d", xbt_swag_size(cnst_list));
-  xbt_swag_foreach(_cnst, cnst_list) {
+  xbt_swag_foreach(_cnst, cnst_list)
+  {
     cnst = static_cast<lmm_constraint_t>(_cnst);
     xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
   }
   cnst_list = &(sys->saturated_constraint_set);
-  xbt_swag_foreach(_cnst, cnst_list) {
-    cnst = static_cast<lmm_constraint_t>(_cnst);
+  xbt_swag_foreach(_cnst, cnst_list)
+  {
+    cnst            = static_cast<lmm_constraint_t>(_cnst);
     cnst->remaining = cnst->bound;
-    cnst->usage = 0.0;
+    cnst->usage     = 0.0;
   }
 
   XBT_DEBUG("Fair bottleneck Initialized");
@@ -85,13 +88,15 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
       sys->print();
     }
     XBT_DEBUG("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
-    xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
-      cnst = static_cast<lmm_constraint_t>(_cnst);
+    xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list)
+    {
+      cnst   = static_cast<lmm_constraint_t>(_cnst);
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", cnst);
-      elem_list = &(cnst->enabled_element_set);
+      elem_list   = &(cnst->enabled_element_set);
       cnst->usage = 0.0;
-      xbt_swag_foreach(_elem, elem_list) {
+      xbt_swag_foreach(_elem, elem_list)
+      {
         elem = static_cast<lmm_element_t>(_elem);
         xbt_assert(elem->variable->sharing_weight > 0);
         if ((elem->consumption_weight > 0) && xbt_swag_belongs(elem->variable, var_list))
@@ -102,7 +107,7 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
         nb = 1;
       if (not nb) {
         cnst->remaining = 0.0;
-        cnst->usage = cnst->remaining;
+        cnst->usage     = cnst->remaining;
         xbt_swag_remove(cnst, cnst_list);
         continue;
       }
@@ -110,8 +115,9 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
       XBT_DEBUG("\tConstraint Usage %p : %f with %d variables", cnst, cnst->usage, nb);
     }
 
-    xbt_swag_foreach_safe(_var, _var_next, var_list) {
-      var = static_cast<lmm_variable_t>(_var);
+    xbt_swag_foreach_safe(_var, _var_next, var_list)
+    {
+      var            = static_cast<lmm_variable_t>(_var);
       double min_inc = DBL_MAX;
       for (s_lmm_element_t const& elm : var->cnsts) {
         if (elm.consumption_weight > 0)
@@ -119,7 +125,7 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
       }
       if (var->bound > 0)
         min_inc = std::min(min_inc, var->bound - var->value);
-      var->mu = min_inc;
+      var->mu   = min_inc;
       XBT_DEBUG("Updating variable %p maximum increment: %g", var, var->mu);
       var->value += var->mu;
       if (var->value == var->bound) {
@@ -127,20 +133,22 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
       }
     }
 
-    xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
+    xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list)
+    {
       cnst = static_cast<lmm_constraint_t>(_cnst);
       XBT_DEBUG("Updating cnst %p ", cnst);
       elem_list = &(cnst->enabled_element_set);
-      xbt_swag_foreach(_elem, elem_list) {
+      xbt_swag_foreach(_elem, elem_list)
+      {
         elem = static_cast<lmm_element_t>(_elem);
         xbt_assert(elem->variable->sharing_weight > 0);
         if (cnst->sharing_policy) {
           XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", cnst, cnst->remaining, elem->variable,
-                 elem->variable->mu);
+                    elem->variable->mu);
           double_update(&(cnst->remaining), elem->consumption_weight * elem->variable->mu, sg_maxmin_precision);
         } else {
-          XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g",
-              cnst, cnst->usage, elem->variable, elem->variable->mu);
+          XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", cnst,
+                    cnst->usage, elem->variable, elem->variable->mu);
           cnst->usage = std::min(cnst->usage, elem->consumption_weight * elem->variable->mu);
         }
       }
@@ -155,7 +163,8 @@ void simgrid::surf::bottleneck_solve(lmm_system_t sys)
         XBT_DEBUG("\tGet rid of constraint %p", cnst);
 
         xbt_swag_remove(cnst, cnst_list);
-        xbt_swag_foreach(_elem, elem_list) {
+        xbt_swag_foreach(_elem, elem_list)
+        {
           elem = static_cast<lmm_element_t>(_elem);
           if (elem->variable->sharing_weight <= 0)
             break;
