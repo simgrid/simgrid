@@ -413,9 +413,8 @@ static void onHostDestruction(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  HostEnergy* host_energy = host.extension<HostEnergy>();
-  host_energy->update();
-  XBT_INFO("Energy consumption of host %s: %f Joules", host.getCname(), host_energy->getConsumedEnergy());
+  XBT_INFO("Energy consumption of host %s: %f Joules", host.getCname(),
+           host.extension<HostEnergy>()->getConsumedEnergy());
 }
 
 static void onSimulationEnd()

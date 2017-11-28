@@ -10,8 +10,8 @@ $ ${bindir:=.}/s4u-energy-link$EXEEXT ${srcdir:=.}/../platforms/energy_platform.
 > [  0.000000] (2:receiver@MyHost2) Receiving 1 flows ...
 > [ 10.250000] (2:receiver@MyHost2) receiver done.
 > [ 10.250000] (1:sender@MyHost1) sender done.
-> [ 10.250000] (0:maestro@) Link 'bus' total consumption: 10.750000
 > [ 10.250000] (0:maestro@) Total energy over all links: 10.750000
+> [ 10.250000] (0:maestro@) Energy consumption of link 'bus': 10.750000 Joules
 
 p And now test with 500000 bytes
 
@@ -23,6 +23,5 @@ $ ${bindir:=.}/s4u-energy-link$EXEEXT ${srcdir:=.}/../platforms/energy_platform.
 > [  0.000000] (2:receiver@MyHost2) Receiving 1 flows ...
 > [510.000000] (2:receiver@MyHost2) receiver done.
 > [510.000000] (1:sender@MyHost1) sender done.
-> [510.000000] (0:maestro@) Link 'bus' total consumption: 1510.000000
 > [510.000000] (0:maestro@) Total energy over all links: 1510.000000
-
+> [510.000000] (0:maestro@) Energy consumption of link 'bus': 1510.000000 Joules

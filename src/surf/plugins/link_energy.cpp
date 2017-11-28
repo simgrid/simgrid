@@ -52,7 +52,7 @@ public:
   ~LinkEnergy();
 
   void initWattsRangeList();
-  double getTotalEnergy();
+  double getConsumedEnergy();
   void update();
 
 private:
@@ -135,9 +135,10 @@ double LinkEnergy::getPower()
   return idle_ + dynamic_power;
 }
 
-double LinkEnergy::getTotalEnergy()
+double LinkEnergy::getConsumedEnergy()
 {
-  update();
+  if (lastUpdated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
+    simgrid::simix::kernelImmediate(std::bind(&LinkEnergy::update, this));
   return this->totalEnergy_;
 }
 }
@@ -168,9 +169,7 @@ static void onSimulationEnd()
 
   double total_energy = 0.0; // Total dissipated energy (whole platform)
   for (const auto link : links) {
-    double link_energy = link->extension<LinkEnergy>()->getTotalEnergy();
-    if (strcmp(link->getCname(), "__loopback__"))
-      XBT_INFO("Link '%s' total consumption: %f", link->getCname(), link_energy);
+    double link_energy = link->extension<LinkEnergy>()->getConsumedEnergy();
     total_energy += link_energy;
   }
 
@@ -199,7 +198,9 @@ void sg_link_energy_plugin_init()
   });
 
   simgrid::s4u::Link::onDestruction.connect([](simgrid::s4u::Link& link) {
-    link.extension<LinkEnergy>()->update();
+    if (strcmp(link.getCname(), "__loopback__"))
+      XBT_INFO("Energy consumption of link '%s': %f Joules", link.getCname(),
+               link.extension<LinkEnergy>()->getConsumedEnergy());
   });
 
   simgrid::s4u::Link::onCommunicationStateChange.connect([](simgrid::surf::NetworkAction* action) {
@@ -213,4 +214,15 @@ void sg_link_energy_plugin_init()
   simgrid::s4u::onSimulationEnd.connect(&onSimulationEnd);
 }
 
+/** @ingroup plugin_energy
+ *  @brief Returns the total energy consumed by the link so far (in Joules)
+ *
+ *  Please note that since the consumption is lazily updated, it may require a simcall to update it.
+ *  The result is that the actor requesting this value will be interrupted,
+ *  the value will be updated in kernel mode before returning the control to the requesting actor.
+ */
+double sg_link_get_consumed_energy(sg_link_t link)
+{
+  return link->extension<LinkEnergy>()->getConsumedEnergy();
+}
 SG_END_DECL()
