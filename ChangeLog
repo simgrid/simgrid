@@ -8,14 +8,29 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
  - Storage::getName() changed to return a std::string, use intead
    Storage::getCname() to get a char*.
 
+ MSG
+ - Deprecate MSG_task_get_flops_amount(). Its semantic was weird:
+    before the start it returned the total amount of flops;
+    after it returned the ratio of remaining work. Split it:
+   MSG_task_get_initial_flops_amount() for first behavior
+   MSG_task_get_remaining_work_ratio() for the second one.
+   This fixes GitHub's #223 using PR #237. Thanks Michael Mercier.
+
  XBT
  - Define class simgrid::xbt::Path to manage file names.
  - Removed unused functions:
    - xbt/file.h: xbt_basename(), xbt_dirname(), xbt_getline()
    - xbt/str.h: xbt_str_join()
-   
+   - xbt/heap.h: use std::priority_queue or boost::heap instead
+
+ PLUGINS:
+ - New link_energy plugin for the consumption of the links.
+
  XML
  - Remove the undocumented/untested tag <include>
+
+ TRACE
+ - Remove viva specific tracing as the tool is no longer maintained
 
 SimGrid (3.17) Released October 8 2017
 

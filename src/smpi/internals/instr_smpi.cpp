@@ -33,8 +33,13 @@ static const char* smpi_colors[] = {
     "init",      "0 1 0",       "finalize",      "0 1 0",
 
     "put",       "0.3 1 0",     "get",           "0 1 0.3",        "accumulate", "1 0.3 0",
+    "rput",       "0.3 1 0",     "rget",           "0 1 0.3",        "raccumulate", "1 0.3 0",
+    "compare_and_swap",       "0.3 1 0",     "get_accumulate",           "0 1 0.3",        "rget_accumulate", "1 0.3 0",
     "win_fence", "1 0 0.3",     "win_post",      "1 0 0.8",        "win_wait",   "1 0.8 0",
-    "win_start", "0.8 0 1",     "win_complete",  "0.8 1 0",        nullptr,      nullptr,
+    "win_start", "0.8 0 1",     "win_complete",  "0.8 1 0",        "win_lock", "1 0 0.3",     
+    "win_unlock", "1 0 0.3",     "win_lock_all",      "1 0 0.8",        "win_unlock_all",   "1 0.8 0",
+    "win_flush", "1 0 0.3",     "win_flush_local",      "1 0 0.8",        "win_flush_all",   "1 0.8 0",
+    "win_flush_local_all", "1 0 0.3", ""  , ""
 };
 
 static const char* instr_find_color(const char* state)

@@ -109,17 +109,17 @@ namespace s4u {
  * <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
  * <platform version="4">
  *
- *   <!-- Start a process called 'master' on the host called 'Tremblay' -->
- *   <process host="Tremblay" function="master">
+ *   <!-- Start an actor called 'master' on the host called 'Tremblay' -->
+ *   <actor host="Tremblay" function="master">
  *      <!-- Here come the parameter that you want to feed to this instance of master -->
  *      <argument value="20"/>        <!-- argv[1] -->
  *      <argument value="50000000"/>  <!-- argv[2] -->
  *      <argument value="1000000"/>   <!-- argv[3] -->
  *      <argument value="5"/>         <!-- argv[4] -->
- *   </process>
+ *   </actor>
  *
- *   <!-- Start a process called 'worker' on the host called 'Jupiter' -->
- *   <process host="Jupiter" function="worker"/> <!-- Don't provide any parameter ->>
+ *   <!-- Start an actor called 'worker' on the host called 'Jupiter' -->
+ *   <actor host="Jupiter" function="worker"/> <!-- Don't provide any parameter ->>
  *
  * </platform>
  * @endcode
@@ -176,7 +176,7 @@ public:
   /** Create an actor using code
    *
    *  Using this constructor, move-only type can be used. The consequence is
-   *  that we cannot copy the value and restart the process in its initial
+   *  that we cannot copy the value and restart the actor in its initial
    *  state. In order to use auto-restart, an explicit `function` must be passed
    *  instead.
    */
@@ -194,7 +194,7 @@ public:
   static ActorPtr createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
 
   // ***** Methods *****
-  /** This actor will be automatically terminated when the last non-daemon process finishes **/
+  /** This actor will be automatically terminated when the last non-daemon actor finishes **/
   void daemonize();
 
   /** Retrieves the name of that actor as a C++ string */
@@ -215,17 +215,19 @@ public:
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
   void suspend();
 
-  /** Resume a suspended process by resuming the task on which it was waiting for the completion. */
+  /** Resume a suspended actor by resuming the task on which it was waiting for the completion. */
   void resume();
-
-  /** Returns true if the process is suspended. */
+  
+  void yield();
+  
+  /** Returns true if the actor is suspended. */
   int isSuspended();
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
 
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
-   * executed when your actor is killed. You should use them to free the data used by your process.
+   * executed when your actor is killed. You should use them to free the data used by your actor.
    */
   void onExit(int_f_pvoid_pvoid_t fun, void* data);
 
@@ -341,11 +343,14 @@ XBT_PUBLIC(std::string) getName();
 /** @brief Returns the name of the current actor as a C string. */
 XBT_PUBLIC(const char*) getCname();
 
-/** @brief Returns the name of the host on which the process is running. */
+/** @brief Returns the name of the host on which the actor is running. */
 XBT_PUBLIC(Host*) getHost();
 
 /** @brief Suspend the actor. */
 XBT_PUBLIC(void) suspend();
+
+/** @brief yield the actor. */
+XBT_PUBLIC(void) yield();
 
 /** @brief Resume the actor. */
 XBT_PUBLIC(void) resume();

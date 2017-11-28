@@ -113,7 +113,6 @@ provided by the [online documentation][fn:4] and by several tutorials:
 Several tools can be used to visualize the result of SimGrid
 simulations and get a better understanding of simulations.
 
-- [viva][fn:1] will be useful to make fancy graph or treemap visualizations.
 - [pajeng][fn:5] provides a Gantt-chart visualization.
 - [Vite][fn:6] also provides a Gantt-chart visualization.
 
@@ -122,7 +121,7 @@ may have to install from the source on other systems. Check the
 documentation of each software for more details.
 
 ~~~~{.sh}
-sudo apt-get install viva pajeng vite
+sudo apt-get install pajeng vite
 ~~~~
 
 \section intro_start Let's get started
@@ -158,16 +157,7 @@ specify the full path to simgrid-colorizer on the above line, such as
 \c /opt/simgrid/bin/simgrid-colorizer. If you did not install it at all,
 you can find it in <simgrid_root_directory>/bin/colorize.
 
-For a really fancy output, you should use [viva/triva][fn:1]:
-
-~~~~{.sh}
-./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:yes \
-    --cfg=tracing/uncategorized:yes --cfg=viva/uncategorized:uncat.plist
-LANG=C ; viva simgrid.trace uncat.plist
-~~~~
-
-For a more classical Gantt-Chart visualization, you can produce a
-[Paje][fn:5] trace:
+For a classical Gantt-Chart visualization, you can produce a [Paje][fn:5] trace:
 
 ~~~~{.sh}
 ./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:yes \
@@ -317,7 +307,7 @@ tasks processed). These debug messages can be activated as follows:
 ## Using the Tracing Mechanism
 
 SimGrid can trace all resource consumption and the outcome can be
-displayed with viva as illustrated in the section \ref intro_setup. However, when several
+displayed as illustrated in the section \ref intro_setup. However, when several
 masters are deployed, it is hard to understand what happens.
 
 ~~~~{.xml}
@@ -349,18 +339,7 @@ void TRACE_category(const char *category);
 void MSG_task_set_category (msg_task_t task, const char *category);
 ~~~~
 
-The outcome can then be visualized as follows:
-
-~~~~{.sh}
-./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:yes\
-    --cfg=tracing/categorized:yes --cfg=viva/categorized:viva_cat.plist
-LANG=C; viva simgrid.trace viva_cat.plist
-~~~~
-
-Right now, you should realize that nothing is behaving like you
-expect. Most workers are idle even though input data are ridiculous
-and there are several masters deployed on the platform. Using a
-Gantt-chart visualization may help:
+The outcome can then be visualized as a Gantt-chart as follows:
 
 ~~~~{.sh}
 ./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:yes \
@@ -368,8 +347,10 @@ Gantt-chart visualization may help:
 pajeng simgrid.trace
 ~~~~
 
-OK, so it should now be obvious that round robin is actually
-very bad.
+Right now, you should realize that nothing is behaving like you expect. Most
+workers are idle even though input data are ridiculous and there are several
+masters deployed on the platform. So it should now be obvious that round robin
+is actually very bad.
 
 ## Improving the Scheduling
 
@@ -436,8 +417,8 @@ bytes that you manage to distribute and process in one hour on
 \section intro_todo TODO: Points to improve for the next time
 
 - Propose equivalent exercises and skeleton in java.
-- Propose a virtualbox image with everything (simgrid, pajeng, viva,
-  ...) already set up.
+- Propose a virtualbox image with everything (simgrid, pajeng, ...) already set
+  up.
 - Ease the installation on mac OS X (binary installer) and
   windows.
 - Explain that programming in C or java and having a working

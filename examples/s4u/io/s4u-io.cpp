@@ -86,6 +86,7 @@ public:
 int main(int argc, char **argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
+  sg_storage_file_system_init();
   e.loadPlatform("../../platforms/storage/storage.xml");
   simgrid::s4u::Actor::createActor("host", simgrid::s4u::Host::by_name("denise"), MyHost());
   e.run();

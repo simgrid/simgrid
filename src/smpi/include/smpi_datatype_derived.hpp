@@ -23,20 +23,6 @@ public:
   void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
 };
 
-class Type_Vector: public Datatype{
-  int block_count_;
-  int block_length_;
-  int block_stride_;
-  MPI_Datatype old_type_;
-
-public:
-  Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, int blocklen, int stride,
-              MPI_Datatype old_type);
-  ~Type_Vector();
-  void serialize(void* noncontiguous, void* contiguous, int count);
-  void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
-};
-
 class Type_Hvector: public Datatype{
   int block_count_;
   int block_length_;
@@ -51,18 +37,10 @@ public:
   void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
 };
 
-class Type_Indexed: public Datatype{
-  int block_count_;
-  int* block_lengths_;
-  int* block_indices_;
-  MPI_Datatype old_type_;
-
+class Type_Vector : public Type_Hvector {
 public:
-  Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, int* block_indices,
-               MPI_Datatype old_type);
-  ~Type_Indexed();
-  void serialize(void* noncontiguous, void* contiguous, int count);
-  void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+  Type_Vector(int size, MPI_Aint lb, MPI_Aint ub, int flags, int count, int blocklen, int stride,
+              MPI_Datatype old_type);
 };
 
 class Type_Hindexed: public Datatype{
@@ -74,9 +52,17 @@ class Type_Hindexed: public Datatype{
 public:
   Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths,
                 MPI_Aint* block_indices, MPI_Datatype old_type);
+  Type_Hindexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, int* block_indices,
+                MPI_Datatype old_type, MPI_Aint factor);
   ~Type_Hindexed();
   void serialize(void* noncontiguous, void* contiguous, int count);
   void unserialize(void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op);
+};
+
+class Type_Indexed : public Type_Hindexed {
+public:
+  Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, int* block_lengths, int* block_indices,
+               MPI_Datatype old_type);
 };
 
 class Type_Struct: public Datatype{

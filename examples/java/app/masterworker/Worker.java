@@ -34,7 +34,7 @@ public class Worker extends Process {
       if ("finalize".equals(task.getName())) {
         break;
       }
-      Msg.info("Received \"" + task.getName() +  "\". Processing it.");
+      Msg.info("Received \"" + task.getName() +  "\". Processing it (my pid is "+getPID()+").");
       try {
         task.execute();
       } catch (TaskCancelledException e) {

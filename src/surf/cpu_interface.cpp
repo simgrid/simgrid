@@ -23,16 +23,14 @@ namespace surf {
 
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(getActionHeap()) > 0)
-         && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
+  while (not actionHeapIsEmpty() && double_equals(actionHeapTopDate(), now, sg_surf_precision)) {
 
-    CpuAction *action = static_cast<CpuAction*>(xbt_heap_pop(getActionHeap()));
+    CpuAction* action = static_cast<CpuAction*>(actionHeapPop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(),
-                                      lmm_variable_getvalue(action->getVariable()), action->getLastUpdate(),
-                                      now - action->getLastUpdate());
+      Cpu* cpu = static_cast<Cpu*>(action->getVariable()->get_constraint(0)->get_id());
+      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(), action->getVariable()->get_value(),
+                                      action->getLastUpdate(), now - action->getLastUpdate());
     }
 
     action->finish(Action::State::done);
@@ -45,13 +43,9 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    ActionList *actionSet = getRunningActionSet();
-    ActionList::iterator it(actionSet->begin());
-    ActionList::iterator itend(actionSet->end());
-    for (; it != itend; ++it) {
-      CpuAction *action = static_cast<CpuAction*>(&*it);
-      if (smaller < 0 || action->getLastUpdate() < smaller)
-        smaller = action->getLastUpdate();
+    for (Action const& action : *getRunningActionSet()) {
+      if (smaller < 0 || action.getLastUpdate() < smaller)
+        smaller = action.getLastUpdate();
     }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
@@ -61,30 +55,24 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
 void CpuModel::updateActionsStateFull(double now, double delta)
 {
-  CpuAction *action = nullptr;
-  ActionList *running_actions = getRunningActionSet();
-  ActionList::iterator it(running_actions->begin());
-  ActionList::iterator itNext = it;
-  ActionList::iterator itend(running_actions->end());
-  for (; it != itend; it = itNext) {
-    ++itNext;
-    action = static_cast<CpuAction*>(&*it);
+  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+    CpuAction& action = static_cast<CpuAction&>(*it);
+    ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (TRACE_is_enabled()) {
-      Cpu *cpu = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
-
-      TRACE_surf_host_set_utilization(cpu->getCname(), action->getCategory(),
-                                      lmm_variable_getvalue(action->getVariable()), now - delta, delta);
+      Cpu* cpu = static_cast<Cpu*>(action.getVariable()->get_constraint(0)->get_id());
+      TRACE_surf_host_set_utilization(cpu->getCname(), action.getCategory(), action.getVariable()->get_value(),
+                                      now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 
-    action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
+    action.updateRemains(action.getVariable()->get_value() * delta);
 
-    if (action->getMaxDuration() != NO_MAX_DURATION)
-      action->updateMaxDuration(delta);
+    if (action.getMaxDuration() != NO_MAX_DURATION)
+      action.updateMaxDuration(delta);
 
-    if (((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) ||
-        ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0))) {
-      action->finish(Action::State::done);
+    if (((action.getRemainsNoUpdate() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+        ((action.getMaxDuration() != NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+      action.finish(Action::State::done);
     }
   }
 }
@@ -199,7 +187,7 @@ void CpuAction::updateRemainingLazy(double now)
     updateRemains(getLastValue() * delta);
 
     if (TRACE_is_enabled()) {
-      Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      Cpu* cpu = static_cast<Cpu*>(getVariable()->get_constraint(0)->get_id());
       TRACE_surf_host_set_utilization(cpu->getCname(), getCategory(), getLastValue(), getLastUpdate(),
                                       now - getLastUpdate());
     }
@@ -207,7 +195,7 @@ void CpuAction::updateRemainingLazy(double now)
   }
 
   refreshLastUpdate();
-  setLastValue(lmm_variable_getvalue(getVariable()));
+  setLastValue(getVariable()->get_value());
 }
 
 simgrid::xbt::signal<void(simgrid::surf::CpuAction*, Action::State)> CpuAction::onStateChange;
@@ -232,13 +220,12 @@ void CpuAction::setState(Action::State state){
 /** @brief returns a list of all CPUs that this action is using */
 std::list<Cpu*> CpuAction::cpus() {
   std::list<Cpu*> retlist;
-  lmm_system_t sys = getModel()->getMaxminSystem();
-  int llen = lmm_get_number_of_cnst_from_var(sys, getVariable());
+  int llen = getVariable()->get_number_of_constraint();
 
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
-    Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+    Resource* resource = static_cast<Resource*>(getVariable()->get_constraint(i)->get_id());
     Cpu* cpu           = dynamic_cast<Cpu*>(resource);
     if (cpu != nullptr)
       retlist.push_back(cpu);

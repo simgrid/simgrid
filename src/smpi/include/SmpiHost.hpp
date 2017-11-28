@@ -6,7 +6,7 @@
 #ifndef SMPI_HOST_HPP_
 #define SMPI_HOST_HPP_
 
-#include "src/include/smpi/smpi_utils.hpp"
+#include "smpi_utils.hpp"
 
 #include "simgrid/s4u/Host.hpp"
 #include <string>

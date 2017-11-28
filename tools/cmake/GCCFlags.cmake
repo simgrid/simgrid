@@ -44,10 +44,10 @@ if(enable_compile_warnings)
   # the one specific to C but refused by C++
   set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
-  if(CMAKE_Fotran_COMPILER_ID MATCHES "GCC|PGI")
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "GCC|PGI")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
   endif()
-  if(CMAKE_Fotran_COMPILER_ID MATCHES "Intel")
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
   endif()
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
@@ -145,11 +145,10 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/log.c src/xbt/xbt_log_appender_file.c
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
       src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
-      src/xbt/dynar.cpp src/xbt/heap.c src/xbt/swag.c
-      src/xbt/str.c src src/xbt/snprintf.c
-      src/xbt/queue.c
+      src/xbt/dynar.cpp src/xbt/swag.c
+      src/xbt/xbt_str.cpp src/xbt/snprintf.c
       src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
-      src/xbt/backtrace_linux.c
+      src/xbt/backtrace_linux.cpp
       ${MC_SRC_BASE} ${MC_SRC})
       set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")
        if(CMAKE_COMPILER_IS_GNUCC)

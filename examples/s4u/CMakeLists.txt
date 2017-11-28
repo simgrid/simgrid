@@ -1,7 +1,8 @@
 foreach (example actions-comm actions-storage 
-                 actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority
+                 actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority actor-yield
                  app-masterworker app-pingpong app-token-ring energy-pstate
 		 async-wait async-waitany async-waitall
+		 energy-link
 		 plugin-hostload io mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -35,6 +36,8 @@ set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-pstate/s4u-energy-pstate.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-priority/s4u-actor-priority.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-priority/s4u-actor-priority.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh
@@ -45,6 +48,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/s4u-actions-storage_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-priority/s4u-actor-priority_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/s4u-app-masterworker_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany_d.xml
@@ -60,9 +64,11 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
 foreach(example actions-comm actions-storage 
-                actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend
+                actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority actor-yield
                 app-bittorrent app-masterworker app-pingpong app-token-ring energy-pstate
-		async-wait async-waitall async-waitany actor-priority
-		dht-chord plugin-hostload io mutex)
+		async-wait async-waitall async-waitany
+		dht-chord 
+		energy-link
+		plugin-hostload io mutex)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u-${example}.tesh)
 endforeach()

@@ -29,7 +29,7 @@ public class Master extends Process {
 
     int workersCount = Integer.parseInt(args[3]);
 
-    Msg.info("Hello! Got "+  workersCount + " workers and "+tasksCount+" tasks to process");
+    Msg.info("Hello! My PID is "+getPID()+". Got "+  workersCount + " workers and "+tasksCount+" tasks to process");
 
     for (int i = 0; i < tasksCount; i++) {
       Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 

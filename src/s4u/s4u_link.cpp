@@ -9,6 +9,7 @@
 #include "simgrid/sg_config.h"
 #include "simgrid/simix.hpp"
 #include "src/surf/network_interface.hpp"
+#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U links");
@@ -114,6 +115,11 @@ int Link::sharingPolicy()
   return this->pimpl_->sharingPolicy();
 }
 
+double Link::getUsage()
+{
+  return this->pimpl_->constraint()->get_usage();
+}
+
 void Link::turnOn()
 {
   simgrid::simix::kernelImmediate([this]() {
@@ -155,6 +161,15 @@ void Link::setLatencyTrace(tmgr_trace_t trace)
   simgrid::simix::kernelImmediate([this, trace]() {
     this->pimpl_->setLatencyTrace(trace);
   });
+}
+
+const char* Link::getProperty(const char* key)
+{
+  return this->pimpl_->getProperty(key);
+}
+void Link::setProperty(std::string key, std::string value)
+{
+  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 /*************

@@ -217,8 +217,13 @@ public abstract class Process implements Runnable {
 	 *
 	 */ 
 	public int getPID()  {
+		if (pid == -1) // Don't traverse the JNI barrier if you already have the answer
+			pid = nativeGetPID(); 
 		return pid;
 	}
+	// This should not be used: the PID is supposed to be initialized from the C directly when the actor is created,
+	// but this sometimes fail, so let's play nasty but safe here.
+	private native int nativeGetPID();
 	/**
 	 * This method returns the PID of the parent of a process.
 	 *
@@ -280,7 +285,6 @@ public abstract class Process implements Runnable {
 	/**
 	 * This method actually creates and run the process.
 	 * It is a noop if the process is already launched.
-	 * @throws HostNotFoundException
 	 */
 	public final void start() {
 	   if (bind == 0)

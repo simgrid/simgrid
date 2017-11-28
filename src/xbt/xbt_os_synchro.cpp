@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/ex.h"
+#include "xbt/ex.hpp"
 #include "xbt/synchro.h"
 
 #include "simgrid/simix.h" /* used implementation */
@@ -50,9 +50,18 @@ void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex)
   simcall_cond_wait((smx_cond_t)cond, (smx_mutex_t)mutex);
 }
 
-void xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
+int xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
 {
-  simcall_cond_wait_timeout((smx_cond_t)cond, (smx_mutex_t)mutex, delay);
+  try {
+    simcall_cond_wait_timeout((smx_cond_t)cond, (smx_mutex_t)mutex, delay);
+  } catch (xbt_ex& e) {
+    if (e.category == timeout_error) {
+      return 1;
+    } else {
+      throw; // rethrow the exceptions that I don't know
+    }
+  }
+  return 0;
 }
 
 void xbt_cond_signal(xbt_cond_t cond)

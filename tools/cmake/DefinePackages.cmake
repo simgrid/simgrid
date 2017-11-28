@@ -6,8 +6,7 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.h
-  src/include/smpi/smpi_utils.hpp
-  src/include/surf/datatypes.h
+  src/include/surf/datatypes.hpp
   src/include/surf/maxmin.hpp
   src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
@@ -35,10 +34,10 @@ set(EXTRA_DIST
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
   src/smpi/include/private.hpp
+  src/smpi/include/smpi_utils.hpp
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
-  src/surf/maxmin_private.hpp
   src/surf/network_cm02.hpp
   src/surf/network_constant.hpp
   src/surf/network_interface.hpp
@@ -53,7 +52,6 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/surf/FileImpl.hpp
   src/surf/StorageImpl.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -71,7 +69,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
   src/xbt/graph_private.h
-  src/xbt/heap_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
 
@@ -275,7 +272,6 @@ set(XBT_SRC
   src/xbt/ex.cpp
   src/xbt/exception.cpp
   src/xbt/graph.c
-  src/xbt/heap.c
   src/xbt/log.c
   src/xbt/mallocator.c
   src/xbt/memory_map.cpp
@@ -305,6 +301,10 @@ set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cpp )
 
 set(SURF_SRC
+  src/kernel/lmm/fair_bottleneck.cpp
+  src/kernel/lmm/lagrange.cpp
+  src/kernel/lmm/maxmin.cpp
+  
   src/kernel/routing/ClusterZone.cpp
   src/kernel/routing/ClusterZone.hpp
   src/kernel/routing/DijkstraZone.cpp
@@ -336,16 +336,13 @@ set(SURF_SRC
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
-  src/surf/fair_bottleneck.cpp
-  src/surf/FileImpl.cpp
   src/surf/instr_routing.cpp
   src/surf/instr_surf.cpp
-  src/surf/lagrange.cpp
-  src/surf/maxmin.cpp
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
   src/surf/plugins/host_energy.cpp
+  src/surf/plugins/link_energy.cpp
   src/surf/plugins/host_load.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
@@ -667,6 +664,7 @@ set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 set(headers_to_install
   include/simgrid/chrono.hpp
   include/simgrid/plugins/energy.h
+  include/simgrid/plugins/file_system.h
   include/simgrid/plugins/load.h
   include/simgrid/instr.h
   include/simgrid/msg.h
@@ -726,7 +724,6 @@ set(headers_to_install
   include/xbt/function_types.h
   include/xbt/future.hpp
   include/xbt/graph.h
-  include/xbt/heap.h
   include/xbt/log.h
   include/xbt/log.hpp
   include/xbt/mallocator.h
@@ -926,6 +923,7 @@ set(DOC_TOOLS
 set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/eclipseScreenShot.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif

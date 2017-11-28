@@ -9,6 +9,7 @@
 #include "simgrid/s4u/Link.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "surf/maxmin.hpp"
 #include "xbt/base.h"
 #include <list>
 #include <unordered_map>
@@ -174,6 +175,7 @@ public:
   static LinkImpl* byName(std::string name);
   static int linksCount();
   static LinkImpl** linksList();
+  static void linksList(std::vector<s4u::Link*>* linkList);
   static void linksExit();
 };
 

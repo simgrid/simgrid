@@ -63,7 +63,7 @@ public:
 class StateEvent : public PajeEvent {
   EntityValue* value;
   std::string filename;
-  int linenumber;
+  int linenumber = 0;
   TIData* extra_ = nullptr;
 
 public:

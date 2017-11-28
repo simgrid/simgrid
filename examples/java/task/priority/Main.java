@@ -17,7 +17,7 @@ public class Main {
     Msg.init(args);
     if(args.length < 2) {
       Msg.info("Usage   : Priority platform_file deployment_file");
-      Msg.info("example : Priority ../platforms/platform.xml priorityDeployment.xml");
+      Msg.info("example : Priority ../platforms/small_platform.xml priority.xml");
       System.exit(1);
     }
 

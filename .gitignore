@@ -152,7 +152,6 @@ examples/msg/process-join/process-join
 examples/msg/process-migration/process-migration
 examples/msg/process-startkilltime/process-startkilltime
 examples/msg/process-suspend/process-suspend
-examples/msg/process-yield/process-yield
 examples/msg/app-masterworker/app-masterworker
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
@@ -198,6 +197,7 @@ examples/s4u/actor-lifetime/s4u-actor-lifetime
 examples/s4u/actor-migration/s4u-actor-migration
 examples/s4u/actor-priority/s4u-actor-priority
 examples/s4u/actor-suspend/s4u-actor-suspend
+examples/s4u/actor-yield/s4u-actor-yield
 examples/s4u/app-bittorrent/s4u-bittorrent
 examples/s4u/app-masterworker/s4u-app-masterworker
 examples/s4u/app-pingpong/s4u-app-pingpong
@@ -209,6 +209,7 @@ examples/s4u/basic/s4u-basic
 examples/s4u/basic/s4u-basic_deployment
 examples/s4u/basic/s4u-basic_function
 examples/s4u/dht-chord/s4u-dht-chord
+examples/s4u/energy-link/s4u-energy-link
 examples/s4u/io/s4u-io
 examples/s4u/mutex/s4u-mutex
 examples/s4u/plugin-hostload/s4u-plugin-hostload
@@ -272,6 +273,7 @@ teshsuite/msg/host_on_off_wait/host_on_off_wait
 teshsuite/msg/listen_async/listen_async
 teshsuite/msg/pid/pid
 teshsuite/msg/process/process
+teshsuite/msg/process-yield/process-yield
 teshsuite/msg/storage_client_server/storage_client_server
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel
 teshsuite/msg/task_listen_from/task_listen_from
@@ -1077,7 +1079,6 @@ teshsuite/surf/lmm_usage/lmm_usage
 teshsuite/surf/maxmin_bench/maxmin_bench
 teshsuite/surf/surf_usage/surf_usage
 teshsuite/surf/surf_usage2/surf_usage2
-teshsuite/xbt/heap_bench/heap_bench
 teshsuite/xbt/log_large/log_large
 teshsuite/xbt/log_usage/log_usage
 teshsuite/xbt/mallocator/mallocator

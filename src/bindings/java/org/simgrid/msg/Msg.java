@@ -40,6 +40,7 @@ public final class Msg {
 	
 	/** Tell the kernel that you want to use the energy plugin */
 	public static final native void energyInit();
+	public static final native void fileSystemInit();
 
 	/** Run the MSG simulation.
 	 *
@@ -58,7 +59,6 @@ public final class Msg {
 
 	/** Example launcher. You can use it or provide your own launcher, as you wish
 	 * @param args
-	 * @throws MsgException
 	 */
 	public static void main(String[]args) {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */

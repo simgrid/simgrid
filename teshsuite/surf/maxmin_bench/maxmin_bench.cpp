@@ -18,6 +18,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+using namespace simgrid::surf;
+
 double date;
 int64_t seedx = 0;
 
@@ -43,10 +45,10 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   lmm_variable_t var[nb_var];
   int used[nb_cnst];
 
-  lmm_system_t Sys = lmm_system_new(1);
+  lmm_system_t Sys = new s_lmm_system_t(true);
 
   for (int i = 0; i < nb_cnst; i++) {
-    cnst[i] = lmm_constraint_new(Sys, NULL, float_random(10.0));
+    cnst[i] = Sys->constraint_new(NULL, float_random(10.0));
     int l;
     if(rate_no_limit>float_random(1.0))
       //Look at what happens when there is no concurrency limit
@@ -55,14 +57,14 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
       //Badly logarithmically random concurrency limit in [2^pw_base_limit+1,2^pw_base_limit+2^pw_max_limit]
       l=(1<<pw_base_limit)+(1<<int_random(pw_max_limit));
 
-    lmm_constraint_concurrency_limit_set(cnst[i],l );
+    cnst[i]->set_concurrency_limit(l);
   }
 
   for (int i = 0; i < nb_var; i++) {
-    var[i] = lmm_variable_new(Sys, NULL, 1.0, -1.0, nb_elem);
+    var[i] = Sys->variable_new(NULL, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     int concurrency_share = 1 + int_random(max_share);
-    lmm_variable_concurrency_share_set(var[i],concurrency_share);
+    var[i]->set_concurrency_share(concurrency_share);
 
     for (int j = 0; j < nb_cnst; j++)
       used[j] = 0;
@@ -72,8 +74,8 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
         j--;
         continue;
       }
-      lmm_expand(Sys, cnst[k], var[i], float_random(1.5));
-      lmm_expand_add(Sys, cnst[k], var[i], float_random(1.5));
+      Sys->expand(cnst[k], var[i], float_random(1.5));
+      Sys->expand_add(cnst[k], var[i], float_random(1.5));
       used[k]++;
     }
   }
@@ -87,25 +89,25 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     fprintf(stderr,"Max concurrency:\n");
     int l=0;
     for (int i = 0; i < nb_cnst; i++) {
-      int j=lmm_constraint_concurrency_maximum_get(cnst[i]);
-      int k=lmm_constraint_concurrency_limit_get(cnst[i]);
+      int j = cnst[i]->get_concurrency_maximum();
+      int k = cnst[i]->get_concurrency_limit();
       xbt_assert(k<0 || j<=k);
       if(j>l)
         l=j;
       fprintf(stderr,"(%i):%i/%i ",i,j,k);
-      lmm_constraint_concurrency_maximum_reset(cnst[i]);
-      xbt_assert(not lmm_constraint_concurrency_maximum_get(cnst[i]));
+      cnst[i]->reset_concurrency_maximum();
+      xbt_assert(not cnst[i]->get_concurrency_maximum());
       if(i%10==9)
         fprintf(stderr,"\n");
     }
     fprintf(stderr,"\nTotal maximum concurrency is %i\n",l);
 
-    lmm_print(Sys);
+    Sys->print();
   }
 
   for (int i = 0; i < nb_var; i++)
-    lmm_variable_free(Sys, var[i]);
-  lmm_system_free(Sys);
+    Sys->variable_free(var[i]);
+  delete Sys;
 }
 
 unsigned int TestClasses [][4]=

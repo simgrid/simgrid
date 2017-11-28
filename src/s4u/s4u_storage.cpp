@@ -3,13 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../surf/StorageImpl.hpp"
+#include "simgrid/s4u/File.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
+#include "src/surf/StorageImpl.hpp"
 #include <unordered_map>
 
 namespace simgrid {
+namespace xbt {
+template class Extendable<simgrid::s4u::Storage>;
+}
+
 namespace s4u {
 
 std::map<std::string, Storage*>* allStorages()
@@ -52,12 +57,27 @@ Host* Storage::getHost()
 
 sg_size_t Storage::getSizeFree()
 {
-  return simgrid::simix::kernelImmediate([this] { return pimpl_->getFreeSize(); });
+  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
+
+  return pimpl_->getSize() - file_system->getUsedSize();
 }
 
 sg_size_t Storage::getSizeUsed()
 {
-  return simgrid::simix::kernelImmediate([this] { return pimpl_->getUsedSize(); });
+  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
+  return file_system->getUsedSize();
+}
+
+void Storage::decrUsedSize(sg_size_t size)
+{
+  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
+  file_system->decrUsedSize(size);
+}
+
+void Storage::incrUsedSize(sg_size_t size)
+{
+  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
+  file_system->incrUsedSize(size);
 }
 
 sg_size_t Storage::getSize()
@@ -82,7 +102,18 @@ void Storage::setProperty(std::string key, std::string value)
 
 std::map<std::string, sg_size_t>* Storage::getContent()
 {
-  return simgrid::simix::kernelImmediate([this] { return pimpl_->getContent(); });
+  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
+  return file_system->getContent();
+}
+
+sg_size_t Storage::read(sg_size_t size)
+{
+  return simcall_storage_read(pimpl_, size);
+}
+
+sg_size_t Storage::write(sg_size_t size)
+{
+  return simcall_storage_write(pimpl_, size);
 }
 
 /*************

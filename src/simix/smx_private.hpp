@@ -66,10 +66,10 @@ XBT_PUBLIC_DATA(std::unique_ptr<simgrid::simix::Global>) simix_global;
 XBT_PUBLIC(void) SIMIX_clean();
 
 /******************************** Exceptions *********************************/
-/** @brief Ask to the provided simix process to raise the provided exception */
+/** @brief Ask to the provided ActorImpl to raise the provided exception */
 #define SMX_EXCEPTION(issuer, cat, val, msg)                                                                           \
   if (1) {                                                                                                             \
-    smx_actor_t _smx_throw_issuer = (issuer); /* evaluate only once */                                                 \
+    simgrid::simix::ActorImpl* _smx_throw_issuer = (issuer); /* evaluate only once */                                  \
     xbt_ex e(XBT_THROW_POINT, msg);                                                                                    \
     e.category                   = cat;                                                                                \
     e.value                      = val;                                                                                \

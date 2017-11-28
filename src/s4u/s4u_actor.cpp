@@ -214,6 +214,11 @@ void sleep_for(double duration)
     simcall_process_sleep(duration);
 }
 
+void yield()
+{
+  simgrid::simix::kernelImmediate([] { /* do nothing*/ });
+}
+
 XBT_PUBLIC(void) sleep_until(double timeout)
 {
   double now = SIMIX_get_clock();

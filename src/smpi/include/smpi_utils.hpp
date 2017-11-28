@@ -14,7 +14,7 @@ extern "C" {
 
 // Methods used to parse and store the values for timing injections in smpi
 struct s_smpi_factor_t {
-  size_t factor=0;
+  size_t factor = 0;
   std::vector<double> values;
 };
 typedef s_smpi_factor_t* smpi_os_factor_t;

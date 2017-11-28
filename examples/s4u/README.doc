@@ -25,7 +25,7 @@ documentation, but it should remain readable directly.
     @ref examples/s4u/actor-create/s4u-actor-create_d.xml \n
     Shows how to start your actors to populate your simulation.
 
-  - <b>Ping Pong</b>: @ref examples/s4u/app-pingpong/s4u-app-pingpong.c\n
+  - <b>Ping Pong</b>: @ref examples/s4u/app-pingpong/s4u-app-pingpong.cpp\n
     This simple example just sends one message back and forth.
     The tesh file laying in the directory show how to start the simulator binary, highlighting how to pass options to 
     the simulators (as detailed in Section \ref options). 
@@ -106,6 +106,12 @@ documentation, but it should remain readable directly.
     Show how define a set of pstates for a host and how the current
     pstate can be accessed/changed with @ref getPstateSpeed and @ref  sg_host_set_pstate.
     See also the platform XML file for have a details on how to declare the CPU capacity for each pstate.
+
+  - <b>Yielding to other actor</b>.
+    @ref examples/s4u/actor-yield/s4u-actor-yield.c\n
+    The simgrid::s4u::this_actor::yield() function interrupts the
+    execution of the current actor, leaving a chance to the other actors
+    that are ready to run at this timestamp.
 
 @section s4u_ex_synchro Inter-Actor Synchronization 
 

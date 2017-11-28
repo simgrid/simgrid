@@ -318,7 +318,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   } else { /* we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host
               fails */
     surf_action_t sleep = simcall->issuer->host->pimpl_cpu->sleep(timeout);
-    sleep->setData(&*synchro);
+    sleep->setData(synchro.get());
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
@@ -690,7 +690,7 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->dst_buff_size)
-    buff_size = MIN(buff_size, *(comm->dst_buff_size));
+    buff_size = std::min(buff_size, *(comm->dst_buff_size));
 
   /* Update the receiver's buffer size to the copied amount */
   if (comm->dst_buff_size)

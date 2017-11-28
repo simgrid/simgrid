@@ -36,6 +36,8 @@
  */
 
 #include "../colls_private.hpp"
+#include <algorithm>
+
 #define MV2_INTRA_SHMEM_REDUCE_MSG 2048
 
 #define mv2_g_shmem_coll_max_msg_size (1 << 17)
@@ -117,15 +119,14 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
     datatype->extent(&true_lb,
                                        &true_extent);
     extent =datatype->get_extent();
-    stride = count * MAX(extent, true_extent);
+    stride = count * std::max(extent, true_extent);
 
     if (local_size == total_size) {
         /* First handle the case where there is only one node */
         if (stride <= MV2_INTRA_SHMEM_REDUCE_MSG &&
             is_commutative == 1) {
             if (local_rank == 0 ) {
-                tmp_buf=(void *)smpi_get_tmp_sendbuffer( count *
-                                    (MAX(extent, true_extent)));
+                tmp_buf = (void*)smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
                 tmp_buf = (void *) ((char *) tmp_buf - true_lb);
             }
 
@@ -150,7 +151,7 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
                 out_buf = NULL;
             }
 
-            if (count * (MAX(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE) {
+            if (count * (std::max(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE) {
               mpi_errno = MPIR_Reduce_shmem_MV2(in_buf, out_buf, count, datatype, op, 0, shmem_comm);
             } else {
               mpi_errno = MPIR_Reduce_intra_knomial_wrapper_MV2(in_buf, out_buf, count, datatype, op, 0, shmem_comm);
@@ -189,8 +190,7 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
         }
         leader_comm_size = leader_comm->size();
         leader_comm_rank = leader_comm->rank();
-        tmp_buf=(void *)smpi_get_tmp_sendbuffer(count *
-                            (MAX(extent, true_extent)));
+        tmp_buf          = (void*)smpi_get_tmp_sendbuffer(count * std::max(extent, true_extent));
         tmp_buf = (void *) ((char *) tmp_buf - true_lb);
     }
     if (sendbuf != MPI_IN_PLACE) {
@@ -214,7 +214,7 @@ int Coll_reduce_mvapich2_two_level::reduce( void *sendbuf,
          *this step*/
         if (MV2_Reduce_intra_function == & MPIR_Reduce_shmem_MV2)
         {
-          if (is_commutative == 1 && (count * (MAX(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE)) {
+          if (is_commutative == 1 && (count * (std::max(extent, true_extent)) < SHMEM_COLL_BLOCK_SIZE)) {
             mpi_errno = MV2_Reduce_intra_function(in_buf, out_buf, count, datatype, op, intra_node_root, shmem_comm);
             } else {
                     mpi_errno = MPIR_Reduce_intra_knomial_wrapper_MV2(in_buf, out_buf, count,

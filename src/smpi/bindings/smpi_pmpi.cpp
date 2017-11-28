@@ -84,7 +84,7 @@ int PMPI_Get_library_version (char *version,int *len){
   return MPI_SUCCESS;
 }
 
-int PMPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+int PMPI_Init_thread(int* argc, char*** argv, int /*required*/, int* provided)
 {
   if (provided != nullptr) {
     *provided = MPI_THREAD_SINGLE;
@@ -112,7 +112,7 @@ int PMPI_Is_thread_main(int *flag)
   }
 }
 
-int PMPI_Abort(MPI_Comm comm, int errorcode)
+int PMPI_Abort(MPI_Comm /*comm*/, int /*errorcode*/)
 {
   smpi_bench_end();
   // FIXME: should kill all processes in comm instead
@@ -182,7 +182,8 @@ int PMPI_Initialized(int* flag) {
    return MPI_SUCCESS;
 }
 
-int PMPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
+int PMPI_Alloc_mem(MPI_Aint size, MPI_Info /*info*/, void* baseptr)
+{
   void *ptr = xbt_malloc(size);
   if(ptr==nullptr)
     return MPI_ERR_NO_MEM;

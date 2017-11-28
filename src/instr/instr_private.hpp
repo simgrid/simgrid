@@ -47,7 +47,6 @@ public:
   std::vector<int>* recvcounts = nullptr;
   std::string send_type        = "";
   std::string recv_type        = "";
-  ;
 
   // NoOpTI: init, finalize, test, wait, barrier
   explicit TIData(std::string name) : name_(name){};
@@ -211,8 +210,6 @@ XBT_PRIVATE bool TRACE_disable_destroy();
 XBT_PRIVATE bool TRACE_basic();
 XBT_PRIVATE bool TRACE_display_sizes();
 XBT_PRIVATE int TRACE_precision();
-XBT_PRIVATE void TRACE_generate_viva_uncat_conf();
-XBT_PRIVATE void TRACE_generate_viva_cat_conf();
 XBT_PRIVATE void instr_pause_tracing();
 XBT_PRIVATE void instr_resume_tracing();
 
@@ -259,7 +256,5 @@ extern instr_fmt_type_t instr_fmt_type;
 XBT_PRIVATE std::string TRACE_get_comment();
 XBT_PRIVATE std::string TRACE_get_comment_file();
 XBT_PRIVATE std::string TRACE_get_filename();
-XBT_PRIVATE std::string TRACE_get_viva_uncat_conf();
-XBT_PRIVATE std::string TRACE_get_viva_cat_conf();
 
 #endif

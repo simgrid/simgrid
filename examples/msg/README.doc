@@ -84,12 +84,6 @@ shipped in the archive:
     @ref examples/msg/process-migration/process-migration.c \n
     Processes can move or be moved from a host to another with the @ref MSG_process_migrate function.
     
-  - <b>Yielding to other processes</b>.
-    @ref examples/msg/process-yield/process-yield.c\n
-    The @ref MSG_process_yield function interrupts the execution of the
-    current process, leaving a chance to run to the other processes
-    that are ready to run at the exact same timestamp
-
   - <b>Controling the process life cycle from the XML</b>.
     @ref examples/msg/process-startkilltime/process-startkilltime.c \n
     You can specify a start time and a kill time in the deployment
@@ -123,7 +117,7 @@ options to see the task executions:
     to that are used to classify its tasks. When the program is executed,
     the tracing mechanism registers the resource utilization of hosts
     and links according to these categories. Recommanded options:
-    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:viva_cat.plist --cfg=viva/uncategorized:viva_uncat.plist
+    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes
     @endverbatim
     
   - <b>Master Workers tracing</b>.
@@ -132,7 +126,7 @@ options to see the task executions:
     using several tracing features. It traces resource usage, sorted
     out in several categories; Trace marks and user variables are also
     used. Recommanded options:
-    @verbatim --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:viva_cat.plist --cfg=viva/uncategorized:viva_uncat.plist
+    @verbatim --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes
     @endverbatim
     
   - <b>Process migration tracing</b>.
@@ -145,7 +139,7 @@ options to see the task executions:
     
 TODO: These tracing examples should be integrated in the examples to
 not duplicate the C files. A full command line to see the result in
-the right tool (viva/vite/FrameSoc) should be given along with some
+the right tool (vite/FrameSoc) should be given along with some
 screenshots.
 
 @subsection msg_ex_tracing_user_variables Tracing user variables
@@ -241,7 +235,6 @@ top of the example file).
 @example examples/msg/async-wait/async-wait.c
 @example examples/msg/async-waitall/async-waitall.c
 @example examples/msg/async-waitany/async-waitany.c
-@example examples/msg/async-yield/async-yield.c
 
 @example examples/msg/process-create/process-create.c
 @example examples/msg/process-suspend/process-suspend.c

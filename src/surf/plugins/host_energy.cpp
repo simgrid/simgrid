@@ -110,7 +110,7 @@ before you can get accurate energy predictions.
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
 
 namespace simgrid {
-namespace energy {
+namespace plugin {
 
 class PowerRange {
 public:
@@ -174,7 +174,7 @@ void HostEnergy::update()
       // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
       cpu_load = 1;
     else
-      cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / current_speed;
+      cpu_load = host->pimpl_cpu->constraint()->get_usage() / current_speed;
 
     /** Divide by the number of cores here **/
     cpu_load /= host->pimpl_cpu->coreCount();
@@ -249,6 +249,14 @@ double HostEnergy::getWattMaxAt(int pstate)
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
   xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->getCname());
+
+ /*
+  *    * Return watts_off if pstate == pstate_off
+  *       * this happens when host is off
+  */
+  if (this->pstate == pstate_off) {
+    return watts_off;
+  }
 
   /* min_power corresponds to the power consumed when only one core is active */
   /* max_power is the power consumed at 100% cpu load       */
@@ -355,7 +363,7 @@ void HostEnergy::initWattsRangeList()
 }
 }
 
-using simgrid::energy::HostEnergy;
+using simgrid::plugin::HostEnergy;
 
 /* **************************** events  callback *************************** */
 static void onCreation(simgrid::s4u::Host& host)
@@ -405,9 +413,8 @@ static void onHostDestruction(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  HostEnergy* host_energy = host.extension<HostEnergy>();
-  host_energy->update();
-  XBT_INFO("Energy consumption of host %s: %f Joules", host.getCname(), host_energy->getConsumedEnergy());
+  XBT_INFO("Energy consumption of host %s: %f Joules", host.getCname(),
+           host.extension<HostEnergy>()->getConsumedEnergy());
 }
 
 static void onSimulationEnd()
@@ -510,7 +517,7 @@ double sg_host_get_current_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  double cpu_load = lmm_constraint_get_usage(host->pimpl_cpu->constraint()) / host->getSpeed();
+  double cpu_load = host->pimpl_cpu->constraint()->get_usage() / host->getSpeed();
   return host->extension<HostEnergy>()->getCurrentWattsValue(cpu_load);
 }
 }

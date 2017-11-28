@@ -112,7 +112,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_backtrace);
   XBT_LOG_CONNECT(xbt_exception);
   XBT_LOG_CONNECT(xbt_graph);
-  XBT_LOG_CONNECT(xbt_heap);
   XBT_LOG_CONNECT(xbt_mallocator);
   XBT_LOG_CONNECT(xbt_memory_map);
   XBT_LOG_CONNECT(xbt_parmap);
@@ -239,7 +238,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_cpu_cas);
   XBT_LOG_CONNECT(surf_cpu_ti);
   XBT_LOG_CONNECT(surf_energy);
-  XBT_LOG_CONNECT(surf_file);
   XBT_LOG_CONNECT(surf_kernel);
   XBT_LOG_CONNECT(surf_lagrange);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);

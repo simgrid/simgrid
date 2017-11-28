@@ -16,9 +16,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT --cfg=tracing:yes
 > [0.004078] [msg_test/INFO] 0-LINK3-HOST1
 > [0.004078] [msg_test/INFO] 0-LINK3-LINK3
 
-$ rm -f viva_graph.plist
+$ rm -f simgrid.trace
 
 p Not tracing user variables
 $ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/app-masterworker/app-masterworker_d.xml
-
-$ rm -f simgrid.trace viva_graph.plist

@@ -232,18 +232,18 @@ inline static void simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeou
   return simcall<void, smx_sem_t, double>(SIMCALL_SEM_ACQUIRE_TIMEOUT, sem, timeout);
 }
 
-inline static sg_size_t simcall_BODY_file_read(surf_file_t fd, sg_size_t size)
+inline static sg_size_t simcall_BODY_storage_read(surf_storage_t st, sg_size_t size)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_file_read(&SIMIX_process_self()->simcall, fd, size);
-  return simcall<sg_size_t, surf_file_t, sg_size_t>(SIMCALL_FILE_READ, fd, size);
+    simcall_HANDLER_storage_read(&SIMIX_process_self()->simcall, st, size);
+  return simcall<sg_size_t, surf_storage_t, sg_size_t>(SIMCALL_STORAGE_READ, st, size);
 }
 
-inline static sg_size_t simcall_BODY_file_write(surf_file_t fd, sg_size_t size)
+inline static sg_size_t simcall_BODY_storage_write(surf_storage_t st, sg_size_t size)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_file_write(&SIMIX_process_self()->simcall, fd, size);
-  return simcall<sg_size_t, surf_file_t, sg_size_t>(SIMCALL_FILE_WRITE, fd, size);
+    simcall_HANDLER_storage_write(&SIMIX_process_self()->simcall, st, size);
+  return simcall<sg_size_t, surf_storage_t, sg_size_t>(SIMCALL_STORAGE_WRITE, st, size);
 }
 
 inline static int simcall_BODY_mc_random(int min, int max)

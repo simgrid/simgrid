@@ -93,6 +93,16 @@ void Engine::getHostList(std::vector<Host*>* list)
   for (auto const& kv : host_list)
     list->push_back(kv.second);
 }
+/** @brief Returns the amount of links in the platform */
+size_t Engine::getLinkCount()
+{
+  return simgrid::surf::LinkImpl::linksCount();
+}
+/** @brief Fills the passed list with all hosts found in the platform */
+void Engine::getLinkList(std::vector<Link*>* list)
+{
+  simgrid::surf::LinkImpl::linksList(list);
+}
 
 void Engine::run() {
   if (MC_is_active()) {

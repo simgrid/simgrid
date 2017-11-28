@@ -172,7 +172,7 @@ void *xbt_swag_extract(xbt_swag_t swag)
  * \param swag a swag
  * \return the number of objects in \a swag
  */
-inline int xbt_swag_size(xbt_swag_t swag)
+inline int xbt_swag_size(const_xbt_swag_t swag)
 {
   return (swag->count);
 }

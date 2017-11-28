@@ -324,7 +324,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       read_element(mc_model_checker->process(),
         &remote_sync, remote(simcall_comm_waitany__get__comms(req)), value,
         sizeof(remote_sync));
-      char* p = pointer_to_string(&*remote_sync);
+      char* p = pointer_to_string(remote_sync.get());
       args = bprintf("comm=%s (%d of %lu)",
         p, value + 1, xbt_dynar_length(&comms));
       xbt_free(p);

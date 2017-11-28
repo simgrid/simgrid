@@ -30,6 +30,13 @@ namespace simgrid {
   {
     return links->size();
   }
+  void LinkImpl::linksList(std::vector<s4u::Link*>* linkList)
+  {
+    for (auto const& kv : *links) {
+      linkList->push_back(&kv.second->piface_);
+    }
+  }
+
   /** @brief Returns a list of all existing links */
   LinkImpl** LinkImpl::linksList()
   {
@@ -62,8 +69,7 @@ namespace simgrid {
 
     NetworkModel::~NetworkModel()
     {
-      lmm_system_free(maxminSystem_);
-      xbt_heap_free(actionHeap_);
+      delete maxminSystem_;
       delete modifiedSet_;
     }
 
@@ -83,10 +89,10 @@ namespace simgrid {
     {
       double minRes = Model::nextOccuringEventFull(now);
 
-      for(auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; it++) {
-        NetworkAction *action = static_cast<NetworkAction*>(&*it);
-        if (action->latency_ > 0)
-          minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
+      for (Action const& action : *getRunningActionSet()) {
+        const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
+        if (net_action.latency_ > 0)
+          minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);
       }
 
       XBT_DEBUG("Min of share resources %f", minRes);
@@ -132,7 +138,7 @@ namespace simgrid {
 
     bool LinkImpl::isUsed()
     {
-      return lmm_constraint_used(model()->getMaxminSystem(), constraint());
+      return model()->getMaxminSystem()->constraint_used(constraint());
     }
 
     double LinkImpl::latency()
@@ -147,7 +153,7 @@ namespace simgrid {
 
     int LinkImpl::sharingPolicy()
     {
-      return lmm_constraint_sharing_policy(constraint());
+      return constraint()->get_sharing_policy();
     }
 
     void LinkImpl::turnOn()
@@ -195,13 +201,12 @@ namespace simgrid {
     std::list<LinkImpl*> NetworkAction::links()
     {
       std::list<LinkImpl*> retlist;
-      lmm_system_t sys = getModel()->getMaxminSystem();
-      int llen         = lmm_get_number_of_cnst_from_var(sys, getVariable());
+      int llen = getVariable()->get_number_of_constraint();
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */
         // extra pb: we cannot dynamic_cast from void*...
-        Resource* resource = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(sys, getVariable(), i)));
+        Resource* resource = static_cast<Resource*>(getVariable()->get_constraint(i)->get_id());
         LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
         if (link != nullptr)
           retlist.push_back(link);

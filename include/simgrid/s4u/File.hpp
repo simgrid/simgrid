@@ -6,6 +6,8 @@
 #ifndef SIMGRID_S4U_FILE_HPP
 #define SIMGRID_S4U_FILE_HPP
 
+#include "simgrid/plugins/file_system.h"
+#include <xbt/Extendable.hpp>
 #include <xbt/base.h>
 
 #include <simgrid/simix.h>
@@ -27,10 +29,10 @@ XBT_PUBLIC_CLASS File
 public:
   File(std::string fullpath, void* userdata);
   File(std::string fullpath, sg_host_t host, void* userdata);
-  ~File();
+  ~File() = default;
 
   /** Retrieves the path to the file */
-  const char* getPath() { return path_.c_str(); }
+  const char* getPath() { return fullpath_.c_str(); }
 
   /** Simulates a local read action. Returns the size of data actually read */
   sg_size_t read(sg_size_t size);
@@ -59,15 +61,31 @@ public:
   /** Remove a file from disk */
   int unlink();
 
-  std::string storage_type;
-  std::string storageId;
-  std::string mount_point;
   int desc_id = 0;
+  Storage* localStorage;
+  std::string mount_point_;
 
 private:
-  surf_file_t pimpl_ = nullptr;
+  sg_size_t size_;
   std::string path_;
-  void* userdata_ = nullptr;
+  std::string fullpath_;
+  sg_size_t current_position_ = SEEK_SET;
+  void* userdata_             = nullptr;
+};
+
+class FileSystemStorageExt {
+public:
+  static simgrid::xbt::Extension<simgrid::s4u::Storage, FileSystemStorageExt> EXTENSION_ID;
+  explicit FileSystemStorageExt(simgrid::s4u::Storage* ptr);
+  ~FileSystemStorageExt();
+  std::map<std::string, sg_size_t>* parseContent(std::string filename);
+  std::map<std::string, sg_size_t>* getContent() { return content_; }
+  sg_size_t getUsedSize() { return usedSize_; }
+  void decrUsedSize(sg_size_t size) { usedSize_ -= size; }
+  void incrUsedSize(sg_size_t size) { usedSize_ += size; }
+private:
+  std::map<std::string, sg_size_t>* content_;
+  sg_size_t usedSize_ = 0;
 };
 }
 } // namespace simgrid::s4u

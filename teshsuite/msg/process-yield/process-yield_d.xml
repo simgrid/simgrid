@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <actor host="Tremblay" function="yielder">
+    <argument value="10"/>       <!-- Number of yields to do  -->
+  </actor>
+  <actor host="Ruby" function="yielder">
+    <argument value="15"/>       <!-- Number of yields to do  -->
+  </actor>
+</platform>

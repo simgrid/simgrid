@@ -14,6 +14,7 @@ public class Main {
 
   public static void main(String[] args) {
     Msg.init(args);
+    Msg.fileSystemInit();
     if(args.length < 1) {
       Msg.info("Usage   : Storage platform_file ");
       Msg.info("example : Storage ../platforms/storage/storage.xml ");
