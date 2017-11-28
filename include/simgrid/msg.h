@@ -246,6 +246,8 @@ XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
+XBT_PUBLIC(sg_size_t) MSG_storage_read(msg_storage_t storage, sg_size_t size);
+XBT_PUBLIC(sg_size_t) MSG_storage_write(msg_storage_t storage, sg_size_t size);
 
 /************************** Host handling ***********************************/
 XBT_PUBLIC(msg_host_t) MSG_host_by_name(const char *name);

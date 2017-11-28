@@ -22,67 +22,29 @@ static int host(int argc, char *argv[]){
   /* - Retrieve all mount points of current host */
   xbt_dict_t storage_list = MSG_host_get_mounted_storage_list(MSG_host_self());
 
-  xbt_dict_foreach(storage_list,cursor,mount_name,storage_name)  {
+  xbt_dict_foreach (storage_list, cursor, mount_name, storage_name) {
     /* - For each disk mounted on host:
            - Retrieve disk's information */
     XBT_INFO("Storage name: %s, mount name: %s", storage_name, mount_name);
     storage = MSG_storage_get_by_name(storage_name);
-
-    sg_size_t free_size = MSG_storage_get_free_size(storage);
-    sg_size_t used_size = MSG_storage_get_used_size(storage);
-    sg_size_t size = MSG_storage_get_size(storage);
-
-    XBT_INFO("Total size: %llu bytes", size);
-    XBT_INFO("Free size: %llu bytes", free_size);
-    XBT_INFO("Used size: %llu bytes", used_size);
   }
   xbt_dict_free(&storage_list);
 
-  /* - Create a 200,000 bytes file named './tmp/data.txt' on /sd1 */
-  char* file_name = xbt_strdup("/home/tmp/data.txt");
+  /* - Write 200,000 bytes on Disk4 */
+  storage = MSG_storage_get_by_name("Disk4");
 
   /* - Open an non-existing file which amounts to create it. */
-  msg_file_t file = MSG_file_open(file_name, NULL);
-  sg_size_t write = MSG_file_write(file, 200000);  // Write 200,000 bytes
-  XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, file_name);
-  MSG_file_dump(file);
-
-  /* - Check that sizes have changed */
-  XBT_INFO("Free size: %llu bytes", MSG_storage_get_free_size(storage));
-  XBT_INFO("Used size: %llu bytes", MSG_storage_get_used_size(storage));
+  sg_size_t write = MSG_storage_write(storage, 200000); // Write 200,000 bytes
+  XBT_INFO("Wrote %llu bytes on 'Disk4'", write);
 
   /*  - Retrieve the size of created file and read it completely */
-  sg_size_t file_size = MSG_file_get_size(file);
-  MSG_file_seek(file, 0, SEEK_SET);
-  sg_size_t read = MSG_file_read(file, file_size);
-  XBT_INFO("Read %llu bytes on %s", read, file_name);
-
-  /* - Then write 100,000 bytes in tmp/data.txt */
-  write = MSG_file_write(file, 100000);  // Write 100,000 bytes
-  XBT_INFO("Write %llu bytes on %s", write, file_name);
-  MSG_file_dump(file);
-
-  storage_name = xbt_strdup("Disk4");
-  storage = MSG_storage_get_by_name(storage_name);
-
-  /*  - Move file from ./tmp/data.txt to ./tmp/simgrid.readme */
-  XBT_INFO("*** Move '/tmp/data.txt' into '/tmp/simgrid.readme'");
-  MSG_file_move(file, "/home/tmp/simgrid.readme");
-
-  /* - Attach some user data to the file */
-  MSG_file_set_data(file, xbt_strdup("777"));
-  /* - Then retrieve this data */
-  char *data = MSG_file_get_data(file);
-  XBT_INFO("User data attached to the file: %s", data);
-  xbt_free(data);
-
-  MSG_file_close(file);
-  free(file_name);
+  sg_size_t read = MSG_storage_read(storage, 200000);
+  XBT_INFO("Read %llu bytes on 'Disk4'", read);
 
   /* - Attach some user data to disk1 */
-  XBT_INFO("*** Get/set data for storage element: %s ***",storage_name);
+  XBT_INFO("*** Get/set data for storage element: Disk4 ***");
 
-  data = MSG_storage_get_data(storage);
+  char* data = MSG_storage_get_data(storage);
 
   XBT_INFO("Get storage data: '%s'", data);
 
@@ -90,32 +52,13 @@ static int host(int argc, char *argv[]){
   data = MSG_storage_get_data(storage);
   XBT_INFO("Set and get data: '%s'", data);
   xbt_free(data);
-  xbt_free(storage_name);
 
-  /* - Finally dump disks contents */
-  XBT_INFO("*** Dump content of %s ***",MSG_host_get_name(MSG_host_self()));
-  xbt_dict_t contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts
-  xbt_dict_cursor_t curs;
-  xbt_dict_cursor_t curs2 = NULL;
-  char* mountname;
-  xbt_dict_t content;
-  char* path;
-  sg_size_t* psize;
-  xbt_dict_foreach(contents, curs, mountname, content){
-    XBT_INFO("Print the content of mount point: %s",mountname);
-    xbt_dict_foreach (content, curs2, path, psize) {
-      XBT_INFO("%s size: %llu bytes", path, *psize);
-    }
-    xbt_dict_free(&content);
-  }
-  xbt_dict_free(&contents);
   return 1;
 }
 
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  MSG_storage_file_system_init();
 
   MSG_create_environment(argv[1]);
   MSG_function_register("host", host);

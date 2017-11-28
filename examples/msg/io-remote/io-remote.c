@@ -64,13 +64,15 @@ int main(int argc, char **argv)
 
   xbt_dynar_t storages = MSG_storages_as_dynar();
   xbt_dynar_foreach(storages, cur, st){
-    XBT_INFO("Init: %llu MiB used on '%s'", MSG_storage_get_used_size(st)/INMEGA, MSG_storage_get_name(st));
+    XBT_INFO("Init: %llu/%llu MiB used/free on '%s'", MSG_storage_get_used_size(st) / INMEGA,
+             MSG_storage_get_free_size(st) / INMEGA, MSG_storage_get_name(st));
   }
 
   int res = MSG_main();
 
   xbt_dynar_foreach(storages, cur, st){
-    XBT_INFO("Init: %llu MiB used on '%s'", MSG_storage_get_used_size(st)/INMEGA, MSG_storage_get_name(st));
+    XBT_INFO("End: %llu/%llu MiB used/free on '%s'", MSG_storage_get_used_size(st) / INMEGA,
+             MSG_storage_get_free_size(st) / INMEGA, MSG_storage_get_name(st));
   }
   xbt_dynar_free(&storages);
 

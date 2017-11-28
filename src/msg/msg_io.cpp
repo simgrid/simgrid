@@ -511,4 +511,14 @@ const char* MSG_storage_get_host(msg_storage_t storage)
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->getHost()->getCname();
 }
+
+sg_size_t MSG_storage_read(msg_storage_t storage, sg_size_t size)
+{
+  return storage->read(size);
+}
+
+sg_size_t MSG_storage_write(msg_storage_t storage, sg_size_t size)
+{
+  return storage->write(size);
+}
 }

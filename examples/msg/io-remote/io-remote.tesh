@@ -1,8 +1,8 @@
 #! ./tesh
 
 $ ${bindir:=.}/io-remote$EXEEXT ${srcdir:=.}/storage/remote_io.xml ${srcdir:=.}/../msg/io-remote/io-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
-> [  0.000000] (0@     ) Init: 12 MiB used on 'Disk1'
-> [  0.000000] (0@     ) Init: 2280 MiB used on 'Disk2'
+> [  0.000000] (0@     ) Init: 12/476824 MiB used/free on 'Disk1'
+> [  0.000000] (0@     ) Init: 2280/474556 MiB used/free on 'Disk2'
 > [  0.000000] (1@alice) Opened file 'c:\Windows\setupact.log'
 > [  0.000000] (1@alice) File Descriptor information:
 > 		Full path: 'c:\Windows\setupact.log'
@@ -59,6 +59,6 @@ $ ${bindir:=.}/io-remote$EXEEXT ${srcdir:=.}/storage/remote_io.xml ${srcdir:=.}/
 > [  0.528211] (4@ dave) Move 'c:\Windows\Professional.xml' (of size 32646144) from 'dave' to 'carl'
 > [  0.819921] (2@  bob) Have written 17436672 bytes to '/scratch/doc/simgrid/examples/platforms/g5k.xml'.
 > [  0.819921] (2@  bob) Copy '/scratch/doc/simgrid/examples/platforms/g5k.xml' (of size 17436672) from 'bob' to 'alice'
-> [  1.843969] (0@     ) Init: 60 MiB used on 'Disk1'
-> [  1.843969] (0@     ) Init: 2297 MiB used on 'Disk2'
+> [  1.843969] (0@     ) End: 60/476776 MiB used/free on 'Disk1'
+> [  1.843969] (0@     ) End: 2297/474539 MiB used/free on 'Disk2'
 > [  1.843969] (0@     ) Simulation time 1.84397
