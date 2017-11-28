@@ -58,7 +58,7 @@ int xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
     if (e.category == timeout_error) {
       return 1;
     } else {
-      throw e; // unknown exception
+      throw; // rethrow the exceptions that I don't know
     }
   }
   return 0;
