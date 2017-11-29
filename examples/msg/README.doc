@@ -76,9 +76,6 @@ shipped in the archive:
     Processes can be suspended and resumed during their executions
     thanks to the @ref MSG_process_suspend and @ref MSG_process_resume functions.
 
-  - <b>Kill processes</b>.
-    @ref examples/msg/process-kill/process-kill.c \n
-    Processes can forcefully stop other processes with the @ref MSG_process_kill function.
      
   - <b>Migrating processes</b>.
     @ref examples/msg/process-migration/process-migration.c \n
@@ -232,7 +229,6 @@ top of the example file).
 
 @example examples/msg/process-create/process-create.c
 @example examples/msg/process-suspend/process-suspend.c
-@example examples/msg/process-kill/process-kill.c
 @example examples/msg/process-migration/process-migration.c
 @example examples/msg/process-startkilltime/process-startkilltime.c
 
