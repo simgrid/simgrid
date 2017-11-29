@@ -21,12 +21,8 @@ public:
       simgrid::s4u::Storage* storage = kv.second;
 
       // Retrieve disk's information
-      sg_size_t free_size = storage->getSizeFree();
-      sg_size_t used_size = storage->getSizeUsed();
-      sg_size_t size      = storage->getSize();
-
-      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getCname(), mountpoint.c_str(), used_size,
-               free_size, size);
+      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getCname(), mountpoint.c_str(),
+               sg_storage_get_size_used(storage), sg_storage_get_size_free(storage), sg_storage_get_size(storage));
     }
   }
 

@@ -107,11 +107,8 @@ static void storage_info(simgrid::s4u::Host* host)
     simgrid::s4u::Storage* storage = elm.second;
     XBT_INFO("\tStorage name: %s, mount name: %s", storage->getCname(), mount_name.c_str());
 
-    sg_size_t free_size = storage->getSizeFree();
-    sg_size_t used_size = storage->getSizeUsed();
-
-    XBT_INFO("\t\tFree size: %llu bytes", free_size);
-    XBT_INFO("\t\tUsed size: %llu bytes", used_size);
+    XBT_INFO("\t\tFree size: %llu bytes", sg_storage_get_size_free(storage));
+    XBT_INFO("\t\tUsed size: %llu bytes", sg_storage_get_size_used(storage));
 
     display_storage_properties(storage);
     dump_storage_by_name(storage->getCname());

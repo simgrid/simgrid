@@ -362,26 +362,6 @@ const char* MSG_storage_get_name(msg_storage_t storage)
 }
 
 /** \ingroup msg_storage_management
- * \brief Returns the free space size of a storage element
- * \param storage a storage
- * \return the free space size of the storage element (as a #sg_size_t)
- */
-sg_size_t MSG_storage_get_free_size(msg_storage_t storage)
-{
-  return storage->getSizeFree();
-}
-
-/** \ingroup msg_storage_management
- * \brief Returns the used space size of a storage element
- * \param storage a storage
- * \return the used space size of the storage element (as a #sg_size_t)
- */
-sg_size_t MSG_storage_get_used_size(msg_storage_t storage)
-{
-  return storage->getSizeUsed();
-}
-
-/** \ingroup msg_storage_management
  * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this storage
  * \param storage a storage
  * \return a dict containing the properties
@@ -487,17 +467,6 @@ xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
     xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);
   }
   return content_as_dict;
-}
-
-/** \ingroup msg_storage_management
- *
- * \brief Returns the size of a #msg_storage_t.
- * \param storage a storage
- * \return The size of the storage
- */
-sg_size_t MSG_storage_get_size(msg_storage_t storage)
-{
-  return storage->getSize();
 }
 
 /** \ingroup msg_storage_management

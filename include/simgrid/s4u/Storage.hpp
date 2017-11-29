@@ -39,11 +39,6 @@ public:
   const char* getCname() const;
   const char* getType();
   Host* getHost();
-  sg_size_t getSize(); /** Retrieve the total amount of space of this storage element */
-  sg_size_t getSizeFree();
-  sg_size_t getSizeUsed();
-  void decrUsedSize(sg_size_t size);
-  void incrUsedSize(sg_size_t size);
 
   std::map<std::string, std::string>* getProperties();
   const char* getProperty(std::string key);

@@ -234,8 +234,6 @@ XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const cha
 XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
-XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(msg_storage_t storage);
-XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(msg_storage_t storage);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char* name, char* value);
@@ -244,7 +242,6 @@ XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar();
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
-XBT_PUBLIC(sg_size_t) MSG_storage_get_size(msg_storage_t storage);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_read(msg_storage_t storage, sg_size_t size);
 XBT_PUBLIC(sg_size_t) MSG_storage_write(msg_storage_t storage, sg_size_t size);

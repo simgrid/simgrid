@@ -55,35 +55,6 @@ Host* Storage::getHost()
   return attached_to_;
 }
 
-sg_size_t Storage::getSizeFree()
-{
-  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
-
-  return pimpl_->getSize() - file_system->getUsedSize();
-}
-
-sg_size_t Storage::getSizeUsed()
-{
-  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
-  return file_system->getUsedSize();
-}
-
-void Storage::decrUsedSize(sg_size_t size)
-{
-  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
-  file_system->decrUsedSize(size);
-}
-
-void Storage::incrUsedSize(sg_size_t size)
-{
-  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
-  file_system->incrUsedSize(size);
-}
-
-sg_size_t Storage::getSize()
-{
-  return pimpl_->getSize();
-}
 
 std::map<std::string, std::string>* Storage::getProperties()
 {

@@ -76,13 +76,13 @@ sg_size_t File::write(sg_size_t size)
 {
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getPath(), localStorage->getCname(), size, size_);
   // If the storage is full before even starting to write
-  if (localStorage->getSizeUsed() >= localStorage->getSize())
+  if (sg_storage_get_size_used(localStorage) >= sg_storage_get_size(localStorage))
     return 0;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
-  localStorage->decrUsedSize(size_ - current_position_);
+  localStorage->extension<FileSystemStorageExt>()->decrUsedSize(size_ - current_position_);
 
   sg_size_t write_size = localStorage->write(size);
-  localStorage->incrUsedSize(write_size);
+  localStorage->extension<FileSystemStorageExt>()->incrUsedSize(write_size);
 
   current_position_ += write_size;
   size_ = current_position_;
@@ -153,7 +153,7 @@ int File::unlink()
     return -1;
   } else {
     XBT_DEBUG("UNLINK %s on disk '%s'", path_.c_str(), localStorage->getCname());
-    localStorage->decrUsedSize(size_);
+    localStorage->extension<FileSystemStorageExt>()->decrUsedSize(size_);
 
     // Remove the file from storage
     localStorage->getContent()->erase(fullpath_);
@@ -226,6 +226,21 @@ void sg_storage_file_system_init()
 
   simgrid::s4u::Storage::onCreation.connect(&onStorageCreation);
   simgrid::s4u::Storage::onDestruction.connect(&onStorageDestruction);
+}
+
+sg_size_t sg_storage_get_size_free(sg_storage_t st)
+{
+  return st->getImpl()->getSize() - st->extension<FileSystemStorageExt>()->getUsedSize();
+}
+
+sg_size_t sg_storage_get_size_used(sg_storage_t st)
+{
+  return st->extension<FileSystemStorageExt>()->getUsedSize();
+}
+
+sg_size_t sg_storage_get_size(sg_storage_t st)
+{
+  return st->getImpl()->getSize();
 }
 
 SG_END_DECL()
