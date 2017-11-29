@@ -81,7 +81,15 @@ endif()
 
 # Do not leak the current directory into the binaries
 if(CMAKE_COMPILER_IS_GNUCC)
-  set(optCFLAGS "${optCFLAGS} -fdebug-prefix-map=${CMAKE_SOURCE_DIR}=.")
+  execute_process(COMMAND realpath --relative-to=${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
+    RESULT_VARIABLE RESULT OUTPUT_VARIABLE RELATIVE_SOURCE_DIR ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(RESULT EQUAL 0)
+    message(STATUS "Relative source directory is \"${RELATIVE_SOURCE_DIR}\".")
+  else()
+    message(WARNING "Failed to find relative source directory. Using \".\".")
+    set(RELATIVE_SOURCE_DIR ".")
+  endif()
+  set(optCFLAGS "${optCFLAGS} -fdebug-prefix-map=${CMAKE_SOURCE_DIR}=${RELATIVE_SOURCE_DIR}")
 endif()
 
 # Configure LTO
