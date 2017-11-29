@@ -41,17 +41,14 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
     var        = static_cast<lmm_variable_t>(_var);
     var->value = 0.0;
     XBT_DEBUG("Handling variable %p", var);
-    xbt_swag_insert(var, &(sys->saturated_variable_set));
-    auto weighted = std::find_if(begin(var->cnsts), end(var->cnsts),
-                                 [](s_lmm_element_t const& x) { return x.consumption_weight != 0.0; });
-    if (weighted == end(var->cnsts) && var->sharing_weight > 0.0) {
+    if (var->sharing_weight > 0.0 && std::find_if(begin(var->cnsts), end(var->cnsts), [](s_lmm_element_t const& x) {
+                                       return x.consumption_weight != 0.0;
+                                     }) != end(var->cnsts)) {
+      xbt_swag_insert(var, &(sys->saturated_variable_set));
+    } else {
       XBT_DEBUG("Err, finally, there is no need to take care of variable %p", var);
-      xbt_swag_remove(var, &(sys->saturated_variable_set));
-      var->value = 1.0;
-    }
-    if (var->sharing_weight <= 0.0) {
-      XBT_DEBUG("Err, finally, there is no need to take care of variable %p", var);
-      xbt_swag_remove(var, &(sys->saturated_variable_set));
+      if (var->sharing_weight > 0.0)
+        var->value = 1.0;
     }
   }
   var_list = &(sys->saturated_variable_set);
