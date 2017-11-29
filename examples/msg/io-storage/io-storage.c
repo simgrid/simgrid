@@ -17,27 +17,22 @@ static int host(int argc, char *argv[]){
   xbt_dict_cursor_t cursor = NULL;
   char* mount_name;
   char* storage_name;
-  msg_storage_t storage = NULL;
 
   /* - Retrieve all mount points of current host */
   xbt_dict_t storage_list = MSG_host_get_mounted_storage_list(MSG_host_self());
 
-  xbt_dict_foreach (storage_list, cursor, mount_name, storage_name) {
-    /* - For each disk mounted on host:
-           - Retrieve disk's information */
+  /* - For each disk mounted on host, display disk name and mount point */
+  xbt_dict_foreach (storage_list, cursor, mount_name, storage_name)
     XBT_INFO("Storage name: %s, mount name: %s", storage_name, mount_name);
-    storage = MSG_storage_get_by_name(storage_name);
-  }
+
   xbt_dict_free(&storage_list);
 
   /* - Write 200,000 bytes on Disk4 */
-  storage = MSG_storage_get_by_name("Disk4");
-
-  /* - Open an non-existing file which amounts to create it. */
+  msg_storage_t storage = MSG_storage_get_by_name("Disk4");
   sg_size_t write = MSG_storage_write(storage, 200000); // Write 200,000 bytes
   XBT_INFO("Wrote %llu bytes on 'Disk4'", write);
 
-  /*  - Retrieve the size of created file and read it completely */
+  /*  - Now read 200,000 bytes */
   sg_size_t read = MSG_storage_read(storage, 200000);
   XBT_INFO("Read %llu bytes on 'Disk4'", read);
 
