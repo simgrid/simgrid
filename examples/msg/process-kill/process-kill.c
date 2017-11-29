@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_kill, "Messages specific for this msg example");
 
-static int victim(int argc, char *argv[])
+static int victimA_fun(int argc, char* argv[])
 {
   XBT_INFO("Hello!");
   XBT_INFO("Suspending myself");
@@ -18,17 +18,27 @@ static int victim(int argc, char *argv[])
   return 0;
 }
 
+static int victimB_fun(int argc, char* argv[])
+{
+  XBT_INFO("Terminates before being killed");
+  return 0;
+}
+
 static int killer(int argc, char *argv[])
 {
   XBT_INFO("Hello!");         /* - First start a victim process */
-  msg_process_t poor_victim = MSG_process_create("victim", victim, NULL, MSG_host_by_name("Fafard"));
+  msg_process_t victimA = MSG_process_create("victim A", victimA_fun, NULL, MSG_host_by_name("Fafard"));
+  msg_process_t victimB = MSG_process_create("victim B", victimB_fun, NULL, MSG_host_by_name("Bourassa"));
   MSG_process_sleep(10.0);
 
-  XBT_INFO("Resume process"); /* - Resume it from its suspended state */
-  MSG_process_resume(poor_victim);
+  XBT_INFO("Resume victimA"); /* - Resume it from its suspended state */
+  MSG_process_resume(victimA);
 
-  XBT_INFO("Kill process");   /* - and then kill it */
-  MSG_process_kill(poor_victim);
+  XBT_INFO("Kill victimA"); /* - and then kill it */
+  MSG_process_kill(victimA);
+
+  XBT_INFO("Kill victimB, even if it's already dead"); /* that's a no-op, there is no zombies in SimGrid */
+  MSG_process_kill(victimB);
 
   XBT_INFO("OK, goodbye now. I commit a suicide.");
   MSG_process_kill(MSG_process_self());
