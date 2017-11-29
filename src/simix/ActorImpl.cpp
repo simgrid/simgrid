@@ -464,6 +464,12 @@ void SIMIX_process_runall()
  */
 void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
+  if (process->finished) {
+    XBT_DEBUG("Ignoring request to kill process %s@%s that is already dead", process->getCname(),
+              process->host->getCname());
+    return;
+  }
+
   XBT_DEBUG("Killing process %s@%s", process->getCname(), process->host->getCname());
 
   process->context->iwannadie = 1;
