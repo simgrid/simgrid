@@ -26,19 +26,13 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
   void* _elem;
   lmm_variable_t var    = nullptr;
   lmm_constraint_t cnst = nullptr;
-  s_lmm_constraint_t s_cnst;
   lmm_element_t elem   = nullptr;
   xbt_swag_t cnst_list = nullptr;
   xbt_swag_t var_list  = nullptr;
   xbt_swag_t elem_list = nullptr;
 
-  static s_xbt_swag_t cnst_to_update;
-
   if (not sys->modified)
     return;
-
-  /* Init */
-  xbt_swag_init(&(cnst_to_update), xbt_swag_offset(s_cnst, saturated_constraint_set_hookup));
 
   var_list = &(sys->variable_set);
   XBT_DEBUG("Variable set : %d", xbt_swag_size(var_list));
