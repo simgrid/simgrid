@@ -1,4 +1,4 @@
-$ ./host_on_off_wait ${srcdir:=.}/../../../examples/platforms/small_platform.xml
+$ ./host_on_off_wait ${platfdir}/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [s4u_test/INFO] Master waiting
 > [Jupiter:worker:(2) 0.000000] [s4u_test/INFO] Worker waiting
 > [Tremblay:master:(1) 1.000000] [s4u_test/INFO] Turning off the worker host

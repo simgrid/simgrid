@@ -1,4 +1,4 @@
-$ ./task_progress ${srcdir:=.}/../../../examples/platforms/small_platform.xml
+$ ./task_progress ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [Tremblay:sequential:(1) 0.000000] [msg_test/INFO] get the progress of simple before the task starts
 > [Tremblay:sequential:(1) 0.000000] [msg_test/INFO] Executing task: "simple"

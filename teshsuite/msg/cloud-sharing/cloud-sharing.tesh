@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${srcdir:=.}/../../../examples/platforms/cluster_backbone.xml
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${platfdir}/cluster_backbone.xml
 > # TEST ON SINGLE-CORE PMs
 > ## Check computation on regular PMs
 > ### Test '(o)1'. A task on a regular PM
