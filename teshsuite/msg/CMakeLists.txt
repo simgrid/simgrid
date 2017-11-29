@@ -39,7 +39,6 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
-				   ${CMAKE_CURRENT_SOURCE_DIR}/process-kill/process-kill_d.xml
 				   ${CMAKE_CURRENT_SOURCE_DIR}/process-yield/process-yield_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
