@@ -80,12 +80,14 @@ public:
   ~FileSystemStorageExt();
   std::map<std::string, sg_size_t>* parseContent(std::string filename);
   std::map<std::string, sg_size_t>* getContent() { return content_; }
+  sg_size_t getSize() { return size_; }
   sg_size_t getUsedSize() { return usedSize_; }
   void decrUsedSize(sg_size_t size) { usedSize_ -= size; }
   void incrUsedSize(sg_size_t size) { usedSize_ += size; }
 private:
   std::map<std::string, sg_size_t>* content_;
   sg_size_t usedSize_ = 0;
+  sg_size_t size_     = 0;
 };
 }
 } // namespace simgrid::s4u

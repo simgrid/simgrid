@@ -115,7 +115,6 @@ public:
    * @return The StorageAction corresponding to the writing
    */
   virtual StorageAction* write(sg_size_t size) = 0;
-  virtual sg_size_t getSize() { return size_; }
   virtual std::string getHost() { return attach_; }
 
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
@@ -124,11 +123,10 @@ public:
   lmm_constraint_t constraintRead_;  /* Constraint for maximum write bandwidth*/
 
   std::string typeId_;
-  sg_size_t usedSize_ = 0;
-  std::string content_name;
+  std::string content_name; // Only used at parsing time then goes to the FileSystemExtension
+  sg_size_t size_;          // Only used at parsing time then goes to the FileSystemExtension
 
 private:
-  sg_size_t size_;
   static std::unordered_map<std::string, StorageImpl*>* storages;
   // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
   // the Host directly.

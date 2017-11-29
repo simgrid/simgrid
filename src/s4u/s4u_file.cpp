@@ -168,6 +168,7 @@ int File::unlink()
 FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
 {
   content_ = parseContent(ptr->getImpl()->content_name);
+  size_    = ptr->getImpl()->size_;
 }
 
 FileSystemStorageExt::~FileSystemStorageExt()
@@ -233,7 +234,7 @@ void sg_storage_file_system_init()
 
 sg_size_t sg_storage_get_size_free(sg_storage_t st)
 {
-  return st->getImpl()->getSize() - st->extension<FileSystemStorageExt>()->getUsedSize();
+  return st->extension<FileSystemStorageExt>()->getSize() - st->extension<FileSystemStorageExt>()->getUsedSize();
 }
 
 sg_size_t sg_storage_get_size_used(sg_storage_t st)
@@ -243,7 +244,7 @@ sg_size_t sg_storage_get_size_used(sg_storage_t st)
 
 sg_size_t sg_storage_get_size(sg_storage_t st)
 {
-  return st->getImpl()->getSize();
+  return st->extension<FileSystemStorageExt>()->getSize();
 }
 
 SG_END_DECL()
