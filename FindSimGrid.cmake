@@ -55,6 +55,6 @@ if ("${_SimGrid_CONFIG_H_CONTENTS}" MATCHES "${_SimGrid_VERSION_REGEX}")
 endif ("${_SimGrid_CONFIG_H_CONTENTS}" MATCHES "${_SimGrid_VERSION_REGEX}")
   
 
-message("-- SimGrid found in ${SimGrid_PATH} (version ${SimGrid_VERSION})")
+message(STATUS "SimGrid found in ${SimGrid_PATH} (version ${SimGrid_VERSION})")
 
 

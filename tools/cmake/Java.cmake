@@ -11,8 +11,8 @@ set(Java_FOUND 1)
 include(UseJava)
 
 find_package(JNI REQUIRED)
-message("-- [Java] JNI found: ${JNI_FOUND}")
-message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
+message(STATUS "[Java] JNI found: ${JNI_FOUND}")
+message(STATUS "[Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
 
 if(WIN32)
   execute_process(COMMAND         java -d64 -version
@@ -39,7 +39,7 @@ else()
 endif()
 
 get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
-message("-- [Java] simgrid-java includes: ${CHECK_INCLUDES}")
+message(STATUS "[Java] simgrid-java includes: ${CHECK_INCLUDES}")
 
 # Rules to build simgrid.jar
 ############################

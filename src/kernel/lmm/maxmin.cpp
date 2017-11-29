@@ -440,6 +440,21 @@ static inline void saturated_variable_set_update(s_lmm_constraint_light_t* cnst_
   }
 }
 
+static void format_lmm_element_swag(xbt_swag_t elem_list, int sharing_policy, double& sum, std::string& buf)
+{
+  void* _elem;
+  xbt_swag_foreach(_elem, elem_list)
+  {
+    lmm_element_t elem = (lmm_element_t)_elem;
+    buf += std::to_string(elem->consumption_weight) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
+           std::to_string(elem->variable->value) + ")" + (sharing_policy ? " + " : " , ");
+    if (sharing_policy)
+      sum += elem->consumption_weight * elem->variable->value;
+    else
+      sum = std::max(sum, elem->consumption_weight * elem->variable->value);
+  }
+}
+
 void s_lmm_system_t::print()
 {
   std::string buf = std::string("MAX-MIN ( ");
@@ -465,32 +480,11 @@ void s_lmm_system_t::print()
     lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
     double sum            = 0.0;
     // Show  the enabled variables
-    void* _elem;
-    xbt_swag_t elem_list = &(cnst->enabled_element_set);
     buf += "\t";
     buf += ((cnst->sharing_policy) ? "(" : "max(");
-    xbt_swag_foreach(_elem, elem_list)
-    {
-      lmm_element_t elem = (lmm_element_t)_elem;
-      buf = buf + std::to_string(elem->consumption_weight) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
-            std::to_string(elem->variable->value) + ")" + ((cnst->sharing_policy) ? " + " : " , ");
-      if (cnst->sharing_policy)
-        sum += elem->consumption_weight * elem->variable->value;
-      else
-        sum = std::max(sum, elem->consumption_weight * elem->variable->value);
-    }
+    format_lmm_element_swag(&cnst->enabled_element_set, cnst->sharing_policy, sum, buf);
     // TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
-    elem_list = &(cnst->disabled_element_set);
-    xbt_swag_foreach(_elem, elem_list)
-    {
-      lmm_element_t elem = (lmm_element_t)_elem;
-      buf = buf + std::to_string(elem->consumption_weight) + ".'" + std::to_string(elem->variable->id_int) + "'(" +
-            std::to_string(elem->variable->value) + ")" + ((cnst->sharing_policy) ? " + " : " , ");
-      if (cnst->sharing_policy)
-        sum += elem->consumption_weight * elem->variable->value;
-      else
-        sum = std::max(sum, elem->consumption_weight * elem->variable->value);
-    }
+    format_lmm_element_swag(&cnst->disabled_element_set, cnst->sharing_policy, sum, buf);
 
     buf = buf + "0) <= " + std::to_string(cnst->bound) + " ('" + std::to_string(cnst->id_int) + "')";
 
