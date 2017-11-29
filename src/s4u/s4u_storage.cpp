@@ -71,12 +71,6 @@ void Storage::setProperty(std::string key, std::string value)
   simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
-std::map<std::string, sg_size_t>* Storage::getContent()
-{
-  FileSystemStorageExt* file_system = extension<FileSystemStorageExt>();
-  return file_system->getContent();
-}
-
 sg_size_t Storage::read(sg_size_t size)
 {
   return simcall_storage_read(pimpl_, size);

@@ -457,7 +457,7 @@ void *MSG_storage_get_data(msg_storage_t storage)
  */
 xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
 {
-  std::map<std::string, sg_size_t>* content = storage->getContent();
+  std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->getContent();
   // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
   xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
 

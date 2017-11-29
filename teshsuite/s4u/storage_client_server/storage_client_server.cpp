@@ -58,7 +58,7 @@ static void hsm_put(const std::string& remote_host, const std::string& src, cons
 static void display_storage_content(simgrid::s4u::Storage* storage)
 {
   XBT_INFO("Print the content of the storage element: %s", storage->getCname());
-  std::map<std::string, sg_size_t>* content = storage->getContent();
+  std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->getContent();
   if (not content->empty()) {
     for (auto const& entry : *content)
       XBT_INFO("\t%s size: %llu bytes", entry.first.c_str(), entry.second);

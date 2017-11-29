@@ -51,7 +51,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
   localStorage = st;
 
   XBT_DEBUG("\tOpen file '%s'", path_.c_str());
-  std::map<std::string, sg_size_t>* content = localStorage->getContent();
+  std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
   // if file does not exist create an empty file
   auto sz = content->find(path_);
   if (sz != content->end()) {
@@ -86,9 +86,10 @@ sg_size_t File::write(sg_size_t size)
 
   current_position_ += write_size;
   size_ = current_position_;
+  std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
 
-  localStorage->getContent()->erase(path_);
-  localStorage->getContent()->insert({path_, size_});
+  content->erase(path_);
+  content->insert({path_, size_});
 
   return write_size;
 }
@@ -129,7 +130,7 @@ void File::move(std::string fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (not strncmp(mount_point_.c_str(), fullpath.c_str(), mount_point_.length())) {
-    std::map<std::string, sg_size_t>* content = localStorage->getContent();
+    std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
     auto sz = content->find(path_);
     if (sz != content->end()) { // src file exists
       sg_size_t new_size = sz->second;
@@ -148,7 +149,9 @@ void File::move(std::string fullpath)
 int File::unlink()
 {
   /* Check if the file is on local storage */
-  if (localStorage->getContent()->find(path_) == localStorage->getContent()->end()) {
+  std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
+
+  if (content->find(path_) == content->end()) {
     XBT_WARN("File %s is not on disk %s. Impossible to unlink", path_.c_str(), localStorage->getCname());
     return -1;
   } else {
@@ -156,7 +159,7 @@ int File::unlink()
     localStorage->extension<FileSystemStorageExt>()->decrUsedSize(size_);
 
     // Remove the file from storage
-    localStorage->getContent()->erase(fullpath_);
+    content->erase(fullpath_);
 
     return 0;
   }

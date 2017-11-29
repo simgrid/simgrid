@@ -43,7 +43,6 @@ public:
   std::map<std::string, std::string>* getProperties();
   const char* getProperty(std::string key);
   void setProperty(std::string, std::string value);
-  std::map<std::string, sg_size_t>* getContent();
 
   void setUserdata(void* data) { userdata_ = data; }
   void* getUserdata() { return userdata_; }
