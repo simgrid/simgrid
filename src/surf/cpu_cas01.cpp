@@ -104,7 +104,7 @@ bool CpuCas01::isUsed()
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::onSpeedChange() {
   lmm_variable_t var = nullptr;
-  lmm_element_t elem = nullptr;
+  const_lmm_element_t elem = nullptr;
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), coresAmount_ * speed_.scale * speed_.peak);
   while ((var = constraint()->get_variable(&elem))) {
@@ -138,7 +138,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
     } else {
       lmm_constraint_t cnst = constraint();
       lmm_variable_t var = nullptr;
-      lmm_element_t elem = nullptr;
+      const_lmm_element_t elem = nullptr;
       double date = surf_get_clock();
 
       turnOff();

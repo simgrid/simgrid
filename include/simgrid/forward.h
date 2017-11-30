@@ -88,6 +88,7 @@ typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 typedef simgrid::surf::StorageImpl* surf_storage_t;
 
 typedef simgrid::kernel::lmm::s_lmm_element_t* lmm_element_t;
+typedef const simgrid::kernel::lmm::s_lmm_element_t* const_lmm_element_t;
 typedef simgrid::kernel::lmm::s_lmm_variable_t* lmm_variable_t;
 typedef simgrid::kernel::lmm::s_lmm_constraint_t* lmm_constraint_t;
 typedef simgrid::kernel::lmm::s_lmm_constraint_light_t* lmm_constraint_light_t;

@@ -273,7 +273,7 @@ public:
    * @param elem A element of constraint of the constraint or NULL
    * @return A variable associated to a constraint
    */
-  lmm_variable_t get_variable(lmm_element_t * elem) const;
+  lmm_variable_t get_variable(const_lmm_element_t* elem) const;
 
   /**
    * @brief Get a var associated to a constraint
@@ -283,7 +283,7 @@ public:
    * @param numelem parameter representing the number of elements to go
    * @return A variable associated to a constraint
    */
-  lmm_variable_t get_variable_safe(lmm_element_t * elem, lmm_element_t * nextelem, int* numelem) const;
+  lmm_variable_t get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem, int* numelem) const;
 
   /**
    * @brief Get the data associated to a constraint
@@ -512,7 +512,7 @@ public:
   int constraint_used(lmm_constraint_t cnst) { return xbt_swag_belongs(cnst, &active_constraint_set); }
 
   /** @brief Print the lmm system */
-  void print();
+  void print() const;
 
   /** @brief Solve the lmm system */
   void solve();
@@ -555,7 +555,7 @@ private:
 
   /** @brief Remove all constraints of the modified_constraint_set. */
   void remove_all_modified_set();
-  void check_concurrency();
+  void check_concurrency() const;
 
 public:
   bool modified;

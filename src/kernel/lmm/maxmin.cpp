@@ -62,7 +62,7 @@ void s_lmm_element_t::increase_concurrency()
              "Concurrency limit overflow!");
 }
 
-void s_lmm_system_t::check_concurrency()
+void s_lmm_system_t::check_concurrency() const
 {
   // These checks are very expensive, so do them only if we want to debug SURF LMM
   if (not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug))
@@ -351,7 +351,7 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
   check_concurrency();
 }
 
-lmm_variable_t s_lmm_constraint_t::get_variable(lmm_element_t* elem) const
+lmm_variable_t s_lmm_constraint_t::get_variable(const_lmm_element_t* elem) const
 {
   if (*elem == nullptr) {
     // That is the first call, pick the first element among enabled_element_set (or disabled_element_set if
@@ -378,7 +378,8 @@ lmm_variable_t s_lmm_constraint_t::get_variable(lmm_element_t* elem) const
 
 // if we modify the swag between calls, normal version may loop forever
 // this safe version ensures that we browse the swag elements only once
-lmm_variable_t s_lmm_constraint_t::get_variable_safe(lmm_element_t* elem, lmm_element_t* nextelem, int* numelem) const
+lmm_variable_t s_lmm_constraint_t::get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem,
+                                                     int* numelem) const
 {
   if (*elem == nullptr) {
     *elem    = (lmm_element_t)xbt_swag_getFirst(&enabled_element_set);
@@ -441,7 +442,7 @@ static inline void saturated_variable_set_update(s_lmm_constraint_light_t* cnst_
   }
 }
 
-static void format_lmm_element_swag(xbt_swag_t elem_list, int sharing_policy, double& sum, std::string& buf)
+static void format_lmm_element_swag(const_xbt_swag_t elem_list, int sharing_policy, double& sum, std::string& buf)
 {
   void* _elem;
   xbt_swag_foreach(_elem, elem_list)
@@ -456,13 +457,13 @@ static void format_lmm_element_swag(xbt_swag_t elem_list, int sharing_policy, do
   }
 }
 
-void s_lmm_system_t::print()
+void s_lmm_system_t::print() const
 {
   std::string buf = std::string("MAX-MIN ( ");
   void* _var;
 
   /* Printing Objective */
-  xbt_swag_t var_list = &variable_set;
+  const_xbt_swag_t var_list = &variable_set;
   xbt_swag_foreach(_var, var_list)
   {
     lmm_variable_t var = (lmm_variable_t)_var;
@@ -475,7 +476,7 @@ void s_lmm_system_t::print()
   XBT_DEBUG("Constraints");
   /* Printing Constraints */
   void* _cnst;
-  xbt_swag_t cnst_list = &active_constraint_set;
+  const_xbt_swag_t cnst_list = &active_constraint_set;
   xbt_swag_foreach(_cnst, cnst_list)
   {
     lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
