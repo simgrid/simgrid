@@ -16,6 +16,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <fstream>
+#include <numeric>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file, "S4U files");
 int sg_storage_max_file_descriptors = 1024;
