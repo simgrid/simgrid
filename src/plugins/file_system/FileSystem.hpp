@@ -29,7 +29,7 @@ XBT_PUBLIC_CLASS File
 public:
   File(std::string fullpath, void* userdata);
   File(std::string fullpath, sg_host_t host, void* userdata);
-  ~File() = default;
+  ~File();
 
   /** Retrieves the path to the file */
   const char* getPath() { return fullpath_.c_str(); }
@@ -70,8 +70,8 @@ private:
 
 class FileSystemStorageExt {
 public:
-  static simgrid::xbt::Extension<simgrid::s4u::Storage, FileSystemStorageExt> EXTENSION_ID;
-  explicit FileSystemStorageExt(simgrid::s4u::Storage* ptr);
+  static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
+  explicit FileSystemStorageExt(Storage* ptr);
   ~FileSystemStorageExt();
   std::map<std::string, sg_size_t>* parseContent(std::string filename);
   std::map<std::string, sg_size_t>* getContent() { return content_; }
@@ -83,6 +83,14 @@ private:
   std::map<std::string, sg_size_t>* content_;
   sg_size_t usedSize_ = 0;
   sg_size_t size_     = 0;
+};
+
+class FileDescriptorHostExt {
+public:
+  static simgrid::xbt::Extension<Host, FileDescriptorHostExt> EXTENSION_ID;
+  FileDescriptorHostExt() = default;
+  ~FileDescriptorHostExt() { delete file_descriptor_table; }
+  std::vector<int>* file_descriptor_table = nullptr; // Created lazily on need
 };
 }
 } // namespace simgrid::s4u

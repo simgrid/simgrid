@@ -219,9 +219,6 @@ XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_hosts() instead: v3.19 will remove 
 /************************** File handling ***********************************/
 XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);
 XBT_PUBLIC(sg_size_t) MSG_file_write(msg_file_t fd, sg_size_t size);
-XBT_PUBLIC(msg_file_t) MSG_file_open(const char* fullpath, void* data);
-XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
-XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
 /************************** Storage handling ***********************************/

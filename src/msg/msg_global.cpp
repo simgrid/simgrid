@@ -49,11 +49,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
-
-    simgrid::MsgHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::MsgHostExt>();
-    simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-      host.extension_set<simgrid::MsgHostExt>(new simgrid::MsgHostExt());
-    });
   }
 
   if(MC_is_active()){

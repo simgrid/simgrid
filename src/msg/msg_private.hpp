@@ -15,16 +15,6 @@
 #include <atomic>
 
 /**************** datatypes **********************************/
-/**************************** Host Extension *********************************/
-namespace simgrid {
-class MsgHostExt {
-public:
-  static simgrid::xbt::Extension<s4u::Host, MsgHostExt> EXTENSION_ID;
-
-  ~MsgHostExt() { delete file_descriptor_table; }
-  std::vector<int>* file_descriptor_table = nullptr; // Created lazily on need
-};
-}
 /********************************* Task **************************************/
 
 struct s_simdata_task_t {

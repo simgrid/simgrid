@@ -18,10 +18,12 @@
 #include <fstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file, "S4U files");
+int sg_storage_max_file_descriptors = 1024;
 
 namespace simgrid {
 namespace s4u {
-simgrid::xbt::Extension<s4u::Storage, FileSystemStorageExt> FileSystemStorageExt::EXTENSION_ID;
+simgrid::xbt::Extension<Storage, FileSystemStorageExt> FileSystemStorageExt::EXTENSION_ID;
+simgrid::xbt::Extension<Host, FileDescriptorHostExt> FileDescriptorHostExt::EXTENSION_ID;
 
 File::File(std::string fullpath, void* userdata) : File(fullpath, Host::current(), userdata){};
 
@@ -50,6 +52,16 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
 
   localStorage = st;
 
+  // assign a file descriptor id to the newly opened File
+  FileDescriptorHostExt* ext = host->extension<simgrid::s4u::FileDescriptorHostExt>();
+  if (ext->file_descriptor_table == nullptr) {
+    ext->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
+    std::iota(ext->file_descriptor_table->rbegin(), ext->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
+  }
+  xbt_assert(not ext->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+  desc_id = ext->file_descriptor_table->back();
+  ext->file_descriptor_table->pop_back();
+
   XBT_DEBUG("\tOpen file '%s'", path_.c_str());
   std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
   // if file does not exist create an empty file
@@ -61,6 +73,11 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
     content->insert({path_, size_});
     XBT_DEBUG("File '%s' was not found, file created.", path_.c_str());
   }
+}
+
+File::~File()
+{
+  Host::current()->extension<simgrid::s4u::FileDescriptorHostExt>()->file_descriptor_table->push_back(desc_id);
 }
 
 void File::dump()
@@ -218,6 +235,7 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parseContent(std::string
 }
 
 using simgrid::s4u::FileSystemStorageExt;
+using simgrid::s4u::FileDescriptorHostExt;
 
 static void onStorageCreation(simgrid::s4u::Storage& st)
 {
@@ -229,18 +247,36 @@ static void onStorageDestruction(simgrid::s4u::Storage& st)
   delete st.extension<FileSystemStorageExt>();
 }
 
+static void onHostCreation(simgrid::s4u::Host& host)
+{
+  host.extension_set<FileDescriptorHostExt>(new FileDescriptorHostExt());
+}
+
 /* **************************** Public interface *************************** */
 SG_BEGIN_DECL()
 
 void sg_storage_file_system_init()
 {
-  if (FileSystemStorageExt::EXTENSION_ID.valid())
-    return;
+  if (not FileSystemStorageExt::EXTENSION_ID.valid()) {
+    FileSystemStorageExt::EXTENSION_ID = simgrid::s4u::Storage::extension_create<FileSystemStorageExt>();
+    simgrid::s4u::Storage::onCreation.connect(&onStorageCreation);
+    simgrid::s4u::Storage::onDestruction.connect(&onStorageDestruction);
+  }
 
-  FileSystemStorageExt::EXTENSION_ID = simgrid::s4u::Storage::extension_create<FileSystemStorageExt>();
+  if (not FileDescriptorHostExt::EXTENSION_ID.valid()) {
+    FileDescriptorHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<FileDescriptorHostExt>();
+    simgrid::s4u::Host::onCreation.connect(&onHostCreation);
+  }
+}
 
-  simgrid::s4u::Storage::onCreation.connect(&onStorageCreation);
-  simgrid::s4u::Storage::onDestruction.connect(&onStorageDestruction);
+sg_file_t sg_file_open(const char* fullpath, void* data)
+{
+  return new simgrid::s4u::File(fullpath, data);
+}
+
+void sg_file_close(sg_file_t fd)
+{
+  delete fd;
 }
 
 const char* sg_file_get_name(sg_file_t fd)

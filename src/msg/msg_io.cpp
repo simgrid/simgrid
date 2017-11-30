@@ -19,24 +19,6 @@ extern "C" {
  *  \see #msg_file_t
  */
 
-static int MSG_host_get_file_descriptor_id(msg_host_t host)
-{
-  simgrid::MsgHostExt* priv = host->extension<simgrid::MsgHostExt>();
-  if (priv->file_descriptor_table == nullptr) {
-    priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
-    std::iota(priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
-  }
-  xbt_assert(not priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
-  int desc = priv->file_descriptor_table->back();
-  priv->file_descriptor_table->pop_back();
-  return desc;
-}
-
-static void MSG_host_release_file_descriptor_id(msg_host_t host, int id)
-{
-  host->extension<simgrid::MsgHostExt>()->file_descriptor_table->push_back(id);
-}
-
 /** \ingroup msg_file
  * \brief Read a file (local or remote)
  *
@@ -123,36 +105,6 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
   return write_size;
 }
 
-/** \ingroup msg_file
- * \brief Opens the file whose name is the string pointed to by path
- *
- * \param fullpath is the file location on the storage
- * \param data user data to attach to the file
- *
- * \return An #msg_file_t associated to the file
- */
-msg_file_t MSG_file_open(const char* fullpath, void* data)
-{
-  msg_file_t fd         = new simgrid::s4u::File(fullpath, MSG_host_self());
-  fd->desc_id           = MSG_host_get_file_descriptor_id(MSG_host_self());
-  fd->setUserdata(data);
-  return fd;
-}
-
-/** \ingroup msg_file
- * \brief Close the file
- *
- * \param fd is the file to close
- * \return 0 on success or 1 on error
- */
-int MSG_file_close(msg_file_t fd)
-{
-  MSG_host_release_file_descriptor_id(MSG_host_self(), fd->desc_id);
-  delete fd;
-
-  return MSG_OK;
-}
-
 /**
  * \ingroup msg_file
  * \brief Copy a file to another location on a remote host.
@@ -166,7 +118,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src = file->localStorage;
   msg_host_t src_host       = storage_src->getHost();
-  MSG_file_seek(file, 0, SEEK_SET);
+  file->seek(0, SEEK_SET);
   sg_size_t read_size = file->read(file->size());
 
   /* Find the host that owns the storage where the file has to be copied */
@@ -229,7 +181,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 msg_error_t MSG_file_rmove (msg_file_t file, msg_host_t host, const char* fullpath)
 {
   msg_error_t res = MSG_file_rcopy(file, host, fullpath);
-  MSG_file_unlink(file);
+  file->unlink();
   return res;
 }
 

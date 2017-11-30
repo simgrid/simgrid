@@ -11,11 +11,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
-simgrid::xbt::Extension<simgrid::s4u::Host, simgrid::MsgHostExt> simgrid::MsgHostExt::EXTENSION_ID;
-
 extern "C" {
-
-int sg_storage_max_file_descriptors = 1024;
 
 /** @addtogroup m_host_management
  * (#msg_host_t) and the functions for managing it.

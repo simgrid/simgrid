@@ -13,6 +13,8 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) sg_storage_file_system_init();
+XBT_PUBLIC(sg_file_t) sg_file_open(const char* fullpath, void* data);
+XBT_PUBLIC(void) sg_file_close(sg_file_t fd);
 
 XBT_PUBLIC(const char*) sg_file_get_name(sg_file_t fd);
 XBT_PUBLIC(sg_size_t) sg_file_get_size(sg_file_t fd);
@@ -33,6 +35,8 @@ XBT_PUBLIC(xbt_dict_t) sg_storage_get_content(sg_storage_t storage);
 
 XBT_PUBLIC(xbt_dict_t) sg_host_get_storage_content(sg_host_t host);
 
+#define MSG_file_open(fullpath, data) sg_file_open(fullpath, data)
+#define MSG_file_close(fd) sg_file_close(fd)
 #define MSG_file_get_name(fd) sg_file_get_name(fd)
 #define MSG_file_get_size(fd) sg_file_get_size(fd)
 #define MSG_file_dump(fd) sg_file_dump(fd)
