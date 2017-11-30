@@ -144,21 +144,21 @@ XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
 XBT_PUBLIC(void)
-lmm_set_default_protocol_function(double (*func_f)(lmm_variable_t var, double x),
-                                  double (*func_fp)(lmm_variable_t var, double x),
-                                  double (*func_fpi)(lmm_variable_t var, double x));
+lmm_set_default_protocol_function(double (*func_f)(const s_lmm_variable_t& var, double x),
+                                  double (*func_fp)(const s_lmm_variable_t& var, double x),
+                                  double (*func_fpi)(const s_lmm_variable_t& var, double x));
 
-XBT_PUBLIC(double) func_reno_f(lmm_variable_t var, double x);
-XBT_PUBLIC(double) func_reno_fp(lmm_variable_t var, double x);
-XBT_PUBLIC(double) func_reno_fpi(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno_f(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_reno_fp(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_reno_fpi(const s_lmm_variable_t& var, double x);
 
-XBT_PUBLIC(double) func_reno2_f(lmm_variable_t var, double x);
-XBT_PUBLIC(double) func_reno2_fp(lmm_variable_t var, double x);
-XBT_PUBLIC(double) func_reno2_fpi(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_reno2_f(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_reno2_fp(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_reno2_fpi(const s_lmm_variable_t& var, double x);
 
-XBT_PUBLIC(double) func_vegas_f(lmm_variable_t var, double x);
-XBT_PUBLIC(double) func_vegas_fp(lmm_variable_t var, double x);
-XBT_PUBLIC(double) func_vegas_fpi(lmm_variable_t var, double x);
+XBT_PUBLIC(double) func_vegas_f(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_vegas_fp(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_vegas_fpi(const s_lmm_variable_t& var, double x);
 
 /**
  * @brief LMM element
@@ -413,9 +413,9 @@ public:
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
-  double (*func_f)(s_lmm_variable_t * var, double x);   /* (f)    */
-  double (*func_fp)(s_lmm_variable_t * var, double x);  /* (f')    */
-  double (*func_fpi)(s_lmm_variable_t * var, double x); /* (f')^{-1}    */
+  double (*func_f)(const s_lmm_variable_t& var, double x);   /* (f)    */
+  double (*func_fp)(const s_lmm_variable_t& var, double x);  /* (f')    */
+  double (*func_fpi)(const s_lmm_variable_t& var, double x); /* (f')^{-1}    */
   /* \end{For Lagrange only} */
 
 private:
@@ -577,9 +577,9 @@ private:
   xbt_mallocator_t variable_mallocator;
 };
 
-extern XBT_PRIVATE double (*func_f_def)(lmm_variable_t, double);
-extern XBT_PRIVATE double (*func_fp_def)(lmm_variable_t, double);
-extern XBT_PRIVATE double (*func_fpi_def)(lmm_variable_t, double);
+extern XBT_PRIVATE double (*func_f_def)(const s_lmm_variable_t&, double);
+extern XBT_PRIVATE double (*func_fp_def)(const s_lmm_variable_t&, double);
+extern XBT_PRIVATE double (*func_fpi_def)(const s_lmm_variable_t&, double);
 
 /** @} */
 }
