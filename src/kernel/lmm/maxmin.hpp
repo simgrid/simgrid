@@ -392,8 +392,8 @@ public:
   int can_enable() const { return staged_weight > 0 && get_min_concurrency_slack() >= concurrency_share; }
 
   /* hookup to system */
-  s_xbt_swag_hookup_t variable_set_hookup           = {nullptr, nullptr};
-  s_xbt_swag_hookup_t saturated_variable_set_hookup = {nullptr, nullptr};
+  boost::intrusive::list_member_hook<> variable_set_hook;
+  boost::intrusive::list_member_hook<> saturated_variable_set_hook;
 
   std::vector<s_lmm_element_t> cnsts;
 
@@ -524,7 +524,14 @@ private:
 
   void var_free(lmm_variable_t var);
   void cnst_free(lmm_constraint_t cnst);
-  lmm_variable_t extract_variable() { return static_cast<lmm_variable_t>(xbt_swag_extract(&variable_set)); }
+  lmm_variable_t extract_variable()
+  {
+    if (variable_set.empty())
+      return nullptr;
+    lmm_variable_t res = &variable_set.front();
+    variable_set.pop_front();
+    return res;
+  }
   lmm_constraint_t extract_constraint()
   {
     if (constraint_set.empty())
@@ -536,8 +543,10 @@ private:
   void insert_constraint(lmm_constraint_t cnst) { constraint_set.push_back(*cnst); }
   void remove_variable(lmm_variable_t var)
   {
-    xbt_swag_remove(var, &variable_set);
-    xbt_swag_remove(var, &saturated_variable_set);
+    if (var->variable_set_hook.is_linked())
+      variable_set.erase(variable_set.iterator_to(*var));
+    if (var->saturated_variable_set_hook.is_linked())
+      saturated_variable_set.erase(saturated_variable_set.iterator_to(*var));
   }
   void make_constraint_active(lmm_constraint_t cnst)
   {
@@ -574,12 +583,18 @@ private:
   template <class CnstList> void solve(CnstList& cnst_list);
 public:
   bool modified;
-  s_xbt_swag_t variable_set;             /* a list of lmm_variable_t */
+  boost::intrusive::list<s_lmm_variable_t,
+                         boost::intrusive::member_hook<s_lmm_variable_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_variable_t::variable_set_hook>>
+      variable_set;
   boost::intrusive::list<s_lmm_constraint_t,
                          boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
                                                        &s_lmm_constraint_t::active_constraint_set_hook>>
       active_constraint_set;
-  s_xbt_swag_t saturated_variable_set;   /* a list of lmm_variable_t */
+  boost::intrusive::list<s_lmm_variable_t,
+                         boost::intrusive::member_hook<s_lmm_variable_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_variable_t::saturated_variable_set_hook>>
+      saturated_variable_set;
   boost::intrusive::list<s_lmm_constraint_t,
                          boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
                                                        &s_lmm_constraint_t::saturated_constraint_set_hook>>

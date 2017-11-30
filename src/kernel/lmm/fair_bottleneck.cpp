@@ -19,35 +19,27 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 
 void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
 {
-  void* _var;
-  void* _var_next;
   void* _elem;
-  lmm_variable_t var    = nullptr;
   lmm_element_t elem   = nullptr;
-  xbt_swag_t var_list  = nullptr;
   xbt_swag_t elem_list = nullptr;
 
   if (not sys->modified)
     return;
 
-  var_list = &(sys->variable_set);
-  XBT_DEBUG("Variable set : %d", xbt_swag_size(var_list));
-  xbt_swag_foreach(_var, var_list)
-  {
-    var        = static_cast<lmm_variable_t>(_var);
-    var->value = 0.0;
-    XBT_DEBUG("Handling variable %p", var);
-    if (var->sharing_weight > 0.0 && std::find_if(begin(var->cnsts), end(var->cnsts), [](s_lmm_element_t const& x) {
-                                       return x.consumption_weight != 0.0;
-                                     }) != end(var->cnsts)) {
-      xbt_swag_insert(var, &(sys->saturated_variable_set));
+  XBT_DEBUG("Variable set : %zu", sys->variable_set.size());
+  for (s_lmm_variable_t& var : sys->variable_set) {
+    var.value = 0.0;
+    XBT_DEBUG("Handling variable %p", &var);
+    if (var.sharing_weight > 0.0 && std::find_if(begin(var.cnsts), end(var.cnsts), [](s_lmm_element_t const& x) {
+                                      return x.consumption_weight != 0.0;
+                                    }) != end(var.cnsts)) {
+      sys->saturated_variable_set.push_back(var);
     } else {
-      XBT_DEBUG("Err, finally, there is no need to take care of variable %p", var);
-      if (var->sharing_weight > 0.0)
-        var->value = 1.0;
+      XBT_DEBUG("Err, finally, there is no need to take care of variable %p", &var);
+      if (var.sharing_weight > 0.0)
+        var.value = 1.0;
     }
   }
-  var_list = &(sys->saturated_variable_set);
 
   XBT_DEBUG("Active constraints : %zu", sys->active_constraint_set.size());
   for (s_lmm_constraint_t& cnst : sys->active_constraint_set) {
@@ -63,6 +55,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
   /*
    * Compute Usage and store the variables that reach the maximum.
    */
+  auto& var_list  = sys->saturated_variable_set;
   auto& cnst_list = sys->saturated_constraint_set;
   do {
     if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
@@ -80,7 +73,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
       {
         elem = static_cast<lmm_element_t>(_elem);
         xbt_assert(elem->variable->sharing_weight > 0);
-        if ((elem->consumption_weight > 0) && xbt_swag_belongs(elem->variable, var_list))
+        if (elem->consumption_weight > 0 && elem->variable->saturated_variable_set_hook.is_linked())
           nb++;
       }
       XBT_DEBUG("\tThere are %d variables", nb);
@@ -97,22 +90,22 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
       }
     }
 
-    xbt_swag_foreach_safe(_var, _var_next, var_list)
-    {
-      var            = static_cast<lmm_variable_t>(_var);
+    for (auto iter = std::begin(var_list); iter != std::end(var_list);) {
+      s_lmm_variable_t& var = *iter;
       double min_inc = DBL_MAX;
-      for (s_lmm_element_t const& elm : var->cnsts) {
+      for (s_lmm_element_t const& elm : var.cnsts) {
         if (elm.consumption_weight > 0)
           min_inc = std::min(min_inc, elm.constraint->usage / elm.consumption_weight);
       }
-      if (var->bound > 0)
-        min_inc = std::min(min_inc, var->bound - var->value);
-      var->mu   = min_inc;
-      XBT_DEBUG("Updating variable %p maximum increment: %g", var, var->mu);
-      var->value += var->mu;
-      if (var->value == var->bound) {
-        xbt_swag_remove(var, var_list);
-      }
+      if (var.bound > 0)
+        min_inc = std::min(min_inc, var.bound - var.value);
+      var.mu    = min_inc;
+      XBT_DEBUG("Updating variable %p maximum increment: %g", &var, var.mu);
+      var.value += var.mu;
+      if (var.value == var.bound)
+        iter = var_list.erase(iter);
+      else
+        iter++;
     }
 
     for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
@@ -149,16 +142,16 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
           elem = static_cast<lmm_element_t>(_elem);
           if (elem->variable->sharing_weight <= 0)
             break;
-          if (elem->consumption_weight > 0) {
+          if (elem->consumption_weight > 0 && elem->variable->saturated_variable_set_hook.is_linked()) {
             XBT_DEBUG("\t\tGet rid of variable %p", elem->variable);
-            xbt_swag_remove(elem->variable, var_list);
+            var_list.erase(var_list.iterator_to(*elem->variable));
           }
         }
       } else {
         iter++;
       }
     }
-  } while (xbt_swag_size(var_list));
+  } while (not var_list.empty());
 
   cnst_list.clear();
   sys->modified = true;
