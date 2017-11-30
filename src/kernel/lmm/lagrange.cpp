@@ -93,29 +93,29 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
   return 1;
 }
 
-static double new_value(lmm_variable_t var)
+static double new_value(const s_lmm_variable_t& var)
 {
   double tmp = 0;
 
-  for (s_lmm_element_t const& elem : var->cnsts) {
+  for (s_lmm_element_t const& elem : var.cnsts) {
     tmp += elem.constraint->lambda;
   }
-  if (var->bound > 0)
-    tmp += var->mu;
-  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", var, tmp, var->sharing_weight);
+  if (var.bound > 0)
+    tmp += var.mu;
+  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", &var, tmp, var.sharing_weight);
   // uses the partial differential inverse function
-  return var->func_fpi(*var, tmp);
+  return var.func_fpi(var, tmp);
 }
 
-static double new_mu(lmm_variable_t var)
+static double new_mu(const s_lmm_variable_t& var)
 {
   double mu_i    = 0.0;
   double sigma_i = 0.0;
 
-  for (s_lmm_element_t const& elem : var->cnsts) {
+  for (s_lmm_element_t const& elem : var.cnsts) {
     sigma_i += elem.constraint->lambda;
   }
-  mu_i = var->func_fp(*var, var->bound) - sigma_i;
+  mu_i = var.func_fp(var, var.bound) - sigma_i;
   if (mu_i < 0.0)
     return 0.0;
   return mu_i;
@@ -212,7 +212,7 @@ void lagrange_solve(lmm_system_t sys)
         var->mu     = 1.0;
         var->new_mu = 2.0;
       }
-      var->value = new_value(var);
+      var->value = new_value(*var);
       XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->sharing_weight);
       XBT_DEBUG("#### var(%p) ->mu :  %e", var, var->mu);
       XBT_DEBUG("#### var(%p) ->weight: %e", var, var->sharing_weight);
@@ -240,7 +240,7 @@ void lagrange_solve(lmm_system_t sys)
       lmm_variable_t var = static_cast<lmm_variable_t>(_var);
       if (var->sharing_weight && var->bound >= 0) {
         XBT_DEBUG("Working on var (%p)", var);
-        var->new_mu = new_mu(var);
+        var->new_mu = new_mu(*var);
         XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var, var->mu, var->new_mu);
         var->mu = var->new_mu;
 
@@ -275,7 +275,7 @@ void lagrange_solve(lmm_system_t sys)
       if (var->sharing_weight <= 0)
         var->value = 0.0;
       else {
-        double tmp = new_value(var);
+        double tmp = new_value(*var);
 
         overall_modification = std::max(overall_modification, fabs(var->value - tmp));
 
