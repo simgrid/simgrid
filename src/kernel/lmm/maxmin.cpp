@@ -574,8 +574,8 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
       if (var.sharing_weight <= 0.0)
         DIE_IMPOSSIBLE;
       /* First check if some of these variables could reach their upper bound and update min_bound accordingly. */
-      XBT_DEBUG("var=%d, var->bound=%f, var->weight=%f, min_usage=%f, var->bound*var->weight=%f", var.id_int,
-                var.bound, var.sharing_weight, min_usage, var.bound * var.sharing_weight);
+      XBT_DEBUG("var=%d, var.bound=%f, var.weight=%f, min_usage=%f, var.bound*var.weight=%f", var.id_int, var.bound,
+                var.sharing_weight, min_usage, var.bound * var.sharing_weight);
       if ((var.bound > 0) && (var.bound * var.sharing_weight < min_usage)) {
         if (min_bound < 0)
           min_bound = var.bound * var.sharing_weight;
@@ -604,7 +604,7 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
           continue;
         }
       }
-      XBT_DEBUG("Min usage: %f, Var(%d)->weight: %f, Var(%d)->value: %f ", min_usage, var.id_int, var.sharing_weight,
+      XBT_DEBUG("Min usage: %f, Var(%d).weight: %f, Var(%d).value: %f ", min_usage, var.id_int, var.sharing_weight,
                 var.id_int, var.value);
 
       /* Update the usage of contraints where this variable is involved */
