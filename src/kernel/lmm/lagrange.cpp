@@ -47,17 +47,10 @@ static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst)
 template <class CnstList, class VarList>
 static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, int warn)
 {
-  void* _elem;
-  const_xbt_swag_t elem_list = nullptr;
-  lmm_element_t elem    = nullptr;
-
   for (s_lmm_constraint_t const& cnst : cnst_list) {
     double tmp = 0;
-    elem_list  = &cnst.enabled_element_set;
-    xbt_swag_foreach(_elem, elem_list)
-    {
-      elem = static_cast<lmm_element_t>(_elem);
-      lmm_variable_t var = elem->variable;
+    for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+      lmm_variable_t var = elem.variable;
       xbt_assert(var->sharing_weight > 0);
       tmp += var->value;
     }
@@ -396,21 +389,16 @@ static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst)
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", &cnst);
 
-  const_xbt_swag_t elem_list = &cnst.enabled_element_set;
-  void* _elem;
-  xbt_swag_foreach(_elem, elem_list)
-  {
-    lmm_element_t elem = static_cast<lmm_element_t>(_elem);
-    s_lmm_variable_t& var = *elem->variable;
+  for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+    s_lmm_variable_t& var = *elem.variable;
     xbt_assert(var.sharing_weight > 0);
     XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", &var);
     // Initialize the summation variable
     double sigma_i = 0.0;
 
     // Compute sigma_i
-    for (s_lmm_element_t const& elem : var.cnsts) {
-      sigma_i += elem.constraint->lambda;
-    }
+    for (s_lmm_element_t const& elem2 : var.cnsts)
+      sigma_i += elem2.constraint->lambda;
 
     // add mu_i if this flow has a RTT constraint associated
     if (var.bound > 0)

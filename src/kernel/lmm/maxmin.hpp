@@ -12,7 +12,6 @@
 #include "xbt/asserts.h"
 #include "xbt/mallocator.h"
 #include "xbt/misc.h"
-#include "xbt/swag.h"
 #include <boost/intrusive/list.hpp>
 #include <cmath>
 #include <limits>
@@ -179,9 +178,9 @@ public:
   void make_inactive();
 
   /* hookup to constraint */
-  s_xbt_swag_hookup_t enabled_element_set_hookup;
-  s_xbt_swag_hookup_t disabled_element_set_hookup;
-  s_xbt_swag_hookup_t active_element_set_hookup;
+  boost::intrusive::list_member_hook<> enabled_element_set_hook;
+  boost::intrusive::list_member_hook<> disabled_element_set_hook;
+  boost::intrusive::list_member_hook<> active_element_set_hook;
 
   lmm_constraint_t constraint;
   lmm_variable_t variable;
@@ -297,9 +296,18 @@ public:
   boost::intrusive::list_member_hook<> active_constraint_set_hook;
   boost::intrusive::list_member_hook<> modified_constraint_set_hook;
   boost::intrusive::list_member_hook<> saturated_constraint_set_hook;
-  s_xbt_swag_t enabled_element_set;  /* a list of lmm_element_t */
-  s_xbt_swag_t disabled_element_set; /* a list of lmm_element_t */
-  s_xbt_swag_t active_element_set;   /* a list of lmm_element_t */
+  boost::intrusive::list<s_lmm_element_t,
+                         boost::intrusive::member_hook<s_lmm_element_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_element_t::enabled_element_set_hook>>
+      enabled_element_set;
+  boost::intrusive::list<s_lmm_element_t,
+                         boost::intrusive::member_hook<s_lmm_element_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_element_t::disabled_element_set_hook>>
+      disabled_element_set;
+  boost::intrusive::list<s_lmm_element_t,
+                         boost::intrusive::member_hook<s_lmm_element_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_element_t::active_element_set_hook>>
+      active_element_set;
   double remaining;
   double usage;
   double bound;
@@ -425,11 +433,14 @@ private:
 
 inline void s_lmm_element_t::make_active()
 {
-  xbt_swag_insert_at_head(this, &constraint->active_element_set);
+  constraint->active_element_set.push_front(*this);
 }
 inline void s_lmm_element_t::make_inactive()
 {
-  xbt_swag_remove(this, &constraint->active_element_set);
+  if (active_element_set_hook.is_linked()) {
+    auto& set = constraint->active_element_set;
+    set.erase(set.iterator_to(*this));
+  }
 }
 
 /**

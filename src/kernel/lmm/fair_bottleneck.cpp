@@ -19,10 +19,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 
 void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
 {
-  void* _elem;
-  lmm_element_t elem   = nullptr;
-  xbt_swag_t elem_list = nullptr;
-
   if (not sys->modified)
     return;
 
@@ -67,13 +63,10 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
       s_lmm_constraint_t& cnst = *iter;
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", &cnst);
-      elem_list  = &cnst.enabled_element_set;
       cnst.usage = 0.0;
-      xbt_swag_foreach(_elem, elem_list)
-      {
-        elem = static_cast<lmm_element_t>(_elem);
-        xbt_assert(elem->variable->sharing_weight > 0);
-        if (elem->consumption_weight > 0 && elem->variable->saturated_variable_set_hook.is_linked())
+      for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+        xbt_assert(elem.variable->sharing_weight > 0);
+        if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook.is_linked())
           nb++;
       }
       XBT_DEBUG("\tThere are %d variables", nb);
@@ -111,24 +104,21 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
     for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
       s_lmm_constraint_t& cnst = *iter;
       XBT_DEBUG("Updating cnst %p ", &cnst);
-      elem_list = &cnst.enabled_element_set;
-      xbt_swag_foreach(_elem, elem_list)
-      {
-        elem = static_cast<lmm_element_t>(_elem);
-        xbt_assert(elem->variable->sharing_weight > 0);
-        if (cnst.sharing_policy) {
-          XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining, elem->variable,
-                    elem->variable->mu);
-          double_update(&cnst.remaining, elem->consumption_weight * elem->variable->mu, sg_maxmin_precision);
-        } else {
-          XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", &cnst,
-                    cnst.usage, elem->variable, elem->variable->mu);
-          cnst.usage = std::min(cnst.usage, elem->consumption_weight * elem->variable->mu);
+      if (cnst.sharing_policy) {
+        for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+          xbt_assert(elem.variable->sharing_weight > 0);
+          XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining, elem.variable,
+                    elem.variable->mu);
+          double_update(&cnst.remaining, elem.consumption_weight * elem.variable->mu, sg_maxmin_precision);
         }
-      }
-      if (not cnst.sharing_policy) {
+      } else {
+        for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+          xbt_assert(elem.variable->sharing_weight > 0);
+          XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", &cnst,
+                    cnst.usage, elem.variable, elem.variable->mu);
+          cnst.usage = std::min(cnst.usage, elem.consumption_weight * elem.variable->mu);
+        }
         XBT_DEBUG("\tUpdate constraint %p (%g) by %g", &cnst, cnst.remaining, cnst.usage);
-
         double_update(&cnst.remaining, cnst.usage, sg_maxmin_precision);
       }
 
@@ -137,14 +127,12 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
         XBT_DEBUG("\tGet rid of constraint %p", &cnst);
 
         iter = cnst_list.erase(iter);
-        xbt_swag_foreach(_elem, elem_list)
-        {
-          elem = static_cast<lmm_element_t>(_elem);
-          if (elem->variable->sharing_weight <= 0)
+        for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+          if (elem.variable->sharing_weight <= 0)
             break;
-          if (elem->consumption_weight > 0 && elem->variable->saturated_variable_set_hook.is_linked()) {
-            XBT_DEBUG("\t\tGet rid of variable %p", elem->variable);
-            var_list.erase(var_list.iterator_to(*elem->variable));
+          if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook.is_linked()) {
+            XBT_DEBUG("\t\tGet rid of variable %p", elem.variable);
+            var_list.erase(var_list.iterator_to(*elem.variable));
           }
         }
       } else {
