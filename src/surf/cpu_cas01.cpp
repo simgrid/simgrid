@@ -7,7 +7,7 @@
 #include "cpu_cas01.hpp"
 #include "cpu_ti.hpp"
 #include "simgrid/sg_config.h"
-#include "surf/maxmin.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 #include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
@@ -53,7 +53,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   }
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
-  maxminSystem_                                    = new s_lmm_system_t(selectiveUpdate_);
+  maxminSystem_                                    = new simgrid::kernel::lmm::s_lmm_system_t(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
     modifiedSet_ = new ActionLmmList();

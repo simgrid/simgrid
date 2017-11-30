@@ -7,9 +7,9 @@
 #define SURF_NETWORK_INTERFACE_HPP_
 
 #include "simgrid/s4u/Link.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/maxmin.hpp"
 #include "xbt/base.h"
 #include <list>
 #include <unordered_map>
@@ -65,7 +65,7 @@ public:
    *
    * @param system The lmm_system_t to solve
    */
-  void (*f_networkSolve)(lmm_system_t) = lmm_solve;
+  void (*f_networkSolve)(lmm_system_t) = simgrid::kernel::lmm::lmm_solve;
 
   /**
    * @brief Get the right multiplicative factor for the latency.

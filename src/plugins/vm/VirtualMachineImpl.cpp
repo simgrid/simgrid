@@ -98,7 +98,7 @@ double VMModel::nextOccuringEvent(double now)
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->pimpl_vm_->getPm()->getCname());
 
     xbt_assert(cpu->model() == surf_cpu_model_vm);
-    surf::lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
+    lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
     vcpu_system->update_constraint_bound(cpu->constraint(), virt_overhead * solved_value);
   }
 

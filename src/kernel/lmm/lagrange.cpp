@@ -7,7 +7,7 @@
  * Modeling the proportional fairness using the Lagrangian Optimization Approach. For a detailed description see:
  * "ssh://username@scm.gforge.inria.fr/svn/memo/people/pvelho/lagrange/ppf.ps".
  */
-#include "surf/maxmin.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
@@ -26,7 +26,8 @@ XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf_lagrange, "Logging specifi
 #define RENO2_SCALING 1.0
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace lmm {
 
 double (*func_f_def)(lmm_variable_t, double);
 double (*func_fp_def)(lmm_variable_t, double);
@@ -558,6 +559,7 @@ double func_reno2_fpi(lmm_variable_t var, double x)
 
   res_fpi = RENO2_SCALING * (-3.0 * tmp + sqrt(res_fpi)) / (4.0 * tmp);
   return res_fpi;
+}
 }
 }
 }

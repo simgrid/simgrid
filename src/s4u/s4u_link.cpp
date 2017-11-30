@@ -8,8 +8,8 @@
 #include "simgrid/s4u/Link.hpp"
 #include "simgrid/sg_config.h"
 #include "simgrid/simix.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/network_interface.hpp"
-#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U links");

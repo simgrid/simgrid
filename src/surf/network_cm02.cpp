@@ -9,7 +9,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
-#include "surf/maxmin.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
@@ -87,14 +87,14 @@ void surf_network_model_init_Reno()
   if (surf_network_model)
     return;
 
-  lmm_set_default_protocol_function(simgrid::surf::func_reno_f, simgrid::surf::func_reno_fp,
-                                    simgrid::surf::func_reno_fpi);
+  lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
+                                    simgrid::kernel::lmm::func_reno_fpi);
 
   xbt_cfg_setdefault_double("network/latency-factor", 13.01);
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::surf::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -104,14 +104,14 @@ void surf_network_model_init_Reno2()
   if (surf_network_model)
     return;
 
-  lmm_set_default_protocol_function(simgrid::surf::func_reno2_f, simgrid::surf::func_reno2_fp,
-                                    simgrid::surf::func_reno2_fpi);
+  lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno2_f, simgrid::kernel::lmm::func_reno2_fp,
+                                    simgrid::kernel::lmm::func_reno2_fpi);
 
   xbt_cfg_setdefault_double("network/latency-factor", 13.01);
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::surf::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -120,14 +120,14 @@ void surf_network_model_init_Vegas()
   if (surf_network_model)
     return;
 
-  lmm_set_default_protocol_function(simgrid::surf::func_vegas_f, simgrid::surf::func_vegas_fp,
-                                    simgrid::surf::func_vegas_fpi);
+  lmm_set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
+                                    simgrid::kernel::lmm::func_vegas_fpi);
 
   xbt_cfg_setdefault_double("network/latency-factor", 13.01);
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::surf::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -152,7 +152,7 @@ NetworkCm02Model::NetworkCm02Model()
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
 
-  maxminSystem_ = new s_lmm_system_t(selectiveUpdate_);
+  maxminSystem_ = new simgrid::kernel::lmm::s_lmm_system_t(selectiveUpdate_);
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY) {

@@ -5,7 +5,7 @@
 
 /* \file callbacks.h */
 
-#include "surf/maxmin.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
@@ -24,7 +24,8 @@ double sg_surf_precision   = 0.00001; /* Change this with --cfg=surf/precision:V
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace lmm {
 
 typedef std::vector<int> dyn_light_t;
 
@@ -1032,6 +1033,7 @@ int s_lmm_constraint_t::get_variable_amount() const
       result++;
   }
   return result;
+}
 }
 }
 }
