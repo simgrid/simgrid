@@ -161,7 +161,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("Irecv", comm->group()->index(src),
-                                                       datatype->is_basic() ? count : count * datatype->size(),
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
 
     *request = simgrid::smpi::Request::irecv(buf, count, datatype, src, tag, comm);
@@ -202,7 +202,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     int trace_dst = comm->group()->index(dst);
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("Isend", trace_dst,
-                                                       datatype->is_basic() ? count : count * datatype->size(),
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
 
     TRACE_smpi_send(rank, rank, trace_dst, tag, count * datatype->size());
@@ -244,7 +244,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     int trace_dst = comm->group()->index(dst);
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("ISsend", trace_dst,
-                                                       datatype->is_basic() ? count : count * datatype->size(),
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
     TRACE_smpi_send(rank, rank, trace_dst, tag, count * datatype->size());
 
@@ -284,7 +284,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     int src_traced         = comm->group()->index(src);
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("recv", src_traced,
-                                                       datatype->is_basic() ? count : count * datatype->size(),
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
 
     simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
@@ -327,7 +327,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     int dst_traced         = comm->group()->index(dst);
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("send", dst_traced,
-                                                       datatype->is_basic() ? count : count * datatype->size(),
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
     if (not TRACE_smpi_view_internals()) {
       TRACE_smpi_send(rank, rank, dst_traced, tag,count*datatype->size());
@@ -365,7 +365,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     int dst_traced         = comm->group()->index(dst);
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("Ssend", dst_traced,
-                                                       datatype->is_basic() ? count : count * datatype->size(),
+                                                       datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
     TRACE_smpi_send(rank, rank, dst_traced, tag, count * datatype->size());
 
@@ -414,8 +414,8 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     src_hack->push_back(src_traced);
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::VarCollTIData(
-                           "sendRecv", -1, sendtype->is_basic() ? sendcount : sendcount * sendtype->size(), dst_hack,
-                           recvtype->is_basic() ? recvcount : recvcount * recvtype->size(), src_hack,
+                           "sendRecv", -1, sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(), dst_hack,
+                           recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(), src_hack,
                            encode_datatype(sendtype), encode_datatype(recvtype)));
 
     TRACE_smpi_send(rank, rank, dst_traced, sendtag, sendcount * sendtype->size());

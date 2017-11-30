@@ -87,6 +87,8 @@ static double parse_double(const char *string)
   return value;
 }
 
+
+//TODO: this logic should be moved inside the datatype class, to support all predefined types and get rid of is_replayable.
 static MPI_Datatype decode_datatype(const char *const action)
 {
   switch(atoi(action)) {

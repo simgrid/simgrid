@@ -103,6 +103,7 @@ public:
   void commit();
   bool is_valid();
   bool is_basic();
+  bool is_replayable();
   void addflag(int flag);
   int extent(MPI_Aint* lb, MPI_Aint* extent);
   MPI_Aint get_extent();

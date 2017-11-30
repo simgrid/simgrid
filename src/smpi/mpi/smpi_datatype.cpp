@@ -198,6 +198,12 @@ bool Datatype::is_basic()
   return (flags_ & DT_FLAG_BASIC);
 }
 
+bool Datatype::is_replayable()
+{
+  return ((this==MPI_BYTE)||(this==MPI_DOUBLE)||(this==MPI_INT)||
+          (this==MPI_CHAR)||(this==MPI_SHORT)||(this==MPI_LONG)||(this==MPI_FLOAT));
+}
+
 size_t Datatype::size(){
   return size_;
 }

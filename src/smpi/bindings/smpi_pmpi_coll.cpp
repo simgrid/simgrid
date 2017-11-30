@@ -29,7 +29,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
     int rank        = smpi_process()->index();
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("bcast", comm->group()->index(root), -1.0,
-                                                      datatype->is_basic() ? count : count * datatype->size(), -1,
+                                                      datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                       encode_datatype(datatype), ""));
     if (comm->size() > 1)
       simgrid::smpi::Colls::bcast(buf, count, datatype, root, comm);
@@ -95,8 +95,8 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbu
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData(
                            "gather", comm->group()->index(root), -1.0,
-                           sendtmptype->is_basic() ? sendtmpcount : sendtmpcount * sendtmptype->size(),
-                           (comm->rank() != root || recvtype->is_basic()) ? recvcount : recvcount * recvtype->size(),
+                           sendtmptype->is_replayable() ? sendtmpcount : sendtmpcount * sendtmptype->size(),
+                           (comm->rank() != root || recvtype->is_replayable()) ? recvcount : recvcount * recvtype->size(),
                            encode_datatype(sendtmptype), encode_datatype(recvtype)));
 
     simgrid::smpi::Colls::gather(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, root, comm);
@@ -135,7 +135,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     }
 
     int rank         = smpi_process()->index();
-    int dt_size_recv = recvtype->is_basic() ? 1 : recvtype->size();
+    int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
     std::vector<int>* trace_recvcounts = new std::vector<int>;
     if (comm->rank() == root) {
@@ -146,7 +146,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::VarCollTIData(
                            "gatherV", comm->group()->index(root),
-                           sendtmptype->is_basic() ? sendtmpcount : sendtmpcount * sendtmptype->size(), nullptr,
+                           sendtmptype->is_replayable() ? sendtmpcount : sendtmpcount * sendtmptype->size(), nullptr,
                            dt_size_recv, trace_recvcounts, encode_datatype(sendtmptype), encode_datatype(recvtype)));
 
     retval = simgrid::smpi::Colls::gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts, displs, recvtype, root, comm);
@@ -182,8 +182,8 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("allGather", -1, -1.0,
-                                                      sendtype->is_basic() ? sendcount : sendcount * sendtype->size(),
-                                                      recvtype->is_basic() ? recvcount : recvcount * recvtype->size(),
+                                                      sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(),
+                                                      recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(),
                                                       encode_datatype(sendtype), encode_datatype(recvtype)));
 
     simgrid::smpi::Colls::allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
@@ -216,7 +216,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       sendtype=recvtype;
     }
     int rank               = smpi_process()->index();
-    int dt_size_recv       = recvtype->is_basic() ? 1 : recvtype->size();
+    int dt_size_recv       = recvtype->is_replayable() ? 1 : recvtype->size();
 
     std::vector<int>* trace_recvcounts = new std::vector<int>;
     for (int i = 0; i < comm->size(); i++) // copy data to avoid bad free
@@ -224,7 +224,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::VarCollTIData(
-                           "allGatherV", -1, sendtype->is_basic() ? sendcount : sendcount * sendtype->size(), nullptr,
+                           "allGatherV", -1, sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(), nullptr,
                            dt_size_recv, trace_recvcounts, encode_datatype(sendtype), encode_datatype(recvtype)));
 
     simgrid::smpi::Colls::allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
@@ -262,8 +262,8 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData(
                            "scatter", comm->group()->index(root), -1.0,
-                           (comm->rank() != root || sendtype->is_basic()) ? sendcount : sendcount * sendtype->size(),
-                           recvtype->is_basic() ? recvcount : recvcount * recvtype->size(), encode_datatype(sendtype),
+                           (comm->rank() != root || sendtype->is_replayable()) ? sendcount : sendcount * sendtype->size(),
+                           recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(), encode_datatype(sendtype),
                            encode_datatype(recvtype)));
 
     simgrid::smpi::Colls::scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
@@ -295,7 +295,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
       recvcount = sendcounts[comm->rank()];
     }
     int rank               = smpi_process()->index();
-    int dt_size_send       = sendtype->is_basic() ? 1 : sendtype->size();
+    int dt_size_send       = sendtype->is_replayable() ? 1 : sendtype->size();
 
     std::vector<int>* trace_sendcounts = new std::vector<int>;
     if (comm->rank() == root) {
@@ -305,7 +305,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
 
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
                                                "scatterV", comm->group()->index(root), dt_size_send, trace_sendcounts,
-                                               recvtype->is_basic() ? recvcount : recvcount * recvtype->size(), nullptr,
+                                               recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(), nullptr,
                                                encode_datatype(sendtype), encode_datatype(recvtype)));
 
     retval = simgrid::smpi::Colls::scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
@@ -332,7 +332,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("reduce", comm->group()->index(root), 0,
-                                                      datatype->is_basic() ? count : count * datatype->size(), -1,
+                                                      datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                       encode_datatype(datatype), ""));
 
     simgrid::smpi::Colls::reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
@@ -382,7 +382,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("allReduce", -1, 0,
-                                                      datatype->is_basic() ? count : count * datatype->size(), -1,
+                                                      datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                       encode_datatype(datatype), ""));
 
     simgrid::smpi::Colls::allreduce(sendtmpbuf, recvbuf, count, datatype, op, comm);
@@ -414,7 +414,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
     int rank               = smpi_process()->index();
 
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::Pt2PtTIData(
-                                               "scan", -1, datatype->is_basic() ? count : count * datatype->size(),
+                                               "scan", -1, datatype->is_replayable() ? count : count * datatype->size(),
                                                encode_datatype(datatype)));
 
     retval = simgrid::smpi::Colls::scan(sendbuf, recvbuf, count, datatype, op, comm);
@@ -446,7 +446,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
     }
 
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::Pt2PtTIData(
-                                               "exscan", -1, datatype->is_basic() ? count : count * datatype->size(),
+                                               "exscan", -1, datatype->is_replayable() ? count : count * datatype->size(),
                                                encode_datatype(datatype)));
 
     retval = simgrid::smpi::Colls::exscan(sendtmpbuf, recvbuf, count, datatype, op, comm);
@@ -476,7 +476,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
   } else {
     int rank               = smpi_process()->index();
     std::vector<int>* trace_recvcounts = new std::vector<int>;
-    int dt_send_size                   = datatype->is_basic() ? 1 : datatype->size();
+    int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
     int totalcount    = 0;
 
     for (int i = 0; i < comm->size(); i++) { // copy data to avoid bad free
@@ -524,7 +524,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     int count = comm->size();
 
     int rank               = smpi_process()->index();
-    int dt_send_size                   = datatype->is_basic() ? 1 : datatype->size();
+    int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
     std::vector<int>* trace_recvcounts = new std::vector<int>(recvcount * dt_send_size); // copy data to avoid bad free
 
     void* sendtmpbuf       = sendbuf;
@@ -579,8 +579,8 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
     TRACE_smpi_comm_in(
         rank, __FUNCTION__,
         new simgrid::instr::CollTIData("allToAll", -1, -1.0,
-                                       sendtmptype->is_basic() ? sendtmpcount : sendtmpcount * sendtmptype->size(),
-                                       recvtype->is_basic() ? recvcount : recvcount * recvtype->size(),
+                                       sendtmptype->is_replayable() ? sendtmpcount : sendtmpcount * sendtmptype->size(),
+                                       recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(),
                                        encode_datatype(sendtmptype), encode_datatype(recvtype)));
 
     retval = simgrid::smpi::Colls::alltoall(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcount, recvtype, comm);
