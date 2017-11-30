@@ -38,46 +38,6 @@ static void MSG_host_release_file_descriptor_id(msg_host_t host, int id)
 }
 
 /** \ingroup msg_file
- *
- * \brief Set the user data of a #msg_file_t.
- *
- * This functions attach \a data to \a file.
- */
-msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
-{
-  fd->setUserdata(data);
-  return MSG_OK;
-}
-
-/** \ingroup msg_file
- *
- * \brief Return the user data of a #msg_file_t.
- *
- * This functions checks whether \a file is a valid pointer and return the user data associated to \a file if possible.
- */
-void* MSG_file_get_data(msg_file_t fd)
-{
-  return fd->getUserdata();
-}
-
-/** \ingroup msg_file
- * \brief Display information related to a file descriptor
- *
- * \param fd is a the file descriptor
- */
-void MSG_file_dump (msg_file_t fd){
-  XBT_INFO("File Descriptor information:\n"
-           "\t\tFull path: '%s'\n"
-           "\t\tSize: %llu\n"
-           "\t\tMount point: '%s'\n"
-           "\t\tStorage Id: '%s'\n"
-           "\t\tStorage Type: '%s'\n"
-           "\t\tFile Descriptor Id: %d",
-           fd->getPath(), fd->size(), fd->mount_point_.c_str(), fd->localStorage->getCname(),
-           fd->localStorage->getType(), fd->desc_id);
-}
-
-/** \ingroup msg_file
  * \brief Read a file (local or remote)
  *
  * \param size of the file to read
@@ -193,77 +153,6 @@ int MSG_file_close(msg_file_t fd)
   return MSG_OK;
 }
 
-/** \ingroup msg_file
- * \brief Unlink the file pointed by fd
- *
- * \param fd is the file descriptor (#msg_file_t)
- * \return 0 on success or 1 on error
- */
-msg_error_t MSG_file_unlink(msg_file_t fd)
-{
-  fd->unlink();
-  delete fd;
-  return MSG_OK;
-}
-
-/** \ingroup msg_file
- * \brief Return the size of a file
- *
- * \param fd is the file descriptor (#msg_file_t)
- * \return the size of the file (as a #sg_size_t)
- */
-sg_size_t MSG_file_get_size(msg_file_t fd)
-{
-  return fd->size();
-}
-
-/**
- * \ingroup msg_file
- * \brief Set the file position indicator in the msg_file_t by adding offset bytes
- * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
- *
- * \param fd : file object that identifies the stream
- * \param offset : number of bytes to offset from origin
- * \param origin : Position used as reference for the offset. It is specified by one of the following constants defined
- *                 in \<stdio.h\> exclusively to be used as arguments for this function (SEEK_SET = beginning of file,
- *                 SEEK_CUR = current position of the file pointer, SEEK_END = end of file)
- * \return If successful, the function returns MSG_OK (=0). Otherwise, it returns MSG_TASK_CANCELED (=8).
- */
-msg_error_t MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin)
-{
-  fd->seek(offset, origin);
-  return MSG_OK;
-}
-
-/**
- * \ingroup msg_file
- * \brief Returns the current value of the position indicator of the file
- *
- * \param fd : file object that identifies the stream
- * \return On success, the current value of the position indicator is returned.
- *
- */
-sg_size_t MSG_file_tell(msg_file_t fd)
-{
-  return fd->tell();
-}
-
-const char *MSG_file_get_name(msg_file_t fd) {
-  xbt_assert((fd != nullptr), "Invalid parameters");
-  return fd->getPath();
-}
-
-/**
- * \ingroup msg_file
- * \brief Move a file to another location on the *same mount point*.
- *
- */
-msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
-{
-  fd->move(fullpath);
-  return MSG_OK;
-}
-
 /**
  * \ingroup msg_file
  * \brief Copy a file to another location on a remote host.
@@ -361,6 +250,12 @@ const char* MSG_storage_get_name(msg_storage_t storage)
   return storage->getCname();
 }
 
+const char* MSG_storage_get_host(msg_storage_t storage)
+{
+  xbt_assert((storage != nullptr), "Invalid parameters");
+  return storage->getHost()->getCname();
+}
+
 /** \ingroup msg_storage_management
  * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this storage
  * \param storage a storage
@@ -426,59 +321,16 @@ xbt_dynar_t MSG_storages_as_dynar()
   return res;
 }
 
-/** \ingroup msg_storage_management
- *
- * \brief Set the user data of a #msg_storage_t.
- * This functions attach \a data to \a storage if possible.
- */
-msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
-{
-  storage->setUserdata(data);
-  return MSG_OK;
-}
-
-/** \ingroup m_host_management
- *
- * \brief Returns the user data of a #msg_storage_t.
- *
- * This functions checks whether \a storage is a valid pointer and returns its associate user data if possible.
- */
-void *MSG_storage_get_data(msg_storage_t storage)
+void* MSG_storage_get_data(msg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
   return storage->getUserdata();
 }
 
-/** \ingroup msg_storage_management
- *
- * \brief Returns the content (file list) of a #msg_storage_t.
- * \param storage a storage
- * \return The content of this storage element as a dict (full path file => size)
- */
-xbt_dict_t MSG_storage_get_content(msg_storage_t storage)
+msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
 {
-  std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->getContent();
-  // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
-  xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
-
-  for (auto const& entry : *content) {
-    sg_size_t* psize = new sg_size_t;
-    *psize           = entry.second;
-    xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);
-  }
-  return content_as_dict;
-}
-
-/** \ingroup msg_storage_management
- *
- * \brief Returns the host name the storage is attached to
- *
- * This functions checks whether a storage is a valid pointer or not and return its name.
- */
-const char* MSG_storage_get_host(msg_storage_t storage)
-{
-  xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->getHost()->getCname();
+  storage->setUserdata(data);
+  return MSG_OK;
 }
 
 sg_size_t MSG_storage_read(msg_storage_t storage, sg_size_t size)
@@ -490,4 +342,5 @@ sg_size_t MSG_storage_write(msg_storage_t storage, sg_size_t size)
 {
   return storage->write(size);
 }
+
 }

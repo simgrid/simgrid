@@ -13,14 +13,43 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) sg_storage_file_system_init();
+
+XBT_PUBLIC(const char*) sg_file_get_name(sg_file_t fd);
+XBT_PUBLIC(sg_size_t) sg_file_get_size(sg_file_t fd);
+XBT_PUBLIC(void) sg_file_dump(sg_file_t fd);
+XBT_PUBLIC(void*) sg_file_get_data(sg_file_t fd);
+XBT_PUBLIC(void) sg_file_set_data(sg_file_t fd, void* data);
+XBT_PUBLIC(void) sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin);
+XBT_PUBLIC(sg_size_t) sg_file_tell(sg_file_t fd);
+XBT_PUBLIC(void) sg_file_move(sg_file_t fd, const char* fullpath);
+XBT_PUBLIC(void) sg_file_unlink(sg_file_t fd);
+
+XBT_PUBLIC(void*) sg_storage_get_data(sg_storage_t storage);
+XBT_PUBLIC(void) sg_storage_set_data(sg_storage_t storage, void* data);
 XBT_PUBLIC(sg_size_t) sg_storage_get_size_free(sg_storage_t st);
 XBT_PUBLIC(sg_size_t) sg_storage_get_size_used(sg_storage_t st);
 XBT_PUBLIC(sg_size_t) sg_storage_get_size(sg_storage_t st);
+XBT_PUBLIC(xbt_dict_t) sg_storage_get_content(sg_storage_t storage);
+
+XBT_PUBLIC(xbt_dict_t) sg_host_get_storage_content(sg_host_t host);
+
+#define MSG_file_get_name(fd) sg_file_get_name(fd)
+#define MSG_file_get_size(fd) sg_file_get_size(fd)
+#define MSG_file_dump(fd) sg_file_dump(fd)
+#define MSG_file_get_data(fd) sg_file_get_data(fd)
+#define MSG_file_set_data(fd, data) sg_file_set_data(fd, data)
+#define MSG_file_seek(fd, offset, origin) sg_file_seek(fd, offset, origin)
+#define MSG_file_tell(fd) sg_file_tell(fd)
+#define MSG_file_move(fd, fullpath) sg_file_get_size(fd, fullpath)
+#define MSG_file_unlink(fd) sg_file_unlink(fd)
 
 #define MSG_storage_file_system_init() sg_storage_file_system_init()
 #define MSG_storage_get_free_size(st) sg_storage_get_size_free(st)
 #define MSG_storage_get_used_size(st) sg_storage_get_size_used(st)
 #define MSG_storage_get_size(st) sg_storage_get_size(st)
+#define MSG_storage_get_content(st) sg_storage_get_content(st)
+
+#define MSG_host_get_storage_content(st) sg_host_get_storage_content(st)
 
 SG_END_DECL()
 

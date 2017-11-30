@@ -252,18 +252,4 @@ xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
   return sg_host_get_attached_storage_list(host);
 }
 
-/** \ingroup m_host_management
- * \brief Return the content of mounted storages on an host.
- * \param host a host
- * \return a dict containing content (as a dict) of all storages mounted on the host
- */
-xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
-{
-  xbt_assert((host != nullptr), "Invalid parameters");
-  xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
-  for (auto const& elm : host->getMountedStorages())
-    xbt_dict_set(contents, elm.first.c_str(), MSG_storage_get_content(elm.second), nullptr);
-
-  return contents;
-}
 }

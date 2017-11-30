@@ -220,15 +220,7 @@ XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_hosts() instead: v3.19 will remove 
 XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);
 XBT_PUBLIC(sg_size_t) MSG_file_write(msg_file_t fd, sg_size_t size);
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* fullpath, void* data);
-XBT_PUBLIC(void*) MSG_file_get_data(msg_file_t fd);
-XBT_PUBLIC(msg_error_t) MSG_file_set_data(msg_file_t fd, void * data);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fd);
-XBT_PUBLIC(sg_size_t) MSG_file_get_size(msg_file_t fd);
-XBT_PUBLIC(void) MSG_file_dump(msg_file_t fd);
-XBT_PUBLIC(msg_error_t) MSG_file_unlink(msg_file_t fd);
-XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin);
-XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
-XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
 XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
@@ -241,7 +233,6 @@ XBT_PUBLIC(const char *)MSG_storage_get_property_value(msg_storage_t storage, co
 XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar();
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
-XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
 XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_read(msg_storage_t storage, sg_size_t size);
 XBT_PUBLIC(sg_size_t) MSG_storage_write(msg_storage_t storage, sg_size_t size);
@@ -283,12 +274,10 @@ XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
 XBT_PUBLIC(int) MSG_get_host_number();
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) MSG_host_get_attached_storage_list(msg_host_t host);
-XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);
-XBT_PUBLIC(const char *) MSG_host_get_property_value(msg_host_t host,
-                                                     const char *name);
+XBT_PUBLIC(const char*) MSG_host_get_property_value(msg_host_t host, const char* name);
 XBT_PUBLIC(void) MSG_host_set_property_value(msg_host_t host, const char* name, char* value);
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
@@ -332,9 +321,7 @@ XBT_PUBLIC(msg_error_t) MSG_process_set_kill_time(msg_process_t process, double 
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_process_get_properties(msg_process_t process);
-XBT_PUBLIC(const char *) MSG_process_get_property_value(msg_process_t
-                                                        process,
-                                                        const char *name);
+XBT_PUBLIC(const char*) MSG_process_get_property_value(msg_process_t process, const char* name);
 
 XBT_PUBLIC(msg_error_t) MSG_process_suspend(msg_process_t process);
 XBT_PUBLIC(msg_error_t) MSG_process_resume(msg_process_t process);
@@ -348,9 +335,7 @@ XBT_PUBLIC(void) MSG_process_ref(msg_process_t process);
 XBT_PUBLIC(void) MSG_process_unref(msg_process_t process);
 
 /************************** Task handling ************************************/
-XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,
-                                     double flops_amount,
-                                     double bytes_amount, void *data);
+XBT_PUBLIC(msg_task_t) MSG_task_create(const char* name, double flops_amount, double bytes_amount, void* data);
 XBT_PUBLIC(msg_task_t) MSG_parallel_task_create(const char *name,
                                               int host_nb,
                                               const msg_host_t * host_list,

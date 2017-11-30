@@ -63,6 +63,18 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
   }
 }
 
+void File::dump()
+{
+  XBT_INFO("File Descriptor information:\n"
+           "\t\tFull path: '%s'\n"
+           "\t\tSize: %llu\n"
+           "\t\tMount point: '%s'\n"
+           "\t\tStorage Id: '%s'\n"
+           "\t\tStorage Type: '%s'\n"
+           "\t\tFile Descriptor Id: %d",
+           getPath(), size_, mount_point_.c_str(), localStorage->getCname(), localStorage->getType(), desc_id);
+}
+
 sg_size_t File::read(sg_size_t size)
 {
   XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->getCname());
@@ -222,7 +234,6 @@ SG_BEGIN_DECL()
 
 void sg_storage_file_system_init()
 {
-
   if (FileSystemStorageExt::EXTENSION_ID.valid())
     return;
 
@@ -230,6 +241,63 @@ void sg_storage_file_system_init()
 
   simgrid::s4u::Storage::onCreation.connect(&onStorageCreation);
   simgrid::s4u::Storage::onDestruction.connect(&onStorageDestruction);
+}
+
+const char* sg_file_get_name(sg_file_t fd)
+{
+  xbt_assert((fd != nullptr), "Invalid file descriptor");
+  return fd->getPath();
+}
+
+sg_size_t sg_file_get_size(sg_file_t fd)
+{
+  return fd->size();
+}
+
+void sg_file_dump(sg_file_t fd)
+{
+  fd->dump();
+}
+
+void* sg_file_get_data(sg_file_t fd)
+{
+  return fd->getUserdata();
+}
+
+void sg_file_set_data(sg_file_t fd, void* data)
+{
+  fd->setUserdata(data);
+}
+
+/**
+ * \brief Set the file position indicator in the msg_file_t by adding offset bytes
+ * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
+ *
+ * \param fd : file object that identifies the stream
+ * \param offset : number of bytes to offset from origin
+ * \param origin : Position used as reference for the offset. It is specified by one of the following constants defined
+ *                 in \<stdio.h\> exclusively to be used as arguments for this function (SEEK_SET = beginning of file,
+ *                 SEEK_CUR = current position of the file pointer, SEEK_END = end of file)
+ */
+void sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin)
+{
+  fd->seek(offset, origin);
+}
+
+sg_size_t sg_file_tell(sg_file_t fd)
+{
+  return fd->tell();
+}
+
+void sg_file_move(sg_file_t fd, const char* fullpath)
+{
+  fd->move(fullpath);
+}
+
+void sg_file_unlink(sg_file_t fd)
+{
+  fd->unlink();
+  delete fd;
 }
 
 sg_size_t sg_storage_get_size_free(sg_storage_t st)
@@ -245,6 +313,30 @@ sg_size_t sg_storage_get_size_used(sg_storage_t st)
 sg_size_t sg_storage_get_size(sg_storage_t st)
 {
   return st->extension<FileSystemStorageExt>()->getSize();
+}
+
+xbt_dict_t sg_storage_get_content(sg_storage_t storage)
+{
+  std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->getContent();
+  // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
+  xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
+
+  for (auto const& entry : *content) {
+    sg_size_t* psize = new sg_size_t;
+    *psize           = entry.second;
+    xbt_dict_set(content_as_dict, entry.first.c_str(), psize, nullptr);
+  }
+  return content_as_dict;
+}
+
+xbt_dict_t sg_host_get_storage_content(sg_host_t host)
+{
+  xbt_assert((host != nullptr), "Invalid parameters");
+  xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
+  for (auto const& elm : host->getMountedStorages())
+    xbt_dict_set(contents, elm.first.c_str(), sg_storage_get_content(elm.second), nullptr);
+
+  return contents;
 }
 
 SG_END_DECL()

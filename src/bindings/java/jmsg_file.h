@@ -8,8 +8,9 @@
 #ifndef MSG_JFILE_H
 #define MSG_JFILE_H
 
-#include <jni.h>
 #include "simgrid/msg.h"
+#include "simgrid/plugins/file_system.h"
+#include <jni.h>
 
 SG_BEGIN_DECL()
 

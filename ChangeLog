@@ -1,12 +1,12 @@
 SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
 
  S4U
- - Link::name() is deprecated and will be removed in v3.21, use instead
-   Link::getCname().
- - Mailbox::getName() changed to return a std::string, use instead
-   Mailbox::getCname() to get a char*.
- - Storage::getName() changed to return a std::string, use intead
-   Storage::getCname() to get a char*.
+ - Link::name() is deprecated and will be removed in v3.21, use
+   Link::getCname() instead.
+ - Mailbox::getName() changed to return a std::string, use
+   Mailbox::getCname() instead to get a char*.
+ - Storage::getName() changed to return a std::string, use
+   Storage::getCname() instead to get a char*.
 
  MSG
  - Deprecate MSG_task_get_flops_amount(). Its semantic was weird:
@@ -25,6 +25,14 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
 
  PLUGINS:
  - New link_energy plugin for the consumption of the links.
+ - Most of the operations on files and storage contents have been
+   packaged into a plugin (src/plugins/file_system). The current
+   public interface can be found in 
+   include/simgrid/plugins/file_system.h
+   To use these functions you now have to initialize the plugin by 
+   calling MSG_storage_file_system_init() just after calling 
+   MSG_init() or sg_storage_file_system_init() just after creating 
+   the Engine.
 
  XML
  - Remove the undocumented/untested tag <include>

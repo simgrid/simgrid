@@ -45,21 +45,16 @@ public:
   /** Retrieves the previously stored data */
   void* getUserdata() { return userdata_; }
 
-  /** Retrieve the datasize */
   sg_size_t size();
-
-  /** Sets the file head to the given position. */
-  void seek(sg_offset_t pos);
-  void seek(sg_offset_t pos, int origin);
-
-  /** Retrieves the current file position */
-  sg_size_t tell();
+  void seek(sg_offset_t pos);             /** Sets the file head to the given position. */
+  void seek(sg_offset_t pos, int origin); /** Sets the file head to the given position from a given origin. */
+  sg_size_t tell();                       /** Retrieves the current file position */
 
   /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
   void move(std::string fullpath);
 
-  /** Remove a file from disk */
-  int unlink();
+  int unlink(); /** Remove a file from the contents of a disk */
+  void dump();
 
   int desc_id = 0;
   Storage* localStorage;
