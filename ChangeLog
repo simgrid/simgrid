@@ -25,7 +25,7 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
 
  PLUGINS:
  - New link_energy plugin for the consumption of the links.
- - Most of the operations on files and storage contents have been
+ - All of the operations on files and storage contents have been
    packaged into a plugin (src/plugins/file_system). The current
    public interface can be found in 
    include/simgrid/plugins/file_system.h

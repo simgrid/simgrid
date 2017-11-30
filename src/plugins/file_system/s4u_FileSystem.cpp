@@ -96,16 +96,53 @@ void File::dump()
 
 sg_size_t File::read(sg_size_t size)
 {
+  if (size_ == 0) /* Nothing to read, return */
+    return 0;
 
+  /* Find the host where the file is physically located and read it */
+  Host* host = localStorage->getHost();
   XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->getCname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
   sg_size_t read_size = localStorage->read(std::min(size, size_ - current_position_));
   current_position_ += read_size;
+
+  if (strcmp(host->getCname(), Host::current()->getCname())) {
+    /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->getCname(), read_size);
+    Host* m_host_list[]  = {Host::current(), host};
+    double* flops_amount = new double[2]{0, 0};
+    double* bytes_amount = new double[4]{0, 0, static_cast<double>(read_size), 0};
+
+    this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
+  }
+
   return read_size;
 }
 
+/** \brief Write into a file (local or remote)
+ *
+ * \param size of the file to write
+ * \param fd is a the file descriptor
+ * \return the number of bytes successfully write or -1 if an error occurred
+ */
 sg_size_t File::write(sg_size_t size)
 {
+  if (size == 0) /* Nothing to write, return */
+    return 0;
+
+  /* Find the host where the file is physically located (remote or local)*/
+  Host* host = localStorage->getHost();
+
+  if (strcmp(host->getCname(), Host::current()->getCname())) {
+    /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->getCname(), size);
+    Host* m_host_list[]  = {Host::current(), host};
+    double* flops_amount = new double[2]{0, 0};
+    double* bytes_amount = new double[4]{0, static_cast<double>(size), 0, 0};
+
+    this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
+  }
+
   XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getPath(), localStorage->getCname(), size, size_);
   // If the storage is full before even starting to write
   if (sg_storage_get_size_used(localStorage) >= sg_storage_get_size(localStorage))
@@ -203,7 +240,10 @@ int File::remoteCopy(sg_host_t host, const char* fullpath)
   Storage* storage_src = localStorage;
   Host* src_host       = storage_src->getHost();
   seek(0, SEEK_SET);
-  sg_size_t read_size = read(size_);
+  XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->getCname());
+  // if the current position is close to the end of the file, we may not be able to read the requested size
+  sg_size_t read_size = localStorage->read(size_);
+  current_position_ += read_size;
 
   /* Find the host that owns the storage where the file has to be copied */
   Storage* storage_dest = nullptr;
@@ -229,7 +269,7 @@ int File::remoteCopy(sg_host_t host, const char* fullpath)
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->getCname(),
             storage_dest->getHost()->getCname());
-  sg_host_t m_host_list[] = {src_host, dst_host};
+  Host* m_host_list[]     = {src_host, dst_host};
   double* flops_amount    = new double[2]{0, 0};
   double* bytes_amount    = new double[4]{0, static_cast<double>(read_size), 0, 0};
 
@@ -237,7 +277,9 @@ int File::remoteCopy(sg_host_t host, const char* fullpath)
 
   /* Create file on remote host, write it and close it */
   File* fd = new File(fullpath, dst_host, nullptr);
-  fd->write(read_size);
+  sg_size_t write_size = fd->localStorage->write(read_size);
+  fd->localStorage->extension<FileSystemStorageExt>()->incrUsedSize(write_size);
+  (*(fd->localStorage->extension<FileSystemStorageExt>()->getContent()))[path_] = size_;
   delete fd;
   return 0;
 }
@@ -327,6 +369,16 @@ void sg_storage_file_system_init()
 sg_file_t sg_file_open(const char* fullpath, void* data)
 {
   return new simgrid::s4u::File(fullpath, data);
+}
+
+sg_size_t sg_file_read(sg_file_t fd, sg_size_t size)
+{
+  return fd->read(size);
+}
+
+sg_size_t sg_file_write(sg_file_t fd, sg_size_t size)
+{
+  return fd->write(size);
 }
 
 void sg_file_close(sg_file_t fd)

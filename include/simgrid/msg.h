@@ -216,9 +216,6 @@ XBT_ATTRIB_DEPRECATED_v319("Use MSG_zone_get_hosts() instead: v3.19 will remove 
   return res;
 }
 
-/************************** File handling ***********************************/
-XBT_PUBLIC(sg_size_t) MSG_file_read(msg_file_t fd, sg_size_t size);
-XBT_PUBLIC(sg_size_t) MSG_file_write(msg_file_t fd, sg_size_t size);
 /************************** Storage handling ***********************************/
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
 XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
