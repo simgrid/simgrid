@@ -150,9 +150,6 @@ void s_lmm_system_t::var_free(lmm_variable_t var)
 
 s_lmm_system_t::s_lmm_system_t(bool selective_update) : selective_update_active(selective_update)
 {
-  s_lmm_variable_t var;
-  s_lmm_constraint_t cnst;
-
   modified        = false;
   visited_counter = 1;
 
@@ -189,8 +186,6 @@ void s_lmm_system_t::cnst_free(lmm_constraint_t cnst)
 
 s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value) : bound(bound_value), id(id_value)
 {
-  s_lmm_element_t elem;
-
   id_int = Global_debug_id++;
 
   remaining           = 0.0;
