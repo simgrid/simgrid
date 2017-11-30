@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2009-2016. The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2007, 2009-2017. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,7 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_kill, "Messages specific for this msg example");
 
-static int victimA_fun(int argc, char* argv[])
+static int victimA_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Hello!");
   XBT_INFO("Suspending myself");
@@ -18,13 +18,13 @@ static int victimA_fun(int argc, char* argv[])
   return 0;
 }
 
-static int victimB_fun(int argc, char* argv[])
+static int victimB_fun(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Terminates before being killed");
   return 0;
 }
 
-static int killer(int argc, char* argv[])
+static int killer(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 {
   XBT_INFO("Hello!"); /* - First start a victim process */
   msg_process_t victimA = MSG_process_create("victim A", victimA_fun, NULL, MSG_host_by_name("Fafard"));
