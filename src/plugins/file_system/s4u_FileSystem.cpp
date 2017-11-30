@@ -5,6 +5,7 @@
 
 #include "xbt/log.h"
 
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
@@ -95,6 +96,7 @@ void File::dump()
 
 sg_size_t File::read(sg_size_t size)
 {
+
   XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->getCname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
   sg_size_t read_size = localStorage->read(std::min(size, size_ - current_position_));
@@ -193,6 +195,58 @@ int File::unlink()
 
     return 0;
   }
+}
+
+int File::remoteCopy(sg_host_t host, const char* fullpath)
+{
+  /* Find the host where the file is physically located and read it */
+  Storage* storage_src = localStorage;
+  Host* src_host       = storage_src->getHost();
+  seek(0, SEEK_SET);
+  sg_size_t read_size = read(size_);
+
+  /* Find the host that owns the storage where the file has to be copied */
+  Storage* storage_dest = nullptr;
+  Host* dst_host;
+  size_t longest_prefix_length = 0;
+
+  for (auto const& elm : host->getMountedStorages()) {
+    std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
+    if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
+      /* The current mount name is found in the full path and is bigger than the previous*/
+      longest_prefix_length = elm.first.length();
+      storage_dest          = elm.second;
+    }
+  }
+
+  if (storage_dest != nullptr) {
+    /* Mount point found, retrieve the host the storage is attached to */
+    dst_host = storage_dest->getHost();
+  } else {
+    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->getCname());
+    return -1;
+  }
+
+  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->getCname(),
+            storage_dest->getHost()->getCname());
+  sg_host_t m_host_list[] = {src_host, dst_host};
+  double* flops_amount    = new double[2]{0, 0};
+  double* bytes_amount    = new double[4]{0, static_cast<double>(read_size), 0, 0};
+
+  this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
+
+  /* Create file on remote host, write it and close it */
+  File* fd = new File(fullpath, dst_host, nullptr);
+  fd->write(read_size);
+  delete fd;
+  return 0;
+}
+
+int File::remoteMove(sg_host_t host, const char* fullpath)
+{
+  int res = remoteCopy(host, fullpath);
+  unlink();
+  return res;
 }
 
 FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
@@ -335,6 +389,31 @@ void sg_file_unlink(sg_file_t fd)
 {
   fd->unlink();
   delete fd;
+}
+
+/**
+ * \brief Copy a file to another location on a remote host.
+ * \param file : the file to move
+ * \param host : the remote host where the file has to be copied
+ * \param fullpath : the complete path destination on the remote host
+ * \return If successful, the function returns 0. Otherwise, it returns -1.
+ */
+int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
+{
+  return file->remoteCopy(host, fullpath);
+}
+
+/**
+ * \brief Move a file to another location on a remote host.
+ * \param file : the file to move
+ * \param host : the remote host where the file has to be moved
+ * \param fullpath : the complete path destination on the remote host
+ * \return If successful, the function returns 0. Otherwise, it returns -1.
+ */
+int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath)
+{
+  return file->remoteMove(host, fullpath);
+  ;
 }
 
 sg_size_t sg_storage_get_size_free(sg_storage_t st)

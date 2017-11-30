@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "src/msg/msg_private.hpp"
@@ -106,73 +105,6 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
   return write_size;
 }
 
-/**
- * \ingroup msg_file
- * \brief Copy a file to another location on a remote host.
- * \param file : the file to move
- * \param host : the remote host where the file has to be copied
- * \param fullpath : the complete path destination on the remote host
- * \return If successful, the function returns MSG_OK. Otherwise, it returns MSG_TASK_CANCELED.
- */
-msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpath)
-{
-  /* Find the host where the file is physically located and read it */
-  msg_storage_t storage_src = file->localStorage;
-  msg_host_t src_host       = storage_src->getHost();
-  file->seek(0, SEEK_SET);
-  sg_size_t read_size = file->read(file->size());
-
-  /* Find the host that owns the storage where the file has to be copied */
-  msg_storage_t storage_dest = nullptr;
-  msg_host_t dst_host;
-  size_t longest_prefix_length = 0;
-
-  for (auto const& elm : host->getMountedStorages()) {
-    std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
-    if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
-      /* The current mount name is found in the full path and is bigger than the previous*/
-      longest_prefix_length = elm.first.length();
-      storage_dest          = elm.second;
-    }
-  }
-
-  if (storage_dest != nullptr) {
-    /* Mount point found, retrieve the host the storage is attached to */
-    dst_host = storage_dest->getHost();
-  }else{
-    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->getCname());
-    return MSG_TASK_CANCELED;
-  }
-
-  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->getCname(),
-            storage_dest->getHost()->getCname());
-  msg_host_t m_host_list[] = {src_host, dst_host};
-  double* flops_amount     = new double[2]{0, 0};
-  double* bytes_amount     = new double[4]{0, static_cast<double>(read_size), 0, 0};
-
-  simgrid::s4u::this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
-
-  /* Create file on remote host, write it and close it */
-  msg_file_t fd = new simgrid::s4u::File(fullpath, dst_host, nullptr);
-  fd->write(read_size);
-  delete fd;
-  return MSG_OK;
-}
-
-/**
- * \ingroup msg_file
- * \brief Move a file to another location on a remote host.
- * \param file : the file to move
- * \param host : the remote host where the file has to be moved
- * \param fullpath : the complete path destination on the remote host
- * \return If successful, the function returns MSG_OK. Otherwise, it returns MSG_TASK_CANCELED.
- */
-msg_error_t MSG_file_rmove (msg_file_t file, msg_host_t host, const char* fullpath)
-{
-  msg_error_t res = MSG_file_rcopy(file, host, fullpath);
-  file->unlink();
-  return res;
-}
 
 /********************************* Storage **************************************/
 /** @addtogroup msg_storage_management

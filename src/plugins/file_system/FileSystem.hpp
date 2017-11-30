@@ -52,6 +52,8 @@ public:
 
   /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
   void move(std::string fullpath);
+  int remoteCopy(sg_host_t host, const char* fullpath);
+  int remoteMove(sg_host_t host, const char* fullpath);
 
   int unlink(); /** Remove a file from the contents of a disk */
   void dump();

@@ -25,6 +25,8 @@ XBT_PUBLIC(void) sg_file_seek(sg_file_t fd, sg_offset_t offset, int origin);
 XBT_PUBLIC(sg_size_t) sg_file_tell(sg_file_t fd);
 XBT_PUBLIC(void) sg_file_move(sg_file_t fd, const char* fullpath);
 XBT_PUBLIC(void) sg_file_unlink(sg_file_t fd);
+XBT_PUBLIC(int) sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath);
+XBT_PUBLIC(int) sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath);
 
 XBT_PUBLIC(void*) sg_storage_get_data(sg_storage_t storage);
 XBT_PUBLIC(void) sg_storage_set_data(sg_storage_t storage, void* data);
@@ -46,6 +48,8 @@ XBT_PUBLIC(xbt_dict_t) sg_host_get_storage_content(sg_host_t host);
 #define MSG_file_tell(fd) sg_file_tell(fd)
 #define MSG_file_move(fd, fullpath) sg_file_get_size(fd, fullpath)
 #define MSG_file_unlink(fd) sg_file_unlink(fd)
+#define MSG_file_rcopy(file, host, fullpath) sg_file_rcopy(file, host, fullpath)
+#define MSG_file_rmove(file, host, fullpath) sg_file_rmove(file, host, fullpath)
 
 #define MSG_storage_file_system_init() sg_storage_file_system_init()
 #define MSG_storage_get_free_size(st) sg_storage_get_size_free(st)
