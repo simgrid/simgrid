@@ -21,13 +21,9 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
 {
   void* _var;
   void* _var_next;
-  void* _cnst;
-  void* _cnst_next;
   void* _elem;
   lmm_variable_t var    = nullptr;
-  lmm_constraint_t cnst = nullptr;
   lmm_element_t elem   = nullptr;
-  xbt_swag_t cnst_list = nullptr;
   xbt_swag_t var_list  = nullptr;
   xbt_swag_t elem_list = nullptr;
 
@@ -53,19 +49,13 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
   }
   var_list = &(sys->saturated_variable_set);
 
-  cnst_list = &(sys->active_constraint_set);
-  XBT_DEBUG("Active constraints : %d", xbt_swag_size(cnst_list));
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    cnst = static_cast<lmm_constraint_t>(_cnst);
-    xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
+  XBT_DEBUG("Active constraints : %zu", sys->active_constraint_set.size());
+  for (s_lmm_constraint_t& cnst : sys->active_constraint_set) {
+    sys->saturated_constraint_set.push_back(cnst);
   }
-  cnst_list = &(sys->saturated_constraint_set);
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    cnst            = static_cast<lmm_constraint_t>(_cnst);
-    cnst->remaining = cnst->bound;
-    cnst->usage     = 0.0;
+  for (s_lmm_constraint_t& cnst : sys->saturated_constraint_set) {
+    cnst.remaining = cnst.bound;
+    cnst.usage     = 0.0;
   }
 
   XBT_DEBUG("Fair bottleneck Initialized");
@@ -73,19 +63,19 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
   /*
    * Compute Usage and store the variables that reach the maximum.
    */
+  auto& cnst_list = sys->saturated_constraint_set;
   do {
     if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
       XBT_DEBUG("Fair bottleneck done");
       sys->print();
     }
-    XBT_DEBUG("******* Constraints to process: %d *******", xbt_swag_size(cnst_list));
-    xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list)
-    {
-      cnst   = static_cast<lmm_constraint_t>(_cnst);
+    XBT_DEBUG("******* Constraints to process: %zu *******", cnst_list.size());
+    for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
+      s_lmm_constraint_t& cnst = *iter;
       int nb = 0;
-      XBT_DEBUG("Processing cnst %p ", cnst);
-      elem_list   = &(cnst->enabled_element_set);
-      cnst->usage = 0.0;
+      XBT_DEBUG("Processing cnst %p ", &cnst);
+      elem_list  = &cnst.enabled_element_set;
+      cnst.usage = 0.0;
       xbt_swag_foreach(_elem, elem_list)
       {
         elem = static_cast<lmm_element_t>(_elem);
@@ -94,16 +84,17 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
           nb++;
       }
       XBT_DEBUG("\tThere are %d variables", nb);
-      if (nb > 0 && not cnst->sharing_policy)
+      if (nb > 0 && not cnst.sharing_policy)
         nb = 1;
-      if (not nb) {
-        cnst->remaining = 0.0;
-        cnst->usage     = cnst->remaining;
-        xbt_swag_remove(cnst, cnst_list);
-        continue;
+      if (nb == 0) {
+        cnst.remaining = 0.0;
+        cnst.usage     = 0.0;
+        iter           = cnst_list.erase(iter);
+      } else {
+        cnst.usage = cnst.remaining / nb;
+        XBT_DEBUG("\tConstraint Usage %p : %f with %d variables", &cnst, cnst.usage, nb);
+        iter++;
       }
-      cnst->usage = cnst->remaining / nb;
-      XBT_DEBUG("\tConstraint Usage %p : %f with %d variables", cnst, cnst->usage, nb);
     }
 
     xbt_swag_foreach_safe(_var, _var_next, var_list)
@@ -124,36 +115,35 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
       }
     }
 
-    xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list)
-    {
-      cnst = static_cast<lmm_constraint_t>(_cnst);
-      XBT_DEBUG("Updating cnst %p ", cnst);
-      elem_list = &(cnst->enabled_element_set);
+    for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
+      s_lmm_constraint_t& cnst = *iter;
+      XBT_DEBUG("Updating cnst %p ", &cnst);
+      elem_list = &cnst.enabled_element_set;
       xbt_swag_foreach(_elem, elem_list)
       {
         elem = static_cast<lmm_element_t>(_elem);
         xbt_assert(elem->variable->sharing_weight > 0);
-        if (cnst->sharing_policy) {
-          XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", cnst, cnst->remaining, elem->variable,
+        if (cnst.sharing_policy) {
+          XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining, elem->variable,
                     elem->variable->mu);
-          double_update(&(cnst->remaining), elem->consumption_weight * elem->variable->mu, sg_maxmin_precision);
+          double_update(&cnst.remaining, elem->consumption_weight * elem->variable->mu, sg_maxmin_precision);
         } else {
-          XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", cnst,
-                    cnst->usage, elem->variable, elem->variable->mu);
-          cnst->usage = std::min(cnst->usage, elem->consumption_weight * elem->variable->mu);
+          XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", &cnst,
+                    cnst.usage, elem->variable, elem->variable->mu);
+          cnst.usage = std::min(cnst.usage, elem->consumption_weight * elem->variable->mu);
         }
       }
-      if (not cnst->sharing_policy) {
-        XBT_DEBUG("\tUpdate constraint %p (%g) by %g", cnst, cnst->remaining, cnst->usage);
+      if (not cnst.sharing_policy) {
+        XBT_DEBUG("\tUpdate constraint %p (%g) by %g", &cnst, cnst.remaining, cnst.usage);
 
-        double_update(&(cnst->remaining), cnst->usage, sg_maxmin_precision);
+        double_update(&cnst.remaining, cnst.usage, sg_maxmin_precision);
       }
 
-      XBT_DEBUG("\tRemaining for %p : %g", cnst, cnst->remaining);
-      if (cnst->remaining <= 0.0) {
-        XBT_DEBUG("\tGet rid of constraint %p", cnst);
+      XBT_DEBUG("\tRemaining for %p : %g", &cnst, cnst.remaining);
+      if (cnst.remaining <= 0.0) {
+        XBT_DEBUG("\tGet rid of constraint %p", &cnst);
 
-        xbt_swag_remove(cnst, cnst_list);
+        iter = cnst_list.erase(iter);
         xbt_swag_foreach(_elem, elem_list)
         {
           elem = static_cast<lmm_element_t>(_elem);
@@ -164,11 +154,13 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
             xbt_swag_remove(elem->variable, var_list);
           }
         }
+      } else {
+        iter++;
       }
     }
   } while (xbt_swag_size(var_list));
 
-  xbt_swag_reset(cnst_list);
+  cnst_list.clear();
   sys->modified = true;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     XBT_DEBUG("Fair bottleneck done");

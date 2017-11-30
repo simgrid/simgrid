@@ -44,21 +44,18 @@ static double dichotomy(double init, double diff(double, const s_lmm_constraint_
 // computes the value of the differential of constraint cnst applied to lambda
 static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst);
 
-static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
+template <class CnstList>
+static int __check_feasible(const CnstList& cnst_list, xbt_swag_t var_list, int warn)
 {
-  void* _cnst;
   void* _elem;
   void* _var;
-  xbt_swag_t elem_list  = nullptr;
+  const_xbt_swag_t elem_list = nullptr;
   lmm_element_t elem    = nullptr;
-  lmm_constraint_t cnst = nullptr;
   lmm_variable_t var    = nullptr;
 
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    cnst       = static_cast<lmm_constraint_t>(_cnst);
+  for (s_lmm_constraint_t const& cnst : cnst_list) {
     double tmp = 0;
-    elem_list  = &(cnst->enabled_element_set);
+    elem_list  = &cnst.enabled_element_set;
     xbt_swag_foreach(_elem, elem_list)
     {
       elem = static_cast<lmm_element_t>(_elem);
@@ -67,13 +64,12 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
       tmp += var->value;
     }
 
-    if (double_positive(tmp - cnst->bound, sg_maxmin_precision)) {
+    if (double_positive(tmp - cnst.bound, sg_maxmin_precision)) {
       if (warn)
-        XBT_WARN("The link (%p) is over-used. Expected less than %f and got %f", cnst, cnst->bound, tmp);
+        XBT_WARN("The link (%p) is over-used. Expected less than %f and got %f", &cnst, cnst.bound, tmp);
       return 0;
     }
-    XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", cnst, tmp - cnst->bound,
-              cnst->lambda);
+    XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", &cnst, tmp - cnst.bound, cnst.lambda);
   }
 
   xbt_swag_foreach(_var, var_list)
@@ -122,11 +118,10 @@ static double new_mu(const s_lmm_variable_t& var)
   return mu_i;
 }
 
-static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
+template <class CnstList>
+static double dual_objective(xbt_swag_t var_list, const CnstList& cnst_list)
 {
-  void* _cnst;
   void* _var;
-  lmm_constraint_t cnst = nullptr;
   lmm_variable_t var    = nullptr;
 
   double obj = 0.0;
@@ -153,11 +148,8 @@ static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
       obj += var->mu * var->bound;
   }
 
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    cnst = static_cast<lmm_constraint_t>(_cnst);
-    obj += cnst->lambda * cnst->bound;
-  }
+  for (s_lmm_constraint_t const& cnst : cnst_list)
+    obj += cnst.lambda * cnst.bound;
 
   return obj;
 }
@@ -184,14 +176,11 @@ void lagrange_solve(lmm_system_t sys)
     return;
 
   /* Initialize lambda. */
-  xbt_swag_t cnst_list = &(sys->active_constraint_set);
-  void* _cnst;
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
-    cnst->lambda          = 1.0;
-    cnst->new_lambda      = 2.0;
-    XBT_DEBUG("#### cnst(%p)->lambda :  %e", cnst, cnst->lambda);
+  auto& cnst_list = sys->active_constraint_set;
+  for (s_lmm_constraint_t& cnst : cnst_list) {
+    cnst.lambda     = 1.0;
+    cnst.new_lambda = 2.0;
+    XBT_DEBUG("#### cnst(%p)->lambda :  %e", &cnst, cnst.lambda);
   }
 
   /*
@@ -253,13 +242,11 @@ void lagrange_solve(lmm_system_t sys)
     }
 
     /* Improve the value of lambda_i */
-    xbt_swag_foreach(_cnst, cnst_list)
-    {
-      lmm_constraint_t cnst = static_cast<lmm_constraint_t>(_cnst);
-      XBT_DEBUG("Working on cnst (%p)", cnst);
-      cnst->new_lambda = dichotomy(cnst->lambda, partial_diff_lambda, *cnst, dichotomy_min_error);
-      XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
-      cnst->lambda = cnst->new_lambda;
+    for (s_lmm_constraint_t& cnst : cnst_list) {
+      XBT_DEBUG("Working on cnst (%p)", &cnst);
+      cnst.new_lambda = dichotomy(cnst.lambda, partial_diff_lambda, cnst, dichotomy_min_error);
+      XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda, cnst.new_lambda);
+      cnst.lambda = cnst.new_lambda;
 
       double new_obj = dual_objective(var_list, cnst_list);
       XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj, obj - new_obj);

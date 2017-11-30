@@ -13,6 +13,7 @@
 #include "xbt/mallocator.h"
 #include "xbt/misc.h"
 #include "xbt/swag.h"
+#include <boost/intrusive/list.hpp>
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -292,10 +293,10 @@ public:
   void* get_id() const { return id; }
 
   /* hookup to system */
-  s_xbt_swag_hookup_t constraint_set_hookup           = {nullptr, nullptr};
-  s_xbt_swag_hookup_t active_constraint_set_hookup    = {nullptr, nullptr};
-  s_xbt_swag_hookup_t modified_constraint_set_hookup  = {nullptr, nullptr};
-  s_xbt_swag_hookup_t saturated_constraint_set_hookup = {nullptr, nullptr};
+  boost::intrusive::list_member_hook<> constraint_set_hook;
+  boost::intrusive::list_member_hook<> active_constraint_set_hook;
+  boost::intrusive::list_member_hook<> modified_constraint_set_hook;
+  boost::intrusive::list_member_hook<> saturated_constraint_set_hook;
   s_xbt_swag_t enabled_element_set;  /* a list of lmm_element_t */
   s_xbt_swag_t disabled_element_set; /* a list of lmm_element_t */
   s_xbt_swag_t active_element_set;   /* a list of lmm_element_t */
@@ -509,7 +510,7 @@ public:
    * @param cnst A constraint
    * @return [description]
    */
-  int constraint_used(lmm_constraint_t cnst) { return xbt_swag_belongs(cnst, &active_constraint_set); }
+  int constraint_used(lmm_constraint_t cnst) { return cnst->active_constraint_set_hook.is_linked(); }
 
   /** @brief Print the lmm system */
   void print() const;
@@ -524,18 +525,31 @@ private:
   void var_free(lmm_variable_t var);
   void cnst_free(lmm_constraint_t cnst);
   lmm_variable_t extract_variable() { return static_cast<lmm_variable_t>(xbt_swag_extract(&variable_set)); }
-  lmm_constraint_t extract_constraint() { return static_cast<lmm_constraint_t>(xbt_swag_extract(&constraint_set)); }
-  void insert_constraint(lmm_constraint_t cnst) { xbt_swag_insert(cnst, &constraint_set); }
+  lmm_constraint_t extract_constraint()
+  {
+    if (constraint_set.empty())
+      return nullptr;
+    lmm_constraint_t res = &constraint_set.front();
+    constraint_set.pop_front();
+    return res;
+  }
+  void insert_constraint(lmm_constraint_t cnst) { constraint_set.push_back(*cnst); }
   void remove_variable(lmm_variable_t var)
   {
     xbt_swag_remove(var, &variable_set);
     xbt_swag_remove(var, &saturated_variable_set);
   }
-  void make_constraint_active(lmm_constraint_t cnst) { xbt_swag_insert(cnst, &active_constraint_set); }
+  void make_constraint_active(lmm_constraint_t cnst)
+  {
+    if (not cnst->active_constraint_set_hook.is_linked())
+      active_constraint_set.push_back(*cnst);
+  }
   void make_constraint_inactive(lmm_constraint_t cnst)
   {
-    xbt_swag_remove(cnst, &active_constraint_set);
-    xbt_swag_remove(cnst, &modified_constraint_set);
+    if (cnst->active_constraint_set_hook.is_linked())
+      active_constraint_set.erase(active_constraint_set.iterator_to(*cnst));
+    if (cnst->modified_constraint_set_hook.is_linked())
+      modified_constraint_set.erase(modified_constraint_set.iterator_to(*cnst));
   }
 
   void enable_var(lmm_variable_t var);
@@ -557,12 +571,19 @@ private:
   void remove_all_modified_set();
   void check_concurrency() const;
 
+  template <class CnstList> void solve(CnstList& cnst_list);
 public:
   bool modified;
   s_xbt_swag_t variable_set;             /* a list of lmm_variable_t */
-  s_xbt_swag_t active_constraint_set;    /* a list of lmm_constraint_t */
+  boost::intrusive::list<s_lmm_constraint_t,
+                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_constraint_t::active_constraint_set_hook>>
+      active_constraint_set;
   s_xbt_swag_t saturated_variable_set;   /* a list of lmm_variable_t */
-  s_xbt_swag_t saturated_constraint_set; /* a list of lmm_constraint_t */
+  boost::intrusive::list<s_lmm_constraint_t,
+                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_constraint_t::saturated_constraint_set_hook>>
+      saturated_constraint_set;
 
   simgrid::surf::ActionLmmListPtr keep_track;
 
@@ -572,8 +593,14 @@ private:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
   unsigned visited_counter;     /* used by lmm_update_modified_set and lmm_remove_modified_set to cleverly (un-)flag the
                                  * constraints (more details in these functions) */
-  s_xbt_swag_t constraint_set;  /* a list of lmm_constraint_t */
-  s_xbt_swag_t modified_constraint_set; /* a list of modified lmm_constraint_t */
+  boost::intrusive::list<s_lmm_constraint_t,
+                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_constraint_t::constraint_set_hook>>
+      constraint_set;
+  boost::intrusive::list<s_lmm_constraint_t,
+                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
+                                                       &s_lmm_constraint_t::modified_constraint_set_hook>>
+      modified_constraint_set;
   xbt_mallocator_t variable_mallocator;
 };
 
