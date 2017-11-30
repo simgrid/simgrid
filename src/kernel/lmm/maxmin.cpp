@@ -389,14 +389,14 @@ lmm_variable_t s_lmm_constraint_t::get_variable_safe(const_lmm_element_t* elem, 
       // Look at enabled_element_set, and jump to disabled_element_set when finished
       auto iter = std::next(enabled_element_set.iterator_to(**elem));
       if (iter != std::end(enabled_element_set))
-        *elem = &*iter;
+        *nextelem = &*iter;
       else if (not disabled_element_set.empty())
-        *elem = &disabled_element_set.front();
+        *nextelem = &disabled_element_set.front();
       else
-        *elem = nullptr;
+        *nextelem = nullptr;
     } else {
       auto iter = std::next(disabled_element_set.iterator_to(**elem));
-      *elem     = iter != std::end(disabled_element_set) ? &*iter : nullptr;
+      *nextelem = iter != std::end(disabled_element_set) ? &*iter : nullptr;
     }
     return (*elem)->variable;
   } else
