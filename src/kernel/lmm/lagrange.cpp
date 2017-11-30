@@ -168,8 +168,7 @@ void lagrange_solve(lmm_system_t sys)
   }
 
   /*
-   * Initialize the var list variable with only the active variables.
-   * Associate an index in the swag variables. Initialize mu.
+   * Initialize the var_list variable with only the active variables. Initialize mu.
    */
   auto& var_list = sys->variable_set;
   for (s_lmm_variable_t& var : var_list) {

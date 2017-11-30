@@ -10,7 +10,6 @@
 #include "src/simix/smx_private.hpp"
 #include "src/xbt_modinter.h" /* prototype of os thread module's init/exit in XBT */
 #include "xbt/function_types.h"
-#include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 
 #include "src/kernel/context/ContextThread.hpp"
