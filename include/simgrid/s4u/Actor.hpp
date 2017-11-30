@@ -308,6 +308,8 @@ XBT_PUBLIC(void) execute(double flop);
  *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
 XBT_PUBLIC(void) execute(double flop, double priority);
 
+XBT_PUBLIC(void) parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount);
+
 /** Block the actor until it gets a message from the given mailbox.
  *
  * See \ref Comm for the full communication API (including non blocking communications).

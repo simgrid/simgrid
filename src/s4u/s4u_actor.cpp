@@ -238,6 +238,12 @@ void execute(double flops,double priority)
   simcall_execution_wait(s);
 }
 
+void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount)
+{
+  smx_activity_t s = simcall_execution_parallel_start(nullptr, host_nb, host_list, flops_amount, bytes_amount, -1, -1);
+  simcall_execution_wait(s);
+}
+
 void* recv(MailboxPtr chan) // deprecated
 {
   return chan->get();

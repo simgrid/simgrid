@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "src/msg/msg_private.hpp"
@@ -146,22 +147,10 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->getCname(),
             storage_dest->getHost()->getCname());
   msg_host_t m_host_list[] = {src_host, dst_host};
-  double flops_amount[]    = {0, 0};
-  double bytes_amount[]    = {0, static_cast<double>(read_size), 0, 0};
+  double* flops_amount     = new double[2]{0, 0};
+  double* bytes_amount     = new double[4]{0, static_cast<double>(read_size), 0, 0};
 
-  msg_task_t task =
-      MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, nullptr);
-  msg_error_t err = MSG_parallel_task_execute(task);
-  MSG_task_destroy(task);
-
-  if (err != MSG_OK) {
-    if (err == MSG_HOST_FAILURE)
-      XBT_WARN("Transfer error, %s remote host just turned off!", storage_dest->getHost()->getCname());
-    if (err == MSG_TASK_CANCELED)
-      XBT_WARN("Transfer error, task has been canceled!");
-
-    return err;
-  }
+  simgrid::s4u::this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
 
   /* Create file on remote host, write it and close it */
   msg_file_t fd = new simgrid::s4u::File(fullpath, dst_host, nullptr);
