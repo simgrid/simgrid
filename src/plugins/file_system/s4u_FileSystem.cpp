@@ -5,10 +5,10 @@
 
 #include "xbt/log.h"
 
-#include "simgrid/s4u/File.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
+#include "src/plugins/file_system/FileSystem.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <algorithm>
@@ -17,7 +17,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <fstream>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file, "S4U files");
 
 namespace simgrid {
 namespace s4u {

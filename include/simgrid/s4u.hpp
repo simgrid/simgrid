@@ -18,7 +18,6 @@
 #include <simgrid/s4u/ConditionVariable.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 
-#include <simgrid/s4u/File.hpp>
 #include <simgrid/s4u/Storage.hpp>
 
 #endif /* SIMGRID_S4U_S4U_H */

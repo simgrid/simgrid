@@ -362,6 +362,9 @@ set(SURF_SRC
   )
 
 set(PLUGINS_SRC
+  src/plugins/file_system/FileSystem.hpp
+  src/plugins/file_system/s4u_FileSystem.cpp
+  src/plugins/vm/VirtualMachineImpl.hpp
   src/plugins/vm/s4u_VirtualMachine.cpp
   src/plugins/vm/VirtualMachineImpl.hpp
   src/plugins/vm/VirtualMachineImpl.cpp
@@ -425,8 +428,7 @@ set(S4U_SRC
   src/s4u/s4u_conditionVariable.cpp
   src/s4u/s4u_comm.cpp
   src/s4u/s4u_engine.cpp  
-  src/s4u/s4u_file.cpp  
-  src/s4u/s4u_host.cpp  
+   src/s4u/s4u_host.cpp  
   src/s4u/s4u_link.cpp
   src/s4u/s4u_mailbox.cpp
   src/s4u/s4u_mutex.cpp
@@ -684,7 +686,6 @@ set(headers_to_install
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
   include/simgrid/s4u/Engine.hpp  
-  include/simgrid/s4u/File.hpp  
   include/simgrid/s4u/Host.hpp  
   include/simgrid/s4u/Link.hpp  
   include/simgrid/s4u/Mailbox.hpp

@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "simgrid/s4u.hpp"
+#include "src/plugins/file_system/FileSystem.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
