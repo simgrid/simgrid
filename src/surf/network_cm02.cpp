@@ -380,7 +380,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
       turnOn();
     else {
       lmm_variable_t var = nullptr;
-      lmm_element_t elem = nullptr;
+      const_lmm_element_t elem = nullptr;
       double now = surf_get_clock();
 
       turnOff();
@@ -414,8 +414,8 @@ void NetworkCm02Link::setBandwidth(double value)
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
 
     lmm_variable_t var;
-    lmm_element_t elem = nullptr;
-    lmm_element_t nextelem = nullptr;
+    const_lmm_element_t elem     = nullptr;
+    const_lmm_element_t nextelem = nullptr;
     int numelem = 0;
     while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
@@ -428,10 +428,10 @@ void NetworkCm02Link::setBandwidth(double value)
 
 void NetworkCm02Link::setLatency(double value)
 {
-  double delta           = value - latency_.peak;
-  lmm_variable_t var = nullptr;
-  lmm_element_t elem = nullptr;
-  lmm_element_t nextelem = nullptr;
+  double delta                 = value - latency_.peak;
+  lmm_variable_t var           = nullptr;
+  const_lmm_element_t elem     = nullptr;
+  const_lmm_element_t nextelem = nullptr;
   int numelem = 0;
 
   latency_.peak = value;

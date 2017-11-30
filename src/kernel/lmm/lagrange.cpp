@@ -29,9 +29,9 @@ namespace simgrid {
 namespace kernel {
 namespace lmm {
 
-double (*func_f_def)(lmm_variable_t, double);
-double (*func_fp_def)(lmm_variable_t, double);
-double (*func_fpi_def)(lmm_variable_t, double);
+double (*func_f_def)(const s_lmm_variable_t&, double);
+double (*func_fp_def)(const s_lmm_variable_t&, double);
+double (*func_fpi_def)(const s_lmm_variable_t&, double);
 
 /*
  * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
@@ -39,124 +39,101 @@ double (*func_fpi_def)(lmm_variable_t, double);
 // solves the proportional fairness using a Lagrangian optimization with dichotomy step
 void lagrange_solve(lmm_system_t sys);
 // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-static double dichotomy(double init, double diff(double, void*), void* var_cnst, double min_error);
-// computes the value of the differential of constraint param_cnst applied to lambda
-static double partial_diff_lambda(double lambda, void* param_cnst);
+static double dichotomy(double init, double diff(double, const s_lmm_constraint_t&), const s_lmm_constraint_t& cnst,
+                        double min_error);
+// computes the value of the differential of constraint cnst applied to lambda
+static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst);
 
-static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
+template <class CnstList, class VarList>
+static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, int warn)
 {
-  void* _cnst;
-  void* _elem;
-  void* _var;
-  xbt_swag_t elem_list  = nullptr;
-  lmm_element_t elem    = nullptr;
-  lmm_constraint_t cnst = nullptr;
-  lmm_variable_t var    = nullptr;
-
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    cnst       = static_cast<lmm_constraint_t>(_cnst);
+  for (s_lmm_constraint_t const& cnst : cnst_list) {
     double tmp = 0;
-    elem_list  = &(cnst->enabled_element_set);
-    xbt_swag_foreach(_elem, elem_list)
-    {
-      elem = static_cast<lmm_element_t>(_elem);
-      var  = elem->variable;
+    for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+      lmm_variable_t var = elem.variable;
       xbt_assert(var->sharing_weight > 0);
       tmp += var->value;
     }
 
-    if (double_positive(tmp - cnst->bound, sg_maxmin_precision)) {
+    if (double_positive(tmp - cnst.bound, sg_maxmin_precision)) {
       if (warn)
-        XBT_WARN("The link (%p) is over-used. Expected less than %f and got %f", cnst, cnst->bound, tmp);
+        XBT_WARN("The link (%p) is over-used. Expected less than %f and got %f", &cnst, cnst.bound, tmp);
       return 0;
     }
-    XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", cnst, tmp - cnst->bound,
-              cnst->lambda);
+    XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", &cnst, tmp - cnst.bound, cnst.lambda);
   }
 
-  xbt_swag_foreach(_var, var_list)
-  {
-    var = static_cast<lmm_variable_t>(_var);
-    if (not var->sharing_weight)
+  for (s_lmm_variable_t const& var : var_list) {
+    if (not var.sharing_weight)
       break;
-    if (var->bound < 0)
+    if (var.bound < 0)
       continue;
-    XBT_DEBUG("Checking feasability for variable (%p): sat = %f mu = %f", var, var->value - var->bound, var->mu);
+    XBT_DEBUG("Checking feasability for variable (%p): sat = %f mu = %f", &var, var.value - var.bound, var.mu);
 
-    if (double_positive(var->value - var->bound, sg_maxmin_precision)) {
+    if (double_positive(var.value - var.bound, sg_maxmin_precision)) {
       if (warn)
-        XBT_WARN("The variable (%p) is too large. Expected less than %f and got %f", var, var->bound, var->value);
+        XBT_WARN("The variable (%p) is too large. Expected less than %f and got %f", &var, var.bound, var.value);
       return 0;
     }
   }
   return 1;
 }
 
-static double new_value(lmm_variable_t var)
+static double new_value(const s_lmm_variable_t& var)
 {
   double tmp = 0;
 
-  for (s_lmm_element_t const& elem : var->cnsts) {
+  for (s_lmm_element_t const& elem : var.cnsts) {
     tmp += elem.constraint->lambda;
   }
-  if (var->bound > 0)
-    tmp += var->mu;
-  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", var, tmp, var->sharing_weight);
+  if (var.bound > 0)
+    tmp += var.mu;
+  XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", &var, tmp, var.sharing_weight);
   // uses the partial differential inverse function
-  return var->func_fpi(var, tmp);
+  return var.func_fpi(var, tmp);
 }
 
-static double new_mu(lmm_variable_t var)
+static double new_mu(const s_lmm_variable_t& var)
 {
   double mu_i    = 0.0;
   double sigma_i = 0.0;
 
-  for (s_lmm_element_t const& elem : var->cnsts) {
+  for (s_lmm_element_t const& elem : var.cnsts) {
     sigma_i += elem.constraint->lambda;
   }
-  mu_i = var->func_fp(var, var->bound) - sigma_i;
+  mu_i = var.func_fp(var, var.bound) - sigma_i;
   if (mu_i < 0.0)
     return 0.0;
   return mu_i;
 }
 
-static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
+template <class VarList, class CnstList>
+static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
 {
-  void* _cnst;
-  void* _var;
-  lmm_constraint_t cnst = nullptr;
-  lmm_variable_t var    = nullptr;
-
   double obj = 0.0;
 
-  xbt_swag_foreach(_var, var_list)
-  {
-    var            = static_cast<lmm_variable_t>(_var);
+  for (s_lmm_variable_t const& var : var_list) {
     double sigma_i = 0.0;
 
-    if (not var->sharing_weight)
+    if (not var.sharing_weight)
       break;
 
-    for (s_lmm_element_t const& elem : var->cnsts)
+    for (s_lmm_element_t const& elem : var.cnsts)
       sigma_i += elem.constraint->lambda;
 
-    if (var->bound > 0)
-      sigma_i += var->mu;
+    if (var.bound > 0)
+      sigma_i += var.mu;
 
-    XBT_DEBUG("var %p : sigma_i = %1.20f", var, sigma_i);
+    XBT_DEBUG("var %p : sigma_i = %1.20f", &var, sigma_i);
 
-    obj += var->func_f(var, var->func_fpi(var, sigma_i)) - sigma_i * var->func_fpi(var, sigma_i);
+    obj += var.func_f(var, var.func_fpi(var, sigma_i)) - sigma_i * var.func_fpi(var, sigma_i);
 
-    if (var->bound > 0)
-      obj += var->mu * var->bound;
+    if (var.bound > 0)
+      obj += var.mu * var.bound;
   }
 
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    cnst = static_cast<lmm_constraint_t>(_cnst);
-    obj += cnst->lambda * cnst->bound;
-  }
+  for (s_lmm_constraint_t const& cnst : cnst_list)
+    obj += cnst.lambda * cnst.bound;
 
   return obj;
 }
@@ -183,44 +160,38 @@ void lagrange_solve(lmm_system_t sys)
     return;
 
   /* Initialize lambda. */
-  xbt_swag_t cnst_list = &(sys->active_constraint_set);
-  void* _cnst;
-  xbt_swag_foreach(_cnst, cnst_list)
-  {
-    lmm_constraint_t cnst = (lmm_constraint_t)_cnst;
-    cnst->lambda          = 1.0;
-    cnst->new_lambda      = 2.0;
-    XBT_DEBUG("#### cnst(%p)->lambda :  %e", cnst, cnst->lambda);
+  auto& cnst_list = sys->active_constraint_set;
+  for (s_lmm_constraint_t& cnst : cnst_list) {
+    cnst.lambda     = 1.0;
+    cnst.new_lambda = 2.0;
+    XBT_DEBUG("#### cnst(%p)->lambda :  %e", &cnst, cnst.lambda);
   }
 
   /*
    * Initialize the var list variable with only the active variables.
    * Associate an index in the swag variables. Initialize mu.
    */
-  xbt_swag_t var_list = &(sys->variable_set);
-  void* _var;
-  xbt_swag_foreach(_var, var_list)
-  {
-    lmm_variable_t var = static_cast<lmm_variable_t>(_var);
-    if (not var->sharing_weight)
-      var->value = 0.0;
+  auto& var_list = sys->variable_set;
+  for (s_lmm_variable_t& var : var_list) {
+    if (not var.sharing_weight)
+      var.value = 0.0;
     else {
-      if (var->bound < 0.0) {
-        XBT_DEBUG("#### NOTE var(%p) is a boundless variable", var);
-        var->mu = -1.0;
+      if (var.bound < 0.0) {
+        XBT_DEBUG("#### NOTE var(%p) is a boundless variable", &var);
+        var.mu = -1.0;
       } else {
-        var->mu     = 1.0;
-        var->new_mu = 2.0;
+        var.mu     = 1.0;
+        var.new_mu = 2.0;
       }
-      var->value = new_value(var);
-      XBT_DEBUG("#### var(%p) ->weight :  %e", var, var->sharing_weight);
-      XBT_DEBUG("#### var(%p) ->mu :  %e", var, var->mu);
-      XBT_DEBUG("#### var(%p) ->weight: %e", var, var->sharing_weight);
-      XBT_DEBUG("#### var(%p) ->bound: %e", var, var->bound);
-      auto weighted = std::find_if(begin(var->cnsts), end(var->cnsts),
+      var.value = new_value(var);
+      XBT_DEBUG("#### var(%p) ->weight :  %e", &var, var.sharing_weight);
+      XBT_DEBUG("#### var(%p) ->mu :  %e", &var, var.mu);
+      XBT_DEBUG("#### var(%p) ->weight: %e", &var, var.sharing_weight);
+      XBT_DEBUG("#### var(%p) ->bound: %e", &var, var.bound);
+      auto weighted = std::find_if(begin(var.cnsts), end(var.cnsts),
                                    [](s_lmm_element_t const& x) { return x.consumption_weight != 0.0; });
-      if (weighted == end(var->cnsts))
-        var->value = 1.0;
+      if (weighted == end(var.cnsts))
+        var.value = 1.0;
     }
   }
 
@@ -235,14 +206,12 @@ void lagrange_solve(lmm_system_t sys)
     XBT_DEBUG("-------------- Gradient Descent ----------");
 
     /* Improve the value of mu_i */
-    xbt_swag_foreach(_var, var_list)
-    {
-      lmm_variable_t var = static_cast<lmm_variable_t>(_var);
-      if (var->sharing_weight && var->bound >= 0) {
-        XBT_DEBUG("Working on var (%p)", var);
-        var->new_mu = new_mu(var);
-        XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var, var->mu, var->new_mu);
-        var->mu = var->new_mu;
+    for (s_lmm_variable_t& var : var_list) {
+      if (var.sharing_weight && var.bound >= 0) {
+        XBT_DEBUG("Working on var (%p)", &var);
+        var.new_mu = new_mu(var);
+        XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", &var, var.mu, var.new_mu);
+        var.mu = var.new_mu;
 
         double new_obj = dual_objective(var_list, cnst_list);
         XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj, obj - new_obj);
@@ -252,13 +221,11 @@ void lagrange_solve(lmm_system_t sys)
     }
 
     /* Improve the value of lambda_i */
-    xbt_swag_foreach(_cnst, cnst_list)
-    {
-      lmm_constraint_t cnst = static_cast<lmm_constraint_t>(_cnst);
-      XBT_DEBUG("Working on cnst (%p)", cnst);
-      cnst->new_lambda = dichotomy(cnst->lambda, partial_diff_lambda, cnst, dichotomy_min_error);
-      XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
-      cnst->lambda = cnst->new_lambda;
+    for (s_lmm_constraint_t& cnst : cnst_list) {
+      XBT_DEBUG("Working on cnst (%p)", &cnst);
+      cnst.new_lambda = dichotomy(cnst.lambda, partial_diff_lambda, cnst, dichotomy_min_error);
+      XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda, cnst.new_lambda);
+      cnst.lambda = cnst.new_lambda;
 
       double new_obj = dual_objective(var_list, cnst_list);
       XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj, obj - new_obj);
@@ -269,18 +236,16 @@ void lagrange_solve(lmm_system_t sys)
     /* Now computes the values of each variable (\rho) based on the values of \lambda and \mu. */
     XBT_DEBUG("-------------- Check convergence ----------");
     overall_modification = 0;
-    xbt_swag_foreach(_var, var_list)
-    {
-      lmm_variable_t var = static_cast<lmm_variable_t>(_var);
-      if (var->sharing_weight <= 0)
-        var->value = 0.0;
+    for (s_lmm_variable_t& var : var_list) {
+      if (var.sharing_weight <= 0)
+        var.value = 0.0;
       else {
         double tmp = new_value(var);
 
-        overall_modification = std::max(overall_modification, fabs(var->value - tmp));
+        overall_modification = std::max(overall_modification, fabs(var.value - tmp));
 
-        var->value = tmp;
-        XBT_DEBUG("New value of var (%p)  = %e, overall_modification = %e", var, var->value, overall_modification);
+        var.value = tmp;
+        XBT_DEBUG("New value of var (%p)  = %e, overall_modification = %e", &var, var.value, overall_modification);
       }
     }
 
@@ -315,7 +280,8 @@ void lagrange_solve(lmm_system_t sys)
  *
  * @return a double corresponding to the result of the dichotomy process
  */
-static double dichotomy(double init, double diff(double, void*), void* var_cnst, double min_error)
+static double dichotomy(double init, double diff(double, const s_lmm_constraint_t&), const s_lmm_constraint_t& cnst,
+                        double min_error)
 {
   double min = init;
   double max = init;
@@ -333,15 +299,15 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
 
   overall_error = 1;
 
-  diff_0 = diff(1e-16, var_cnst);
+  diff_0 = diff(1e-16, cnst);
   if (diff_0 >= 0) {
     XBT_CDEBUG(surf_lagrange_dichotomy, "returning 0.0 (diff = %e)", diff_0);
     XBT_OUT();
     return 0.0;
   }
 
-  double min_diff = diff(min, var_cnst);
-  double max_diff = diff(max, var_cnst);
+  double min_diff = diff(min, cnst);
+  double max_diff = diff(max, cnst);
 
   while (overall_error > min_error) {
     XBT_CDEBUG(surf_lagrange_dichotomy, "[min, max] = [%1.20f, %1.20f] || diffmin, diffmax = %1.20f, %1.20f", min, max,
@@ -351,7 +317,7 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
       if (min == max) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing min");
         min      = min / 2.0;
-        min_diff = diff(min, var_cnst);
+        min_diff = diff(min, cnst);
       } else {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing max");
         max      = min;
@@ -361,7 +327,7 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
       if (min == max) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing max");
         max      = max * 2.0;
-        max_diff = diff(max, var_cnst);
+        max_diff = diff(max, cnst);
       } else {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing min");
         min      = max;
@@ -378,7 +344,7 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
                   min, max - min, min_diff, max_diff);
         break;
       }
-      middle_diff = diff(middle, var_cnst);
+      middle_diff = diff(middle, cnst);
 
       if (middle_diff < 0) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing min");
@@ -415,44 +381,38 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
   return ((min + max) / 2.0);
 }
 
-static double partial_diff_lambda(double lambda, void* param_cnst)
+static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst)
 {
-  lmm_constraint_t cnst = static_cast<lmm_constraint_t>(param_cnst);
   double diff           = 0.0;
 
   XBT_IN();
 
-  XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", cnst);
+  XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", &cnst);
 
-  xbt_swag_t elem_list = &(cnst->enabled_element_set);
-  void* _elem;
-  xbt_swag_foreach(_elem, elem_list)
-  {
-    lmm_element_t elem = static_cast<lmm_element_t>(_elem);
-    lmm_variable_t var = elem->variable;
-    xbt_assert(var->sharing_weight > 0);
-    XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", var);
+  for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+    s_lmm_variable_t& var = *elem.variable;
+    xbt_assert(var.sharing_weight > 0);
+    XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", &var);
     // Initialize the summation variable
     double sigma_i = 0.0;
 
     // Compute sigma_i
-    for (s_lmm_element_t const& elem : var->cnsts) {
-      sigma_i += elem.constraint->lambda;
-    }
+    for (s_lmm_element_t const& elem2 : var.cnsts)
+      sigma_i += elem2.constraint->lambda;
 
     // add mu_i if this flow has a RTT constraint associated
-    if (var->bound > 0)
-      sigma_i += var->mu;
+    if (var.bound > 0)
+      sigma_i += var.mu;
 
-    // replace value of cnst->lambda by the value of parameter lambda
-    sigma_i = (sigma_i - cnst->lambda) + lambda;
+    // replace value of cnst.lambda by the value of parameter lambda
+    sigma_i = (sigma_i - cnst.lambda) + lambda;
 
-    diff += -var->func_fpi(var, sigma_i);
+    diff += -var.func_fpi(var, sigma_i);
   }
 
-  diff += cnst->bound;
+  diff += cnst.bound;
 
-  XBT_CDEBUG(surf_lagrange_dichotomy, "d D/d lambda for cnst (%p) at %1.20f = %1.20f", cnst, lambda, diff);
+  XBT_CDEBUG(surf_lagrange_dichotomy, "d D/d lambda for cnst (%p) at %1.20f = %1.20f", &cnst, lambda, diff);
   XBT_OUT();
   return diff;
 }
@@ -465,9 +425,9 @@ static double partial_diff_lambda(double lambda, void* param_cnst)
  *  programming.
  *
  */
-void lmm_set_default_protocol_function(double (*func_f)(lmm_variable_t var, double x),
-                                       double (*func_fp)(lmm_variable_t var, double x),
-                                       double (*func_fpi)(lmm_variable_t var, double x))
+void lmm_set_default_protocol_function(double (*func_f)(const s_lmm_variable_t& var, double x),
+                                       double (*func_fp)(const s_lmm_variable_t& var, double x),
+                                       double (*func_fpi)(const s_lmm_variable_t& var, double x))
 {
   func_f_def   = func_f;
   func_fp_def  = func_fp;
@@ -482,22 +442,22 @@ void lmm_set_default_protocol_function(double (*func_f)(lmm_variable_t var, doub
  * Therefore: $fp(x) = \frac{\alpha D_f}{x}$
  * Therefore: $fpi(x) = \frac{\alpha D_f}{x}$
  */
-double func_vegas_f(lmm_variable_t var, double x)
+double func_vegas_f(const s_lmm_variable_t& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var->sharing_weight * log(x);
+  return VEGAS_SCALING * var.sharing_weight * log(x);
 }
 
-double func_vegas_fp(lmm_variable_t var, double x)
+double func_vegas_fp(const s_lmm_variable_t& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return VEGAS_SCALING * var->sharing_weight / x;
+  return VEGAS_SCALING * var.sharing_weight / x;
 }
 
-double func_vegas_fpi(lmm_variable_t var, double x)
+double func_vegas_fpi(const s_lmm_variable_t& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
-  return var->sharing_weight / (x / VEGAS_SCALING);
+  return var.sharing_weight / (x / VEGAS_SCALING);
 }
 
 /*
@@ -505,27 +465,27 @@ double func_vegas_fpi(lmm_variable_t var, double x)
  * Therefore: $fp(x)  = \frac{3}{3 D_f^2 x^2+2}$
  * Therefore: $fpi(x)  = \sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
  */
-double func_reno_f(lmm_variable_t var, double x)
+double func_reno_f(const s_lmm_variable_t& var, double x)
 {
-  xbt_assert(var->sharing_weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
 
-  return RENO_SCALING * sqrt(3.0 / 2.0) / var->sharing_weight * atan(sqrt(3.0 / 2.0) * var->sharing_weight * x);
+  return RENO_SCALING * sqrt(3.0 / 2.0) / var.sharing_weight * atan(sqrt(3.0 / 2.0) * var.sharing_weight * x);
 }
 
-double func_reno_fp(lmm_variable_t var, double x)
+double func_reno_fp(const s_lmm_variable_t& var, double x)
 {
-  return RENO_SCALING * 3.0 / (3.0 * var->sharing_weight * var->sharing_weight * x * x + 2.0);
+  return RENO_SCALING * 3.0 / (3.0 * var.sharing_weight * var.sharing_weight * x * x + 2.0);
 }
 
-double func_reno_fpi(lmm_variable_t var, double x)
+double func_reno_fpi(const s_lmm_variable_t& var, double x)
 {
   double res_fpi;
 
-  xbt_assert(var->sharing_weight > 0.0, "Don't call me with stupid values!");
+  xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
   xbt_assert(x > 0.0, "Don't call me with stupid values!");
 
-  res_fpi = 1.0 / (var->sharing_weight * var->sharing_weight * (x / RENO_SCALING)) -
-            2.0 / (3.0 * var->sharing_weight * var->sharing_weight);
+  res_fpi = 1.0 / (var.sharing_weight * var.sharing_weight * (x / RENO_SCALING)) -
+            2.0 / (3.0 * var.sharing_weight * var.sharing_weight);
   if (res_fpi <= 0.0)
     return 0.0;
   return sqrt(res_fpi);
@@ -536,22 +496,22 @@ double func_reno_fpi(lmm_variable_t var, double x)
  * Therefore:   $fp(x)  = 2/(Weight*x + 2)
  * Therefore:   $fpi(x) = (2*Weight)/x - 4
  */
-double func_reno2_f(lmm_variable_t var, double x)
+double func_reno2_f(const s_lmm_variable_t& var, double x)
 {
-  xbt_assert(var->sharing_weight > 0.0, "Don't call me with stupid values!");
-  return RENO2_SCALING * (1.0 / var->sharing_weight) *
-         log((x * var->sharing_weight) / (2.0 * x * var->sharing_weight + 3.0));
+  xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
+  return RENO2_SCALING * (1.0 / var.sharing_weight) *
+         log((x * var.sharing_weight) / (2.0 * x * var.sharing_weight + 3.0));
 }
 
-double func_reno2_fp(lmm_variable_t var, double x)
+double func_reno2_fp(const s_lmm_variable_t& var, double x)
 {
-  return RENO2_SCALING * 3.0 / (var->sharing_weight * x * (2.0 * var->sharing_weight * x + 3.0));
+  return RENO2_SCALING * 3.0 / (var.sharing_weight * x * (2.0 * var.sharing_weight * x + 3.0));
 }
 
-double func_reno2_fpi(lmm_variable_t var, double x)
+double func_reno2_fpi(const s_lmm_variable_t& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values!");
-  double tmp     = x * var->sharing_weight * var->sharing_weight;
+  double tmp     = x * var.sharing_weight * var.sharing_weight;
   double res_fpi = tmp * (9.0 * x + 24.0);
 
   if (res_fpi <= 0.0)

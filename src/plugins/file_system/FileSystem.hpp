@@ -70,7 +70,7 @@ private:
   void* userdata_             = nullptr;
 };
 
-class FileSystemStorageExt {
+XBT_PUBLIC_CLASS FileSystemStorageExt {
 public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
   explicit FileSystemStorageExt(Storage* ptr);

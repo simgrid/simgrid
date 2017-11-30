@@ -295,7 +295,7 @@ bool CpuL07::isUsed(){
 /** @brief take into account changes of speed (either load or max) */
 void CpuL07::onSpeedChange() {
   lmm_variable_t var = nullptr;
-  lmm_element_t elem = nullptr;
+  const_lmm_element_t elem = nullptr;
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), speed_.peak * speed_.scale);
   while ((var = constraint()->get_variable(&elem))) {
@@ -365,7 +365,7 @@ void LinkL07::setLatency(double value)
 {
   lmm_variable_t var = nullptr;
   L07Action *action;
-  lmm_element_t elem = nullptr;
+  const_lmm_element_t elem = nullptr;
 
   latency_.peak = value;
   while ((var = constraint()->get_variable(&elem))) {
