@@ -13,7 +13,7 @@ static int on_exit(void*, void*)
   return 0;
 }
 
-static void victim()
+static void victimA_fun()
 {
   simgrid::s4u::this_actor::onExit(on_exit, nullptr);
   XBT_INFO("Hello!");
@@ -24,19 +24,29 @@ static void victim()
   XBT_INFO("Bye!"); /* - But will never reach the end of it */
 }
 
+static void victimB_fun()
+{
+  XBT_INFO("Terminate before being killed");
+}
+
 static void killer()
 {
   XBT_INFO("Hello!"); /* - First start a victim process */
-  simgrid::s4u::ActorPtr poor_victim =
-      simgrid::s4u::Actor::createActor("victim", simgrid::s4u::Host::by_name("Fafard"), victim);
+  simgrid::s4u::ActorPtr victimA =
+      simgrid::s4u::Actor::createActor("victim A", simgrid::s4u::Host::by_name("Fafard"), victimA_fun);
+  simgrid::s4u::ActorPtr victimB =
+      simgrid::s4u::Actor::createActor("victim B", simgrid::s4u::Host::by_name("Jupiter"), victimB_fun);
   simgrid::s4u::this_actor::sleep_for(10); /* - Wait for 10 seconds */
 
-  XBT_INFO("Resume the victim"); /* - Resume it from its suspended state */
-  poor_victim->resume();
+  XBT_INFO("Resume the victim A"); /* - Resume it from its suspended state */
+  victimA->resume();
   simgrid::s4u::this_actor::sleep_for(2);
 
-  XBT_INFO("Kill the victim"); /* - and then kill it */
-  poor_victim->kill();
+  XBT_INFO("Kill the victim A"); /* - and then kill it */
+  victimA->kill();
+
+  XBT_INFO("Kill victimB, even if it's already dead"); /* that's a no-op, there is no zombies in SimGrid */
+  victimB->kill();
   simgrid::s4u::this_actor::sleep_for(1);
 
   XBT_INFO("Killing everybody but myself");
@@ -54,12 +64,8 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   e.loadPlatform(argv[1]); /* - Load the platform description */
-  /* - Create and deploy killer process, that will create the victim process  */
+  /* - Create and deploy killer process, that will create the victim actors  */
   simgrid::s4u::Actor::createActor("killer", simgrid::s4u::Host::by_name("Tremblay"), killer);
-  simgrid::s4u::Actor::createActor("Alice", simgrid::s4u::Host::by_name("Jupiter"), victim);
-  simgrid::s4u::Actor::createActor("Bob", simgrid::s4u::Host::by_name("Ginette"), victim);
-  simgrid::s4u::Actor::createActor("Carol", simgrid::s4u::Host::by_name("Bourassa"), victim);
-  simgrid::s4u::Actor::createActor("Dave", simgrid::s4u::Host::by_name("Boivin"), victim);
 
   e.run(); /* - Run the simulation */
 

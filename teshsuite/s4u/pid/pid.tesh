@@ -1,4 +1,4 @@
-$ ./pid ${srcdir:=.}/../../../examples/platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ./pid ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (sendpid@Tremblay) Sending pid of "1".
 > [  0.000000] (sendpid@Tremblay) Sending pid of "2".
 > [  0.000000] (sendpid@Tremblay) Sending pid of "3".
@@ -12,7 +12,7 @@ $ ./pid ${srcdir:=.}/../../../examples/platforms/small_platform.xml "--log=root.
 > [  0.001206] (killall@Tremblay) Killing process "3".
 > [  0.001206] (sendpid@Tremblay) Process "3" killed.
 
-$ ./pid ${srcdir:=.}/../../../examples/platforms/small_platform.xml 2 "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+$ ./pid ${platfdir}/small_platform.xml 2 "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (sendpid@Tremblay) Sending pid of "2".
 > [  0.000000] (sendpid@Tremblay) Sending pid of "3".
 > [  0.000000] (sendpid@Tremblay) Sending pid of "4".

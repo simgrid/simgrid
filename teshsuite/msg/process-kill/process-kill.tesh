@@ -1,0 +1,14 @@
+#! ./tesh
+
+p Testing a MSG_process_kill function
+
+$ $SG_TEST_EXENV ${bindir:=.}/process-kill ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:killer@Tremblay) Hello!
+> [  0.000000] (2:victim A@Fafard) Hello!
+> [  0.000000] (2:victim A@Fafard) Suspending myself
+> [  0.000000] (3:victim B@Bourassa) Terminates before being killed
+> [ 10.000000] (1:killer@Tremblay) Resume victimA
+> [ 10.000000] (1:killer@Tremblay) Kill victimA
+> [ 10.000000] (1:killer@Tremblay) Kill victimB, even if it's already dead
+> [ 10.000000] (1:killer@Tremblay) OK, goodbye now. I commit a suicide.
+> [ 10.000000] (0:maestro@) Simulation time 10
