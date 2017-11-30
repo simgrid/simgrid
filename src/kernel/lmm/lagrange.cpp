@@ -39,9 +39,10 @@ double (*func_fpi_def)(const s_lmm_variable_t&, double);
 // solves the proportional fairness using a Lagrangian optimization with dichotomy step
 void lagrange_solve(lmm_system_t sys);
 // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-static double dichotomy(double init, double diff(double, void*), void* var_cnst, double min_error);
-// computes the value of the differential of constraint param_cnst applied to lambda
-static double partial_diff_lambda(double lambda, void* param_cnst);
+static double dichotomy(double init, double diff(double, const s_lmm_constraint_t&), const s_lmm_constraint_t& cnst,
+                        double min_error);
+// computes the value of the differential of constraint cnst applied to lambda
+static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst);
 
 static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list, int warn)
 {
@@ -256,7 +257,7 @@ void lagrange_solve(lmm_system_t sys)
     {
       lmm_constraint_t cnst = static_cast<lmm_constraint_t>(_cnst);
       XBT_DEBUG("Working on cnst (%p)", cnst);
-      cnst->new_lambda = dichotomy(cnst->lambda, partial_diff_lambda, cnst, dichotomy_min_error);
+      cnst->new_lambda = dichotomy(cnst->lambda, partial_diff_lambda, *cnst, dichotomy_min_error);
       XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", cnst, cnst->lambda, cnst->new_lambda);
       cnst->lambda = cnst->new_lambda;
 
@@ -315,7 +316,8 @@ void lagrange_solve(lmm_system_t sys)
  *
  * @return a double corresponding to the result of the dichotomy process
  */
-static double dichotomy(double init, double diff(double, void*), void* var_cnst, double min_error)
+static double dichotomy(double init, double diff(double, const s_lmm_constraint_t&), const s_lmm_constraint_t& cnst,
+                        double min_error)
 {
   double min = init;
   double max = init;
@@ -333,15 +335,15 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
 
   overall_error = 1;
 
-  diff_0 = diff(1e-16, var_cnst);
+  diff_0 = diff(1e-16, cnst);
   if (diff_0 >= 0) {
     XBT_CDEBUG(surf_lagrange_dichotomy, "returning 0.0 (diff = %e)", diff_0);
     XBT_OUT();
     return 0.0;
   }
 
-  double min_diff = diff(min, var_cnst);
-  double max_diff = diff(max, var_cnst);
+  double min_diff = diff(min, cnst);
+  double max_diff = diff(max, cnst);
 
   while (overall_error > min_error) {
     XBT_CDEBUG(surf_lagrange_dichotomy, "[min, max] = [%1.20f, %1.20f] || diffmin, diffmax = %1.20f, %1.20f", min, max,
@@ -351,7 +353,7 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
       if (min == max) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing min");
         min      = min / 2.0;
-        min_diff = diff(min, var_cnst);
+        min_diff = diff(min, cnst);
       } else {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing max");
         max      = min;
@@ -361,7 +363,7 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
       if (min == max) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing max");
         max      = max * 2.0;
-        max_diff = diff(max, var_cnst);
+        max_diff = diff(max, cnst);
       } else {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing min");
         min      = max;
@@ -378,7 +380,7 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
                   min, max - min, min_diff, max_diff);
         break;
       }
-      middle_diff = diff(middle, var_cnst);
+      middle_diff = diff(middle, cnst);
 
       if (middle_diff < 0) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Increasing min");
@@ -415,16 +417,15 @@ static double dichotomy(double init, double diff(double, void*), void* var_cnst,
   return ((min + max) / 2.0);
 }
 
-static double partial_diff_lambda(double lambda, void* param_cnst)
+static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst)
 {
-  lmm_constraint_t cnst = static_cast<lmm_constraint_t>(param_cnst);
   double diff           = 0.0;
 
   XBT_IN();
 
-  XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", cnst);
+  XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", &cnst);
 
-  xbt_swag_t elem_list = &(cnst->enabled_element_set);
+  const_xbt_swag_t elem_list = &cnst.enabled_element_set;
   void* _elem;
   xbt_swag_foreach(_elem, elem_list)
   {
@@ -444,15 +445,15 @@ static double partial_diff_lambda(double lambda, void* param_cnst)
     if (var->bound > 0)
       sigma_i += var->mu;
 
-    // replace value of cnst->lambda by the value of parameter lambda
-    sigma_i = (sigma_i - cnst->lambda) + lambda;
+    // replace value of cnst.lambda by the value of parameter lambda
+    sigma_i = (sigma_i - cnst.lambda) + lambda;
 
     diff += -var->func_fpi(*var, sigma_i);
   }
 
-  diff += cnst->bound;
+  diff += cnst.bound;
 
-  XBT_CDEBUG(surf_lagrange_dichotomy, "d D/d lambda for cnst (%p) at %1.20f = %1.20f", cnst, lambda, diff);
+  XBT_CDEBUG(surf_lagrange_dichotomy, "d D/d lambda for cnst (%p) at %1.20f = %1.20f", &cnst, lambda, diff);
   XBT_OUT();
   return diff;
 }
