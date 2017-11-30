@@ -87,7 +87,8 @@ private:
   sg_size_t size_     = 0;
 };
 
-class FileDescriptorHostExt {
+XBT_PUBLIC_CLASS FileDescriptorHostExt
+{
 public:
   static simgrid::xbt::Extension<Host, FileDescriptorHostExt> EXTENSION_ID;
   FileDescriptorHostExt() = default;
