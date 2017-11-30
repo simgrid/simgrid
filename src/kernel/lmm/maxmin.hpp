@@ -18,7 +18,8 @@
 #include <vector>
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace lmm {
 
 /** @addtogroup SURF_lmm
  * @details
@@ -166,7 +167,8 @@ XBT_PUBLIC(double) func_vegas_fpi(lmm_variable_t var, double x);
  * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or
  * vice-versa list all constraints for a given variable.
  */
-XBT_PUBLIC_CLASS s_lmm_element_t {
+XBT_PUBLIC_CLASS s_lmm_element_t
+{
 public:
   int get_concurrency() const;
   void decrease_concurrency();
@@ -203,7 +205,8 @@ struct s_lmm_constraint_light_t {
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero.
  *     LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
  */
-XBT_PUBLIC_CLASS s_lmm_constraint_t {
+XBT_PUBLIC_CLASS s_lmm_constraint_t
+{
 public:
   s_lmm_constraint_t() = default;
   s_lmm_constraint_t(void* id_value, double bound_value);
@@ -270,7 +273,7 @@ public:
    * @param elem A element of constraint of the constraint or NULL
    * @return A variable associated to a constraint
    */
-  lmm_variable_t get_variable(lmm_element_t* elem) const;
+  lmm_variable_t get_variable(lmm_element_t * elem) const;
 
   /**
    * @brief Get a var associated to a constraint
@@ -280,7 +283,7 @@ public:
    * @param numelem parameter representing the number of elements to go
    * @return A variable associated to a constraint
    */
-  lmm_variable_t get_variable_safe(lmm_element_t* elem, lmm_element_t* nextelem, int* numelem) const;
+  lmm_variable_t get_variable_safe(lmm_element_t * elem, lmm_element_t * nextelem, int* numelem) const;
 
   /**
    * @brief Get the data associated to a constraint
@@ -323,9 +326,10 @@ private:
  * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as
  * soon as possible we enable the variable with desired weight
  */
-XBT_PUBLIC_CLASS s_lmm_variable_t {
+XBT_PUBLIC_CLASS s_lmm_variable_t
+{
 public:
-  void initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
+  void initialize(simgrid::surf::Action * id_value, double sharing_weight_value, double bound_value,
                   int number_of_constraints, unsigned visited_value);
 
   /**
@@ -409,9 +413,9 @@ public:
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
-  double (*func_f)(s_lmm_variable_t* var, double x);   /* (f)    */
-  double (*func_fp)(s_lmm_variable_t* var, double x);  /* (f')    */
-  double (*func_fpi)(s_lmm_variable_t* var, double x); /* (f')^{-1}    */
+  double (*func_f)(s_lmm_variable_t * var, double x);   /* (f)    */
+  double (*func_fp)(s_lmm_variable_t * var, double x);  /* (f')    */
+  double (*func_fpi)(s_lmm_variable_t * var, double x); /* (f')^{-1}    */
   /* \end{For Lagrange only} */
 
 private:
@@ -430,7 +434,8 @@ inline void s_lmm_element_t::make_inactive()
 /**
  * @brief LMM system
  */
-XBT_PUBLIC_CLASS s_lmm_system_t {
+XBT_PUBLIC_CLASS s_lmm_system_t
+{
 public:
   /**
    * @brief Create a new Linear MaxMim system
@@ -454,7 +459,7 @@ public:
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
    * @param number_of_constraints The maximum number of constraint to associate to the variable
    */
-  lmm_variable_t variable_new(simgrid::surf::Action* id, double weight_value, double bound, int number_of_constraints);
+  lmm_variable_t variable_new(simgrid::surf::Action * id, double weight_value, double bound, int number_of_constraints);
 
   /**
    * @brief Free a variable
@@ -577,6 +582,7 @@ extern XBT_PRIVATE double (*func_fp_def)(lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fpi_def)(lmm_variable_t, double);
 
 /** @} */
+}
 }
 }
 

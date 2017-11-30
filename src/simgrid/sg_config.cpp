@@ -11,9 +11,9 @@
 #include "simgrid/instr.h"
 #include "simgrid/simix.h"
 #include "simgrid_config.h" /* what was compiled in? */
+#include "src/kernel/lmm/maxmin.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/maxmin.hpp"
 #include "surf/surf.hpp"
 #include "xbt/config.h"
 #include "xbt/config.hpp"

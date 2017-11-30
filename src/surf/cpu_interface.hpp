@@ -7,7 +7,7 @@
 #define SURF_CPU_INTERFACE_HPP_
 
 #include "simgrid/s4u/Host.hpp"
-#include "surf/maxmin.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 
 #include <list>
 

@@ -9,7 +9,6 @@
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 #include "src/internal_config.h"
-#include "surf/datatypes.hpp"
 #include "xbt/config.h"
 #include "xbt/dict.h"
 #include "xbt/dynar.h"

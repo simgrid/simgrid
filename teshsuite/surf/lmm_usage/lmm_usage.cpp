@@ -7,8 +7,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/maxmin.hpp"
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h"
@@ -92,11 +92,13 @@ static void test1(method_t method)
   double b = 10.0;
 
   if (method == LAGRANGE_VEGAS)
-    lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
+    simgrid::kernel::lmm::lmm_set_default_protocol_function(
+        simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp, simgrid::kernel::lmm::func_vegas_fpi);
   else if (method == LAGRANGE_RENO)
-    lmm_set_default_protocol_function(func_reno_f, func_reno_fpi, func_reno_fpi);
+    simgrid::kernel::lmm::lmm_set_default_protocol_function(
+        simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fpi, simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys    = new s_lmm_system_t(true);
+  lmm_system_t Sys    = new simgrid::kernel::lmm::s_lmm_system_t(true);
   lmm_constraint_t L1 = Sys->constraint_new(nullptr, a);
   lmm_constraint_t L2 = Sys->constraint_new(nullptr, b);
   lmm_constraint_t L3 = Sys->constraint_new(nullptr, a);
@@ -178,11 +180,13 @@ static void test1(method_t method)
 static void test2(method_t method)
 {
   if (method == LAGRANGE_VEGAS)
-    lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
+    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
+                                      simgrid::kernel::lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
+    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
+                                      simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys      = new s_lmm_system_t(true);
+  lmm_system_t Sys      = new simgrid::kernel::lmm::s_lmm_system_t(true);
   lmm_constraint_t CPU1 = Sys->constraint_new(nullptr, 200.0);
   lmm_constraint_t CPU2 = Sys->constraint_new(nullptr, 100.0);
 
@@ -249,11 +253,13 @@ static void test3(method_t method)
   A[14][15] =                                        1.0;
 
   if (method == LAGRANGE_VEGAS)
-    lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
+    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
+                                      simgrid::kernel::lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
+    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
+                                      simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys = new s_lmm_system_t(true);
+  lmm_system_t Sys = new simgrid::kernel::lmm::s_lmm_system_t(true);
 
   /* Creates the constraints */
   lmm_constraint_t* tmp_cnst = new lmm_constraint_t[15];

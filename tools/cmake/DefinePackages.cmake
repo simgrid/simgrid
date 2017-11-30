@@ -6,8 +6,6 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.h
-  src/include/surf/datatypes.hpp
-  src/include/surf/maxmin.hpp
   src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
   src/mc/mc_mmu.hpp
@@ -303,6 +301,7 @@ set(NS3_SRC  src/surf/network_ns3.cpp
 set(SURF_SRC
   src/kernel/lmm/fair_bottleneck.cpp
   src/kernel/lmm/lagrange.cpp
+  src/kernel/lmm/maxmin.hpp
   src/kernel/lmm/maxmin.cpp
   
   src/kernel/routing/ClusterZone.cpp

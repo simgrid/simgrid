@@ -37,7 +37,13 @@ namespace activity {
 
   class MailboxImpl;
 }
-
+namespace lmm {
+class s_lmm_element_t;
+class s_lmm_variable_t;
+class s_lmm_constraint_t;
+class s_lmm_constraint_light_t;
+class s_lmm_system_t;
+}
 namespace routing {
   class NetPoint;
 }
@@ -80,6 +86,12 @@ typedef simgrid::simix::ActorImpl* smx_actor_t;
 typedef simgrid::simix::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 typedef simgrid::surf::StorageImpl* surf_storage_t;
+
+typedef simgrid::kernel::lmm::s_lmm_element_t* lmm_element_t;
+typedef simgrid::kernel::lmm::s_lmm_variable_t* lmm_variable_t;
+typedef simgrid::kernel::lmm::s_lmm_constraint_t* lmm_constraint_t;
+typedef simgrid::kernel::lmm::s_lmm_constraint_light_t* lmm_constraint_light_t;
+typedef simgrid::kernel::lmm::s_lmm_system_t* lmm_system_t;
 
 #else
 

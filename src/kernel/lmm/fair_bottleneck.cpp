@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf/maxmin.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 #include <algorithm>
@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d", expr);
 #define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p", expr);
 
-void simgrid::surf::bottleneck_solve(lmm_system_t sys)
+void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
 {
   void* _var;
   void* _var_next;

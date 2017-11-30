@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "StorageImpl.hpp"
-#include "surf/maxmin.hpp"
+#include "src/kernel/lmm/maxmin.hpp"
 #include "surf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
@@ -41,7 +41,7 @@ StorageImpl* StorageImpl::byName(std::string name)
 
 StorageModel::StorageModel() : Model()
 {
-  maxminSystem_ = new s_lmm_system_t(true /* lazy update */);
+  maxminSystem_ = new simgrid::kernel::lmm::s_lmm_system_t(true /* lazy update */);
 }
 
 StorageModel::~StorageModel()
