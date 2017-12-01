@@ -149,6 +149,7 @@ if(enable_model-checking AND enable_compile_optimizations)
   set(optCFLAGS "-O0 ")
   # But you can still optimize this:
   foreach(s
+      src/kernel/lmm/fair_bottleneck.cpp src/kernel/lmm/lagrange.cpp src/kernel/lmm/maxmin.cpp
       src/xbt/mmalloc/mm.c
       src/xbt/log.c src/xbt/xbt_log_appender_file.c
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
