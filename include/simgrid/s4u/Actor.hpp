@@ -309,6 +309,8 @@ XBT_PUBLIC(void) execute(double flop);
 XBT_PUBLIC(void) execute(double flop, double priority);
 
 XBT_PUBLIC(void) parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount);
+XBT_PUBLIC(void)
+parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double timeout);
 
 /** Block the actor until it gets a message from the given mailbox.
  *
