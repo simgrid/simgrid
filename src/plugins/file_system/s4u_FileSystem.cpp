@@ -465,7 +465,6 @@ int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
 int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath)
 {
   return file->remoteMove(host, fullpath);
-  ;
 }
 
 sg_size_t sg_storage_get_size_free(sg_storage_t st)
