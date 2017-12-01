@@ -19,7 +19,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
      strided_acc_onelock strided_get_indexed strided_putget_indexed contention_put contention_putget
      adlb_mimic1 lock_contention_dt acc-loc get_acc_local get_accumulate put_base put_bottom
      linked_list_bench_lock_all linked_list_bench_lock_excl manyrma2 pscw_ordering rma-contig get-struct
-     rput_local_comp racc_local_comp)
+     rput_local_comp racc_local_comp rget-testall)
     # fence_shm fetchandadd_am fetchandadd fetchandadd_tree_am fetchandadd_tree 
     #  linked_list_bench_lock_shr linked_list linked_list_fop linked_list_lockall 
     #   mcs-mutex mixedsync mutex_bench lockcontention3 reqops
@@ -61,7 +61,7 @@ foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfen
           rget-unlock overlap_wins_rma lock_nested derived-acc-flush_local large-acc-flush_local lockall_dt lockall_dt_flushall
           lockall_dt_flush nb_test lockall_dt_flushlocal lockall_dt_flushlocalall lock_contention_dt lock_dt lock_dt_flush lock_dt_flushlocal 
           racc_local_comp rput_local_comp win_shared_create win_shared_put_flush_get win_shared_rma_flush_load
-          wrma_flush_get)
+          wrma_flush_get rget-testall)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 
