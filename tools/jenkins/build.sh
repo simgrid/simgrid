@@ -123,7 +123,7 @@ cmake -G"$GENERATOR"\
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_smpi_ISP_testsuite=$(onoff test "$build_mode" = "ModelChecker") \
-  -Denable_compile_optimizations=$(onoff test "$build_mode" = "Debug") \
+  -Denable_compile_optimizations=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_smpi_MPICH3_testsuite=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
