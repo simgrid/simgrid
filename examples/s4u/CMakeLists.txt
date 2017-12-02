@@ -72,5 +72,9 @@ foreach(example actions-comm actions-storage
                 energy-link energy-ptask
                 platform-properties plugin-hostload mutex
                 io io-file-remote io-storage-raw)
-  ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u-${example}.tesh)
+  ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
+                                    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+				    --cd ${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()

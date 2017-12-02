@@ -63,20 +63,23 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1-c1s1-c3s2.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp2.5-hbp1.5.xml    PARENT_SCOPE)
 
-foreach(x get_sender host_on_off host_on_off_processes host_on_off_recv
+foreach(x 
+    actions-comm actions-storage
     async-wait async-waitall async-waitany
+    app-bittorrent
+    host_on_off host_on_off_processes host_on_off_recv
+    get_sender
     task_destroy_cancel task_listen_from task_progress 
     process-daemon process-kill process-migration process-suspend process-yield
     energy-ptask
     io-raw-storage
     trace_integration)
-  ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
+  ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" 
+                                   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+				   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/${x}
+				   --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} 
+				   ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()
-
-foreach(x actions-comm actions-storage app-bittorrent)
-  ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} ${x}.tesh)
-endforeach()
-# One context factory is enough for these ones
 
 foreach(x cloud-sharing)
   ADD_TESH(tesh-msg-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)

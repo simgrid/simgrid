@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/s4u-io-storage-raw$EXEEXT ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir}/s4u-io-storage-raw$EXEEXT ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:@denise) *** Storage info on denise ***
 > [  0.000000] (1:@denise) Storage name: Disk2, mount name: c:
 > [  0.000000] (1:@denise) Storage name: Disk4, mount name: /home
