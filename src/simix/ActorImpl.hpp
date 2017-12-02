@@ -38,7 +38,6 @@ public:
   ~ActorImpl();
 
   // TODO, replace with boost intrusive container hooks
-  s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr }; /* simix_global->process_list */
   s_xbt_swag_hookup_t synchro_hookup   = { nullptr, nullptr }; /* {mutex,cond,sem}->sleeping */
   s_xbt_swag_hookup_t host_proc_hookup = { nullptr, nullptr }; /* smx_host->process_lis */
   s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */

@@ -239,8 +239,6 @@ public:
   /** @brief Get the state set in which the action is */
   ActionList* getStateSet() const { return stateSet_; };
 
-  s_xbt_swag_hookup_t stateHookup_ = {nullptr,nullptr};
-
   simgrid::surf::Model* getModel() const { return model_; }
 
 protected:
