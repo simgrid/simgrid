@@ -140,7 +140,7 @@ also the tesh files in the example directories for details.
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
 
-@subsection s4u_ex_io Simulating disks
+@subsection s4u_ex_io Simulating disks and files
 
 The examples of this section demonstrate how to interact with the
 simulated storages.
@@ -149,6 +149,12 @@ simulated storages.
     @ref examples/s4u/io-raw-storage/s4u-io-raw-storage.cpp \n
     This example illustrates how to simply read and write data on a
     simulated storage resource.
+
+  - <b>Remote I/O</b>. 
+    @ref examples/s4u/io-file-remote/s4u-io-file-remote.cpp \n
+    I/O operations on files can also be done in a remote fashion, 
+    i.e. when the accessed disk is not mounted on the caller's host.
+
 */
 
 /**
@@ -166,7 +172,8 @@ simulated storages.
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
-
+@example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
+@example examples/s4u/io-raw-storage/s4u-io-raw-storage.cpp
 @example examples/s4u/mutex/s4u-mutex.cpp
 
 */
