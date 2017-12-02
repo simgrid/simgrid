@@ -6,6 +6,7 @@
 #ifndef SIMIX_HOST_PRIVATE_HPP
 #define SIMIX_HOST_PRIVATE_HPP
 
+#include <boost/intrusive/list.hpp>
 #include <functional>
 #include <map>
 #include <vector>
@@ -30,7 +31,9 @@ public:
   explicit Host();
   virtual ~Host();
 
-  xbt_swag_t process_list;
+  boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
+                                                                  &ActorImpl::host_process_list_hook>>
+      process_list;
   std::vector<ProcessArg*> auto_restart_processes;
   std::vector<ProcessArg*> boot_processes;
 

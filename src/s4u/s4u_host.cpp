@@ -134,10 +134,8 @@ int Host::getPstatesCount() const
  */
 void Host::actorList(std::vector<ActorPtr>* whereto)
 {
-  smx_actor_t actor = NULL;
-  xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list)
-  {
-    whereto->push_back(actor->ciface());
+  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
+    whereto->push_back(actor.ciface());
   }
 }
 
@@ -193,9 +191,8 @@ void Host::setProperty(std::string key, std::string value)
 /** Get the processes attached to the host */
 void Host::getProcesses(std::vector<ActorPtr>* list)
 {
-  smx_actor_t actor = NULL;
-  xbt_swag_foreach(actor, this->extension<simgrid::simix::Host>()->process_list) {
-    list->push_back(actor->iface());
+  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
+    list->push_back(actor.iface());
   }
 }
 

@@ -22,19 +22,15 @@ namespace simgrid {
     {
       if (not Host::EXTENSION_ID.valid())
         Host::EXTENSION_ID = s4u::Host::extension_create<simix::Host>();
-
-      simgrid::simix::ActorImpl act;
-      process_list = xbt_swag_new(xbt_swag_offset(act, host_proc_hookup));
     }
 
     Host::~Host()
     {
       /* All processes should be gone when the host is turned off (by the end of the simulation). */
-      if (xbt_swag_size(process_list) != 0) {
+      if (not process_list.empty()) {
         std::string msg     = std::string("Shutting down host, but it's not empty:");
-        smx_actor_t process = nullptr;
-
-        xbt_swag_foreach(process, process_list) msg = msg + "\n\t" + process->name.c_str();
+        for (auto const& process : process_list)
+          msg += "\n\t" + std::string(process.getName());
 
         SIMIX_display_process_status();
         THROWF(arg_error, 0, "%s", msg.c_str());
@@ -45,7 +41,6 @@ namespace simgrid {
       for (auto const& arg : boot_processes)
         delete arg;
       boot_processes.clear();
-      xbt_swag_free(process_list);
     }
 
     /** Re-starts all the actors that are marked as restartable.
@@ -78,12 +73,11 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
     h->pimpl_cpu->turnOff();
 
     /* Clean Simulator data */
-    if (xbt_swag_size(host->process_list) != 0) {
-      smx_actor_t process = nullptr;
-      xbt_swag_foreach(process, host->process_list) {
-        SIMIX_process_kill(process, issuer);
-        XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process->getCname(),
-                  process->host->getCname(), issuer->getCname());
+    if (not host->process_list.empty()) {
+      for (auto& process : host->process_list) {
+        SIMIX_process_kill(&process, issuer);
+        XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.getCname(),
+                  process.host->getCname(), issuer->getCname());
       }
     }
   } else {

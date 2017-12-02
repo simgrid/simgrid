@@ -10,6 +10,7 @@
 #include "src/simix/popping_private.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "xbt/swag.h"
+#include <boost/intrusive/list.hpp>
 #include <list>
 #include <map>
 
@@ -39,8 +40,8 @@ public:
 
   // TODO, replace with boost intrusive container hooks
   s_xbt_swag_hookup_t synchro_hookup   = { nullptr, nullptr }; /* {mutex,cond,sem}->sleeping */
-  s_xbt_swag_hookup_t host_proc_hookup = { nullptr, nullptr }; /* smx_host->process_lis */
   s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
+  boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
 
   aid_t pid  = 0;
   aid_t ppid = -1;

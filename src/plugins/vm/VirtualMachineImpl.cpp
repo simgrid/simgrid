@@ -176,16 +176,14 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
   if (issuer->host == piface_)
     THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->getCname(), piface_->getCname());
 
-  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("suspend VM(%s), where %d processes exist", piface_->getCname(), xbt_swag_size(process_list));
+  auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+  XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->getCname(), process_list.size());
 
   action_->suspend();
 
-  smx_actor_t smx_process;
-  smx_actor_t smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("suspend %s", smx_process->name.c_str());
-    smx_process->suspend(issuer);
+  for (auto& smx_process : process_list) {
+    XBT_DEBUG("suspend %s", smx_process.name.c_str());
+    smx_process.suspend(issuer);
   }
 
   XBT_DEBUG("suspend all processes on the VM done done");
@@ -198,16 +196,14 @@ void VirtualMachineImpl::resume()
   if (getState() != SURF_VM_STATE_SUSPENDED)
     THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->getCname());
 
-  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("Resume VM %s, containing %d processes.", piface_->getCname(), xbt_swag_size(process_list));
+  auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+  XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->getCname(), process_list.size());
 
   action_->resume();
 
-  smx_actor_t smx_process;
-  smx_actor_t smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("resume %s", smx_process->getCname());
-    smx_process->resume();
+  for (auto& smx_process : process_list) {
+    XBT_DEBUG("resume %s", smx_process.getCname());
+    smx_process.resume();
   }
 
   vmState_ = SURF_VM_STATE_RUNNING;
@@ -241,15 +237,13 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->getCname(), stateName);
   }
 
-  xbt_swag_t process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("shutdown VM %s, that contains %d processes", piface_->getCname(), xbt_swag_size(process_list));
+  auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
+  XBT_DEBUG("shutdown VM %s, that contains %zu processes", piface_->getCname(), process_list.size());
 
-  smx_actor_t smx_process;
-  smx_actor_t smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, process_list) {
-    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process->getCname(),
-              smx_process->host->getCname(), issuer->getCname());
-    SIMIX_process_kill(smx_process, issuer);
+  for (auto& smx_process : process_list) {
+    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process.getCname(),
+              smx_process.host->getCname(), issuer->getCname());
+    SIMIX_process_kill(&smx_process, issuer);
   }
 
   setState(SURF_VM_STATE_DESTROYED);

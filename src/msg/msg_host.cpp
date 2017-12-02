@@ -132,9 +132,8 @@ int MSG_host_get_core_number(msg_host_t host) {
 void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
-  smx_actor_t actor = NULL;
-  xbt_swag_foreach(actor, host->extension<simgrid::simix::Host>()->process_list) {
-    msg_process_t p = actor->ciface();
+  for (auto& actor : host->extension<simgrid::simix::Host>()->process_list) {
+    msg_process_t p = actor.ciface();
     xbt_dynar_push(whereto, &p);
   }
 }
