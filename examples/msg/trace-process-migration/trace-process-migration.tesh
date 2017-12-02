@@ -1,7 +1,7 @@
 #! ./tesh
 
 p Tracing processes
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
@@ -393,7 +393,7 @@ $ tail -n +3 procmig.trace
 > 7 18.155073 1 1
 > 7 18.155073 11 31
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
@@ -996,7 +996,7 @@ $ tail -n +3 procmig.trace
 > 7 18.155073 1 1
 > 7 18.155073 13 31
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=tracing/buffer:no --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=tracing/buffer:no --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'no'
@@ -1598,10 +1598,10 @@ $ tail -n +3 procmig.trace
 > 7 18.155073 1 1
 > 7 18.155073 13 31
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:no ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:no ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'no'
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/categorized:yes ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/categorized:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 
@@ -1934,7 +1934,7 @@ $ tail -n +3 simgrid.trace
 > 7 18.155073 1 1
 > 7 18.155073 3 31
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/uncategorized:yes ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 
@@ -2414,7 +2414,7 @@ $ tail -n +3 simgrid.trace
 > 7 18.155073 1 1
 > 7 18.155073 4 31
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
 

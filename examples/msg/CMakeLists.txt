@@ -78,32 +78,47 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
+          cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority
+	  energy-consumption energy-onoff energy-pstate energy-vm
+	  plugin-hostload
           process-create process-join process-startkilltime
           platform-properties synchro-semaphore)
-  ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
+  ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
+                              --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
+			      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
+			      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+			      ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
 endforeach()
 
-foreach (example consumption onoff pstate vm)
-  ADD_TESH_FACTORIES(msg-energy-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-${example}/energy-${example}.tesh)
+foreach (x trace-categories trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform trace-process-migration trace-host-user-variables)
+  ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
+	            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
+		    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+		    ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
 endforeach()
 
-foreach (x categories route-user-variables link-user-variables masterworker platform process-migration host-user-variables)
-  ADD_TESH(msg-trace-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/trace-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/trace-${x} trace-${x}.tesh)
-endforeach()
+ADD_TESH_FACTORIES(msg-dht-kademlia-parallel "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} 
+                                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia 
+					     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia
+					     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+					     ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia/dht-kademlia.tesh)
 
-ADD_TESH_FACTORIES(msg-dht-kademlia-parallel           "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia dht-kademlia.tesh)
-ADD_TESH_FACTORIES(msg-energy-pstate-ptask             "thread;ucontext;raw;boost" --cfg host/model:ptask_L07 --log xbt_cfg.threshold:critical --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-pstate/energy-pstate.tesh)
-ADD_TESH_FACTORIES(msg-energy-consumption-ptask        "thread;ucontext;raw;boost" --cfg host/model:ptask_L07 --log xbt_cfg.threshold:critical --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-consumption/energy-consumption.tesh)
-ADD_TESH_FACTORIES(msg-plugin-hostload "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/ ${CMAKE_HOME_DIRECTORY}/examples/msg/plugin-hostload/plugin-hostload.tesh)
 if(NOT WIN32)
-  ADD_TESH_FACTORIES(msg-maestro-set                     "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/maestro-set/maestro-set.tesh)
+  ADD_TESH_FACTORIES(msg-maestro-set   "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/maestro-set/maestro-set.tesh)
 else()
   message("Test maestro-set disabled on windows: this feature is not working")
 endif()
 
-ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-multicore.tesh)
-ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-vivaldi.tesh)
+ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" 
+                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker 
+                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/app-masterworker
+						--setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+						${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-multicore.tesh)
+ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" 
+                                                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker 
+                                                --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/app-masterworker
+						--setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+						${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-vivaldi.tesh)
 
 if(SIMGRID_HAVE_NS3)
   ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)

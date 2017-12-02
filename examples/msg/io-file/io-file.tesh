@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/io-file ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/io-file ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Number of host '4'
 > [  0.000000] (1:host@alice) 	Open file 'c:\Windows\setupact.log'
 > [  0.000000] (1:host@alice) 	Capacity of the storage element 'c:\Windows\setupact.log' is stored on: 2391537133 / 536870912000
