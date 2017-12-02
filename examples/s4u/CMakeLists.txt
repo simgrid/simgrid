@@ -3,7 +3,7 @@ foreach (example actions-comm actions-storage
                  app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  energy-link energy-ptask
-                 io io-file-remote io-raw-storage
+                 io io-file-remote io-storage-raw
                  plugin-hostload mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -70,6 +70,6 @@ foreach(example actions-comm actions-storage
                 dht-chord 
                 energy-link energy-ptask
                 plugin-hostload mutex
-                io io-file-remote io-raw-storage)
+                io io-file-remote io-storage-raw)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u-${example}.tesh)
 endforeach()
