@@ -102,7 +102,7 @@ documentation, but it should remain readable directly.
     Actors can move or be moved from a host to another with the @ref migrate method.
 
   - <b>Using Pstates on a host</b>
-    @ref examples/s4u/energy-pstate/s4u-energy-pstate.c\n
+    @ref examples/s4u/energy-pstate/s4u-energy-pstate.cpp\n
     Show how define a set of pstates for a host and how the current
     pstate can be accessed/changed with @ref getPstateSpeed and @ref  sg_host_set_pstate.
     See also the platform XML file for have a details on how to declare the CPU capacity for each pstate.
@@ -178,6 +178,7 @@ simulated storages.
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
+@example examples/s4u/energy-pstate/s4u-energy-pstate.cpp
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 @example examples/s4u/io-raw-storage/s4u-io-raw-storage.cpp
 @example examples/s4u/mutex/s4u-mutex.cpp

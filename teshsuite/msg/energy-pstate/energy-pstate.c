@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 
-static int dvfs(int argc, char *argv[])
+static int dvfs(int argc, char* argv[])
 {
   double workload = 100E6;
   msg_host_t host = MSG_host_self();
@@ -28,8 +28,8 @@ static int dvfs(int argc, char *argv[])
   XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a task
-  msg_task_t task1 = MSG_task_create ("t1", workload, 0, NULL);
-  MSG_task_execute (task1);
+  msg_task_t task1 = MSG_task_create("t1", workload, 0, NULL);
+  MSG_task_execute(task1);
   MSG_task_destroy(task1);
 
   double task_time = MSG_get_clock();
@@ -49,15 +49,15 @@ static int dvfs(int argc, char *argv[])
   XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a second task
-  task1 = MSG_task_create ("t1", workload, 0, NULL);
-  MSG_task_execute (task1);
+  task1 = MSG_task_create("t1", workload, 0, NULL);
+  MSG_task_execute(task1);
   MSG_task_destroy(task1);
 
   task_time = MSG_get_clock() - task_time;
   XBT_INFO("Task2 simulation time: %e", task_time);
 
   // Verify the default pstate is set to 0
-  host = MSG_host_by_name("MyHost2");
+  host    = MSG_host_by_name("MyHost2");
   int nb2 = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb2);
 
@@ -66,7 +66,7 @@ static int dvfs(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
 

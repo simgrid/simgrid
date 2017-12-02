@@ -50,12 +50,6 @@ documentation, but it should remain readable directly.
     You can specify a start time and a kill time in the deployment
     file. See all *_d.xml files in this directory.
 
-  - <b>Using Pstates on a host</b>
-    @ref examples/msg/energy-pstate/energy-pstate.c\n
-    Show how define a set of pstates for a host and how the current
-    pstate can be accessed/changed with @ref MSG_get_host_current_power_peak and @ref  MSG_set_host_pstate.
-    See also the platform XML file for have a details on how to declare the CPU capacity for each pstate.
-
 @section msg_ex_tracing Tracing and visualization features
 
 Tracing can be activated by various configuration options which

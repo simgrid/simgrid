@@ -1,9 +1,9 @@
 # C examples
 foreach(x actions-comm actions-storage
           async-wait async-waitall async-waitany
-          cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes
+          cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes	  
           process-daemon process-kill process-migration process-suspend process-yield
-          energy-ptask
+          energy-ptask energy-pstate
           io-raw-storage
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
@@ -67,6 +67,7 @@ foreach(x
     actions-comm actions-storage
     async-wait async-waitall async-waitany
     app-bittorrent
+    energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
     get_sender
     task_destroy_cancel task_listen_from task_progress 
