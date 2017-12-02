@@ -143,10 +143,6 @@ TODO: show the XML files instead if it's what is interesting. On a "XML example 
 The examples of this section demonstrate how to interact with the
 simulated storages.
 
-  - <b>Basic example</b>.
-    @ref examples/msg/io-storage/io-storage.c \n
-    All main storage and file functions are demoed.
-    
   - <b>File Management</b>. @ref examples/msg/io-file/io-file.c \n
     This example illustrates the use of operations on file
     (@ref MSG_file_open, @ref MSG_file_read, @ref MSG_file_write,

@@ -2,7 +2,7 @@
 foreach(x app-masterworker app-pingpong app-token-ring 
           cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-pastry energy-consumption energy-onoff energy-pstate energy-vm platform-failures 
-          io-file io-remote io-storage task-priority 
+          io-file io-remote task-priority 
           plugin-hostload
           process-create process-join
           platform-properties process-startkilltime synchro-semaphore trace-categories 
@@ -78,7 +78,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
+          cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote task-priority 
           process-create process-join process-startkilltime
           platform-properties synchro-semaphore)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)

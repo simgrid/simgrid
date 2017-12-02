@@ -140,6 +140,15 @@ also the tesh files in the example directories for details.
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
 
+@subsection s4u_ex_io Simulating disks
+
+The examples of this section demonstrate how to interact with the
+simulated storages.
+
+  - <b>Access to raw storage devices </b>.
+    @ref examples/s4u/io-raw-storage/s4u-io-raw-storage.cpp \n
+    This example illustrates how to simply read and write data on a
+    simulated storage resource.
 */
 
 /**

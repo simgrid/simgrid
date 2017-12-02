@@ -5,9 +5,10 @@
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
+XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 
-static int host(int argc, char *argv[]){
+static int host(int argc, char* argv[])
+{
   const char* host_name = MSG_host_get_name(MSG_host_self());
 
   /* - Display information on the disks mounted by the current host */
@@ -28,7 +29,7 @@ static int host(int argc, char *argv[]){
 
   /* - Write 200,000 bytes on Disk4 */
   msg_storage_t storage = MSG_storage_get_by_name("Disk4");
-  sg_size_t write = MSG_storage_write(storage, 200000); // Write 200,000 bytes
+  sg_size_t write       = MSG_storage_write(storage, 200000); // Write 200,000 bytes
   XBT_INFO("Wrote %llu bytes on 'Disk4'", write);
 
   /*  - Now read 200,000 bytes */
@@ -50,13 +51,13 @@ static int host(int argc, char *argv[]){
   return 1;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
 
   MSG_create_environment(argv[1]);
   MSG_function_register("host", host);
-  xbt_dynar_t hosts =  MSG_hosts_as_dynar();
+  xbt_dynar_t hosts = MSG_hosts_as_dynar();
   MSG_process_create(NULL, host, NULL, xbt_dynar_get_as(hosts, 3, msg_host_t));
   xbt_dynar_free(&hosts);
 
