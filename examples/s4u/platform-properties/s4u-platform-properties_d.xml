@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <actor host="host1" function="alice" />
+  <actor host="host1" function="bob">
+    <prop id="SomeProp" value="SomeValue"/>
+  </actor>
+  <actor host="host2" function="carole" />
+  <actor host="host2" function="david" />
+</platform>

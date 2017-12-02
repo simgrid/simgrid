@@ -4,7 +4,7 @@ foreach (example actions-comm actions-storage
                  async-wait async-waitany async-waitall
                  energy-link energy-ptask
                  io io-file-remote io-storage-raw
-                 plugin-hostload mutex)
+                 platform-properties plugin-hostload mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
   set_target_properties(s4u-${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
@@ -46,6 +46,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/s4u-actions-storage_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-priority/s4u-actor-priority_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
@@ -55,7 +56,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/s4u-io-file-remote_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/s4u-platform-properties_d.xml
 		  PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split-p1.txt
@@ -69,7 +70,7 @@ foreach(example actions-comm actions-storage
                 async-wait async-waitall async-waitany
                 dht-chord 
                 energy-link energy-ptask
-                plugin-hostload mutex
+                platform-properties plugin-hostload mutex
                 io io-file-remote io-storage-raw)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example} s4u-${example}.tesh)
 endforeach()
