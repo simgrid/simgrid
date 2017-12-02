@@ -269,6 +269,7 @@ public:
   simix::ActorImpl* getImpl();
 
   /** Retrieve the property value (or nullptr if not set) */
+  std::map<std::string, std::string>* getProperties();
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
   Actor* restart();

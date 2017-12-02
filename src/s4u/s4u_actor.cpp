@@ -173,6 +173,11 @@ void Actor::killAll(int resetPid)
   simcall_process_killall(resetPid);
 }
 
+std::map<std::string, std::string>* Actor::getProperties()
+{
+  return simgrid::simix::kernelImmediate([this] { return this->pimpl_->getProperties(); });
+}
+
 /** Retrieve the property value (or nullptr if not set) */
 const char* Actor::getProperty(const char* key)
 {
