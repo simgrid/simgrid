@@ -2,7 +2,7 @@ foreach (example actions-comm actions-storage
                  actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority actor-yield
                  app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
-                 energy-link energy-ptask
+                 energy-link energy-pstate energy-ptask
                  io io-file-remote io-storage-raw
                  platform-properties plugin-hostload mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
@@ -34,6 +34,8 @@ endforeach()
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/energy-pstate/s4u-energy-pstate.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-priority/s4u-actor-priority.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-priority/s4u-actor-priority.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield.tesh
@@ -69,7 +71,7 @@ foreach(example actions-comm actions-storage
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany
                 dht-chord 
-                energy-link energy-ptask
+                energy-link energy-pstate energy-ptask
                 platform-properties plugin-hostload mutex
                 io io-file-remote io-storage-raw)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 

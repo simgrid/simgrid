@@ -1,5 +1,5 @@
 ! output sort 19
-$ ${bindir:=.}/actions-comm --log=actions.thres=verbose ${srcdir:=.}/small_platform_fatpipe.xml actions-comm_split_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/actions-comm --log=actions.thres=verbose ${platfdir}/small_platform_fatpipe.xml actions-comm_split_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [ 20.703314] (1:p0@Tremblay) p0 recv p1 20.703314
 > [ 20.703314] (2:p1@Ruby) p1 send p0 1e10 20.703314
 > [ 30.897513] (0:maestro@) Simulation time 30.8975
@@ -7,7 +7,7 @@ $ ${bindir:=.}/actions-comm --log=actions.thres=verbose ${srcdir:=.}/small_platf
 > [ 30.897513] (2:p1@Ruby) p1 compute 1e9 10.194200
 
 ! output sort 19
-$ ${bindir:=.}/actions-comm --log=actions.thres=verbose ${srcdir:=.}/small_platform_fatpipe.xml actions-comm_d.xml actions-comm.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/actions-comm --log=actions.thres=verbose ${platfdir}/small_platform_fatpipe.xml actions-comm_d.xml actions-comm.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:p0@Tremblay) p0 comm_size 3 0.000000
 > [  1.037020] (1:p0@Tremblay) p0 bcast 5e8 1.037020
 > [  1.037020] (2:p1@Ruby) p1 bcast 5e8 1.037020
