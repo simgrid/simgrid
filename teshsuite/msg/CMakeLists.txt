@@ -1,6 +1,6 @@
 # C examples
 foreach(x actions-comm actions-storage cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes
-          process-kill process-yield
+          process-daemon process-kill process-migration process-suspend process-yield
           energy-ptask
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
@@ -56,7 +56,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
 
 foreach(x get_sender host_on_off host_on_off_processes host_on_off_recv
     task_destroy_cancel task_listen_from task_progress 
-    process-kill process-yield
+    process-daemon process-kill process-migration process-suspend process-yield
     energy-ptask
     trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)

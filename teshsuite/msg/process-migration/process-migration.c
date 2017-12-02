@@ -11,13 +11,13 @@ msg_bar_t barrier;
 static msg_process_t controlled_process = NULL;
 
 /* The Emigrant process will be moved from host to host. */
-static int emigrant(int argc, char *argv[])
+static int emigrant(int argc, char* argv[])
 {
   XBT_INFO("I'll look for a new job on another machine ('Boivin') where the grass is greener.");
-  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin"));    /* - First, move to another host by myself */
+  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin")); /* - First, move to another host by myself */
 
   XBT_INFO("Yeah, found something to do");
-  msg_task_t task = MSG_task_create("job", 98095000, 0, NULL);            /* - Execute some work there */
+  msg_task_t task = MSG_task_create("job", 98095000, 0, NULL); /* - Execute some work there */
   MSG_task_execute(task);
   MSG_task_destroy(task);
   MSG_process_sleep(2);
@@ -35,9 +35,9 @@ static int emigrant(int argc, char *argv[])
 }
 
 /* The policeman check for emigrants and move them back to 'Jacquelin' */
-static int policeman(int argc, char *argv[])
+static int policeman(int argc, char* argv[])
 {
-  XBT_INFO("Wait at the checkpoint.");  /* - block on the mutex+condition */
+  XBT_INFO("Wait at the checkpoint."); /* - block on the mutex+condition */
   MSG_barrier_wait(barrier);
   MSG_process_migrate(controlled_process, MSG_host_by_name("Jacquelin")); /* - Move an emigrant to Jacquelin */
   XBT_INFO("I moved the emigrant");
@@ -46,12 +46,12 @@ static int policeman(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  MSG_create_environment(argv[1]);  /* - Load the platform description */
+  MSG_create_environment(argv[1]); /* - Load the platform description */
   /* - Create and deploy the emigrant and policeman processes */
   MSG_process_create("emigrant", emigrant, NULL, MSG_get_host_by_name("Jacquelin"));
   MSG_process_create("policeman", policeman, NULL, MSG_get_host_by_name("Boivin"));

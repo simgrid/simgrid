@@ -71,16 +71,6 @@ shipped in the archive:
     Most processes are started from the deployment XML file, but they
     can also be used with the @ref MSG_process_create() function.
 
-  - <b>Suspend and Resume processes</b>.
-    @ref examples/msg/process-suspend/process-suspend.c \n
-    Processes can be suspended and resumed during their executions
-    thanks to the @ref MSG_process_suspend and @ref MSG_process_resume functions.
-
-     
-  - <b>Migrating processes</b>.
-    @ref examples/msg/process-migration/process-migration.c \n
-    Processes can move or be moved from a host to another with the @ref MSG_process_migrate function.
-    
   - <b>Controling the process life cycle from the XML</b>.
     @ref examples/msg/process-startkilltime/process-startkilltime.c \n
     You can specify a start time and a kill time in the deployment
@@ -228,8 +218,6 @@ top of the example file).
 @example examples/msg/async-waitany/async-waitany.c
 
 @example examples/msg/process-create/process-create.c
-@example examples/msg/process-suspend/process-suspend.c
-@example examples/msg/process-migration/process-migration.c
 @example examples/msg/process-startkilltime/process-startkilltime.c
 
 @example examples/msg/trace-platform/trace-platform.c

@@ -1,6 +1,6 @@
 #! ./tesh
 
-p Testing the suspend/resume feature of MSG
+p Testing the suspend/resume feature of S4U
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-suspend ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
