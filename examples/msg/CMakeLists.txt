@@ -1,10 +1,10 @@
 # C examples
-foreach(x app-masterworker app-pingpong app-token-ring async-wait async-waitall 
-          async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
+foreach(x app-masterworker app-pingpong app-token-ring 
+          cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-pastry energy-consumption energy-onoff energy-pstate energy-vm platform-failures 
           io-file io-remote io-storage task-priority 
-          plugin-hostload 
-	  process-create process-join
+          plugin-hostload
+          process-create process-join
           platform-properties process-startkilltime synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-host-user-variables)
@@ -44,8 +44,7 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file app-chainsend app-masterworker app-pingpong async-wait
-         async-waitall async-waitany dht-kademlia dht-pastry io-remote platform-properties 
+foreach (file app-chainsend app-masterworker app-pingpong dht-kademlia dht-pastry io-remote platform-properties 
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
@@ -63,9 +62,6 @@ set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.tesh                 PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-onoff/platform_onoff.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3hosts_2links_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3links-timer_d.xml
@@ -81,7 +77,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
-          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
+          cloud-capping cloud-masterworker cloud-migration cloud-simple 
           cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
           process-create process-join process-startkilltime
           platform-properties synchro-semaphore)

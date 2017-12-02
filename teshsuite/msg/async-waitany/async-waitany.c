@@ -7,14 +7,14 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitany, "Messages specific for this msg example");
 
-static int sender(int argc, char *argv[])
+static int sender(int argc, char* argv[])
 {
-  xbt_assert(argc==6, "This function expects 5 parameters from the XML deployment file");
-  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
+  xbt_assert(argc == 6, "This function expects 5 parameters from the XML deployment file");
+  long number_of_tasks  = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
-  long receivers_count = xbt_str_parse_int(argv[4], "Invalid amount of receivers: %s");
-  int diff_com = xbt_str_parse_int(argv[5], "Invalid value for diff_comm: %s");
+  long receivers_count  = xbt_str_parse_int(argv[4], "Invalid amount of receivers: %s");
+  int diff_com          = xbt_str_parse_int(argv[5], "Invalid value for diff_comm: %s");
 
   xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   /* First pack the communications in the dynar */
@@ -23,8 +23,8 @@ static int sender(int argc, char *argv[])
 
     char mailbox[80];
     char taskname[80];
-    snprintf(mailbox,79, "receiver-%ld", (i % receivers_count));
-    snprintf(taskname,79, "Task_%d", i);
+    snprintf(mailbox, 79, "receiver-%ld", (i % receivers_count));
+    snprintf(taskname, 79, "Task_%d", i);
     msg_task_t task = MSG_task_create(taskname, task_comp_size, task_comm_size / coef, NULL);
     msg_comm_t comm = MSG_task_isend(task, mailbox);
     xbt_dynar_push_as(comms, msg_comm_t, comm);
@@ -41,8 +41,8 @@ static int sender(int argc, char *argv[])
 
   /* Here we are waiting for the completion of all tasks */
   for (int i = 0; i < receivers_count; i++) {
-    msg_task_t task = NULL;
-    msg_comm_t comm = MSG_task_irecv(&task, "finalize");
+    msg_task_t task      = NULL;
+    msg_comm_t comm      = MSG_task_irecv(&task, "finalize");
     msg_error_t res_wait = MSG_comm_wait(comm, -1);
     xbt_assert(res_wait == MSG_OK, "MSG_comm_wait failed");
     MSG_comm_destroy(comm);
@@ -53,21 +53,21 @@ static int sender(int argc, char *argv[])
   return 0;
 }
 
-static int receiver(int argc, char *argv[])
+static int receiver(int argc, char* argv[])
 {
-  xbt_assert(argc==3, "This function expects 2 parameters from the XML deployment file");
-  int id = xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
-  int task_amount = xbt_str_parse_int(argv[2], "Invalid amount of tasks: %s");
-  msg_task_t *tasks = xbt_new(msg_task_t, task_amount);
+  xbt_assert(argc == 3, "This function expects 2 parameters from the XML deployment file");
+  int id            = xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
+  int task_amount   = xbt_str_parse_int(argv[2], "Invalid amount of tasks: %s");
+  msg_task_t* tasks = xbt_new(msg_task_t, task_amount);
   xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
 
   char mailbox[80];
-  snprintf(mailbox,79, "receiver-%d", id);
+  snprintf(mailbox, 79, "receiver-%d", id);
 
   MSG_process_sleep(10);
   for (int i = 0; i < task_amount; i++) {
     XBT_INFO("Wait to receive task %d", i);
-    tasks[i] = NULL;
+    tasks[i]        = NULL;
     msg_comm_t comm = MSG_task_irecv(&tasks[i], mailbox);
     xbt_dynar_push_as(comms, msg_comm_t, comm);
   }
@@ -94,11 +94,12 @@ static int receiver(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-                  "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+                       "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+             argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 

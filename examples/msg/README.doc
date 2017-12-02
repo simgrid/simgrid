@@ -7,7 +7,6 @@ documentation, but it should remain readable directly.
  @brief Find the MSG example fitting your needs from the extensive set provided in the archive.
 
   - @ref msg_ex_basics
-  - @ref msg_ex_async
   - @ref msg_ex_process
   - @ref msg_ex_tracing
     - @ref msg_ex_tracing_user_variables
@@ -39,31 +38,6 @@ documentation, but it should remain readable directly.
    task to dispatch to a set of several Worker processes. It is fully
    commented in @ref msg_ex_master_worker.
 
-@section msg_ex_async Asynchronous communications
-
-In addition to the fully documented example of @ref
-MSG_ex_asynchronous_communications, there are several other examples
-shipped in the archive:
-  
- - <b>Basic asynchronous communications</b>. 
-   @ref examples/msg/async-wait/async-wait.c \n
-   Illustrates how to have non-blocking communications, that are
-   communications running in the background leaving the process free
-   to do something else during their completion. The main functions
-   involved are @ref MSG_task_isend, @ref MSG_task_irecv, and @ref
-   MSG_comm_wait.
- 
- - <b>Waiting for all communications in a set</b>.
-   @ref examples/msg/async-waitall/async-waitall.c\n
-   The @ref MSG_comm_waitall function is useful when you want to block
-   until all activities in a given set have completed.
-   
- - <b>Waiting for the first completed communication in a set</b>.
-   @ref examples/msg/async-waitany/async-waitany.c\n
-   The @ref MSG_comm_waitany function is useful when you want to block
-   until one activity of the set completes, no matter which terminates
-   first.
-   
 @section msg_ex_process Acting on Processes
 
   - <b>Creating processes</b>. 
@@ -212,10 +186,6 @@ top of the example file).
 @example examples/msg/app-pingpong/app-pingpong.c
 @example examples/msg/app-token-ring/app-token-ring.c
 @example examples/msg/app-masterworker/app-masterworker.c
-
-@example examples/msg/async-wait/async-wait.c
-@example examples/msg/async-waitall/async-waitall.c
-@example examples/msg/async-waitany/async-waitany.c
 
 @example examples/msg/process-create/process-create.c
 @example examples/msg/process-startkilltime/process-startkilltime.c

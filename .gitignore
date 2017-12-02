@@ -121,9 +121,6 @@ doc/msg-tuto-src/masterworker1
 doc/msg-tuto-src/masterworker2
 doc/msg-tuto-src/masterworker3
 doc/msg-tuto-src/masterworker4
-examples/msg/async-wait/async-wait
-examples/msg/async-waitall/async-waitall
-examples/msg/async-waitany/async-waitany
 examples/msg/app-chainsend/chainsend
 examples/msg/cloud-capping/cloud-capping
 examples/msg/cloud-masterworker/cloud-masterworker
@@ -260,6 +257,9 @@ teshsuite/mc/mutex-handling/without-mutex-handling
 teshsuite/msg/actions-comm/actions-comm
 teshsuite/msg/actions-storage/actions-storage
 teshsuite/msg/app-bittorrent/bittorrent
+teshsuite/msg/async-wait/async-wait
+teshsuite/msg/async-waitall/async-waitall
+teshsuite/msg/async-waitany/async-waitany
 teshsuite/msg/cloud-sharing/cloud-sharing
 teshsuite/msg/concurrent_rw/concurrent_rw
 teshsuite/msg/energy-ptask/energy-ptask
