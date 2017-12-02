@@ -12,7 +12,6 @@
 
 #include <xbt/log.h>
 #include <xbt/mmalloc.h>
-#include <xbt/swag.h>
 #include <xbt/sysdep.h>
 
 #include <simgrid/modelchecker.h>

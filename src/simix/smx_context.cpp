@@ -21,7 +21,6 @@
 #include "smx_private.hpp"
 #include "src/internal_config.h"
 #include "xbt/log.h"
-#include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 
 #ifdef _WIN32

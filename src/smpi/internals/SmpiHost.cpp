@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_host, smpi, "Logging specific to SMPI (host)");
 

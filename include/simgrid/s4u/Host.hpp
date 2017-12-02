@@ -13,7 +13,6 @@
 #include "xbt/Extendable.hpp"
 #include "xbt/signal.hpp"
 #include "xbt/string.hpp"
-#include "xbt/swag.h"
 
 #include "simgrid/forward.h"
 #include "simgrid/s4u/forward.hpp"

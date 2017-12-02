@@ -14,7 +14,6 @@
 #include "xbt/dynar.h"
 #include "xbt/graph.h"
 #include "xbt/misc.h"
-#include "xbt/swag.h"
 
 #ifndef __cplusplus
 #error This is a C++ only file, now
