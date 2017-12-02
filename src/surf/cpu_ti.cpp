@@ -423,7 +423,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
     CpuTiTgmr *trace;
 
     XBT_DEBUG("Finish trace date: value %f", value);
-    /* update remaining of actions and put in modified cpu swag */
+    /* update remaining of actions and put in modified cpu list */
     updateRemainingAmount(surf_get_clock());
 
     modified(true);
