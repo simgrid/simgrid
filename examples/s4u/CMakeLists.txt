@@ -77,6 +77,6 @@ foreach(example actions-comm actions-storage
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
                                     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
 				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-				    --cd ${CMAKE_CURRENT_BINARY_DIR}/${example} 
+				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
 				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
