@@ -1,5 +1,5 @@
 
-$ ./host_on_off ${platfdir}/small_platform.xml
+$ ${bindir}/host_on_off ${platfdir}/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "task on"
 > [Jupiter:slave:(2) 0.824497] [msg_test/INFO] Task "task on" done
 > [Tremblay:master:(1) 1.169155] [msg_test/INFO] Sending "task off"
