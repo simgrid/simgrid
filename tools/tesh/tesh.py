@@ -414,6 +414,7 @@ if __name__ == '__main__':
         tesh_exit(1)
 
     if options.cd is not None:
+        print("[Tesh/INFO] change directory to " + options.cd)
         os.chdir(options.cd)
 
     if options.ignore_jenkins:
