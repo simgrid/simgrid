@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -39,6 +39,7 @@ static int host(int argc, char* argv[])
       XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, file->size(),
                simgrid::s4u::Host::current()->getCname(), argv[3]);
       file->remoteMove(simgrid::s4u::Host::by_name(argv[3]), argv[4]);
+      delete file;
     } else {
       XBT_INFO("Copy '%s' (of size %llu) from '%s' to '%s'", filename, file->size(),
                simgrid::s4u::Host::current()->getCname(), argv[3]);
