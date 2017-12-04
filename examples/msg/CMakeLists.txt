@@ -116,5 +116,9 @@ ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost"
 						${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-vivaldi.tesh)
 
 if(SIMGRID_HAVE_NS3)
-  ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)
+  ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost"
+                                      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg
+                                      --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg
+                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                      ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)
 endif()

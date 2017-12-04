@@ -5,8 +5,7 @@ p We just want to check that the NS3 bindings of SimGrid are working correctly, 
 
 p 3hosts 2links
 
-$ ${bindir:=.}/network-ns3/network-ns3
-${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network-ns3/3hosts_2links_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+$ ${bindir:=.}/network-ns3/network-ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network-ns3/3hosts_2links_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [Jupiter:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
 
