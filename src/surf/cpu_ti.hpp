@@ -124,7 +124,7 @@ public:
   void modified(bool modified);
 
   CpuTiTgmr *speedIntegratedTrace_ = nullptr;/*< Structure with data needed to integrate trace file */
-  ActionTiList *actionSet_ = nullptr;        /*< set with all actions running on cpu */
+  ActionTiList actionSet_;                   /*< set with all actions running on cpu */
   double sumPriority_ = 0; /*< the sum of actions' priority that are running on cpu */
   double lastUpdate_ = 0;  /*< last update of actions' remaining amount done */
 
@@ -141,14 +141,14 @@ typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
  *********/
 class CpuTiModel : public CpuModel {
 public:
-  CpuTiModel();
+  CpuTiModel() = default;
   ~CpuTiModel() override;
   Cpu *createCpu(simgrid::s4u::Host *host,  std::vector<double>* speedPerPstate, int core) override;
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 
-  ActionList *runningActionSetThatDoesNotNeedBeingChecked_;
-  CpuTiList *modifiedCpu_;
+  ActionList runningActionSetThatDoesNotNeedBeingChecked_;
+  CpuTiList modifiedCpu_;
 };
 
 }

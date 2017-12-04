@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -28,7 +28,7 @@ public:
   ~CpuCas01Model() override;
 
   Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
-  ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+  ActionList p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };
 
 /************

@@ -327,18 +327,9 @@ void surf_cpu_model_init_ti()
 namespace simgrid {
 namespace surf {
 
-CpuTiModel::CpuTiModel() : CpuModel()
-{
-  runningActionSetThatDoesNotNeedBeingChecked_ = new ActionList();
-
-  modifiedCpu_ = new CpuTiList();
-}
-
 CpuTiModel::~CpuTiModel()
 {
   surf_cpu_model_pm = nullptr;
-  delete runningActionSetThatDoesNotNeedBeingChecked_;
-  delete modifiedCpu_;
 }
 
 Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedPerPstate, int core)
@@ -351,7 +342,7 @@ double CpuTiModel::nextOccuringEvent(double now)
   double min_action_duration = -1;
 
   /* iterates over modified cpus to update share resources */
-  for (auto it = std::begin(*modifiedCpu_); it != std::end(*modifiedCpu_);) {
+  for (auto it = std::begin(modifiedCpu_); it != std::end(modifiedCpu_);) {
     CpuTi& ti = *it;
     ++it; // increment iterator here since the following call to ti.updateActionsFinishTime() may invalidate it
     ti.updateActionsFinishTime(now);
@@ -388,8 +379,6 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, std::vector<double> *s
   xbt_assert(core==1,"Multi-core not handled by this model yet");
   coresAmount_ = core;
 
-  actionSet_ = new ActionTiList();
-
   speed_.peak = speedPerPstate->front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
@@ -400,7 +389,6 @@ CpuTi::~CpuTi()
 {
   modified(false);
   delete speedIntegratedTrace_;
-  delete actionSet_;
 }
 void CpuTi::setSpeedTrace(tmgr_trace_t trace)
 {
@@ -451,7 +439,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
-      for (CpuTiAction& action : *actionSet_) {
+      for (CpuTiAction& action : actionSet_) {
         if (action.getState() == Action::State::running || action.getState() == Action::State::ready ||
             action.getState() == Action::State::not_in_the_system) {
           action.setFinishTime(date);
@@ -475,7 +463,7 @@ void CpuTi::updateActionsFinishTime(double now)
   /* update remaining amount of actions */
   updateRemainingAmount(now);
 
-  for (CpuTiAction const& action : *actionSet_) {
+  for (CpuTiAction const& action : actionSet_) {
     /* action not running, skip it */
     if (action.getStateSet() != surf_cpu_model_pm->getRunningActionSet())
       continue;
@@ -492,7 +480,7 @@ void CpuTi::updateActionsFinishTime(double now)
   }
   sumPriority_ = sum_priority;
 
-  for (CpuTiAction& action : *actionSet_) {
+  for (CpuTiAction& action : actionSet_) {
     double min_finish = -1;
     /* action not running, skip it */
     if (action.getStateSet() != surf_cpu_model_pm->getRunningActionSet())
@@ -532,7 +520,7 @@ void CpuTi::updateActionsFinishTime(double now)
 
 bool CpuTi::isUsed()
 {
-  return not actionSet_->empty();
+  return not actionSet_.empty();
 }
 
 double CpuTi::getAvailableSpeed()
@@ -552,7 +540,7 @@ void CpuTi::updateRemainingAmount(double now)
   /* compute the integration area */
   double area_total = speedIntegratedTrace_->integrate(lastUpdate_, now) * speed_.peak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
-  for (CpuTiAction& action : *actionSet_) {
+  for (CpuTiAction& action : actionSet_) {
     /* action not running, skip it */
     if (action.getStateSet() != model()->getRunningActionSet())
       continue;
@@ -585,7 +573,7 @@ CpuAction *CpuTi::execution_start(double size)
   XBT_IN("(%s,%g)", getCname(), size);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), size, isOff(), this);
 
-  actionSet_->push_back(*action);
+  actionSet_.push_back(*action);
 
   XBT_OUT();
   return action;
@@ -605,25 +593,25 @@ CpuAction *CpuTi::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
-    action->stateSet_ = static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
+    action->stateSet_ = &static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
     action->getStateSet()->push_back(*action);
   }
 
-  actionSet_->push_back(*action);
+  actionSet_.push_back(*action);
 
   XBT_OUT();
   return action;
 }
 
 void CpuTi::modified(bool modified){
-  CpuTiList* modifiedCpu = static_cast<CpuTiModel*>(model())->modifiedCpu_;
+  CpuTiList& modifiedCpu = static_cast<CpuTiModel*>(model())->modifiedCpu_;
   if (modified) {
     if (not cpu_ti_hook.is_linked()) {
-      modifiedCpu->push_back(*this);
+      modifiedCpu.push_back(*this);
     }
   } else {
     if (cpu_ti_hook.is_linked())
-      simgrid::xbt::intrusive_erase(*modifiedCpu, *this);
+      simgrid::xbt::intrusive_erase(modifiedCpu, *this);
   }
 }
 
@@ -652,7 +640,7 @@ int CpuTiAction::unref()
       simgrid::xbt::intrusive_erase(*getStateSet(), *this);
     /* remove from action_set */
     if (action_ti_hook.is_linked())
-      simgrid::xbt::intrusive_erase(*cpu_->actionSet_, *this);
+      simgrid::xbt::intrusive_erase(cpu_->actionSet_, *this);
     /* remove from heap */
     heapRemove(getModel()->getActionHeap());
     cpu_->modified(true);
