@@ -359,16 +359,11 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
         ? simcall_mutex_lock__get__mutex(req)
         : simcall_mutex_trylock__get__mutex(req)
       ));
-    s_xbt_swag_t mutex_sleeping;
-    mc_model_checker->process().read_bytes(&mutex_sleeping, sizeof(mutex_sleeping),
-      remote(mutex.getBuffer()->sleeping));
-
     args =
-        bprintf("locked = %d, owner = %d, sleeping = %d", mutex.getBuffer()->locked,
+        bprintf("locked = %d, owner = %d, sleeping = n/a", mutex.getBuffer()->locked,
                 mutex.getBuffer()->owner != nullptr
                     ? (int)mc_model_checker->process().resolveActor(simgrid::mc::remote(mutex.getBuffer()->owner))->pid
-                    : -1,
-                mutex_sleeping.count);
+                    : -1);
     break;
   }
 

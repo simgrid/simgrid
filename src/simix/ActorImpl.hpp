@@ -38,10 +38,10 @@ public:
   ActorImpl() : piface_(this) {}
   ~ActorImpl();
 
-  // TODO, replace with boost intrusive container hooks
-  s_xbt_swag_hookup_t synchro_hookup   = { nullptr, nullptr }; /* {mutex,cond,sem}->sleeping */
+  // TODO, replace with boost intrusive container hooks (src/mc/mc_smx.cpp needs to be changed too)
   s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
   boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
+  boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
   aid_t pid  = 0;
   aid_t ppid = -1;

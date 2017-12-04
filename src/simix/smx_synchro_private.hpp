@@ -7,10 +7,15 @@
 #define SIMIX_SYNCHRO_PRIVATE_H
 
 #include "simgrid/s4u/ConditionVariable.hpp"
-#include "xbt/swag.h"
+#include "src/simix/ActorImpl.hpp"
+#include <boost/intrusive/list.hpp>
 
 namespace simgrid {
 namespace simix {
+
+typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
+                                                                        &ActorImpl::smx_synchro_hook>>
+    SynchroList;
 
 class XBT_PUBLIC() MutexImpl {
 public:
@@ -26,7 +31,7 @@ public:
   bool locked       = false;
   smx_actor_t owner = nullptr;
   // List of sleeping processes:
-  xbt_swag_t sleeping = nullptr;
+  simgrid::simix::SynchroList sleeping;
 
   // boost::intrusive_ptr<Mutex> support:
   friend void intrusive_ptr_add_ref(MutexImpl* mutex)
@@ -54,13 +59,13 @@ struct s_smx_cond_t {
 
   std::atomic_int_fast32_t refcount_{1};
   smx_mutex_t mutex   = nullptr;
-  xbt_swag_t sleeping = nullptr; /* list of sleeping process */
+  simgrid::simix::SynchroList sleeping; /* list of sleeping processes */
   simgrid::s4u::ConditionVariable cond_;
 };
 
 struct s_smx_sem_t {
   unsigned int value;
-  xbt_swag_t sleeping; /* list of sleeping process */
+  simgrid::simix::SynchroList sleeping; /* list of sleeping processes */
 };
 
 XBT_PRIVATE void SIMIX_post_synchro(smx_activity_t synchro);
