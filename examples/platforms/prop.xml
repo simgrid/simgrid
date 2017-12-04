@@ -19,6 +19,7 @@
 
     <cluster id="acme" prefix="node-" suffix=".acme.org" radical="0-4" speed="1Gf"
              bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us">
+      <!-- these props will be attached to the network zone constituting the cluster -->
       <prop id="bla" value="acme cluster"/>
       <prop id="Hdd"  value="180"/>
       <prop id="mem"  value="42"/>

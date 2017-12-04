@@ -45,11 +45,6 @@ documentation, but it should remain readable directly.
     Most processes are started from the deployment XML file, but they
     can also be used with the @ref MSG_process_create() function.
 
-  - <b>Controling the process life cycle from the XML</b>.
-    @ref examples/msg/process-startkilltime/process-startkilltime.c \n
-    You can specify a start time and a kill time in the deployment
-    file. See all *_d.xml files in this directory.
-
 @section msg_ex_tracing Tracing and visualization features
 
 Tracing can be activated by various configuration options which
@@ -154,14 +149,6 @@ simulated storages.
    @ref examples/msg/task-priority/task-priority.c \n
    Demonstrates the use of @ref MSG_task_set_priority to change the
    computation priority of  a given task.
-
- - <b>User-defined properties</b>.
-   @ref examples/msg/platform-properties/platform-properties.c \n
-   Attaching arbitrary information to host, processes and
-   such, and retrieving them with @ref MSG_host_get_properties,
-   @ref MSG_host_get_property_value, @ref MSG_process_get_properties, and 
-   @ref MSG_process_get_property_value. Also make sure to read the
-   platform and deployment XML files to see how to declare these data.
  
 TODO: Document the many other examples that we have 
 */
@@ -180,7 +167,6 @@ top of the example file).
 @example examples/msg/app-masterworker/app-masterworker.c
 
 @example examples/msg/process-create/process-create.c
-@example examples/msg/process-startkilltime/process-startkilltime.c
 
 @example examples/msg/trace-platform/trace-platform.c
 @example examples/msg/trace-categories/trace-categories.c
@@ -192,12 +178,9 @@ top of the example file).
 
 @example examples/msg/network-ns3/network-ns3.c
 
-@example examples/msg/io-storage/io-storage.c
 @example examples/msg/io-file/io-file.c
-@example examples/msg/io-remote/io-remote.c
 
 @example examples/msg/task-priority/task-priority.c
-@example examples/msg/platform-properties/platform-properties.c
 
 */
 

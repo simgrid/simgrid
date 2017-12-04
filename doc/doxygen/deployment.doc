@@ -21,8 +21,8 @@ How exactly you organize your work remains up to you.
 @section deploy_s4u Deployment with S4U
 
 The following example shows the several ways of doing so in the S4U
-interface: @ref examples/s4u/actor-create/s4u_actor-create.cpp.
-Associated XML file: @ref examples/s4u/actor-create/s4u_actor-create_d.xml
+interface: @ref examples/s4u/actor-create/s4u-actor-create.cpp.
+Associated XML file: @ref examples/s4u/actor-create/s4u-actor-create_d.xml
 
 @section deploy_msg Deployment with MSG
 

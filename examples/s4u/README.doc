@@ -3,7 +3,7 @@ S4U (Simgrid for you) is the next interface of SimGrid, expected to be released 
 Even if it is not completely rock stable yet, it may well already fit
 your needs. You are welcome to try it and report any interface
 glitches that you see. Be however warned that the interface may change
-until its final release.  You will have to adapt your code on the way.
+until the final release.  You will have to adapt your code on the way.
 
 This file follows the Doxygen syntax to be included in the
 documentation, but it should remain readable directly.
@@ -18,8 +18,11 @@ documentation, but it should remain readable directly.
   - @ref s4u_ex_actors
   - @ref s4u_ex_synchro
   - @ref s4u_ex_actions
+  - @ref s4u_ex_platf
   - @ref s4u_ex_io
   - @ref s4u_ex_energy
+
+TODO: document here the examples about plugins
 
 @section s4u_ex_basics Basics of SimGrid simulation
 
@@ -47,7 +50,7 @@ documentation, but it should remain readable directly.
    Illustrates how to have non-blocking communications, that are
    communications running in the background leaving the process free
    to do something else during their completion. The main functions
-   involved are @ref simgrid::s4u::Comm::put_async and 
+   involved are @ref simgrid::s4u::Mailbox::put_async and 
    @ref simgrid::s4u::Comm::wait().
 
  - <b>Waiting for all communications in a set</b>.
@@ -65,14 +68,16 @@ documentation, but it should remain readable directly.
 
   - <b>Creating actors</b>. 
     @ref examples/s4u/actor-create/s4u-actor-create.cpp \n
-    Most actors are started from the deployment XML file, but they exist other methods.
+    Most actors are started from the deployment XML file, but there is other methods.
+    This example show them all.
 
   - <b>Actors using CPU time</b>.
     @ref examples/s4u/actor-execute/s4u-actor-execute.cpp \n
     The computations done in your program are not reported to the
     simulated world, unless you explicitely request the simulator to pause
     the actor until a given amount of flops gets computed on its simulated
-    host.
+    host. Some executions can be given an higher priority so that they
+    get more resources.
 
   - <b>Daemonize actors</b>
     @ref examples/s4u/actor-daemon/s4u-actor-daemon.cpp \n
@@ -82,16 +87,17 @@ documentation, but it should remain readable directly.
   - <b>Suspend and Resume actors</b>.
     @ref examples/s4u/actor-suspend/s4u-actor-suspend.cpp \n
     Actors can be suspended and resumed during their executions
-    thanks to the @ref suspend and @ref resume methods.
+    thanks to the @ref simgrid::s4u::Actor::suspend and @ref simgrid::s4u::Actor::resume methods.
 
   - <b>Priority actors</b>.
     @ref examples/s4u/actor-priority/s4u-actor-priority.cpp \n
     Actors can be launched according their priorities thanks to the @ref
-     execution method.
+    simgrid::s4u::this_actor::execute() method.
 
   - <b>Kill actors</b>.
     @ref examples/s4u/actor-kill/s4u-actor-kill.cpp \n
-    Actors can forcefully stop other actors with the @ref kill method.
+    Actors can forcefully stop other actors with the @ref
+    simgrid::s4u::Actor::kill() method.
 
   - <b>Controling the actor life cycle from the XML</b>.
     @ref examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp 
@@ -101,10 +107,11 @@ documentation, but it should remain readable directly.
 
   - <b>Migrating Actors</b>.
     @ref examples/s4u/actor-migration/s4u-actor-migration.cpp \n
-    Actors can move or be moved from a host to another with the @ref migrate method.
+    Actors can move or be moved from a host to another with the @ref
+    simgrid::s4u::this_actor::migrate() method.
 
   - <b>Yielding to other actor</b>.
-    @ref examples/s4u/actor-yield/s4u-actor-yield.c\n
+    @ref examples/s4u/actor-yield/s4u-actor-yield.cpp\n
     The simgrid::s4u::this_actor::yield() function interrupts the
     execution of the current actor, leaving a chance to the other actors
     that are ready to run at this timestamp.
@@ -142,13 +149,28 @@ also the tesh files in the example directories for details.
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
 
+@section s4u_ex_platf Interacting with the platform
+
+ - <b>User-defined properties</b>.
+   @ref examples/s4u/platform-properties/s4u-platform-properties.cpp and 
+   @ref examples/s4u/platform-properties/s4u-platform-properties_d.xml and
+   @ref examples/platforms/prop.xml \n
+   You can attach arbitrary information to most platform elements from
+   the XML file, and then interact with these values from your
+   program. Note that the changes are not written into the XML file: they
+   will only last until the end of your simulation.
+   - simgrid::s4u::Actor::getProperty() and simgrid::s4u::Actor::setProperty()
+   - simgrid::s4u::Host::getProperty() and simgrid::s4u::Host::setProperty()
+   - simgrid::s4u::Link::getProperty() and simgrid::s4u::Link::setProperty()
+   - simgrid::s4u::NetZone::getProperty() and simgrid::s4u::NetZone::setProperty()
+
 @section s4u_ex_io Simulating disks and files
 
 The examples of this section demonstrate how to interact with the
 simulated storages.
 
   - <b>Access to raw storage devices </b>.
-    @ref examples/s4u/io-raw-storage/s4u-io-raw-storage.cpp \n
+    @ref examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp \n
     This example illustrates how to simply read and write data on a
     simulated storage resource.
 
@@ -163,7 +185,7 @@ simulated storages.
     @ref examples/s4u/energy-pstate/s4u-energy-pstate.cpp and 
     @ref examples/platforms/energy_platform.xml \n
     Show how define a set of pstates for a host and how the current
-    pstate can be accessed/changed with @ref getPstateSpeed and @ref sg_host_set_pstate.
+    pstate can be accessed/changed with @ref simgrid::s4u::Host::getPstateSpeed and @ref simgrid::s4u::Host::setPstate.
     See also the platform XML file for have a details on how to declare the CPU capacity for each pstate.
 
 */
@@ -179,14 +201,22 @@ simulated storages.
 @example examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp 
 @example examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml 
 @example examples/s4u/actor-migration/s4u-actor-migration.cpp
+@example examples/s4u/actor-priority/s4u-actor-priority.cpp
 @example examples/s4u/actor-suspend/s4u-actor-suspend.cpp
+@example examples/s4u/actor-yield/s4u-actor-yield.cpp
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
+@example examples/s4u/async-wait/s4u-async-wait.cpp
+@example examples/s4u/async-waitall/s4u-async-waitall.cpp
+@example examples/s4u/async-waitany/s4u-async-waitany.cpp
 @example examples/s4u/energy-pstate/s4u-energy-pstate.cpp
-@example examples/platforms/energy_platform.xml
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
-@example examples/s4u/io-raw-storage/s4u-io-raw-storage.cpp
+@example examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp \n
 @example examples/s4u/mutex/s4u-mutex.cpp
+@example examples/s4u/platform-properties/s4u-platform-properties.cpp
+@example examples/s4u/platform-properties/s4u-platform-properties_d.xml
+@example examples/platforms/energy_platform.xml
+@example examples/platforms/prop.xml
 
 */
