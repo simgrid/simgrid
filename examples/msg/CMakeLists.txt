@@ -74,10 +74,10 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
           cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file task-priority
-	  energy-consumption energy-onoff energy-vm
-	  plugin-hostload
-          process-create process-join process-startkilltime
-          platform-properties synchro-semaphore)
+          energy-consumption energy-onoff energy-vm
+          plugin-hostload
+          process-create process-join
+          synchro-semaphore)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
 			      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
