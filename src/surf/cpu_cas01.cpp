@@ -8,6 +8,7 @@
 #include "cpu_ti.hpp"
 #include "simgrid/sg_config.h"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "xbt/utility.hpp"
 #include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
@@ -184,7 +185,7 @@ CpuAction *CpuCas01::sleep(double duration)
   action->suspended_ = 2;
   if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
-    action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
+    simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
     action->stateSet_ = static_cast<CpuCas01Model*>(model())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }

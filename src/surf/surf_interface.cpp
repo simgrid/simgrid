@@ -10,6 +10,7 @@
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "xbt/utility.hpp"
 
 #include <fstream>
 #include <set>
@@ -622,7 +623,7 @@ Action::State Action::getState() const
 
 void Action::setState(Action::State state)
 {
-  stateSet_->erase(stateSet_->iterator_to(*this));
+  simgrid::xbt::intrusive_erase(*stateSet_, *this);
   switch (state) {
   case Action::State::ready:
     stateSet_ = model_->getReadyActionSet();
@@ -691,7 +692,7 @@ void Action::cancel(){
   setState(Action::State::failed);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
     if (action_lmm_hook.is_linked())
-      getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
+      simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
     heapRemove(getModel()->getActionHeap());
   }
 }
@@ -700,14 +701,14 @@ int Action::unref(){
   refcount_--;
   if (not refcount_) {
     if (action_hook.is_linked())
-      stateSet_->erase(stateSet_->iterator_to(*this));
+      simgrid::xbt::intrusive_erase(*stateSet_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
       /* remove from heap */
       heapRemove(getModel()->getActionHeap());
       if (action_lmm_hook.is_linked())
-        getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
+        simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
     }
     delete this;
     return 1;

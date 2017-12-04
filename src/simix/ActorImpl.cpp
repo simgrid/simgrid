@@ -15,6 +15,7 @@
 #include "xbt/functional.hpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
+#include "xbt/utility.hpp"
 
 #include "simgrid/s4u/Host.hpp"
 
@@ -112,10 +113,8 @@ void SIMIX_process_cleanup(smx_actor_t process)
 
   XBT_DEBUG("%p should not be run anymore",process);
   simix_global->process_list.erase(process->pid);
-  if (process->host && process->host_process_list_hook.is_linked()) {
-    auto& list = process->host->extension<simgrid::simix::Host>()->process_list;
-    list.erase(list.iterator_to(*process));
-  }
+  if (process->host && process->host_process_list_hook.is_linked())
+    simgrid::xbt::intrusive_erase(process->host->extension<simgrid::simix::Host>()->process_list, *process);
   xbt_swag_insert(process, simix_global->process_to_destroy);
   process->context->iwannadie = 0;
 
@@ -600,8 +599,7 @@ void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
 void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
 {
   xbt_assert((process != nullptr), "Invalid parameters");
-  auto& list = process->host->extension<simgrid::simix::Host>()->process_list;
-  list.erase(list.iterator_to(*process));
+  simgrid::xbt::intrusive_erase(process->host->extension<simgrid::simix::Host>()->process_list, *process);
   process->host = dest;
   dest->extension<simgrid::simix::Host>()->process_list.push_back(*process);
 }

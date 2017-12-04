@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
+#include "xbt/utility.hpp"
 #include <cmath> /*ceil*/
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
@@ -143,7 +144,7 @@ int StorageN11Action::unref()
   refcount_--;
   if (not refcount_) {
     if (action_hook.is_linked())
-      stateSet_->erase(stateSet_->iterator_to(*this));
+      simgrid::xbt::intrusive_erase(*stateSet_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
     xbt_free(getCategory());

@@ -12,6 +12,7 @@
 #include "xbt/asserts.h"
 #include "xbt/mallocator.h"
 #include "xbt/misc.h"
+#include "xbt/utility.hpp"
 #include <boost/intrusive/list.hpp>
 #include <cmath>
 #include <limits>
@@ -437,10 +438,8 @@ inline void s_lmm_element_t::make_active()
 }
 inline void s_lmm_element_t::make_inactive()
 {
-  if (active_element_set_hook.is_linked()) {
-    auto& set = constraint->active_element_set;
-    set.erase(set.iterator_to(*this));
-  }
+  if (active_element_set_hook.is_linked())
+    simgrid::xbt::intrusive_erase(constraint->active_element_set, *this);
 }
 
 /**
@@ -555,9 +554,9 @@ private:
   void remove_variable(lmm_variable_t var)
   {
     if (var->variable_set_hook.is_linked())
-      variable_set.erase(variable_set.iterator_to(*var));
+      simgrid::xbt::intrusive_erase(variable_set, *var);
     if (var->saturated_variable_set_hook.is_linked())
-      saturated_variable_set.erase(saturated_variable_set.iterator_to(*var));
+      simgrid::xbt::intrusive_erase(saturated_variable_set, *var);
   }
   void make_constraint_active(lmm_constraint_t cnst)
   {
@@ -567,9 +566,9 @@ private:
   void make_constraint_inactive(lmm_constraint_t cnst)
   {
     if (cnst->active_constraint_set_hook.is_linked())
-      active_constraint_set.erase(active_constraint_set.iterator_to(*cnst));
+      simgrid::xbt::intrusive_erase(active_constraint_set, *cnst);
     if (cnst->modified_constraint_set_hook.is_linked())
-      modified_constraint_set.erase(modified_constraint_set.iterator_to(*cnst));
+      simgrid::xbt::intrusive_erase(modified_constraint_set, *cnst);
   }
 
   void enable_var(lmm_variable_t var);

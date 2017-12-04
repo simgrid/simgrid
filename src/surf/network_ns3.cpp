@@ -8,6 +8,7 @@
 
 #include "xbt/config.hpp"
 #include "xbt/string.hpp"
+#include "xbt/utility.hpp"
 
 #include "ns3/core-module.h"
 #include "ns3/node.h"
@@ -312,7 +313,7 @@ int NetworkNS3Action::unref()
   refcount_--;
   if (not refcount_) {
     if (action_hook.is_linked())
-      stateSet_->erase(stateSet_->iterator_to(*this));
+      simgrid::xbt::intrusive_erase(*stateSet_, *this);
     XBT_DEBUG ("Removing action %p", this);
     delete this;
     return 1;

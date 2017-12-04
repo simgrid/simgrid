@@ -11,6 +11,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
+#include <xbt/utility.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_G(expr) XBT_DEBUG(#expr " = %g", expr);
@@ -132,7 +133,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
             break;
           if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook.is_linked()) {
             XBT_DEBUG("\t\tGet rid of variable %p", elem.variable);
-            var_list.erase(var_list.iterator_to(*elem.variable));
+            simgrid::xbt::intrusive_erase(var_list, *elem.variable);
           }
         }
       } else {

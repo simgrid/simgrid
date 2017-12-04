@@ -6,6 +6,7 @@
 
 #include "cpu_ti.hpp"
 #include "src/surf/trace_mgr.hpp"
+#include "xbt/utility.hpp"
 #include <algorithm>
 
 #ifndef SURF_MODEL_CPUTI_H_
@@ -602,11 +603,10 @@ CpuAction *CpuTi::sleep(double duration)
   action->setMaxDuration(duration);
   action->suspended_ = 2;
   if (duration == NO_MAX_DURATION) {
-   /* Move to the *end* of the corresponding action set. This convention
-      is used to speed up update_resource_state  */
-  action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-  action->stateSet_ = static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
-  action->getStateSet()->push_back(*action);
+    /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
+    simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
+    action->stateSet_ = static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
+    action->getStateSet()->push_back(*action);
   }
 
   actionSet_->push_back(*action);
@@ -622,9 +622,8 @@ void CpuTi::modified(bool modified){
       modifiedCpu->push_back(*this);
     }
   } else {
-    if (cpu_ti_hook.is_linked()) {
-      modifiedCpu->erase(modifiedCpu->iterator_to(*this));
-    }
+    if (cpu_ti_hook.is_linked())
+      simgrid::xbt::intrusive_erase(*modifiedCpu, *this);
   }
 }
 
@@ -650,10 +649,10 @@ int CpuTiAction::unref()
   refcount_--;
   if (not refcount_) {
     if (action_hook.is_linked())
-      getStateSet()->erase(getStateSet()->iterator_to(*this));
+      simgrid::xbt::intrusive_erase(*getStateSet(), *this);
     /* remove from action_set */
     if (action_ti_hook.is_linked())
-      cpu_->actionSet_->erase(cpu_->actionSet_->iterator_to(*this));
+      simgrid::xbt::intrusive_erase(*cpu_->actionSet_, *this);
     /* remove from heap */
     heapRemove(getModel()->getActionHeap());
     cpu_->modified(true);

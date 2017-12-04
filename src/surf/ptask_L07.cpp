@@ -12,6 +12,7 @@
 #include "ptask_L07.hpp"
 
 #include "cpu_interface.hpp"
+#include "xbt/utility.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
@@ -420,7 +421,7 @@ int L07Action::unref()
   refcount_--;
   if (not refcount_) {
     if (action_hook.is_linked())
-      stateSet_->erase(stateSet_->iterator_to(*this));
+      simgrid::xbt::intrusive_erase(*stateSet_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
     delete this;

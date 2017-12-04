@@ -10,6 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/sysdep.h"
+#include "xbt/utility.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -121,18 +122,12 @@ void s_lmm_system_t::var_free(lmm_variable_t var)
   for (s_lmm_element_t& elem : var->cnsts) {
     if (var->sharing_weight > 0)
       elem.decrease_concurrency();
-    if (elem.enabled_element_set_hook.is_linked()) {
-      auto& set = elem.constraint->enabled_element_set;
-      set.erase(set.iterator_to(elem));
-    }
-    if (elem.disabled_element_set_hook.is_linked()) {
-      auto& set = elem.constraint->disabled_element_set;
-      set.erase(set.iterator_to(elem));
-    }
-    if (elem.active_element_set_hook.is_linked()) {
-      auto& set = elem.constraint->active_element_set;
-      set.erase(set.iterator_to(elem));
-    }
+    if (elem.enabled_element_set_hook.is_linked())
+      simgrid::xbt::intrusive_erase(elem.constraint->enabled_element_set, elem);
+    if (elem.disabled_element_set_hook.is_linked())
+      simgrid::xbt::intrusive_erase(elem.constraint->disabled_element_set, elem);
+    if (elem.active_element_set_hook.is_linked())
+      simgrid::xbt::intrusive_erase(elem.constraint->active_element_set, elem);
     int nelements = elem.constraint->enabled_element_set.size() + elem.constraint->disabled_element_set.size();
     if (nelements == 0)
       make_constraint_inactive(elem.constraint);
@@ -770,11 +765,10 @@ void s_lmm_system_t::enable_var(lmm_variable_t var)
   // Enabling the variable, move var to list head. Subtlety is: here, we need to call update_modified_set AFTER
   // moving at least one element of var.
 
-  variable_set.erase(variable_set.iterator_to(*var));
+  simgrid::xbt::intrusive_erase(variable_set, *var);
   variable_set.push_front(*var);
   for (s_lmm_element_t& elem : var->cnsts) {
-    auto& set = elem.constraint->disabled_element_set;
-    set.erase(set.iterator_to(elem));
+    simgrid::xbt::intrusive_erase(elem.constraint->disabled_element_set, elem);
     elem.constraint->enabled_element_set.push_front(elem);
     elem.increase_concurrency();
   }
@@ -791,18 +785,15 @@ void s_lmm_system_t::disable_var(lmm_variable_t var)
   xbt_assert(not var->staged_weight, "Staged weight should have been cleared");
   // Disabling the variable, move to var to list tail. Subtlety is: here, we need to call update_modified_set
   // BEFORE moving the last element of var.
-  variable_set.erase(variable_set.iterator_to(*var));
+  simgrid::xbt::intrusive_erase(variable_set, *var);
   variable_set.push_back(*var);
   if (not var->cnsts.empty())
     update_modified_set(var->cnsts[0].constraint);
   for (s_lmm_element_t& elem : var->cnsts) {
-    auto& set = elem.constraint->enabled_element_set;
-    set.erase(set.iterator_to(elem));
+    simgrid::xbt::intrusive_erase(elem.constraint->enabled_element_set, elem);
     elem.constraint->disabled_element_set.push_back(elem);
-    if (elem.active_element_set_hook.is_linked()) {
-      auto& set = elem.constraint->active_element_set;
-      set.erase(set.iterator_to(elem));
-    }
+    if (elem.active_element_set_hook.is_linked())
+      simgrid::xbt::intrusive_erase(elem.constraint->active_element_set, elem);
     elem.decrease_concurrency();
   }
 
