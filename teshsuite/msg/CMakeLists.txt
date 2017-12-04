@@ -50,7 +50,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/async-waitall_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/io-file-remote_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform_properties/platform-properties_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/platform-properties_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/baseline_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/kill_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/start_d.xml
