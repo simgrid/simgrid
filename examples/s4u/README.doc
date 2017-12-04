@@ -18,6 +18,8 @@ documentation, but it should remain readable directly.
   - @ref s4u_ex_actors
   - @ref s4u_ex_synchro
   - @ref s4u_ex_actions
+  - @ref s4u_ex_io
+  - @ref s4u_ex_energy
 
 @section s4u_ex_basics Basics of SimGrid simulation
 
@@ -82,7 +84,7 @@ documentation, but it should remain readable directly.
     Actors can be suspended and resumed during their executions
     thanks to the @ref suspend and @ref resume methods.
 
-    - <b>Priority actors</b>.
+  - <b>Priority actors</b>.
     @ref examples/s4u/actor-priority/s4u-actor-priority.cpp \n
     Actors can be launched according their priorities thanks to the @ref
      execution method.
@@ -100,12 +102,6 @@ documentation, but it should remain readable directly.
   - <b>Migrating Actors</b>.
     @ref examples/s4u/actor-migration/s4u-actor-migration.cpp \n
     Actors can move or be moved from a host to another with the @ref migrate method.
-
-  - <b>Using Pstates on a host</b>
-    @ref examples/s4u/energy-pstate/s4u-energy-pstate.cpp\n
-    Show how define a set of pstates for a host and how the current
-    pstate can be accessed/changed with @ref getPstateSpeed and @ref  sg_host_set_pstate.
-    See also the platform XML file for have a details on how to declare the CPU capacity for each pstate.
 
   - <b>Yielding to other actor</b>.
     @ref examples/s4u/actor-yield/s4u-actor-yield.c\n
@@ -146,7 +142,7 @@ also the tesh files in the example directories for details.
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
 
-@subsection s4u_ex_io Simulating disks and files
+@section s4u_ex_io Simulating disks and files
 
 The examples of this section demonstrate how to interact with the
 simulated storages.
@@ -160,6 +156,15 @@ simulated storages.
     @ref examples/s4u/io-file-remote/s4u-io-file-remote.cpp \n
     I/O operations on files can also be done in a remote fashion, 
     i.e. when the accessed disk is not mounted on the caller's host.
+
+@section s4u_ex_energy Simulating the energy consumption
+
+  - <b>Using Pstates on a host</b>
+    @ref examples/s4u/energy-pstate/s4u-energy-pstate.cpp and 
+    @ref examples/platforms/energy_platform.xml \n
+    Show how define a set of pstates for a host and how the current
+    pstate can be accessed/changed with @ref getPstateSpeed and @ref sg_host_set_pstate.
+    See also the platform XML file for have a details on how to declare the CPU capacity for each pstate.
 
 */
 
@@ -179,6 +184,7 @@ simulated storages.
 @example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
 @example examples/s4u/energy-pstate/s4u-energy-pstate.cpp
+@example examples/platforms/energy_platform.xml
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 @example examples/s4u/io-raw-storage/s4u-io-raw-storage.cpp
 @example examples/s4u/mutex/s4u-mutex.cpp

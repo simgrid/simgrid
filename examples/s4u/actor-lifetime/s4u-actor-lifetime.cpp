@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This C++ file acts as the foil to the corresponding XML file, where the
+   action takes place: Actors are started and stopped at predefined time.   */
+
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this s4u example");
