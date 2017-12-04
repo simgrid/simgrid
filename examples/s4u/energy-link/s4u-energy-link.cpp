@@ -27,23 +27,17 @@ static void sender(std::vector<std::string> args)
   /* Sleep a while before starting the example */
   simgrid::s4u::this_actor::sleep_for(10);
 
-  /* - Send the task to the @ref worker */
-  char* payload = bprintf("%f", comm_size);
 
   if (flow_amount == 1) {
+    /* - Send the task to the @ref worker */
+    char* payload = bprintf("%f", comm_size);
     mailbox->put(payload, comm_size);
   } else {
-    // Start all comms in parallel
+    // Start all comms in parallel, and wait for all completions in one shot
     std::vector<simgrid::s4u::CommPtr> comms;
     for (int i = 0; i < flow_amount; i++)
-      comms.push_back(mailbox->put_async(const_cast<char*>("message"), comm_size));
-
-    // And now, wait for all comms. Manually since wait_all is not part of this_actor yet
-    for (int i = 0; i < flow_amount; i++) {
-      simgrid::s4u::CommPtr comm = comms.at(i);
-      comm->wait();
-    }
-    comms.clear();
+      comms.push_back(mailbox->put_async(bprintf("%d", i), comm_size));
+    simgrid::s4u::Comm::wait_all(&comms);
   }
   XBT_INFO("sender done.");
 }
@@ -60,17 +54,16 @@ static void receiver(std::vector<std::string> args)
     void* res = mailbox->get();
     xbt_free(res);
   } else {
-    void* ignored;
+    char* data[flow_amount];
 
-    // Start all comms in parallel
+    // Start all comms in parallel, and wait for their completion in one shot
     std::vector<simgrid::s4u::CommPtr> comms;
     for (int i = 0; i < flow_amount; i++)
-      comms.push_back(mailbox->get_async(&ignored));
+      comms.push_back(mailbox->get_async(reinterpret_cast<void**>(&(data[i]))));
 
-    // And now, wait for all comms. Manually since wait_all is not part of this_actor yet
+    simgrid::s4u::Comm::wait_all(&comms);
     for (int i = 0; i < flow_amount; i++)
-      comms.at(i)->wait();
-    comms.clear();
+      xbt_free(data[i]);
   }
   XBT_INFO("receiver done.");
 }
