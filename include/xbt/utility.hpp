@@ -22,6 +22,13 @@ public:
   bool operator()(const Pair& a, const Pair& b) const { return a.first > b.first; }
 };
 
+/** @brief Erase an element given by reference from a boost::intrusive::list.
+ */
+template <class List, class Elem> inline void intrusive_erase(List& list, Elem& elem)
+{
+  list.erase(list.iterator_to(elem));
+}
+
 // integer_sequence and friends from C++14
 // We need them to implement `apply` from C++17.
 
