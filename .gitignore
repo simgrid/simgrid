@@ -188,7 +188,6 @@ examples/s4u/actor-execute/s4u-actor-execute
 examples/s4u/actor-kill/s4u-actor-kill
 examples/s4u/actor-lifetime/s4u-actor-lifetime
 examples/s4u/actor-migration/s4u-actor-migration
-examples/s4u/actor-priority/s4u-actor-priority
 examples/s4u/actor-suspend/s4u-actor-suspend
 examples/s4u/actor-yield/s4u-actor-yield
 examples/s4u/app-bittorrent/s4u-bittorrent
