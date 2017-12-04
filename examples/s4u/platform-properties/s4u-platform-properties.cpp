@@ -107,6 +107,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Host** hosts = sg_host_list();
   for (unsigned int i = 0; i < totalHosts; i++)
     XBT_INFO("Host '%s' runs at %.0f flops/s", hosts[i]->getCname(), hosts[i]->getSpeed());
+  xbt_free(hosts);
 
   e.loadDeployment(argv[2]);
   e.run();
