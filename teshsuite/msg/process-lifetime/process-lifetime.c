@@ -15,7 +15,7 @@ static int my_onexit(XBT_ATTRIB_UNUSED void* ignored1, XBT_ATTRIB_UNUSED void* i
 }
 
 /* Just sleep until termination */
-static int sleeper(int argc, char *argv[])
+static int sleeper(int argc, char* argv[])
 {
   XBT_INFO("Hello! I go to sleep.");
   MSG_process_on_exit(my_onexit, NULL);
@@ -25,15 +25,16 @@ static int sleeper(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+                       "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+             argv[0], argv[0]);
 
-  MSG_create_environment(argv[1]);   /* - Load the platform description */
+  MSG_create_environment(argv[1]); /* - Load the platform description */
   MSG_function_register("sleeper", sleeper);
-  MSG_launch_application(argv[2]);   /* - Deploy the sleeper processes with explicit start/kill times */
+  MSG_launch_application(argv[2]); /* - Deploy the sleeper processes with explicit start/kill times */
 
   msg_error_t res = MSG_main(); /* - Run the simulation */
   XBT_INFO("Simulation time %g", MSG_get_clock());

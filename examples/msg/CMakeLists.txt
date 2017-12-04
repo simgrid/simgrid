@@ -5,7 +5,7 @@ foreach(x app-masterworker app-pingpong app-token-ring
           io-file task-priority 
           plugin-hostload
           process-create process-join
-          platform-properties process-startkilltime synchro-semaphore trace-categories 
+          synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-host-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
@@ -44,8 +44,7 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file app-chainsend app-masterworker app-pingpong dht-kademlia dht-pastry platform-properties 
-         task-priority)
+foreach (file app-chainsend app-masterworker app-pingpong dht-kademlia dht-pastry task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
@@ -70,11 +69,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/dogbone_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/two_clusters_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/baseline_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/kill_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/two_clusters_d.xml       PARENT_SCOPE)
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
