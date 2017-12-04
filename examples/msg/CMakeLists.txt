@@ -2,7 +2,7 @@
 foreach(x app-masterworker app-pingpong app-token-ring 
           cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-pastry energy-consumption energy-onoff energy-vm platform-failures 
-          io-file io-remote task-priority 
+          io-file task-priority 
           plugin-hostload
           process-create process-join
           platform-properties process-startkilltime synchro-semaphore trace-categories 
@@ -44,7 +44,7 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file app-chainsend app-masterworker app-pingpong dht-kademlia dht-pastry io-remote platform-properties 
+foreach (file app-chainsend app-masterworker app-pingpong dht-kademlia dht-pastry platform-properties 
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
@@ -78,7 +78,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote task-priority
+          cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file task-priority
 	  energy-consumption energy-onoff energy-vm
 	  plugin-hostload
           process-create process-join process-startkilltime

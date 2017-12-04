@@ -4,7 +4,7 @@ foreach(x actions-comm actions-storage
           cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes	  
           process-daemon process-kill process-migration process-suspend process-yield
           energy-ptask energy-pstate
-          io-raw-storage
+          io-raw-storage io-file-remote
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
@@ -49,6 +49,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/async-waitall_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/async-waitany_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/io-file-remote_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-yield/process-yield_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
@@ -73,7 +74,7 @@ foreach(x
     task_destroy_cancel task_listen_from task_progress 
     process-daemon process-kill process-migration process-suspend process-yield
     energy-ptask
-    io-raw-storage
+    io-raw-storage io-file-remote
     trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" 
                                    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

@@ -147,10 +147,6 @@ simulated storages.
     This example illustrates the use of operations on file
     (@ref MSG_file_open, @ref MSG_file_read, @ref MSG_file_write,
     or @ref MSG_file_close).
-    
-  - <b>Remote I/O</b>. @ref examples/msg/io-remote/io-remote.c \n
-    I/O operations can also be done in a remote, i.e. when the
-    accessed disk is not mounted on the caller's host.
 
 @section msg_ex_misc Miscellaneous
 
