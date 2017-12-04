@@ -1,5 +1,5 @@
 foreach (example actions-comm actions-storage 
-                 actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority actor-yield
+                 actor-create actor-daemon actor-execute actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-priority actor-yield
                  app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  energy-link energy-pstate energy-ptask
@@ -67,7 +67,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
 foreach(example actions-comm actions-storage 
-                actor-create actor-daemon actor-execute actor-kill actor-lifetime actor-migration actor-suspend actor-priority actor-yield
+                actor-create actor-daemon actor-execute actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-priority actor-yield
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany
                 dht-chord 

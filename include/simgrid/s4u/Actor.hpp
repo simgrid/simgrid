@@ -258,6 +258,7 @@ public:
    * This blocks the calling actor until the actor on which we call join() is terminated
    */
   void join();
+  void join(double timeout);
 
   // Static methods on all actors:
 

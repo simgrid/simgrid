@@ -61,6 +61,11 @@ void Actor::join() {
   simcall_process_join(this->pimpl_, -1);
 }
 
+void Actor::join(double timeout)
+{
+  simcall_process_join(this->pimpl_, timeout);
+}
+
 void Actor::setAutoRestart(bool autorestart) {
   simgrid::simix::kernelImmediate([this, autorestart]() { pimpl_->auto_restart = autorestart; });
 }
