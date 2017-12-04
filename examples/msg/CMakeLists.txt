@@ -1,5 +1,5 @@
 # C examples
-foreach(x app-masterworker app-pingpong app-token-ring async-wait async-waitall 
+foreach(x app-masterworker app-pingpong app-token-ring async-wait  
           async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm platform-failures 
           io-file io-remote io-storage task-priority 
@@ -45,7 +45,7 @@ foreach (file answer dht-kademlia node routing_table task)
 endforeach()
 
 foreach (file app-chainsend app-masterworker app-pingpong async-wait
-         async-waitall async-waitany dht-kademlia dht-pastry io-remote platform-properties 
+         async-waitany dht-kademlia dht-pastry io-remote platform-properties 
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
@@ -81,7 +81,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
-          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
+          async-wait async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
           cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
           process-create process-daemon process-join process-migration process-startkilltime process-suspend 
 	  platform-properties synchro-semaphore)
