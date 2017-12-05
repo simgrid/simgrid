@@ -93,11 +93,12 @@ msg_storage_t MSG_storage_get_by_name(const char *name)
  */
 xbt_dynar_t MSG_storages_as_dynar()
 {
-  std::map<std::string, simgrid::s4u::Storage*>* storage_map = simgrid::s4u::allStorages();
+  std::map<std::string, simgrid::s4u::Storage*>* storage_list = new std::map<std::string, simgrid::s4u::Storage*>;
+  simgrid::s4u::getStorageList(storage_list);
   xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),nullptr);
-  for (auto const& s : *storage_map)
+  for (auto const& s : *storage_list)
     xbt_dynar_push(res, &(s.second));
-  delete storage_map;
+  delete storage_list;
   return res;
 }
 

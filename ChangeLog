@@ -7,6 +7,9 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    Mailbox::getCname() instead to get a char*.
  - Storage::getName() changed to return a std::string, use
    Storage::getCname() instead to get a char*.
+ - simgrid::s4u::allStorages() becomes 
+   simgrid::s4u::getStorageList(whereTo) to have both allocation
+   and deallocation of the map in user space.
 
  MSG
  - Deprecate MSG_task_get_flops_amount(). Its semantic was weird:

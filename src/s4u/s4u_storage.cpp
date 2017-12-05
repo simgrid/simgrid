@@ -17,14 +17,10 @@ template class Extendable<simgrid::s4u::Storage>;
 
 namespace s4u {
 
-std::map<std::string, Storage*>* allStorages()
+void getStorageList(std::map<std::string, Storage*>* whereTo)
 {
-  std::unordered_map<std::string, surf::StorageImpl*>* map = surf::StorageImpl::storagesMap();
-  std::map<std::string, Storage*>* res                     = new std::map<std::string, Storage*>;
-  for (auto const& s : *map)
-    res->insert({s.first, &(s.second->piface_)}); // Convert each entry into its interface
-
-  return res;
+  for (auto const& s : *surf::StorageImpl::storagesMap())
+    whereTo->insert({s.first, &(s.second->piface_)}); // Convert each entry into its interface
 }
 
 Storage* Storage::byName(std::string name)

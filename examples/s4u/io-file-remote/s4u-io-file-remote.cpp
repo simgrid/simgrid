@@ -58,7 +58,8 @@ int main(int argc, char** argv)
   e.loadPlatform(argv[1]);
   e.registerFunction("host", host);
   e.loadDeployment(argv[2]);
-  std::map<std::string, simgrid::s4u::Storage*>* allStorages = simgrid::s4u::allStorages();
+  std::map<std::string, simgrid::s4u::Storage*>* allStorages = new std::map<std::string, simgrid::s4u::Storage*>;
+  simgrid::s4u::getStorageList(allStorages);
 
   for (auto const& s : *allStorages) {
     XBT_INFO("Init: %llu/%llu MiB used/free on '%s'", sg_storage_get_size_used(s.second) / INMEGA,
