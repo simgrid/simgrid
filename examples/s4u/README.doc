@@ -113,6 +113,11 @@ TODO: document here the examples about plugins
 
 @section s4u_ex_synchro Inter-Actor Synchronization 
 
+ - <b>Waiting for the termination of an actor</b> (joining on it)
+   @ref examples/s4u/actor-join/s4u-actor-join.cpp \n
+   The simgrid::s4u::Actor::join() method allows to block the current
+   actor until the end of the receiving actor.
+
  - <b>Mutex: </b> @ref examples/s4u/mutex/s4u-mutex.cpp \n
    Shows how to use simgrid::s4u::Mutex synchronization objects.
 
@@ -192,6 +197,7 @@ simulated storages.
 @example examples/s4u/actor-create/s4u-actor-create_d.xml
 @example examples/s4u/actor-daemon/s4u-actor-daemon.cpp
 @example examples/s4u/actor-execute/s4u-actor-execute.cpp
+@example examples/s4u/actor-join/s4u-actor-join.cpp
 @example examples/s4u/actor-kill/s4u-actor-kill.cpp
 @example examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp 
 @example examples/s4u/actor-lifetime/s4u-actor-lifetime_d.xml 
