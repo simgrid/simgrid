@@ -437,13 +437,15 @@ void SIMIX_run()
 
       /* Here, the order is ok because:
        *
-       *   Short proof: only maestro adds stuff to the process_to_run array, so the execution order of user contexts do not impact its order.
+       *   Short proof: only maestro adds stuff to the process_to_run array, so the execution order of user contexts do
+       *   not impact its order.
        *
        *   Long proof: processes remain sorted through an arbitrary (implicit, complex but fixed) order in all cases.
        *
        *   - if there is no kill during the simulation, processes remain sorted according by their PID.
        *     rational: This can be proved inductively.
-       *        Assume that process_to_run is sorted at a beginning of one round (it is at round 0: the deployment file is parsed linearly).
+       *        Assume that process_to_run is sorted at a beginning of one round (it is at round 0: the deployment file
+       *        is parsed linearly).
        *        Let's show that it is still so at the end of this round.
        *        - if a process is added when being created, that's from maestro. It can be either at startup
        *          time (and then in PID order), or in response to a process_create simcall. Since simcalls are handled
@@ -452,37 +454,42 @@ void SIMIX_run()
        *        - If a process gets added to process_to_run because one of their blocking action constituting the meat
        *          of a simcall terminates, we're still good. Proof:
        *          - You are added from SIMIX_simcall_answer() only. When this function is called depends on the resource
-       *            kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications as an example.
+       *            kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications as an
+       *            example.
        *          - For communications, this function is called from SIMIX_comm_finish().
        *            This function itself don't mess with the order since simcalls are handled in FIFO order.
        *            The function is called:
        *            - before the comm starts (invalid parameters, or resource already dead or whatever).
        *              The order then trivial holds since maestro didn't interrupt its handling of the simcall yet
-       *            - because the communication failed or were canceled after startup. In this case, it's called from the function
-       *              we are in, by the chunk:
+       *            - because the communication failed or were canceled after startup. In this case, it's called from
+       *              the function we are in, by the chunk:
        *                       set = model->states.failed_action_set;
-       *                       while ((synchro = xbt_swag_extract(set)))
+       *                       while ((synchro = extract(set)))
        *                          SIMIX_simcall_post((smx_synchro_t) synchro->data);
        *              This order is also fixed because it depends of the order in which the surf actions were
        *              added to the system, and only maestro can add stuff this way, through simcalls.
        *              We thus use the inductive hypothesis once again to conclude that the order in which synchros are
-       *              poped out of the swag does not depend on the user code's execution order.
+       *              poped out of the set does not depend on the user code's execution order.
        *            - because the communication terminated. In this case, synchros are served in the order given by
        *                       set = model->states.done_action_set;
-       *                       while ((synchro = xbt_swag_extract(set)))
+       *                       while ((synchro = extract(set)))
        *                          SIMIX_simcall_post((smx_synchro_t) synchro->data);
        *              and the argument is very similar to the previous one.
-       *            So, in any case, the orders of calls to SIMIX_comm_finish() do not depend on the order in which user processes are executed.
-       *          So, in any cases, the orders of processes within process_to_run do not depend on the order in which user processes were executed previously.
+       *            So, in any case, the orders of calls to SIMIX_comm_finish() do not depend on the order in which user
+       *            processes are executed.
+       *          So, in any cases, the orders of processes within process_to_run do not depend on the order in which
+       *          user processes were executed previously.
        *     So, if there is no killing in the simulation, the simulation reproducibility is not jeopardized.
        *   - If there is some process killings, the order is changed by this decision that comes from user-land
-       *     But this decision may not have been motivated by a situation that were different because the simulation is not reproducible.
+       *     But this decision may not have been motivated by a situation that were different because the simulation is
+       *     not reproducible.
        *     So, even the order change induced by the process killing is perfectly reproducible.
        *
        *   So science works, bitches [http://xkcd.com/54/].
        *
-       *   We could sort the process_that_ran array completely so that we can describe the order in which simcalls are handled
-       *   (like "according to the PID of issuer"), but it's not mandatory (order is fixed already even if unfriendly).
+       *   We could sort the process_that_ran array completely so that we can describe the order in which simcalls are
+       *   handled (like "according to the PID of issuer"), but it's not mandatory (order is fixed already even if
+       *   unfriendly).
        *   That would thus be a pure waste of time.
        */
 
