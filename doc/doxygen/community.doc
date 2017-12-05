@@ -330,12 +330,11 @@ but it is currently disabled.
 
 #### Interface with the model-checked processes
 
-The model-checker reads many information about the model-checked process
-by `process_vm_readv()`-ing brutally the data structure of the model-checked
-process leading to some horrible code such as walking a swag from another
-process. It prevents us as well from replacing some XBT data structures with
-standard C++ ones. We need a sane way to expose the relevant information to
-the model-checker.
+The model-checker reads many information about the model-checked process by
+`process_vm_readv()`-ing brutally the data structure of the model-checked
+process leading to some inefficient code such as maintaining copies of complex
+C++ structures in XBT dynars. We need a sane way to expose the relevant
+information to the model-checker.
 
 #### Generic simcalls
 
