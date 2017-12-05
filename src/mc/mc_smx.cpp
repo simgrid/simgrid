@@ -25,38 +25,12 @@ static inline simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
   return process_info;
 }
 
-/** Load the remote swag of processes into a vector
+/** Load the remote list of processes into a vector
  *
- *  @param process     MCed process
- *  @param target      Local vector (to be filled with copies of `s_smx_actor_t`)
- *  @param remote_swag Address of the process SWAG in the remote list
+ *  @param process      MCed process
+ *  @param target       Local vector (to be filled with copies of `s_smx_actor_t`)
+ *  @param remote_dynar Address of the process dynar in the remote list
  */
-static void MC_process_refresh_simix_process_list(simgrid::mc::RemoteClient* process,
-                                                  std::vector<simgrid::mc::ActorInformation>& target,
-                                                  simgrid::mc::RemotePtr<s_xbt_swag_t> remote_swag)
-{
-  target.clear();
-
-  // swag = REMOTE(*simix_global->process_list)
-  s_xbt_swag_t swag;
-  process->read_bytes(&swag, sizeof(swag), remote_swag);
-
-  // Load each element of the vector from the MCed process:
-  int i = 0;
-  for (smx_actor_t p = (smx_actor_t) swag.head; p; ++i) {
-
-    simgrid::mc::ActorInformation info;
-    info.address = p;
-    info.hostname = nullptr;
-    process->read_bytes(&info.copy, sizeof(info.copy), remote(p));
-    target.push_back(std::move(info));
-
-    // Lookup next process address:
-    p = (smx_actor_t) xbt_swag_getNext(&info.copy, swag.offset);
-  }
-  assert(i == swag.count);
-}
-
 static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* process,
                                                  std::vector<simgrid::mc::ActorInformation>& target,
                                                  simgrid::mc::RemotePtr<s_xbt_dynar_t> remote_dynar)
@@ -105,8 +79,8 @@ void RemoteClient::refresh_simix()
     this->read<simgrid::simix::Global>(simix_global_p);
 
   MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, remote(simix_global.getBuffer()->actors_vector));
-  MC_process_refresh_simix_process_list(this, this->smx_dead_actors_infos,
-                                        remote(simix_global.getBuffer()->process_to_destroy));
+  MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos,
+                                       remote(simix_global.getBuffer()->dead_actors_vector));
 
   this->cache_flags_ |= RemoteClient::cache_simix_processes;
 }

@@ -26,17 +26,19 @@ public:
   std::vector<smx_actor_t> process_to_run;
   std::vector<smx_actor_t> process_that_ran;
   std::map<aid_t, smx_actor_t> process_list;
+  xbt_swag_t process_to_destroy = nullptr;
 #if SIMGRID_HAVE_MC
-  /* MCer cannot read the std::map above in the remote process, so we copy the info it needs in a dynar.
+  /* MCer cannot read members process_list and process_to_destroy above in the remote process, so we copy the info it
+   * needs in a dynar.
    * FIXME: This is supposed to be a temporary hack.
    * A better solution would be to change the split between MCer and MCed, where the responsibility
    *   to compute the list of the enabled transitions goes to the MCed.
    * That way, the MCer would not need to have the list of actors on its side.
    * These info could be published by the MCed to the MCer in a way inspired of vd.so
    */
-  xbt_dynar_t actors_vector = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+  xbt_dynar_t actors_vector      = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+  xbt_dynar_t dead_actors_vector = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
 #endif
-  xbt_swag_t process_to_destroy = nullptr;
   smx_actor_t maestro_process   = nullptr;
 
   // Maps function names to actor code:

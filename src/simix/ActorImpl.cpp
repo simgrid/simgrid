@@ -115,7 +115,12 @@ void SIMIX_process_cleanup(smx_actor_t process)
   simix_global->process_list.erase(process->pid);
   if (process->host && process->host_process_list_hook.is_linked())
     simgrid::xbt::intrusive_erase(process->host->extension<simgrid::simix::Host>()->process_list, *process);
-  xbt_swag_insert(process, simix_global->process_to_destroy);
+  if (not xbt_swag_belongs(process, simix_global->process_to_destroy)) {
+#if SIMGRID_HAVE_MC
+    xbt_dynar_push_as(simix_global->dead_actors_vector, smx_actor_t, process);
+#endif
+    xbt_swag_insert(process, simix_global->process_to_destroy);
+  }
   process->context->iwannadie = 0;
 
   xbt_os_mutex_release(simix_global->mutex);
@@ -135,6 +140,9 @@ void SIMIX_process_empty_trash()
     intrusive_ptr_release(process);
     process = static_cast<smx_actor_t>(xbt_swag_extract(simix_global->process_to_destroy));
   }
+#if SIMGRID_HAVE_MC
+  xbt_dynar_reset(simix_global->dead_actors_vector);
+#endif
 }
 
 namespace simgrid {

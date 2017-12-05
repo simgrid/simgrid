@@ -308,6 +308,7 @@ void SIMIX_clean()
   simix_global->mutex = nullptr;
 #if SIMGRID_HAVE_MC
   xbt_dynar_free(&simix_global->actors_vector);
+  xbt_dynar_free(&simix_global->dead_actors_vector);
 #endif
 
   /* Let's free maestro now */
