@@ -23,6 +23,8 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
  - Define class simgrid::xbt::Path to manage file names.
  - Removed unused functions:
    - xbt/file.h: xbt_basename(), xbt_dirname(), xbt_getline()
+   - xbt/graph.h: xbt_graph_edge_get_length(), xbt_graph_edge_set_length,
+       xbt_graph_export_graphviz()
    - xbt/str.h: xbt_str_join()
    - xbt/heap.h: use std::priority_queue or boost::heap instead
    - xbt/swag.h: use boost::intrusive::list instead

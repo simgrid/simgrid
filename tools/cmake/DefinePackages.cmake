@@ -66,7 +66,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_dummy.cpp
   src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
-  src/xbt/graph_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
 
