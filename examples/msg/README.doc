@@ -12,7 +12,6 @@ documentation, but it should remain readable directly.
     - @ref msg_ex_tracing_user_variables
   - @ref msg_ex_models
     - @ref msg_ex_ns3
-    - @ref msg_ex_io
   - @ref msg_ex_apps
   - @ref msg_ex_misc
 
@@ -133,16 +132,6 @@ TODO: merge the C files
 
 TODO: show the XML files instead if it's what is interesting. On a "XML example files" page that does not exist yet.
 
-@subsection msg_ex_io Simulating disks and files
-
-The examples of this section demonstrate how to interact with the
-simulated storages.
-
-  - <b>File Management</b>. @ref examples/msg/io-file/io-file.c \n
-    This example illustrates the use of operations on file
-    (@ref MSG_file_open, @ref MSG_file_read, @ref MSG_file_write,
-    or @ref MSG_file_close).
-
 @section msg_ex_misc Miscellaneous
 
  - <b>Task priorities</b>.
@@ -177,8 +166,6 @@ top of the example file).
 @example examples/msg/trace-route-user-variables/trace-route-user-variables.c
 
 @example examples/msg/network-ns3/network-ns3.c
-
-@example examples/msg/io-file/io-file.c
 
 @example examples/msg/task-priority/task-priority.c
 

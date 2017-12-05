@@ -2,7 +2,7 @@
 foreach(x app-masterworker app-pingpong app-token-ring 
           cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-pastry energy-consumption energy-onoff energy-vm platform-failures 
-          io-file task-priority 
+          task-priority 
           plugin-hostload
           process-create process-join
           synchro-semaphore trace-categories 
@@ -73,7 +73,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-pastry dht-kademlia platform-failures io-file task-priority
+          cloud-two-tasks dht-pastry dht-kademlia platform-failures task-priority
           energy-consumption energy-onoff energy-vm
           plugin-hostload
           process-create process-join

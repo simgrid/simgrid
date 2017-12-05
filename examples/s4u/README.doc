@@ -169,6 +169,10 @@ also the tesh files in the example directories for details.
 The examples of this section demonstrate how to interact with the
 simulated storages.
 
+  - <b>File Management</b>. @ref examples/s4u/io-file-system/s4u-io-file-system.cpp \n
+    This example illustrates the use of operations on files
+    (read, write, seek, tell, unlink, ...).
+
   - <b>Access to raw storage devices </b>.
     @ref examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp \n
     This example illustrates how to simply read and write data on a
@@ -211,6 +215,7 @@ simulated storages.
 @example examples/s4u/async-waitall/s4u-async-waitall.cpp
 @example examples/s4u/async-waitany/s4u-async-waitany.cpp
 @example examples/s4u/energy-pstate/s4u-energy-pstate.cpp
+@example examples/s4u/io-file-system/s4u-io-file-system.cpp
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 @example examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp \n
 @example examples/s4u/mutex/s4u-mutex.cpp

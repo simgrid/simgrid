@@ -4,7 +4,7 @@ foreach(x actions-comm actions-storage
           cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes	  
           process-daemon process-kill process-lifetime process-migration process-suspend process-yield
           energy-ptask energy-pstate platform-properties
-          io-raw-storage io-file-remote
+          io-file io-raw-storage io-file-remote
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
@@ -79,7 +79,7 @@ foreach(x
     task_destroy_cancel task_listen_from task_progress 
     process-daemon process-kill process-lifetime process-migration process-suspend process-yield
     energy-ptask
-    io-raw-storage io-file-remote
+    io-file io-raw-storage io-file-remote
     platform-properties
     trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" 

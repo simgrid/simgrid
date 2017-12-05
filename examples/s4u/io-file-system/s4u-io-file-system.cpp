@@ -27,7 +27,8 @@ public:
     }
   }
 
-  void operator()() {
+  void operator()()
+  {
     std::unordered_map<std::string, simgrid::s4u::Storage*> const& mounts =
         simgrid::s4u::Host::current()->getMountedStorages();
 
@@ -37,7 +38,7 @@ public:
     std::string filename     = "/home/tmp/data.txt";
     simgrid::s4u::File* file = new simgrid::s4u::File(filename, nullptr);
 
-    sg_size_t write = file->write(200000);  // Write 200,000 bytes
+    sg_size_t write = file->write(200000); // Write 200,000 bytes
     XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, filename.c_str());
 
     // check that sizes have changed
@@ -50,7 +51,7 @@ public:
     XBT_INFO("Read %llu bytes on %s", read, filename.c_str());
 
     // Now write 100,000 bytes in tmp/data.txt
-    write = file->write(100000);  // Write 100,000 bytes
+    write = file->write(100000); // Write 100,000 bytes
     XBT_INFO("Write %llu bytes on %s", write, filename.c_str());
 
     simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName("Disk4");
@@ -88,7 +89,7 @@ public:
   }
 };
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
   sg_storage_file_system_init();

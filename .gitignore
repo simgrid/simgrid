@@ -135,7 +135,6 @@ examples/msg/energy-consumption/energy-consumption
 examples/msg/energy-onoff/energy-onoff
 examples/msg/energy-pstate/energy-pstate
 examples/msg/energy-vm/energy-vm
-examples/msg/io-file/io-file
 examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
@@ -206,7 +205,7 @@ examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-ptask/s4u-energy-ptask
 examples/s4u/energy-pstate/s4u-energy-pstate
 examples/s4u/energy-vm/s4u-energy-vm
-examples/s4u/io/s4u-io
+examples/s4u/io-file-system/s4u-io-file-system
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-storage-raw/s4u-io-storage-raw
 examples/s4u/mutex/s4u-mutex
@@ -274,6 +273,7 @@ teshsuite/msg/host_on_off/host_on_off
 teshsuite/msg/host_on_off_processes/host_on_off_processes
 teshsuite/msg/host_on_off_recv/host_on_off_recv
 teshsuite/msg/host_on_off_wait/host_on_off_wait
+teshsuite/msg/io-file/io-file
 teshsuite/msg/io-file-remote/io-file-remote
 teshsuite/msg/io-raw-storage/io-raw-storage
 teshsuite/msg/listen_async/listen_async
