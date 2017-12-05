@@ -52,7 +52,7 @@ struct papi_process_data {
 #endif
 std::unordered_map<std::string, double> location2speedup;
 
-simgrid::smpi::Process **process_data = nullptr;
+static simgrid::smpi::Process** process_data = nullptr;
 int process_count = 0;
 int smpi_universe_size = 0;
 int* index_to_process_data = nullptr;
