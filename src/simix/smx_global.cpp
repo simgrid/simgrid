@@ -210,8 +210,6 @@ void SIMIX_global_init(int *argc, char **argv)
 
   if (not simix_global) {
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
-
-    simgrid::simix::ActorImpl proc;
     simix_global->maestro_process = nullptr;
     simix_global->create_process_function = &SIMIX_process_create;
     simix_global->kill_process_function = &kill_process;
