@@ -14,8 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
-//TODO : replace
-extern simgrid::smpi::Process **process_data;
 extern int* index_to_process_data;
 
 #define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
@@ -272,7 +270,7 @@ void Process::set_return_value(int val){
 
 void Process::init(int *argc, char ***argv){
 
-  if (process_data == nullptr){
+  if (smpi_process_count() == 0) {
     printf("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
     exit(1);
   }
