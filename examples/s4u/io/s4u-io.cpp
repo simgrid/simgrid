@@ -76,7 +76,15 @@ public:
     storage->setUserdata(new std::string("Some user data"));
     std::string* storage_data = static_cast<std::string*>(storage->getUserdata());
     XBT_INFO("    Set and get data: '%s'", storage_data->c_str());
+
     delete storage_data;
+
+    // Reopen the file and then unlink it
+    file = new simgrid::s4u::File("/home/tmp/simgrid.readme", nullptr);
+    XBT_INFO("Unlink file: '%s'", file->getPath());
+    file->unlink();
+
+    show_info(mounts);
   }
 };
 
@@ -84,10 +92,7 @@ int main(int argc, char **argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
   sg_storage_file_system_init();
-  const char* platffile = "../../platforms/storage/storage.xml";
-  if (argc > 1)
-    platffile = argv[1];
-  e.loadPlatform(platffile);
+  e.loadPlatform(argv[1]);
   simgrid::s4u::Actor::createActor("host", simgrid::s4u::Host::by_name("denise"), MyHost());
   e.run();
 
