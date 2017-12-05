@@ -681,10 +681,6 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   }
 
   switch (type.type) {
-  default:
-    XBT_DEBUG("Unhandled type: %d (%s)", type.type, simgrid::dwarf::tagname(type.type));
-    break;
-
   case DW_TAG_array_type:
     type.element_count = MC_dwarf_array_element_count(die, unit);
     // TODO, handle DW_byte_stride and (not) DW_bit_stride
@@ -699,8 +695,12 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   case DW_TAG_union_type:
   case DW_TAG_class_type:
     MC_dwarf_add_members(info, die, unit, &type);
-    std::string new_ns = ns ? simgrid::xbt::string_printf("%s::%s", ns, name) : type.name;
-    MC_dwarf_handle_children(info, die, unit, frame, new_ns.c_str());
+    MC_dwarf_handle_children(info, die, unit, frame,
+                             ns ? simgrid::xbt::string_printf("%s::%s", ns, name).c_str() : type.name.c_str());
+    break;
+
+  default:
+    XBT_DEBUG("Unhandled type: %d (%s)", type.type, simgrid::dwarf::tagname(type.type));
     break;
   }
 
