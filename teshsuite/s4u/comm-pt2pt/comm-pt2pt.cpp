@@ -166,11 +166,11 @@ int main(int argc, char* argv[])
   std::vector<std::string> argSend{specSend.c_str()};
   std::vector<std::string> argRecv{specRecv.c_str()};
 
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
   if (argc < 2)
     usage(argv[0], specSend.c_str(), specRecv.c_str());
 
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
 
   if (argc >= 3) {
     argSend.clear();
@@ -187,9 +187,8 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::createActor("recver", hosts[1], receiver, argRecv);
   xbt_free(hosts);
 
-  e->run();
-  XBT_INFO("Simulation time %g", e->getClock());
+  e.run();
+  XBT_INFO("Simulation time %g", e.getClock());
 
-  delete e;
   return 0;
 }

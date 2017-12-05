@@ -29,15 +29,14 @@ static void host()
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
-  e->loadPlatform(argv[1]);
+  simgrid::s4u::Engine e(&argc, argv);
+  e.loadPlatform(argv[1]);
 
   for (int i = 0; i < 5; i++)
     simgrid::s4u::Actor::createActor("host", simgrid::s4u::Host::by_name("bob"), host);
 
-  e->run();
-  XBT_INFO("Simulation time %g", e->getClock());
+  e.run();
+  XBT_INFO("Simulation time %g", e.getClock());
 
-  delete e;
   return 0;
 }

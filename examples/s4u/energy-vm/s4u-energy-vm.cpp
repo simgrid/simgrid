@@ -54,15 +54,15 @@ static void dvfs()
 int main(int argc, char* argv[])
 {
   sg_host_energy_plugin_init();
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
 
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  e->loadPlatform(argv[1]);
+  e.loadPlatform(argv[1]);
 
   simgrid::s4u::Actor::createActor("dvfs", simgrid::s4u::Host::by_name("MyHost1"), dvfs);
 
-  e->run();
+  e.run();
 
   XBT_INFO("Total simulation time: %.2f; Host2 and Host3 must have the exact same energy consumption; Host1 is "
            "multi-core and will differ.",
