@@ -47,6 +47,7 @@ static void runner()
     XBT_WARN("Woops, this did not timeout as expected... Please report that bug.");
   } catch (xbt_ex& e) {
     /* Do nothing this exception on timeout was expected */
+    XBT_DEBUG("Caught expected exception: %s", e.what());
   }
 
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
