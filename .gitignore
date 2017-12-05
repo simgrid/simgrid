@@ -205,6 +205,7 @@ examples/s4u/dht-chord/s4u-dht-chord
 examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-ptask/s4u-energy-ptask
 examples/s4u/energy-pstate/s4u-energy-pstate
+examples/s4u/energy-vm/s4u-energy-vm
 examples/s4u/io/s4u-io
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-storage-raw/s4u-io-storage-raw
