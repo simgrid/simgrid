@@ -10,6 +10,7 @@
 #include "src/kernel/context/Context.hpp"
 #include <csignal>
 
+#include <boost/intrusive/list.hpp>
 #include <map>
 #include <vector>
 
@@ -26,7 +27,9 @@ public:
   std::vector<smx_actor_t> process_to_run;
   std::vector<smx_actor_t> process_that_ran;
   std::map<aid_t, smx_actor_t> process_list;
-  xbt_swag_t process_to_destroy = nullptr;
+  boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
+                                                                  &ActorImpl::smx_destroy_list_hook>>
+      process_to_destroy;
 #if SIMGRID_HAVE_MC
   /* MCer cannot read members process_list and process_to_destroy above in the remote process, so we copy the info it
    * needs in a dynar.

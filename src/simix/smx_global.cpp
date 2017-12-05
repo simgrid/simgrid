@@ -212,7 +212,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
 
     simgrid::simix::ActorImpl proc;
-    simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
     simix_global->maestro_process = nullptr;
     simix_global->create_process_function = &SIMIX_process_create;
     simix_global->kill_process_function = &kill_process;
@@ -300,9 +299,8 @@ void SIMIX_clean()
   /* Free the remaining data structures */
   simix_global->process_to_run.clear();
   simix_global->process_that_ran.clear();
-  xbt_swag_free(simix_global->process_to_destroy);
+  simix_global->process_to_destroy.clear();
   simix_global->process_list.clear();
-  simix_global->process_to_destroy = nullptr;
 
   xbt_os_mutex_destroy(simix_global->mutex);
   simix_global->mutex = nullptr;

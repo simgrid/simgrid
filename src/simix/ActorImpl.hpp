@@ -9,7 +9,6 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "src/simix/popping_private.hpp"
 #include "src/surf/PropertyHolder.hpp"
-#include "xbt/swag.h"
 #include <boost/intrusive/list.hpp>
 #include <list>
 #include <map>
@@ -38,9 +37,8 @@ public:
   ActorImpl() : piface_(this) {}
   ~ActorImpl();
 
-  // TODO, replace with boost intrusive container hooks (src/mc/mc_smx.cpp needs to be changed too)
-  s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
   boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
+  boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->process_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
   aid_t pid  = 0;

@@ -115,11 +115,11 @@ void SIMIX_process_cleanup(smx_actor_t process)
   simix_global->process_list.erase(process->pid);
   if (process->host && process->host_process_list_hook.is_linked())
     simgrid::xbt::intrusive_erase(process->host->extension<simgrid::simix::Host>()->process_list, *process);
-  if (not xbt_swag_belongs(process, simix_global->process_to_destroy)) {
+  if (not process->smx_destroy_list_hook.is_linked()) {
 #if SIMGRID_HAVE_MC
     xbt_dynar_push_as(simix_global->dead_actors_vector, smx_actor_t, process);
 #endif
-    xbt_swag_insert(process, simix_global->process_to_destroy);
+    simix_global->process_to_destroy.push_back(*process);
   }
   process->context->iwannadie = 0;
 
@@ -133,12 +133,11 @@ void SIMIX_process_cleanup(smx_actor_t process)
  */
 void SIMIX_process_empty_trash()
 {
-  smx_actor_t process = static_cast<smx_actor_t>(xbt_swag_extract(simix_global->process_to_destroy));
-
-  while (process) {
+  while (not simix_global->process_to_destroy.empty()) {
+    smx_actor_t process = &simix_global->process_to_destroy.front();
+    simix_global->process_to_destroy.pop_front();
     XBT_DEBUG("Getting rid of %p",process);
     intrusive_ptr_release(process);
-    process = static_cast<smx_actor_t>(xbt_swag_extract(simix_global->process_to_destroy));
   }
 #if SIMGRID_HAVE_MC
   xbt_dynar_reset(simix_global->dead_actors_vector);
