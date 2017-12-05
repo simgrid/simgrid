@@ -13,6 +13,10 @@
 #include "swag.h"
 #include "xbt/asserts.h"
 
+typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
+typedef struct xbt_swag* xbt_swag_t;
+typedef const struct xbt_swag* const_xbt_swag_t;
+
 #define xbt_swag_getPrev(obj, offset) (((xbt_swag_hookup_t)(((char*)(obj)) + (offset)))->prev)
 #define xbt_swag_getNext(obj, offset) (((xbt_swag_hookup_t)(((char*)(obj)) + (offset)))->next)
 #define xbt_swag_belongs(obj, swag) (xbt_swag_getNext((obj), (swag)->offset) || (swag)->tail == (obj))

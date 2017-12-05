@@ -60,7 +60,6 @@ typedef struct foo {
 }
 \endcode
 */
-typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
 
 struct xbt_swag {
   void *head;
@@ -69,7 +68,5 @@ struct xbt_swag {
   int count;
 };
 typedef struct xbt_swag s_xbt_swag_t;
-typedef struct xbt_swag* xbt_swag_t;
-typedef const struct xbt_swag* const_xbt_swag_t;
 
 #endif /* XBT_SWAG_H */
