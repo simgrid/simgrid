@@ -42,24 +42,13 @@ static int computation_fun(int argc, char *argv[])
   return 0;
 }
 
-static void launch_computation_worker(msg_host_t host)
-{
-  const char *pr_name = "compute";
-  char **argv = xbt_new(char *, 2);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = NULL;
-
-  MSG_process_create_with_arguments(pr_name, computation_fun, NULL, host, 1, argv);
-}
-
 static int master_main(int argc, char *argv[])
 {
-  xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_vm_t   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
 
-  launch_computation_worker((msg_host_t)vm0);
+  MSG_process_create("compute", computation_fun, NULL, (msg_host_t)vm0);
 
   while(MSG_get_clock()<100) {
     if (atask != NULL)
@@ -69,7 +58,6 @@ static int master_main(int argc, char *argv[])
 
   MSG_process_sleep(10000);
   MSG_vm_destroy(vm0);
-  xbt_dynar_free(&hosts_dynar);
   return 1;
 }
 
