@@ -16,7 +16,6 @@
     - Data structures
       - \ref XBT_dynar
       - \ref XBT_dict
-      - \ref XBT_swag
     - \ref XBT_misc
       - \ref XBT_graph
 
@@ -64,7 +63,6 @@
   @{ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */
      /** @defgroup XBT_dict   Dict: generic dictionnary */
-     /** @defgroup XBT_swag   Swag: O(1) set datatype */
 /** @} */
 
 

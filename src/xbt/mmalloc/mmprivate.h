@@ -16,12 +16,12 @@
 #include <xbt/base.h>
 #include <xbt/misc.h>
 
+#include "swag.h"
 #include "src/internal_config.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"
 #include "xbt/dynar.h"
-#include "xbt/swag.h"
 
 #include <pthread.h>
 #include <stdint.h>

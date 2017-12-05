@@ -80,6 +80,8 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmorecore.c
   src/xbt/mmalloc/mmprivate.h
   src/xbt/mmalloc/mrealloc.c
+  src/xbt/mmalloc/swag.c
+  src/xbt/mmalloc/swag.h
   tools/tesh/generate_tesh
   tools/lualib.patch
   teshsuite/lua/lua_platforms.tesh
@@ -277,7 +279,6 @@ set(XBT_SRC
   src/xbt/parmap.cpp
   src/xbt/snprintf.c
   src/xbt/string.cpp
-  src/xbt/swag.c
   src/xbt/xbt_log_appender_file.c
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
@@ -737,7 +738,6 @@ set(headers_to_install
   include/xbt/signal.hpp
   include/xbt/str.h
   include/xbt/string.hpp
-  include/xbt/swag.h
   include/xbt/synchro.h
   include/xbt/sysdep.h
   include/xbt/system_error.hpp

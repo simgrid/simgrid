@@ -21,7 +21,6 @@
 
 #include <xbt/dynar.h>
 #include <xbt/dict.h>
-#include <xbt/swag.h>
 #include <xbt/parmap.h>
 
 #include <xbt/config.h>

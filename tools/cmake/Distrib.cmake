@@ -344,7 +344,6 @@ add_custom_target(maintainer-clean
   COMMAND ${CMAKE_COMMAND} -E remove -f src/ex_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/set_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid_units_main.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/swag_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_str_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}")

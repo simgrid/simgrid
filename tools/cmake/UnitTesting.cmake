@@ -9,7 +9,6 @@ set(FILES_CONTAINING_UNITTESTS
   src/xbt/ex.cpp
   src/xbt/dynar.cpp
   src/xbt/dict.cpp
-  src/xbt/swag.c
   src/xbt/xbt_str.cpp
   src/xbt/config.cpp
 )

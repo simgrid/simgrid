@@ -7,7 +7,7 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    Mailbox::getCname() instead to get a char*.
  - Storage::getName() changed to return a std::string, use
    Storage::getCname() instead to get a char*.
- - simgrid::s4u::allStorages() becomes 
+ - simgrid::s4u::allStorages() becomes
    simgrid::s4u::getStorageList(whereTo) to have both allocation
    and deallocation of the map in user space.
 
@@ -25,16 +25,17 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    - xbt/file.h: xbt_basename(), xbt_dirname(), xbt_getline()
    - xbt/str.h: xbt_str_join()
    - xbt/heap.h: use std::priority_queue or boost::heap instead
+   - xbt/swag.h: use boost::intrusive::list instead
 
  PLUGINS:
  - New link_energy plugin for the consumption of the links.
  - All of the operations on files and storage contents have been
    packaged into a plugin (src/plugins/file_system). The current
-   public interface can be found in 
+   public interface can be found in
    include/simgrid/plugins/file_system.h
-   To use these functions you now have to initialize the plugin by 
-   calling MSG_storage_file_system_init() just after calling 
-   MSG_init() or sg_storage_file_system_init() just after creating 
+   To use these functions you now have to initialize the plugin by
+   calling MSG_storage_file_system_init() just after calling
+   MSG_init() or sg_storage_file_system_init() just after creating
    the Engine.
 
  XML
@@ -130,7 +131,7 @@ SimGrid (3.16) Released June 22. 2017.
     When one wants to get the list of tasks whose states have changed during a
     simulation round, s/he has to allocate and free a dynar and use it as
     argument to this function. The former SD_simulate (double how_long)
-    now	returns void.
+    now returns void.
 
  Virtual Machines
   - Allow multicore VMs, with the correct sharing (unless you overcommit)
