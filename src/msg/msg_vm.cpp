@@ -124,8 +124,6 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
   s_vm_params_t params;
-  params.skip_stage1  = 0;
-  params.skip_stage2  = 0;
   params.max_downtime = 0.03;
   params.mig_speed    = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
   params.dp_intensity = static_cast<double>(dp_intensity) / 100;
@@ -523,14 +521,13 @@ static int migration_tx_fun(int argc, char *argv[])
   s_vm_params_t params;
   ms->vm->getParameters(&params);
   const sg_size_t ramsize   = ms->vm->getRamsize();
-  const int skip_stage1     = params.skip_stage1;
-  int skip_stage2           = params.skip_stage2;
   const double dp_rate      = host_speed ? (params.mig_speed * params.dp_intensity) / host_speed : 1;
   const double dp_cap       = params.dp_cap;
   const double mig_speed    = params.mig_speed;
   double max_downtime       = params.max_downtime;
 
   double mig_timeout = 10000000.0;
+  bool skip_stage2   = false;
 
   size_t remaining_size = ramsize;
   size_t threshold      = 0.0;
@@ -549,44 +546,40 @@ static int migration_tx_fun(int argc, char *argv[])
   start_dirty_page_tracking(ms->vm);
 
   double computed_during_stage1 = 0;
-  if (not skip_stage1) {
-    double clock_prev_send = MSG_get_clock();
+  double clock_prev_send        = MSG_get_clock();
 
-    try {
-      /* At stage 1, we do not need timeout. We have to send all the memory pages even though the duration of this
-       * transfer exceeds the timeout value. */
-      XBT_VERB("Stage 1: Gonna send %llu bytes", ramsize);
-      sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
-      remaining_size -= sent;
-      computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
+  try {
+    /* At stage 1, we do not need timeout. We have to send all the memory pages even though the duration of this
+     * transfer exceeds the timeout value. */
+    XBT_VERB("Stage 1: Gonna send %llu bytes", ramsize);
+    sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
+    remaining_size -= sent;
+    computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
 
-      if (sent < ramsize) {
-        XBT_VERB("mig-stage1: timeout, force moving to stage 3");
-        skip_stage2 = 1;
-      } else if (sent > ramsize)
-        XBT_CRITICAL("bug");
+    if (sent < ramsize) {
+      XBT_VERB("mig-stage1: timeout, force moving to stage 3");
+      skip_stage2 = true;
+    } else if (sent > ramsize)
+      XBT_CRITICAL("bug");
 
-    }
-    catch (xbt_ex& e) {
-      //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
-      // Stop the dirty page tracking an return (there is no memory space to release)
-      stop_dirty_page_tracking(ms->vm);
-      return 0;
-    }
-
-    double clock_post_send = MSG_get_clock();
-    mig_timeout -= (clock_post_send - clock_prev_send);
-    if (mig_timeout < 0) {
-      XBT_VERB("The duration of stage 1 exceeds the timeout value, skip stage 2");
-      skip_stage2 = 1;
-    }
-
-    /* estimate bandwidth */
-    double bandwidth = ramsize / (clock_post_send - clock_prev_send);
-    threshold        = bandwidth * max_downtime;
-    XBT_DEBUG("actual bandwidth %f (MB/s), threshold %zu", bandwidth / 1024 / 1024, threshold);
+  } catch (xbt_ex& e) {
+    // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
+    // Stop the dirty page tracking an return (there is no memory space to release)
+    stop_dirty_page_tracking(ms->vm);
+    return 0;
   }
 
+  double clock_post_send = MSG_get_clock();
+  mig_timeout -= (clock_post_send - clock_prev_send);
+  if (mig_timeout < 0) {
+    XBT_VERB("The duration of stage 1 exceeds the timeout value, skip stage 2");
+    skip_stage2 = true;
+  }
+
+  /* estimate bandwidth */
+  double bandwidth = ramsize / (clock_post_send - clock_prev_send);
+  threshold        = bandwidth * max_downtime;
+  XBT_DEBUG("actual bandwidth %f (MB/s), threshold %zu", bandwidth / 1024 / 1024, threshold);
 
   /* Stage2: send update pages iteratively until the size of remaining states becomes smaller than threshold value. */
   if (not skip_stage2) {

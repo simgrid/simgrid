@@ -10,17 +10,12 @@
 #include "simgrid/forward.h"
 
 struct vm_params {
-  /* The size of other states than memory pages, which is out-of-scope of dirty page tracking. */
-  int skip_stage1;
-  int skip_stage2;
   double max_downtime;
-
-  double dp_intensity; // Percentage of pages that get dirty compared to netspeed [0;1]
-  double dp_cap; /* bytes per 1 flop execution */
-
-  /* set migration speed */
-  double mig_speed;
+  double dp_intensity; // Percentage of pages that get dirty compared to netspeed [0;1] bytes per 1 flop execution
+  double dp_cap;
+  double mig_speed; // Set migration speed
 };
+
 typedef struct vm_params  s_vm_params_t;
 typedef struct vm_params* vm_params_t;
 
