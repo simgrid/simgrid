@@ -127,9 +127,6 @@ inline void s_simdata_task_t::setUsed()
 {
   if (this->isused)
     this->reportMultipleUse();
-  if (msg_global->debug_multiple_use) {
-    // TODO, backtrace
-  }
   this->isused = true;
 }
 
