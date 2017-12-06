@@ -295,7 +295,7 @@ void Process::init(int *argc, char ***argv){
     // this up here so that I can set the privatized region before the switch.
     Process* process = smpi_process_remote(index);
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
-      /* Now using segment index of the process  */
+      /* Now using the segment index of this process  */
       index = proc->segment_index;
       process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
