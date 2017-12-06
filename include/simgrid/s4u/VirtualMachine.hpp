@@ -46,6 +46,9 @@ private:
   virtual ~VirtualMachine();
 public:
   void start();
+  void suspend();
+  void resume();
+
   bool isMigrating();
 
   void getParameters(vm_params_t params);

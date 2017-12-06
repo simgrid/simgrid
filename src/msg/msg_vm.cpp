@@ -31,7 +31,6 @@ typedef s_dirty_page* dirty_page_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 
-/* **** ******** GENERAL ********* **** */
 const char* MSG_vm_get_name(msg_vm_t vm)
 {
   return vm->getCname();
@@ -71,7 +70,7 @@ size_t MSG_vm_get_ramsize(msg_vm_t vm)
 /* **** Check state of a VM **** */
 static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state)
 {
-  return vm->pimpl_vm_ != nullptr && vm->pimpl_vm_->getState() == state;
+  return vm->pimpl_vm_ != nullptr && vm->getState() == state;
 }
 
 /** @brief Returns whether the given VM has just created, not running.
@@ -288,11 +287,11 @@ static int migration_rx_fun(int argc, char *argv[])
   simgrid::simix::kernelImmediate([vm, dst_pm]() {
     /* Update the vm location */
     /* precopy migration makes the VM temporally paused */
-    xbt_assert(vm->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
+    xbt_assert(vm->getState() == SURF_VM_STATE_SUSPENDED);
 
     /* Update the vm location and resume it */
     vm->pimpl_vm_->setPm(dst_pm);
-    vm->pimpl_vm_->resume();
+    vm->resume();
   });
 
 
@@ -517,7 +516,7 @@ static int migration_tx_fun(int argc, char *argv[])
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
   migration_session* ms = static_cast<migration_session*>(MSG_process_get_data(MSG_process_self()));
 
-  double host_speed = ms->vm->pimpl_vm_->getPm()->getSpeed();
+  double host_speed = ms->vm->getPm()->getSpeed();
   s_vm_params_t params;
   ms->vm->getParameters(&params);
   const sg_size_t ramsize   = ms->vm->getRamsize();
@@ -662,7 +661,7 @@ static int migration_tx_fun(int argc, char *argv[])
   catch(xbt_ex& e) {
     //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
-    ms->vm->pimpl_vm_->resume();
+    ms->vm->resume();
     return 0;
   }
 
@@ -694,7 +693,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
    * The second one would be easier.
    */
 
-  msg_host_t src_pm = vm->pimpl_vm_->getPm();
+  msg_host_t src_pm = vm->getPm();
 
   if (src_pm->isOff())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->getCname(), src_pm->getCname());
@@ -762,11 +761,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
  */
 void MSG_vm_suspend(msg_vm_t vm)
 {
-  smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([vm, issuer]() { vm->pimpl_vm_->suspend(issuer); });
-
-  XBT_DEBUG("vm_suspend done");
-
+  vm->suspend();
   if (TRACE_msg_vm_is_enabled()) {
     simgrid::instr::StateType* state = simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE");
     state->addEntityValue("suspend", "1 0 0"); // suspend is red
@@ -781,8 +776,7 @@ void MSG_vm_suspend(msg_vm_t vm)
  */
 void MSG_vm_resume(msg_vm_t vm)
 {
-  vm->pimpl_vm_->resume();
-
+  vm->resume();
   if (TRACE_msg_vm_is_enabled())
     simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE")->popEvent();
 }
