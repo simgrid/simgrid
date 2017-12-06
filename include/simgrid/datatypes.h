@@ -11,7 +11,6 @@
 
 struct vm_params {
   /* The size of other states than memory pages, which is out-of-scope of dirty page tracking. */
-  sg_size_t devsize;
   int skip_stage1;
   int skip_stage2;
   double max_downtime;

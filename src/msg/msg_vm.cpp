@@ -124,7 +124,6 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
   s_vm_params_t params;
-  params.devsize      = 0;
   params.skip_stage1  = 0;
   params.skip_stage2  = 0;
   params.max_downtime = 0.03;
@@ -524,7 +523,6 @@ static int migration_tx_fun(int argc, char *argv[])
   s_vm_params_t params;
   ms->vm->getParameters(&params);
   const sg_size_t ramsize   = ms->vm->getRamsize();
-  const sg_size_t devsize   = params.devsize;
   const int skip_stage1     = params.skip_stage1;
   int skip_stage2           = params.skip_stage2;
   const double dp_rate      = host_speed ? (params.mig_speed * params.dp_intensity) / host_speed : 1;
@@ -534,8 +532,8 @@ static int migration_tx_fun(int argc, char *argv[])
 
   double mig_timeout = 10000000.0;
 
-  double remaining_size = static_cast<double>(ramsize + devsize);
-  double threshold = 0.0;
+  size_t remaining_size = ramsize;
+  size_t threshold      = 0.0;
 
   /* check parameters */
   if (ramsize == 0)
@@ -547,7 +545,7 @@ static int migration_tx_fun(int argc, char *argv[])
   }
 
   /* Stage1: send all memory pages to the destination. */
-  XBT_DEBUG("mig-stage1: remaining_size %f", remaining_size);
+  XBT_DEBUG("mig-stage1: remaining_size %zu", remaining_size);
   start_dirty_page_tracking(ms->vm);
 
   double computed_during_stage1 = 0;
@@ -586,7 +584,7 @@ static int migration_tx_fun(int argc, char *argv[])
     /* estimate bandwidth */
     double bandwidth = ramsize / (clock_post_send - clock_prev_send);
     threshold        = bandwidth * max_downtime;
-    XBT_DEBUG("actual bandwidth %f (MB/s), threshold %f", bandwidth / 1024 / 1024, threshold);
+    XBT_DEBUG("actual bandwidth %f (MB/s), threshold %zu", bandwidth / 1024 / 1024, threshold);
   }
 
 
@@ -610,7 +608,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
       /* Check whether the remaining size is below the threshold value. If so, move to stage 3. */
       remaining_size += updated_size;
-      XBT_DEBUG("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round, remaining_size,
+      XBT_DEBUG("mig-stage2.%d: remaining_size %zu (%s threshold %zu)", stage2_round, remaining_size,
                 (remaining_size < threshold) ? "<" : ">", threshold);
       if (remaining_size < threshold)
         break;
@@ -634,7 +632,7 @@ static int migration_tx_fun(int argc, char *argv[])
         /* timeout did not happen */
         double bandwidth = updated_size / (clock_post_send - clock_prev_send);
         threshold        = bandwidth * max_downtime;
-        XBT_DEBUG("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
+        XBT_DEBUG("actual bandwidth %f, threshold %zu", bandwidth / 1024 / 1024, threshold);
         remaining_size -= sent;
         stage2_round += 1;
         mig_timeout -= (clock_post_send - clock_prev_send);
@@ -657,7 +655,7 @@ static int migration_tx_fun(int argc, char *argv[])
   }
 
   /* Stage3: stop the VM and copy the rest of states. */
-  XBT_DEBUG("mig-stage3: remaining_size %f", remaining_size);
+  XBT_DEBUG("mig-stage3: remaining_size %zu", remaining_size);
   simgrid::vm::VirtualMachineImpl* pimpl = ms->vm->pimpl_vm_;
   pimpl->setState(SURF_VM_STATE_RUNNING); // FIXME: this bypass of the checks in suspend() is not nice
   pimpl->isMigrating = false;             // FIXME: this bypass of the checks in suspend() is not nice
@@ -665,9 +663,8 @@ static int migration_tx_fun(int argc, char *argv[])
   stop_dirty_page_tracking(ms->vm);
 
   try {
-    XBT_DEBUG("Stage 3: Gonna send %f bytes", remaining_size);
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, static_cast<sg_size_t>(remaining_size), ms->mbox, 3, 0,
-                        mig_speed, -1);
+    XBT_DEBUG("Stage 3: Gonna send %zu bytes", remaining_size);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, -1);
   }
   catch(xbt_ex& e) {
     //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
