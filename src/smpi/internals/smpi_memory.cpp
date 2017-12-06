@@ -134,8 +134,11 @@ int smpi_is_privatization_file(char* file)
   return buffer_path.compare(0, std::string::npos, file, buffer_path.length()) == 0;
 }
 
-// TODO: cheinrich: The behavior changed; this now only makes a backup of the
-// data segment. I think the function should be renamed.
+/**
+ * @brief Makes a backup of the segment in memory that stores the global variables of a process.
+ *        This backup is then used to initialize the global variables for every single
+ *        process that is added, regardless of the progress of the simulation.
+ */
 void smpi_backup_global_memory_segment()
 {
 #if HAVE_PRIVATIZATION
