@@ -31,7 +31,7 @@ public:
 
   ~Exec() = default;
 
-  void start()
+  void start() override
   {
     pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1 / priority_, 0.);
     state_ = started;
