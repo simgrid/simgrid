@@ -180,7 +180,7 @@ void MSG_vm_destroy(msg_vm_t vm)
     MSG_vm_shutdown(vm);
 
   /* Then, destroy the VM object */
-  simgrid::simix::kernelImmediate([vm]() { vm->destroy(); });
+  vm->destroy();
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t container = simgrid::instr::Container::byName(vm->getName());
