@@ -83,10 +83,7 @@ static int master_fun(int argc, char *argv[])
     XBT_INFO("create %s on PM(%s)", vm_name, MSG_host_get_name(pm));
     msg_vm_t vm = MSG_vm_create_core(pm, vm_name);
 
-    s_vm_params_t params;
-    memset(&params, 0, sizeof(params));
-    params.ramsize = 1L * 1024 * 1024 * 1024; // 1Gbytes
-    MSG_vm_set_params(vm, &params);
+    MSG_vm_set_ramsize(vm, 1L * 1024 * 1024 * 1024); // 1GiB
 
     MSG_vm_start(vm);
     xbt_dynar_push(vms, &vm);

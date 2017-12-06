@@ -234,10 +234,7 @@ static int master_main(int argc, char *argv[])
            " network one");
   XBT_INFO("### Relocate VM0 between PM0 and PM1");
   vm0 = MSG_vm_create_core(pm0, "VM0");
-  s_vm_params_t params;
-  memset(&params, 0, sizeof(params));
-  params.ramsize = 1L * 1024 * 1024 * 1024; // 1Gbytes
-  MSG_vm_set_params(vm0, &params);
+  MSG_vm_set_ramsize(vm0, 1L * 1024 * 1024 * 1024); // 1GiB
 
   MSG_vm_start(vm0);
   launch_communication_worker((msg_host_t)vm0, pm2);

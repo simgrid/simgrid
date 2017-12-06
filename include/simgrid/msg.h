@@ -469,6 +469,8 @@ XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
 XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_get_params(msg_vm_t vm, vm_params_t params);
 XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
+XBT_PUBLIC(void) MSG_vm_set_ramsize(msg_vm_t vm, size_t size);
+XBT_PUBLIC(size_t) MSG_vm_get_ramsize(msg_vm_t vm);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);

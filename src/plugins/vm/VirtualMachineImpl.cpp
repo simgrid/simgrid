@@ -114,8 +114,8 @@ double VMModel::nextOccuringEvent(double now)
  ************/
 
 VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM,
-                                       int coreAmount)
-    : HostImpl(piface), hostPM_(host_PM), coreAmount_(coreAmount)
+                                       int coreAmount, size_t ramsize)
+    : HostImpl(piface), hostPM_(host_PM), coreAmount_(coreAmount), ramsize_(ramsize)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);
@@ -123,9 +123,6 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   action_ = host_PM->pimpl_cpu->execution_start(0, coreAmount);
-
-  /* Initialize the VM parameters */
-  params_.ramsize = 0;
 
   XBT_VERB("Create VM(%s)@PM(%s)", piface->getCname(), hostPM_->getCname());
 }
@@ -293,11 +290,6 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
   action_ = new_cpu_action;
 
   XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
-}
-
-sg_size_t VirtualMachineImpl::getRamsize()
-{
-  return params_.ramsize;
 }
 
 void VirtualMachineImpl::setBound(double bound)

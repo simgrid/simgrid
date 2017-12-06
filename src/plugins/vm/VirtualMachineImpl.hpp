@@ -53,7 +53,7 @@ XBT_PUBLIC_CLASS VirtualMachineImpl : public surf::HostImpl
   friend simgrid::s4u::VirtualMachine;
 
 public:
-  explicit VirtualMachineImpl(s4u::VirtualMachine * piface, s4u::Host * host, int coreAmount);
+  explicit VirtualMachineImpl(s4u::VirtualMachine * piface, s4u::Host * host, int coreAmount, size_t ramsize);
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
@@ -71,7 +71,8 @@ public:
   /** @brief Get the physical machine hosting the VM */
   s4u::Host* getPm();
 
-  sg_size_t getRamsize();
+  sg_size_t getRamsize() { return ramsize_; }
+  void setRamsize(sg_size_t ramsize) { ramsize_ = ramsize; }
 
   virtual void setBound(double bound);
 
@@ -97,6 +98,7 @@ private:
   simgrid::s4u::Host* hostPM_;
   s_vm_params_t params_;
   int coreAmount_;
+  size_t ramsize_            = 0;
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
 };
 

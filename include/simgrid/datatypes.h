@@ -10,12 +10,7 @@
 #include "simgrid/forward.h"
 
 struct vm_params {
-  int ncpus;
-  sg_size_t ramsize;
-  int overcommit;
-
-  /* The size of other states than memory pages, which is out-of-scope of dirty
-   * page tracking. */
+  /* The size of other states than memory pages, which is out-of-scope of dirty page tracking. */
   sg_size_t devsize;
   int skip_stage1;
   int skip_stage2;

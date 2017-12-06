@@ -15,7 +15,12 @@ namespace simgrid {
 namespace s4u {
 
 VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
-    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, pm, coreAmount))
+    : VirtualMachine(name, pm, coreAmount, 0)
+{
+}
+
+VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, size_t ramsize)
+    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, pm, coreAmount, ramsize))
 {
   XBT_DEBUG("Create VM %s", name);
 
@@ -91,17 +96,25 @@ bool VirtualMachine::isMigrating()
 {
   return pimpl_vm_ && pimpl_vm_->isMigrating;
 }
-double VirtualMachine::getRamsize()
-{
-  return pimpl_vm_->params_.ramsize;
-}
+
 simgrid::s4u::Host* VirtualMachine::getPm()
 {
   return pimpl_vm_->getPm();
 }
+
 e_surf_vm_state_t VirtualMachine::getState()
 {
   return pimpl_vm_->getState();
+}
+
+size_t VirtualMachine::getRamsize()
+{
+  return pimpl_vm_->getRamsize();
+}
+
+void VirtualMachine::setRamsize(size_t ramsize)
+{
+  pimpl_vm_->setRamsize(ramsize);
 }
 
 /** @brief Retrieve a copy of the parameters of that VM/PM
