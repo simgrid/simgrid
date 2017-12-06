@@ -21,16 +21,18 @@ public:
       : name(name)
       , size(max_no_processes)
       , present_processes(0)
-      , index(process_count)
       , comm_world(comm)
       , finalization_barrier(finalization_barrier)
   {
+    int cur_process_count = smpi_process_count();
+    for (int i = 0; i < max_no_processes; i++) {
+      smpi_add_process(cur_process_count + i);
+    }
   }
 
   const char* name;
   int size;
   int present_processes;
-  int index; // Badly named. This should be "no_processes_when_registering" ;)
   MPI_Comm comm_world;
   msg_bar_t finalization_barrier;
 };
@@ -42,7 +44,6 @@ using simgrid::smpi::app::Instance;
 
 static std::map<std::string, Instance> smpi_instances;
 extern int process_count; // How many processes have been allocated over all instances?
-extern int* index_to_process_data;
 
 /** \ingroup smpi_simulation
  * \brief Registers a running instance of a MPI program.
@@ -80,15 +81,12 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 
 void smpi_deployment_register_process(const char* instance_id, int rank, int index)
 {
-  if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
-    index_to_process_data[index]=index;
+  if (smpi_instances.empty()) // no instance registered, we probably used smpirun.
     return;
-  }
 
   Instance& instance = smpi_instances.at(instance_id);
 
   instance.present_processes++;
-  index_to_process_data[index] = instance.index + rank;
   instance.comm_world->group()->set_mapping(index, rank);
 }
 

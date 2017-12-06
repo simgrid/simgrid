@@ -14,8 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
-extern int* index_to_process_data;
-
 #define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
 
 static char *get_mailbox_name(char *str, int index)
@@ -114,11 +112,9 @@ int Process::finalized()
 /** @brief Check if a process is initialized */
 int Process::initialized()
 {
-  if (index_to_process_data == nullptr){
-    return false;
-  } else{
-    return ((index_ != MPI_UNDEFINED) && (state_ == SMPI_INITIALIZED));
-  }
+  // TODO cheinrich: Check if we still need this. This should be a global condition, not for a
+  // single process ... ?
+  return ((index_ != MPI_UNDEFINED) && (state_ == SMPI_INITIALIZED));
 }
 
 /** @brief Mark a process as initialized (=MPI_Init called) */
@@ -278,10 +274,6 @@ void Process::init(int *argc, char ***argv){
     proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
     int index = proc->pid - 1; // The maestro process has always ID 0 but we don't need that process here
-
-    if(index_to_process_data == nullptr){
-      index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
-    }
 
     char* instance_id = (*argv)[1];
     try {

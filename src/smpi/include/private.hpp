@@ -431,6 +431,8 @@ XBT_PRIVATE int smpi_process_papi_event_set();
 #endif
 
 extern std::unordered_map<std::string, double> location2speedup;
+// TODO: Move this to the right location (if we keep this...)
+void smpi_add_process(int adjusted_proc_id);
 
 /** @brief Returns the last call location (filename, linenumber). Process-specific. */
 extern "C" {

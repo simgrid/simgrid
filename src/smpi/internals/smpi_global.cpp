@@ -52,10 +52,9 @@ struct papi_process_data {
 #endif
 std::unordered_map<std::string, double> location2speedup;
 
-static simgrid::smpi::Process** process_data = nullptr;
+static std::map</*process_id*/ int, simgrid::smpi::Process*> process_data;
 int process_count = 0;
 int smpi_universe_size = 0;
-int* index_to_process_data = nullptr;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
 /**
@@ -82,6 +81,12 @@ static simgrid::config::Flag<double> smpi_init_sleep(
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
+void smpi_add_process(int smx_process)
+{
+  process_data.insert(
+      std::pair<int, simgrid::smpi::Process*>(smx_process, new simgrid::smpi::Process(smx_process, nullptr)));
+}
+
 int smpi_process_count()
 {
   return process_count;
@@ -98,7 +103,7 @@ simgrid::smpi::Process* smpi_process()
 
 simgrid::smpi::Process* smpi_process_remote(int index)
 {
-  return process_data[index_to_process_data[index]];
+  return process_data.at(index);
 }
 
 MPI_Comm smpi_process_comm_self(){
@@ -241,7 +246,7 @@ static void smpi_check_options(){
 }
 
 int smpi_enabled() {
-  return process_data != nullptr;
+  return not process_data.empty();
 }
 
 void smpi_global_init()
@@ -340,30 +345,13 @@ void smpi_global_init()
   }
 #endif
 
-  if (index_to_process_data == nullptr) {
-    index_to_process_data = new int[SIMIX_process_count()];
-  }
-
-  bool smpirun = 0;
   if (process_count == 0) { // The program has been dispatched but no other
                             // SMPI instances have been registered. We're using smpirun.
-    smpirun = true;
     SMPI_app_instance_register(smpi_default_instance_name, nullptr,
                                SIMIX_process_count()); // This call has a side effect on process_count...
     MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
   }
   smpi_universe_size = process_count;
-  process_data       = new simgrid::smpi::Process*[process_count];
-  for (int i = 0; i < process_count; i++) {
-    if (smpirun) {
-      process_data[i] = new simgrid::smpi::Process(i, smpi_deployment_finalization_barrier(smpi_default_instance_name));
-      smpi_deployment_register_process(smpi_default_instance_name, i, i);
-    } else {
-      // TODO We can pass a nullptr here because Process::set_data() assigns the
-      // barrier from the instance anyway. This is ugly and should be changed
-      process_data[i] = new simgrid::smpi::Process(i, nullptr);
-    }
-  }
 }
 
 void smpi_global_destroy()
@@ -371,20 +359,18 @@ void smpi_global_destroy()
   smpi_bench_destroy();
   smpi_shared_destroy();
   smpi_deployment_cleanup_instances();
-  int count = smpi_process_count();
-  for (int i = 0; i < count; i++) {
-    if(process_data[i]->comm_self()!=MPI_COMM_NULL){
-      simgrid::smpi::Comm::destroy(process_data[i]->comm_self());
+  for (auto& pair : process_data) {
+    auto& process = pair.second;
+    if (process->comm_self() != MPI_COMM_NULL) {
+      simgrid::smpi::Comm::destroy(process->comm_self());
     }
-    if(process_data[i]->comm_intra()!=MPI_COMM_NULL){
-      simgrid::smpi::Comm::destroy(process_data[i]->comm_intra());
+    if (process->comm_intra() != MPI_COMM_NULL) {
+      simgrid::smpi::Comm::destroy(process->comm_intra());
     }
-    xbt_os_timer_free(process_data[i]->timer());
-    xbt_mutex_destroy(process_data[i]->mailboxes_mutex());
-    delete process_data[i];
+    xbt_os_timer_free(process->timer());
+    xbt_mutex_destroy(process->mailboxes_mutex());
   }
-  delete[] process_data;
-  process_data = nullptr;
+  process_data.clear();
 
   if (simgrid::smpi::Colls::smpi_coll_cleanup_callback != nullptr)
     simgrid::smpi::Colls::smpi_coll_cleanup_callback();
@@ -395,7 +381,6 @@ void smpi_global_destroy()
     xbt_os_timer_free(global_timer);
   }
 
-  delete[] index_to_process_data;
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
@@ -628,10 +613,9 @@ int smpi_main(const char* executable, int argc, char *argv[])
     }
   }
   int ret   = 0;
-  int count = smpi_process_count();
-  for (int i = 0; i < count; i++) {
-    if(process_data[i]->return_value()!=0){
-      ret=process_data[i]->return_value();//return first non 0 value
+  for (int i = 0, count = smpi_process_count(); i < count; i++) {
+    if (process_data.at(i)->return_value() != 0) {
+      ret = process_data.at(i)->return_value(); // return first non 0 value
       break;
     }
   }
