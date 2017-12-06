@@ -78,7 +78,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
 
-//get the index of the process in the process_data array
 void smpi_deployment_register_process(const char* instance_id, int rank, int index)
 {
   if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
@@ -93,7 +92,6 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   instance.comm_world->group()->set_mapping(index, rank);
 }
 
-//get the index of the process in the process_data array
 MPI_Comm* smpi_deployment_comm_world(const char* instance_id)
 {
   if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
