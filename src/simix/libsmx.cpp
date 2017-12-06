@@ -110,11 +110,12 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
  */
 void simcall_execution_cancel(smx_activity_t execution)
 {
-  simgrid::simix::kernelImmediate([execution] {
-    XBT_DEBUG("Cancel synchro %p", execution.get());
-    simgrid::kernel::activity::ExecImplPtr exec =
-        boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
+  if (not exec->surf_exec)
+    return;
+  simgrid::simix::kernelImmediate([exec] {
+    XBT_DEBUG("Cancel synchro %p", exec.get());
     if (exec->surf_exec)
       exec->surf_exec->cancel();
   });

@@ -500,7 +500,11 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
         boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro);
 
     if (exec != nullptr) {
-      /* Nothing to do */
+      if (exec->surf_exec) {
+        exec->surf_exec->cancel();
+        exec->surf_exec->unref();
+        exec->surf_exec = nullptr;
+      }
     } else if (comm != nullptr) {
       process->comms.remove(process->waiting_synchro);
       comm->cancel();

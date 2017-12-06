@@ -177,7 +177,6 @@ static int test_launcher(int argc, char *argv[])
 
   test =6;
   if (xbt_dynar_search_or_negative(tests, &test)!=-1){
-    MSG_process_set_data_cleanup(NULL); /* FIXME: we are leaking here, but removing this line changes the test output */
     XBT_INFO("Test 6: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node");
 
     // Create VM0

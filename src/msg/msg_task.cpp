@@ -216,14 +216,14 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 {
   xbt_assert((task != nullptr), "Cannot cancel a nullptr task");
 
-  if (task->simdata->compute) {
-    simcall_execution_cancel(task->simdata->compute);
-  }
-  else if (task->simdata->comm) {
-    simdata_task_t simdata = task->simdata;
+  simdata_task_t simdata = task->simdata;
+  if (simdata->compute) {
+    simcall_execution_cancel(simdata->compute);
+    MSG_host_del_task(MSG_process_get_host(MSG_process_self()), task);
+  } else if (simdata->comm) {
     simcall_comm_cancel(simdata->comm);
-    simdata->setNotUsed();
   }
+  simdata->setNotUsed();
   return MSG_OK;
 }
 
