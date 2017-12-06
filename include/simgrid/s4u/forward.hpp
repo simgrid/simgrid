@@ -21,6 +21,8 @@ class Activity;
 class Comm;
 using CommPtr = boost::intrusive_ptr<Comm>;
 class Engine;
+class Exec;
+using ExecPtr = boost::intrusive_ptr<Exec>;
 class Host;
 class Link;
 class Mailbox;
@@ -28,7 +30,6 @@ using MailboxPtr = boost::intrusive_ptr<Mailbox>;
 class Mutex;
 class NetZone;
 class VirtualMachine;
-
 class File;
 class Storage;
 

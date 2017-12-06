@@ -130,6 +130,7 @@ namespace s4u {
 /** @brief Simulation Agent */
 XBT_PUBLIC_CLASS Actor : public simgrid::xbt::Extendable<Actor>
 {
+  friend Exec;
   friend Mailbox;
   friend simgrid::simix::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
@@ -274,6 +275,9 @@ public:
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
   Actor* restart();
+
+  ExecPtr exec_init(double flops_amounts);
+  ExecPtr exec_async(double flops_amounts);
 };
 
 /** @ingroup s4u_api
@@ -306,6 +310,7 @@ XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into a
 
 /** Block the actor, computing the given amount of flops */
 XBT_PUBLIC(void) execute(double flop);
+
 /** Block the actor, computing the given amount of flops at the given priority.
  *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
 XBT_PUBLIC(void) execute(double flop, double priority);

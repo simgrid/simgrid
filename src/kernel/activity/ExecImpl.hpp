@@ -18,7 +18,7 @@ XBT_PUBLIC_CLASS ExecImpl : public ActivityImpl
   ~ExecImpl() override;
 
 public:
-  ExecImpl(const char* name, sg_host_t host);
+  explicit ExecImpl(const char* name, sg_host_t host);
   void suspend() override;
   void resume() override;
   void post() override;

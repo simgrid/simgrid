@@ -685,6 +685,7 @@ set(headers_to_install
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
   include/simgrid/s4u/Engine.hpp  
+  include/simgrid/s4u/Exec.hpp
   include/simgrid/s4u/Host.hpp  
   include/simgrid/s4u/Link.hpp  
   include/simgrid/s4u/Mailbox.hpp

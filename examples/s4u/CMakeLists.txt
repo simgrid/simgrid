@@ -2,6 +2,7 @@ foreach (example actions-comm actions-storage
                  actor-create actor-daemon actor-execute actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
                  app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
+                 cloud-progress-monitor
                  energy-link energy-pstate energy-ptask energy-vm
                  io-file-system io-file-remote io-storage-raw
                  platform-properties plugin-hostload mutex)
@@ -67,6 +68,7 @@ foreach(example actions-comm actions-storage
                 actor-create actor-daemon actor-execute actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany
+                cloud-progress-monitor
                 dht-chord 
                 energy-link energy-pstate energy-ptask energy-vm
                 platform-properties plugin-hostload mutex

@@ -7,6 +7,7 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
@@ -197,6 +198,22 @@ void Actor::setProperty(const char* key, const char* value)
 Actor* Actor::restart()
 {
   return simgrid::simix::kernelImmediate([this]() { return pimpl_->restart(); });
+}
+
+ExecPtr Actor::exec_init(double flops_amount)
+{
+  ExecPtr res        = ExecPtr(new Exec());
+  res->runner_       = SIMIX_process_self();
+  res->flops_amount_ = flops_amount;
+  res->setRemains(flops_amount);
+  return res;
+}
+
+ExecPtr Actor::exec_async(double flops)
+{
+  ExecPtr res = exec_init(flops);
+  res->start();
+  return res;
 }
 
 // ***** this_actor *****
