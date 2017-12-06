@@ -84,7 +84,7 @@ public:
 
   /* Dirty pages stuff */
   std::unordered_map<std::string, dirty_page_t> dp_objs;
-  int dp_enabled                     = 0;
+  bool dp_enabled                    = false;
   double dp_updated_by_deleted_tasks = 0;
 
   e_surf_vm_state_t getState();

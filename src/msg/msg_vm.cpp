@@ -341,7 +341,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
 static void start_dirty_page_tracking(msg_vm_t vm)
 {
-  vm->pimpl_vm_->dp_enabled = 1;
+  vm->pimpl_vm_->dp_enabled = true;
   if (vm->pimpl_vm_->dp_objs.empty())
     return;
 
@@ -356,7 +356,7 @@ static void start_dirty_page_tracking(msg_vm_t vm)
 
 static void stop_dirty_page_tracking(msg_vm_t vm)
 {
-  vm->pimpl_vm_->dp_enabled = 0;
+  vm->pimpl_vm_->dp_enabled = false;
 }
 
 static double get_computed(const std::string& key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
