@@ -271,8 +271,7 @@ void Process::set_return_value(int val){
 void Process::init(int *argc, char ***argv){
 
   if (smpi_process_count() == 0) {
-    printf("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
-    exit(1);
+    xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
   }
   if (argc != nullptr && argv != nullptr) {
     smx_actor_t proc = SIMIX_process_self();
