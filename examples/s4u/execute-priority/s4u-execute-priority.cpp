@@ -9,11 +9,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-static int test(int argc, char** argv)
+static void test(double computation_amount, double priority)
 {
-  double computation_amount = std::stod(argv[1]);
-  double priority           = std::stod(argv[2]);
-
   XBT_INFO("Hello! Execute %g flops with priority %g", computation_amount, priority);
   simgrid::s4u::ExecPtr activity = simgrid::s4u::Actor::self()->exec_init(computation_amount);
   activity->setPriority(priority);
@@ -21,15 +18,14 @@ static int test(int argc, char** argv)
   activity->wait();
 
   XBT_INFO("Goodbye now!");
-  return 0;
 }
 
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.loadPlatform(argv[1]); /* - Load the platform description */
-  e.registerFunction("test", test);
-  e.loadDeployment(argv[2]);
+  e.loadPlatform(argv[1]);
+  simgrid::s4u::Actor::createActor("test", simgrid::s4u::Host::by_name("Fafard"), test, 7.6296e+07, 1.0);
+  simgrid::s4u::Actor::createActor("test", simgrid::s4u::Host::by_name("Fafard"), test, 7.6296e+07, 2.0);
 
   e.run();
 

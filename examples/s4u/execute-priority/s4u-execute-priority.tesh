@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/s4u-execute-priority$EXEEXT ${platfdir}/small_platform.xml  ${srcdir:=.}/s4u-execute-priority_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-execute-priority$EXEEXT ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:test@Fafard) Hello! Execute 7.6296e+07 flops with priority 1
 > [  0.000000] (2:test@Fafard) Hello! Execute 7.6296e+07 flops with priority 2
 > [  1.500000] (2:test@Fafard) Goodbye now!
