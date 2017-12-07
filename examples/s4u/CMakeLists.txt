@@ -4,6 +4,7 @@ foreach (example actions-comm actions-storage
                  async-wait async-waitany async-waitall
                  cloud-progress-monitor
                  energy-link energy-pstate energy-ptask energy-vm
+                 execute-priority
                  io-file-system io-file-remote io-storage-raw
                  platform-properties plugin-hostload mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
@@ -71,6 +72,7 @@ foreach(example actions-comm actions-storage
                 cloud-progress-monitor
                 dht-chord 
                 energy-link energy-pstate energy-ptask energy-vm
+                execute-priority
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
