@@ -19,6 +19,10 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    MSG_task_get_remaining_work_ratio() for the second one.
    This fixes GitHub's #223 using PR #237. Thanks Michael Mercier.
 
+ SURF
+ - LMM stuff moved to its own namespace: simgrid::kernel::lmm.
+ - Renamed LMM classes (e.g. s_lmm_system_t -> System).
+
  XBT
  - Define class simgrid::xbt::Path to manage file names.
  - Removed unused functions:
