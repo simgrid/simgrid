@@ -27,7 +27,7 @@ public:
 
   void start() override;
   void wait() override;
-  void wait(double timeout);
+  void wait(double timeout) override;
   bool test();
 
   ExecPtr setPriority(double priority);
