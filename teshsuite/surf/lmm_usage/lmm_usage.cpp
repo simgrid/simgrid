@@ -98,7 +98,7 @@ static void test1(method_t method)
     simgrid::kernel::lmm::lmm_set_default_protocol_function(
         simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fpi, simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys    = new simgrid::kernel::lmm::s_lmm_system_t(true);
+  lmm_system_t Sys    = new simgrid::kernel::lmm::System(true);
   lmm_constraint_t L1 = Sys->constraint_new(nullptr, a);
   lmm_constraint_t L2 = Sys->constraint_new(nullptr, b);
   lmm_constraint_t L3 = Sys->constraint_new(nullptr, a);
@@ -186,7 +186,7 @@ static void test2(method_t method)
     lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
                                       simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys      = new simgrid::kernel::lmm::s_lmm_system_t(true);
+  lmm_system_t Sys      = new simgrid::kernel::lmm::System(true);
   lmm_constraint_t CPU1 = Sys->constraint_new(nullptr, 200.0);
   lmm_constraint_t CPU2 = Sys->constraint_new(nullptr, 100.0);
 
@@ -259,7 +259,7 @@ static void test3(method_t method)
     lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
                                       simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys = new simgrid::kernel::lmm::s_lmm_system_t(true);
+  lmm_system_t Sys = new simgrid::kernel::lmm::System(true);
 
   /* Creates the constraints */
   lmm_constraint_t* tmp_cnst = new lmm_constraint_t[15];

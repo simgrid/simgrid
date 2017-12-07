@@ -416,7 +416,7 @@ public:
   short int concurrency_share; /* The maximum number of elements that variable will add to a constraint */
   simgrid::surf::Action* id;
   int id_int;
-  unsigned visited; /* used by lmm_update_modified_set */
+  unsigned visited; /* used by System::update_modified_set() */
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
@@ -442,16 +442,16 @@ inline void Element::make_inactive()
 /**
  * @brief LMM system
  */
-XBT_PUBLIC_CLASS s_lmm_system_t
+XBT_PUBLIC_CLASS System
 {
 public:
   /**
    * @brief Create a new Linear MaxMim system
    * @param selective_update whether we should do lazy updates
    */
-  explicit s_lmm_system_t(bool selective_update);
+  explicit System(bool selective_update);
   /** @brief Free an existing Linear MaxMin system */
-  ~s_lmm_system_t();
+  ~System();
 
   /**
    * @brief Create a new Linear MaxMin constraint
@@ -609,8 +609,8 @@ public:
 
 private:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
-  unsigned visited_counter;     /* used by lmm_update_modified_set and lmm_remove_modified_set to cleverly (un-)flag the
-                                 * constraints (more details in these functions) */
+  unsigned visited_counter;     /* used by System::update_modified_set() and System::remove_all_modified_set() to
+                                 * cleverly (un-)flag the constraints (more details in these functions) */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
                                                                    &Constraint::constraint_set_hook>>
       constraint_set;

@@ -41,7 +41,7 @@ StorageImpl* StorageImpl::byName(std::string name)
 
 StorageModel::StorageModel() : Model()
 {
-  maxminSystem_ = new simgrid::kernel::lmm::s_lmm_system_t(true /* lazy update */);
+  maxminSystem_ = new simgrid::kernel::lmm::System(true /* lazy update */);
 }
 
 StorageModel::~StorageModel()

@@ -53,7 +53,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
     xbt_die("Unsupported optimization (%s) for this model", optim.c_str());
   }
 
-  maxminSystem_ = new simgrid::kernel::lmm::s_lmm_system_t(selectiveUpdate_);
+  maxminSystem_ = new simgrid::kernel::lmm::System(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
     modifiedSet_ = new ActionLmmList();
@@ -177,7 +177,7 @@ CpuAction *CpuCas01::sleep(double duration)
   XBT_IN("(%s,%g)", getCname(), duration);
   CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());
 
-  // FIXME: sleep variables should not consume 1.0 in lmm_expand
+  // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->setMaxDuration(duration);
   action->suspended_ = 2;
   if (duration < 0) { // NO_MAX_DURATION

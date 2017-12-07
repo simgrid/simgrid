@@ -63,7 +63,7 @@ void Element::increase_concurrency()
              "Concurrency limit overflow!");
 }
 
-void s_lmm_system_t::check_concurrency() const
+void System::check_concurrency() const
 {
   // These checks are very expensive, so do them only if we want to debug SURF LMM
   if (not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug))
@@ -109,7 +109,7 @@ void s_lmm_system_t::check_concurrency() const
   }
 }
 
-void s_lmm_system_t::var_free(lmm_variable_t var)
+void System::var_free(lmm_variable_t var)
 {
   XBT_IN("(sys=%p, var=%p)", this, var);
   modified = true;
@@ -143,7 +143,7 @@ void s_lmm_system_t::var_free(lmm_variable_t var)
   XBT_OUT();
 }
 
-s_lmm_system_t::s_lmm_system_t(bool selective_update) : selective_update_active(selective_update)
+System::System(bool selective_update) : selective_update_active(selective_update)
 {
   modified        = false;
   visited_counter = 1;
@@ -151,12 +151,12 @@ s_lmm_system_t::s_lmm_system_t(bool selective_update) : selective_update_active(
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
 
   keep_track          = nullptr;
-  variable_mallocator = xbt_mallocator_new(65536, s_lmm_system_t::variable_mallocator_new_f,
-                                           s_lmm_system_t::variable_mallocator_free_f, nullptr);
+  variable_mallocator =
+      xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
   solve_fun = &lmm_solve;
 }
 
-s_lmm_system_t::~s_lmm_system_t()
+System::~System()
 {
   lmm_variable_t var;
   lmm_constraint_t cnst;
@@ -173,7 +173,7 @@ s_lmm_system_t::~s_lmm_system_t()
   xbt_mallocator_free(variable_mallocator);
 }
 
-void s_lmm_system_t::cnst_free(lmm_constraint_t cnst)
+void System::cnst_free(lmm_constraint_t cnst)
 {
   make_constraint_inactive(cnst);
   delete cnst;
@@ -195,25 +195,25 @@ Constraint::Constraint(void* id_value, double bound_value) : bound(bound_value),
   cnst_light = nullptr;
 }
 
-lmm_constraint_t s_lmm_system_t::constraint_new(void* id, double bound_value)
+lmm_constraint_t System::constraint_new(void* id, double bound_value)
 {
   lmm_constraint_t cnst = new Constraint(id, bound_value);
   insert_constraint(cnst);
   return cnst;
 }
 
-void* s_lmm_system_t::variable_mallocator_new_f()
+void* System::variable_mallocator_new_f()
 {
   return new Variable;
 }
 
-void s_lmm_system_t::variable_mallocator_free_f(void* var)
+void System::variable_mallocator_free_f(void* var)
 {
   delete static_cast<lmm_variable_t>(var);
 }
 
-lmm_variable_t s_lmm_system_t::variable_new(simgrid::surf::Action* id, double sharing_weight, double bound,
-                                            int number_of_constraints)
+lmm_variable_t System::variable_new(simgrid::surf::Action* id, double sharing_weight, double bound,
+                                    int number_of_constraints)
 {
   XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", this, id, sharing_weight, bound, number_of_constraints);
 
@@ -228,13 +228,13 @@ lmm_variable_t s_lmm_system_t::variable_new(simgrid::surf::Action* id, double sh
   return var;
 }
 
-void s_lmm_system_t::variable_free(lmm_variable_t var)
+void System::variable_free(lmm_variable_t var)
 {
   remove_variable(var);
   var_free(var);
 }
 
-void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
+void System::expand(lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
 {
   modified = true;
 
@@ -287,7 +287,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
   check_concurrency();
 }
 
-void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value)
+void System::expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value)
 {
   modified = true;
 
@@ -441,7 +441,7 @@ static void format_element_list(const ElemList& elem_list, int sharing_policy, d
   }
 }
 
-void s_lmm_system_t::print() const
+void System::print() const
 {
   std::string buf = std::string("MAX-MIN ( ");
 
@@ -487,7 +487,7 @@ void s_lmm_system_t::print() const
   }
 }
 
-void s_lmm_system_t::solve()
+void System::solve()
 {
   if (modified) {
     XBT_IN("(sys=%p)", this);
@@ -502,7 +502,7 @@ void s_lmm_system_t::solve()
   }
 }
 
-template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
+template <class CnstList> void System::solve(CnstList& cnst_list)
 {
   double min_usage = -1;
   double min_bound = -1;
@@ -698,14 +698,13 @@ void lmm_solve(lmm_system_t sys)
 
 /** \brief Attribute the value bound to var->bound.
  *
- *  \param sys the lmm_system_t
  *  \param var the lmm_variable_t
  *  \param bound the new bound to associate with var
  *
  *  Makes var->bound equal to bound. Whenever this function is called a change is  signed in the system. To
  *  avoid false system changing detection it is a good idea to test (bound != 0) before calling it.
  */
-void s_lmm_system_t::update_variable_bound(lmm_variable_t var, double bound)
+void System::update_variable_bound(lmm_variable_t var, double bound)
 {
   modified   = true;
   var->bound = bound;
@@ -751,11 +750,11 @@ int Variable::get_min_concurrency_slack() const
   return minslack;
 }
 
-// Small remark: In this implementation of lmm_enable_var and lmm_disable_var, we will meet multiple times with var when
-// running sys->update_modified_set.
-// A priori not a big performance issue, but we might do better by calling sys->update_modified_set within the for loops
-// (after doing the first for enabling==1, and before doing the last for disabling==1)
-void s_lmm_system_t::enable_var(lmm_variable_t var)
+// Small remark: In this implementation of System::enable_var() and System::disable_var(), we will meet multiple times
+// with var when running System::update_modified_set().
+// A priori not a big performance issue, but we might do better by calling System::update_modified_set() within the for
+// loops (after doing the first for enabling==1, and before doing the last for disabling==1)
+void System::enable_var(lmm_variable_t var)
 {
   xbt_assert(not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug) || var->can_enable());
 
@@ -780,7 +779,7 @@ void s_lmm_system_t::enable_var(lmm_variable_t var)
   // Anyway, caller functions all call check_concurrency() in the end.
 }
 
-void s_lmm_system_t::disable_var(lmm_variable_t var)
+void System::disable_var(lmm_variable_t var)
 {
   xbt_assert(not var->staged_weight, "Staged weight should have been cleared");
   // Disabling the variable, move to var to list tail. Subtlety is: here, we need to call update_modified_set
@@ -810,7 +809,7 @@ void s_lmm_system_t::disable_var(lmm_variable_t var)
  * If yes, check that none of the constraints that this variable is involved in is at the limit of its concurrency
  * And then add it to enabled variables
  */
-void s_lmm_system_t::on_disabled_var(lmm_constraint_t cnstr)
+void System::on_disabled_var(lmm_constraint_t cnstr)
 {
   if (cnstr->get_concurrency_limit() < 0)
     return;
@@ -821,7 +820,7 @@ void s_lmm_system_t::on_disabled_var(lmm_constraint_t cnstr)
 
   lmm_element_t elem = &cnstr->disabled_element_set.front();
 
-  // Cannot use foreach loop, because lmm_enable_var will modify disabled_element_set.. within the loop
+  // Cannot use foreach loop, because System::enable_var() will modify disabled_element_set.. within the loop
   while (numelem-- && elem) {
 
     lmm_element_t nextelem;
@@ -854,7 +853,7 @@ void s_lmm_system_t::on_disabled_var(lmm_constraint_t cnstr)
 /* \brief update the weight of a variable, and enable/disable it.
  * @return Returns whether a change was made
  */
-void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
+void System::update_variable_weight(lmm_variable_t var, double weight)
 {
   xbt_assert(weight >= 0, "Variable weight should not be negative!");
 
@@ -892,7 +891,7 @@ void s_lmm_system_t::update_variable_weight(lmm_variable_t var, double weight)
   XBT_OUT();
 }
 
-void s_lmm_system_t::update_constraint_bound(lmm_constraint_t cnst, double bound)
+void System::update_constraint_bound(lmm_constraint_t cnst, double bound)
 {
   modified = true;
   update_modified_set(cnst);
@@ -902,13 +901,12 @@ void s_lmm_system_t::update_constraint_bound(lmm_constraint_t cnst, double bound
 /** \brief Update the constraint set propagating recursively to other constraints so the system should not be entirely
  *  computed.
  *
- *  \param sys the lmm_system_t
  *  \param cnst the lmm_constraint_t affected by the change
  *
  *  A recursive algorithm to optimize the system recalculation selecting only constraints that have changed. Each
  *  constraint change is propagated to the list of constraints for each variable.
  */
-void s_lmm_system_t::update_modified_set_rec(lmm_constraint_t cnst)
+void System::update_modified_set_rec(lmm_constraint_t cnst)
 {
   for (Element const& elem : cnst->enabled_element_set) {
     lmm_variable_t var = elem.variable;
@@ -925,7 +923,7 @@ void s_lmm_system_t::update_modified_set_rec(lmm_constraint_t cnst)
   }
 }
 
-void s_lmm_system_t::update_modified_set(lmm_constraint_t cnst)
+void System::update_modified_set(lmm_constraint_t cnst)
 {
   /* nothing to do if selective update isn't active */
   if (selective_update_active && not cnst->modified_constraint_set_hook.is_linked()) {
@@ -934,7 +932,7 @@ void s_lmm_system_t::update_modified_set(lmm_constraint_t cnst)
   }
 }
 
-void s_lmm_system_t::remove_all_modified_set()
+void System::remove_all_modified_set()
 {
   // We cleverly un-flag all variables just by incrementing visited_counter
   // In effect, the var->visited value will no more be equal to visited counter

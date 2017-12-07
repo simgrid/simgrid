@@ -152,7 +152,7 @@ NetworkCm02Model::NetworkCm02Model()
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
 
-  maxminSystem_ = new simgrid::kernel::lmm::s_lmm_system_t(selectiveUpdate_);
+  maxminSystem_ = new simgrid::kernel::lmm::System(selectiveUpdate_);
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY) {
@@ -160,8 +160,8 @@ NetworkCm02Model::NetworkCm02Model()
     maxminSystem_->keep_track = modifiedSet_;
   }
 }
-NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self))
-  : NetworkCm02Model()
+
+NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self)) : NetworkCm02Model()
 {
   maxminSystem_->solve_fun = specificSolveFun;
 }

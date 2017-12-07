@@ -35,7 +35,7 @@ namespace simgrid {
 namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
-  maxminSystem_            = new simgrid::kernel::lmm::s_lmm_system_t(true /* lazy */);
+  maxminSystem_            = new simgrid::kernel::lmm::System(true /* lazy */);
   maxminSystem_->solve_fun = &simgrid::kernel::lmm::bottleneck_solve;
   surf_network_model = new NetworkL07Model(this,maxminSystem_);
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
@@ -49,9 +49,7 @@ HostL07Model::~HostL07Model()
   delete surf_cpu_model_pm;
 }
 
-CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
-  : CpuModel()
-  , hostModel_(hmodel)
+CpuL07Model::CpuL07Model(HostL07Model* hmodel, lmm_system_t sys) : CpuModel(), hostModel_(hmodel)
 {
   maxminSystem_ = sys;
 }
@@ -61,9 +59,7 @@ CpuL07Model::~CpuL07Model()
   maxminSystem_ = nullptr;
 }
 
-NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
-  : NetworkModel()
-  , hostModel_(hmodel)
+NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, lmm_system_t sys) : NetworkModel(), hostModel_(hmodel)
 {
   maxminSystem_ = sys;
   loopback_     = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);

@@ -42,7 +42,7 @@ class Element;
 class Variable;
 class Constraint;
 class ConstraintLight;
-class s_lmm_system_t;
+class System;
 }
 namespace routing {
   class NetPoint;
@@ -92,7 +92,7 @@ typedef const simgrid::kernel::lmm::Element* const_lmm_element_t;
 typedef simgrid::kernel::lmm::Variable* lmm_variable_t;
 typedef simgrid::kernel::lmm::Constraint* lmm_constraint_t;
 typedef simgrid::kernel::lmm::ConstraintLight* lmm_constraint_light_t;
-typedef simgrid::kernel::lmm::s_lmm_system_t* lmm_system_t;
+typedef simgrid::kernel::lmm::System* lmm_system_t;
 
 #else
 
