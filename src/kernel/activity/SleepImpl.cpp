@@ -30,15 +30,15 @@ void simgrid::kernel::activity::SleepImpl::post()
     smx_simcall_t simcall = simcalls.front();
     simcalls.pop_front();
 
-    e_smx_state_t state;
+    e_smx_state_t result;
     switch (surf_sleep->getState()) {
       case simgrid::surf::Action::State::failed:
         simcall->issuer->context->iwannadie = 1;
-        state = SIMIX_SRC_HOST_FAILURE;
+        result                              = SIMIX_SRC_HOST_FAILURE;
         break;
 
       case simgrid::surf::Action::State::done:
-        state = SIMIX_DONE;
+        result = SIMIX_DONE;
         break;
 
       default:
@@ -48,7 +48,7 @@ void simgrid::kernel::activity::SleepImpl::post()
     if (simcall->issuer->host->isOff()) {
       simcall->issuer->context->iwannadie = 1;
     }
-    simcall_process_sleep__set__result(simcall, state);
+    simcall_process_sleep__set__result(simcall, result);
     simcall->issuer->waiting_synchro = nullptr;
     if (simcall->issuer->suspended) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
