@@ -255,12 +255,7 @@ private:
   }
 
 public:
-
-  template<class F>
-  Task(F code)
-  {
-    this->init(std::move(code));
-  }
+  template <class F> explicit Task(F code) { this->init(std::move(code)); }
 
   operator bool() const { return vtable_ != nullptr; }
   bool operator!() const { return vtable_ == nullptr; }
@@ -297,7 +292,7 @@ auto makeTask(F code, Args... args)
 -> Task< decltype(code(std::move(args)...))() >
 {
   TaskImpl<F, Args...> task(std::move(code), std::make_tuple(std::move(args)...));
-  return std::move(task);
+  return Task<decltype(code(std::move(args)...))()>(std::move(task));
 }
 
 }
