@@ -145,9 +145,9 @@ XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
 XBT_PUBLIC(void)
-lmm_set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                                  double (*func_fp)(const Variable& var, double x),
-                                  double (*func_fpi)(const Variable& var, double x));
+set_default_protocol_function(double (*func_f)(const Variable& var, double x),
+                              double (*func_fp)(const Variable& var, double x),
+                              double (*func_fpi)(const Variable& var, double x));
 
 XBT_PUBLIC(double) func_reno_f(const Variable& var, double x);
 XBT_PUBLIC(double) func_reno_fp(const Variable& var, double x);

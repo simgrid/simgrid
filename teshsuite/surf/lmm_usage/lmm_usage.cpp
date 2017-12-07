@@ -92,11 +92,11 @@ static void test1(method_t method)
   double b = 10.0;
 
   if (method == LAGRANGE_VEGAS)
-    simgrid::kernel::lmm::lmm_set_default_protocol_function(
-        simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp, simgrid::kernel::lmm::func_vegas_fpi);
+    set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
+                                  simgrid::kernel::lmm::func_vegas_fpi);
   else if (method == LAGRANGE_RENO)
-    simgrid::kernel::lmm::lmm_set_default_protocol_function(
-        simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fpi, simgrid::kernel::lmm::func_reno_fpi);
+    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fpi,
+                                  simgrid::kernel::lmm::func_reno_fpi);
 
   lmm_system_t Sys    = new simgrid::kernel::lmm::System(true);
   lmm_constraint_t L1 = Sys->constraint_new(nullptr, a);
@@ -180,11 +180,11 @@ static void test1(method_t method)
 static void test2(method_t method)
 {
   if (method == LAGRANGE_VEGAS)
-    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
-                                      simgrid::kernel::lmm::func_vegas_fpi);
+    set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
+                                  simgrid::kernel::lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
-                                      simgrid::kernel::lmm::func_reno_fpi);
+    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
+                                  simgrid::kernel::lmm::func_reno_fpi);
 
   lmm_system_t Sys      = new simgrid::kernel::lmm::System(true);
   lmm_constraint_t CPU1 = Sys->constraint_new(nullptr, 200.0);
@@ -253,11 +253,11 @@ static void test3(method_t method)
   A[14][15] =                                        1.0;
 
   if (method == LAGRANGE_VEGAS)
-    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
-                                      simgrid::kernel::lmm::func_vegas_fpi);
+    set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
+                                  simgrid::kernel::lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    lmm_set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
-                                      simgrid::kernel::lmm::func_reno_fpi);
+    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
+                                  simgrid::kernel::lmm::func_reno_fpi);
 
   lmm_system_t Sys = new simgrid::kernel::lmm::System(true);
 

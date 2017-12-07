@@ -422,9 +422,9 @@ static double partial_diff_lambda(double lambda, const Constraint& cnst)
  *  programming.
  *
  */
-void lmm_set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                                       double (*func_fp)(const Variable& var, double x),
-                                       double (*func_fpi)(const Variable& var, double x))
+void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
+                                   double (*func_fp)(const Variable& var, double x),
+                                   double (*func_fpi)(const Variable& var, double x))
 {
   func_f_def   = func_f;
   func_fp_def  = func_fp;
