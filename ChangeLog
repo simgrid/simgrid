@@ -30,6 +30,7 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    - xbt/graph.h: xbt_graph_edge_get_length(), xbt_graph_edge_set_length,
        xbt_graph_export_graphviz()
    - xbt/str.h: xbt_str_join()
+ - Remove unused datatypes:
    - xbt/heap.h: use std::priority_queue or boost::heap instead
    - xbt/swag.h: use boost::intrusive::list instead
 
@@ -51,7 +52,13 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
  - Remove viva specific tracing as the tool is no longer maintained
 
  Fixed bugs:
- - #248: Kill of finished MSG processes leads to segfault
+ - #248: Kill of finished processes leads to segfault
+ - #240: xbt_cond_wait_timeout should gracefully return for C apps
+ - #230: segfaults when exit() without run() 
+ - #225: s4u::Actor::kill() doesn not really kill victims in a join()
+ - #222: Actor::kill() doesn't really kill and segfaults 
+ - #221: odd LMM warning when killing an actor 
+ - #120: Memory leak when the processes are forcefully killed
 
 SimGrid (3.17) Released October 8 2017
 
