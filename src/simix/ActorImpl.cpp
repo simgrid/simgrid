@@ -500,10 +500,10 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
         boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro);
 
     if (exec != nullptr) {
-      if (exec->surf_exec) {
-        exec->surf_exec->cancel();
-        exec->surf_exec->unref();
-        exec->surf_exec = nullptr;
+      if (exec->surfAction_) {
+        exec->surfAction_->cancel();
+        exec->surfAction_->unref();
+        exec->surfAction_ = nullptr;
       }
     } else if (comm != nullptr) {
       process->comms.remove(process->waiting_synchro);
@@ -552,8 +552,8 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(process->waiting_synchro);
-    if (exec != nullptr && exec->surf_exec)
-      exec->surf_exec->cancel();
+    if (exec != nullptr && exec->surfAction_)
+      exec->surfAction_->cancel();
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(process->waiting_synchro);

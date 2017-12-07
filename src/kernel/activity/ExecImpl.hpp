@@ -24,10 +24,10 @@ public:
   void post() override;
   double remains();
 
-  sg_host_t host_ =
-      nullptr; /* The host where the execution takes place. If nullptr, then this is a parallel exec (and only surf
+  /* The host where the execution takes place. If nullptr, then this is a parallel exec (and only surf
                   knows the hosts) */
-  surf_action_t surf_exec       = nullptr; /* The Surf execution action encapsulated */
+  sg_host_t host_               = nullptr;
+  surf_action_t surfAction_     = nullptr; /* The Surf execution action encapsulated */
   surf::Action* timeoutDetector = nullptr;
 };
 }

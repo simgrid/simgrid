@@ -112,12 +112,12 @@ void simcall_execution_cancel(smx_activity_t execution)
 {
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-  if (not exec->surf_exec)
+  if (not exec->surfAction_)
     return;
   simgrid::simix::kernelImmediate([exec] {
     XBT_DEBUG("Cancel synchro %p", exec.get());
-    if (exec->surf_exec)
-      exec->surf_exec->cancel();
+    if (exec->surfAction_)
+      exec->surfAction_->cancel();
   });
 }
 
@@ -137,8 +137,8 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-    if (exec->surf_exec)
-      exec->surf_exec->setSharingWeight(priority);
+    if (exec->surfAction_)
+      exec->surfAction_->setSharingWeight(priority);
   });
 }
 
@@ -155,8 +155,8 @@ void simcall_execution_set_bound(smx_activity_t execution, double bound)
   simgrid::simix::kernelImmediate([execution, bound] {
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-    if (exec->surf_exec)
-      static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
+    if (exec->surfAction_)
+      exec->surfAction_->setBound(bound);
   });
 }
 

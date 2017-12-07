@@ -41,16 +41,16 @@ simgrid::kernel::activity::CommImpl::~CommImpl()
 void simgrid::kernel::activity::CommImpl::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
-  if (surf_comm)
-    surf_comm->suspend();
+  if (surfAction_)
+    surfAction_->suspend();
   /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
 }
 
 void simgrid::kernel::activity::CommImpl::resume()
 {
   /*FIXME: check what happen with the timeouts */
-  if (surf_comm)
-    surf_comm->resume();
+  if (surfAction_)
+    surfAction_->resume();
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
@@ -64,22 +64,22 @@ void simgrid::kernel::activity::CommImpl::cancel()
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
              && not MC_record_replay_is_active() && (state == SIMIX_READY || state == SIMIX_RUNNING)) {
 
-    surf_comm->cancel();
+    surfAction_->cancel();
   }
 }
 
 /**  @brief get the amount remaining from the communication */
 double simgrid::kernel::activity::CommImpl::remains()
 {
-  return surf_comm->getRemains();
+  return surfAction_->getRemains();
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */
 void simgrid::kernel::activity::CommImpl::cleanupSurf()
 {
-  if (surf_comm) {
-    surf_comm->unref();
-    surf_comm = nullptr;
+  if (surfAction_) {
+    surfAction_->unref();
+    surfAction_ = nullptr;
   }
 
   if (src_timeout) {
@@ -104,7 +104,7 @@ void simgrid::kernel::activity::CommImpl::post()
     state = SIMIX_SRC_HOST_FAILURE;
   else if (dst_timeout && dst_timeout->getState() == simgrid::surf::Action::State::failed)
     state = SIMIX_DST_HOST_FAILURE;
-  else if (surf_comm && surf_comm->getState() == simgrid::surf::Action::State::failed) {
+  else if (surfAction_ && surfAction_->getState() == simgrid::surf::Action::State::failed) {
     state = SIMIX_LINK_FAILURE;
   } else
     state = SIMIX_DONE;

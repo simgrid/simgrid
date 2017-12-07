@@ -21,29 +21,29 @@ simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, sg_host_t host) 
 
 simgrid::kernel::activity::ExecImpl::~ExecImpl()
 {
-  if (surf_exec)
-    surf_exec->unref();
+  if (surfAction_)
+    surfAction_->unref();
   if (timeoutDetector)
     timeoutDetector->unref();
   XBT_DEBUG("Destroy exec %p", this);
 }
 void simgrid::kernel::activity::ExecImpl::suspend()
 {
-  XBT_VERB("This exec is suspended (remain: %f)", surf_exec->getRemains());
-  if (surf_exec)
-    surf_exec->suspend();
+  XBT_VERB("This exec is suspended (remain: %f)", surfAction_->getRemains());
+  if (surfAction_)
+    surfAction_->suspend();
 }
 
 void simgrid::kernel::activity::ExecImpl::resume()
 {
-  XBT_VERB("This exec is resumed (remain: %f)", surf_exec->getRemains());
-  if (surf_exec)
-    surf_exec->resume();
+  XBT_VERB("This exec is resumed (remain: %f)", surfAction_->getRemains());
+  if (surfAction_)
+    surfAction_->resume();
 }
 
 double simgrid::kernel::activity::ExecImpl::remains()
 {
-  return surf_exec->getRemains();
+  return surfAction_->getRemains();
 }
 
 void simgrid::kernel::activity::ExecImpl::post()
@@ -52,7 +52,7 @@ void simgrid::kernel::activity::ExecImpl::post()
                                  /* If the host running the synchro failed, notice it. This way, the asking
                                   * process can be killed if it runs on that host itself */
     state = SIMIX_FAILED;
-  } else if (surf_exec->getState() == simgrid::surf::Action::State::failed) {
+  } else if (surfAction_->getState() == simgrid::surf::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state = SIMIX_CANCELED;
   } else if (timeoutDetector && timeoutDetector->getState() == simgrid::surf::Action::State::done) {
@@ -61,9 +61,9 @@ void simgrid::kernel::activity::ExecImpl::post()
     state = SIMIX_DONE;
   }
 
-  if (surf_exec) {
-    surf_exec->unref();
-    surf_exec = nullptr;
+  if (surfAction_) {
+    surfAction_->unref();
+    surfAction_ = nullptr;
   }
   if (timeoutDetector) {
     timeoutDetector->unref();

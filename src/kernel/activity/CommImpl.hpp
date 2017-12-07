@@ -46,7 +46,7 @@ expectations of the other side, too. See  */
   void (*copy_data_fun)(smx_activity_t, void*, size_t) = nullptr;
 
   /* Surf action data */
-  surf_action_t surf_comm   = nullptr; /* The Surf communication action encapsulated */
+  surf_action_t surfAction_ = nullptr; /* The Surf communication action encapsulated */
   surf_action_t src_timeout = nullptr; /* Surf's actions to instrument the timeouts */
   surf_action_t dst_timeout = nullptr; /* Surf's actions to instrument the timeouts */
   smx_actor_t src_proc      = nullptr;

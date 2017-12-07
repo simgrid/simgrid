@@ -164,12 +164,12 @@ SIMIX_execution_start(smx_actor_t issuer, const char* name, double flops_amount,
   /* set surf's action */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
 
-    exec->surf_exec = issuer->host->pimpl_cpu->execution_start(flops_amount);
-    exec->surf_exec->setData(exec.get());
-    exec->surf_exec->setSharingWeight(priority);
+    exec->surfAction_ = issuer->host->pimpl_cpu->execution_start(flops_amount);
+    exec->surfAction_->setData(exec.get());
+    exec->surfAction_->setSharingWeight(priority);
 
     if (bound > 0)
-      static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
+      static_cast<simgrid::surf::CpuAction*>(exec->surfAction_)->setBound(bound);
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name.c_str());
@@ -198,8 +198,8 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
     /* set surf's synchro */
     sg_host_t* host_list_cpy = new sg_host_t[host_nb];
     std::copy_n(host_list, host_nb, host_list_cpy);
-    exec->surf_exec = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
-    exec->surf_exec->setData(exec.get());
+    exec->surfAction_ = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
+    exec->surfAction_->setData(exec.get());
     if (timeout > 0) {
       exec->timeoutDetector = host_list[0]->pimpl_cpu->sleep(timeout);
       exec->timeoutDetector->setData(exec.get());
@@ -280,13 +280,13 @@ void SIMIX_set_category(smx_activity_t synchro, const char *category)
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   if (exec != nullptr) {
-    exec->surf_exec->setCategory(category);
+    exec->surfAction_->setCategory(category);
     return;
   }
 
   simgrid::kernel::activity::CommImplPtr comm =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
   if (comm != nullptr) {
-    comm->surf_comm->setCategory(category);
+    comm->surfAction_->setCategory(category);
   }
 }

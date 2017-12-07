@@ -196,7 +196,7 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
       other_comm = std::move(this_synchro);
       mbox->push(other_comm);
     } else {
-      if (other_comm->surf_comm && other_comm->remains() < 1e-12) {
+      if (other_comm->surfAction_ && other_comm->remains() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
         other_comm->state = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
@@ -455,15 +455,15 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
     simgrid::s4u::Host* sender   = comm->src_proc->host;
     simgrid::s4u::Host* receiver = comm->dst_proc->host;
 
-    comm->surf_comm = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
-    comm->surf_comm->setData(comm.get());
+    comm->surfAction_ = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
+    comm->surfAction_->setData(comm.get());
     comm->state = SIMIX_RUNNING;
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", comm.get(), sender->getCname(),
-              receiver->getCname(), comm->surf_comm);
+              receiver->getCname(), comm->surfAction_);
 
     /* If a link is failed, detect it immediately */
-    if (comm->surf_comm->getState() == simgrid::surf::Action::State::failed) {
+    if (comm->surfAction_->getState() == simgrid::surf::Action::State::failed) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->getCname(),
                 receiver->getCname());
       comm->state = SIMIX_LINK_FAILURE;
@@ -482,7 +482,7 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
                   "communication",
                   comm->dst_proc->getCname(), comm->dst_proc->host->getCname());
 
-      comm->surf_comm->suspend();
+      comm->surfAction_->suspend();
     }
   }
 }
