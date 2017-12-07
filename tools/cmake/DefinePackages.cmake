@@ -427,7 +427,8 @@ set(S4U_SRC
   src/s4u/s4u_conditionVariable.cpp
   src/s4u/s4u_comm.cpp
   src/s4u/s4u_engine.cpp  
-   src/s4u/s4u_host.cpp  
+  src/s4u/s4u_exec.cpp  
+  src/s4u/s4u_host.cpp  
   src/s4u/s4u_link.cpp
   src/s4u/s4u_mailbox.cpp
   src/s4u/s4u_mutex.cpp
