@@ -145,21 +145,21 @@ XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
 XBT_PUBLIC(void)
-lmm_set_default_protocol_function(double (*func_f)(const s_lmm_variable_t& var, double x),
-                                  double (*func_fp)(const s_lmm_variable_t& var, double x),
-                                  double (*func_fpi)(const s_lmm_variable_t& var, double x));
+lmm_set_default_protocol_function(double (*func_f)(const Variable& var, double x),
+                                  double (*func_fp)(const Variable& var, double x),
+                                  double (*func_fpi)(const Variable& var, double x));
 
-XBT_PUBLIC(double) func_reno_f(const s_lmm_variable_t& var, double x);
-XBT_PUBLIC(double) func_reno_fp(const s_lmm_variable_t& var, double x);
-XBT_PUBLIC(double) func_reno_fpi(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_reno_f(const Variable& var, double x);
+XBT_PUBLIC(double) func_reno_fp(const Variable& var, double x);
+XBT_PUBLIC(double) func_reno_fpi(const Variable& var, double x);
 
-XBT_PUBLIC(double) func_reno2_f(const s_lmm_variable_t& var, double x);
-XBT_PUBLIC(double) func_reno2_fp(const s_lmm_variable_t& var, double x);
-XBT_PUBLIC(double) func_reno2_fpi(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_reno2_f(const Variable& var, double x);
+XBT_PUBLIC(double) func_reno2_fp(const Variable& var, double x);
+XBT_PUBLIC(double) func_reno2_fpi(const Variable& var, double x);
 
-XBT_PUBLIC(double) func_vegas_f(const s_lmm_variable_t& var, double x);
-XBT_PUBLIC(double) func_vegas_fp(const s_lmm_variable_t& var, double x);
-XBT_PUBLIC(double) func_vegas_fpi(const s_lmm_variable_t& var, double x);
+XBT_PUBLIC(double) func_vegas_f(const Variable& var, double x);
+XBT_PUBLIC(double) func_vegas_fp(const Variable& var, double x);
+XBT_PUBLIC(double) func_vegas_fpi(const Variable& var, double x);
 
 /**
  * @brief LMM element
@@ -336,10 +336,10 @@ private:
  * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as
  * soon as possible we enable the variable with desired weight
  */
-XBT_PUBLIC_CLASS s_lmm_variable_t
+XBT_PUBLIC_CLASS Variable
 {
 public:
-  void initialize(simgrid::surf::Action * id_value, double sharing_weight_value, double bound_value,
+  void initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
                   int number_of_constraints, unsigned visited_value);
 
   /**
@@ -423,9 +423,9 @@ public:
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
-  double (*func_f)(const s_lmm_variable_t& var, double x);   /* (f)    */
-  double (*func_fp)(const s_lmm_variable_t& var, double x);  /* (f')    */
-  double (*func_fpi)(const s_lmm_variable_t& var, double x); /* (f')^{-1}    */
+  double (*func_f)(const Variable& var, double x);   /* (f)    */
+  double (*func_fp)(const Variable& var, double x);  /* (f')    */
+  double (*func_fpi)(const Variable& var, double x); /* (f')^{-1}    */
   /* \end{For Lagrange only} */
 
 private:
@@ -470,7 +470,7 @@ public:
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
    * @param number_of_constraints The maximum number of constraint to associate to the variable
    */
-  lmm_variable_t variable_new(simgrid::surf::Action * id, double weight_value, double bound, int number_of_constraints);
+  lmm_variable_t variable_new(simgrid::surf::Action* id, double weight_value, double bound, int number_of_constraints);
 
   /**
    * @brief Free a variable
@@ -593,17 +593,15 @@ private:
   template <class CnstList> void solve(CnstList& cnst_list);
 public:
   bool modified;
-  boost::intrusive::list<s_lmm_variable_t,
-                         boost::intrusive::member_hook<s_lmm_variable_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_variable_t::variable_set_hook>>
+  boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
+                                                                 &Variable::variable_set_hook>>
       variable_set;
   boost::intrusive::list<s_lmm_constraint_t,
                          boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
                                                        &s_lmm_constraint_t::active_constraint_set_hook>>
       active_constraint_set;
-  boost::intrusive::list<s_lmm_variable_t,
-                         boost::intrusive::member_hook<s_lmm_variable_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_variable_t::saturated_variable_set_hook>>
+  boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
+                                                                 &Variable::saturated_variable_set_hook>>
       saturated_variable_set;
   boost::intrusive::list<s_lmm_constraint_t,
                          boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
@@ -629,9 +627,9 @@ private:
   xbt_mallocator_t variable_mallocator;
 };
 
-extern XBT_PRIVATE double (*func_f_def)(const s_lmm_variable_t&, double);
-extern XBT_PRIVATE double (*func_fp_def)(const s_lmm_variable_t&, double);
-extern XBT_PRIVATE double (*func_fpi_def)(const s_lmm_variable_t&, double);
+extern XBT_PRIVATE double (*func_f_def)(const Variable&, double);
+extern XBT_PRIVATE double (*func_fp_def)(const Variable&, double);
+extern XBT_PRIVATE double (*func_fpi_def)(const Variable&, double);
 
 /** @} */
 }

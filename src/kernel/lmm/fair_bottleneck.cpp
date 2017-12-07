@@ -24,7 +24,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
     return;
 
   XBT_DEBUG("Variable set : %zu", sys->variable_set.size());
-  for (s_lmm_variable_t& var : sys->variable_set) {
+  for (Variable& var : sys->variable_set) {
     var.value = 0.0;
     XBT_DEBUG("Handling variable %p", &var);
     if (var.sharing_weight > 0.0 && std::find_if(begin(var.cnsts), end(var.cnsts), [](s_lmm_element_t const& x) {
@@ -85,7 +85,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
     }
 
     for (auto iter = std::begin(var_list); iter != std::end(var_list);) {
-      s_lmm_variable_t& var = *iter;
+      Variable& var  = *iter;
       double min_inc = DBL_MAX;
       for (s_lmm_element_t const& elm : var.cnsts) {
         if (elm.consumption_weight > 0)

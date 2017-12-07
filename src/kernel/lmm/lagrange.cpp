@@ -29,9 +29,9 @@ namespace simgrid {
 namespace kernel {
 namespace lmm {
 
-double (*func_f_def)(const s_lmm_variable_t&, double);
-double (*func_fp_def)(const s_lmm_variable_t&, double);
-double (*func_fpi_def)(const s_lmm_variable_t&, double);
+double (*func_f_def)(const Variable&, double);
+double (*func_fp_def)(const Variable&, double);
+double (*func_fpi_def)(const Variable&, double);
 
 /*
  * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
@@ -63,7 +63,7 @@ static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, 
     XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", &cnst, tmp - cnst.bound, cnst.lambda);
   }
 
-  for (s_lmm_variable_t const& var : var_list) {
+  for (Variable const& var : var_list) {
     if (not var.sharing_weight)
       break;
     if (var.bound < 0)
@@ -79,7 +79,7 @@ static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, 
   return 1;
 }
 
-static double new_value(const s_lmm_variable_t& var)
+static double new_value(const Variable& var)
 {
   double tmp = 0;
 
@@ -93,7 +93,7 @@ static double new_value(const s_lmm_variable_t& var)
   return var.func_fpi(var, tmp);
 }
 
-static double new_mu(const s_lmm_variable_t& var)
+static double new_mu(const Variable& var)
 {
   double mu_i    = 0.0;
   double sigma_i = 0.0;
@@ -112,7 +112,7 @@ static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
 {
   double obj = 0.0;
 
-  for (s_lmm_variable_t const& var : var_list) {
+  for (Variable const& var : var_list) {
     double sigma_i = 0.0;
 
     if (not var.sharing_weight)
@@ -171,7 +171,7 @@ void lagrange_solve(lmm_system_t sys)
    * Initialize the var_list variable with only the active variables. Initialize mu.
    */
   auto& var_list = sys->variable_set;
-  for (s_lmm_variable_t& var : var_list) {
+  for (Variable& var : var_list) {
     if (not var.sharing_weight)
       var.value = 0.0;
     else {
@@ -205,7 +205,7 @@ void lagrange_solve(lmm_system_t sys)
     XBT_DEBUG("-------------- Gradient Descent ----------");
 
     /* Improve the value of mu_i */
-    for (s_lmm_variable_t& var : var_list) {
+    for (Variable& var : var_list) {
       if (var.sharing_weight && var.bound >= 0) {
         XBT_DEBUG("Working on var (%p)", &var);
         var.new_mu = new_mu(var);
@@ -235,7 +235,7 @@ void lagrange_solve(lmm_system_t sys)
     /* Now computes the values of each variable (\rho) based on the values of \lambda and \mu. */
     XBT_DEBUG("-------------- Check convergence ----------");
     overall_modification = 0;
-    for (s_lmm_variable_t& var : var_list) {
+    for (Variable& var : var_list) {
       if (var.sharing_weight <= 0)
         var.value = 0.0;
       else {
@@ -389,7 +389,7 @@ static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst)
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", &cnst);
 
   for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
-    s_lmm_variable_t& var = *elem.variable;
+    Variable& var = *elem.variable;
     xbt_assert(var.sharing_weight > 0);
     XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", &var);
     // Initialize the summation variable
@@ -424,9 +424,9 @@ static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst)
  *  programming.
  *
  */
-void lmm_set_default_protocol_function(double (*func_f)(const s_lmm_variable_t& var, double x),
-                                       double (*func_fp)(const s_lmm_variable_t& var, double x),
-                                       double (*func_fpi)(const s_lmm_variable_t& var, double x))
+void lmm_set_default_protocol_function(double (*func_f)(const Variable& var, double x),
+                                       double (*func_fp)(const Variable& var, double x),
+                                       double (*func_fpi)(const Variable& var, double x))
 {
   func_f_def   = func_f;
   func_fp_def  = func_fp;
@@ -441,19 +441,19 @@ void lmm_set_default_protocol_function(double (*func_f)(const s_lmm_variable_t& 
  * Therefore: $fp(x) = \frac{\alpha D_f}{x}$
  * Therefore: $fpi(x) = \frac{\alpha D_f}{x}$
  */
-double func_vegas_f(const s_lmm_variable_t& var, double x)
+double func_vegas_f(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
   return VEGAS_SCALING * var.sharing_weight * log(x);
 }
 
-double func_vegas_fp(const s_lmm_variable_t& var, double x)
+double func_vegas_fp(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
   return VEGAS_SCALING * var.sharing_weight / x;
 }
 
-double func_vegas_fpi(const s_lmm_variable_t& var, double x)
+double func_vegas_fpi(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values! (%1.20f)", x);
   return var.sharing_weight / (x / VEGAS_SCALING);
@@ -464,19 +464,19 @@ double func_vegas_fpi(const s_lmm_variable_t& var, double x)
  * Therefore: $fp(x)  = \frac{3}{3 D_f^2 x^2+2}$
  * Therefore: $fpi(x)  = \sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
  */
-double func_reno_f(const s_lmm_variable_t& var, double x)
+double func_reno_f(const Variable& var, double x)
 {
   xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
 
   return RENO_SCALING * sqrt(3.0 / 2.0) / var.sharing_weight * atan(sqrt(3.0 / 2.0) * var.sharing_weight * x);
 }
 
-double func_reno_fp(const s_lmm_variable_t& var, double x)
+double func_reno_fp(const Variable& var, double x)
 {
   return RENO_SCALING * 3.0 / (3.0 * var.sharing_weight * var.sharing_weight * x * x + 2.0);
 }
 
-double func_reno_fpi(const s_lmm_variable_t& var, double x)
+double func_reno_fpi(const Variable& var, double x)
 {
   double res_fpi;
 
@@ -495,19 +495,19 @@ double func_reno_fpi(const s_lmm_variable_t& var, double x)
  * Therefore:   $fp(x)  = 2/(Weight*x + 2)
  * Therefore:   $fpi(x) = (2*Weight)/x - 4
  */
-double func_reno2_f(const s_lmm_variable_t& var, double x)
+double func_reno2_f(const Variable& var, double x)
 {
   xbt_assert(var.sharing_weight > 0.0, "Don't call me with stupid values!");
   return RENO2_SCALING * (1.0 / var.sharing_weight) *
          log((x * var.sharing_weight) / (2.0 * x * var.sharing_weight + 3.0));
 }
 
-double func_reno2_fp(const s_lmm_variable_t& var, double x)
+double func_reno2_fp(const Variable& var, double x)
 {
   return RENO2_SCALING * 3.0 / (var.sharing_weight * x * (2.0 * var.sharing_weight * x + 3.0));
 }
 
-double func_reno2_fpi(const s_lmm_variable_t& var, double x)
+double func_reno2_fpi(const Variable& var, double x)
 {
   xbt_assert(x > 0.0, "Don't call me with stupid values!");
   double tmp     = x * var.sharing_weight * var.sharing_weight;

@@ -136,7 +136,7 @@ public:
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    */
-  Action(simgrid::surf::Model *model, double cost, bool failed);
+  Action(simgrid::surf::Model* model, double cost, bool failed);
 
   /**
    * @brief Action constructor
@@ -146,7 +146,7 @@ public:
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  Action(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var);
+  Action(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var);
 
   /** @brief Destructor */
   virtual ~Action();
@@ -259,10 +259,10 @@ private:
   void *data_ = nullptr; /**< for your convenience */
 
   /* LMM */
-  double lastUpdate_         = 0;
-  double lastValue_          = 0;
-  lmm_variable_t variable_   = nullptr;
-  enum heap_action_type hat_ = NOTSET;
+  double lastUpdate_                                  = 0;
+  double lastValue_                                   = 0;
+  lmm_variable_t variable_                            = nullptr;
+  enum heap_action_type hat_                          = NOTSET;
   boost::optional<heap_type::handle_type> heapHandle_ = boost::none;
 
 public:

@@ -379,9 +379,9 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
     if (value > 0)
       turnOn();
     else {
-      lmm_variable_t var = nullptr;
+      lmm_variable_t var       = nullptr;
       const_lmm_element_t elem = nullptr;
-      double now = surf_get_clock();
+      double now               = surf_get_clock();
 
       turnOff();
       while ((var = constraint()->get_variable(&elem))) {
@@ -432,7 +432,7 @@ void NetworkCm02Link::setLatency(double value)
   lmm_variable_t var           = nullptr;
   const_lmm_element_t elem     = nullptr;
   const_lmm_element_t nextelem = nullptr;
-  int numelem = 0;
+  int numelem                  = 0;
 
   latency_.peak = value;
 

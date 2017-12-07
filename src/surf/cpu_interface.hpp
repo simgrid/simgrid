@@ -144,21 +144,23 @@ public:
  * @brief A CpuAction represents the execution of code on one or several Cpus
  */
 XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
-friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
-public:
-/** @brief Signal emitted when the action state changes (ready/running/done, etc)
- *  Signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
- */
-static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
-/** @brief Signal emitted when the action share changes (amount of flops it gets)
- *  Signature: `void(CpuAction *action)`
- */
-static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
+  friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction* action);
 
-  CpuAction(simgrid::surf::Model *model, double cost, bool failed)
-  : Action(model, cost, failed) {}
-  CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
-  : Action(model, cost, failed, var) {}
+public:
+  /** @brief Signal emitted when the action state changes (ready/running/done, etc)
+   *  Signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
+   */
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
+  /** @brief Signal emitted when the action share changes (amount of flops it gets)
+   *  Signature: `void(CpuAction *action)`
+   */
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
+
+  CpuAction(simgrid::surf::Model* model, double cost, bool failed) : Action(model, cost, failed) {}
+  CpuAction(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var)
+      : Action(model, cost, failed, var)
+  {
+  }
 
   void setState(simgrid::surf::Action::State state) override;
 

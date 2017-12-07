@@ -30,7 +30,7 @@ namespace lmm {
 
 typedef std::vector<int> dyn_light_t;
 
-int s_lmm_variable_t::Global_debug_id   = 1;
+int Variable::Global_debug_id           = 1;
 int s_lmm_constraint_t::Global_debug_id = 1;
 
 int s_lmm_element_t::get_concurrency() const
@@ -89,7 +89,7 @@ void s_lmm_system_t::check_concurrency() const
   }
 
   // Check that for each variable, all corresponding elements are in the same state (i.e. same element sets)
-  for (s_lmm_variable_t const& var : variable_set) {
+  for (Variable const& var : variable_set) {
     if (var.cnsts.empty())
       continue;
 
@@ -204,7 +204,7 @@ lmm_constraint_t s_lmm_system_t::constraint_new(void* id, double bound_value)
 
 void* s_lmm_system_t::variable_mallocator_new_f()
 {
-  return new s_lmm_variable_t;
+  return new Variable;
 }
 
 void s_lmm_system_t::variable_mallocator_free_f(void* var)
@@ -446,7 +446,7 @@ void s_lmm_system_t::print() const
   std::string buf = std::string("MAX-MIN ( ");
 
   /* Printing Objective */
-  for (s_lmm_variable_t const& var : variable_set)
+  for (Variable const& var : variable_set)
     buf += "'" + std::to_string(var.id_int) + "'(" + std::to_string(var.sharing_weight) + ") ";
   buf += ")";
   XBT_DEBUG("%20s", buf.c_str());
@@ -476,7 +476,7 @@ void s_lmm_system_t::print() const
 
   XBT_DEBUG("Variables");
   /* Printing Result */
-  for (s_lmm_variable_t const& var : variable_set) {
+  for (Variable const& var : variable_set) {
     if (var.bound > 0) {
       XBT_DEBUG("'%d'(%f) : %f (<=%f)", var.id_int, var.sharing_weight, var.value, var.bound);
       xbt_assert(not double_positive(var.value - var.bound, var.bound * sg_maxmin_precision),
@@ -563,7 +563,7 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
   do {
     /* Fix the variables that have to be */
     auto& var_list = saturated_variable_set;
-    for (s_lmm_variable_t const& var : var_list) {
+    for (Variable const& var : var_list) {
       if (var.sharing_weight <= 0.0)
         DIE_IMPOSSIBLE;
       /* First check if some of these variables could reach their upper bound and update min_bound accordingly. */
@@ -579,7 +579,7 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
     }
 
     while (not var_list.empty()) {
-      s_lmm_variable_t& var = var_list.front();
+      Variable& var = var_list.front();
       if (min_bound < 0) {
         // If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is
         // saturated at each cycle)
@@ -714,8 +714,8 @@ void s_lmm_system_t::update_variable_bound(lmm_variable_t var, double bound)
     update_modified_set(var->cnsts[0].constraint);
 }
 
-void s_lmm_variable_t::initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
-                                  int number_of_constraints, unsigned visited_value)
+void Variable::initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
+                          int number_of_constraints, unsigned visited_value)
 {
   id     = id_value;
   id_int = Global_debug_id++;
@@ -736,7 +736,7 @@ void s_lmm_variable_t::initialize(simgrid::surf::Action* id_value, double sharin
   xbt_assert(not saturated_variable_set_hook.is_linked());
 }
 
-int s_lmm_variable_t::get_min_concurrency_slack() const
+int Variable::get_min_concurrency_slack() const
 {
   int minslack = std::numeric_limits<int>::max();
   for (s_lmm_element_t const& elem : cnsts) {
@@ -943,7 +943,7 @@ void s_lmm_system_t::remove_all_modified_set()
   // (i.e. not readibily reproducible, and requiring a lot of run time before happening).
   if (++visited_counter == 1) {
     /* the counter wrapped around, reset each variable->visited */
-    for (s_lmm_variable_t& var : variable_set)
+    for (Variable& var : variable_set)
       var.visited = 0;
   }
   modified_constraint_set.clear();
