@@ -73,7 +73,8 @@ void Process::set_data(int index, int* argc, char*** argv)
     instance_id_ = instance_id;
     index_       = index;
 
-    static_cast<simgrid::msg::ActorExt*>(SIMIX_process_self()->userdata)->data = this;
+    process_                                                       = SIMIX_process_self();
+    static_cast<simgrid::msg::ActorExt*>(process_->userdata)->data = this;
 
     if (*argc > 3) {
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
@@ -85,8 +86,7 @@ void Process::set_data(int index, int* argc, char*** argv)
     argv_ = argv;
     // set the process attached to the mailbox
     mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
-    process_ = SIMIX_process_self();
-    XBT_DEBUG("<%d> New process in the game: %p", index_, SIMIX_process_self());
+    XBT_DEBUG("<%d> New process in the game: %p", index_, process_);
 }
 
 /** @brief Prepares the current process for termination. */
