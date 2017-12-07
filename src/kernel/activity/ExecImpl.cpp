@@ -43,10 +43,7 @@ void simgrid::kernel::activity::ExecImpl::resume()
 
 double simgrid::kernel::activity::ExecImpl::remains()
 {
-  if (state == SIMIX_RUNNING)
-    return surf_exec->getRemains();
-
-  return 0;
+  return surf_exec->getRemains();
 }
 
 void simgrid::kernel::activity::ExecImpl::post()
