@@ -209,7 +209,7 @@ void bindPromise(Promise<T> promise, Future<T> future)
 {
   class PromiseBinder {
   public:
-    PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
+    explicit PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
     void operator()(Future<T> future)
     {
       simgrid::xbt::setPromise(promise_, future);
