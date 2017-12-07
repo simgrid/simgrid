@@ -82,7 +82,7 @@ template <class T>
 class Future {
 public:
   Future() { /* Nothing to do*/}
-  Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
+  explicit Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
 
   bool valid() const { return future_.valid(); }
   T get()

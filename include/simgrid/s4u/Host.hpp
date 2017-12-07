@@ -114,7 +114,7 @@ public:
   void execute(double flops);
 
 private:
-  simgrid::xbt::string name_ = "noname";
+  simgrid::xbt::string name_{"noname"};
   std::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
 
 public:

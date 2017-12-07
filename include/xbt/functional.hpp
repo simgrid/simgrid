@@ -171,7 +171,7 @@ private:
 
 public:
   Task() { /* Nothing to do */}
-  Task(std::nullptr_t) { /* Nothing to do */}
+  explicit Task(std::nullptr_t) { /* Nothing to do */}
   ~Task()
   {
     this->clear();

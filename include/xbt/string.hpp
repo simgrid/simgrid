@@ -89,7 +89,7 @@ public:
     }
   }
   string() : string(&NUL, 0) {}
-  string(const char* s) : string(s, strlen(s)) {}
+  explicit string(const char* s) : string(s, strlen(s)) {}
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
   {

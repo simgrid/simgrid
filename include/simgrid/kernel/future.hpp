@@ -455,7 +455,7 @@ template<class T>
 class Promise {
 public:
   Promise() : state_(std::make_shared<FutureState<T>>()) {}
-  Promise(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
+  explicit Promise(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
 
   // Move type
   Promise(Promise const&) = delete;
@@ -510,7 +510,7 @@ template<>
 class Promise<void> {
 public:
   Promise() : state_(std::make_shared<FutureState<void>>()) {}
-  Promise(std::shared_ptr<FutureState<void>> state) : state_(std::move(state)) {}
+  explicit Promise(std::shared_ptr<FutureState<void>> state) : state_(std::move(state)) {}
   ~Promise()
   {
     if (state_ && state_->get_status() == FutureStatus::not_ready)
