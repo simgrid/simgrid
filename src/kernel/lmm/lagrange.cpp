@@ -48,7 +48,7 @@ static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, 
 {
   for (Constraint const& cnst : cnst_list) {
     double tmp = 0;
-    for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+    for (Element const& elem : cnst.enabled_element_set) {
       lmm_variable_t var = elem.variable;
       xbt_assert(var->sharing_weight > 0);
       tmp += var->value;
@@ -82,7 +82,7 @@ static double new_value(const Variable& var)
 {
   double tmp = 0;
 
-  for (s_lmm_element_t const& elem : var.cnsts) {
+  for (Element const& elem : var.cnsts) {
     tmp += elem.constraint->lambda;
   }
   if (var.bound > 0)
@@ -97,7 +97,7 @@ static double new_mu(const Variable& var)
   double mu_i    = 0.0;
   double sigma_i = 0.0;
 
-  for (s_lmm_element_t const& elem : var.cnsts) {
+  for (Element const& elem : var.cnsts) {
     sigma_i += elem.constraint->lambda;
   }
   mu_i = var.func_fp(var, var.bound) - sigma_i;
@@ -117,7 +117,7 @@ static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
     if (not var.sharing_weight)
       break;
 
-    for (s_lmm_element_t const& elem : var.cnsts)
+    for (Element const& elem : var.cnsts)
       sigma_i += elem.constraint->lambda;
 
     if (var.bound > 0)
@@ -186,8 +186,8 @@ void lagrange_solve(lmm_system_t sys)
       XBT_DEBUG("#### var(%p) ->mu :  %e", &var, var.mu);
       XBT_DEBUG("#### var(%p) ->weight: %e", &var, var.sharing_weight);
       XBT_DEBUG("#### var(%p) ->bound: %e", &var, var.bound);
-      auto weighted = std::find_if(begin(var.cnsts), end(var.cnsts),
-                                   [](s_lmm_element_t const& x) { return x.consumption_weight != 0.0; });
+      auto weighted =
+          std::find_if(begin(var.cnsts), end(var.cnsts), [](Element const& x) { return x.consumption_weight != 0.0; });
       if (weighted == end(var.cnsts))
         var.value = 1.0;
     }
@@ -386,7 +386,7 @@ static double partial_diff_lambda(double lambda, const Constraint& cnst)
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", &cnst);
 
-  for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+  for (Element const& elem : cnst.enabled_element_set) {
     Variable& var = *elem.variable;
     xbt_assert(var.sharing_weight > 0);
     XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)", &var);
@@ -394,7 +394,7 @@ static double partial_diff_lambda(double lambda, const Constraint& cnst)
     double sigma_i = 0.0;
 
     // Compute sigma_i
-    for (s_lmm_element_t const& elem2 : var.cnsts)
+    for (Element const& elem2 : var.cnsts)
       sigma_i += elem2.constraint->lambda;
 
     // add mu_i if this flow has a RTT constraint associated

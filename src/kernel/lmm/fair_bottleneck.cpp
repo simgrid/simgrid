@@ -27,7 +27,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
   for (Variable& var : sys->variable_set) {
     var.value = 0.0;
     XBT_DEBUG("Handling variable %p", &var);
-    if (var.sharing_weight > 0.0 && std::find_if(begin(var.cnsts), end(var.cnsts), [](s_lmm_element_t const& x) {
+    if (var.sharing_weight > 0.0 && std::find_if(begin(var.cnsts), end(var.cnsts), [](Element const& x) {
                                       return x.consumption_weight != 0.0;
                                     }) != end(var.cnsts)) {
       sys->saturated_variable_set.push_back(var);
@@ -65,7 +65,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", &cnst);
       cnst.usage = 0.0;
-      for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+      for (Element& elem : cnst.enabled_element_set) {
         xbt_assert(elem.variable->sharing_weight > 0);
         if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook.is_linked())
           nb++;
@@ -87,7 +87,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
     for (auto iter = std::begin(var_list); iter != std::end(var_list);) {
       Variable& var  = *iter;
       double min_inc = DBL_MAX;
-      for (s_lmm_element_t const& elm : var.cnsts) {
+      for (Element const& elm : var.cnsts) {
         if (elm.consumption_weight > 0)
           min_inc = std::min(min_inc, elm.constraint->usage / elm.consumption_weight);
       }
@@ -106,14 +106,14 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
       Constraint& cnst = *iter;
       XBT_DEBUG("Updating cnst %p ", &cnst);
       if (cnst.sharing_policy) {
-        for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+        for (Element& elem : cnst.enabled_element_set) {
           xbt_assert(elem.variable->sharing_weight > 0);
           XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining, elem.variable,
                     elem.variable->mu);
           double_update(&cnst.remaining, elem.consumption_weight * elem.variable->mu, sg_maxmin_precision);
         }
       } else {
-        for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+        for (Element& elem : cnst.enabled_element_set) {
           xbt_assert(elem.variable->sharing_weight > 0);
           XBT_DEBUG("\tNon-Shared variable. Update constraint usage of %p (%g) with variable %p by %g", &cnst,
                     cnst.usage, elem.variable, elem.variable->mu);
@@ -128,7 +128,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
         XBT_DEBUG("\tGet rid of constraint %p", &cnst);
 
         iter = cnst_list.erase(iter);
-        for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+        for (Element& elem : cnst.enabled_element_set) {
           if (elem.variable->sharing_weight <= 0)
             break;
           if (elem.consumption_weight > 0 && elem.variable->saturated_variable_set_hook.is_linked()) {

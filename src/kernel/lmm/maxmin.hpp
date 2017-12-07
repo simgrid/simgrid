@@ -168,7 +168,7 @@ XBT_PUBLIC(double) func_vegas_fpi(const Variable& var, double x);
  * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or
  * vice-versa list all constraints for a given variable.
  */
-XBT_PUBLIC_CLASS s_lmm_element_t
+XBT_PUBLIC_CLASS Element
 {
 public:
   int get_concurrency() const;
@@ -297,17 +297,14 @@ public:
   boost::intrusive::list_member_hook<> active_constraint_set_hook;
   boost::intrusive::list_member_hook<> modified_constraint_set_hook;
   boost::intrusive::list_member_hook<> saturated_constraint_set_hook;
-  boost::intrusive::list<s_lmm_element_t,
-                         boost::intrusive::member_hook<s_lmm_element_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_element_t::enabled_element_set_hook>>
+  boost::intrusive::list<Element, boost::intrusive::member_hook<Element, boost::intrusive::list_member_hook<>,
+                                                                &Element::enabled_element_set_hook>>
       enabled_element_set;
-  boost::intrusive::list<s_lmm_element_t,
-                         boost::intrusive::member_hook<s_lmm_element_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_element_t::disabled_element_set_hook>>
+  boost::intrusive::list<Element, boost::intrusive::member_hook<Element, boost::intrusive::list_member_hook<>,
+                                                                &Element::disabled_element_set_hook>>
       disabled_element_set;
-  boost::intrusive::list<s_lmm_element_t,
-                         boost::intrusive::member_hook<s_lmm_element_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_element_t::active_element_set_hook>>
+  boost::intrusive::list<Element, boost::intrusive::member_hook<Element, boost::intrusive::list_member_hook<>,
+                                                                &Element::active_element_set_hook>>
       active_element_set;
   double remaining;
   double usage;
@@ -404,7 +401,7 @@ public:
   boost::intrusive::list_member_hook<> variable_set_hook;
   boost::intrusive::list_member_hook<> saturated_variable_set_hook;
 
-  std::vector<s_lmm_element_t> cnsts;
+  std::vector<Element> cnsts;
 
   // sharing_weight: variable's impact on the resource during the sharing
   //   if == 0, the variable is not considered by LMM
@@ -432,11 +429,11 @@ private:
   static int Global_debug_id;
 };
 
-inline void s_lmm_element_t::make_active()
+inline void Element::make_active()
 {
   constraint->active_element_set.push_front(*this);
 }
-inline void s_lmm_element_t::make_inactive()
+inline void Element::make_inactive()
 {
   if (active_element_set_hook.is_linked())
     simgrid::xbt::intrusive_erase(constraint->active_element_set, *this);

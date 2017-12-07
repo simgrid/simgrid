@@ -38,7 +38,7 @@ namespace activity {
   class MailboxImpl;
 }
 namespace lmm {
-class s_lmm_element_t;
+class Element;
 class Variable;
 class Constraint;
 class ConstraintLight;
@@ -87,8 +87,8 @@ typedef simgrid::simix::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 typedef simgrid::surf::StorageImpl* surf_storage_t;
 
-typedef simgrid::kernel::lmm::s_lmm_element_t* lmm_element_t;
-typedef const simgrid::kernel::lmm::s_lmm_element_t* const_lmm_element_t;
+typedef simgrid::kernel::lmm::Element* lmm_element_t;
+typedef const simgrid::kernel::lmm::Element* const_lmm_element_t;
 typedef simgrid::kernel::lmm::Variable* lmm_variable_t;
 typedef simgrid::kernel::lmm::Constraint* lmm_constraint_t;
 typedef simgrid::kernel::lmm::ConstraintLight* lmm_constraint_light_t;

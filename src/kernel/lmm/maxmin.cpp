@@ -33,7 +33,7 @@ typedef std::vector<int> dyn_light_t;
 int Variable::Global_debug_id   = 1;
 int Constraint::Global_debug_id = 1;
 
-int s_lmm_element_t::get_concurrency() const
+int Element::get_concurrency() const
 {
   // Ignore element with weight less than one (e.g. cross-traffic)
   return (consumption_weight >= 1) ? 1 : 0;
@@ -45,13 +45,13 @@ int s_lmm_element_t::get_concurrency() const
   // return (int)ceil(elem->weight);//Include element as the rounded-up integer value of the element weight
 }
 
-void s_lmm_element_t::decrease_concurrency()
+void Element::decrease_concurrency()
 {
   xbt_assert(constraint->concurrency_current >= get_concurrency());
   constraint->concurrency_current -= get_concurrency();
 }
 
-void s_lmm_element_t::increase_concurrency()
+void Element::increase_concurrency()
 {
   constraint->concurrency_current += get_concurrency();
 
@@ -71,12 +71,12 @@ void s_lmm_system_t::check_concurrency() const
 
   for (Constraint const& cnst : constraint_set) {
     int concurrency       = 0;
-    for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+    for (Element const& elem : cnst.enabled_element_set) {
       xbt_assert(elem.variable->sharing_weight > 0);
       concurrency += elem.get_concurrency();
     }
 
-    for (s_lmm_element_t const& elem : cnst.disabled_element_set) {
+    for (Element const& elem : cnst.disabled_element_set) {
       // We should have staged variables only if concurrency is reached in some constraint
       xbt_assert(cnst.get_concurrency_limit() < 0 || elem.variable->staged_weight == 0 ||
                      elem.variable->get_min_concurrency_slack() < elem.variable->concurrency_share,
@@ -93,12 +93,12 @@ void s_lmm_system_t::check_concurrency() const
     if (var.cnsts.empty())
       continue;
 
-    const s_lmm_element_t& elem = var.cnsts[0];
-    int belong_to_enabled       = elem.enabled_element_set_hook.is_linked();
-    int belong_to_disabled      = elem.disabled_element_set_hook.is_linked();
-    int belong_to_active        = elem.active_element_set_hook.is_linked();
+    const Element& elem    = var.cnsts[0];
+    int belong_to_enabled  = elem.enabled_element_set_hook.is_linked();
+    int belong_to_disabled = elem.disabled_element_set_hook.is_linked();
+    int belong_to_active   = elem.active_element_set_hook.is_linked();
 
-    for (s_lmm_element_t const& elem2 : var.cnsts) {
+    for (Element const& elem2 : var.cnsts) {
       xbt_assert(belong_to_enabled == elem2.enabled_element_set_hook.is_linked(),
                  "Variable inconsistency (1): enabled_element_set");
       xbt_assert(belong_to_disabled == elem2.disabled_element_set_hook.is_linked(),
@@ -119,7 +119,7 @@ void s_lmm_system_t::var_free(lmm_variable_t var)
   if (not var->cnsts.empty())
     update_modified_set(var->cnsts[0].constraint);
 
-  for (s_lmm_element_t& elem : var->cnsts) {
+  for (Element& elem : var->cnsts) {
     if (var->sharing_weight > 0)
       elem.decrease_concurrency();
     if (elem.enabled_element_set_hook.is_linked())
@@ -242,7 +242,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
   // If it does, substract it from the required slack
   int current_share = 0;
   if (var->concurrency_share > 1) {
-    for (s_lmm_element_t& elem : var->cnsts) {
+    for (Element& elem : var->cnsts) {
       if (elem.constraint == cnst && elem.enabled_element_set_hook.is_linked())
         current_share += elem.get_concurrency();
     }
@@ -252,7 +252,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
   if (var->sharing_weight > 0 && var->concurrency_share - current_share > cnst->get_concurrency_slack()) {
     double weight = var->sharing_weight;
     disable_var(var);
-    for (s_lmm_element_t const& elem : var->cnsts)
+    for (Element const& elem : var->cnsts)
       on_disabled_var(elem.constraint);
     consumption_weight = 0;
     var->staged_weight = weight;
@@ -262,7 +262,7 @@ void s_lmm_system_t::expand(lmm_constraint_t cnst, lmm_variable_t var, double co
   xbt_assert(var->cnsts.size() < var->cnsts.capacity(), "Too much constraints");
 
   var->cnsts.resize(var->cnsts.size() + 1);
-  s_lmm_element_t& elem = var->cnsts.back();
+  Element& elem = var->cnsts.back();
 
   elem.consumption_weight = consumption_weight;
   elem.constraint         = cnst;
@@ -294,10 +294,10 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
   check_concurrency();
 
   // BEWARE: In case you have multiple elements in one constraint, this will always add value to the first element.
-  auto elem_it = std::find_if(begin(var->cnsts), end(var->cnsts),
-                              [&cnst](s_lmm_element_t const& x) { return x.constraint == cnst; });
+  auto elem_it =
+      std::find_if(begin(var->cnsts), end(var->cnsts), [&cnst](Element const& x) { return x.constraint == cnst; });
   if (elem_it != end(var->cnsts)) {
-    s_lmm_element_t& elem = *elem_it;
+    Element& elem = *elem_it;
     if (var->sharing_weight)
       elem.decrease_concurrency();
 
@@ -311,7 +311,7 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
       if (cnst->get_concurrency_slack() < elem.get_concurrency()) {
         double weight = var->sharing_weight;
         disable_var(var);
-        for (s_lmm_element_t const& elem2 : var->cnsts)
+        for (Element const& elem2 : var->cnsts)
           on_disabled_var(elem2.constraint);
         var->staged_weight = weight;
         xbt_assert(not var->sharing_weight);
@@ -419,7 +419,7 @@ static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab
    * (cnst_light_tab)*/
   for (int const& saturated_cnst : saturated_constraints) {
     ConstraintLight& cnst = cnst_light_tab[saturated_cnst];
-    for (s_lmm_element_t const& elem : cnst.cnst->active_element_set) {
+    for (Element const& elem : cnst.cnst->active_element_set) {
       // Visiting active_element_set, so, by construction, should never get a zero weight, correct?
       xbt_assert(elem.variable->sharing_weight > 0);
       if (elem.consumption_weight > 0 && not elem.variable->saturated_variable_set_hook.is_linked())
@@ -429,9 +429,9 @@ static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab
 }
 
 template <class ElemList>
-static void format_lmm_element_list(const ElemList& elem_list, int sharing_policy, double& sum, std::string& buf)
+static void format_element_list(const ElemList& elem_list, int sharing_policy, double& sum, std::string& buf)
 {
-  for (s_lmm_element_t const& elem : elem_list) {
+  for (Element const& elem : elem_list) {
     buf += std::to_string(elem.consumption_weight) + ".'" + std::to_string(elem.variable->id_int) + "'(" +
            std::to_string(elem.variable->value) + ")" + (sharing_policy ? " + " : " , ");
     if (sharing_policy)
@@ -459,9 +459,9 @@ void s_lmm_system_t::print() const
     // Show  the enabled variables
     buf += "\t";
     buf += cnst.sharing_policy ? "(" : "max(";
-    format_lmm_element_list(cnst.enabled_element_set, cnst.sharing_policy, sum, buf);
+    format_element_list(cnst.enabled_element_set, cnst.sharing_policy, sum, buf);
     // TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
-    format_lmm_element_list(cnst.disabled_element_set, cnst.sharing_policy, sum, buf);
+    format_element_list(cnst.disabled_element_set, cnst.sharing_policy, sum, buf);
 
     buf += "0) <= " + std::to_string(cnst.bound) + " ('" + std::to_string(cnst.id_int) + "')";
 
@@ -510,7 +510,7 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
   XBT_DEBUG("Active constraints : %zu", cnst_list.size());
   /* Init: Only modified code portions: reset the value of active variables */
   for (Constraint const& cnst : cnst_list) {
-    for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
+    for (Element const& elem : cnst.enabled_element_set) {
       xbt_assert(elem.variable->sharing_weight > 0.0);
       elem.variable->value = 0.0;
     }
@@ -527,7 +527,7 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
     if (not double_positive(cnst.remaining, cnst.bound * sg_maxmin_precision))
       continue;
     cnst.usage = 0;
-    for (s_lmm_element_t& elem : cnst.enabled_element_set) {
+    for (Element& elem : cnst.enabled_element_set) {
       xbt_assert(elem.variable->sharing_weight > 0);
       if (elem.consumption_weight > 0) {
         if (cnst.sharing_policy)
@@ -601,7 +601,7 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
                 var.id_int, var.value);
 
       /* Update the usage of contraints where this variable is involved */
-      for (s_lmm_element_t& elem : var.cnsts) {
+      for (Element& elem : var.cnsts) {
         lmm_constraint_t cnst = elem.constraint;
         if (cnst->sharing_policy) {
           // Remember: shared constraints require that sum(elem.value * var.value) < cnst->bound
@@ -627,7 +627,7 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
           // Remember: non-shared constraints only require that max(elem.value * var.value) < cnst->bound
           cnst->usage = 0.0;
           elem.make_inactive();
-          for (s_lmm_element_t& elem2 : cnst->enabled_element_set) {
+          for (Element& elem2 : cnst->enabled_element_set) {
             xbt_assert(elem2.variable->sharing_weight > 0);
             if (elem2.variable->value > 0)
               continue;
@@ -739,7 +739,7 @@ void Variable::initialize(simgrid::surf::Action* id_value, double sharing_weight
 int Variable::get_min_concurrency_slack() const
 {
   int minslack = std::numeric_limits<int>::max();
-  for (s_lmm_element_t const& elem : cnsts) {
+  for (Element const& elem : cnsts) {
     int slack = elem.constraint->get_concurrency_slack();
     if (slack < minslack) {
       // This is only an optimization, to avoid looking at more constraints when slack is already zero
@@ -767,7 +767,7 @@ void s_lmm_system_t::enable_var(lmm_variable_t var)
 
   simgrid::xbt::intrusive_erase(variable_set, *var);
   variable_set.push_front(*var);
-  for (s_lmm_element_t& elem : var->cnsts) {
+  for (Element& elem : var->cnsts) {
     simgrid::xbt::intrusive_erase(elem.constraint->disabled_element_set, elem);
     elem.constraint->enabled_element_set.push_front(elem);
     elem.increase_concurrency();
@@ -789,7 +789,7 @@ void s_lmm_system_t::disable_var(lmm_variable_t var)
   variable_set.push_back(*var);
   if (not var->cnsts.empty())
     update_modified_set(var->cnsts[0].constraint);
-  for (s_lmm_element_t& elem : var->cnsts) {
+  for (Element& elem : var->cnsts) {
     simgrid::xbt::intrusive_erase(elem.constraint->enabled_element_set, elem);
     elem.constraint->disabled_element_set.push_back(elem);
     if (elem.active_element_set_hook.is_linked())
@@ -910,9 +910,9 @@ void s_lmm_system_t::update_constraint_bound(lmm_constraint_t cnst, double bound
  */
 void s_lmm_system_t::update_modified_set_rec(lmm_constraint_t cnst)
 {
-  for (s_lmm_element_t const& elem : cnst->enabled_element_set) {
+  for (Element const& elem : cnst->enabled_element_set) {
     lmm_variable_t var = elem.variable;
-    for (s_lmm_element_t const& elem2 : var->cnsts) {
+    for (Element const& elem2 : var->cnsts) {
       if (var->visited == visited_counter)
         break;
       if (elem2.constraint != cnst && not elem2.constraint->modified_constraint_set_hook.is_linked()) {
@@ -964,11 +964,11 @@ double Constraint::get_usage() const
 {
   double result              = 0.0;
   if (sharing_policy) {
-    for (s_lmm_element_t const& elem : enabled_element_set)
+    for (Element const& elem : enabled_element_set)
       if (elem.consumption_weight > 0)
         result += elem.consumption_weight * elem.variable->value;
   } else {
-    for (s_lmm_element_t const& elem : enabled_element_set)
+    for (Element const& elem : enabled_element_set)
       if (elem.consumption_weight > 0)
         result = std::max(result, elem.consumption_weight * elem.variable->value);
   }
@@ -978,7 +978,7 @@ double Constraint::get_usage() const
 int Constraint::get_variable_amount() const
 {
   return std::count_if(std::begin(enabled_element_set), std::end(enabled_element_set),
-                       [](const s_lmm_element_t& elem) { return elem.consumption_weight > 0; });
+                       [](const Element& elem) { return elem.consumption_weight > 0; });
 }
 }
 }
