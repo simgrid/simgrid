@@ -21,12 +21,12 @@ void Exec::start()
 
 void Exec::wait()
 {
-  this->wait(-1);
+  simcall_execution_wait(pimpl_);
 }
 
 void Exec::wait(double timeout)
 {
-  simcall_execution_wait(pimpl_);
+  THROW_UNIMPLEMENTED;
 }
 
 bool Exec::test()
