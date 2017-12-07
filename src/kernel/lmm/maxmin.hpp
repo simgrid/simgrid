@@ -192,7 +192,7 @@ public:
   double consumption_weight;
 };
 
-struct s_lmm_constraint_light_t {
+struct ConstraintLight {
   double remaining_over_usage;
   lmm_constraint_t cnst;
 };
@@ -206,11 +206,11 @@ struct s_lmm_constraint_light_t {
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero.
  *     LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
  */
-XBT_PUBLIC_CLASS s_lmm_constraint_t
+XBT_PUBLIC_CLASS Constraint
 {
 public:
-  s_lmm_constraint_t() = default;
-  s_lmm_constraint_t(void* id_value, double bound_value);
+  Constraint() = default;
+  Constraint(void* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
   void unshare() { sharing_policy = 0; }
@@ -596,16 +596,14 @@ public:
   boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
                                                                  &Variable::variable_set_hook>>
       variable_set;
-  boost::intrusive::list<s_lmm_constraint_t,
-                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_constraint_t::active_constraint_set_hook>>
+  boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
+                                                                   &Constraint::active_constraint_set_hook>>
       active_constraint_set;
   boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
                                                                  &Variable::saturated_variable_set_hook>>
       saturated_variable_set;
-  boost::intrusive::list<s_lmm_constraint_t,
-                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_constraint_t::saturated_constraint_set_hook>>
+  boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
+                                                                   &Constraint::saturated_constraint_set_hook>>
       saturated_constraint_set;
 
   simgrid::surf::ActionLmmListPtr keep_track;
@@ -616,13 +614,11 @@ private:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
   unsigned visited_counter;     /* used by lmm_update_modified_set and lmm_remove_modified_set to cleverly (un-)flag the
                                  * constraints (more details in these functions) */
-  boost::intrusive::list<s_lmm_constraint_t,
-                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_constraint_t::constraint_set_hook>>
+  boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
+                                                                   &Constraint::constraint_set_hook>>
       constraint_set;
-  boost::intrusive::list<s_lmm_constraint_t,
-                         boost::intrusive::member_hook<s_lmm_constraint_t, boost::intrusive::list_member_hook<>,
-                                                       &s_lmm_constraint_t::modified_constraint_set_hook>>
+  boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
+                                                                   &Constraint::modified_constraint_set_hook>>
       modified_constraint_set;
   xbt_mallocator_t variable_mallocator;
 };

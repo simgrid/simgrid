@@ -56,8 +56,8 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-      std::vector<double> *speedPerPstate, int core);
+  Cpu(simgrid::surf::Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint,
+      std::vector<double>* speedPerPstate, int core);
 
   /**
    * @brief Cpu constructor
@@ -67,7 +67,7 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
+  Cpu(simgrid::surf::Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core);
 
   ~Cpu();
 

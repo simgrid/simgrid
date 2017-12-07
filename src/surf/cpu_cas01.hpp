@@ -60,7 +60,7 @@ class CpuCas01Action: public CpuAction {
   friend CpuAction *CpuCas01::sleep(double duration);
 public:
   CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint, int coreAmount);
-  CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint);
+  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint);
   ~CpuCas01Action() override;
   int requestedCore();
 

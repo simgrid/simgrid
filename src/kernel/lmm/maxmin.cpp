@@ -30,8 +30,8 @@ namespace lmm {
 
 typedef std::vector<int> dyn_light_t;
 
-int Variable::Global_debug_id           = 1;
-int s_lmm_constraint_t::Global_debug_id = 1;
+int Variable::Global_debug_id   = 1;
+int Constraint::Global_debug_id = 1;
 
 int s_lmm_element_t::get_concurrency() const
 {
@@ -69,7 +69,7 @@ void s_lmm_system_t::check_concurrency() const
   if (not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug))
     return;
 
-  for (s_lmm_constraint_t const& cnst : constraint_set) {
+  for (Constraint const& cnst : constraint_set) {
     int concurrency       = 0;
     for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
       xbt_assert(elem.variable->sharing_weight > 0);
@@ -179,7 +179,7 @@ void s_lmm_system_t::cnst_free(lmm_constraint_t cnst)
   delete cnst;
 }
 
-s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value) : bound(bound_value), id(id_value)
+Constraint::Constraint(void* id_value, double bound_value) : bound(bound_value), id(id_value)
 {
   id_int = Global_debug_id++;
 
@@ -197,7 +197,7 @@ s_lmm_constraint_t::s_lmm_constraint_t(void* id_value, double bound_value) : bou
 
 lmm_constraint_t s_lmm_system_t::constraint_new(void* id, double bound_value)
 {
-  lmm_constraint_t cnst = new s_lmm_constraint_t(id, bound_value);
+  lmm_constraint_t cnst = new Constraint(id, bound_value);
   insert_constraint(cnst);
   return cnst;
 }
@@ -325,7 +325,7 @@ void s_lmm_system_t::expand_add(lmm_constraint_t cnst, lmm_variable_t var, doubl
   check_concurrency();
 }
 
-lmm_variable_t s_lmm_constraint_t::get_variable(const_lmm_element_t* elem) const
+lmm_variable_t Constraint::get_variable(const_lmm_element_t* elem) const
 {
   if (*elem == nullptr) {
     // That is the first call, pick the first element among enabled_element_set (or disabled_element_set if
@@ -360,8 +360,8 @@ lmm_variable_t s_lmm_constraint_t::get_variable(const_lmm_element_t* elem) const
 
 // if we modify the list between calls, normal version may loop forever
 // this safe version ensures that we browse the list elements only once
-lmm_variable_t s_lmm_constraint_t::get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem,
-                                                     int* numelem) const
+lmm_variable_t Constraint::get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem,
+                                             int* numelem) const
 {
   if (*elem == nullptr) {
     *numelem = enabled_element_set.size() + disabled_element_set.size() - 1;
@@ -412,13 +412,13 @@ static inline void saturated_constraints_update(double usage, int cnst_light_num
   }
 }
 
-static inline void saturated_variable_set_update(s_lmm_constraint_light_t* cnst_light_tab,
+static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab,
                                                  const dyn_light_t& saturated_constraints, lmm_system_t sys)
 {
   /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate
    * (cnst_light_tab)*/
   for (int const& saturated_cnst : saturated_constraints) {
-    s_lmm_constraint_light_t& cnst = cnst_light_tab[saturated_cnst];
+    ConstraintLight& cnst = cnst_light_tab[saturated_cnst];
     for (s_lmm_element_t const& elem : cnst.cnst->active_element_set) {
       // Visiting active_element_set, so, by construction, should never get a zero weight, correct?
       xbt_assert(elem.variable->sharing_weight > 0);
@@ -454,7 +454,7 @@ void s_lmm_system_t::print() const
 
   XBT_DEBUG("Constraints");
   /* Printing Constraints */
-  for (s_lmm_constraint_t const& cnst : active_constraint_set) {
+  for (Constraint const& cnst : active_constraint_set) {
     double sum            = 0.0;
     // Show  the enabled variables
     buf += "\t";
@@ -509,18 +509,18 @@ template <class CnstList> void s_lmm_system_t::solve(CnstList& cnst_list)
 
   XBT_DEBUG("Active constraints : %zu", cnst_list.size());
   /* Init: Only modified code portions: reset the value of active variables */
-  for (s_lmm_constraint_t const& cnst : cnst_list) {
+  for (Constraint const& cnst : cnst_list) {
     for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
       xbt_assert(elem.variable->sharing_weight > 0.0);
       elem.variable->value = 0.0;
     }
   }
 
-  s_lmm_constraint_light_t* cnst_light_tab = new s_lmm_constraint_light_t[cnst_list.size()]();
-  int cnst_light_num                       = 0;
+  ConstraintLight* cnst_light_tab = new ConstraintLight[cnst_list.size()]();
+  int cnst_light_num              = 0;
   dyn_light_t saturated_constraints;
 
-  for (s_lmm_constraint_t& cnst : cnst_list) {
+  for (Constraint& cnst : cnst_list) {
     /* INIT: Collect constraints that actually need to be saturated (i.e remaining  and usage are strictly positive)
      * into cnst_light_tab. */
     cnst.remaining = cnst.bound;
@@ -960,7 +960,7 @@ void s_lmm_system_t::remove_all_modified_set()
  *
  * \param cnst the lmm_constraint_t associated to the resource
  */
-double s_lmm_constraint_t::get_usage() const
+double Constraint::get_usage() const
 {
   double result              = 0.0;
   if (sharing_policy) {
@@ -975,7 +975,7 @@ double s_lmm_constraint_t::get_usage() const
   return result;
 }
 
-int s_lmm_constraint_t::get_variable_amount() const
+int Constraint::get_variable_amount() const
 {
   return std::count_if(std::begin(enabled_element_set), std::end(enabled_element_set),
                        [](const s_lmm_element_t& elem) { return elem.consumption_weight > 0; });

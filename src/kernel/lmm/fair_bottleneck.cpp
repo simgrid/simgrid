@@ -39,10 +39,10 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
   }
 
   XBT_DEBUG("Active constraints : %zu", sys->active_constraint_set.size());
-  for (s_lmm_constraint_t& cnst : sys->active_constraint_set) {
+  for (Constraint& cnst : sys->active_constraint_set) {
     sys->saturated_constraint_set.push_back(cnst);
   }
-  for (s_lmm_constraint_t& cnst : sys->saturated_constraint_set) {
+  for (Constraint& cnst : sys->saturated_constraint_set) {
     cnst.remaining = cnst.bound;
     cnst.usage     = 0.0;
   }
@@ -61,7 +61,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
     }
     XBT_DEBUG("******* Constraints to process: %zu *******", cnst_list.size());
     for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
-      s_lmm_constraint_t& cnst = *iter;
+      Constraint& cnst = *iter;
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", &cnst);
       cnst.usage = 0.0;
@@ -103,7 +103,7 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
     }
 
     for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
-      s_lmm_constraint_t& cnst = *iter;
+      Constraint& cnst = *iter;
       XBT_DEBUG("Updating cnst %p ", &cnst);
       if (cnst.sharing_policy) {
         for (s_lmm_element_t& elem : cnst.enabled_element_set) {

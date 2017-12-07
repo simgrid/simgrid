@@ -39,15 +39,14 @@ double (*func_fpi_def)(const Variable&, double);
 // solves the proportional fairness using a Lagrangian optimization with dichotomy step
 void lagrange_solve(lmm_system_t sys);
 // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-static double dichotomy(double init, double diff(double, const s_lmm_constraint_t&), const s_lmm_constraint_t& cnst,
-                        double min_error);
+static double dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst, double min_error);
 // computes the value of the differential of constraint cnst applied to lambda
-static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst);
+static double partial_diff_lambda(double lambda, const Constraint& cnst);
 
 template <class CnstList, class VarList>
 static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, int warn)
 {
-  for (s_lmm_constraint_t const& cnst : cnst_list) {
+  for (Constraint const& cnst : cnst_list) {
     double tmp = 0;
     for (s_lmm_element_t const& elem : cnst.enabled_element_set) {
       lmm_variable_t var = elem.variable;
@@ -132,7 +131,7 @@ static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
       obj += var.mu * var.bound;
   }
 
-  for (s_lmm_constraint_t const& cnst : cnst_list)
+  for (Constraint const& cnst : cnst_list)
     obj += cnst.lambda * cnst.bound;
 
   return obj;
@@ -161,7 +160,7 @@ void lagrange_solve(lmm_system_t sys)
 
   /* Initialize lambda. */
   auto& cnst_list = sys->active_constraint_set;
-  for (s_lmm_constraint_t& cnst : cnst_list) {
+  for (Constraint& cnst : cnst_list) {
     cnst.lambda     = 1.0;
     cnst.new_lambda = 2.0;
     XBT_DEBUG("#### cnst(%p)->lambda :  %e", &cnst, cnst.lambda);
@@ -220,7 +219,7 @@ void lagrange_solve(lmm_system_t sys)
     }
 
     /* Improve the value of lambda_i */
-    for (s_lmm_constraint_t& cnst : cnst_list) {
+    for (Constraint& cnst : cnst_list) {
       XBT_DEBUG("Working on cnst (%p)", &cnst);
       cnst.new_lambda = dichotomy(cnst.lambda, partial_diff_lambda, cnst, dichotomy_min_error);
       XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda, cnst.new_lambda);
@@ -279,8 +278,7 @@ void lagrange_solve(lmm_system_t sys)
  *
  * @return a double corresponding to the result of the dichotomy process
  */
-static double dichotomy(double init, double diff(double, const s_lmm_constraint_t&), const s_lmm_constraint_t& cnst,
-                        double min_error)
+static double dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst, double min_error)
 {
   double min = init;
   double max = init;
@@ -380,7 +378,7 @@ static double dichotomy(double init, double diff(double, const s_lmm_constraint_
   return ((min + max) / 2.0);
 }
 
-static double partial_diff_lambda(double lambda, const s_lmm_constraint_t& cnst)
+static double partial_diff_lambda(double lambda, const Constraint& cnst)
 {
   double diff           = 0.0;
 
