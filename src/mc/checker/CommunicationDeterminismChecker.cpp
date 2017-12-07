@@ -194,13 +194,13 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
         static_cast<simgrid::kernel::activity::CommImpl*>(temp_synchro.getBuffer());
 
     char* remote_name = mc_model_checker->process().read<char*>(
-        (std::uint64_t)(synchro->mbox ? &synchro->mbox->name_ : &synchro->mbox_cpy->name_));
-    pattern->rdv = mc_model_checker->process().read_string(remote_name);
+        RemotePtr<char*>((uint64_t)(synchro->mbox ? &synchro->mbox->name_ : &synchro->mbox_cpy->name_)));
+    pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
     pattern->src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(synchro->src_proc))->pid;
     pattern->src_host = MC_smx_actor_get_host_name(issuer);
 
-    simgrid::smpi::Request mpi_request =
-        mc_model_checker->process().read<simgrid::smpi::Request>((std::uint64_t)simcall_comm_isend__get__data(request));
+    simgrid::smpi::Request mpi_request = mc_model_checker->process().read<simgrid::smpi::Request>(
+        RemotePtr<simgrid::smpi::Request>((std::uint64_t)simcall_comm_isend__get__data(request)));
     pattern->tag = mpi_request.tag();
 
     if (synchro->src_buff != nullptr) {
@@ -239,7 +239,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     mc_model_checker->process().read(
         &remote_name, remote(comm->mbox ? &simgrid::xbt::string::to_string_data(comm->mbox->name_).data
                                         : &simgrid::xbt::string::to_string_data(comm->mbox_cpy->name_).data));
-    pattern->rdv = mc_model_checker->process().read_string(remote_name);
+    pattern->rdv      = mc_model_checker->process().read_string(RemotePtr<char>(remote_name));
     pattern->dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc))->pid;
     pattern->dst_host = MC_smx_actor_get_host_name(issuer);
   } else

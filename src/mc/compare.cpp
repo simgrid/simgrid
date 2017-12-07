@@ -344,9 +344,9 @@ int mmalloc_compare_heap(
 
   // This is in snapshot do not use them directly:
   const malloc_info* heapinfos1 = snapshot1->read<malloc_info*>(
-    (std::uint64_t)heapinfo_address, simgrid::mc::ProcessIndexMissing);
+      RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address), simgrid::mc::ProcessIndexMissing);
   const malloc_info* heapinfos2 = snapshot2->read<malloc_info*>(
-    (std::uint64_t)heapinfo_address, simgrid::mc::ProcessIndexMissing);
+      RemotePtr<malloc_info*>((std::uint64_t)heapinfo_address), simgrid::mc::ProcessIndexMissing);
 
   while (i1 < state.heaplimit) {
 

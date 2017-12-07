@@ -41,13 +41,13 @@ static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* proc
   process->read_bytes(&dynar, sizeof(dynar), remote_dynar);
 
   smx_actor_t* data = static_cast<smx_actor_t*>(::operator new(dynar.elmsize * dynar.used));
-  process->read_bytes(data, dynar.elmsize * dynar.used, dynar.data);
+  process->read_bytes(data, dynar.elmsize * dynar.used, simgrid::mc::RemotePtr<void>(dynar.data));
 
   // Load each element of the vector from the MCed process:
   for (unsigned int i = 0; i < dynar.used; ++i) {
 
     simgrid::mc::ActorInformation info;
-    info.address  = data[i];
+    info.address  = simgrid::mc::RemotePtr<simgrid::simix::ActorImpl>(data[i]);
     info.hostname = nullptr;
     process->read_bytes(&info.copy, sizeof(info.copy), remote(data[i]));
     target.push_back(std::move(info));
@@ -71,8 +71,7 @@ void RemoteClient::refresh_simix()
   static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*),
     "Bad size for simix_global");
 
-  RemotePtr<simgrid::simix::Global> simix_global_p =
-    this->read_variable<simgrid::simix::Global*>("simix_global");
+  RemotePtr<simgrid::simix::Global> simix_global_p{this->read_variable<simgrid::simix::Global*>("simix_global")};
 
   // simix_global = REMOTE(*simix_global)
   Remote<simgrid::simix::Global> simix_global =

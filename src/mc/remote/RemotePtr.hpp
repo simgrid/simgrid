@@ -81,9 +81,10 @@ template <class T> class RemotePtr {
 
 public:
   RemotePtr() : address_(0) {}
-  RemotePtr(std::uint64_t address) : address_(address) {}
-  RemotePtr(T* address) : address_((std::uintptr_t)address) {}
-  RemotePtr(Remote<T*> p) : RemotePtr(*p.getBuffer()) {}
+  explicit RemotePtr(std::nullptr_t) : address_(0) {}
+  explicit RemotePtr(std::uint64_t address) : address_(address) {}
+  explicit RemotePtr(T* address) : address_((std::uintptr_t)address) {}
+  explicit RemotePtr(Remote<T*> p) : RemotePtr(*p.getBuffer()) {}
   std::uint64_t address() const { return address_; }
 
   /** Turn into a local pointer
@@ -94,6 +95,11 @@ public:
   operator bool() const { return address_; }
   bool operator!() const { return not address_; }
   operator RemotePtr<void>() const { return RemotePtr<void>(address_); }
+  RemotePtr<T>& operator=(std::nullptr_t)
+  {
+    address_ = 0;
+    return *this;
+  }
   RemotePtr<T> operator+(std::uint64_t n) const { return RemotePtr<T>(address_ + n * sizeof(T)); }
   RemotePtr<T> operator-(std::uint64_t n) const { return RemotePtr<T>(address_ - n * sizeof(T)); }
   RemotePtr<T>& operator+=(std::uint64_t n)

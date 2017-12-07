@@ -443,7 +443,7 @@ const void* RemoteClient::read_bytes(void* buffer, std::size_t size, RemotePtr<v
                                      ReadOptions options) const
 {
   if (process_index != simgrid::mc::ProcessIndexDisabled) {
-    std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->find_object_info_rw((void*)address.address());
+    std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->find_object_info_rw(address);
 // Segment overlap is not handled.
 #if HAVE_SMPI
     if (info.get() && this->privatized(*info)) {

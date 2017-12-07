@@ -44,7 +44,7 @@ namespace mc {
 class ActorInformation {
 public:
   /** MCed address of the process */
-  RemotePtr<simgrid::simix::ActorImpl> address = nullptr;
+  RemotePtr<simgrid::simix::ActorImpl> address{nullptr};
   Remote<simgrid::simix::ActorImpl> copy;
 
   /** Hostname (owned by `mc_modelchecker->hostnames`) */

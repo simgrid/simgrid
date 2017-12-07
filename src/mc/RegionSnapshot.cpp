@@ -137,8 +137,8 @@ RegionSnapshot sparse_region(RegionType region_type,
     "Not at the beginning of a page");
   size_t page_count = simgrid::mc::mmu::chunkCount(size);
 
-  simgrid::mc::ChunkedData page_data(
-    mc_model_checker->page_store(), *process, permanent_addr, page_count);
+  simgrid::mc::ChunkedData page_data(mc_model_checker->page_store(), *process, RemotePtr<void>(permanent_addr),
+                                     page_count);
 
   simgrid::mc::RegionSnapshot region(
     region_type, start_addr, permanent_addr, size);
