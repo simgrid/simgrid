@@ -32,8 +32,8 @@ namespace activity {
     virtual void post() =0; // What to do when a simcall terminates
 
     // boost::intrusive_ptr<ActivityImpl> support:
-    friend void intrusive_ptr_add_ref(ActivityImpl * activity);
-    friend void intrusive_ptr_release(ActivityImpl * activity);
+    friend XBT_PUBLIC(void) intrusive_ptr_add_ref(ActivityImpl * activity);
+    friend XBT_PUBLIC(void) intrusive_ptr_release(ActivityImpl * activity);
 
   private:
     std::atomic_int_fast32_t refcount_{0};
