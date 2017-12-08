@@ -134,7 +134,7 @@
 
 /* Handle import/export stuff
  *
- * Rational of XBT_PUBLIC:
+ * Rationale of XBT_PUBLIC:
  *   * This is for library symbols visible from the application-land.
  *     Basically, any symbols defined in the include/directory must be like this (plus some other globals).
  *
@@ -145,7 +145,7 @@
  *   * If you link your application against the DLL or if you do a UNIX build, don't do anything special. This file
  *     will do the right thing for you by default.
  *
- * Rational of XBT_EXPORT_NO_IMPORT: (windows-only)
+ * Rationale of XBT_EXPORT_NO_IMPORT: (windows-only)
  *   * Symbols which must be exported in the DLL, but not imported from it.
  *
  *   * This is obviously useful for initialized globals (which cannot be  extern or similar).
@@ -153,7 +153,7 @@
  *     called from within SimGrid, the symbol must be exported, but when called  from within the client code, it must
  *     not try to retrieve the symbol from the DLL since it's not in there.
  *
- * Rational of XBT_IMPORT_NO_EXPORT: (windows-only)
+ * Rationale of XBT_IMPORT_NO_EXPORT: (windows-only)
  *   * Symbols which must be imported from the DLL, but not explicitly  exported from it.
  *
  *   * The root log category is already exported, but not imported explicitly when creating a subcategory since we

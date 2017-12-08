@@ -441,7 +441,7 @@ void SIMIX_run()
        *   Long proof: processes remain sorted through an arbitrary (implicit, complex but fixed) order in all cases.
        *
        *   - if there is no kill during the simulation, processes remain sorted according by their PID.
-       *     rational: This can be proved inductively.
+       *     Rationale: This can be proved inductively.
        *        Assume that process_to_run is sorted at a beginning of one round (it is at round 0: the deployment file
        *        is parsed linearly).
        *        Let's show that it is still so at the end of this round.

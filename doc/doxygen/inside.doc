@@ -28,7 +28,7 @@ different from runtime configuration.
 
 In particular, the build is configured by default to produce highly
 optimized binaries, at the price of high compilation time. The
-rational is that users will compile SimGrid only once, and use it many
+rationale is that users will compile SimGrid only once, and use it many
 times. This is exactly the contrary for the insiders, so you want to
 turn off \b enable_compile_optimizations.
 
