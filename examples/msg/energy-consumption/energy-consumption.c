@@ -26,7 +26,7 @@ static int dvfs(int argc, char *argv[])
   // Run a task
   start = MSG_get_clock();
   msg_task_t task1 = MSG_task_create ("t1", 100E6, 0, NULL);
-  XBT_INFO("Run a task of %.0E flops", MSG_task_get_initial_flops_amount(task1));
+  XBT_INFO("Run a task of %.0E flops", MSG_task_get_flops_amount(task1));
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
@@ -43,7 +43,7 @@ static int dvfs(int argc, char *argv[])
   // Run a second task
   start = MSG_get_clock();
   task1 = MSG_task_create ("t2", 100E6, 0, NULL);
-  XBT_INFO("Run a task of %.0E flops", MSG_task_get_initial_flops_amount(task1));
+  XBT_INFO("Run a task of %.0E flops", MSG_task_get_flops_amount(task1));
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",

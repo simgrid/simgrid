@@ -406,7 +406,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
   if (vm == nullptr)
     return;
 
-  double remaining = MSG_task_get_initial_flops_amount(task);
+  double remaining = MSG_task_get_flops_amount(task);
   std::string key  = simgrid::xbt::string_printf("%s-%p", task->name, task);
 
   dirty_page_t dp = new s_dirty_page;
