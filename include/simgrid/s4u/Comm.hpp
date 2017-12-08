@@ -25,8 +25,8 @@ XBT_PUBLIC_CLASS Comm : public Activity
 {
   Comm() : Activity() {}
 public:
-  friend void intrusive_ptr_release(simgrid::s4u::Comm * c);
-  friend void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
+  friend XBT_PUBLIC(void) intrusive_ptr_release(simgrid::s4u::Comm* c);
+  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(simgrid::s4u::Comm* c);
   friend Mailbox; // Factory of comms
 
   virtual ~Comm();
