@@ -12,17 +12,23 @@
 namespace simgrid {
 namespace s4u {
 
+class Activity;
 class Actor;
+using ActorPtr = boost::intrusive_ptr<Actor>;
 XBT_PUBLIC(void) intrusive_ptr_release(Actor* actor);
 XBT_PUBLIC(void) intrusive_ptr_add_ref(Actor* actor);
-using ActorPtr = boost::intrusive_ptr<Actor>;
 
-class Activity;
 class Comm;
 using CommPtr = boost::intrusive_ptr<Comm>;
+XBT_PUBLIC(void) intrusive_ptr_release(Comm* c);
+XBT_PUBLIC(void) intrusive_ptr_add_ref(Comm* c);
+
 class Engine;
 class Exec;
 using ExecPtr = boost::intrusive_ptr<Exec>;
+XBT_PUBLIC(void) intrusive_ptr_release(Exec* e);
+XBT_PUBLIC(void) intrusive_ptr_add_ref(Exec* e);
+
 class Host;
 class Link;
 class Mailbox;
@@ -32,9 +38,6 @@ class NetZone;
 class VirtualMachine;
 class File;
 class Storage;
-
-XBT_PUBLIC(void) intrusive_ptr_release(Comm* c);
-XBT_PUBLIC(void) intrusive_ptr_add_ref(Comm* c);
 }
 }
 

@@ -20,11 +20,11 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Activity {
   friend Comm;
-  friend void intrusive_ptr_release(Comm * c);
-  friend void intrusive_ptr_add_ref(Comm * c);
+  friend XBT_PUBLIC(void) intrusive_ptr_release(Comm * c);
+  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(Comm * c);
   friend Exec;
-  friend void intrusive_ptr_release(Exec * e);
-  friend void intrusive_ptr_add_ref(Exec * e);
+  friend XBT_PUBLIC(void) intrusive_ptr_release(Exec * e);
+  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(Exec * e);
 
 protected:
   Activity()  = default;

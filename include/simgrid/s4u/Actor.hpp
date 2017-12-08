@@ -155,8 +155,8 @@ public:
   Actor& operator=(Actor const&) = delete;
 
   // ***** Reference count *****
-  friend void intrusive_ptr_add_ref(Actor * actor);
-  friend void intrusive_ptr_release(Actor * actor);
+  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(Actor * actor);
+  friend XBT_PUBLIC(void) intrusive_ptr_release(Actor * actor);
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
