@@ -12,12 +12,12 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    and deallocation of the map in user space.
 
  MSG
- - Deprecate MSG_task_get_flops_amount(). Its semantic was weird:
-    before the start it returned the total amount of flops;
-    after it returned the ratio of remaining work. Split it:
-   MSG_task_get_initial_flops_amount() for first behavior
-   MSG_task_get_remaining_work_ratio() for the second one.
-   This fixes GitHub's #223 using PR #237. Thanks Michael Mercier.
+ - Forbid the use of MSG_task_get_flops_amount() on parallel tasks:
+   The amount of flops remaining to do is a vector, not a scalar.
+ - Introduce MSG_task_get_remaining_work_ratio(), which does what its
+   name implies on both sequential and parallel tasks.
+ - Both changes fix GitHub's #223 using PR #237 as a basis.
+   Thanks Michael Mercier.
 
  SURF
  - LMM stuff moved to its own namespace: simgrid::kernel::lmm.
