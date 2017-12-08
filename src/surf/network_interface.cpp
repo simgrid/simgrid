@@ -67,11 +67,7 @@ simgrid::surf::NetworkModel *surf_network_model = nullptr;
 namespace simgrid {
   namespace surf {
 
-    NetworkModel::~NetworkModel()
-    {
-      delete maxminSystem_;
-      delete modifiedSet_;
-    }
+  NetworkModel::~NetworkModel() = default;
 
     double NetworkModel::latencyFactor(double /*size*/) {
       return sg_latency_factor;

@@ -43,8 +43,6 @@ HostL07Model::HostL07Model() : HostModel() {
 
 HostL07Model::~HostL07Model()
 {
-  delete maxminSystem_;
-  maxminSystem_ = nullptr;
   delete surf_network_model;
   delete surf_cpu_model_pm;
 }

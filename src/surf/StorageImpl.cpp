@@ -46,7 +46,6 @@ StorageModel::StorageModel() : Model()
 
 StorageModel::~StorageModel()
 {
-  delete maxminSystem_;
   surf_storage_model = nullptr;
 }
 

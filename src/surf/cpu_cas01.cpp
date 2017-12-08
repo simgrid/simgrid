@@ -63,10 +63,6 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 
 CpuCas01Model::~CpuCas01Model()
 {
-  delete maxminSystem_;
-  maxminSystem_ = nullptr;
-  delete modifiedSet_;
-
   surf_cpu_model_pm = nullptr;
 }
 

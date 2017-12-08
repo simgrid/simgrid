@@ -376,6 +376,8 @@ Model::~Model(){
   delete runningActionSet_;
   delete failedActionSet_;
   delete doneActionSet_;
+  delete modifiedSet_;
+  delete maxminSystem_;
 }
 
 Action* Model::actionHeapPop()
