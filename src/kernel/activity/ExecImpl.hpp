@@ -23,6 +23,7 @@ public:
   void resume() override;
   void post() override;
   double remains();
+  double remainingRatio();
 
   /* The host where the execution takes place. If nullptr, then this is a parallel exec (and only surf
                   knows the hosts) */

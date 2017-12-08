@@ -239,12 +239,7 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
   xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
   if (task->simdata->compute) {
     // Task in progress
-    return task->simdata->compute->remains();
-
-  //} else if ((MSG_task_get_flops_amount(task) == 0 and task->simdata->flops_parallel_amount == nullptr) //this is a sequential task
-  //    or (task->simdata->flops_parallel_amount != nullptr and task->simdata->flops_parallel_amount == 0)) {
-  //  // Task finished
-  //  return 1;
+    return task->simdata->compute->remainingRatio();
   } else {
     // Task not started or finished
     return 0;
