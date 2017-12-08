@@ -251,10 +251,21 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
   }
 }
 
+/** \ingroup m_task_management
+ * \brief Returns the amount of flops that remain to be computed
+ *
+ * The returned value is initially the cost that you defined for the task, then it decreases until it reaches 0
+ *
+ * It works for sequential tasks, but the remaining amount of work is not a scalar value for parallel tasks.
+ * So you will get an exception if you call this function on parallel tasks. Just don't do it.
+ */
 double MSG_task_get_flops_amount(msg_task_t task) {
-  if (task->simdata->compute) {
+  if (task->simdata->compute != nullptr) {
     return task->simdata->compute->remains();
   } else {
+    // Not started or already done.
+    // - Before starting, flops_amount is initially the task cost
+    // - After execution, flops_amount is set to 0 (until someone uses MSG_task_set_flops_amount, if any)
     return task->simdata->flops_amount;
   }
 }
