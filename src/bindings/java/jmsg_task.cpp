@@ -205,7 +205,7 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env,
     jxbt_throw_notbound(env, "task", jtask);
     return -1;
   }
-  return (jdouble)MSG_task_get_remaining_work_ratio(ptask);
+  return (jdouble)MSG_task_get_flops_amount(ptask);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {

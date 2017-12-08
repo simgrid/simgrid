@@ -347,7 +347,7 @@ static void start_dirty_page_tracking(msg_vm_t vm)
 
   for (auto const& elm : vm->pimpl_vm_->dp_objs) {
     dirty_page_t dp    = elm.second;
-    double remaining = MSG_task_get_remaining_work_ratio(dp->task);
+    double remaining   = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
     XBT_DEBUG("%s@%s remaining %f", elm.first.c_str(), vm->getCname(), remaining);
@@ -377,7 +377,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   for (auto const& elm : vm->pimpl_vm_->dp_objs) {
     const std::string& key = elm.first;
     dirty_page_t dp  = elm.second;
-    double remaining       = MSG_task_get_remaining_work_ratio(dp->task);
+    double remaining       = MSG_task_get_flops_amount(dp->task);
 
     double clock = MSG_get_clock();
 
@@ -436,7 +436,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
   if (vm->pimpl_vm_->dp_enabled) {
-    double remaining = MSG_task_get_remaining_work_ratio(task);
+    double remaining = MSG_task_get_flops_amount(task);
     double clock = MSG_get_clock();
     double updated = get_computed(key, vm, dp, remaining, clock); // was host instead of vm
 

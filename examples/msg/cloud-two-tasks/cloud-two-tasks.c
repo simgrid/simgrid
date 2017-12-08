@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -52,7 +51,7 @@ static int master_main(int argc, char *argv[])
 
   while(MSG_get_clock()<100) {
     if (atask != NULL)
-      XBT_INFO("aTask remaining duration: %g", MSG_task_get_remaining_work_ratio(atask));
+      XBT_INFO("aTask remaining duration: %g", MSG_task_get_flops_amount(atask));
     MSG_process_sleep(1);
   }
 

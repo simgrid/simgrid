@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -98,7 +97,7 @@ static int worker(int /*argc*/, char* /*argv*/ [])
     MSG_task_execute(task);
     double end = MSG_get_clock();
     XBT_INFO("Task \"%s\" done in %f (amount %f)", MSG_task_get_name(task), end - start,
-             MSG_task_get_remaining_work_ratio(task));
+             MSG_task_get_flops_amount(task));
 
     MSG_task_destroy(task);
   }
