@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2015, 2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,57 +10,42 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-simgrid::s4u::ExecPtr activity;
+static void monitor(simgrid::s4u::ExecPtr activity)
+{
+  while (activity->getRemains() > 0) { // FIXME: use a test() here once that function is implemented
+    XBT_INFO("activity remaining duration: %g (%.0f%%)", activity->getRemains(), 100 * activity->getRemainingRatio());
+    simgrid::s4u::this_actor::sleep_for(5);
+  }
+  XBT_INFO("My task is over.");
+}
 
 static void executor()
 {
-  const char* actor_name = simgrid::s4u::this_actor::getCname();
-  const char* host_name  = simgrid::s4u::Host::current()->getCname();
+  XBT_INFO("Create one monitored task, and wait for it");
+  simgrid::s4u::ExecPtr activity = simgrid::s4u::Actor::self()->exec_async(1e9);
+  simgrid::s4u::Actor::createActor("monitor 1", simgrid::s4u::Host::by_name("Tremblay"), monitor, activity);
+  activity->wait(); // This blocks until the activity is over
+  XBT_INFO("The monitored task is over. Let's start 3 of them now.");
+  simgrid::s4u::Actor::createActor("monitor 2", simgrid::s4u::Host::by_name("Jupiter"), monitor,
+                                   simgrid::s4u::Actor::self()->exec_async(1e9));
+  simgrid::s4u::Actor::createActor("monitor 3", simgrid::s4u::Host::by_name("Ginette"), monitor,
+                                   simgrid::s4u::Actor::self()->exec_async(1e9));
+  simgrid::s4u::Actor::createActor("monitor 4", simgrid::s4u::Host::by_name("Bourassa"), monitor,
+                                   simgrid::s4u::Actor::self()->exec_async(1e9));
+  XBT_INFO("All activities are started; finish now");
+  // Waiting execution activities is not mandatory: they go to completion once started
 
-  double clock_begin = simgrid::s4u::Engine::getClock();
-  XBT_INFO("%s:%s task 1 created %g", host_name, actor_name, clock_begin);
-  activity = simgrid::s4u::Actor::self()->exec_async(1e9);
-  activity->wait();
-  double clock_end = simgrid::s4u::Engine::getClock();
-
-  XBT_INFO("%s:%s task 1 executed %g", host_name, actor_name, clock_end - clock_begin);
-
-  activity = nullptr;
-
-  simgrid::s4u::this_actor::sleep_for(1);
-
-  clock_begin = simgrid::s4u::Engine::getClock();
-  XBT_INFO("%s:%s task 2 created %g", host_name, actor_name, clock_begin);
-  activity = simgrid::s4u::Actor::self()->exec_async(1e10);
-  activity->wait();
-  clock_end = simgrid::s4u::Engine::getClock();
-
-  XBT_INFO("%s:%s task 2 executed %g", host_name, actor_name, clock_end - clock_begin);
-}
-
-static void monitor()
-{
-  simgrid::s4u::Actor::createActor("compute", simgrid::s4u::Host::by_name("Fafard"), executor);
-
-  while (simgrid::s4u::Engine::getClock() < 100) {
-    if (activity)
-      XBT_INFO("activity remaining duration: %g", activity->getRemains());
-    simgrid::s4u::this_actor::sleep_for(1);
-  }
-
-  simgrid::s4u::this_actor::sleep_for(10000);
+  // No memory is leaked here: activities are automatically refcounted, thanks to C++ smart pointers
 }
 
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.loadPlatform(argv[1]); /* - Load the platform description */
+  e.loadPlatform(argv[1]);
 
-  simgrid::s4u::Actor::createActor("master_", simgrid::s4u::Host::by_name("Fafard"), monitor);
+  simgrid::s4u::Actor::createActor("executor", simgrid::s4u::Host::by_name("Fafard"), executor);
 
   e.run();
-
-  XBT_INFO("Simulation time %g", e.getClock());
 
   return 0;
 }
