@@ -52,7 +52,7 @@ public:
   e_s4u_activity_state_t getState() {return state_;}
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
-  double getRemains();
+  virtual double getRemains();
   /** Set the [remaining] amount of work that this Activity will entail
    *
    * It is forbidden to change the amount of work once the Activity is started */

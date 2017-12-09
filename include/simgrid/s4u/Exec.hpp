@@ -32,7 +32,7 @@ public:
 
   ExecPtr setPriority(double priority);
 
-  double getRemains();
+  double getRemains() override;
 
 private:
   smx_actor_t runner_  = nullptr;
