@@ -84,7 +84,7 @@ public:
     file = new simgrid::s4u::File("/home/tmp/simgrid.readme", nullptr);
     XBT_INFO("Unlink file: '%s'", file->getPath());
     file->unlink();
-    delete file;
+    delete file; // Unlinking the file on "disk" does not free the object
 
     show_info(mounts);
   }
