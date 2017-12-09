@@ -73,29 +73,11 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Engine e(&argc, argv);
 
-  /* Check if we got --NS3 on the command line, and activate ecofen if so */
-  bool NS3 = false;
-  for (int i = 0; i < argc; i++) {
-    if (strcmp(argv[i], "--NS3") == 0)
-      NS3 = true;
-    if (NS3) // Found the --NS3 parameter previously; shift the rest of the line
-      argv[i] = argv[i + 1];
-  }
-  if (NS3) {
-    xbt_die("No Ecofen in this build");
-    //    XBT_INFO("Activating the Ecofen energy plugin");
-    //    ns3_link_energy_plugin_init();
-    //    xbt_cfg_set_parse("network/model:NS3");
-    //    argc -= 1; // We removed it from the parameters
-  } else {
-    XBT_INFO("Activating the SimGrid link energy plugin");
-    sg_link_energy_plugin_init();
-  }
+  XBT_INFO("Activating the SimGrid link energy plugin");
+  sg_link_energy_plugin_init();
 
-  xbt_assert(argc > 1, "\nUsage: %s platform_file [flowCount [datasize]] [--NS3]\n"
-                       "\tExample: %s s4uplatform.xml \n"
-                       "\tIf you add NS3 as last parameter, this will try to activate the ecofen plugin.\n"
-                       "\tWithout it, it will use the SimGrid link energy plugin.\n",
+  xbt_assert(argc > 1, "\nUsage: %s platform_file [flowCount [datasize]]\n"
+                       "\tExample: %s s4uplatform.xml \n",
              argv[0], argv[0]);
   e.loadPlatform(argv[1]);
 
