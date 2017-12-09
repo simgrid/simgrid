@@ -121,6 +121,7 @@ $ cat ${srcdir:=.}/daxload/smalldax.trace
 > [84.067138] node-0.acme.org recv node-11.acme.org 4167312.000000 # 3@task1_o3_end
 > [84.067138] node-0.acme.org compute 0.000000 # end
 
+! output ignore
 $ cmake -E remove -f ${srcdir:=.}/dax.dot ${srcdir:=.}/daxload/smalldax.trace
 
 p Test the DAX loader with a DAX comprising a cycle.
