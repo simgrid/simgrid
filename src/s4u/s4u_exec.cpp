@@ -55,6 +55,11 @@ double Exec::getRemains()
   return simgrid::simix::kernelImmediate(
       [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->remains(); });
 }
+double Exec::getRemainingRatio()
+{
+  return simgrid::simix::kernelImmediate(
+      [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->remainingRatio(); });
+}
 
 void intrusive_ptr_release(simgrid::s4u::Exec* e)
 {
