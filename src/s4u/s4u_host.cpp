@@ -261,5 +261,10 @@ void Host::execute(double flops)
   simcall_execution_wait(s);
 }
 
+double Host::getLoad()
+{
+  return this->pimpl_cpu->getLoad();
+}
+
 } // namespace simgrid
 } // namespace s4u

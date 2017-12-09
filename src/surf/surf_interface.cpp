@@ -8,6 +8,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/kernel/lmm/maxmin.hpp"   // Constraint
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "xbt/utility.hpp"
@@ -538,6 +539,11 @@ void Resource::turnOn()
 void Resource::turnOff()
 {
   isOn_ = false;
+}
+
+double Resource::getLoad()
+{
+  return constraint_->get_usage();
 }
 
 Model* Resource::model() const

@@ -433,6 +433,9 @@ public:
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;
 
+  /** @brief returns the current load (in flops per second, byte per second or similar) */
+  virtual double getLoad();
+
   /** @brief Check if the current Resource is active */
   virtual bool isOn() const;
   /** @brief Check if the current Resource is shut down */

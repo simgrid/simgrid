@@ -4,6 +4,7 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
  - s4u::onDeadlock() signal, run before stopping the simulation.
  - s4u::Exec: asynchronous executions (abstraction of background
    threads)
+ - s4u::Host->getLoad() returns the achieved speed in flops/s
 
  S4U API changes
  - Link::name() is deprecated and will be removed in v3.21, use

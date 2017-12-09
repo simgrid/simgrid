@@ -113,6 +113,9 @@ public:
    */
   void execute(double flops);
 
+  /** @brief Returns the current computation load (in flops per second) */
+  double getLoad();
+
 private:
   simgrid::xbt::string name_{"noname"};
   std::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
