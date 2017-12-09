@@ -26,6 +26,7 @@ namespace s4u {
 xbt::signal<void()> onPlatformCreated;
 xbt::signal<void()> onSimulationEnd;
 xbt::signal<void(double)> onTimeAdvance;
+xbt::signal<void(void)> onDeadlock;
 
 Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 

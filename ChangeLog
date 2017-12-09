@@ -1,6 +1,9 @@
 SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
 
- S4U
+ S4U New features
+ - s4u::onDeadlock() signal, run before stopping the simulation.
+
+ S4U API changes
  - Link::name() is deprecated and will be removed in v3.21, use
    Link::getCname() instead.
  - Mailbox::getName() changed to return a std::string, use
@@ -54,6 +57,7 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
  Fixed bugs:
  - #248: Kill of finished processes leads to segfault
  - #240: xbt_cond_wait_timeout should gracefully return for C apps
+ - #239: please implement signal s4u::onDeadlock()
  - #230: segfaults when exit() without run() 
  - #225: s4u::Actor::kill() doesn not really kill victims in a join()
  - #223: MSG_task_get_flops_amount() not working with parallel tasks

@@ -126,6 +126,9 @@ extern XBT_PRIVATE xbt::signal<void()> onSimulationEnd;
 
 /** Callback fired when the time jumps into the future */
 extern XBT_PRIVATE xbt::signal<void(double)> onTimeAdvance;
+
+/** Callback fired when the time cannot jump because of inter-actors deadlock */
+extern XBT_PRIVATE xbt::signal<void(void)> onDeadlock;
 }
 } // namespace simgrid::s4u
 
