@@ -106,7 +106,6 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Mailbox {
   friend Comm;
-  friend simgrid::s4u::Engine;
   friend simgrid::kernel::activity::MailboxImpl;
 
   simgrid::kernel::activity::MailboxImpl* pimpl_;
