@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static void test(double computation_amount, double priority)
 {
   XBT_INFO("Hello! Execute %g flops with priority %g", computation_amount, priority);
-  simgrid::s4u::ExecPtr activity = simgrid::s4u::Actor::self()->exec_init(computation_amount);
+  simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(computation_amount);
   activity->setPriority(priority);
   activity->start();
   activity->wait();

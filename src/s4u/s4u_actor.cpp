@@ -198,22 +198,6 @@ Actor* Actor::restart()
   return simgrid::simix::kernelImmediate([this]() { return pimpl_->restart(); });
 }
 
-ExecPtr Actor::exec_init(double flops_amount)
-{
-  ExecPtr res        = ExecPtr(new Exec());
-  res->host_         = this->getHost();
-  res->flops_amount_ = flops_amount;
-  res->setRemains(flops_amount);
-  return res;
-}
-
-ExecPtr Actor::exec_async(double flops)
-{
-  ExecPtr res = exec_init(flops);
-  res->start();
-  return res;
-}
-
 // ***** this_actor *****
 
 namespace this_actor {
@@ -274,6 +258,22 @@ void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, d
 {
   smx_activity_t s = simcall_execution_parallel_start(nullptr, host_nb, host_list, flops_amount, bytes_amount, -1, -1);
   simcall_execution_wait(s);
+}
+
+ExecPtr exec_init(double flops_amount)
+{
+  ExecPtr res        = ExecPtr(new Exec());
+  res->host_         = getHost();
+  res->flops_amount_ = flops_amount;
+  res->setRemains(flops_amount);
+  return res;
+}
+
+ExecPtr exec_async(double flops)
+{
+  ExecPtr res = exec_init(flops);
+  res->start();
+  return res;
 }
 
 void* recv(MailboxPtr chan) // deprecated

@@ -21,7 +21,7 @@ XBT_PUBLIC_CLASS Exec : public Activity
 public:
   friend void intrusive_ptr_release(simgrid::s4u::Exec * e);
   friend void intrusive_ptr_add_ref(simgrid::s4u::Exec * e);
-  friend Actor; // Factory of Exec
+  friend ExecPtr this_actor::exec_init(double flops_amount);
 
   ~Exec() = default;
 

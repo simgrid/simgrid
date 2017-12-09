@@ -275,9 +275,6 @@ public:
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
   Actor* restart();
-
-  ExecPtr exec_init(double flops_amounts);
-  ExecPtr exec_async(double flops_amounts);
 };
 
 /** @ingroup s4u_api
@@ -318,6 +315,9 @@ XBT_PUBLIC(void) execute(double flop, double priority);
 XBT_PUBLIC(void) parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount);
 XBT_PUBLIC(void)
 parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double timeout);
+
+XBT_PUBLIC(ExecPtr) exec_init(double flops_amounts);
+XBT_PUBLIC(ExecPtr) exec_async(double flops_amounts);
 
 /** Block the actor until it gets a message from the given mailbox.
  *

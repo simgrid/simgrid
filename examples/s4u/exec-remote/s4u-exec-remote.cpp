@@ -14,7 +14,7 @@ static void wizard()
   simgrid::s4u::Host* ginette = simgrid::s4u::Host::by_name("Ginette");
 
   XBT_INFO("I'm a wizard! I can run a task on the Fafard host from the Ginette one! Look!");
-  simgrid::s4u::ExecPtr activity = simgrid::s4u::Actor::self()->exec_init(48.492e6);
+  simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(48.492e6);
   activity->setHost(ginette);
   activity->start();
   // TODO: display the load of each hosts once it gets possible

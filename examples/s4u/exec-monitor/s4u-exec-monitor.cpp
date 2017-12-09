@@ -22,16 +22,16 @@ static void monitor(simgrid::s4u::ExecPtr activity)
 static void executor()
 {
   XBT_INFO("Create one monitored task, and wait for it");
-  simgrid::s4u::ExecPtr activity = simgrid::s4u::Actor::self()->exec_async(1e9);
+  simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_async(1e9);
   simgrid::s4u::Actor::createActor("monitor 1", simgrid::s4u::Host::by_name("Tremblay"), monitor, activity);
   activity->wait(); // This blocks until the activity is over
   XBT_INFO("The monitored task is over. Let's start 3 of them now.");
   simgrid::s4u::Actor::createActor("monitor 2", simgrid::s4u::Host::by_name("Jupiter"), monitor,
-                                   simgrid::s4u::Actor::self()->exec_async(1e9));
+                                   simgrid::s4u::this_actor::exec_async(1e9));
   simgrid::s4u::Actor::createActor("monitor 3", simgrid::s4u::Host::by_name("Ginette"), monitor,
-                                   simgrid::s4u::Actor::self()->exec_async(1e9));
+                                   simgrid::s4u::this_actor::exec_async(1e9));
   simgrid::s4u::Actor::createActor("monitor 4", simgrid::s4u::Host::by_name("Bourassa"), monitor,
-                                   simgrid::s4u::Actor::self()->exec_async(1e9));
+                                   simgrid::s4u::this_actor::exec_async(1e9));
   XBT_INFO("All activities are started; finish now");
   // Waiting execution activities is not mandatory: they go to completion once started
 
