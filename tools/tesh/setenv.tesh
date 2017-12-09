@@ -2,7 +2,9 @@
 # This suite builds and uses a program returning 1.
 # tesh is instructed of this return code and must not whine.
 
+! output ignore
 $ cmake -E remove_directory temp_testdir_setenv
+
 $ mkdir temp_testdir_setenv
 $ cd temp_testdir_setenv
 
@@ -14,4 +16,6 @@ $ perl testenv.pl
 > tesh_test_toto=blah
 
 $ cd ..
+
+! output ignore
 $ cmake -E remove_directory temp_testdir_setenv

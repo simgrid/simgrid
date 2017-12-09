@@ -1,4 +1,4 @@
-
+! output ignore
 $ cmake -E remove bgtesh.pl bgtesh.data
 
 < use strict; 
@@ -20,4 +20,6 @@ $ mkfile bgtesh.pl
 $ mkfile bgtesh.data
 
 $ sleep 2
+
+! output ignore
 $ cmake -E remove bgtesh.pl bgtesh.data

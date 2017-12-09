@@ -5,77 +5,102 @@
 # father), so we do the test a bunch of times.
 #
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 01
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 02
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 03
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 04
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 05
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 06
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 07
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 08
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 09
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 10
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 11
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 12
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 13
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 14
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 15
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 16
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 17
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 18
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 19
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 20
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 21
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 22
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 23
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 24
 $ cmake -E echo
 
+! output ignore
 < blablablablablablablablablablablablablablablablablablablabla 25
 $ cmake -E echo

@@ -2,7 +2,9 @@
 
 # This example uses the cd command
 
+! output ignore
 $ cmake -E remove_directory testdir_temp-cd
+
 $ mkdir testdir_temp-cd
 $ cd testdir_temp-cd
 
@@ -22,4 +24,6 @@ $ ${bindir:=.}/tesh
 $ test -e ../testdir_temp-cd
 
 $ cd ..
+
+! output ignore
 $ cmake -E remove_directory testdir_temp-cd
