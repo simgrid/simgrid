@@ -183,7 +183,6 @@ examples/s4u/actions-comm/s4u-actions-comm
 examples/s4u/actions-storage/s4u-actions-storage
 examples/s4u/actor-create/s4u-actor-create
 examples/s4u/actor-daemon/s4u-actor-daemon
-examples/s4u/actor-execute/s4u-actor-execute
 examples/s4u/actor-join/s4u-actor-join
 examples/s4u/actor-kill/s4u-actor-kill
 examples/s4u/actor-lifetime/s4u-actor-lifetime
@@ -206,6 +205,8 @@ examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-ptask/s4u-energy-ptask
 examples/s4u/energy-pstate/s4u-energy-pstate
 examples/s4u/energy-vm/s4u-energy-vm
+examples/s4u/exec-async/s4u-exec-async
+examples/s4u/exec-basic/s4u-exec-basic
 examples/s4u/io-file-system/s4u-io-file-system
 examples/s4u/io-file-remote/s4u-io-file-remote
 examples/s4u/io-storage-raw/s4u-io-storage-raw
