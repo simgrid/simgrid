@@ -149,12 +149,11 @@ boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount, double priority,
                                 double bound, sg_host_t host)
 {
-  return SIMIX_execution_start(simcall->issuer, name, flops_amount, priority, bound, host);
+  return SIMIX_execution_start(name, flops_amount, priority, bound, host);
 }
 
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> SIMIX_execution_start(smx_actor_t issuer, const char* name,
-                                                                                double flops_amount, double priority,
-                                                                                double bound, sg_host_t host)
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
+SIMIX_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host)
 {
 
   /* alloc structures and initialize */
