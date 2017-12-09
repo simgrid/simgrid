@@ -2,6 +2,8 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
 
  S4U New features
  - s4u::onDeadlock() signal, run before stopping the simulation.
+ - s4u::Exec: asynchronous executions (abstraction of background
+   threads)
 
  S4U API changes
  - Link::name() is deprecated and will be removed in v3.21, use
@@ -10,9 +12,8 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
    Mailbox::getCname() instead to get a char*.
  - Storage::getName() changed to return a std::string, use
    Storage::getCname() instead to get a char*.
- - simgrid::s4u::allStorages() becomes
-   simgrid::s4u::getStorageList(whereTo) to have both allocation
-   and deallocation of the map in user space.
+ - s4u::allStorages() becomes s4u::getStorageList(whereTo) 
+   to have both allocation and deallocation of the map in user space.
 
  MSG
  - Forbid the use of MSG_task_get_flops_amount() on parallel tasks:
