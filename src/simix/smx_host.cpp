@@ -145,21 +145,21 @@ void SIMIX_host_autorestart(sg_host_t host)
   process_list.clear();
 }
 
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> simcall_HANDLER_execution_start(smx_simcall_t simcall,
-                                                                                          const char* name,
-                                                                                          double flops_amount,
-                                                                                          double priority, double bound)
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
+simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount, double priority,
+                                double bound, sg_host_t host)
 {
-  return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound);
+  return SIMIX_execution_start(simcall->issuer, name, flops_amount, priority, bound, host);
 }
 
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-SIMIX_execution_start(smx_actor_t issuer, const char* name, double flops_amount, double priority, double bound)
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> SIMIX_execution_start(smx_actor_t issuer, const char* name,
+                                                                                double flops_amount, double priority,
+                                                                                double bound, sg_host_t host)
 {
 
   /* alloc structures and initialize */
   simgrid::kernel::activity::ExecImplPtr exec =
-      simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, issuer->host));
+      simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, host));
 
   /* set surf's action */
   if (not MC_is_active() && not MC_record_replay_is_active()) {

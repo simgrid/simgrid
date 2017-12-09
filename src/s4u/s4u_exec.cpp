@@ -15,7 +15,7 @@ namespace s4u {
 
 void Exec::start()
 {
-  pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1 / priority_, 0.);
+  pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1 / priority_, 0., host_);
   state_ = started;
 }
 
@@ -47,6 +47,11 @@ bool Exec::test()
 ExecPtr Exec::setPriority(double priority)
 {
   priority_ = priority;
+  return this;
+}
+ExecPtr Exec::setHost(Host* host)
+{
+  host_ = host;
   return this;
 }
 

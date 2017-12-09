@@ -164,6 +164,18 @@ static inline void simcall_execution_start__set__bound(smx_simcall_t simcall, do
 {
   simgrid::simix::marshal<double>(simcall->args[3], arg);
 }
+static inline sg_host_t simcall_execution_start__get__host(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[4]);
+}
+static inline sg_host_t simcall_execution_start__getraw__host(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<sg_host_t>(simcall->args[4]);
+}
+static inline void simcall_execution_start__set__host(smx_simcall_t simcall, sg_host_t arg)
+{
+  simgrid::simix::marshal<sg_host_t>(simcall->args[4], arg);
+}
 static inline boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> simcall_execution_start__get__result(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>>(simcall->result);
@@ -1363,7 +1375,9 @@ XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int rese
 XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
-XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount, double priority, double bound);
+XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
+simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount, double priority,
+                                double bound, sg_host_t host);
 XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution);
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox, int type, simix_match_func_t match_fun, void* data);
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);

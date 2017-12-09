@@ -201,7 +201,7 @@ Actor* Actor::restart()
 ExecPtr Actor::exec_init(double flops_amount)
 {
   ExecPtr res        = ExecPtr(new Exec());
-  res->runner_       = SIMIX_process_self();
+  res->host_         = this->getHost();
   res->flops_amount_ = flops_amount;
   res->setRemains(flops_amount);
   return res;
@@ -253,13 +253,13 @@ XBT_PUBLIC(void) sleep_until(double timeout)
 
 void execute(double flops)
 {
-  smx_activity_t s = simcall_execution_start(nullptr,flops,1.0/*priority*/,0./*bound*/);
+  smx_activity_t s = simcall_execution_start(nullptr, flops, 1.0 /*priority*/, 0. /*bound*/, getHost());
   simcall_execution_wait(s);
 }
 
 void execute(double flops, double priority)
 {
-  smx_activity_t s = simcall_execution_start(nullptr,flops,1 / priority/*priority*/,0./*bound*/);
+  smx_activity_t s = simcall_execution_start(nullptr, flops, 1 / priority /*priority*/, 0. /*bound*/, getHost());
   simcall_execution_wait(s);
 }
 

@@ -31,12 +31,13 @@ public:
   bool test();
 
   ExecPtr setPriority(double priority);
+  ExecPtr setHost(Host * host);
 
   double getRemains() override;
   double getRemainingRatio();
 
 private:
-  smx_actor_t runner_  = nullptr;
+  Host* host_          = nullptr;
   double flops_amount_ = 0.0;
   double priority_     = 1.0;
 

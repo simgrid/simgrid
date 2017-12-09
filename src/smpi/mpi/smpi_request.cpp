@@ -14,6 +14,7 @@
 #include "smpi_process.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/simix/ActorImpl.hpp"
 
 #include <algorithm>
 
@@ -629,7 +630,9 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   MPI_Request request = new Request(nullptr, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
                  comm->group()->index(source), comm->rank(), tag, comm, PERSISTENT | RECV);
   if (smpi_iprobe_sleep > 0) {
-    smx_activity_t iprobe_sleep = simcall_execution_start("iprobe", /* flops to executek*/nsleeps*smpi_iprobe_sleep*speed*maxrate, /* priority */1.0, /* performance bound */maxrate*speed);
+    smx_activity_t iprobe_sleep = simcall_execution_start(
+        "iprobe", /* flops to executek*/ nsleeps * smpi_iprobe_sleep * speed * maxrate, /* priority */ 1.0,
+        /* performance bound */ maxrate * speed, smpi_process()->process()->host);
     simcall_execution_wait(iprobe_sleep);
   }
   // behave like a receive, but don't do it

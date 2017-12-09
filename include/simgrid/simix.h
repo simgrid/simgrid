@@ -186,9 +186,8 @@ XBT_PUBLIC(void) simcall_call(smx_actor_t process);
 
 /******************************* Host simcalls ********************************/
 XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
-XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
-                                                double flops_amount,
-                                                double priority, double bound);
+XBT_PUBLIC(smx_activity_t)
+simcall_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host);
 XBT_PUBLIC(smx_activity_t)
 simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
                                  double* bytes_amount, double rate, double timeout);

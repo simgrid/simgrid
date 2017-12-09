@@ -4,12 +4,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.hpp"
+#include "simgrid/host.h"
 #include "simgrid/modelchecker.h"
 #include "smpi_comm.hpp"
-#include "simgrid/host.h"
 #include "smpi_process.hpp"
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
+#include "src/simix/ActorImpl.hpp"
 #include <unordered_map>
 
 #ifndef WIN32
@@ -43,7 +44,7 @@ void smpi_execute_(double *duration)
 
 void smpi_execute_flops(double flops) {
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0);
+  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->process()->host);
   simcall_set_category (action, TRACE_internal_smpi_get_category());
   simcall_execution_wait(action);
   smpi_switch_data_segment(smpi_process()->index());

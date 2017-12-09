@@ -221,7 +221,7 @@ smx_activity_t ActorImpl::suspend(ActorImpl* issuer)
 
     return nullptr;
   } else {
-    return SIMIX_execution_start(this, "suspend", 0.0, 1.0, 0.0);
+    return SIMIX_execution_start(this, "suspend", 0.0, 1.0, 0.0, this->host);
   }
 }
 

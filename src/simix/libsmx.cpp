@@ -55,15 +55,14 @@ void simcall_call(smx_actor_t actor)
  * \param bound
  * \return A new SIMIX execution synchronization
  */
-smx_activity_t simcall_execution_start(const char *name,
-                                    double flops_amount,
-                                    double priority, double bound)
+smx_activity_t simcall_execution_start(const char* name, double flops_amount, double priority, double bound,
+                                       simgrid::s4u::Host* host)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(std::isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_execution_start(name, flops_amount, priority, bound);
+  return simcall_BODY_execution_start(name, flops_amount, priority, bound, host);
 }
 
 /**
