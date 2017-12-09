@@ -47,12 +47,10 @@ ActorPtr Actor::createActor(const char* name, s4u::Host* host, const char* funct
 
 void intrusive_ptr_add_ref(Actor* actor)
 {
-  xbt_assert(actor != nullptr);
   intrusive_ptr_add_ref(actor->pimpl_);
 }
 void intrusive_ptr_release(Actor* actor)
 {
-  xbt_assert(actor != nullptr);
   intrusive_ptr_release(actor->pimpl_);
 }
 
