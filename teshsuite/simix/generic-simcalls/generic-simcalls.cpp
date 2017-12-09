@@ -9,9 +9,9 @@
 
 #include <xbt/future.hpp>
 
+#include <simgrid/kernel/future.hpp>
 #include <simgrid/simix.hpp>
 #include <simgrid/simix/blocking_simcall.hpp>
-#include <simgrid/kernel/future.hpp>
 #include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "my log messages");
@@ -23,24 +23,19 @@ class exception : public std::runtime_error {
 };
 
 /** Create a future which becomes ready when the date is reached */
-static
-simgrid::kernel::Future<void> kernel_wait_until(double date)
+static simgrid::kernel::Future<void> kernel_wait_until(double date)
 {
   auto promise = std::make_shared<simgrid::kernel::Promise<void>>();
-  auto future = promise->get_future();
-  SIMIX_timer_set(date, [promise] {
-    promise->set_value();
-  });
+  auto future  = promise->get_future();
+  SIMIX_timer_set(date, [promise] { promise->set_value(); });
   return future;
 }
 
-static int master(int argc, char *argv[])
+static int master(int argc, char* argv[])
 {
   // Test the simple immediate execution:
   XBT_INFO("Start");
-  simgrid::simix::kernelImmediate([] {
-    XBT_INFO("kernel");
-  });
+  simgrid::simix::kernelImmediate([] { XBT_INFO("kernel"); });
   XBT_INFO("kernel, returned");
 
   // Synchronize on a successful Future<void>:
@@ -102,10 +97,9 @@ static int master(int argc, char *argv[])
 
   return 0;
 }
-
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   SIMIX_global_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);

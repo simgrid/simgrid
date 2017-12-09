@@ -316,9 +316,9 @@ teshsuite/simdag/incomplete/incomplete
 teshsuite/simdag/is-router/is-router
 teshsuite/simdag/evaluate-get-route-time/evaluate-get-route-time
 teshsuite/simdag/evaluate-parse-time/evaluate-parse-time
-teshsuite/simix/check_defaults/check_defaults
-teshsuite/simix/stack_overflow/stack_overflow
-teshsuite/simix/generic_simcalls/generic_simcalls
+teshsuite/simix/check-defaults/check-defaults
+teshsuite/simix/stack-overflow/stack-overflow
+teshsuite/simix/generic-simcalls/generic-simcalls
 teshsuite/smpi/bug-17132/bug-17132
 teshsuite/smpi/coll-allgather/coll-allgather
 teshsuite/smpi/coll-allgatherv/coll-allgatherv

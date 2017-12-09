@@ -1,2 +1,2 @@
-$ ${bindir:=.}/check_defaults
+$ ${bindir:=.}/check-defaults
 > [simix_context/VERBOSE] Activating SYSV context factory

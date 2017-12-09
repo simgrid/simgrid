@@ -1,4 +1,4 @@
-$ ${bindir:=.}/generic_simcalls --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
+$ ${bindir:=.}/generic-simcalls --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [test/INFO] Start
 > [0.000000] [test/INFO] kernel
 > [Tremblay:master:(1) 0.000000] [test/INFO] kernel, returned
