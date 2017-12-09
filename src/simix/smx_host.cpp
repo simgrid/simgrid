@@ -164,7 +164,7 @@ boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> SIMIX_execution_start(
   /* set surf's action */
   if (not MC_is_active() && not MC_record_replay_is_active()) {
 
-    exec->surfAction_ = issuer->host->pimpl_cpu->execution_start(flops_amount);
+    exec->surfAction_ = host->pimpl_cpu->execution_start(flops_amount);
     exec->surfAction_->setData(exec.get());
     exec->surfAction_->setSharingWeight(priority);
 

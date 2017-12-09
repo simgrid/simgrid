@@ -86,7 +86,11 @@ TODO: document here the examples about plugins
     This example shows how to start an asynchronous execution, and
     monitor its status.
     
-    TODO: add an example about parallel executions.
+  - <b>Remote execution</b>.
+    @ref examples/s4u/exec-remote/s4u-exec-remote.cpp \n
+    Before its start, you can change the host on which a given execution will occur.
+
+  TODO: add an example about parallel executions.
 
 @section s4u_ex_actors Acting on Actors
 
@@ -237,6 +241,7 @@ respective advantages, depending on what you want to model.
 @example examples/s4u/exec-basic/s4u-exec-basic.cpp
 @example examples/s4u/exec-async/s4u-exec-async.cpp
 @example examples/s4u/exec-monitor/s4u-exec-monitor.cpp
+@example examples/s4u/exec-remote/s4u-exec-remote.cpp 
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp

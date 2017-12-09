@@ -46,11 +46,13 @@ bool Exec::test()
 
 ExecPtr Exec::setPriority(double priority)
 {
+  xbt_assert(state_ == inited, "Cannot change the priority of an exec after its start");
   priority_ = priority;
   return this;
 }
 ExecPtr Exec::setHost(Host* host)
 {
+  xbt_assert(state_ == inited, "Cannot change the host of an exec after its start");
   host_ = host;
   return this;
 }
