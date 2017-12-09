@@ -11,14 +11,17 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void wizard()
 {
+  simgrid::s4u::Host* fafard  = simgrid::s4u::Host::by_name("Fafard");
   simgrid::s4u::Host* ginette = simgrid::s4u::Host::by_name("Ginette");
 
   XBT_INFO("I'm a wizard! I can run a task on the Fafard host from the Ginette one! Look!");
   simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(48.492e6);
   activity->setHost(ginette);
   activity->start();
-  // TODO: display the load of each hosts once it gets possible
   XBT_INFO("It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).");
+
+  simgrid::s4u::this_actor::sleep_for(0.1);
+  XBT_INFO("Load on Fafard: %e flops/s; Load on Ginette: %e flops/s.", fafard->getLoad(), ginette->getLoad());
 
   activity->wait();
 
