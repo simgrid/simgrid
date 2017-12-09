@@ -6,10 +6,10 @@
 #include "simgrid/msg.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int test(int argc, char *argv[])
+static int test(int argc, char* argv[])
 {
   double computation_amount = xbt_str_parse_double(argv[1], "Invalid argument: %s");
-  double priority = xbt_str_parse_double(argv[2], "Invalid argument: %s");
+  double priority           = xbt_str_parse_double(argv[2], "Invalid argument: %s");
 
   XBT_INFO("Hello! Running a task of size %g with priority %g", computation_amount, priority);
   msg_task_t task = MSG_task_create("Task", computation_amount, 0.0, NULL);
@@ -22,11 +22,12 @@ static int test(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+                       "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+             argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
   MSG_function_register("test", test);

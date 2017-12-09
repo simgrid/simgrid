@@ -2,7 +2,6 @@
 foreach(x app-masterworker app-pingpong app-token-ring 
           cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-pastry energy-consumption energy-onoff energy-vm platform-failures 
-          task-priority 
           plugin-hostload
           process-create process-join
           synchro-semaphore trace-categories 
@@ -44,7 +43,7 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file app-chainsend app-masterworker app-pingpong dht-kademlia dht-pastry task-priority)
+foreach (file app-chainsend app-masterworker app-pingpong dht-kademlia dht-pastry)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
@@ -73,7 +72,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 
 foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-pastry dht-kademlia platform-failures task-priority
+          cloud-two-tasks dht-pastry dht-kademlia platform-failures
           energy-consumption energy-onoff energy-vm
           plugin-hostload
           process-create process-join

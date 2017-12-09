@@ -37,7 +37,7 @@ static int privileged(std::vector<std::string> /*args*/)
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   std::vector<std::string> args;

@@ -5,6 +5,7 @@ foreach(x actions-comm actions-storage
           process-daemon process-kill process-lifetime process-migration process-suspend process-yield
           energy-ptask energy-pstate platform-properties
           io-file io-raw-storage io-file-remote
+	  task-priority
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
@@ -56,6 +57,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/start_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-lifetime/start_kill_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process-yield/process-yield_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/task-priority/task-priority_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp1.0-hbp1.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.0-hbp3.0-hbp4.0.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp1.5-hbp1.5.xml

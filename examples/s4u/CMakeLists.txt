@@ -1,9 +1,10 @@
 foreach (example actions-comm actions-storage 
-                 actor-create actor-daemon actor-execute actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
+                 actor-create actor-daemon actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
                  app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  cloud-progress-monitor
                  energy-link energy-pstate energy-ptask energy-vm
+		 exec-basic
                  execute-priority
                  io-file-system io-file-remote io-storage-raw
                  platform-properties plugin-hostload mutex)
@@ -42,7 +43,7 @@ set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-execute/s4u-actor-execute.tesh       
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-basic/s4u-exec-basic.tesh
                   PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm-split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-actions-comm_d.xml
@@ -66,13 +67,13 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
 foreach(example actions-comm actions-storage 
-                actor-create actor-daemon actor-execute actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
+                actor-create actor-daemon actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany
                 cloud-progress-monitor
                 dht-chord 
                 energy-link energy-pstate energy-ptask energy-vm
-                execute-priority
+                exec-basic execute-priority
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
