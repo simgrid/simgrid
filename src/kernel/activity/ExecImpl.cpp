@@ -47,7 +47,7 @@ double simgrid::kernel::activity::ExecImpl::remains()
                                "We would need to return a vector instead of a scalar. "
                                "Did you meant remainingRatio() instead?");
 
-  return surfAction_->getRemains();
+  return surfAction_ ? surfAction_->getRemains() : 0;
 }
 double simgrid::kernel::activity::ExecImpl::remainingRatio()
 {
