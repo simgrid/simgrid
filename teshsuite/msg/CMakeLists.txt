@@ -2,7 +2,7 @@
 foreach(x actions-comm actions-storage
           async-wait async-waitall async-waitany
           cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes	  
-          process-daemon process-kill process-lifetime process-migration process-suspend process-yield
+          process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
           energy-ptask energy-pstate platform-properties
           io-file io-raw-storage io-file-remote
 	  task-priority
@@ -79,7 +79,7 @@ foreach(x
     host_on_off host_on_off_processes host_on_off_recv
     get_sender
     task_destroy_cancel task_listen_from task_progress 
-    process-daemon process-kill process-lifetime process-migration process-suspend process-yield
+    process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
     energy-ptask
     io-file io-raw-storage io-file-remote
     platform-properties

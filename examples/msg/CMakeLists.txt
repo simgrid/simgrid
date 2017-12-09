@@ -3,7 +3,7 @@ foreach(x app-masterworker app-pingpong app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-pastry energy-consumption energy-onoff energy-vm platform-failures 
           plugin-hostload
-          process-create process-join
+          process-create 
           synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-host-user-variables)
@@ -75,7 +75,7 @@ foreach(x app-chainsend app-masterworker app-pingpong app-token-ring
           cloud-two-tasks dht-pastry dht-kademlia platform-failures
           energy-consumption energy-onoff energy-vm
           plugin-hostload
-          process-create process-join
+          process-create 
           synchro-semaphore)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
                               --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
