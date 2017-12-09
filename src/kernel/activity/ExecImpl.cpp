@@ -43,12 +43,13 @@ void simgrid::kernel::activity::ExecImpl::resume()
 
 double simgrid::kernel::activity::ExecImpl::remains()
 {
-  if (host_ == nullptr) // parallel task: their remain is not in flops (we'd need a vector to express it this way
-                        // instead of a scalar), but between 0 and 1
-    throw new std::logic_error(
-        "The remaining work on parallel tasks cannot be defined as a scalar amount of flops (it's a vector). "
-        "So parallel_task->remains() is not defined. "
-        "You are probably looking for parallel_task->remainingRatio().");
+  static std::logic_error e(
+      "The remaining work on parallel tasks cannot be defined as a scalar amount of flops (it's a vector). "
+      "So parallel_task->remains() is not defined. "
+      "You are probably looking for parallel_task->remainingRatio().");
+
+  if (host_ == nullptr) // parallel task: their remain is not in flops (we'd need a vector for that, not a scalar)
+    throw &e;
   else // sequential task: everything's fine
     return surfAction_->getRemains();
 }
