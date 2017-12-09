@@ -41,11 +41,7 @@ static void executor()
 
 static void monitor()
 {
-  simgrid::s4u::Host* pm0           = simgrid::s4u::Host::by_name("Fafard");
-  simgrid::s4u::VirtualMachine* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->start();
-
-  simgrid::s4u::Actor::createActor("compute", vm0, executor);
+  simgrid::s4u::Actor::createActor("compute", simgrid::s4u::Host::by_name("Fafard"), executor);
 
   while (simgrid::s4u::Engine::getClock() < 100) {
     if (activity)
@@ -54,7 +50,6 @@ static void monitor()
   }
 
   simgrid::s4u::this_actor::sleep_for(10000);
-  vm0->destroy();
 }
 
 int main(int argc, char* argv[])

@@ -2,9 +2,8 @@ foreach (example actions-comm actions-storage
                  actor-create actor-daemon actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
                  app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
-                 cloud-progress-monitor
                  energy-link energy-pstate energy-ptask energy-vm
-                 exec-async exec-basic
+                 exec-async exec-basic exec-monitor
                  io-file-system io-file-remote io-storage-raw
                  platform-properties plugin-hostload mutex)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
@@ -69,10 +68,9 @@ foreach(example actions-comm actions-storage
                 actor-create actor-daemon actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
                 app-bittorrent app-masterworker app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany
-                cloud-progress-monitor
                 dht-chord 
                 energy-link energy-pstate energy-ptask energy-vm
-                exec-async exec-basic
+                exec-async exec-basic exec-monitor
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
