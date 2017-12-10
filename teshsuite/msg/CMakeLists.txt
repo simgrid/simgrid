@@ -1,5 +1,6 @@
 # C examples
 foreach(x actions-comm actions-storage
+          app-pingpong
           async-wait async-waitall async-waitany
           cloud-sharing get_sender host_on_off host_on_off_recv host_on_off_processes	  
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
@@ -44,6 +45,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
@@ -74,7 +76,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
 foreach(x 
     actions-comm actions-storage
     async-wait async-waitall async-waitany
-    app-bittorrent
+    app-bittorrent app-pingpong
     energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
     get_sender

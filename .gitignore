@@ -157,7 +157,6 @@ examples/msg/network-ns3/network-ns3
 examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
 examples/msg/synchro-semaphore/synchro-semaphore
-examples/msg/app-pingpong/app-pingpong
 examples/msg/maestro-set/maestro-set
 examples/msg/simulation.trace
 examples/msg/app-token-ring/app-token-ring
@@ -252,6 +251,7 @@ teshsuite/mc/mutex-handling/without-mutex-handling
 teshsuite/msg/actions-comm/actions-comm
 teshsuite/msg/actions-storage/actions-storage
 teshsuite/msg/app-bittorrent/bittorrent
+teshsuite/msg/app-pingpong/app-pingpong
 teshsuite/msg/async-wait/async-wait
 teshsuite/msg/async-waitall/async-waitall
 teshsuite/msg/async-waitany/async-waitany
