@@ -132,14 +132,6 @@ TODO: merge the C files
 
 TODO: show the XML files instead if it's what is interesting. On a "XML example files" page that does not exist yet.
 
-@section msg_ex_misc Miscellaneous
-
- - <b>Task priorities</b>.
-   @ref examples/msg/task-priority/task-priority.c \n
-   Demonstrates the use of @ref MSG_task_set_priority to change the
-   computation priority of  a given task.
- 
-TODO: Document the many other examples that we have 
 */
 
 As a human, you can stop reading at this point. The rest is garbage:
@@ -166,8 +158,6 @@ top of the example file).
 @example examples/msg/trace-route-user-variables/trace-route-user-variables.c
 
 @example examples/msg/network-ns3/network-ns3.c
-
-@example examples/msg/task-priority/task-priority.c
 
 */
 

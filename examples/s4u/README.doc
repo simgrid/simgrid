@@ -15,11 +15,15 @@ documentation, but it should remain readable directly.
 
   - @ref s4u_ex_basics
   - @ref s4u_ex_activities
+    - @ref s4u_ex_activity_comm
+    - @ref s4u_ex_activity_exec
+    - @ref s4u_ex_activity_io
   - @ref s4u_ex_actors
+    - @ref s4u_ex_actors_start
+    - @ref s4u_ex_actors_synchro
+    - @ref s4u_ex_actors_replay
   - @ref s4u_ex_synchro
-  - @ref s4u_ex_actions
   - @ref s4u_ex_platf
-  - @ref s4u_ex_io
   - @ref s4u_ex_energy
 
 TODO: document here the examples about plugins
@@ -43,7 +47,7 @@ TODO: document here the examples about plugins
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
     processes. 
     
-@section s4u_ex_activities Activities on Resources (communications and executions)
+@section s4u_ex_activities Activities that consume Resources (communications, executions and disks)
 
 @subsection s4u_ex_activity_comm Communications (using the network)
 
@@ -78,8 +82,8 @@ TODO: document here the examples about plugins
 
   - <b>Asynchronous execution</b>.
     @ref examples/s4u/exec-async/s4u-exec-async.cpp \n
-    You can start asynchronous executions, in a way that is very
-    similar to asynchronous communications.
+    You can start asynchronous executions, just like you would fire
+    background threads.
     
   - <b>Monitoring asynchronous executions</b>.
     @ref examples/s4u/exec-monitor/s4u-exec-monitor.cpp \n
@@ -92,22 +96,39 @@ TODO: document here the examples about plugins
 
   TODO: add an example about parallel executions.
 
+@subsection s4u_ex_activity_io I/O (using disks and files)
+
+SimGrid provides two levels of abstraction to interact with the
+simulated storages. At the simplest level, you simply create read and
+write actions on the storage resources.
+
+  - <b>Access to raw storage devices</b>.
+    @ref examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp \n
+    This example illustrates how to simply read and write data on a
+    simulated storage resource.
+
+The FileSystem plugin provides a more detailed view, with the
+classical operations over files: open, move, unlink, and of course
+read and write. The file and disk sizes are also dealt with and can
+result in short reads and short write, as in reality.
+
+  - <b>File Management</b>. @ref examples/s4u/io-file-system/s4u-io-file-system.cpp \n
+    This example illustrates the use of operations on files
+    (read, write, seek, tell, unlink, ...).
+
+  - <b>Remote I/O</b>. 
+    @ref examples/s4u/io-file-remote/s4u-io-file-remote.cpp \n
+    I/O operations on files can also be done in a remote fashion, 
+    i.e. when the accessed disk is not mounted on the caller's host.
+
 @section s4u_ex_actors Acting on Actors
+
+@subsection s4u_ex_actors_start Starting and stoping actors
 
   - <b>Creating actors</b>. 
     @ref examples/s4u/actor-create/s4u-actor-create.cpp \n
     Most actors are started from the deployment XML file, but there is other methods.
     This example show them all.
-
-  - <b>Daemonize actors</b>
-    @ref examples/s4u/actor-daemon/s4u-actor-daemon.cpp \n
-    Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
-    actor into a daemon that will be automatically killed once the simulation is over. 
-
-  - <b>Suspend and Resume actors</b>.
-    @ref examples/s4u/actor-suspend/s4u-actor-suspend.cpp \n
-    Actors can be suspended and resumed during their executions
-    thanks to the @ref simgrid::s4u::Actor::suspend and @ref simgrid::s4u::Actor::resume methods.
 
   - <b>Kill actors</b>.
     @ref examples/s4u/actor-kill/s4u-actor-kill.cpp \n
@@ -120,10 +141,27 @@ TODO: document here the examples about plugins
     \n
     You can specify a start time and a kill time in the deployment file.
 
+  - <b>Daemonize actors</b>
+    @ref examples/s4u/actor-daemon/s4u-actor-daemon.cpp \n
+    Some actors may be intended to simulate daemons that run in background. This example show how to transform a regular
+    actor into a daemon that will be automatically killed once the simulation is over. 
+    
+@subsection s4u_ex_actors_synchro Inter-actors interactions
+
+  - <b>Suspend and Resume actors</b>.
+    @ref examples/s4u/actor-suspend/s4u-actor-suspend.cpp \n
+    Actors can be suspended and resumed during their executions
+    thanks to the @ref simgrid::s4u::Actor::suspend and @ref simgrid::s4u::Actor::resume methods.
+
   - <b>Migrating Actors</b>.
     @ref examples/s4u/actor-migration/s4u-actor-migration.cpp \n
     Actors can move or be moved from a host to another with the @ref
     simgrid::s4u::this_actor::migrate() method.
+
+  - <b>Waiting for the termination of an actor</b> (joining on it)
+    @ref examples/s4u/actor-join/s4u-actor-join.cpp \n
+    The simgrid::s4u::Actor::join() method allows to block the current
+    actor until the end of the receiving actor.
 
   - <b>Yielding to other actor</b>.
     @ref examples/s4u/actor-yield/s4u-actor-yield.cpp\n
@@ -131,17 +169,7 @@ TODO: document here the examples about plugins
     execution of the current actor, leaving a chance to the other actors
     that are ready to run at this timestamp.
 
-@section s4u_ex_synchro Inter-Actor Synchronization 
-
- - <b>Waiting for the termination of an actor</b> (joining on it)
-   @ref examples/s4u/actor-join/s4u-actor-join.cpp \n
-   The simgrid::s4u::Actor::join() method allows to block the current
-   actor until the end of the receiving actor.
-
- - <b>Mutex: </b> @ref examples/s4u/mutex/s4u-mutex.cpp \n
-   Shows how to use simgrid::s4u::Mutex synchronization objects.
-
-@section s4u_ex_actions Following Workload Traces
+@subsection s4u_ex_actors_replay Traces Replay as a Workload
 
 This section details how to run trace-driven simulations. It is very
 handy when you want to test an algorithm or protocol that only react
@@ -169,6 +197,11 @@ also the tesh files in the example directories for details.
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
 
+@section s4u_ex_synchro Classical synchronization objects
+
+ - <b>Mutex: </b> @ref examples/s4u/mutex/s4u-mutex.cpp \n
+   Shows how to use simgrid::s4u::Mutex synchronization objects.
+
 @section s4u_ex_platf Interacting with the platform
 
  - <b>User-defined properties</b>.
@@ -184,32 +217,6 @@ also the tesh files in the example directories for details.
    - simgrid::s4u::Link::getProperty() and simgrid::s4u::Link::setProperty()
    - simgrid::s4u::NetZone::getProperty() and simgrid::s4u::NetZone::setProperty()
 
-@section s4u_ex_io Simulating disks and files
-
-The examples of this section demonstrate how to interact with the
-simulated storages. 
-
-SimGrid provides two levels of abstraction. You can either use the 
-FileSystem plugin, or interact directly with the disks. At the file
-system level, you can open files and interact with them. A write
-operation may fail if the disk is already full. Using the direct (low
-level) interface, you just specify the amount of data that is written
-or read, and this is done unconditionnally. Both levels have
-respective advantages, depending on what you want to model.
-
-  - <b>Access to raw storage devices</b>.
-    @ref examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp \n
-    This example illustrates how to simply read and write data on a
-    simulated storage resource.
-
-  - <b>File Management</b>. @ref examples/s4u/io-file-system/s4u-io-file-system.cpp \n
-    This example illustrates the use of operations on files
-    (read, write, seek, tell, unlink, ...).
-
-  - <b>Remote I/O</b>. 
-    @ref examples/s4u/io-file-remote/s4u-io-file-remote.cpp \n
-    I/O operations on files can also be done in a remote fashion, 
-    i.e. when the accessed disk is not mounted on the caller's host.
 
 @section s4u_ex_energy Simulating the energy consumption
 
