@@ -1,6 +1,6 @@
 # C examples
 foreach(x app-masterworker app-token-ring 
-          cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
+          cloud-capping cloud-masterworker cloud-migration cloud-simple
           dht-pastry energy-consumption energy-onoff energy-vm platform-failures 
           plugin-hostload
           process-create 
@@ -72,7 +72,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 
 foreach(x app-chainsend app-masterworker app-token-ring
           cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-pastry dht-kademlia platform-failures
+          dht-pastry dht-kademlia platform-failures
           energy-consumption energy-onoff energy-vm
           plugin-hostload
           process-create 

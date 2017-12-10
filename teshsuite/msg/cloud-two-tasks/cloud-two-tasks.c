@@ -9,12 +9,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 msg_task_t atask = NULL;
 
-static int computation_fun(int argc, char *argv[])
+static int computation_fun(int argc, char* argv[])
 {
-  const char *pr_name = MSG_process_get_name(MSG_process_self());
-  const char *host_name = MSG_host_get_name(MSG_host_self());
-  atask = MSG_task_create("Task1", 1e9, 1e9, NULL);
-  double clock_sta = MSG_get_clock();
+  const char* pr_name   = MSG_process_get_name(MSG_process_self());
+  const char* host_name = MSG_host_get_name(MSG_host_self());
+  atask                 = MSG_task_create("Task1", 1e9, 1e9, NULL);
+  double clock_sta      = MSG_get_clock();
   XBT_INFO("%s:%s task 1 created %g", host_name, pr_name, clock_sta);
   MSG_task_execute(atask);
   double clock_end = MSG_get_clock();
@@ -41,15 +41,15 @@ static int computation_fun(int argc, char *argv[])
   return 0;
 }
 
-static int master_main(int argc, char *argv[])
+static int master_main(int argc, char* argv[])
 {
   msg_host_t pm0 = MSG_host_by_name("Fafard");
-  msg_vm_t   vm0 = MSG_vm_create_core(pm0, "VM0");
+  msg_vm_t vm0   = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
 
   MSG_process_create("compute", computation_fun, NULL, (msg_host_t)vm0);
 
-  while(MSG_get_clock()<100) {
+  while (MSG_get_clock() < 100) {
     if (atask != NULL)
       XBT_INFO("aTask remaining duration: %g", MSG_task_get_flops_amount(atask));
     MSG_process_sleep(1);
@@ -60,7 +60,8 @@ static int master_main(int argc, char *argv[])
   return 1;
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char* argv[])
+{
   MSG_init(&argc, argv);
 
   xbt_assert(argc == 2);
@@ -73,4 +74,3 @@ int main(int argc, char *argv[]){
 
   return !(res == MSG_OK);
 }
-
