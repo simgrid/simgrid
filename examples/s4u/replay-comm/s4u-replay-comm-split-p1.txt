@@ -1,0 +1,3 @@
+# sample replay file (with only the actions for p1, to be launched by deployment file)
+p1 send p0 1e10
+p1 compute 1e9

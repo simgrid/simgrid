@@ -10,12 +10,12 @@
 #include <xbt/replay.hpp>
 #include <xbt/str.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(storage_actions, "Messages specific for this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(storage_replay, "Messages specific for this example");
 
 static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
 
 #define ACT_DEBUG(...)                                                                                                 \
-  if (XBT_LOG_ISENABLED(storage_actions, xbt_log_priority_verbose)) {                                                  \
+  if (XBT_LOG_ISENABLED(storage_replay, xbt_log_priority_verbose)) {                                                   \
     char* NAME = xbt_str_join_array(action, " ");                                                                      \
     XBT_DEBUG(__VA_ARGS__);                                                                                            \
     xbt_free(NAME);                                                                                                    \
@@ -24,7 +24,7 @@ static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
 
 static void log_action(const char* const* action, double date)
 {
-  if (XBT_LOG_ISENABLED(storage_actions, xbt_log_priority_verbose)) {
+  if (XBT_LOG_ISENABLED(storage_replay, xbt_log_priority_verbose)) {
     char* name = xbt_str_join_array(action, " ");
     XBT_VERB("%s %f", name, date);
     xbt_free(name);

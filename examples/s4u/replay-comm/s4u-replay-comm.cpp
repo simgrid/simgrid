@@ -8,19 +8,20 @@
 #include "xbt/str.h"
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(actions, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(replay, "Messages specific for this msg example");
 
-#define ACT_DEBUG(...) \
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose)) {  \
-    char *NAME = xbt_str_join_array(action, " ");              \
-    XBT_DEBUG(__VA_ARGS__);                                    \
-    xbt_free(NAME);                                            \
-  } else ((void)0)
+#define ACT_DEBUG(...)                                                                                                 \
+  if (XBT_LOG_ISENABLED(replay, xbt_log_priority_verbose)) {                                                           \
+    char* NAME = xbt_str_join_array(action, " ");                                                                      \
+    XBT_DEBUG(__VA_ARGS__);                                                                                            \
+    xbt_free(NAME);                                                                                                    \
+  } else                                                                                                               \
+  ((void)0)
 
-static void log_action(const char *const *action, double date)
+static void log_action(const char* const* action, double date)
 {
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose)) {
-    char *name = xbt_str_join_array(action, " ");
+  if (XBT_LOG_ISENABLED(replay, xbt_log_priority_verbose)) {
+    char* name = xbt_str_join_array(action, " ");
     XBT_VERB("%s %f", name, date);
     xbt_free(name);
   }
@@ -83,7 +84,7 @@ public:
   }
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
 
