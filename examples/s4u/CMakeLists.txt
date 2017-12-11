@@ -4,9 +4,10 @@ foreach (example actor-create actor-daemon actor-join actor-kill actor-lifetime 
                  energy-link energy-pstate energy-ptask energy-vm
                  exec-async exec-basic exec-monitor exec-remote
                  io-file-system io-file-remote io-storage-raw
-		 mutex
+                 mutex
                  platform-properties plugin-hostload 
-		 replay-comm replay-storage)
+                 replay-comm replay-storage
+                 trace-platform)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
   set_target_properties(s4u-${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
@@ -73,10 +74,16 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-lifetime a
                 exec-async exec-basic exec-monitor exec-remote
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw
-		replay-comm replay-storage)
+                replay-comm replay-storage)
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
                                     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
 				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
 				    --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
 				    ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
+endforeach()
+
+foreach (example trace-platform)
+  ADD_TESH(s4u-${example} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                          --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                          ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()

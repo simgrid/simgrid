@@ -5,7 +5,7 @@ foreach(x app-masterworker app-token-ring
           plugin-hostload
           process-create 
           synchro-semaphore trace-categories 
-          trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform 
+          trace-route-user-variables trace-link-user-variables trace-masterworker
           trace-process-migration trace-host-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
   target_link_libraries(${x}     simgrid)
@@ -84,7 +84,7 @@ foreach(x app-chainsend app-masterworker app-token-ring
 			      ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
 endforeach()
 
-foreach (x trace-categories trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform trace-process-migration trace-host-user-variables)
+foreach (x trace-categories trace-route-user-variables trace-link-user-variables trace-masterworker trace-process-migration trace-host-user-variables)
   ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
 	            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
 		    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
