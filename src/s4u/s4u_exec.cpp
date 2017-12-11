@@ -41,6 +41,11 @@ bool Exec::test()
     this->start();
   }
 
+  if (simcall_execution_test(pimpl_)) {
+    state_ = finished;
+    return true;
+  }
+
   return false;
 }
 

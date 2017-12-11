@@ -44,6 +44,7 @@ int  process_sleep(double duration) [[block]];
 boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host);
 boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double rate, double timeout) [[nohandler]];
 int           execution_wait(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution) [[block]];
+int           execution_test(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution) [[block]];
 
 void          process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data) [[nohandler]];
 

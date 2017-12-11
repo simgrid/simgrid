@@ -49,7 +49,7 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, const char*
 
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 
-XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec);
+XBT_PRIVATE void SIMIX_execution_finish(smx_activity_t synchro);
 
 XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char* category);
 }

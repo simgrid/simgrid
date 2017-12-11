@@ -222,18 +222,40 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
   /* set surf's synchro */
   if (MC_is_active() || MC_record_replay_is_active()) {
     synchro->state = SIMIX_DONE;
-    SIMIX_execution_finish(exec);
+    SIMIX_execution_finish(synchro);
     return;
   }
 
   /* If the synchro is already finished then perform the error handling */
   if (synchro->state != SIMIX_RUNNING)
-    SIMIX_execution_finish(exec);
+    SIMIX_execution_finish(synchro);
 }
 
-void SIMIX_execution_finish(simgrid::kernel::activity::ExecImplPtr exec)
+void simcall_HANDLER_execution_test(smx_simcall_t simcall, smx_activity_t synchro)
 {
-  for (smx_simcall_t const& simcall : exec->simcalls) {
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
+
+  simcall_execution_test__set__result(simcall, (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING));
+  if (simcall_execution_test__get__result(simcall)) {
+    synchro->simcalls.push_back(simcall);
+    SIMIX_execution_finish(synchro);
+  } else {
+    SIMIX_simcall_answer(simcall);
+  }
+  /* If the synchro is already finished then perform the error handling */
+  if (synchro->state != SIMIX_RUNNING)
+    SIMIX_execution_finish(synchro);
+}
+
+void SIMIX_execution_finish(smx_activity_t synchro)
+{
+  simgrid::kernel::activity::ExecImplPtr exec =
+      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
+
+  while (not synchro->simcalls.empty()) {
+    smx_simcall_t simcall = synchro->simcalls.front();
+    synchro->simcalls.pop_front();
     switch (exec->state) {
 
       case SIMIX_DONE:

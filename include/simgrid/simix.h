@@ -195,6 +195,7 @@ XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
 XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
+XBT_PUBLIC(e_smx_state_t) simcall_execution_test(smx_activity_t execution);
 
 /**************************** Process simcalls ********************************/
 SG_BEGIN_DECL()

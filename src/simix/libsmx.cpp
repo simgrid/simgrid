@@ -170,6 +170,11 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
   return (e_smx_state_t) simcall_BODY_execution_wait(execution);
 }
 
+e_smx_state_t simcall_execution_test(smx_activity_t execution)
+{
+  return (e_smx_state_t)simcall_BODY_execution_test(execution);
+}
+
 /**
  * \ingroup simix_process_management
  * \brief Kills all SIMIX processes.
