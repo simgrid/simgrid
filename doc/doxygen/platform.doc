@@ -1543,6 +1543,36 @@ for @ref pf_trace "trace_connect":
 ./two_hosts.xml:17:  <trace_connect trace="Tremblay_power" element="Tremblay" kind="SPEED"/>
 @endverbatim
 
+\subsection pf_hint_generating How to generate different platform files?
+
+This is actually a good idea to search for a better platform file,
+that better fit the need of your study. To be honest, the provided
+examples are not representative of anything. They exemplify our XML
+syntax, but that's all. small_platform.xml for example was generated
+without much thought beyond that.
+
+The best thing to do when possible is to write your own platform file,
+that model the platform on which you run your code. For that, you
+could use <a href="https://gitlab.inria.fr/simgrid/platform-calibration">our
+calibration scripts</a>. This leads to very good fits between the
+platform, the model and the needs.  The g5k.xml example resulted of
+such an effort, which also lead to <a href="https://github.com/lpouillo/topo5k/">an 
+ongoing attempt</a> to automatically extract the SimGrid platform from
+the <a href="http://grid5000.fr/">Grid'5000</a> experimental platform.
+But it's hard to come up with generic models. Don't take these files
+too seriously. Actually, you should always challenge our models and
+your instanciation if the accuracy really matters to you (see <a
+href="https://hal.inria.fr/hal-00907887">this discussion</a>).
+
+But such advices only hold if you have a real platform and a real
+application at hand. It's moot for more abstract studies working on
+ideas and algorithms instead of technical artefacts. Well, in this
+case, there unfortunately is nothing better than this old and rusty
+<a href="http://pda.gforge.inria.fr/tools/download.html">simulacrum</a>.
+This project is dormant since over 10 years (and you will have to
+update the generated platforms with <tt>bin/simgrid_update_xml</tt> to
+use them), but that's the best we have for this right now....
+
 \subsection pf_as_h AS Hierarchy
 The AS design allows SimGrid to go fast, because computing route is
 done only for the set of resources defined in this AS. If you're using
