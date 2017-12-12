@@ -14,7 +14,7 @@ static void computation_fun()
   double clock_end = simgrid::s4u::Engine::getClock();
 
   XBT_INFO("%s:%s task executed %g", simgrid::s4u::this_actor::getHost()->getCname(),
-           simgrid::s4u::this_actor::getName().c_str(), clock_end - clock_sta);
+           simgrid::s4u::this_actor::getCname(), clock_end - clock_sta);
 }
 
 static void launch_computation_worker(s4u_Host* host)
@@ -56,7 +56,7 @@ static void communication_rx_fun(std::vector<std::string> args)
 
 static void launch_communication_worker(s4u_Host* tx_host, s4u_Host* rx_host)
 {
-  std::string mbox_name = std::string("MBOX:") + tx_host->getName() + "-" + rx_host->getName();
+  std::string mbox_name = std::string("MBOX:") + tx_host->getCname() + "-" + rx_host->getCname();
   std::vector<std::string> args;
   args.push_back(mbox_name);
 
