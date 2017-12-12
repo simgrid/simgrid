@@ -59,7 +59,7 @@ public class Comm {
 		waitAll(comms, -1.);
 	}
 	/** Wait any of the communications, and return the rank of the terminating comm */
-	public static native void waitAny(Comm[] comms) throws TransferFailureException, HostFailureException, TimeoutException;
+	public static native int waitAny(Comm[] comms) throws TransferFailureException, HostFailureException, TimeoutException;
 	/**
 	 * Returns the task associated with the communication.
 	 * if the communication isn't finished yet, will return null.
