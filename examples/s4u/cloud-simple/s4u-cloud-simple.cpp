@@ -188,21 +188,16 @@ static void master_main()
   XBT_INFO("## Test 5 (ended)");
 }
 
-static void launch_master(s4u_Host* host)
-{
-  simgrid::s4u::Actor::createActor("master_", host, master_main);
-}
-
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine* e = new simgrid::s4u::Engine(&argc, argv);
-  e->loadPlatform(argv[1]); /* - Load the platform description */
+  simgrid::s4u::Engine e(&argc, argv);
+  e.loadPlatform(argv[1]); /* - Load the platform description */
 
-  launch_master(simgrid::s4u::Host::by_name("Fafard"));
+  simgrid::s4u::Actor::createActor("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);
 
-  e->run();
+  e.run();
 
-  XBT_INFO("Simulation time %g", e->getClock());
+  XBT_INFO("Simulation time %g", e.getClock());
 
   return 0;
 }
