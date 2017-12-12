@@ -2,7 +2,7 @@
 foreach(x actions-comm actions-storage
           app-pingpong
           async-wait async-waitall async-waitany
-          cloud-sharing cloud-two-tasks
+          cloud-sharing cloud-two-tasks cloud-simple
 	  get_sender host_on_off host_on_off_recv host_on_off_processes	  
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
           energy-ptask energy-pstate platform-properties
@@ -78,7 +78,7 @@ foreach(x
     actions-comm actions-storage
     async-wait async-waitall async-waitany
     app-bittorrent app-pingpong
-    cloud-two-tasks
+    cloud-two-tasks cloud-simple
     energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
     get_sender

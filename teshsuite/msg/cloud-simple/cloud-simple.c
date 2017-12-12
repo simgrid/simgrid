@@ -6,10 +6,10 @@
 #include "simgrid/msg.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int computation_fun(int argc, char *argv[])
+static int computation_fun(int argc, char* argv[])
 {
-  const char *pr_name = MSG_process_get_name(MSG_process_self());
-  const char *host_name = MSG_host_get_name(MSG_host_self());
+  const char* pr_name   = MSG_process_get_name(MSG_process_self());
+  const char* host_name = MSG_host_get_name(MSG_host_self());
 
   msg_task_t task = MSG_task_create("Task", 1000000, 1000000, NULL);
 
@@ -26,10 +26,10 @@ static int computation_fun(int argc, char *argv[])
 
 static void launch_computation_worker(msg_host_t host)
 {
-  const char *pr_name = "compute";
-  char **argv = xbt_new(char *, 2);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = NULL;
+  const char* pr_name = "compute";
+  char** argv         = xbt_new(char*, 2);
+  argv[0]             = xbt_strdup(pr_name);
+  argv[1]             = NULL;
 
   MSG_process_create_with_arguments(pr_name, computation_fun, NULL, host, 1, argv);
 }
@@ -40,17 +40,17 @@ struct task_priv {
   double clock_sta;
 };
 
-static int communication_tx_fun(int argc, char *argv[])
+static int communication_tx_fun(int argc, char* argv[])
 {
   xbt_assert(argc == 2);
-  const char *mbox = argv[1];
+  const char* mbox = argv[1];
 
   msg_task_t task = MSG_task_create("Task", 1000000, 1000000, NULL);
 
-  struct task_priv *priv = xbt_new(struct task_priv, 1);
-  priv->tx_proc = MSG_process_self();
-  priv->tx_host = MSG_host_self();
-  priv->clock_sta = MSG_get_clock();
+  struct task_priv* priv = xbt_new(struct task_priv, 1);
+  priv->tx_proc          = MSG_process_self();
+  priv->tx_host          = MSG_host_self();
+  priv->clock_sta        = MSG_get_clock();
 
   MSG_task_set_data(task, priv);
 
@@ -59,21 +59,21 @@ static int communication_tx_fun(int argc, char *argv[])
   return 0;
 }
 
-static int communication_rx_fun(int argc, char *argv[])
+static int communication_rx_fun(int argc, char* argv[])
 {
-  const char *pr_name = MSG_process_get_name(MSG_process_self());
-  const char *host_name = MSG_host_get_name(MSG_host_self());
+  const char* pr_name   = MSG_process_get_name(MSG_process_self());
+  const char* host_name = MSG_host_get_name(MSG_host_self());
   xbt_assert(argc == 2);
-  const char *mbox = argv[1];
+  const char* mbox = argv[1];
 
   msg_task_t task = NULL;
   MSG_task_recv(&task, mbox);
 
-  struct task_priv *priv = MSG_task_get_data(task);
-  double clock_end = MSG_get_clock();
+  struct task_priv* priv = MSG_task_get_data(task);
+  double clock_end       = MSG_get_clock();
 
-  XBT_INFO("%s:%s to %s:%s => %g sec", MSG_host_get_name(priv->tx_host), MSG_process_get_name(priv->tx_proc),
-      host_name, pr_name, clock_end - priv->clock_sta);
+  XBT_INFO("%s:%s to %s:%s => %g sec", MSG_host_get_name(priv->tx_host), MSG_process_get_name(priv->tx_proc), host_name,
+           pr_name, clock_end - priv->clock_sta);
 
   xbt_free(priv);
   MSG_task_destroy(task);
@@ -83,29 +83,28 @@ static int communication_rx_fun(int argc, char *argv[])
 
 static void launch_communication_worker(msg_host_t tx_host, msg_host_t rx_host)
 {
-  char *mbox = bprintf("MBOX:%s-%s", MSG_host_get_name(tx_host), MSG_host_get_name(rx_host));
-  const char *pr_name_tx =  "comm_tx";
+  char* mbox             = bprintf("MBOX:%s-%s", MSG_host_get_name(tx_host), MSG_host_get_name(rx_host));
+  const char* pr_name_tx = "comm_tx";
 
   char** argv = xbt_new(char*, 3);
-  argv[0] = xbt_strdup(pr_name_tx);
-  argv[1] = xbt_strdup(mbox);
-  argv[2] = NULL;
+  argv[0]     = xbt_strdup(pr_name_tx);
+  argv[1]     = xbt_strdup(mbox);
+  argv[2]     = NULL;
 
   MSG_process_create_with_arguments(pr_name_tx, communication_tx_fun, NULL, tx_host, 2, argv);
 
-  const char *pr_name_rx =  "comm_rx";
-  argv = xbt_new(char *, 3);
-  argv[0] = xbt_strdup(pr_name_rx);
-  argv[1] = xbt_strdup(mbox);
-  argv[2] = NULL;
+  const char* pr_name_rx = "comm_rx";
+  argv                   = xbt_new(char*, 3);
+  argv[0]                = xbt_strdup(pr_name_rx);
+  argv[1]                = xbt_strdup(mbox);
+  argv[2]                = NULL;
 
   MSG_process_create_with_arguments(pr_name_rx, communication_rx_fun, NULL, rx_host, 2, argv);
 
   xbt_free(mbox);
 }
 
-
-static int master_main(int argc, char *argv[])
+static int master_main(int argc, char* argv[])
 {
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_host_t pm1 = MSG_host_by_name("Tremblay");
@@ -140,7 +139,8 @@ static int master_main(int argc, char *argv[])
 
   XBT_INFO("## Test 2 (ended)");
 
-  XBT_INFO("## Test 3 (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)");
+  XBT_INFO(
+      "## Test 3 (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)");
 
   XBT_INFO("### Put a VM on a PM, and put a task to the PM");
   vm0 = MSG_vm_create_core(pm0, "VM0");
@@ -155,7 +155,7 @@ static int master_main(int argc, char *argv[])
            " the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1");
 
   XBT_INFO("### Put two VMs on a PM, and put a task to each VM");
-  vm0 = MSG_vm_create_core(pm0, "VM0");
+  vm0          = MSG_vm_create_core(pm0, "VM0");
   msg_vm_t vm1 = MSG_vm_create_core(pm0, "VM1");
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
@@ -251,15 +251,15 @@ static int master_main(int argc, char *argv[])
 
 static void launch_master(msg_host_t host)
 {
-  const char *pr_name = "master_";
-  char **argv = xbt_new(char *, 2);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = NULL;
+  const char* pr_name = "master_";
+  char** argv         = xbt_new(char*, 2);
+  argv[0]             = xbt_strdup(pr_name);
+  argv[1]             = NULL;
 
   MSG_process_create_with_arguments(pr_name, master_main, NULL, host, 1, argv);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   /* Get the arguments */
   MSG_init(&argc, argv);
@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
   /* load the platform file */
   const char* platform = "../../platforms/small_platform.xml";
   if (argc == 2)
-     platform = argv[1];
+    platform = argv[1];
   MSG_create_environment(platform);
 
   msg_host_t pm0 = MSG_host_by_name("Fafard");
