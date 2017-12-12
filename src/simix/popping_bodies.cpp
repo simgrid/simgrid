@@ -75,7 +75,7 @@ inline static boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 simcall_BODY_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_execution_start(&SIMIX_process_self()->simcall, name, flops_amount, priority, bound, host);
+    SIMIX_execution_start(name, flops_amount, priority, bound, host);
   return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>, const char*, double, double, double,
                  sg_host_t>(SIMCALL_EXECUTION_START, name, flops_amount, priority, bound, host);
 }

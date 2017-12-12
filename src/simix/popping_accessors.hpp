@@ -1403,9 +1403,6 @@ XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int rese
 XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
-XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount, double priority,
-                                double bound, sg_host_t host);
 XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> execution);
 XBT_PRIVATE void
 simcall_HANDLER_execution_test(smx_simcall_t simcall,
