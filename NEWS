@@ -5,6 +5,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |( _ )
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|\___/
                (not released yet)
 
+The "Oh Oh Oh! SimGrid 4 is approaching" release.
+
+ * New model: energy consumption due to the network.
+ * Major cleanups in the disk and storage subsystems.
+ * Convert most of MSG examples to S4U.
+ * (+ further deprecate XBT, bug fixes and doc improvement)
                     _               _____  _ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___  |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | |  / /
