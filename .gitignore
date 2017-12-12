@@ -183,6 +183,7 @@ examples/s4u/app-token-ring/s4u-app-token-ring
 examples/s4u/async-wait/s4u-async-wait
 examples/s4u/async-waitall/s4u-async-waitall
 examples/s4u/async-waitany/s4u-async-waitany
+examples/s4u/cloud-simple/s4u-cloud-simple
 examples/s4u/dht-chord/s4u-dht-chord
 examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-ptask/s4u-energy-ptask
