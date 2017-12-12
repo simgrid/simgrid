@@ -204,8 +204,6 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)
 {
-  simgrid::kernel::activity::ExecImplPtr exec =
-      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro.get(), (int)synchro->state);
 
   /* Associate this simcall to the synchro */
@@ -226,9 +224,6 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
 
 void simcall_HANDLER_execution_test(smx_simcall_t simcall, smx_activity_t synchro)
 {
-  simgrid::kernel::activity::ExecImplPtr exec =
-      boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
-
   simcall_execution_test__set__result(simcall, (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING));
   if (simcall_execution_test__get__result(simcall)) {
     synchro->simcalls.push_back(simcall);
