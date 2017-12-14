@@ -1,0 +1,16 @@
+#! ./tesh
+
+p Testing the chainsend S4U implementation
+
+! timeout 60
+! output sort 19
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-app-chainsend ${platfdir}/cluster.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+> [    2.214423] (2:peer@node-1.acme.org) ### 2.214423 16777216 bytes (Avg 7.225360 MB/s); copy finished (simulated).
+> [    2.222796] (3:peer@node-2.acme.org) ### 2.222796 16777216 bytes (Avg 7.198141 MB/s); copy finished (simulated).
+> [    2.231170] (4:peer@node-3.acme.org) ### 2.231170 16777216 bytes (Avg 7.171127 MB/s); copy finished (simulated).
+> [    2.239543] (5:peer@node-4.acme.org) ### 2.239543 16777216 bytes (Avg 7.144314 MB/s); copy finished (simulated).
+> [    2.247917] (6:peer@node-5.acme.org) ### 2.247917 16777216 bytes (Avg 7.117701 MB/s); copy finished (simulated).
+> [    2.256290] (7:peer@node-6.acme.org) ### 2.256290 16777216 bytes (Avg 7.091286 MB/s); copy finished (simulated).
+> [    2.264637] (0:maestro@) Total simulation time: 2.264637e+00
+> [    2.264637] (8:peer@node-7.acme.org) ### 2.264637 16777216 bytes (Avg 7.065151 MB/s); copy finished (simulated).
+> [    2.264637] (9:peer@node-8.acme.org) ### 2.264637 16777216 bytes (Avg 7.065151 MB/s); copy finished (simulated).

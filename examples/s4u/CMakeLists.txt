@@ -1,5 +1,5 @@
 foreach (example actor-create actor-daemon actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
-                 app-masterworker app-pingpong app-token-ring
+                 app-chainsend app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  cloud-simple
                  energy-link energy-pstate energy-ptask energy-vm
@@ -68,7 +68,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
 foreach(example actor-create actor-daemon actor-join actor-kill actor-lifetime actor-migration actor-suspend actor-yield
-                app-bittorrent app-masterworker app-pingpong app-token-ring 
+                app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany
                 cloud-simple
                 dht-chord 
