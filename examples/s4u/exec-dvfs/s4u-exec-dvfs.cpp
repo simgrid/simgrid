@@ -7,12 +7,12 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 
-static int dvfs(std::vector<std::string> args)
+static int dvfs()
 {
   double workload = 100E6;
-  sg_host_t host  = simgrid::s4u::this_actor::getHost();
+  simgrid::s4u::Host* host = simgrid::s4u::this_actor::getHost();
 
-  int nb = sg_host_get_nb_pstates(host);
+  int nb = host->getPstatesCount();
   XBT_INFO("Count of Processor states=%d", nb);
 
   XBT_INFO("Current power peak=%f", host->getSpeed());
@@ -28,7 +28,7 @@ static int dvfs(std::vector<std::string> args)
 
   XBT_INFO("Changing power peak value to %f (at index %d)", host->getPstateSpeed(new_pstate), new_pstate);
 
-  sg_host_set_pstate(host, new_pstate);
+  host->setPstate(new_pstate);
 
   XBT_INFO("Current power peak=%f", host->getSpeed());
 
@@ -38,9 +38,9 @@ static int dvfs(std::vector<std::string> args)
   task_time = simgrid::s4u::Engine::getClock() - task_time;
   XBT_INFO("Task2 simulation time: %e", task_time);
 
-  // Verify the default pstate is set to 0
+  // Verify that the default pstate is set to 0
   host = simgrid::s4u::Host::by_name_or_null("MyHost2");
-  XBT_INFO("Count of Processor states=%d", sg_host_get_nb_pstates(host));
+  XBT_INFO("Count of Processor states=%d", host->getPstatesCount());
 
   XBT_INFO("Current power peak=%f", host->getSpeed());
   return 0;
@@ -49,14 +49,13 @@ static int dvfs(std::vector<std::string> args)
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  std::vector<std::string> args;
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]); /* - Load the platform description */
+  e.loadPlatform(argv[1]);
 
-  simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost1"), dvfs, args);
-  simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost2"), dvfs, args);
+  simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost1"), dvfs);
+  simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost2"), dvfs);
 
   e.run();
 
