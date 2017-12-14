@@ -94,6 +94,12 @@ TODO: document here the examples about plugins
     @ref examples/s4u/exec-remote/s4u-exec-remote.cpp \n
     Before its start, you can change the host on which a given execution will occur.
 
+  - <b>Using Pstates on a host</b>
+    @ref examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp and 
+    @ref examples/platforms/energy_platform.xml \n
+    Show how define a set of pstatesfor a host in the XML, and how the current
+    pstate can be accessed/changed with @ref simgrid::s4u::Host::getPstateSpeed and @ref simgrid::s4u::Host::setPstate.
+
   TODO: add an example about parallel executions.
 
 @subsection s4u_ex_activity_io I/O (using disks and files)
@@ -225,13 +231,6 @@ also the tesh files in the example directories for details.
     This example shows how to retrieve the amount of energy consumed
     by the CPU during computations, and the impact of the pstate.
 
-  - <b>Using Pstates on a host</b>
-    @ref examples/s4u/energy-pstate/s4u-energy-pstate.cpp and 
-    @ref examples/platforms/energy_platform.xml \n
-    Show how define a set of pstates for a host and how the current
-    pstate can be accessed/changed with @ref simgrid::s4u::Host::getPstateSpeed and @ref simgrid::s4u::Host::setPstate.
-    See also the platform XML file for have a details on how to declare the CPU capacity for each pstate.
-
 */
 
 /**
@@ -252,13 +251,13 @@ also the tesh files in the example directories for details.
 @example examples/s4u/async-waitany/s4u-async-waitany.cpp
 @example examples/s4u/exec-basic/s4u-exec-basic.cpp
 @example examples/s4u/exec-async/s4u-exec-async.cpp
+@example examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp
 @example examples/s4u/exec-monitor/s4u-exec-monitor.cpp
 @example examples/s4u/exec-remote/s4u-exec-remote.cpp 
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
 @example examples/s4u/energy-exec/s4u-energy-exec.cpp
-@example examples/s4u/energy-pstate/s4u-energy-pstate.cpp
 @example examples/s4u/io-file-system/s4u-io-file-system.cpp
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 @example examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp

@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 static int dvfs(std::vector<std::string> args)
 {
   double workload = 100E6;
-  sg_host_t host = simgrid::s4u::this_actor::getHost();
+  sg_host_t host  = simgrid::s4u::this_actor::getHost();
 
   int nb = sg_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb);
@@ -46,19 +46,19 @@ static int dvfs(std::vector<std::string> args)
   return 0;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   std::vector<std::string> args;
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-   e.loadPlatform(argv[1]); /* - Load the platform description */
+  e.loadPlatform(argv[1]); /* - Load the platform description */
 
-   simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost1"), dvfs, args);
-   simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost2"), dvfs, args);
+  simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost1"), dvfs, args);
+  simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost2"), dvfs, args);
 
-   e.run();
+  e.run();
 
   XBT_INFO("Total simulation time: %e", e.getClock());
 

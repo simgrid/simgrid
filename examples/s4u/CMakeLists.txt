@@ -2,8 +2,8 @@ foreach (example actor-create actor-daemon actor-join actor-kill actor-lifetime 
                  app-chainsend app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  cloud-simple
-                 energy-exec energy-link energy-pstate energy-ptask energy-vm
-                 exec-async exec-basic exec-monitor exec-remote
+                 energy-exec energy-link energy-ptask energy-vm
+                 exec-async exec-basic exec-dvfs exec-monitor exec-remote
                  io-file-system io-file-remote io-storage-raw
                  mutex
                  platform-properties plugin-hostload 
@@ -38,13 +38,13 @@ endforeach()
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/energy-pstate/s4u-energy-pstate.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/exec-basic/s4u-exec-basic.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-dvfs/s4u-exec-dvfs.tesh
                   PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
@@ -72,8 +72,8 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-lifetime a
                 async-wait async-waitall async-waitany
                 cloud-simple
                 dht-chord 
-                energy-exec energy-link energy-pstate energy-ptask energy-vm
-                exec-async exec-basic exec-monitor exec-remote
+                energy-exec energy-link energy-ptask energy-vm
+                exec-async exec-basic exec-dvfs exec-monitor exec-remote
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw
                 replay-comm replay-storage)
