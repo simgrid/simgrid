@@ -81,6 +81,10 @@ Host* Host::by_name(std::string name)
 {
   return host_list.at(name); // Will raise a std::out_of_range if the host does not exist
 }
+Host* Host::by_name(const char* name)
+{
+  return host_list.at(std::string(name)); // Will raise a std::out_of_range if the host does not exist
+}
 Host* Host::by_name_or_null(const char* name)
 {
   return by_name_or_null(std::string(name));
