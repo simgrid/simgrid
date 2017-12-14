@@ -194,12 +194,12 @@ with, but the second is more efficient on very large traces. Check
 also the tesh files in the example directories for details.
 
   - <b>Communication replay</b>.
-    @ref examples/s4u/actions-comm/s4u-actions-comm.cpp \n
+    @ref examples/s4u/replay-comm/s4u-replay-comm.cpp \n
     Presents a set of event handlers reproducing classical communication
     primitives (asynchronous send/receive at the moment).
 
   - <b>I/O replay</b>.
-    @ref examples/s4u/actions-storage/s4u-actions-storage.cpp \n
+    @ref examples/s4u/replay-storage/s4u-replay-storage.cpp \n
     Presents a set of event handlers reproducing classical I/O
     primitives (open, read, close).
 
@@ -223,7 +223,6 @@ also the tesh files in the example directories for details.
    - simgrid::s4u::Link::getProperty() and simgrid::s4u::Link::setProperty()
    - simgrid::s4u::NetZone::getProperty() and simgrid::s4u::NetZone::setProperty()
 
-
 @section s4u_ex_energy Simulating the energy consumption
 
   - <b>Consumption due to the CPU</b> 
@@ -231,11 +230,25 @@ also the tesh files in the example directories for details.
     This example shows how to retrieve the amount of energy consumed
     by the CPU during computations, and the impact of the pstate.
 
+@section s4u_ex_tracing Tracing and visualization features
+
+Tracing can be activated by various configuration options which
+are illustrated in these example. See also the 
+@ref tracing_tracing_options "full list of options related to tracing".
+
+It is interesting to run the process-create example with the following
+options to see the task executions:
+
+  - <b>Platform tracing</b>.
+    @ref examples/s4u/trace-platform/s4u-trace-platform.cpp \n
+    This program is a toy example just loading the platform, so that
+    you can play with the platform visualization. Recommanded options:
+    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes
+    @endverbatim
+
 */
 
 /**
-@example examples/s4u/actions-comm/s4u-actions-comm.cpp
-@example examples/s4u/actions-storage/s4u-actions-storage.cpp
 @example examples/s4u/actor-create/s4u-actor-create.cpp
 @example examples/s4u/actor-create/s4u-actor-create_d.xml
 @example examples/s4u/actor-daemon/s4u-actor-daemon.cpp
@@ -264,6 +277,9 @@ also the tesh files in the example directories for details.
 @example examples/s4u/mutex/s4u-mutex.cpp
 @example examples/s4u/platform-properties/s4u-platform-properties.cpp
 @example examples/s4u/platform-properties/s4u-platform-properties_d.xml
+@example examples/s4u/replay-comm/s4u-replay-comm.cpp
+@example examples/s4u/replay-storage/s4u-replay-storage.cpp
+@example examples/s4u/trace-platform/s4u-trace-platform.cpp
 @example examples/platforms/energy_platform.xml
 @example examples/platforms/prop.xml
 

@@ -46,13 +46,6 @@ are illustrated in these example. See also the
 It is interesting to run the process-create example with the following
 options to see the task executions:
 
-  - <b>Platform tracing</b>.
-    @ref examples/msg/trace-platform/trace-platform.c \n
-    This program is a toy example just loading the platform, so that
-    you can play with the platform visualization. Recommanded options:
-    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes
-    @endverbatim
-
   - <b>Setting Categories</b>.
     @ref examples/msg/trace-categories/trace-categories.c \n
     This example declares several tracing categories
@@ -141,7 +134,6 @@ top of the example file).
 
 @example examples/msg/process-create/process-create.c
 
-@example examples/msg/trace-platform/trace-platform.c
 @example examples/msg/trace-categories/trace-categories.c
 @example examples/msg/trace-masterworker/trace-masterworker.c
 @example examples/msg/trace-process-migration/trace-process-migration.c
