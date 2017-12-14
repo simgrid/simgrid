@@ -2,7 +2,7 @@ foreach (example actor-create actor-daemon actor-join actor-kill actor-lifetime 
                  app-chainsend app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  cloud-simple
-                 energy-link energy-pstate energy-ptask energy-vm
+                 energy-exec energy-link energy-pstate energy-ptask energy-vm
                  exec-async exec-basic exec-monitor exec-remote
                  io-file-system io-file-remote io-storage-raw
                  mutex
@@ -72,7 +72,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-lifetime a
                 async-wait async-waitall async-waitany
                 cloud-simple
                 dht-chord 
-                energy-link energy-pstate energy-ptask energy-vm
+                energy-exec energy-link energy-pstate energy-ptask energy-vm
                 exec-async exec-basic exec-monitor exec-remote
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw

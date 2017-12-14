@@ -130,7 +130,6 @@ examples/msg/cloud-two-tasks/cloud-two-tasks
 examples/msg/dht-chord/dht-chord
 examples/msg/dht-kademlia/dht-kademlia
 examples/msg/dht-pastry/dht-pastry
-examples/msg/energy-consumption/energy-consumption
 examples/msg/energy-onoff/energy-onoff
 examples/msg/energy-vm/energy-vm
 examples/msg/platform-failures/platform-failures
@@ -187,10 +186,10 @@ examples/s4u/cloud-simple/s4u-cloud-simple
 examples/s4u/dht-chord/s4u-dht-chord
 examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-ptask/s4u-energy-ptask
-examples/s4u/energy-pstate/s4u-energy-pstate
 examples/s4u/energy-vm/s4u-energy-vm
 examples/s4u/exec-async/s4u-exec-async
 examples/s4u/exec-basic/s4u-exec-basic
+examples/s4u/exec-dvfs/s4u-exec-dvfs
 examples/s4u/exec-monitor/s4u-exec-monitor
 examples/s4u/exec-remote/s4u-exec-remote
 examples/s4u/io-file-system/s4u-io-file-system
@@ -258,6 +257,7 @@ teshsuite/msg/async-waitall/async-waitall
 teshsuite/msg/async-waitany/async-waitany
 teshsuite/msg/cloud-sharing/cloud-sharing
 teshsuite/msg/concurrent_rw/concurrent_rw
+teshsuite/msg/energy-consumption/energy-consumption
 teshsuite/msg/energy-pstate/energy-pstate
 teshsuite/msg/energy-ptask/energy-ptask
 teshsuite/msg/get_sender/get_sender

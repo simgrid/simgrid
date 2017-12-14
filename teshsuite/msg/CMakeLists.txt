@@ -5,7 +5,7 @@ foreach(x actions-comm actions-storage
           cloud-sharing cloud-two-tasks cloud-simple
 	  get_sender host_on_off host_on_off_recv host_on_off_processes	  
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
-          energy-ptask energy-pstate platform-properties
+          energy-consumption energy-ptask energy-pstate platform-properties
           io-file io-raw-storage io-file-remote
 	  task-priority
           trace_integration)
@@ -84,7 +84,7 @@ foreach(x
     get_sender
     task_destroy_cancel task_listen_from task_progress 
     process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
-    energy-ptask
+    energy-consumption energy-ptask
     io-file io-raw-storage io-file-remote
     platform-properties
     trace_integration)

@@ -1,7 +1,7 @@
 # C examples
 foreach(x app-masterworker app-token-ring 
           cloud-capping cloud-masterworker cloud-migration
-          dht-pastry energy-consumption energy-onoff energy-vm platform-failures 
+          dht-pastry energy-onoff energy-vm platform-failures 
           plugin-hostload
           process-create 
           synchro-semaphore trace-categories 
@@ -73,7 +73,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 foreach(x app-chainsend app-masterworker app-token-ring
           cloud-capping cloud-masterworker cloud-migration
           dht-pastry dht-kademlia platform-failures
-          energy-consumption energy-onoff energy-vm
+          energy-onoff energy-vm
           plugin-hostload
           process-create 
           synchro-semaphore)
