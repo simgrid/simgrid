@@ -274,7 +274,7 @@ static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
  *  Before this version of DWARF, the MIPS extensions
  *  DW_AT_MIPS_linkage_name is used (at least by GCC).
  *
- *  \param  the DIE
+ *  \param  die the DIE
  *  \return linkage name of the given DIE (or nullptr)
  * */
 static const char *MC_dwarf_at_linkage_name(Dwarf_Die * die)
@@ -312,7 +312,7 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
 
 /** \brief Find the type/subtype (DW_AT_type) for a DIE
  *
- *  \param dit the DIE
+ *  \param die the DIE
  *  \return DW_AT_type reference as a global offset in hexadecimal (or nullptr)
  */
 static
@@ -621,7 +621,7 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
 /** \brief Create a MC type object from a DIE
  *
  *  \param info current object info object
- *  \param DIE (for a given type)
+ *  \param die DIE (for a given type)
  *  \param unit compilation unit of the current DIE
  *  \return MC representation of the type
  */

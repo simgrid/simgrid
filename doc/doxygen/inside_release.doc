@@ -47,7 +47,7 @@ git clean -dfx          # warning, it will kill your uncommited changes
 cmake . && make dist
 \endverbatim
 
-\subsection inside_release_c_source Building the binary jarfile
+\subsection inside_release_c_jarfile Building the binary jarfile
 
 Get the jarfiles for several OSes on the CI slaves. Use Save under to
 give a separate name to each of them.
