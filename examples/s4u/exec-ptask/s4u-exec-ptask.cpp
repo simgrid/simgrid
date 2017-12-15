@@ -3,6 +3,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* Parallel tasks are convenient abstractions of parallel computational kernels that span over several machines.
+ * To create a new one, you have to provide several things:
+ *   - a vector of hosts on which the task will execute
+ *   - a vector of values, the amount of computation for each of the hosts (in flops)
+ *   - a matrix of values, the amount of communication between each pair of hosts (in bytes)
+ *
+ * Each of these operation will be processed at the same relative speed.
+ * This means that at some point in time, all sub-executions and all sub-communications will be at 20% of completion.
+ * Also, they will all complete at the exact same time.
+ *
+ * This is obviously a simplistic abstraction, but this is very handful in a large amount of situations.
+ *
+ * Please note that you must have the LV07 platform model enabled to use such constructs.
+ */
+
 #include "simgrid/plugins/energy.h"
 #include <simgrid/s4u.hpp>
 #include <xbt/ex.hpp>

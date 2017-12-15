@@ -175,7 +175,10 @@ also the tesh files in the example directories for details.
     Show how define a set of pstatesfor a host in the XML, and how the current
     pstate can be accessed/changed with @ref simgrid::s4u::Host::getPstateSpeed and @ref simgrid::s4u::Host::setPstate.
 
-  TODO: add an example about parallel executions.
+  - <b>Parallel tasks</b>
+    @ref examples/s4u/exec-ptasks/s4u-exec-ptasks.cpp\n
+    These objects are convenient abstractions of parallel
+    computational kernels that span over several machines. 
 
 @subsection s4u_ex_activity_io I/O on disks and files
 
