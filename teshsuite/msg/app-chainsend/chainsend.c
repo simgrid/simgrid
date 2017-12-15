@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h"
+#include "broadcaster.h"
 #include "iterator.h"
 #include "messages.h"
-#include "broadcaster.h"
 #include "peer.h"
+#include "simgrid/msg.h"
 
 /** @addtogroup MSG_examples
  *
@@ -17,7 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chainsend, "Messages specific for chainsend");
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
 

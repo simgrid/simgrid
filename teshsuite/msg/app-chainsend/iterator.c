@@ -14,17 +14,17 @@ xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*crit
 {
   xbt_dynar_iterator_t it = xbt_new(xbt_dynar_iterator_s, 1);
 
-  it->list = list;
-  it->length = xbt_dynar_length(list);
+  it->list         = list;
+  it->length       = xbt_dynar_length(list);
   it->indices_list = criteria_fn(it->length); // Creates and fills a dynar of int
-  it->criteria_fn = criteria_fn;
-  it->current = 0;
+  it->criteria_fn  = criteria_fn;
+  it->current      = 0;
 
   return it;
 }
 
 /* Returns the next element iterated by iterator it, NULL if there are no more elements */
-void *xbt_dynar_iterator_next(xbt_dynar_iterator_t it)
+void* xbt_dynar_iterator_next(xbt_dynar_iterator_t it)
 {
   if (it->current >= it->length) {
     return NULL;

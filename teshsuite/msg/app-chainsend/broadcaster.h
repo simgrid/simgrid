@@ -7,10 +7,10 @@
 #ifndef BROADCASTER_H
 #define BROADCASTER_H
 
-#include "xbt/dynar.h"
-#include "messages.h"
-#include "iterator.h"
 #include "common.h"
+#include "iterator.h"
+#include "messages.h"
+#include "xbt/dynar.h"
 
 /* Connection parameters */
 #define MAX_PENDING_SENDS 10
@@ -21,7 +21,7 @@
 
 /* Broadcaster struct */
 typedef struct s_broadcaster {
-  const char *first;
+  const char* first;
   int piece_count;
   int current_piece;
   xbt_dynar_t host_list;
@@ -30,7 +30,7 @@ typedef struct s_broadcaster {
   xbt_dynar_t pending_sends;
 } s_broadcaster_t;
 
-typedef s_broadcaster_t *broadcaster_t;
+typedef s_broadcaster_t* broadcaster_t;
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount);
 
@@ -40,6 +40,6 @@ int broadcaster_build_chain(broadcaster_t bc);
 int broadcaster_send_file(broadcaster_t bc);
 
 /* Tasks */
-int broadcaster(int argc, char *argv[]);
+int broadcaster(int argc, char* argv[]);
 
 #endif /* BROADCASTER_H */

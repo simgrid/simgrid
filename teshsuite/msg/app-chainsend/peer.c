@@ -10,10 +10,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peer, "Messages specific for the peer");
 
 void peer_init_chain(peer_t peer, message_t msg)
 {
-  peer->prev = msg->prev_hostname;
-  peer->next = msg->next_hostname;
+  peer->prev         = msg->prev_hostname;
+  peer->next         = msg->next_hostname;
   peer->total_pieces = msg->num_pieces;
-  peer->init = 1;
+  peer->init         = 1;
 }
 
 static void peer_forward_msg(peer_t peer, message_t msg)
@@ -26,7 +26,7 @@ static void peer_forward_msg(peer_t peer, message_t msg)
 
 int peer_execute_task(peer_t peer, msg_task_t task)
 {
-  int done = 0;
+  int done      = 0;
   message_t msg = MSG_task_get_data(task);
 
   XBT_DEBUG("Peer %s got message of type %u\n", peer->me, msg->type);
@@ -54,14 +54,14 @@ msg_error_t peer_wait_for_message(peer_t peer)
   msg_error_t status;
   msg_comm_t comm = NULL;
   msg_task_t task = NULL;
-  int done = 0;
+  int done        = 0;
 
   while (done == 0) {
     comm = MSG_task_irecv(&task, peer->me);
     queue_pending_connection(comm, peer->pending_recvs);
     int idx = MSG_comm_waitany(peer->pending_recvs);
     if (idx != -1) {
-      comm = xbt_dynar_get_as(peer->pending_recvs, idx, msg_comm_t);
+      comm   = xbt_dynar_get_as(peer->pending_recvs, idx, msg_comm_t);
       status = MSG_comm_get_status(comm);
       XBT_DEBUG("peer_wait_for_message: error code = %u", status);
       xbt_assert(status == MSG_OK, "peer_wait_for_message() failed");
@@ -80,13 +80,13 @@ msg_error_t peer_wait_for_message(peer_t peer)
   return status;
 }
 
-void peer_init(peer_t p, int argc, char *argv[])
+void peer_init(peer_t p, int argc, char* argv[])
 {
-  p->init = 0;
-  p->prev = NULL;
-  p->next = NULL;
-  p->pieces = 0;
-  p->bytes = 0;
+  p->init          = 0;
+  p->prev          = NULL;
+  p->next          = NULL;
+  p->pieces        = 0;
+  p->bytes         = 0;
   p->pending_recvs = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   /* Set mailbox name: use host number from argv or hostname if no argument given */
@@ -101,7 +101,7 @@ void peer_shutdown(peer_t p)
 {
   unsigned int size = xbt_dynar_length(p->pending_sends);
   unsigned int idx;
-  msg_comm_t *comms = xbt_new(msg_comm_t, size);
+  msg_comm_t* comms = xbt_new(msg_comm_t, size);
 
   for (idx = 0; idx < size; idx++) {
     comms[idx] = xbt_dynar_get_as(p->pending_sends, idx, msg_comm_t);
@@ -130,11 +130,12 @@ void peer_delete(peer_t p)
 
 void peer_print_stats(peer_t p, float elapsed_time)
 {
-  XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", elapsed_time, p->bytes, p->bytes / 1024.0 / 1024.0 / elapsed_time);
+  XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", elapsed_time, p->bytes,
+           p->bytes / 1024.0 / 1024.0 / elapsed_time);
 }
 
 /** Peer function  */
-int peer(int argc, char *argv[])
+int peer(int argc, char* argv[])
 {
   peer_t p = xbt_new(s_peer_t, 1);
   msg_error_t status;
@@ -143,7 +144,7 @@ int peer(int argc, char *argv[])
 
   peer_init(p, argc, argv);
   float start_time = MSG_get_clock();
-  status = peer_wait_for_message(p);
+  status           = peer_wait_for_message(p);
   peer_shutdown(p);
   float end_time = MSG_get_clock();
   peer_print_stats(p, end_time - start_time);

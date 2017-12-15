@@ -15,13 +15,6 @@ documentation, but it should remain readable directly.
 
 @section msg_ex_basics Basic examples and features
 
- - <b>Token Ring</b>.
-   @ref examples/msg/app-token-ring/app-token-ring.c\n
-   Classical communication pattern, where a token is exchanged
-   along a ring to reach every participant. 
-   The tesh file laying in the directory shows how to run the same
-   example on different virtual platforms.
-
  - <b>Master Workers</b>.
    @ref examples/msg/app-masterworker/app-masterworker.c\n
    Another good old example, where one Master process has a bunch of
@@ -126,7 +119,6 @@ top of the example file).
 
 
 /**
-@example examples/msg/app-token-ring/app-token-ring.c
 @example examples/msg/app-masterworker/app-masterworker.c
 
 @example examples/msg/process-create/process-create.c
