@@ -95,8 +95,7 @@ int Group::compare(MPI_Group group2)
   if (size_ != group2->size()) {
     result = MPI_UNEQUAL;
   } else {
-    int sz = group2->size();
-    for (int i = 0; i < sz; i++) {
+    for (int i = 0; i < size_; i++) {
       int index = this->index(i);
       int rank = group2->rank(index);
       if (rank == MPI_UNDEFINED) {
