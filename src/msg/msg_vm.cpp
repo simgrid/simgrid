@@ -789,34 +789,8 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
   return vm->getPm();
 }
 
-/** @brief Set a CPU bound for a given VM.
- *  @ingroup msg_VMs
- *
- * 1. Note that in some cases MSG_task_set_bound() may not intuitively work for VMs.
- *
- * For example,
- *  On PM0, there are Task1 and VM0.
- *  On VM0, there is Task2.
- * Now we bound 75% to Task1\@PM0 and bound 25% to Task2\@VM0.
- * Then,
- *  Task1\@PM0 gets 50%.
- *  Task2\@VM0 gets 25%.
- * This is NOT 75% for Task1\@PM0 and 25% for Task2\@VM0, respectively.
- *
- * This is because a VM has the dummy CPU action in the PM layer. Putting a task on the VM does not affect the bound of
- * the dummy CPU action. The bound of the dummy CPU action is unlimited.
- *
- * There are some solutions for this problem. One option is to update the bound of the dummy CPU action automatically.
- * It should be the sum of all tasks on the VM. But, this solution might be costly, because we have to scan all tasks
- * on the VM in share_resource() or we have to trap both the start and end of task execution.
- *
- * The current solution is to use MSG_vm_set_bound(), which allows us to directly set the bound of the dummy CPU action.
- *
- * 2. Note that bound == 0 means no bound (i.e., unlimited). But, if a host has multiple CPU cores, the CPU share of a
- *    computation task (or a VM) never exceeds the capacity of a CPU core.
- */
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
-  simgrid::simix::kernelImmediate([vm, bound]() { vm->pimpl_vm_->setBound(bound); });
+  vm->setBound(bound);
 }
 }

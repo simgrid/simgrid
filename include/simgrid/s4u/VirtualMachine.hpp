@@ -56,6 +56,7 @@ public:
   simgrid::s4u::Host* getPm();
   size_t getRamsize();
   void setRamsize(size_t ramsize);
+  void setBound(double bound);
 
   e_surf_vm_state_t getState();
 
