@@ -227,10 +227,22 @@ result in short reads and short write, as in reality.
 
 @section s4u_ex_energy Simulating the energy consumption
 
+  - <b>Describing the energy profiles in the platform</b>
+    @ref examples/platforms/energy_platform.xml \n
+    This platform file contains the energy profile of each links and
+    hosts, which is necessary to get energy consumption predictions.
+    As usual, you should not trust our example, and you should strive
+    to double-check that your instanciation matches your target platform.
+
   - <b>Consumption due to the CPU</b> 
     @ref examples/s4u/energy-exec/s4u-energy-exec.cpp \n
     This example shows how to retrieve the amount of energy consumed
     by the CPU during computations, and the impact of the pstate.
+
+  - <b>Consumption due to the network</b>
+    @ref examples/s4u/energy-link/s4u-energy-link.cpp
+    This example shows how to retrieve and display the energy consumed
+    by the network during communications.
 
 @section s4u_ex_tracing Tracing and visualization features
 
@@ -311,6 +323,7 @@ than the previous examples.
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/energy-exec/s4u-energy-exec.cpp
+@example examples/s4u/energy-link/s4u-energy-link.cpp
 @example examples/s4u/io-file-system/s4u-io-file-system.cpp
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 @example examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp
