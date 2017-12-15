@@ -40,7 +40,9 @@ to simulate.
   - @ref s4u_ex_platf
   - @ref s4u_ex_energy
   - @ref s4u_ex_tracing
-  - @ref s4u_ex_examplars
+  - @ref s4u_ex_app
+    - @ref s4u_ex_app_data
+    - @ref s4u_ex_app_dht
 
 TODO: document here the examples about plugins
     
@@ -243,7 +245,7 @@ options to see the task executions:
     @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes
     @endverbatim
 
-@section s4u_ex_examplars Larger SimGrid examplars
+@section s4u_ex_app Larger SimGrid examplars
 
 This section contains application examples that are somewhat larger
 than the previous examples.
@@ -260,6 +262,22 @@ than the previous examples.
   - <b>Master Workers:</b> @ref examples/s4u/app-masterworker/s4u-app-masterworker.cpp \n
     Another good old example, where one Master process has a bunch of task to dispatch to a set of several Worker 
     processes. 
+    
+@subsection s4u_ex_app_data Data diffusion
+
+  - <b>Bit Torrent</b> 
+    @ref examples/s4u/app-bittorrent/s4u-app-bittorrent.cpp\n
+    Classical protocol for Peer-to-Peer data diffusion.
+    
+  - <b>Chained send</b> 
+    @ref examples/s4u/app-chainsend/s4u-app-chainsend.cpp\n
+    Data broadcast over a ring of processes.
+
+@subsection s4u_ex_app_dht Distributed Hash Tables (DHT)
+
+  - <b>Chord Protocol</b> 
+    @ref examples/s4u/app-chord/s4u-app-chord.cpp\n
+    One of the most famous DHT protocol.
 
 */
 
@@ -282,9 +300,11 @@ than the previous examples.
 @example examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp
 @example examples/s4u/exec-monitor/s4u-exec-monitor.cpp
 @example examples/s4u/exec-remote/s4u-exec-remote.cpp 
-@example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
+@example examples/s4u/app-bittorrent/s4u-app-bittorrent.cpp
+@example examples/s4u/app-chainsend/s4u-app-chainsend.cpp
 @example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
+@example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/energy-exec/s4u-energy-exec.cpp
 @example examples/s4u/io-file-system/s4u-io-file-system.cpp
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
