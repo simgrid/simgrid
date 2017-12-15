@@ -12,8 +12,6 @@ documentation, but it should remain readable directly.
     - @ref msg_ex_tracing_user_variables
   - @ref msg_ex_models
     - @ref msg_ex_ns3
-  - @ref msg_ex_apps
-  - @ref msg_ex_misc
 
 @section msg_ex_basics Basic examples and features
 
@@ -27,8 +25,7 @@ documentation, but it should remain readable directly.
  - <b>Master Workers</b>.
    @ref examples/msg/app-masterworker/app-masterworker.c\n
    Another good old example, where one Master process has a bunch of
-   task to dispatch to a set of several Worker processes. It is fully
-   commented in @ref msg_ex_master_worker.
+   task to dispatch to a set of several Worker processes.
 
 @section msg_ex_process Acting on Processes
 
