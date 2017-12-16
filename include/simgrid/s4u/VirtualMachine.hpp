@@ -27,8 +27,8 @@ namespace s4u {
  *
  * @tableofcontents
  *
- * A VM is a virtual machine that contains actors. The total computing power that the contained
- * processes can get is constrained to the virtual machine size.
+ * A VM represents a virtual machine (or a container) that hosts actors.
+ * The total computing power that the contained actors can get is constrained to the virtual machine size.
  *
  */
 XBT_PUBLIC_CLASS VirtualMachine : public s4u::Host
