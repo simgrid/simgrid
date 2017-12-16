@@ -13,20 +13,23 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 namespace simgrid {
 namespace s4u {
 
-void Exec::start()
+Activity* Exec::start()
 {
   pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1 / priority_, 0., host_);
   state_ = started;
+  return this;
 }
 
-void Exec::wait()
+Activity* Exec::wait()
 {
   simcall_execution_wait(pimpl_);
+  return this;
 }
 
-void Exec::wait(double timeout)
+Activity* Exec::wait(double timeout)
 {
   THROW_UNIMPLEMENTED;
+  return this;
 }
 
 bool Exec::test()

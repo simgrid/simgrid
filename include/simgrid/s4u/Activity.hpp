@@ -38,14 +38,14 @@ public:
    *
    * This function is optional: you can call wait() even if you didn't call start()
    */
-  virtual void start()=0;
+  virtual Activity* start() = 0;
   /** Tests whether the given activity is terminated yet. This is a pure function. */
   //virtual bool test()=0;
   /** Blocks until the activity is terminated */
-  virtual void wait()=0;
+  virtual Activity* wait() = 0;
   /** Blocks until the activity is terminated, or until the timeout is elapsed
    *  Raises: timeout exception.*/
-  virtual void wait(double timeout)=0;
+  virtual Activity* wait(double timeout) = 0;
   /** Cancel that activity */
   //virtual void cancel();
   /** Retrieve the current state of the activity */
@@ -56,10 +56,14 @@ public:
   /** Set the [remaining] amount of work that this Activity will entail
    *
    * It is forbidden to change the amount of work once the Activity is started */
-  void setRemains(double remains);
+  Activity* setRemains(double remains);
 
   /** Put some user data onto the Activity */
-  void setUserData(void *data) {userData_=data;}
+  Activity* setUserData(void* data)
+  {
+    userData_ = data;
+    return this;
+  }
   /** Retrieve the user data of the Activity */
   void *getUserData() { return userData_; }
 

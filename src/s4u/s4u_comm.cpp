@@ -25,45 +25,58 @@ Comm::~Comm()
   }
 }
 
-void Comm::setRate(double rate) {
+Activity* Comm::setRate(double rate)
+{
   xbt_assert(state_==inited);
   rate_ = rate;
+  return this;
 }
 
-void Comm::setSrcData(void * buff) {
+Activity* Comm::setSrcData(void* buff)
+{
   xbt_assert(state_==inited);
   xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
+  return this;
 }
-void Comm::setSrcDataSize(size_t size){
+Activity* Comm::setSrcDataSize(size_t size)
+{
   xbt_assert(state_==inited);
   srcBuffSize_ = size;
+  return this;
 }
-void Comm::setSrcData(void * buff, size_t size) {
+Activity* Comm::setSrcData(void* buff, size_t size)
+{
   xbt_assert(state_==inited);
 
   xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
   srcBuffSize_ = size;
+  return this;
 }
-void Comm::setDstData(void ** buff) {
+Activity* Comm::setDstData(void** buff)
+{
   xbt_assert(state_==inited);
   xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
+  return this;
 }
 size_t Comm::getDstDataSize(){
   xbt_assert(state_==finished);
   return dstBuffSize_;
 }
-void Comm::setDstData(void ** buff, size_t size) {
+Activity* Comm::setDstData(void** buff, size_t size)
+{
   xbt_assert(state_==inited);
 
   xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
   dstBuffSize_ = size;
+  return this;
 }
 
-void Comm::start() {
+Activity* Comm::start()
+{
   xbt_assert(state_ == inited);
 
   if (srcBuff_ != nullptr) { // Sender side
@@ -81,11 +94,13 @@ void Comm::start() {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
   }
   state_ = started;
+  return this;
 }
 
 /** @brief Block the calling actor until the communication is finished */
-void Comm::wait() {
-  this->wait(-1);
+Activity* Comm::wait()
+{
+  return this->wait(-1);
 }
 
 /** @brief Block the calling actor until the communication is finished, or until timeout
@@ -94,10 +109,11 @@ void Comm::wait() {
  *
  * @param timeout the amount of seconds to wait for the comm termination.
  *                Negative values denote infinite wait times. 0 as a timeout returns immediately. */
-void Comm::wait(double timeout) {
+Activity* Comm::wait(double timeout)
+{
   switch (state_) {
     case finished:
-      return;
+      return this;
 
     case inited: // It's not started yet. Do it in one simcall
       if (srcBuff_ != nullptr) {
@@ -108,31 +124,33 @@ void Comm::wait(double timeout) {
                           userData_, timeout, rate_);
       }
       state_ = finished;
-      return;
+      return this;
 
     case started:
       simcall_comm_wait(pimpl_, timeout);
       state_ = finished;
-      return;
+      return this;
 
     default:
       THROW_IMPOSSIBLE;
   }
+  return this;
 }
 
-void Comm::detach()
+Activity* Comm::detach()
 {
   xbt_assert(state_ == inited, "You cannot detach communications once they are started.");
   xbt_assert(srcBuff_ != nullptr && srcBuffSize_ != 0, "You can only detach sends, not recvs");
   detached_ = true;
-  start();
+  return start();
 }
 
-void Comm::cancel()
+Activity* Comm::cancel()
 {
   simgrid::kernel::activity::CommImplPtr commPimpl =
       boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(pimpl_);
   commPimpl->cancel();
+  return this;
 }
 
 bool Comm::test()

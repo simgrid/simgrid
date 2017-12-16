@@ -96,38 +96,38 @@ public:
     return from->get_async(data);
   }
 
-  void start() override;
-  void wait() override;
-  void wait(double timeout) override;
+  Activity* start() override;
+  Activity* wait() override;
+  Activity* wait(double timeout) override;
 
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  void detach();
+  Activity* detach();
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  void detach(void (*cleanFunction)(void*))
+  Activity* detach(void (*cleanFunction)(void*))
   {
     cleanFunction_ = cleanFunction;
-    detach();
+    return detach();
   }
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
-  void setRate(double rate);
+  Activity* setRate(double rate);
 
   /** Specify the data to send */
-  void setSrcData(void* buff);
+  Activity* setSrcData(void* buff);
   /** Specify the size of the data to send */
-  void setSrcDataSize(size_t size);
+  Activity* setSrcDataSize(size_t size);
   /** Specify the data to send and its size */
-  void setSrcData(void* buff, size_t size);
+  Activity* setSrcData(void* buff, size_t size);
 
   /** Specify where to receive the data */
-  void setDstData(void** buff);
+  Activity* setDstData(void** buff);
   /** Specify the buffer in which the data should be received */
-  void setDstData(void** buff, size_t size);
+  Activity* setDstData(void** buff, size_t size);
   /** Retrieve the size of the received data */
   size_t getDstDataSize();
 
   bool test();
-  void cancel();
+  Activity* cancel();
 
   /** Retrieve the mailbox on which this comm acts */
   MailboxPtr getMailbox();

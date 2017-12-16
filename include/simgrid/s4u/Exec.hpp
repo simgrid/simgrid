@@ -25,9 +25,9 @@ public:
 
   ~Exec() = default;
 
-  void start() override;
-  void wait() override;
-  void wait(double timeout) override;
+  Activity* start() override;
+  Activity* wait() override;
+  Activity* wait(double timeout) override;
   bool test();
 
   ExecPtr setPriority(double priority);
