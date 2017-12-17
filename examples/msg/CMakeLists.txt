@@ -77,6 +77,7 @@ foreach (x trace-categories trace-route-user-variables trace-link-user-variables
   ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
 	            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
 		    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                    --cd ${CMAKE_BINARY_DIR}/examples/msg/${x}
 		    ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
 endforeach()
 
