@@ -244,6 +244,12 @@ result in short reads and short write, as in reality.
     This example shows how to retrieve and display the energy consumed
     by the network during communications.
 
+  - <b>Modeling the shutdown and boot of hosts</b>
+    @ref examples/s4u/energy-boot/platform_boot.xml
+    @ref examples/s4u/energy-boot/s4u-energy-boot.cpp\n
+    Simple example of model of model for the energy consumption during
+    the host boot and shutdown periods.
+
 @section s4u_ex_tracing Tracing and visualization features
 
 Tracing can be activated by various configuration options which
@@ -310,20 +316,22 @@ than the previous examples.
 @example examples/s4u/async-wait/s4u-async-wait.cpp
 @example examples/s4u/async-waitall/s4u-async-waitall.cpp
 @example examples/s4u/async-waitany/s4u-async-waitany.cpp
+@example examples/s4u/app-bittorrent/s4u-bittorrent.cpp
+@example examples/s4u/app-chainsend/s4u-app-chainsend.cpp
+@example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
+@example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
+@example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/dht-chord/s4u-dht-chord.cpp
+@example examples/s4u/energy-boot/platform_boot.xml
+@example examples/s4u/energy-boot/s4u-energy-boot.cpp
+@example examples/s4u/energy-exec/s4u-energy-exec.cpp
+@example examples/s4u/energy-link/s4u-energy-link.cpp
 @example examples/s4u/exec-basic/s4u-exec-basic.cpp
 @example examples/s4u/exec-async/s4u-exec-async.cpp
 @example examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp
 @example examples/s4u/exec-monitor/s4u-exec-monitor.cpp
 @example examples/s4u/exec-ptask/s4u-exec-ptask.cpp
 @example examples/s4u/exec-remote/s4u-exec-remote.cpp 
-@example examples/s4u/app-bittorrent/s4u-bittorrent.cpp
-@example examples/s4u/app-chainsend/s4u-app-chainsend.cpp
-@example examples/s4u/app-masterworker/s4u-app-masterworker.cpp
-@example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
-@example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
-@example examples/s4u/energy-exec/s4u-energy-exec.cpp
-@example examples/s4u/energy-link/s4u-energy-link.cpp
 @example examples/s4u/io-file-system/s4u-io-file-system.cpp
 @example examples/s4u/io-file-remote/s4u-io-file-remote.cpp
 @example examples/s4u/io-storage-raw/s4u-io-storage-raw.cpp

@@ -1,7 +1,7 @@
 # C examples
 foreach(x app-masterworker 
           cloud-capping cloud-masterworker cloud-migration
-          dht-pastry energy-onoff energy-vm platform-failures 
+          dht-pastry energy-vm platform-failures 
           process-create 
           synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker
@@ -50,7 +50,6 @@ set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-k
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.tesh                 PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/energy-onoff/platform_onoff.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3hosts_2links_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3links-timer_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3links_d.xml
@@ -63,7 +62,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
 foreach(x app-masterworker 
           cloud-capping cloud-masterworker cloud-migration
           dht-pastry dht-kademlia platform-failures
-          energy-onoff energy-vm
+          energy-vm
           process-create 
           synchro-semaphore)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 

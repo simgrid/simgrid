@@ -1,0 +1,47 @@
+#! ./tesh
+
+p Modeling the host energy consumption during boot and shutdown
+
+$ ${bindir:=.}/s4u-energy-boot$EXEEXT ${srcdir:=.}/platform_boot.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:Boot Monitor@MyHost2) Initial pstate: 0; Energy dissipated so far:0E+00 J
+> [  0.000000] (1:Boot Monitor@MyHost2) Sleep for 10 seconds
+> [ 10.000000] (1:Boot Monitor@MyHost2) Done sleeping. Current pstate: 0; Energy dissipated so far: 950.00 J
+> [ 10.000000] (1:Boot Monitor@MyHost2) Switch to virtual pstate 4, that encodes the 'shutting down' state in that platform
+> [ 10.000000] (1:Boot Monitor@MyHost2) Wait 7 seconds to simulate the shutdown time.
+> [ 17.000000] (1:Boot Monitor@MyHost2) Switch back to previous pstate 0, that will be used on reboot.
+> [ 17.000000] (1:Boot Monitor@MyHost2) Actually shutdown the host
+> [ 17.000000] (1:Boot Monitor@MyHost2) Host1 is now OFF. Current pstate: 0; Energy dissipated so far: 1720.00 J
+> [ 17.000000] (1:Boot Monitor@MyHost2) Sleep for 10 seconds
+> [ 27.000000] (1:Boot Monitor@MyHost2) Done sleeping. Current pstate: 0; Energy dissipated so far: 1820.00 J
+> [ 27.000000] (1:Boot Monitor@MyHost2) Switch to virtual pstate 3, that encodes the 'booting up' state in that platform
+> [ 27.000000] (1:Boot Monitor@MyHost2) Actually start the host
+> [ 27.000000] (1:Boot Monitor@MyHost2) Wait 150s to simulate the boot time.
+> [177.000000] (1:Boot Monitor@MyHost2) The host is now up and running. Switch back to previous pstate 0
+> [177.000000] (1:Boot Monitor@MyHost2) Host1 is now ON again. Current pstate: 0; Energy dissipated so far: 19820.00 J
+> [177.000000] (0:maestro@) Total energy consumption: 37520.000000 Joules (used hosts: 37520.000000 Joules; unused/idle hosts: 0.000000)
+> [177.000000] (0:maestro@) End of simulation.
+> [177.000000] (0:maestro@) Energy consumption of host MyHost1: 19820.000000 Joules
+> [177.000000] (0:maestro@) Energy consumption of host MyHost2: 17700.000000 Joules
+
+$ ${bindir:=.}/s4u-energy-boot$EXEEXT ${srcdir:=.}/platform_boot.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=host/model:ptask_L07
+> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
+> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+> [  0.000000] (1:Boot Monitor@MyHost2) Initial pstate: 0; Energy dissipated so far:0E+00 J
+> [  0.000000] (1:Boot Monitor@MyHost2) Sleep for 10 seconds
+> [ 10.000000] (1:Boot Monitor@MyHost2) Done sleeping. Current pstate: 0; Energy dissipated so far: 950.00 J
+> [ 10.000000] (1:Boot Monitor@MyHost2) Switch to virtual pstate 4, that encodes the 'shutting down' state in that platform
+> [ 10.000000] (1:Boot Monitor@MyHost2) Wait 7 seconds to simulate the shutdown time.
+> [ 17.000000] (1:Boot Monitor@MyHost2) Switch back to previous pstate 0, that will be used on reboot.
+> [ 17.000000] (1:Boot Monitor@MyHost2) Actually shutdown the host
+> [ 17.000000] (1:Boot Monitor@MyHost2) Host1 is now OFF. Current pstate: 0; Energy dissipated so far: 1720.00 J
+> [ 17.000000] (1:Boot Monitor@MyHost2) Sleep for 10 seconds
+> [ 27.000000] (1:Boot Monitor@MyHost2) Done sleeping. Current pstate: 0; Energy dissipated so far: 1820.00 J
+> [ 27.000000] (1:Boot Monitor@MyHost2) Switch to virtual pstate 3, that encodes the 'booting up' state in that platform
+> [ 27.000000] (1:Boot Monitor@MyHost2) Actually start the host
+> [ 27.000000] (1:Boot Monitor@MyHost2) Wait 150s to simulate the boot time.
+> [177.000000] (1:Boot Monitor@MyHost2) The host is now up and running. Switch back to previous pstate 0
+> [177.000000] (1:Boot Monitor@MyHost2) Host1 is now ON again. Current pstate: 0; Energy dissipated so far: 19820.00 J
+> [177.000000] (0:maestro@) Total energy consumption: 37520.000000 Joules (used hosts: 37520.000000 Joules; unused/idle hosts: 0.000000)
+> [177.000000] (0:maestro@) End of simulation.
+> [177.000000] (0:maestro@) Energy consumption of host MyHost1: 19820.000000 Joules
+> [177.000000] (0:maestro@) Energy consumption of host MyHost2: 17700.000000 Joules

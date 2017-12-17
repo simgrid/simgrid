@@ -2,7 +2,7 @@ foreach (example actor-create actor-daemon actor-join actor-kill actor-lifetime 
                  app-chainsend app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
                  cloud-simple
-                 energy-exec energy-link energy-vm
+                 energy-exec energy-boot energy-link energy-vm
                  exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                  io-file-system io-file-remote io-storage-raw
                  mutex
@@ -55,6 +55,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/energy-boot/platform_boot.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/io-file-remote/s4u-io-file-remote_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/platform-properties/s4u-platform-properties_d.xml
 				  ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split_d.xml
@@ -72,7 +73,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-lifetime a
                 async-wait async-waitall async-waitany
                 cloud-simple
                 dht-chord 
-                energy-exec energy-link energy-vm
+                energy-exec energy-boot energy-link energy-vm
                 exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw

@@ -1,0 +1,40 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <zone  id="AS0"  routing="Full">
+
+    <!-- Use the pstate mechanism to encode the boot/shutdown time and energy.
+      --
+      -- See the C++ file in the same directory for more information.
+      -->
+
+    <!-- pstate values:
+      * 0-2: real pstates
+         0: p1 100 MFlops/s, [idle: 95W -> full burning: 200W]
+         1: p2  50 MFlops/s, [idle: 93W -> full burning: 170W]
+         2: p3  20 MFlops/s, [idel: 90W -> full burning: 150W] 
+      * 3: booting up was measured to take 150s and 18000J.
+           So we create a pstate 3 consuming 18000J/150s=120W, and a boot remains at this pstate for 150s.
+           Speed is set at 0 flop/s so that nothing progresses during the boot.
+      * 4: shutting down was measured to take 7 s and 770 J
+           So we create a pstate 4 consuming 770J/7s=110W, and a boot remains at this pstate for 7s.
+
+      Please note that even if these values are educated guesses, you should still challenge them.
+      If you want a realistic simulation, you have to use values coming from a real benchmark of your platform. 
+      -->
+
+    <host id="MyHost1"          speed="100.0Mf,50.0Mf,20.0Mf,                    0f,0f" pstate="0" >
+      <prop id="watt_per_state" value="95.0:200.0,93.0:170.0,90.0:150.0,         120:120,110:110" />
+      <prop id="watt_off"       value="10" />
+    </host>
+    <host id="MyHost2" speed="100.0Mf" >
+      <prop id="watt_per_state" value="100.0:200.0" />
+      <prop id="watt_off"       value="10" />
+    </host>
+
+    <link id="link1" bandwidth="100kBps" latency="0"/>
+    <route src="MyHost1" dst="MyHost2">
+      <link_ctn id="link1"/>
+    </route>
+  </zone>
+</platform>
