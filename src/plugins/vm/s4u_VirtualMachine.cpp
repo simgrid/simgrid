@@ -104,6 +104,12 @@ void VirtualMachine::resume()
   pimpl_vm_->resume();
 }
 
+void VirtualMachine::shutdown()
+{
+  smx_actor_t issuer = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+}
+
 bool VirtualMachine::isMigrating()
 {
   return pimpl_vm_ && pimpl_vm_->isMigrating;

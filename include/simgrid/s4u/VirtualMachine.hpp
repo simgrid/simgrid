@@ -48,6 +48,7 @@ public:
   void start();
   void suspend();
   void resume();
+  void shutdown();
 
   bool isMigrating();
 

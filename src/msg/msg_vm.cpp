@@ -176,11 +176,10 @@ void MSG_vm_destroy(msg_vm_t vm)
     THROWF(vm_error, 0, "Cannot destroy VM '%s', which is migrating.", vm->getCname());
 
   /* First, terminate all processes on the VM if necessary */
-  if (MSG_vm_is_running(vm))
-    MSG_vm_shutdown(vm);
+  vm->shutdown();
 
   /* Then, destroy the VM object */
-  simgrid::simix::kernelImmediate([vm]() { vm->destroy(); });
+  vm->destroy();
 
   if (TRACE_msg_vm_is_enabled()) {
     container_t container = simgrid::instr::Container::byName(vm->getName());
@@ -213,11 +212,7 @@ void MSG_vm_start(msg_vm_t vm)
  */
 void MSG_vm_shutdown(msg_vm_t vm)
 {
-  smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([vm, issuer]() { vm->pimpl_vm_->shutdown(issuer); });
-
-  // Make sure that processes in the VM are killed in this scheduling round before processing (eg with the VM destroy)
-  MSG_process_sleep(0.);
+  vm->shutdown();
 }
 
 static std::string get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
