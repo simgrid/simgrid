@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "simgrid/plugins/live_migration.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
@@ -296,6 +297,7 @@ int main(int argc, char *argv[])
 {
   /* Get the arguments */
   MSG_init(&argc, argv);
+  MSG_vm_live_migration_plugin_init();
 
   /* load the platform file */
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);

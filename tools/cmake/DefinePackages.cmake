@@ -340,6 +340,7 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
+  src/surf/plugins/dirty_page_tracking.cpp
   src/surf/plugins/host_energy.cpp
   src/surf/plugins/link_energy.cpp
   src/surf/plugins/host_load.cpp
@@ -667,6 +668,7 @@ set(headers_to_install
   include/simgrid/chrono.hpp
   include/simgrid/plugins/energy.h
   include/simgrid/plugins/file_system.h
+  include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
   include/simgrid/instr.h
   include/simgrid/msg.h
@@ -695,8 +697,6 @@ set(headers_to_install
   include/simgrid/s4u/Storage.hpp  
   include/simgrid/s4u/VirtualMachine.hpp  
   include/simgrid/s4u.hpp
-  include/simgrid/plugins/energy.h
-  include/simgrid/plugins/load.h
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_main.h

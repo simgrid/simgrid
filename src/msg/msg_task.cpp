@@ -219,7 +219,6 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   simdata_task_t simdata = task->simdata;
   if (simdata->compute) {
     simcall_execution_cancel(simdata->compute);
-    MSG_host_del_task(MSG_process_get_host(MSG_process_self()), task);
   } else if (simdata->comm) {
     simcall_comm_cancel(simdata->comm);
   }

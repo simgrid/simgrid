@@ -22,14 +22,7 @@ extern "C" {
  */
 msg_error_t MSG_task_execute(msg_task_t task)
 {
-  /* TODO: add this to other locations */
-  msg_host_t host = MSG_process_get_host(MSG_process_self());
-  MSG_host_add_task(host, task);
-
-  msg_error_t ret = MSG_parallel_task_execute(task);
-
-  MSG_host_del_task(host, task);
-  return ret;
+  return MSG_parallel_task_execute(task);
 }
 
 /** \ingroup msg_task_usage

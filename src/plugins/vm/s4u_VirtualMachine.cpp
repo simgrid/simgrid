@@ -176,11 +176,5 @@ void VirtualMachine::setParameters(vm_params_t params)
   simgrid::simix::kernelImmediate([this, params] { pimpl_vm_->setParams(params); });
 }
 
-/*************
- * Callbacks *
- *************/
-simgrid::xbt::signal<void(s4u::VirtualMachine&)> VirtualMachine::onCreation;
-simgrid::xbt::signal<void(s4u::VirtualMachine&)> VirtualMachine::onDestruction;
-
 } // namespace simgrid
 } // namespace s4u

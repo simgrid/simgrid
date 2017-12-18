@@ -11,8 +11,8 @@
 
 #include <xbt/ex.hpp>
 
+#include "simgrid/plugins/live_migration.h"
 #include "src/instr/instr_private.hpp"
-#include "src/msg/msg_private.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
 
@@ -21,13 +21,6 @@
 #include "xbt/string.hpp"
 
 extern "C" {
-
-struct s_dirty_page {
-  double prev_clock     = 0.0;
-  double prev_remaining = 0.0;
-  msg_task_t task       = nullptr;
-};
-typedef s_dirty_page* dirty_page_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 
@@ -334,116 +327,6 @@ static int migration_rx_fun(int argc, char *argv[])
   return 0;
 }
 
-static void start_dirty_page_tracking(msg_vm_t vm)
-{
-  vm->pimpl_vm_->dp_enabled = true;
-  if (vm->pimpl_vm_->dp_objs.empty())
-    return;
-
-  for (auto const& elm : vm->pimpl_vm_->dp_objs) {
-    dirty_page_t dp    = elm.second;
-    double remaining   = MSG_task_get_flops_amount(dp->task);
-    dp->prev_clock = MSG_get_clock();
-    dp->prev_remaining = remaining;
-    XBT_DEBUG("%s@%s remaining %f", elm.first.c_str(), vm->getCname(), remaining);
-  }
-}
-
-static void stop_dirty_page_tracking(msg_vm_t vm)
-{
-  vm->pimpl_vm_->dp_enabled = false;
-}
-
-static double get_computed(const std::string& key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
-{
-  double computed = dp->prev_remaining - remaining;
-  double duration = clock - dp->prev_clock;
-
-  XBT_DEBUG("%s@%s: computed %f ops (remaining %f -> %f) in %f secs (%f -> %f)", key.c_str(), vm->getCname(), computed,
-            dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
-
-  return computed;
-}
-
-static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug, int stage2_round_for_fancy_debug)
-{
-  double total = 0;
-
-  for (auto const& elm : vm->pimpl_vm_->dp_objs) {
-    const std::string& key = elm.first;
-    dirty_page_t dp  = elm.second;
-    double remaining       = MSG_task_get_flops_amount(dp->task);
-
-    double clock = MSG_get_clock();
-
-    total += get_computed(key, vm, dp, remaining, clock);
-
-    dp->prev_remaining = remaining;
-    dp->prev_clock = clock;
-  }
-
-  total += vm->pimpl_vm_->dp_updated_by_deleted_tasks;
-
-  XBT_DEBUG("mig-stage%d.%d: computed %f flop_counts (including %f by deleted tasks)", stage_for_fancy_debug,
-            stage2_round_for_fancy_debug, total, vm->pimpl_vm_->dp_updated_by_deleted_tasks);
-
-  vm->pimpl_vm_->dp_updated_by_deleted_tasks = 0;
-
-  return total;
-}
-
-// TODO Is this code redundant with the information provided by
-// msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
-/** @brief take care of the dirty page tracking, in case we're adding a task to a migrating VM */
-void MSG_host_add_task(msg_host_t host, msg_task_t task)
-{
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
-  if (vm == nullptr)
-    return;
-
-  double remaining = MSG_task_get_flops_amount(task);
-  std::string key  = simgrid::xbt::string_printf("%s-%p", task->name, task);
-
-  dirty_page_t dp = new s_dirty_page;
-  dp->task = task;
-  if (vm->pimpl_vm_->dp_enabled) {
-    dp->prev_clock = MSG_get_clock();
-    dp->prev_remaining = remaining;
-  }
-  vm->pimpl_vm_->dp_objs.insert({key, dp});
-  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key.c_str(), host->getCname(), remaining,
-            vm->pimpl_vm_->dp_enabled);
-}
-
-void MSG_host_del_task(msg_host_t host, msg_task_t task)
-{
-  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
-  if (vm == nullptr)
-    return;
-
-  std::string key = simgrid::xbt::string_printf("%s-%p", task->name, task);
-  dirty_page_t dp = nullptr;
-  auto dp_obj     = vm->pimpl_vm_->dp_objs.find(key);
-  if (dp_obj != vm->pimpl_vm_->dp_objs.end())
-    dp = dp_obj->second;
-  xbt_assert(dp && dp->task == task);
-
-  /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
-   * the information for the lookup_() function that will called soon. */
-  if (vm->pimpl_vm_->dp_enabled) {
-    double remaining = MSG_task_get_flops_amount(task);
-    double clock = MSG_get_clock();
-    double updated = get_computed(key, vm, dp, remaining, clock); // was host instead of vm
-
-    vm->pimpl_vm_->dp_updated_by_deleted_tasks += updated;
-  }
-
-  vm->pimpl_vm_->dp_objs.erase(key);
-  delete dp;
-
-  XBT_DEBUG("del %s on %s", key.c_str(), host->getCname());
-}
-
 static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, sg_size_t size,
                                      const std::string& mbox, int stage, int stage2_round, double mig_speed,
                                      double timeout)
@@ -537,7 +420,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
   /* Stage1: send all memory pages to the destination. */
   XBT_DEBUG("mig-stage1: remaining_size %zu", remaining_size);
-  start_dirty_page_tracking(ms->vm);
+  sg_vm_start_dirty_page_tracking(ms->vm);
 
   double computed_during_stage1 = 0;
   double clock_prev_send        = MSG_get_clock();
@@ -548,7 +431,7 @@ static int migration_tx_fun(int argc, char *argv[])
     XBT_VERB("Stage 1: Gonna send %llu bytes", ramsize);
     sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
     remaining_size -= sent;
-    computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
+    computed_during_stage1 = sg_vm_lookup_computed_flops(ms->vm);
 
     if (sent < ramsize) {
       XBT_VERB("mig-stage1: timeout, force moving to stage 3");
@@ -559,7 +442,7 @@ static int migration_tx_fun(int argc, char *argv[])
   } catch (xbt_ex& e) {
     // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
-    stop_dirty_page_tracking(ms->vm);
+    sg_vm_stop_dirty_page_tracking(ms->vm);
     return 0;
   }
 
@@ -586,7 +469,7 @@ static int migration_tx_fun(int argc, char *argv[])
         /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
         updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
       } else {
-        double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
+        double computed = sg_vm_lookup_computed_flops(ms->vm);
         updated_size    = get_updated_size(computed, dp_rate, dp_cap);
       }
 
@@ -610,7 +493,7 @@ static int migration_tx_fun(int argc, char *argv[])
         // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data
         // code)
         // Stop the dirty page tracking an return (there is no memory space to release)
-        stop_dirty_page_tracking(ms->vm);
+        sg_vm_stop_dirty_page_tracking(ms->vm);
         return 0;
       }
       double clock_post_send = MSG_get_clock();
@@ -632,7 +515,7 @@ static int migration_tx_fun(int argc, char *argv[])
                  updated_size, (clock_post_send - clock_prev_send));
         remaining_size -= sent;
 
-        double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
+        double computed = sg_vm_lookup_computed_flops(ms->vm);
         updated_size    = get_updated_size(computed, dp_rate, dp_cap);
         remaining_size += updated_size;
         break;
@@ -647,7 +530,7 @@ static int migration_tx_fun(int argc, char *argv[])
   pimpl->setState(SURF_VM_STATE_RUNNING); // FIXME: this bypass of the checks in suspend() is not nice
   pimpl->isMigrating = false;             // FIXME: this bypass of the checks in suspend() is not nice
   pimpl->suspend(SIMIX_process_self());
-  stop_dirty_page_tracking(ms->vm);
+  sg_vm_stop_dirty_page_tracking(ms->vm);
 
   try {
     XBT_DEBUG("Stage 3: Gonna send %zu bytes", remaining_size);

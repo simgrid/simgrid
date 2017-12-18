@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "simgrid/plugins/live_migration.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
@@ -175,6 +176,8 @@ int main(int argc, char *argv[])
   const int nb_workers = 2;
 
   MSG_init(&argc, argv);
+  MSG_vm_live_migration_plugin_init();
+
   xbt_assert(argc >1,"Usage: %s example/platforms/cluster.xml\n", argv[0]);
 
   /* Load the platform file */

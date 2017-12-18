@@ -99,9 +99,6 @@ XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::fun
                                                       smx_actor_t parent_process);
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_activity_t comm, void* buff, size_t buff_size);
 
-XBT_PRIVATE void MSG_host_add_task(msg_host_t host, msg_task_t task);
-XBT_PRIVATE void MSG_host_del_task(msg_host_t host, msg_task_t task);
-
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */
 XBT_PRIVATE void TRACE_msg_set_task_category(msg_task_t task, const char* category);

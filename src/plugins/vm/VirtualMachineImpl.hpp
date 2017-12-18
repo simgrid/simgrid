@@ -21,25 +21,6 @@ typedef struct s_dirty_page* dirty_page_t;
 namespace simgrid {
 namespace vm {
 
-/*************
- * Callbacks *
- *************/
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
- */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmCreation;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
- */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmDestruction;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
- */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmStateChange;
-
 /************
  * Resource *
  ************/
@@ -48,7 +29,7 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> 
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-XBT_PUBLIC_CLASS VirtualMachineImpl : public surf::HostImpl
+XBT_PUBLIC_CLASS VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt::Extendable<VirtualMachineImpl>
 {
   friend simgrid::s4u::VirtualMachine;
 
@@ -82,17 +63,29 @@ public:
   /* The vm object of the lower layer */
   surf::Action* action_ = nullptr;
 
-  /* Dirty pages stuff */
-  std::unordered_map<std::string, dirty_page_t> dp_objs;
-  bool dp_enabled                    = false;
-  double dp_updated_by_deleted_tasks = 0;
-
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<s4u::VirtualMachine*> allVms_;
   int coreAmount() { return coreAmount_; }
 
   bool isMigrating = false;
+  /*************
+   * Callbacks *
+   *************/
+  /** @ingroup SURF_callbacks
+   * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
+   */
+  static simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmCreation;
+
+  /** @ingroup SURF_callbacks
+   * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
+   */
+  static simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmDestruction;
+
+  /** @ingroup SURF_callbacks
+   * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
+   */
+  static simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmStateChange;
 
 private:
   simgrid::s4u::Host* hostPM_;
