@@ -85,3 +85,9 @@ void simgrid::kernel::activity::ExecImpl::post()
   if (not simcalls.empty())
     SIMIX_execution_finish(this);
 }
+
+/*************
+ * Callbacks *
+ *************/
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onCreation;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onDestruction;

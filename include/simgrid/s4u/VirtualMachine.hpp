@@ -63,6 +63,9 @@ public:
 
   /* FIXME: protect me */
   simgrid::vm::VirtualMachineImpl* pimpl_vm_ = nullptr;
+
+  static simgrid::xbt::signal<void(s4u::VirtualMachine&)> onCreation;
+  static simgrid::xbt::signal<void(s4u::VirtualMachine&)> onDestruction;
 };
 }
 } // namespace simgrid::s4u

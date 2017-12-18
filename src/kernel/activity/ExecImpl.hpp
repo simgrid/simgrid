@@ -8,12 +8,13 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "surf/surf.hpp"
+#include "xbt/Extendable.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
-XBT_PUBLIC_CLASS ExecImpl : public ActivityImpl
+XBT_PUBLIC_CLASS ExecImpl : public ActivityImpl, public simgrid::xbt::Extendable<ExecImpl>
 {
   ~ExecImpl() override;
 
@@ -30,6 +31,8 @@ public:
   sg_host_t host_               = nullptr;
   surf_action_t surfAction_     = nullptr; /* The Surf execution action encapsulated */
   surf::Action* timeoutDetector = nullptr;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCreation;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onDestruction;
 };
 }
 }

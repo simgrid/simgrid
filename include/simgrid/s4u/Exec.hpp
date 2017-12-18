@@ -32,6 +32,7 @@ public:
 
   ExecPtr setPriority(double priority);
   ExecPtr setHost(Host * host);
+  Host* getHost() { return host_; }
 
   double getRemains() override;
   double getRemainingRatio();
