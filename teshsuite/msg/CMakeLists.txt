@@ -1,6 +1,6 @@
 # C examples
 foreach(x actions-comm actions-storage
-          app-pingpong
+          app-pingpong app-token-ring
           async-wait async-waitall async-waitany
           cloud-sharing cloud-two-tasks cloud-simple
 	  get_sender host_on_off host_on_off_recv host_on_off_processes	  
@@ -8,6 +8,7 @@ foreach(x actions-comm actions-storage
           energy-consumption energy-ptask energy-pstate platform-properties
           io-file io-raw-storage io-file-remote
 	  task-priority
+	  plugin-hostload
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
@@ -34,9 +35,18 @@ foreach (file bittorrent connection messages peer tracker)
   set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
 endforeach()
 
-
+add_executable       (chainsend app-chainsend/chainsend.c app-chainsend/iterator.c app-chainsend/common.c app-chainsend/messages.c app-chainsend/broadcaster.c app-chainsend/peer.c)
+target_link_libraries(chainsend simgrid)
+set_target_properties(chainsend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
+foreach (file common iterator messages broadcaster peer)
+  set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.h)
+endforeach()
+set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.c)
+                                  
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
-set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent.tesh          PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent.tesh          
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
+                                   PARENT_SCOPE)
 set(bin_files    ${bin_files}      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py                  PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p0.txt
@@ -46,6 +56,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
@@ -77,7 +88,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
 foreach(x 
     actions-comm actions-storage
     async-wait async-waitall async-waitany
-    app-bittorrent app-pingpong
+    app-bittorrent app-chainsend app-pingpong app-token-ring
     cloud-two-tasks cloud-simple
     energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
@@ -87,6 +98,7 @@ foreach(x
     energy-consumption energy-ptask
     io-file io-raw-storage io-file-remote
     platform-properties
+    plugin-hostload
     trace_integration)
   ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" 
                                    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms

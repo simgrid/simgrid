@@ -12,23 +12,13 @@ documentation, but it should remain readable directly.
     - @ref msg_ex_tracing_user_variables
   - @ref msg_ex_models
     - @ref msg_ex_ns3
-  - @ref msg_ex_apps
-  - @ref msg_ex_misc
 
 @section msg_ex_basics Basic examples and features
-
- - <b>Token Ring</b>.
-   @ref examples/msg/app-token-ring/app-token-ring.c\n
-   Classical communication pattern, where a token is exchanged
-   along a ring to reach every participant. 
-   The tesh file laying in the directory shows how to run the same
-   example on different virtual platforms.
 
  - <b>Master Workers</b>.
    @ref examples/msg/app-masterworker/app-masterworker.c\n
    Another good old example, where one Master process has a bunch of
-   task to dispatch to a set of several Worker processes. It is fully
-   commented in @ref msg_ex_master_worker.
+   task to dispatch to a set of several Worker processes.
 
 @section msg_ex_process Acting on Processes
 
@@ -129,7 +119,6 @@ top of the example file).
 
 
 /**
-@example examples/msg/app-token-ring/app-token-ring.c
 @example examples/msg/app-masterworker/app-masterworker.c
 
 @example examples/msg/process-create/process-create.c

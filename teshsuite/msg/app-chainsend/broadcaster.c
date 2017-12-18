@@ -11,7 +11,7 @@ xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 {
   xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), xbt_free_ref);
   for (int i = 1; i <= hostcount; i++) {
-    char *hostname = bprintf("host%d", i);
+    char* hostname = bprintf("host%d", i);
     XBT_DEBUG("%s", hostname);
     xbt_dynar_push(host_list, &hostname);
   }
@@ -20,7 +20,7 @@ xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 
 int broadcaster_build_chain(broadcaster_t bc)
 {
-  msg_task_t task = NULL;
+  msg_task_t task          = NULL;
   char** cur               = (char**)xbt_dynar_iterator_next(bc->it);
   const char* me           = MSG_host_get_name(MSG_host_self());
   const char* current_host = NULL;
@@ -31,14 +31,14 @@ int broadcaster_build_chain(broadcaster_t bc)
   /* Build the chain if there's at least one peer */
   if (cur != NULL) {
     /* init: prev=NULL, host=current cur, next=next cur */
-    next = *cur;
+    next      = *cur;
     bc->first = next;
 
     /* This iterator iterates one step ahead: cur is current iterated element, but is actually next in the chain */
     do {
       /* following steps: prev=last, host=next, next=cur */
-      cur = (char**)xbt_dynar_iterator_next(bc->it);
-      prev = last;
+      cur          = (char**)xbt_dynar_iterator_next(bc->it);
+      prev         = last;
       current_host = next;
       if (cur != NULL)
         next = *cur;
@@ -80,12 +80,12 @@ broadcaster_t broadcaster_init(xbt_dynar_t host_list, unsigned int piece_count)
   broadcaster_t bc = xbt_new(s_broadcaster_t, 1);
 
   bc->first             = NULL;
-  bc->piece_count = piece_count;
-  bc->current_piece = 0;
-  bc->host_list = host_list;
-  bc->it = xbt_dynar_iterator_new(bc->host_list, forward_indices_list);
+  bc->piece_count       = piece_count;
+  bc->current_piece     = 0;
+  bc->host_list         = host_list;
+  bc->it                = xbt_dynar_iterator_new(bc->host_list, forward_indices_list);
   bc->max_pending_sends = MAX_PENDING_SENDS;
-  bc->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
+  bc->pending_sends     = xbt_dynar_new(sizeof(msg_comm_t), NULL);
 
   status = broadcaster_build_chain(bc);
   xbt_assert(status == MSG_OK, "Chain initialization failed");
@@ -103,7 +103,7 @@ static void broadcaster_destroy(broadcaster_t bc)
 }
 
 /** Emitter function  */
-int broadcaster(int argc, char *argv[])
+int broadcaster(int argc, char* argv[])
 {
   unsigned int piece_count = PIECE_COUNT;
 

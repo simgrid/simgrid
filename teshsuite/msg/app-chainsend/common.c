@@ -13,7 +13,7 @@ int process_pending_connections(xbt_dynar_t q)
   int empty = 0;
   msg_comm_t comm;
 
-  xbt_dynar_foreach(q, iter, comm) {
+  xbt_dynar_foreach (q, iter, comm) {
     empty = 1;
     if (MSG_comm_test(comm)) {
       status = MSG_comm_get_status(comm);

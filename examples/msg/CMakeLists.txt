@@ -1,8 +1,7 @@
 # C examples
-foreach(x app-masterworker app-token-ring 
+foreach(x app-masterworker 
           cloud-capping cloud-masterworker cloud-migration
           dht-pastry energy-onoff energy-vm platform-failures 
-          plugin-hostload
           process-create 
           synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker
@@ -29,13 +28,6 @@ if(SIMGRID_HAVE_NS3)
   set_target_properties(network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
 endif()
 
-add_executable       (chainsend app-chainsend/chainsend.c app-chainsend/iterator.c app-chainsend/common.c app-chainsend/messages.c app-chainsend/broadcaster.c app-chainsend/peer.c)
-target_link_libraries(chainsend simgrid)
-set_target_properties(chainsend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
-foreach (file common iterator messages broadcaster peer)
-  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/${file}.h)
-endforeach()
-
 add_executable       (dht-kademlia dht-kademlia/dht-kademlia.c dht-kademlia/node.c dht-kademlia/routing_table.c dht-kademlia/task.c dht-kademlia/answer.c)
 target_link_libraries(dht-kademlia simgrid)
 set_target_properties(dht-kademlia PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dht-kademlia)
@@ -43,18 +35,16 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file app-chainsend app-masterworker dht-kademlia dht-pastry)
+foreach (file app-masterworker dht-kademlia dht-pastry)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README.doc          PARENT_SCOPE)
 set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/generate.py                       PARENT_SCOPE)
-set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.c
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/common.h
+set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/common.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.c                    PARENT_SCOPE)
-set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.tesh
+set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.tesh                 PARENT_SCOPE)
@@ -70,11 +60,10 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/two_clusters_d.xml       PARENT_SCOPE)
 
-foreach(x app-chainsend app-masterworker app-token-ring
+foreach(x app-masterworker 
           cloud-capping cloud-masterworker cloud-migration
           dht-pastry dht-kademlia platform-failures
           energy-onoff energy-vm
-          plugin-hostload
           process-create 
           synchro-semaphore)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" 
@@ -88,6 +77,7 @@ foreach (x trace-categories trace-route-user-variables trace-link-user-variables
   ADD_TESH(msg-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x}
 	            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/${x} 
 		    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                    --cd ${CMAKE_BINARY_DIR}/examples/msg/${x}
 		    ${CMAKE_HOME_DIRECTORY}/examples/msg/${x}/${x}.tesh)
 endforeach()
 
