@@ -1006,8 +1006,12 @@ Several options are possible to avoid this, as described in the main
 SimGrid provides two ways of automatically privatizing the globals,
 and this option allows to choose between them.
 
-  - <b>no</b> (default): Do not automatically privatize variables.
-  - <b>mmap</b> or <b>yes</b>: Runtime automatic switching of the data segments.\n
+\warning
+  This configuration option cannot be set in your platform file. You can only
+  pass it as an argument to smpirun.
+
+  - <b>no</b> (default when not using smpirun): Do not automatically privatize variables.
+  - <b>mmap</b> or <b>yes</b> (default when using smpirun): Runtime automatic switching of the data segments.\n
     SMPI stores a copy of each global data segment for each process,
     and at each context switch replaces the actual data with its copy
     from the right process. No copy actually occures as this mechanism
@@ -1019,14 +1023,11 @@ and this option allows to choose between them.
     correctly. The easiest way to solve this is to statically link
     against the library with these globals (but you should never
     statically link against the simgrid library itself).
-  - <b>dlopen</b>: Link multiple times against the binary.\n  
-    SMPI loads several copy of the same binary in memory, resulting in
-    the natural duplication global variables. Since the dynamic linker
-    refuses to link the same file several times, the binary is copied
-    in a temporary file before being dl-loaded (it is erased right
-    after loading).\n
-    Note that this feature is somewhat experimental at time of writing
-    (v3.16) but seems to work.\n
+  - <b>dlopen</b> (faster but less tested): Link multiple times against the binary.\n  
+    Asks SMPI to load several copies of the same binary in memory, so
+    that the global variables get naturally duplicated. Since the
+    dynamic linker refuses to link the same file several times, the
+    binary is copied in a temporary file before being dl-loaded.\n
     This approach greatly speeds up the context switching, down to
     about 40 CPU cycles with our raw contextes, instead of requesting
     several syscalls with the \c mmap approach. Another advantage is
@@ -1036,15 +1037,13 @@ and this option allows to choose between them.
     overconsumption. It seems that we could 
     <a href="https://lwn.net/Articles/415889/">punch holes</a>
     in the files before dl-loading them to remove the code and
-    constants, and mmap these area onto a unique copy. This require
-    to understand the ELF layout of the file, but would 
-    reduce the disk- and memory- usage to the bare minimum. In
-    addition, this would reduce the pressure on the CPU caches (in
-    particular on instruction one).
-
-\warning
-  This configuration option cannot be set in your platform file. You can only
-  pass it as an argument to smpirun.
+    constants, and mmap these area onto a unique copy. If done
+    correctly, this would reduce the disk- and memory- usage to the
+    bare minimum, and would also reduce the pressure on the CPU
+    instruction cache.\n
+    For now, this still requires any external dependencies to be
+    statically linked into your application. We could extend this
+    mechanism to change this, but we never felt the need so far.
 
 \subsection options_model_smpi_detached Simulating MPI detached send
 
