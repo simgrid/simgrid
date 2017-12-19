@@ -16,8 +16,6 @@
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
 
-typedef struct s_dirty_page* dirty_page_t;
-
 namespace simgrid {
 namespace vm {
 
