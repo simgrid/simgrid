@@ -344,11 +344,10 @@ void Comm::init_smp(){
   }else{
     delete[] leaders_map;
   }
-  int j=0;
   int leader_group_size = 0;
   for(i=0; i<comm_size; i++){
     int already_done = 0;
-    for (j = 0; j < leader_group_size; j++) {
+    for (int j = 0; j < leader_group_size; j++) {
       if (leaders_map_[i] == leader_list[j]) {
         already_done = 1;
       }
