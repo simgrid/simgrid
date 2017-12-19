@@ -81,6 +81,7 @@ void simgrid::kernel::activity::ExecImpl::post()
     timeoutDetector = nullptr;
   }
 
+  onCompletion(this);
   /* If there are simcalls associated with the synchro, then answer them */
   if (not simcalls.empty())
     SIMIX_execution_finish(this);
@@ -90,4 +91,4 @@ void simgrid::kernel::activity::ExecImpl::post()
  * Callbacks *
  *************/
 simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onCreation;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onDestruction;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onCompletion;

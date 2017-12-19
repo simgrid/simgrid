@@ -74,7 +74,7 @@ static void onExecCreation(simgrid::kernel::activity::ExecImplPtr exec)
   }
 }
 
-static void onExecDestruction(simgrid::kernel::activity::ExecImplPtr exec)
+static void onExecCompletion(simgrid::kernel::activity::ExecImplPtr exec)
 {
   simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->host_);
   if (vm == nullptr)
@@ -99,7 +99,7 @@ void sg_vm_live_migration_plugin_init()
         simgrid::vm::VirtualMachineImpl::extension_create<simgrid::vm::VmDirtyPageTrackingExt>();
     simgrid::vm::VirtualMachineImpl::onVmCreation.connect(&onVirtualMachineCreation);
     simgrid::kernel::activity::ExecImpl::onCreation.connect(&onExecCreation);
-    simgrid::kernel::activity::ExecImpl::onDestruction.connect(&onExecDestruction);
+    simgrid::kernel::activity::ExecImpl::onCompletion.connect(&onExecCompletion);
   }
 }
 

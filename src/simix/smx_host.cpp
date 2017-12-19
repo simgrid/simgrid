@@ -165,6 +165,7 @@ SIMIX_execution_start(const char* name, double flops_amount, double priority, do
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name.c_str());
+  simgrid::kernel::activity::ExecImpl::onCreation(exec);
 
   return exec;
 }

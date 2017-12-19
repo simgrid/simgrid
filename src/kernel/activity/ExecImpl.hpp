@@ -31,7 +31,7 @@ public:
   surf_action_t surfAction_     = nullptr; /* The Surf execution action encapsulated */
   surf::Action* timeoutDetector = nullptr;
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCreation;
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onDestruction;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCompletion;
 };
 }
 }
