@@ -15,18 +15,10 @@
 #include <xbt/graph.h>
 #include <xbt/signal.hpp>
 
+#include <simgrid/forward.h>
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
-class NetZoneImpl;
-class NetPoint;
-}
-}
-namespace surf {
-class LinkImpl;
-}
 
 namespace s4u {
 

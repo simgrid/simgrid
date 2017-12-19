@@ -46,6 +46,7 @@ class System;
 }
 namespace routing {
   class NetPoint;
+  class NetZoneImpl;
 }
 }
 namespace simix {
