@@ -33,12 +33,4 @@
   <actor host="Lovelace" function="worker">
     <argument value="4"/>
   </actor>
-  <actor host="Lovelace" function="timer">
-    <argument value="0"/>
-    <argument value=".1"/>
-  </actor>
-  <actor host="Lovelace" function="timer" start_time="2.0">
-    <argument value="0"/>
-    <argument value=".1"/>
-  </actor>
 </platform>
