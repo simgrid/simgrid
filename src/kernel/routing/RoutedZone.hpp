@@ -54,12 +54,15 @@ public:
 
   void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                 std::map<std::string, xbt_edge_t>* edges) override;
-  virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg,
-                                                  bool change_order);
+  virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
+                                                  NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
+                                                  bool symmetrical, bool change_order);
 
 protected:
   void getRouteCheckParams(NetPoint* src, NetPoint* dst);
-  void addRouteCheckParams(sg_platf_route_cbarg_t route);
+  void addRouteCheckParams(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                           kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                           std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical);
 };
 }
 }

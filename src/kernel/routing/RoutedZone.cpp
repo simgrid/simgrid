@@ -120,24 +120,24 @@ void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* 
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg,
+sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst,
+                                                    NetPoint* gw_src, NetPoint* gw_dst,
+                                                    std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical,
                                                     bool change_order)
 {
-  sg_platf_route_cbarg_t result;
-
-  result            = new s_sg_platf_route_cbarg_t;
+  sg_platf_route_cbarg_t result = new s_sg_platf_route_cbarg_t;
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
              "The hierarchy of this netzone is neither BASIC nor RECURSIVE, I'm lost here.");
 
   if (hierarchy == RoutingMode::recursive) {
-    xbt_assert(routearg->gw_src && routearg->gw_dst, "nullptr is obviously a deficient gateway");
+    xbt_assert(gw_src && gw_dst, "nullptr is obviously a deficient gateway");
 
-    result->gw_src = routearg->gw_src;
-    result->gw_dst = routearg->gw_dst;
+    result->gw_src = gw_src;
+    result->gw_dst = gw_dst;
   }
 
-  for (auto const& link : routearg->link_list) {
+  for (auto const& link : link_list) {
     if (change_order)
       result->link_list.push_back(link);
     else
@@ -164,18 +164,18 @@ void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
                              "%s@%s). Please report that bug.",
              src->getCname(), dst->getCname(), src_as->getCname(), dst_as->getCname(), getCname());
 }
-void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
+void RoutedZone::addRouteCheckParams(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                                     kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                                     std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
-  NetPoint* src       = route->src;
-  NetPoint* dst       = route->dst;
   const char* srcName = src->getCname();
   const char* dstName = dst->getCname();
 
-  if (not route->gw_dst || not route->gw_src) {
+  if (not gw_dst || not gw_src) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
-    xbt_assert(not route->link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
+    xbt_assert(not link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
     xbt_assert(not src->isNetZone(),
                "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
                srcName);
@@ -183,28 +183,26 @@ void RoutedZone::addRouteCheckParams(sg_platf_route_cbarg_t route)
                "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
                dstName);
   } else {
-    XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, route->gw_src->getCname(), dstName,
-              route->gw_dst->getCname());
+    XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->getCname(), dstName, gw_dst->getCname());
     xbt_assert(src->isNetZone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
     xbt_assert(dst->isNetZone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
 
-    xbt_assert(route->gw_src->isHost() || route->gw_src->isRouter(),
+    xbt_assert(gw_src->isHost() || gw_src->isRouter(),
                "When defining a NetzoneRoute, gw_src must be an host or a router but '%s' is not.", srcName);
-    xbt_assert(route->gw_dst->isHost() || route->gw_dst->isRouter(),
+    xbt_assert(gw_dst->isHost() || gw_dst->isRouter(),
                "When defining a NetzoneRoute, gw_dst must be an host or a router but '%s' is not.", dstName);
 
-    xbt_assert(route->gw_src != route->gw_dst, "Cannot define an NetzoneRoute from '%s' to itself",
-               route->gw_src->getCname());
+    xbt_assert(gw_src != gw_dst, "Cannot define an NetzoneRoute from '%s' to itself", gw_src->getCname());
 
-    xbt_assert(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->getCname(),
-               dstName, route->gw_dst->getCname(), srcName);
-    xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, route->gw_src->getCname(),
-               dstName, route->gw_dst->getCname(), dstName);
-    xbt_assert(not route->link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName,
-               route->gw_src->getCname(), dstName, route->gw_dst->getCname());
+    xbt_assert(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, gw_src->getCname(), dstName,
+               gw_dst->getCname(), srcName);
+    xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, gw_src->getCname(), dstName,
+               gw_dst->getCname(), dstName);
+    xbt_assert(not link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName, gw_src->getCname(),
+               dstName, gw_dst->getCname());
   }
 
-  onRouteCreation(route->symmetrical, route->src, route->dst, route->gw_src, route->gw_dst, route->link_list);
+  onRouteCreation(symmetrical, src, dst, gw_src, gw_dst, link_list);
 }
 }
 }

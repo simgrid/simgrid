@@ -13,16 +13,19 @@
 
 #include <xbt/base.h>
 #include <xbt/graph.h>
+#include <xbt/signal.hpp>
 
 #include <simgrid/s4u/forward.hpp>
-
-#include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 
 namespace simgrid {
 namespace kernel {
 namespace routing {
 class NetZoneImpl;
+class NetPoint;
 }
+}
+namespace surf {
+class LinkImpl;
 }
 
 namespace s4u {
@@ -62,8 +65,12 @@ public:
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   virtual int addComponent(kernel::routing::NetPoint * elm); /* A host, a router or a netzone, whatever */
-  virtual void addRoute(sg_platf_route_cbarg_t route);
-  virtual void addBypassRoute(sg_platf_route_cbarg_t e_route) = 0;
+  virtual void addRoute(kernel::routing::NetPoint * src, kernel::routing::NetPoint * dst,
+                        kernel::routing::NetPoint * gw_src, kernel::routing::NetPoint * gw_dst,
+                        std::vector<simgrid::surf::LinkImpl*> & link_list, bool symmetrical);
+  virtual void addBypassRoute(kernel::routing::NetPoint * src, kernel::routing::NetPoint * dst,
+                              kernel::routing::NetPoint * gw_src, kernel::routing::NetPoint * gw_dst,
+                              std::vector<simgrid::surf::LinkImpl*> & link_list, bool symmetrical) = 0;
 
   /*** Called on each newly created regular route (not on bypass routes) */
   static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,

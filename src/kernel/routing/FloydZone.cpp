@@ -84,12 +84,14 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
   }
 }
 
-void FloydZone::addRoute(sg_platf_route_cbarg_t route)
+void FloydZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                         std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
   /* set the size of table routing */
   unsigned int table_size = getTableSize();
 
-  addRouteCheckParams(route);
+  addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   if (not linkTable_) {
     /* Create Cost, Predecessor and Link tables */
@@ -107,47 +109,48 @@ void FloydZone::addRoute(sg_platf_route_cbarg_t route)
   }
 
   /* Check that the route does not already exist */
-  if (route->gw_dst) // netzone route (to adapt the error message, if any)
-    xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
+  if (gw_dst) // netzone route (to adapt the error message, if any)
+    xbt_assert(nullptr == TO_FLOYD_LINK(src->id(), dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-               route->src->getCname(), route->gw_src->getCname(), route->dst->getCname(), route->gw_dst->getCname());
+               src->getCname(), gw_src->getCname(), dst->getCname(), gw_dst->getCname());
   else
-    xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
-               "The route between %s and %s already exists (Rq: routes are symmetrical by default).",
-               route->src->getCname(), route->dst->getCname());
+    xbt_assert(nullptr == TO_FLOYD_LINK(src->id(), dst->id()),
+               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->getCname(),
+               dst->getCname());
 
-  TO_FLOYD_LINK(route->src->id(), route->dst->id()) = newExtendedRoute(hierarchy_, route, 1);
-  TO_FLOYD_PRED(route->src->id(), route->dst->id()) = route->src->id();
-  TO_FLOYD_COST(route->src->id(), route->dst->id()) =
-      (TO_FLOYD_LINK(route->src->id(), route->dst->id()))->link_list.size();
+  TO_FLOYD_LINK(src->id(), dst->id()) =
+      newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
+  TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
+  TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list.size();
 
-  if (route->symmetrical == true) {
-    if (route->gw_dst) // netzone route (to adapt the error message, if any)
+  if (symmetrical == true) {
+    if (gw_dst) // netzone route (to adapt the error message, if any)
       xbt_assert(
-          nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
+          nullptr == TO_FLOYD_LINK(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          route->dst->getCname(), route->gw_dst->getCname(), route->src->getCname(), route->gw_src->getCname());
+          dst->getCname(), gw_dst->getCname(), src->getCname(), gw_src->getCname());
     else
-      xbt_assert(nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
+      xbt_assert(nullptr == TO_FLOYD_LINK(dst->id(), src->id()),
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-                 route->dst->getCname(), route->src->getCname());
+                 dst->getCname(), src->getCname());
 
-    if (route->gw_dst && route->gw_src) {
-      NetPoint* gw_tmp = route->gw_src;
-      route->gw_src   = route->gw_dst;
-      route->gw_dst   = gw_tmp;
+    if (gw_dst && gw_src) {
+      NetPoint* gw_tmp = gw_src;
+      gw_src           = gw_dst;
+      gw_dst           = gw_tmp;
     }
 
-    if (not route->gw_src || not route->gw_dst)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->getCname(), route->src->getCname());
+    if (not gw_src || not gw_dst)
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst->getCname(), src->getCname());
     else
-      XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", route->dst->getCname(), route->gw_src->getCname(),
-                route->src->getCname(), route->gw_dst->getCname());
+      XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", dst->getCname(), gw_src->getCname(), src->getCname(),
+                gw_dst->getCname());
 
-    TO_FLOYD_LINK(route->dst->id(), route->src->id()) = newExtendedRoute(hierarchy_, route, 0);
-    TO_FLOYD_PRED(route->dst->id(), route->src->id()) = route->dst->id();
-    TO_FLOYD_COST(route->dst->id(), route->src->id()) =
-        (TO_FLOYD_LINK(route->dst->id(), route->src->id()))->link_list.size(); /* count of links, old model assume 1 */
+    TO_FLOYD_LINK(dst->id(), src->id()) =
+        newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
+    TO_FLOYD_PRED(dst->id(), src->id()) = dst->id();
+    TO_FLOYD_COST(dst->id(), src->id()) =
+        (TO_FLOYD_LINK(dst->id(), src->id()))->link_list.size(); /* count of links, old model assume 1 */
   }
 }
 

@@ -406,12 +406,14 @@ void sg_platf_new_mount(MountCreationArgs* mount)
 
 void sg_platf_new_route(sg_platf_route_cbarg_t route)
 {
-  routing_get_current()->addRoute(route);
+  routing_get_current()->addRoute(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
+                                  route->symmetrical);
 }
 
 void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
 {
-  routing_get_current()->addBypassRoute(bypassRoute);
+  routing_get_current()->addBypassRoute(bypassRoute->src, bypassRoute->dst, bypassRoute->gw_src, bypassRoute->gw_dst,
+                                        bypassRoute->link_list, bypassRoute->symmetrical);
 }
 
 void sg_platf_new_process(sg_platf_process_cbarg_t process)

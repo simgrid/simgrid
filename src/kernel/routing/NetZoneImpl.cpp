@@ -64,34 +64,33 @@ simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double
   return res;
 }
 
-void NetZoneImpl::addBypassRoute(sg_platf_route_cbarg_t e_route)
+void NetZoneImpl::addBypassRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                                 std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
   /* Argument validity checks */
-  if (e_route->gw_dst) {
-    XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", e_route->src->getCname(), e_route->gw_src->getCname(),
-              e_route->dst->getCname(), e_route->gw_dst->getCname());
-    xbt_assert(not e_route->link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
-               e_route->src->getCname(), e_route->gw_src->getCname(), e_route->dst->getCname(),
-               e_route->gw_dst->getCname());
-    xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
-               "The bypass route between %s@%s and %s@%s already exists.", e_route->src->getCname(),
-               e_route->gw_src->getCname(), e_route->dst->getCname(), e_route->gw_dst->getCname());
+  if (gw_dst) {
+    XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", src->getCname(), gw_src->getCname(), dst->getCname(),
+              gw_dst->getCname());
+    xbt_assert(not link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.", src->getCname(),
+               gw_src->getCname(), dst->getCname(), gw_dst->getCname());
+    xbt_assert(bypassRoutes_.find({src, dst}) == bypassRoutes_.end(),
+               "The bypass route between %s@%s and %s@%s already exists.", src->getCname(), gw_src->getCname(),
+               dst->getCname(), gw_dst->getCname());
   } else {
-    XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->getCname(), e_route->dst->getCname());
-    xbt_assert(not e_route->link_list.empty(), "Bypass route between %s and %s cannot be empty.",
-               e_route->src->getCname(), e_route->dst->getCname());
-    xbt_assert(bypassRoutes_.find({e_route->src, e_route->dst}) == bypassRoutes_.end(),
-               "The bypass route between %s and %s already exists.", e_route->src->getCname(),
-               e_route->dst->getCname());
+    XBT_DEBUG("Load bypassRoute from %s to %s", src->getCname(), dst->getCname());
+    xbt_assert(not link_list.empty(), "Bypass route between %s and %s cannot be empty.", src->getCname(),
+               dst->getCname());
+    xbt_assert(bypassRoutes_.find({src, dst}) == bypassRoutes_.end(),
+               "The bypass route between %s and %s already exists.", src->getCname(), dst->getCname());
   }
 
   /* Build a copy that will be stored in the dict */
-  kernel::routing::BypassRoute* newRoute = new kernel::routing::BypassRoute(e_route->gw_src, e_route->gw_dst);
-  for (auto const& link : e_route->link_list)
+  kernel::routing::BypassRoute* newRoute = new kernel::routing::BypassRoute(gw_src, gw_dst);
+  for (auto const& link : link_list)
     newRoute->links.push_back(link);
 
   /* Store it */
-  bypassRoutes_.insert({{e_route->src, e_route->dst}, newRoute});
+  bypassRoutes_.insert({{src, dst}, newRoute});
 }
 
 /** @brief Get the common ancestor and its first children in each line leading to src and dst

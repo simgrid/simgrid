@@ -12,6 +12,7 @@
 
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/forward.hpp"
+#include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 
 namespace simgrid {
 namespace kernel {
@@ -61,7 +62,8 @@ public:
   simgrid::s4u::Host* createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
                                  std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
-  void addBypassRoute(sg_platf_route_cbarg_t e_route) override;
+  void addBypassRoute(NetPoint * src, NetPoint * dst, NetPoint * gw_src, NetPoint * gw_dst,
+                      std::vector<simgrid::surf::LinkImpl*> & link_list, bool symmetrical) override;
 
 protected:
   /**

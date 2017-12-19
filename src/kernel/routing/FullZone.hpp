@@ -25,7 +25,9 @@ public:
   ~FullZone() override;
 
   void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
-  void addRoute(sg_platf_route_cbarg_t route) override;
+  void addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+                kernel::routing::NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
+                bool symmetrical) override;
 
   sg_platf_route_cbarg_t* routingTable_ = nullptr;
 };

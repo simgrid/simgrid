@@ -270,14 +270,14 @@ DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : Rou
 {
 }
 
-void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
+void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                            kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                            std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
-  NetPoint* src       = route->src;
-  NetPoint* dst       = route->dst;
   const char* srcName = src->getCname();
   const char* dstName = dst->getCname();
 
-  addRouteCheckParams(route);
+  addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   /* Create the topology graph */
   if (not routeGraph_)
@@ -287,35 +287,35 @@ void DijkstraZone::addRoute(sg_platf_route_cbarg_t route)
    * nodes */
 
   /* Add the route to the base */
-  sg_platf_route_cbarg_t e_route = newExtendedRoute(hierarchy_, route, 1);
+  sg_platf_route_cbarg_t e_route = newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
   newRoute(src->id(), dst->id(), e_route);
 
   // Symmetrical YES
-  if (route->symmetrical == true) {
+  if (symmetrical == true) {
 
     xbt_dynar_t nodes   = xbt_graph_get_nodes(routeGraph_);
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src->id(), xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst->id(), xbt_node_t);
     xbt_edge_t edge     = xbt_graph_get_edge(routeGraph_, node_e_v, node_s_v);
 
-    if (not route->gw_dst || not route->gw_src){
+    if (not gw_dst || not gw_src) {
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
       if (edge)
         THROWF(arg_error, 0, "Route from %s to %s already exists", dstName, srcName);
     } else {
-      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, route->gw_dst->getCname(), srcName,
-                route->gw_src->getCname());
+      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, gw_dst->getCname(), srcName, gw_src->getCname());
       if (edge)
-        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->getCname(), srcName,
-               route->gw_src->getCname());
+        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, gw_dst->getCname(), srcName,
+               gw_src->getCname());
     }
 
-    if (route->gw_dst && route->gw_src) {
-      NetPoint* gw_tmp = route->gw_src;
-      route->gw_src   = route->gw_dst;
-      route->gw_dst   = gw_tmp;
+    if (gw_dst && gw_src) {
+      NetPoint* gw_tmp = gw_src;
+      gw_src           = gw_dst;
+      gw_dst           = gw_tmp;
     }
-    sg_platf_route_cbarg_t link_route_back = newExtendedRoute(hierarchy_, route, 0);
+    sg_platf_route_cbarg_t link_route_back =
+        newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
     newRoute(dst->id(), src->id(), link_route_back);
   }
 }

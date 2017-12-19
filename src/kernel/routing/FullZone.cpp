@@ -71,11 +71,11 @@ void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_
   }
 }
 
-void FullZone::addRoute(sg_platf_route_cbarg_t route)
+void FullZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                        kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                        std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
-  NetPoint* src = route->src;
-  NetPoint* dst = route->dst;
-  addRouteCheckParams(route);
+  addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   unsigned int table_size = getTableSize();
 
@@ -83,35 +83,37 @@ void FullZone::addRoute(sg_platf_route_cbarg_t route)
     routingTable_ = new sg_platf_route_cbarg_t[table_size * table_size]();
 
   /* Check that the route does not already exist */
-  if (route->gw_dst) // inter-zone route (to adapt the error message, if any)
+  if (gw_dst) // inter-zone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-               src->getCname(), route->gw_src->getCname(), dst->getCname(), route->gw_dst->getCname());
+               src->getCname(), gw_src->getCname(), dst->getCname(), gw_dst->getCname());
   else
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
                "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->getCname(),
                dst->getCname());
 
   /* Add the route to the base */
-  TO_ROUTE_FULL(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, true);
+  TO_ROUTE_FULL(src->id(), dst->id()) =
+      newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, true);
 
-  if (route->symmetrical == true && src != dst) {
-    if (route->gw_dst && route->gw_src) {
-      NetPoint* gw_tmp = route->gw_src;
-      route->gw_src   = route->gw_dst;
-      route->gw_dst   = gw_tmp;
+  if (symmetrical == true && src != dst) {
+    if (gw_dst && gw_src) {
+      NetPoint* gw_tmp = gw_src;
+      gw_src           = gw_dst;
+      gw_dst           = gw_tmp;
     }
-    if (route->gw_dst && route->gw_src) // inter-zone route (to adapt the error message, if any)
+    if (gw_dst && gw_src) // inter-zone route (to adapt the error message, if any)
       xbt_assert(
           nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          dst->getCname(), route->gw_dst->getCname(), src->getCname(), route->gw_src->getCname());
+          dst->getCname(), gw_dst->getCname(), src->getCname(), gw_src->getCname());
     else
       xbt_assert(nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
                  dst->getCname(), src->getCname());
 
-    TO_ROUTE_FULL(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, false);
+    TO_ROUTE_FULL(dst->id(), src->id()) =
+        newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, false);
   }
 }
 }
