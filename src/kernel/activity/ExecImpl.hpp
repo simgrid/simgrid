@@ -8,13 +8,12 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "surf/surf.hpp"
-#include "xbt/Extendable.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
-XBT_PUBLIC_CLASS ExecImpl : public ActivityImpl, public simgrid::xbt::Extendable<ExecImpl>
+XBT_PUBLIC_CLASS ExecImpl : public ActivityImpl
 {
   ~ExecImpl() override;
 
