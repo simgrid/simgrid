@@ -28,6 +28,16 @@ SimGrid (3.18) NOT RELEASED YET (target: December 24 2017)
  - LMM stuff moved to its own namespace: simgrid::kernel::lmm.
  - Renamed LMM classes (e.g. s_lmm_system_t -> System).
 
+ Virtual Machines
+ - Live migration is getting moved to a plugin. Dirty page tracking is
+   the first part of this plugin. This imply that VM migration is now
+   only possible if one this function is called :
+    - C/MSG: MSG_vm_live_migration_plugin_init() 
+    - C/C++: sg_vm_live_migration_plugin_init()
+    - Java:  Msg.liveMigrationInit()
+   For C and C++, "simgrid/plugins/live_migration.h" also has to be 
+   included.
+
  XBT
  - Define class simgrid::xbt::Path to manage file names.
  - Removed unused functions:

@@ -26,7 +26,7 @@ public class Main {
 
   public static void main(String[] args) throws MsgException {
     Msg.init(args);
-
+    Msg.liveMigrationInit();
     if (args.length < 1) {
       Msg.info("Usage  : Main platform_file.xml");
       System.exit(1);

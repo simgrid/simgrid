@@ -22,6 +22,7 @@ class Main {
 
   public static void main(String[] args) {
     Msg.init(args); 
+    Msg.liveMigrationInit();
 
     String platfFile = "../../examples/platforms/small_platform.xml";
     if (args.length >= 1)

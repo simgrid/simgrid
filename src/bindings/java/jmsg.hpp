@@ -37,6 +37,7 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv* env, jclass 
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass cls, jobjectArray jargs);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit();
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_liveMigrationInit();
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit();
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_debug(JNIEnv* env, jclass cls, jstring jargs);
