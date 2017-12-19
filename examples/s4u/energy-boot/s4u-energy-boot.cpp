@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* This is an example of how the bootup and shutdown periods can be modeled
- * with SimGrid, takes both the time and overall consumption into account.
+ * with SimGrid, taking both the time and overall consumption into account.
  *
  * The main idea is to augment the platform description to declare fake
  * pstate that represent these states. The CPU speed of these state is zero
