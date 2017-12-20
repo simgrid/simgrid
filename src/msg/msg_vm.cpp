@@ -29,6 +29,14 @@ const char* MSG_vm_get_name(msg_vm_t vm)
   return vm->getCname();
 }
 
+/** @brief Get the physical host of a given VM.
+ *  @ingroup msg_VMs
+ */
+msg_host_t MSG_vm_get_pm(msg_vm_t vm)
+{
+  return vm->getPm();
+}
+
 /** \ingroup m_vm_management
  * \brief Set the parameters of a given host
  *
@@ -61,6 +69,10 @@ size_t MSG_vm_get_ramsize(msg_vm_t vm)
 }
 
 /* **** Check state of a VM **** */
+void MSG_vm_set_bound(msg_vm_t vm, double bound)
+{
+  vm->setBound(bound);
+}
 static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state)
 {
   return vm->pimpl_vm_ != nullptr && vm->getState() == state;
@@ -160,6 +172,63 @@ msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount
   return vm;
 }
 
+/** @brief Start a vm (i.e., boot the guest operating system)
+ *  @ingroup msg_VMs
+ *
+ *  If the VM cannot be started (because of memory over-provisioning), an exception is generated.
+ */
+void MSG_vm_start(msg_vm_t vm)
+{
+  vm->start();
+  if (TRACE_msg_vm_is_enabled()) {
+    simgrid::instr::StateType* state = simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE");
+    state->addEntityValue("start", "0 0 1"); // start is blue
+    state->pushEvent("start");
+  }
+}
+
+/** @brief Immediately suspend the execution of all processes within the given VM.
+ *  @ingroup msg_VMs
+ *
+ * This function stops the execution of the VM. All the processes on this VM
+ * will pause. The state of the VM is preserved. We can later resume it again.
+ *
+ * No suspension cost occurs.
+ */
+void MSG_vm_suspend(msg_vm_t vm)
+{
+  vm->suspend();
+  if (TRACE_msg_vm_is_enabled()) {
+    simgrid::instr::StateType* state = simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE");
+    state->addEntityValue("suspend", "1 0 0"); // suspend is red
+    state->pushEvent("suspend");
+  }
+}
+
+/** @brief Resume the execution of the VM. All processes on the VM run again.
+ *  @ingroup msg_VMs
+ *
+ * No resume cost occurs.
+ */
+void MSG_vm_resume(msg_vm_t vm)
+{
+  vm->resume();
+  if (TRACE_msg_vm_is_enabled())
+    simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE")->popEvent();
+}
+
+/** @brief Immediately kills all processes within the given VM.
+ *  @ingroup msg_VMs
+ *
+ * Any memory that they allocated will be leaked, unless you used #MSG_process_on_exit().
+ *
+ * No extra delay occurs. If you want to simulate this too, you want to use a #MSG_process_sleep().
+ */
+void MSG_vm_shutdown(msg_vm_t vm)
+{
+  vm->shutdown();
+}
+
 /** @brief Destroy a VM. Destroy the VM object from the simulation.
  *  @ingroup msg_VMs
  */
@@ -179,33 +248,6 @@ void MSG_vm_destroy(msg_vm_t vm)
     container->removeFromParent();
     delete container;
   }
-}
-
-/** @brief Start a vm (i.e., boot the guest operating system)
- *  @ingroup msg_VMs
- *
- *  If the VM cannot be started (because of memory over-provisioning), an exception is generated.
- */
-void MSG_vm_start(msg_vm_t vm)
-{
-  vm->start();
-  if (TRACE_msg_vm_is_enabled()) {
-    simgrid::instr::StateType* state = simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE");
-    state->addEntityValue("start", "0 0 1"); // start is blue
-    state->pushEvent("start");
-  }
-}
-
-/** @brief Immediately kills all processes within the given VM.
- *  @ingroup msg_VMs
- *
- * Any memory that they allocated will be leaked, unless you used #MSG_process_on_exit().
- *
- * No extra delay occurs. If you want to simulate this too, you want to use a #MSG_process_sleep().
- */
-void MSG_vm_shutdown(msg_vm_t vm)
-{
-  vm->shutdown();
 }
 
 static std::string get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
@@ -627,48 +669,5 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 
   xbt_assert(get_mig_task_name(vm, src_pm, dst_pm, 4) == task->name);
   MSG_task_destroy(task);
-}
-
-/** @brief Immediately suspend the execution of all processes within the given VM.
- *  @ingroup msg_VMs
- *
- * This function stops the execution of the VM. All the processes on this VM
- * will pause. The state of the VM is preserved. We can later resume it again.
- *
- * No suspension cost occurs.
- */
-void MSG_vm_suspend(msg_vm_t vm)
-{
-  vm->suspend();
-  if (TRACE_msg_vm_is_enabled()) {
-    simgrid::instr::StateType* state = simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE");
-    state->addEntityValue("suspend", "1 0 0"); // suspend is red
-    state->pushEvent("suspend");
-  }
-}
-
-/** @brief Resume the execution of the VM. All processes on the VM run again.
- *  @ingroup msg_VMs
- *
- * No resume cost occurs.
- */
-void MSG_vm_resume(msg_vm_t vm)
-{
-  vm->resume();
-  if (TRACE_msg_vm_is_enabled())
-    simgrid::instr::Container::byName(vm->getName())->getState("MSG_VM_STATE")->popEvent();
-}
-
-/** @brief Get the physical host of a given VM.
- *  @ingroup msg_VMs
- */
-msg_host_t MSG_vm_get_pm(msg_vm_t vm)
-{
-  return vm->getPm();
-}
-
-void MSG_vm_set_bound(msg_vm_t vm, double bound)
-{
-  vm->setBound(bound);
 }
 }
