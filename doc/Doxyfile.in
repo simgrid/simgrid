@@ -770,6 +770,7 @@ EXAMPLE_PATH           = ./ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/xml/ \
                          @CMAKE_HOME_DIRECTORY@/src/xbt/ \
+                         @CMAKE_HOME_DIRECTORY@/include \
                          @CMAKE_HOME_DIRECTORY@/examples \
                          @CMAKE_HOME_DIRECTORY@/doc/example_lists
 
