@@ -6,19 +6,30 @@
 
 [TOC]
 
-This programming environment enables the study of MPI application by
-emulating them on top of the SimGrid simulator. This is particularly
-interesting to study existing MPI applications within the comfort of
-the simulator. The motivation for this work is detailed in the
-reference article (available at http://hal.inria.fr/inria-00527150).
+SMPI enables the study of MPI application by emulating them on top of
+the SimGrid simulator. This is particularly interesting to study
+existing MPI applications within the comfort of the simulator. The
+SMPI reference article is available at
+https://hal.inria.fr/hal-01415484. You should also read the 
+<a href="http://simgrid.org/tutorials/simgrid-smpi-101.pdf">SMPI
+introductory slides</a>.
 
+Our goal is to enable the study of **unmodified MPI applications**.
+Some constructs and features are still missing, but we can probably
+add them on demand.  If you already used MPI before, SMPI should sound
+very familiar to you: Use smpicc instead of mpicc, and smpirun instead
+of mpirun. The main difference is that smpirun takes a virtual
+platform as extra parameter (see @ref platform).
 
-Our goal is to enable the study of **unmodified MPI applications**,
-and even if some constructs and features are still missing, we
-consider SMPI to be stable and usable in production.  For **further
-scalability**, you may modify your code to speed up your studies or
-save memory space.  Improved **simulation accuracy** requires some
-specific care from you.
+If you are new to MPI, you should first take our online [SMPI
+CourseWare](https://simgrid.github.io/SMPI_CourseWare/). It consists
+in several projects that progressively introduce the MPI concepts. It
+proposes to use SimGrid and SMPI to run the experiments, but the
+learning objectives are centered on MPI itself. 
+
+For **further scalability**, you may modify your code to speed up your
+studies or save memory space.  Maximal **simulation accuracy**
+requires some specific care from you.
 
  - @ref SMPI_use
    - @ref SMPI_use_compile
@@ -33,41 +44,20 @@ specific care from you.
    - @ref SMPI_adapting_size
    - @ref SMPI_adapting_speed
  - @ref SMPI_accuracy
+ - @ref SMPI_troubleshooting
+   - @ref SMPI_trouble_buildchain
 
 
 @section SMPI_use Using SMPI
 
-If you're absolutely new to MPI, you should first take our online
-[SMPI CourseWare](https://simgrid.github.io/SMPI_CourseWare/), and/or
-take a MPI course in your favorite university.  If you already know
-MPI, SMPI should sound very familiar to you: Use smpicc instead of
-mpicc, and smpirun instead of mpirun, and you're almost set.  Once you
-get a virtual platform description (see @ref platform), you're good to
-go.
-
 @subsection SMPI_use_compile Compiling your code
 
-For that, simply use <tt>smpicc</tt> as a compiler just
-like you use mpicc with other MPI implementations. This script
-still calls your default compiler (gcc, clang, ...) and adds the right
-compilation flags along the way.
-
-Alas, some building infrastructures cannot cope with that and your
-<tt>./configure</tt> may fail, reporting that the compiler is not
-functional. If this happens, define the <tt>SMPI_PRETEND_CC</tt>
-environment variable before running the configuration. Do not define
-it when using SMPI!
-
-@verbatim
-SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
-make
-@endverbatim
-
-\warning
-  Again, make sure that SMPI_PRETEND_CC is not set when you actually 
-  compile your application. It is just a work-around for some configure-scripts
-  and replaces some internals by "return 0;". Your simulation will not
-  work with this variable set!
+If your application is in C, then simply use <tt>smpicc</tt> as a
+compiler just like you use mpicc with other MPI implementations. This
+script still calls your default compiler (gcc, clang, ...) and adds
+the right compilation flags along the way. If your application is in
+C++, Fortran 77 or Fortran 90, use respectively <tt>smpicxx</tt>,
+<tt>smpiff</tt> or <tt>smpif90</tt>.
 
 @subsection SMPI_use_exec Executing your code on the simulator
 
@@ -349,7 +339,7 @@ Described by Chen et.al. in  <a href="http://ieeexplore.ieee.org/xpl/articleDeta
  - mvapich2_smp: SMP aware algorithm, performing intra-node gather, inter-node allgather with one process/node, and bcast intra-node
 
 
-####_Allgatherv
+#### MPI_Allgatherv
 
  - default: naive one, by default
  - ompi: use openmpi selector for the allgatherv operations
@@ -396,7 +386,7 @@ Bcast, gatherv is not tuned)
 
 #### Automatic evaluation 
 
-(Warning: This is experimental and may be removed or crash easily)
+(Warning: This is still very experimental)
 
 An automatic version is available for each collective (or even as a selector). This specific 
 version will loop over all other implemented algorithm for this particular collective, and apply 
@@ -443,7 +433,7 @@ the first one with a ring algorithm, the second with a pairwise one:
 
 @section SMPI_what What can run within SMPI?
 
-You can run unmodified MPI applications (both C and Fortran) within
+You can run unmodified MPI applications (both C/C++ and Fortran) within
 SMPI, provided that you only use MPI calls that we implemented. Global
 variables should be handled correctly on Linux systems.
 
@@ -451,54 +441,100 @@ variables should be handled correctly on Linux systems.
 
 Our coverage of the interface is very decent, but still incomplete;
 Given the size of the MPI standard, we may well never manage to 
-implement absolutely all existing primitives. Currently, we have a
-very sparse support for one-sided communications, and almost none for
-I/O primitives. But our coverage is still very decent: we pass a very
-large amount of the MPICH coverage tests.
+implement absolutely all existing primitives. Currently, we have
+almost no support for I/O primitives, but we still pass a very large
+amount of the MPICH coverage tests.
 
 The full list of not yet implemented functions is documented in the
 file @ref include/smpi/smpi.h, between two lines containing the
-<tt>FIXME</tt> marker. If you really need a missing feature, please
-get in touch with us: we can guide you though the SimGrid code to help
-you implementing it, and we'd glad to integrate it in the main project
-afterward if you contribute them back.
+<tt>FIXME</tt> marker. If you really miss a feature, please get in
+touch with us: we can guide you though the SimGrid code to help you
+implementing it, and we'd glad to integrate your contribution to the
+main project afterward.
 
-@subsection SMPI_what_globals Global variables
+@subsection SMPI_what_globals Global variables in SMPI
 
 Concerning the globals, the problem comes from the fact that usually,
 MPI processes run as real UNIX processes while they are all folded
 into threads of a unique system process in SMPI. Global variables are
 usually private to each MPI process while they become shared between
-the processes in SMPI. This point is rather problematic, and currently
-forces to modify your application to privatize the global variables.
-
-We tried several techniques to work this around. We used to have a
-script that privatized automatically the globals through static
-analysis of the source code, but it was not robust enough to be used
-in production. This issue, as well as several potential solutions, is
+the processes in SMPI.  The problem and some potential solutions are
 discussed in this article: "Automatic Handling of Global Variables for
-Multi-threaded MPI Programs",
-available at http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf
-(note that this article does not deal with SMPI but with a competing
-solution called AMPI that suffers of the same issue). 
+Multi-threaded MPI Programs", available at
+http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf (note that this
+article does not deal with SMPI but with a competing solution called
+AMPI that suffers of the same issue).  This point used to be
+problematic in SimGrid, but the problem should now be handled
+automatically on Linux.
 
-SimGrid can duplicate and dynamically switch the .data and .bss
-segments of the ELF process when switching the MPI ranks, allowing
-each ranks to have its own copy of the global variables. This feature
-is expected to work correctly on Linux and BSD, so smpirun activates
-it by default. As no copy is involved, performance should not be
-altered (but memory occupation will be higher).
+Older versions of SimGrid came with a script that automatically
+privatized the globals through static analysis of the source code. But
+our implementation was not robust enough to be used in production, so
+it was removed at some point. Currently, SMPI comes with two
+privatization mechanisms that you can @ref options_smpi_privatization
+"select at runtime". At the time of writing (v3.18), the mmap approach
+is considered to be very robust (but a bit slow) while the dlopen
+approach is considered to be much faster. dlopen is used by default.
 
-If you want to turn it off, pass \c -no-privatize to smpirun. This may
-be necessary if your application uses dynamic libraries as the global
-variables of these libraries will not be privatized. You can fix this
-by linking statically with these libraries (but NOT with libsimgrid,
-as we need SimGrid's own global variables).
+With the <b>mmap approach</b>, SMPI duplicates and dynamically switch
+the \c .data and \c .bss segments of the ELF process when switching
+the MPI ranks. This allows each ranks to have its own copy of the
+global variables.  No copy actually occures as this mechanism uses \c
+mmap for efficiency. This mechanism is considered to be very robust on
+all systems supporting \c mmap (Linux and most BSDs). Its performance
+is questionable since each context switch between MPI ranks induces
+several syscalls to change the \c mmap that redirects the \c .data and
+\c .bss segments to the copies of the new rank. The code will also be
+copied several times in memory, inducing a slight increase of memory
+occupation.
+
+Another limitation is that SMPI only accounts for global variables
+defined in the executable. If the processes use external global
+variables from dynamic libraries, they won't be switched
+correctly. The easiest way to solve this is to statically link against
+the library with these globals. This way, each MPI rank will get its
+own copy of these libraries. Of course you should never statically
+link against the SimGrid library itself.
+
+With the <b>dlopen approach</b>, SMPI loads several copies of the same
+executable in memory as if it were a library, so that the global
+variables get naturally duplicated. It first requires the executable
+to be compiled as a relocatable binary, which is less common for
+programs than for libraries. But most distributions are now compiled
+this way for security reason as it allows to randomize the address
+space layout. It should thus be safe to compile most (any?) program
+this way.  The second trick is that the dynamic linker refuses to link
+the exact same file several times, be it a library or a relocatable
+executable. It makes perfectly sense in the general case, but we need
+to circumvent this rule of thumb in our case. To that extend, the
+binary is copied in a temporary file before being re-linked against.
+
+This approach greatly speeds up the context switching, down to about
+40 CPU cycles with our raw contextes, instead of requesting several
+syscalls with the \c mmap approach. Another advantage is that it
+permits to run the SMPI contexts in parallel, which is obviously not
+possible with the \c mmap approach. It was tricky to implement, but we
+are not aware of any flaws, so smpirun activates it by default.
+
+In the future, it may be possible to further reduce the memory and
+disk consumption. It seems that we could <a
+href="https://lwn.net/Articles/415889/">punch holes</a> in the files
+before dl-loading them to remove the code and constants, and mmap
+these area onto a unique copy. If done correctly, this would reduce
+the disk- and memory- usage to the bare minimum, and would also reduce
+the pressure on the CPU instruction cache.\n
+
+Also, currently, only the binary is copied and dlopen-ed for each MPI
+rank. We could probably extend this to external dependencies, but for
+now, any external dependencies must be statically linked into your
+application. As usual, simgrid itself shall never be statically linked
+in your app. You don't want to give a copy of SimGrid to each MPI rank:
+that's ways too much for them to deal with.
 
 @section SMPI_adapting Adapting your MPI code for further scalability
 
 As detailed in the reference article (available at
-http://hal.inria.fr/inria-00527150), you may want to adapt your code
+http://hal.inria.fr/hal-01415484), you may want to adapt your code
 to improve the simulation performance. But these tricks may seriously
 hinder the result quality (or even prevent the app to run) if used
 wrongly. We assume that if you want to simulate an HPC application,
@@ -583,6 +619,28 @@ because it has the right names in the right place either).
 Finally, you may want to check [this
 article](https://hal.inria.fr/hal-00907887) on the classical pitfalls
 in modeling distributed systems.
+
+@section SMPI_troubleshooting Troubleshooting with SMPI
+
+@subsection SMPI_trouble_buildchain My ./configure refuses to use smpicc
+
+Alas, some building infrastructures cannot use smpicc as a project
+compiler, and your <tt>./configure</tt> may report that the compiler
+is not functional. If this happens, define the
+<tt>SMPI_PRETEND_CC</tt> environment variable before running the
+configuration.
+
+@verbatim
+SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
+make
+@endverbatim
+
+\warning 
+
+  Make sure that SMPI_PRETEND_CC is only set when calling ./configure,
+  not during the actual compilation. With that variable, smpicc does
+  not do anything, to not hurt the ./configure feelings. But you need
+  smpicc do actually do something to get your application compiled.
 
 */
 

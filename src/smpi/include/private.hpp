@@ -442,7 +442,7 @@ enum smpi_priv_strategies {
   SMPI_PRIVATIZE_NONE    = 0,
   SMPI_PRIVATIZE_MMAP    = 1,
   SMPI_PRIVATIZE_DLOPEN  = 2,
-  SMPI_PRIVATIZE_DEFAULT = SMPI_PRIVATIZE_MMAP
+  SMPI_PRIVATIZE_DEFAULT = SMPI_PRIVATIZE_DLOPEN
 };
 
 extern XBT_PRIVATE int smpi_privatize_global_variables;
