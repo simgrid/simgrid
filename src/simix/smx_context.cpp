@@ -110,9 +110,10 @@ void SIMIX_context_mod_init()
   }
 #endif
 #if defined(__FreeBSD__)
-  if (context_factory_name == "thread" && xbt_cfg_get_string("smpi/privatization") != "no") {
+  if (xbt_cfg_get_string("smpi/privatization") == "mmap") {
     XBT_WARN("mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts.");
     context_factory_name = "raw";
+    xbt_cfg_set_string("smpi/privatization", "dlopen");
   }
 #endif
 
