@@ -1010,9 +1010,9 @@ to choose between them.
 
   - <b>no</b> (default when not using smpirun): Do not automatically privatize variables.
     Pass \c -no-privatize to smpirun to disable this feature.
-  - <b>mmap</b> or <b>yes</b> (default when using smpirun):
+  - <b>dlopen</b> or <b>yes</b> (default when using smpirun): Link multiple times against the binary.
+  - <b>mmap</b> (slower, but maybe somewhat more stable):
     Runtime automatic switching of the data segments.
-  - <b>dlopen</b> (faster but less tested): Link multiple times against the binary.
 
 \warning
   This configuration option cannot be set in your platform file. You can only

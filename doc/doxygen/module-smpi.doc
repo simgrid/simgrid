@@ -474,19 +474,19 @@ it was removed at some point. Currently, SMPI comes with two
 privatization mechanisms that you can @ref options_smpi_privatization
 "select at runtime". At the time of writing (v3.18), the mmap approach
 is considered to be very robust (but a bit slow) while the dlopen
-approach is considered to be fast and experimental.
+approach is considered to be much faster. dlopen is used by default.
 
 With the <b>mmap approach</b>, SMPI duplicates and dynamically switch
 the \c .data and \c .bss segments of the ELF process when switching
 the MPI ranks. This allows each ranks to have its own copy of the
 global variables.  No copy actually occures as this mechanism uses \c
 mmap for efficiency. This mechanism is considered to be very robust on
-all systems supporting \c mmap (Linux and most BSDs), so smpirun
-activates it by default. Its performance is questionable since each
-context switch between MPI ranks induces several syscalls to change
-the \c mmap that redirects the \c .data and \c .bss segments to the
-copies of the new rank. The code will also be copied several times in
-memory, inducing a slight increase of memory occupation.
+all systems supporting \c mmap (Linux and most BSDs). Its performance
+is questionable since each context switch between MPI ranks induces
+several syscalls to change the \c mmap that redirects the \c .data and
+\c .bss segments to the copies of the new rank. The code will also be
+copied several times in memory, inducing a slight increase of memory
+occupation.
 
 Another limitation is that SMPI only accounts for global variables
 defined in the executable. If the processes use external global
@@ -513,7 +513,8 @@ This approach greatly speeds up the context switching, down to about
 40 CPU cycles with our raw contextes, instead of requesting several
 syscalls with the \c mmap approach. Another advantage is that it
 permits to run the SMPI contexts in parallel, which is obviously not
-possible with the \c mmap approach.
+possible with the \c mmap approach. It was tricky to implement, but we
+are not aware of any flaws, so smpirun activates it by default.
 
 In the future, it may be possible to further reduce the memory and
 disk consumption. It seems that we could <a
