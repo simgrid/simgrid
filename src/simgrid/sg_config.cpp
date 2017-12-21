@@ -500,7 +500,7 @@ void sg_config_init(int *argc, char **argv)
 
     const char* default_privatization = std::getenv("SMPI_PRIVATIZATION");
     if (default_privatization == nullptr)
-      default_privatization = "no";
+      default_privatization = "dlopen";
 
     xbt_cfg_register_string("smpi/privatization", default_privatization, nullptr,
                             "How we should privatize global variable at runtime (no, yes, mmap, dlopen).");
