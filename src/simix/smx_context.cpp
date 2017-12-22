@@ -118,7 +118,7 @@ void SIMIX_context_mod_init()
     XBT_WARN("mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts.");
     context_factory_name = "raw";
   }
-}
+
 #endif
 
   /* select the context factory to use to create the contexts */
