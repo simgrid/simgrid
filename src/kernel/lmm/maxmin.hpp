@@ -230,7 +230,7 @@ public:
 
   /**
    * @brief Sets the concurrency limit for this constraint
-   * @param concurrency_limit The concurrency limit to use for this constraint
+   * @param limit The concurrency limit to use for this constraint
    */
   void set_concurrency_limit(int limit)
   {
@@ -353,7 +353,7 @@ public:
 
   /**
    * @brief Set the concurrent share of the variable
-   * @param concurrency_share The new concurrency share
+   * @param value The new concurrency share
    */
   void set_concurrency_share(short int value) { concurrency_share = value; }
 
