@@ -13,6 +13,10 @@ documentation, but it should remain readable directly.
   - @ref msg_ex_models
     - @ref msg_ex_ns3
 
+@warning MSG was deprecated in SimGrid v3.18. These examples should be
+         converted to S4U in the next releases. You really should
+         consider using S4U in your next project.
+
 @section msg_ex_basics Basic examples and features
 
  - <b>Master Workers</b>.

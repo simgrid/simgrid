@@ -17,9 +17,9 @@
   - @subpage tutorial_smpi "Tutorials with SMPI"
 - @subpage application
   - @subpage s4u_api
+  - @subpage SMPI_API
   - @subpage MSG_API
   - @subpage SD_API
-  - @subpage SMPI_API
   - @subpage MSG_Java
 - @subpage platform
   - @subpage models

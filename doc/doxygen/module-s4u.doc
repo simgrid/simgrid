@@ -1,16 +1,16 @@
 /**
-@defgroup s4u_api  S4U: Next Generation SimGrid API
+@defgroup s4u_api  S4U: Next generation SimGrid API
 @brief Future core API, mixing the full power of SimGrid to the power of C++. 
 
-The S4U API is currently under heavy work, but will eventually
-deprecate the MSG and SimDag APIs. Everything that you can do in
-SimGrid will be possible in S4U. 
+The S4U API is near from its final state.  Everything that you can do in
+SimGrid should be possible in S4U and the missing pieces are seen as
+bugs.
 
-@warning <b>S4U is not as rock stable as the rest of SimGrid yet</b>. 
-	 You are really welcome to test it, but be warned that the API
-	 may change without notice between releases. This is however
-	 the way to go if you want to create a new long-term project.
-	 If you want to play safe, proceed to @ref MSG_API instead. 
+@warning <b>S4U is still evolving: v3.18 is a beta release</b>. You
+	 are really welcome to test it, but this API may change
+	 between releases. This is however the way to go if you want
+	 to create a new long-term project. If you want to play safe,
+	 proceed to deprecated @ref MSG_API instead. 
 
 Unsurprisingly, the S4U interface matches the concepts presented in 
 @ref starting_components "the introduction". You should read this page
