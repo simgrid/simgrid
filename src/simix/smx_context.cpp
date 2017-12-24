@@ -104,7 +104,8 @@ void SIMIX_context_mod_init()
 #endif
 
 #if defined(__APPLE__) || defined(__NetBSD__)
-  if (context_factory_name == "thread" && xbt_cfg_get_string("smpi/privatization") == "dlopen") {
+  std::string priv = xbt_cfg_get_string("smpi/privatization");
+  if (context_factory_name == "thread" && (priv == "dlopen" || priv == "yes" || priv == "default" || priv == "1")) {
     XBT_WARN("dlopen+thread broken on Apple and BSD. Switching to raw contexts.");
     context_factory_name = "raw";
   }
