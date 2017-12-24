@@ -654,7 +654,7 @@ the slowest to the most efficient:
  - \b ucontext: fast factory using System V contexts (Linux and FreeBSD only)
  - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)
    of the boost library for a performance that is comparable to our
-   raw implementation.\nInstall the relevant library (e.g. with the
+   raw implementation.\n Install the relevant library (e.g. with the
    libboost-contexts-dev package on Debian/Ubuntu) and recompile
    SimGrid. Note that our implementation is not compatible with recent
    implementations of the library, and it will be hard to fix this since

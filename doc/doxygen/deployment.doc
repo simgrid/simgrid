@@ -13,7 +13,7 @@ a trace captured from a past applicative run, as briefly explained
 
 There is two ways to specify the mapping of your program onto virtual
 hosts: either directly from your program (with @ref MSG_process_create
-or as in @ref s4u_ex_basics "this S4U example"), or using an external
+or as in @ref s4u_ex_actors_start "this S4U example"), or using an external
 XML file.  You should really logically separate your application from
 the deployment, as it will ease your experimental campain afterward.
 How exactly you organize your work remains up to you.
