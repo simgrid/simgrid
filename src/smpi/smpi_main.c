@@ -11,7 +11,7 @@
 int main(int argc, char **argv)
 {
   if (argc < 2) {
-    fprintf(stderr, "Usage: smpi_main <program to launch>\n");
+    fprintf(stderr, "Usage: smpimain <program to launch>\n");
     exit(1);
   }
   return smpi_main(argv[1], argc - 1, argv + 1);
