@@ -88,7 +88,7 @@ the settings icon of the release you want to change.
 - Rebuild and resynchronize the website so that the file gets visible
   from our download page.\n
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
-  - emacs org/site/index.org and C-c C-c the first source block to refresh the news.
+  - emacs org/site/index.org and C-c C-c the first source block to refresh the news; fake the date in the result.
   - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
   - emacs org/site/documentation.org and edit the version links.
   - make -C org all sync
@@ -97,10 +97,19 @@ the settings icon of the release you want to change.
  - Document the tag on https://github.com/simgrid/simgrid/releases
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
+    - Hall of Fame in the mail\n
+      git log --after="22 september 2017" --pretty=short |grep Author|sort |uniq -c 
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
 - Release the debian package
+  - make -C debian/rules get-orig-source
+  - gbp import ../simgrid_XXX+dfsg.orig.tar.xz
+  - dch -i "New upstream release" # + copy the NEWS into debian/changelog
+  - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
+  - edit debian/control
+    - s/simgrid3.XX/simgrid3.XY/ 
+    - libsimgrid3.XY conflicts with libsimgrid3.XX because of smpimain
 - Update the simgrid/package.py for spack: https://github.com/solverstack/spack
 - Create the template for the next release in ChangeLog and NEWS files
 - Change the release number in CMakeLists.txt
