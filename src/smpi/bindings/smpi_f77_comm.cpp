@@ -211,7 +211,7 @@ void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*ne
 void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int* root, int* comm, int* intercomm,
                        int* array_of_errcodes, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_spawn( command, nullptr, *maxprocs, *reinterpret_cast<MPI_Info*>(info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp,
+  *ierr = MPI_Comm_spawn( command, &argv, *maxprocs, *reinterpret_cast<MPI_Info*>(info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp,
                           array_of_errcodes);
   if(*ierr == MPI_SUCCESS) {
     *intercomm = tmp->add_f();
