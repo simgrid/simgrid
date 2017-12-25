@@ -1,6 +1,7 @@
 /**
-@defgroup MSG_API  MSG: Simulate CSP Algorithms
+@defgroup MSG_API  MSG: Legacy handling of CSP algorithms
 @brief Simple programming environment
+
 
 MSG is a simple API to write algorithms organized with Concurrent
 Sequential Processes (CSP) that interact by exchanging messages. It
@@ -9,12 +10,13 @@ systems. It can be used to build rather realistic simulations, but
 remains simple to use: most unpleasant technical elements can be
 abstracted away rather easily.
 
-If you are unsure, then you probably want to use MSG. Otherwise, you
-may want to use one of the following:
-
- - MSG in Java instead of C: @ref MSG_Java.
- - If you want to use DAGs: @ref SD_API.
- - If you want to study a MPI application: @ref SMPI_API.
+\warning MSG used to be the main API of SimGrid 3, but we are
+	 currently in the process of releasing SimGrid 4. The
+	 tentative release date is Summer 2018. So MSG is frozen and
+	 will probably never evolve. If you are starting a new
+	 project, you should consider S4U instead. Note that the
+	 support for MSG will not be removed from SimGrid before 2020
+	 at least.
 
 \section MSG_funct Offered functionalities
    - \ref msg_simulation

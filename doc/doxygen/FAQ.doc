@@ -1,6 +1,8 @@
-/*! \page FAQ Frequently Asked Questions
+/*! \page FAQ MSG Frequently Asked Questions
 
 @tableofcontents
+
+This document is the FAQ of the MSG interface. Some entries are a bit aging and it should be refreshed at some point.
 
 \section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
 
@@ -12,7 +14,7 @@ material on the
 <a href="http://people.irisa.fr/Martin.Quinson/blog/SimGrid/">blog of
 Martin Quinson</a>. 
 
-Another great source of inspiration can be found in the \ref msg_examples.
+Another great source of inspiration can be found in the \ref s4u_examples.
 
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
@@ -133,15 +135,6 @@ and MSG_task_get_data().
 
 You could use a dictionary (#xbt_dict_t) of dynars (#xbt_dynar_t). If
 you still don't see how to do it, please come back to us...
-
-\subsubsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
-
-You are probably looking for the following functions:
-MSG_task_isend() and MSG_task_irecv(); 
-MSG_comm_test(), MSG_comm_wait(), MSG_comm_waitall() and MSG_comm_waitany();
-MSG_comm_destroy(). 
-
-There is even a specific example section on \ref msg_ex_async .
 
 \subsubsection faq_MIA_thread_synchronization How to synchronize my user processes?
 

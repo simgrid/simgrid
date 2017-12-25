@@ -3,11 +3,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |( _ )
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | |/ _ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) || | (_) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|\___/
-               (not released yet)
+               December 24 2017
 
-The "Ho Ho Ho! SimGrid 4 is coming to town" release.
+The "Ho Ho Ho! SimGrid 4 beta is coming to town" release.
+  SimGrid 4 *may* be there by the next solstice.
 
- * Convert most of (but not all) MSG examples to S4U.
+ * Convert almost all interesting MSG examples to S4U.
  * New model: energy consumption due to the network.
  * Major cleanups in the disk and storage subsystems.
  * (+ further deprecate XBT, bug fixes and doc improvement)

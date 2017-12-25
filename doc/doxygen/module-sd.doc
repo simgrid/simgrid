@@ -1,5 +1,5 @@
 /** 
-@defgroup SD_API      SimDag: Simulate DAG algorithms
+@defgroup SD_API  SimDag: Legacy handling of DAG algorithms
 @brief Programming environment for DAG applications
 
 SimDag provides functionnalities to simulate parallel task scheduling
@@ -8,7 +8,9 @@ can be expressed with SimDag; consider using @ref MSG_API "MSG" for
 distributed algorithms). 
 
 SimDag is the oldest interface in SimGrid, even if it was temporarly
-removed when the new superfast kernel was added in SimGrid v3.0.
+removed when the new superfast kernel was added in SimGrid v3.0. It
+will certainly be deprecated by future releases of the S4U API, when
+inter-activity dependencies are added.
 
   @{
   

@@ -452,7 +452,7 @@ touch with us: we can guide you though the SimGrid code to help you
 implementing it, and we'd glad to integrate your contribution to the
 main project afterward.
 
-@subsection SMPI_what_globals Global variables in SMPI
+@subsection SMPI_what_globals Privatization of global variables
 
 Concerning the globals, the problem comes from the fact that usually,
 MPI processes run as real UNIX processes while they are all folded
@@ -472,9 +472,9 @@ privatized the globals through static analysis of the source code. But
 our implementation was not robust enough to be used in production, so
 it was removed at some point. Currently, SMPI comes with two
 privatization mechanisms that you can @ref options_smpi_privatization
-"select at runtime". At the time of writing (v3.18), the mmap approach
-is considered to be very robust (but a bit slow) while the dlopen
-approach is considered to be much faster. dlopen is used by default.
+"select at runtime". At the time of writing (v3.18), the dlopen
+approach is considered to be very fast (it's used by default) while
+the mmap approach is considered to be rather slow but very robust.
 
 With the <b>mmap approach</b>, SMPI duplicates and dynamically switch
 the \c .data and \c .bss segments of the ELF process when switching

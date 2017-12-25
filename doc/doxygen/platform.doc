@@ -559,7 +559,7 @@ kicks in. It then loops back, starting at 100µs (the initial value) for one sec
 #### The ``<prop/>`` tag ####
 
 Similar to the ``<host>`` tag, a link may also contain the ``<prop/>`` tag; see the host
-documentation (Section \ref pf_host) for an example.
+documentation (Section \ref pf_tag_host) for an example.
 
 
 \subsubsection pf_backbone <backbone/>
@@ -715,7 +715,7 @@ Attributes     | Mandatory | Values | Description
 -------------- | --------- | ------ | -----------
 id             | yes       | string | Identifier of this ``storage``; used when referring to it
 typeId         | yes       | string | Here you need to refer to an already existing \ref pf_storage_entity_storage_type "\<storage_type\>"; the storage entity defined by this tag will then inherit the properties defined there.
-attach         | yes       | string | Name of a host (see Section \ref pf_host) to which this storage is <i>physically</i> attached to (e.g., a hard drive in a computer)
+attach         | yes       | string | Name of a host (see Section \ref pf_tag_host) to which this storage is <i>physically</i> attached to (e.g., a hard drive in a computer)
 content        | no        | string | When specified, overwrites the content attribute of \ref pf_storage_entity_storage_type "\<storage_type\>"
 
 Here are two examples:
@@ -1079,6 +1079,7 @@ routing model (the path is given relative to SimGrid's source directory):
 \verbinclude example_filelist_routing_cluster
 
 \anchor pf_routing_model_none
+
 ### None ###
 
 This model does exactly what it's name advertises: Nothing. There is no routing
@@ -1086,7 +1087,7 @@ available within this model and if you try to communicate within the AS that
 uses this model, SimGrid will fail unless you have explicitly activated the
 \ref options_model_select_network_constant "Constant Network Model" (this model charges
 the same for every single communication). It should
-be noted, however, that you can still attach an \ref pf_tag_asroute "ASroute",
+be noted, however, that you can still attach an \ref pf_tag_zoneroute "ZoneRoute",
 as is demonstrated in the example below:
 
 \verbinclude platforms/cluster_and_one_host.xml
@@ -1186,8 +1187,19 @@ entity (the path is given relative to SimGrid's source directory):
 
 \subsubsection pf_tag_zoneroute &lt;zoneRoute&gt;
 
-The purpose of this entity is to define a route between two ASes.
-This is mainly useful when you're in the \ref pf_routing_model_full "Full routing model".
+The purpose of this entity is to define a route between two
+NetZones. Recall that all zones form a tree, so to connect two
+sibiling zones, you must give such a zoneRoute specifying the source
+and destination zones, along with the gateway in each zone (ie, the
+point to reach within that zone to reach the netzone), and the list of
+links in the ancestor zone to go from one zone to another.
+
+So, to go from an host \c src_host that is within zone \c src, to an
+host \c dst_host that is within \c dst, you need to:
+
+ - move within zone \c src, from \c src_host to the specified \c gw_src;
+ - traverse all links specified by the zoneRoute (they are supposed to be within the common ancestor);
+ - move within zone \c dst, from \c gw_dst to \c dst_host.
 
 #### Attributes ####
 
@@ -1229,7 +1241,7 @@ This is mainly useful when you're in the \ref pf_routing_model_full "Full routin
 \subsubsection pf_tag_route &lt;route&gt; 
 
 The principle is the same as for 
-\ref pf_tag_zoneroute "ASroute": The route contains a list of links that
+\ref pf_tag_zoneroute "ZoneRoute": The route contains a list of links that
 provide a path from \c src to \c dst. Here, \c src and \c dst can both be either a 
 \ref pf_tag_host "host" or \ref pf_router "router".  This is mostly useful for the 
 \ref pf_routing_model_full "Full routing model" as well as for the 
@@ -1467,12 +1479,11 @@ or similar functions.
 \subsection pf_trace trace and trace_connect
 
 Both tags are an alternate way to pass files containing information on
-availability, state etc. to an entity. (See also, for instance, Section \ref
-pf_host_churn "Churn", as described for the host entity.) Instead of referring
-to the file directly in the host, link, or cluster tag, you proceed by defining
-a trace with an id corresponding to a file, later a host/link/cluster, and
-finally using trace_connect you say that the file trace must be used by the
-entity. 
+availability, state etc. to an entity. (See also @ref howto_churn).
+Instead of referring to the file directly in the host, link, or
+cluster tag, you proceed by defining a trace with an id corresponding
+to a file, later a host/link/cluster, and finally using trace_connect
+you say that the file trace must be used by the entity.
 
 
 #### Example #### 
@@ -1669,7 +1680,7 @@ Vivaldi).
 
 Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between AS.
 That is for example what is commonly done when using peers (see Section \ref pf_peer).
-\verbatim
+@verbatim
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="4">
@@ -1680,7 +1691,7 @@ That is for example what is commonly done when using peers (see Section \ref pf_
    <peer id="peer-2" coordinates="243.4 58.8 1.4" speed="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
 </AS>
 </platform>
-\endverbatim
+@endverbatim
 In such a case though, we connect the AS created by the <b>peer</b> tag with the Vivaldi routing mechanism.
 This means that to route between AS1 and AS2, it will use the coordinates of router_AS1 and router_AS2.
 This is currently a convention and we may offer to change this convention in the DTD later if needed.

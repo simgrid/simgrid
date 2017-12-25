@@ -955,8 +955,6 @@ void System::remove_all_modified_set()
  *
  * If the resource is not shared (ie in FATPIPE mode), then the load is the max (not the sum) of all resource usages
  * located on this resource.
- *
- * \param cnst the lmm_constraint_t associated to the resource
  */
 double Constraint::get_usage() const
 {

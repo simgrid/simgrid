@@ -30,7 +30,12 @@ static void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr synchro);
 
 /**
  *  \brief Checks if there is a communication activity queued in a deque matching our needs
+ *  \param deque where to search into
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
+ *  \param match_fun the function to apply
+ *  \param this_user_data additional parameter to the match_fun
+ *  \param my_synchro what to compare against
+ *  \param remove_matching whether or not to clean the found object from the queue
  *  \return The communication activity if found, nullptr otherwise
  */
 static simgrid::kernel::activity::CommImplPtr
@@ -445,7 +450,7 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 
 /**
  *  \brief Starts the simulation of a communication synchro.
- *  \param synchro the communication synchro
+ *  \param comm the communication that will be started
  */
 static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
 {
