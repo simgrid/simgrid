@@ -508,6 +508,8 @@ the exact same file several times, be it a library or a relocatable
 executable. It makes perfectly sense in the general case, but we need
 to circumvent this rule of thumb in our case. To that extend, the
 binary is copied in a temporary file before being re-linked against.
+`dlmopen()` cannot be used as it only allows 256 contextes, and as it
+would also dupplicate simgrid itself.
 
 This approach greatly speeds up the context switching, down to about
 40 CPU cycles with our raw contextes, instead of requesting several
@@ -522,7 +524,9 @@ href="https://lwn.net/Articles/415889/">punch holes</a> in the files
 before dl-loading them to remove the code and constants, and mmap
 these area onto a unique copy. If done correctly, this would reduce
 the disk- and memory- usage to the bare minimum, and would also reduce
-the pressure on the CPU instruction cache.\n
+the pressure on the CPU instruction cache. See 
+<a href="https://github.com/simgrid/simgrid/issues/137">the relevant
+bug</a> on github for implementation leads.\n
 
 Also, currently, only the binary is copied and dlopen-ed for each MPI
 rank. We could probably extend this to external dependencies, but for
