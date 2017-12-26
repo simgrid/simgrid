@@ -36,25 +36,16 @@ void MigrationRx::operator()()
   // Here Stage 1, 2  and 3 have been performed.
   // Hence complete the migration
 
-  // Copy the reference to the vm (if SRC crashes now, do_migration will free ms)
-  // This is clearly ugly but I (Adrien) need more time to do something cleaner (actually we should copy the whole ms
-  // structure at the beginning and free it at the end of each function)
-  simgrid::s4u::VirtualMachine* vm = vm_;
-  simgrid::s4u::Host* dst_pm       = dst_pm_;
+  /* Update the vm location */
+  /* precopy migration makes the VM temporally paused */
+  xbt_assert(vm_->getState() == SURF_VM_STATE_SUSPENDED);
 
-  // Make sure that we cannot get interrupted between the migrate and the resume to not end in an inconsistent state
-  simgrid::simix::kernelImmediate([vm, dst_pm]() {
-    /* Update the vm location */
-    /* precopy migration makes the VM temporally paused */
-    xbt_assert(vm->getState() == SURF_VM_STATE_SUSPENDED);
-
-    /* Update the vm location and resume it */
-    vm->pimpl_vm_->setPm(dst_pm);
-    vm->resume();
-  });
+  /* Update the vm location and resume it */
+  vm_->setPm(dst_pm_);
+  vm_->resume();
 
   // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-  vm->pimpl_vm_->isMigrating = false;
+  vm_->pimpl_vm_->isMigrating = false;
   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm_->getCname(), src_pm_->getCname(), dst_pm_->getCname());
 
   if (TRACE_msg_vm_is_enabled()) {
@@ -63,19 +54,19 @@ void MigrationRx::operator()()
     counter++;
 
     // start link
-    container_t msg = simgrid::instr::Container::byName(vm->getName());
+    container_t msg = simgrid::instr::Container::byName(vm_->getName());
     simgrid::instr::Container::getRoot()->getLink("MSG_VM_LINK")->startEvent(msg, "M", key);
 
     // destroy existing container of this vm
-    container_t existing_container = simgrid::instr::Container::byName(vm->getName());
+    container_t existing_container = simgrid::instr::Container::byName(vm_->getName());
     existing_container->removeFromParent();
     delete existing_container;
 
     // create new container on the new_host location
-    new simgrid::instr::Container(vm->getCname(), "MSG_VM", simgrid::instr::Container::byName(dst_pm_->getName()));
+    new simgrid::instr::Container(vm_->getCname(), "MSG_VM", simgrid::instr::Container::byName(dst_pm_->getName()));
 
     // end link
-    msg = simgrid::instr::Container::byName(vm->getName());
+    msg = simgrid::instr::Container::byName(vm_->getName());
     simgrid::instr::Container::getRoot()->getLink("MSG_VM_LINK")->endEvent(msg, "M", key);
   }
   // Inform the SRC that the migration has been correctly performed
@@ -302,6 +293,8 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->getCname());
   if (vm->isMigrating())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->getCname());
+
+  vm->pimpl_vm_->isMigrating = true;
 
   std::string rx_name =
       std::string("__pr_mig_rx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";

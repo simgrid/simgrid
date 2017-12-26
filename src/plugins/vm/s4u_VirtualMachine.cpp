@@ -122,6 +122,11 @@ simgrid::s4u::Host* VirtualMachine::getPm()
   return pimpl_vm_->getPm();
 }
 
+void VirtualMachine::setPm(simgrid::s4u::Host* pm)
+{
+  simgrid::simix::kernelImmediate([this, pm]() { pimpl_vm_->setPm(pm); });
+}
+
 e_surf_vm_state_t VirtualMachine::getState()
 {
   return pimpl_vm_->getState();

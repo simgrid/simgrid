@@ -151,10 +151,9 @@ void VirtualMachineImpl::setState(e_surf_vm_state_t state)
 {
   vmState_ = state;
 }
+
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
-  if (isMigrating)
-    THROWF(vm_error, 0, "Cannot suspend VM '%s': it is migrating", piface_->getCname());
   if (getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->getCname());
   if (issuer->host == piface_)
