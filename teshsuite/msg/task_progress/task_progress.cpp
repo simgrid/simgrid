@@ -15,7 +15,7 @@ static int seq_task(int /*argc*/, char* /*argv*/ [])
 {
   double task_comp_size = 5E7;
   double task_comm_size = 1E6;
-  double progress = 0;
+  double progress;
 
   msg_task_t task = MSG_task_create("simple", task_comp_size, task_comm_size, NULL);
   tasks.push_back(task);
@@ -40,7 +40,7 @@ static int par_task(int /*argc*/, char* /*argv*/ [])
 {
   double * computation_amount = new double[2] {10E7, 10E7};
   double * communication_amount = new double[4] {1E6, 1E6, 1E6, 1E6};
-  double progress = 0;
+  double progress;
 
   std::vector<msg_host_t> hosts_to_use = std::vector<msg_host_t>();
   hosts_to_use.push_back(MSG_get_host_by_name("Tremblay"));
