@@ -171,17 +171,6 @@ void VirtualMachine::setBound(double bound)
 {
   simgrid::simix::kernelImmediate([this, bound]() { pimpl_vm_->setBound(bound); });
 }
-/** @brief Retrieve a copy of the parameters of that VM/PM
- *  @details The ramsize and overcommit fields are used on the PM too */
-void VirtualMachine::getParameters(vm_params_t params)
-{
-  pimpl_vm_->getParams(params);
-}
-/** @brief Sets the params of that VM/PM */
-void VirtualMachine::setParameters(vm_params_t params)
-{
-  simgrid::simix::kernelImmediate([this, params] { pimpl_vm_->setParams(params); });
-}
 
 } // namespace simgrid
 } // namespace s4u

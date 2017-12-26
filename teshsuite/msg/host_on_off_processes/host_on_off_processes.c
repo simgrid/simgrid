@@ -180,16 +180,13 @@ static int test_launcher(int argc, char *argv[])
     XBT_INFO("Test 6: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node");
 
     // Create VM0
-    int dpRate = 70;
-    msg_vm_t vm0;
-    msg_process_t daemon;
-
-    vm0 = MSG_vm_create(jupiter, "vm0", 1, 2048, 125, dpRate);
+    msg_vm_t vm0 = MSG_vm_create_core(jupiter, "vm0");
     MSG_vm_start(vm0);
 
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("process_daemon");
-    daemon   = MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, (msg_host_t)vm0, 1, argvF);
+    msg_process_t daemon =
+        MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, (msg_host_t)vm0, 1, argvF);
 
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("process_daemonJUPI");

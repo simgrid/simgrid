@@ -37,28 +37,6 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
   return vm->getPm();
 }
 
-/** \ingroup m_vm_management
- * \brief Set the parameters of a given host
- *
- * \param vm a vm
- * \param params a parameter object
- */
-void MSG_vm_set_params(msg_vm_t vm, vm_params_t params)
-{
-  vm->setParameters(params);
-}
-
-/** \ingroup m_vm_management
- * \brief Get the parameters of a given host
- *
- * \param vm the vm you are interested into
- * \param params a prameter object
- */
-void MSG_vm_get_params(msg_vm_t vm, vm_params_t params)
-{
-  vm->getParameters(params);
-}
-
 void MSG_vm_set_ramsize(msg_vm_t vm, size_t size)
 {
   vm->setRamsize(size);
@@ -127,14 +105,16 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int coreAmount, int rams
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
-  s_vm_params_t params;
-  params.max_downtime = 0.03;
-  params.mig_speed    = static_cast<double>(mig_netspeed) * 1024 * 1024; // mig_speed
-  params.dp_intensity = static_cast<double>(dp_intensity) / 100;
-  params.dp_cap       = vm->getRamsize() * 0.9; // assume working set memory is 90% of ramsize
+  if (not sg_vm_is_migratable(vm)) {
+    if (mig_netspeed != 0 || dp_intensity != 0)
+      XBT_WARN("The live migration is not enabled. dp_intensity and mig_netspeed can't be used");
+  } else {
+    sg_vm_set_dirty_page_intensity(vm, dp_intensity / 100.0);
+    sg_vm_set_working_set_memory(vm, vm->getRamsize() * 0.9); // assume working set memory is 90% of ramsize
+    sg_vm_set_migration_speed(vm, mig_netspeed * 1024 * 1024.0);
 
-  XBT_DEBUG("migspeed : %f intensity mem : %d", params.mig_speed, dp_intensity);
-  vm->setParameters(&params);
+    XBT_DEBUG("migspeed : %f intensity mem : %d", mig_netspeed * 1024 * 1024.0, dp_intensity);
+  }
 
   return vm;
 }
@@ -150,9 +130,6 @@ msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name)
              "Cannot create a VM named %s: this name is already used by an host or a VM", name);
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, 1);
-  s_vm_params_t params;
-  memset(&params, 0, sizeof(params));
-  vm->setParameters(&params);
   return vm;
 }
 /** @brief Create a new VM object with the default parameters, but with a specified amount of cores
@@ -166,9 +143,6 @@ msg_vm_t MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount
              "Cannot create a VM named %s: this name is already used by an host or a VM", name);
 
   msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
-  s_vm_params_t params;
-  memset(&params, 0, sizeof(params));
-  vm->setParameters(&params);
   return vm;
 }
 

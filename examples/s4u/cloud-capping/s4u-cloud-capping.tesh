@@ -175,7 +175,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-cloud-capping ${platfdir}/small_platform.xml -
 > [51100.000000] (88:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
 > [52000.000000] (1:master_@Fafard)  
 > [52000.000000] (1:master_@Fafard) # 10. (c) migrate
-> [52000.000000] (90:__pr_mig_tx:VM0(Fafard-Fafard)@Fafard) use the default max_downtime value 30ms
 > [52002.070722] (1:master_@Fafard)  
 > [52002.070722] (1:master_@Fafard) # 10. (d) Put a task again on the VM.
 > [52102.070722] (91:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)

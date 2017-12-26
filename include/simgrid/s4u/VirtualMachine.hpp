@@ -52,8 +52,6 @@ public:
 
   bool isMigrating();
 
-  void getParameters(vm_params_t params);
-  void setParameters(vm_params_t params);
   simgrid::s4u::Host* getPm();
   void setPm(simgrid::s4u::Host * pm);
   size_t getRamsize();

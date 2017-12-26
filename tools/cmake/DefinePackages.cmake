@@ -677,7 +677,6 @@ set(headers_to_install
   include/simgrid/instr.h
   include/simgrid/msg.h
   include/simgrid/simdag.h
-  include/simgrid/datatypes.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
   include/simgrid/simix.h
