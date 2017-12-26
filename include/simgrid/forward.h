@@ -30,6 +30,8 @@ namespace activity {
   using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
   class IoImpl;
   using IoImplPtr = boost::intrusive_ptr<IoImpl>;
+  class MutexImpl;
+  using MutexImplPtr = boost::intrusive_ptr<MutexImpl>;
   class RawImpl;
   using RawImplPtr = boost::intrusive_ptr<RawImpl>;
   class SleepImpl;
@@ -54,7 +56,6 @@ namespace simix {
   using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
   class Host;
 
-  class MutexImpl;
 }
 namespace surf {
   class Resource;
@@ -84,7 +85,7 @@ typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 typedef simgrid::kernel::context::Context* smx_context_t;
 typedef simgrid::simix::ActorImpl* smx_actor_t;
-typedef simgrid::simix::MutexImpl* smx_mutex_t;
+typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 typedef simgrid::surf::StorageImpl* surf_storage_t;
 

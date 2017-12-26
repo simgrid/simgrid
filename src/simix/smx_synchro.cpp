@@ -11,8 +11,8 @@
 #include <xbt/log.h>
 #include <xbt/utility.hpp>
 
+#include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/simix/MutexImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 

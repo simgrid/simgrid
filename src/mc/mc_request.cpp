@@ -6,6 +6,7 @@
 #include <cassert>
 
 #include "src/include/mc/mc.h"
+#include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
@@ -352,7 +353,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     else
       type = "Mutex TRYLOCK";
 
-    simgrid::mc::Remote<simgrid::simix::MutexImpl> mutex;
+    simgrid::mc::Remote<simgrid::kernel::activity::MutexImpl> mutex;
     mc_model_checker->process().read_bytes(mutex.getBuffer(), sizeof(mutex),
       remote(
         req->call == SIMCALL_MUTEX_LOCK

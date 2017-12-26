@@ -11,7 +11,8 @@
 #include <boost/intrusive/list.hpp>
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 
 class XBT_PUBLIC() MutexImpl {
 public:
@@ -47,6 +48,7 @@ private:
   std::atomic_int_fast32_t refcount_{1};
   simgrid::s4u::Mutex mutex_;
 };
+}
 }
 }
 #endif /* SIMIX_MUTEXIMPL_HPP */

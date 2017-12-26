@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Mutex.hpp"
-#include "src/simix/MutexImpl.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
 
 namespace simgrid {
 namespace s4u {
