@@ -12,10 +12,10 @@ SimGrid (3.18) Released December 24 2017
  The "Ho Ho Ho! SimGrid 4 beta is coming to town" release.
 
  MSG IS NOW DEPRECATED. Please use S4U for new projects.
- - Support for MSG should not be removed from SimGrid before 2020, 
+ - Support for MSG should not be removed from SimGrid before 2020,
    but future evolutions will be limited to the integration of
    user-provided patches.
-   
+
  S4U New features
  - s4u::onDeadlock() signal, run before stopping the simulation.
  - s4u::Exec: asynchronous executions (abstraction of background
@@ -29,7 +29,7 @@ SimGrid (3.18) Released December 24 2017
    Mailbox::getCname() instead to get a char*.
  - Storage::getName() changed to return a std::string, use
    Storage::getCname() instead to get a char*.
- - s4u::allStorages() becomes s4u::getStorageList(whereTo) 
+ - s4u::allStorages() becomes s4u::getStorageList(whereTo)
    to have both allocation and deallocation of the map in user space.
 
  MSG
@@ -40,7 +40,7 @@ SimGrid (3.18) Released December 24 2017
  - Both changes fix GitHub's #223 using PR #237 as a basis.
    Thanks Michael Mercier.
  - Most examples were converted to S4U and hidden elsewhere at tests.
-   Rational: we still want MSG to work; we want newcomers to use S4U.
+   Rationale: we still want MSG to work; we want newcomers to use S4U.
 
  SURF
  - LMM stuff moved to its own namespace: simgrid::kernel::lmm.
@@ -54,10 +54,10 @@ SimGrid (3.18) Released December 24 2017
  - Live migration is getting moved to a plugin. Dirty page tracking is
    the first part of this plugin. This imply that VM migration is now
    only possible if one this function is called :
-    - C/MSG: MSG_vm_live_migration_plugin_init() 
+    - C/MSG: MSG_vm_live_migration_plugin_init()
     - C/C++: sg_vm_live_migration_plugin_init()
     - Java:  Msg.liveMigrationInit()
-   For C and C++, "simgrid/plugins/live_migration.h" also has to be 
+   For C and C++, "simgrid/plugins/live_migration.h" also has to be
    included.
 
  XBT
@@ -92,11 +92,11 @@ SimGrid (3.18) Released December 24 2017
  - #248: Kill of finished processes leads to segfault
  - #240: xbt_cond_wait_timeout should gracefully return for C apps
  - #239: please implement signal s4u::onDeadlock()
- - #230: segfaults when exit() without run() 
+ - #230: segfaults when exit() without run()
  - #225: s4u::Actor::kill() doesn not really kill victims in a join()
  - #223: MSG_task_get_flops_amount() not working with parallel tasks
- - #222: Actor::kill() doesn't really kill and segfaults 
- - #221: odd LMM warning when killing an actor 
+ - #222: Actor::kill() doesn't really kill and segfaults
+ - #221: odd LMM warning when killing an actor
  - #120: Memory leak when the processes are forcefully killed
 
 SimGrid (3.17) Released October 8 2017
