@@ -56,7 +56,6 @@ public:
   bool suspended    = false;
   bool auto_restart = false;
 
-  sg_host_t new_host             = nullptr; /* if not null, the host on which the process must migrate to */
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall_t simcall;

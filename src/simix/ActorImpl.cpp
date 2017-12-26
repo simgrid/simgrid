@@ -607,12 +607,12 @@ void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
     simix_process_maxpid = reset_pid;
 }
 
-void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest)
+void SIMIX_process_change_host(smx_actor_t actor, sg_host_t dest)
 {
-  xbt_assert((process != nullptr), "Invalid parameters");
-  simgrid::xbt::intrusive_erase(process->host->extension<simgrid::simix::Host>()->process_list, *process);
-  process->host = dest;
-  dest->extension<simgrid::simix::Host>()->process_list.push_back(*process);
+  xbt_assert((actor != nullptr), "Invalid parameters");
+  simgrid::xbt::intrusive_erase(actor->host->extension<simgrid::simix::Host>()->process_list, *actor);
+  actor->host = dest;
+  dest->extension<simgrid::simix::Host>()->process_list.push_back(*actor);
 }
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process)
@@ -743,11 +743,6 @@ void SIMIX_process_yield(smx_actor_t self)
 
   /* Ok, maestro returned control to us */
   XBT_DEBUG("Control returned to me: '%s'", self->name.c_str());
-
-  if (self->new_host) {
-    SIMIX_process_change_host(self, self->new_host);
-    self->new_host = nullptr;
-  }
 
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");

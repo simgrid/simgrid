@@ -74,10 +74,27 @@ void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
   simcall_process_on_exit(pimpl_, fun, data);
 }
 
+/** @brief Moves the actor to another host
+ *
+ * If the actor is currently blocked on an execution activity, the activity is also
+ * migrated to the new host. If it's blocked on another kind of activity, an error is
+ * raised as the mandated code is not written yet. Please report that bug if you need it.
+ *
+ * Asynchronous activities started by the actor are not migrated automatically, so you have
+ * to take care of this yourself (only you knows which ones should be migrated).
+ */
 void Actor::migrate(Host* new_host)
 {
   simgrid::simix::kernelImmediate([this, new_host]() {
-    pimpl_->new_host = new_host;
+    if (pimpl_->waiting_synchro != nullptr) {
+      // The actor is blocked on an activity. If it's an exec, migrate it too.
+      // FIXME: implement the migration of other kind of activities
+      simgrid::kernel::activity::ExecImplPtr exec =
+          boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_->waiting_synchro);
+      xbt_assert(exec.get() != nullptr, "We can only migrate blocked actors when they are blocked on executions.");
+      exec->migrate(new_host);
+    }
+    SIMIX_process_change_host(this->pimpl_, new_host);
   });
 }
 
@@ -361,6 +378,10 @@ void onExit(int_f_pvoid_pvoid_t fun, void* data)
   simcall_process_on_exit(SIMIX_process_self(), fun, data);
 }
 
+/** @brief Moves the current actor to another host
+ *
+ * @see simgrid::s4u::Actor::migrate() for more information
+ */
 void migrate(Host* new_host)
 {
   SIMIX_process_self()->iface()->migrate(new_host);

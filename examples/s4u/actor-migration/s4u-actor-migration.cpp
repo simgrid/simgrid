@@ -3,74 +3,69 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This example demonstrate the actor migrations.
+ *
+ * The worker actor first move by itself, and then start an execution.
+ * During that execution, the monitor migrates the worker, that wakes up on another host.
+ * The execution was of the right amount of flops to take exactly 5 seconds on the first host
+ * and 5 other seconds on the second one, so it stops after 10 seconds.
+ *
+ * Then another migration is done by the monitor while the worker is suspended.
+ *
+ * Note that worker() takes an uncommon set of parameters,
+ * and that this is perfectly accepted by createActor().
+ */
+
 #include <simgrid/s4u.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_migration, "Messages specific for this s4u example");
 
-simgrid::s4u::MutexPtr checkpoint                 = nullptr;
-simgrid::s4u::ConditionVariablePtr identification = nullptr;
-static simgrid::s4u::ActorPtr controlled_process  = nullptr;
-
-/* The Emigrant process will be moved from host to host. */
-static void emigrant()
+static void worker(simgrid::s4u::Host* first, simgrid::s4u::Host* second)
 {
-  XBT_INFO("I'll look for a new job on another machine ('Boivin') where the grass is greener.");
-  simgrid::s4u::this_actor::migrate(
-      simgrid::s4u::Host::by_name("Boivin")); /* - First, move to another host by myself */
+  double flopAmount = first->getSpeed() * 5 + second->getSpeed() * 5;
 
-  XBT_INFO("Yeah, found something to do");
-  simgrid::s4u::this_actor::execute(98095000);
-  simgrid::s4u::this_actor::sleep_for(2);
+  XBT_INFO("Let's move to %s to execute %.2f Mflops (5sec on %s and 5sec on %s)", first->getCname(), flopAmount / 1e6,
+           first->getCname(), second->getCname());
 
-  XBT_INFO("Moving back home after work");
-  simgrid::s4u::this_actor::migrate(simgrid::s4u::Host::by_name("Jacquelin")); /* - Move back to original location */
+  simgrid::s4u::this_actor::migrate(first);
+  simgrid::s4u::this_actor::execute(flopAmount);
 
-  simgrid::s4u::this_actor::migrate(simgrid::s4u::Host::by_name("Boivin")); /* - Go back to the other host to sleep*/
-  simgrid::s4u::this_actor::sleep_for(4);
-
-  checkpoint->lock();                               /* - Get controlled at checkpoint */
-  controlled_process = simgrid::s4u::Actor::self(); /* - and get moved back by the policeman process */
-  identification->notify_all();
-  checkpoint->unlock();
+  XBT_INFO("I wake up on %s. Let's suspend a bit", simgrid::s4u::this_actor::getHost()->getCname());
 
   simgrid::s4u::this_actor::suspend();
 
-  XBT_INFO("I've been moved on this new host: %s", simgrid::s4u::this_actor::getHost()->getCname());
-  XBT_INFO("Uh, nothing to do here. Stopping now");
+  XBT_INFO("I wake up on %s", simgrid::s4u::this_actor::getHost()->getCname());
+  XBT_INFO("Done");
 }
 
-/* The policeman check for emigrants and move them back to 'Jacquelin' */
-static void policeman()
+static void monitor()
 {
-  checkpoint->lock();
+  simgrid::s4u::Host* boivin    = simgrid::s4u::Host::by_name("Boivin");
+  simgrid::s4u::Host* jacquelin = simgrid::s4u::Host::by_name("Jacquelin");
+  simgrid::s4u::Host* fafard    = simgrid::s4u::Host::by_name("Fafard");
 
-  XBT_INFO("Wait at the checkpoint."); /* - block on the mutex+condition */
-  while (controlled_process == nullptr)
-    identification->wait(checkpoint);
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::createActor("worker", fafard, worker, boivin, jacquelin);
 
-  controlled_process->migrate(simgrid::s4u::Host::by_name("Jacquelin")); /* - Move an emigrant to Jacquelin */
-  XBT_INFO("I moved the emigrant");
-  controlled_process->resume();
+  simgrid::s4u::this_actor::sleep_for(5);
 
-  checkpoint->unlock();
+  XBT_INFO("After 5 seconds, move the process to %s", jacquelin->getCname());
+  actor->migrate(jacquelin);
+
+  simgrid::s4u::this_actor::sleep_until(15);
+  XBT_INFO("At t=15, move the process to %s and resume it.", fafard->getCname());
+  actor->migrate(fafard);
+  actor->resume();
 }
 
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
-  e.loadPlatform(argv[1]); /* - Load the platform description */
+  e.loadPlatform(argv[1]);
 
-  /* - Create and deploy the emigrant and policeman processes */
-  simgrid::s4u::Actor::createActor("emigrant", simgrid::s4u::Host::by_name("Jacquelin"), emigrant);
-  simgrid::s4u::Actor::createActor("policeman", simgrid::s4u::Host::by_name("Boivin"), policeman);
-
-  checkpoint     = simgrid::s4u::Mutex::createMutex(); /* - Initiate the mutex and conditions */
-  identification = simgrid::s4u::ConditionVariable::createConditionVariable();
+  simgrid::s4u::Actor::createActor("monitor", simgrid::s4u::Host::by_name("Boivin"), monitor);
   e.run();
-
-  XBT_INFO("Simulation time %g", e.getClock());
 
   return 0;
 }

@@ -475,7 +475,7 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
       comm->cleanupSurf();
     }
 
-    /* If any of the process is suspend, create the synchro but stop its execution,
+    /* If any of the process is suspended, create the synchro but stop its execution,
        it will be restarted when the sender process resume */
     if (comm->src_proc->isSuspended() || comm->dst_proc->isSuspended()) {
       if (comm->src_proc->isSuspended())
