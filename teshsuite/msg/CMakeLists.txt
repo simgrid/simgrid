@@ -2,13 +2,13 @@
 foreach(x actions-comm actions-storage
           app-pingpong app-token-ring
           async-wait async-waitall async-waitany
-          cloud-sharing cloud-two-tasks cloud-simple
-	  get_sender host_on_off host_on_off_recv host_on_off_processes	  
+          cloud-capping cloud-sharing cloud-two-tasks cloud-simple
+          get_sender host_on_off host_on_off_recv host_on_off_processes	  
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
           energy-consumption energy-ptask energy-pstate platform-properties
           io-file io-raw-storage io-file-remote
-	  task-priority
-	  plugin-hostload
+          task-priority
+          plugin-hostload
           trace_integration)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
@@ -89,7 +89,7 @@ foreach(x
     actions-comm actions-storage
     async-wait async-waitall async-waitany
     app-bittorrent app-chainsend app-pingpong app-token-ring
-    cloud-two-tasks cloud-simple
+    cloud-capping cloud-two-tasks cloud-simple
     energy-pstate
     host_on_off host_on_off_processes host_on_off_recv
     get_sender

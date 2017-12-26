@@ -1,6 +1,6 @@
 # C examples
 foreach(x app-masterworker 
-          cloud-capping cloud-masterworker cloud-migration
+          cloud-masterworker cloud-migration
           dht-pastry energy-vm platform-failures 
           process-create 
           synchro-semaphore trace-categories 
@@ -60,7 +60,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/two_clusters_d.xml       PARENT_SCOPE)
 
 foreach(x app-masterworker 
-          cloud-capping cloud-masterworker cloud-migration
+          cloud-masterworker cloud-migration
           dht-pastry dht-kademlia platform-failures
           energy-vm
           process-create 

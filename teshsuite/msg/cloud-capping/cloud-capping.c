@@ -13,22 +13,22 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
  * - <b>cloud/bound.c</b>: Demonstrates the use of @ref MSG_task_set_bound
  */
 
-static int worker_main(int argc, char *argv[])
+static int worker_main(int argc, char* argv[])
 {
   double computation_amount = xbt_str_parse_double(argv[1], "Invalid computation amount: %s");
-  int use_bound = xbt_str_parse_int(argv[2], "Second parameter (use_bound) should be 0 or 1 but is: %s");
-  double bound = xbt_str_parse_double(argv[3], "Invalid bound: %s");
+  int use_bound             = xbt_str_parse_int(argv[2], "Second parameter (use_bound) should be 0 or 1 but is: %s");
+  double bound              = xbt_str_parse_double(argv[3], "Invalid bound: %s");
 
   double clock_sta = MSG_get_clock();
 
   msg_task_t task = MSG_task_create("Task", computation_amount, 0, NULL);
   if (use_bound)
-     MSG_task_set_bound(task, bound);
+    MSG_task_set_bound(task, bound);
   MSG_task_execute(task);
   MSG_task_destroy(task);
 
-  double clock_end = MSG_get_clock();
-  double duration = clock_end - clock_sta;
+  double clock_end     = MSG_get_clock();
+  double duration      = clock_end - clock_sta;
   double flops_per_sec = computation_amount / duration;
 
   if (use_bound)
@@ -39,21 +39,21 @@ static int worker_main(int argc, char *argv[])
   return 0;
 }
 
-static void launch_worker(msg_host_t host, const char *pr_name, double computation_amount, int use_bound, double bound)
+static void launch_worker(msg_host_t host, const char* pr_name, double computation_amount, int use_bound, double bound)
 {
-  char **argv = xbt_new(char *, 5);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = bprintf("%f", computation_amount);
-  argv[2] = bprintf("%d", use_bound);
-  argv[3] = bprintf("%f", bound);
-  argv[4] = NULL;
+  char** argv = xbt_new(char*, 5);
+  argv[0]     = xbt_strdup(pr_name);
+  argv[1]     = bprintf("%f", computation_amount);
+  argv[2]     = bprintf("%d", use_bound);
+  argv[3]     = bprintf("%f", bound);
+  argv[4]     = NULL;
 
   MSG_process_create_with_arguments(pr_name, worker_main, NULL, host, 4, argv);
 }
 
-static int worker_busy_loop_main(int argc, char *argv[])
+static int worker_busy_loop_main(int argc, char* argv[])
 {
-  msg_task_t *task = MSG_process_get_data(MSG_process_self());
+  msg_task_t* task = MSG_process_get_data(MSG_process_self());
   MSG_task_execute(*task);
   MSG_task_destroy(*task);
 
@@ -107,9 +107,9 @@ static void test_dynamic_change(void)
 
 static void test_one_task(msg_host_t hostA)
 {
-  const double cpu_speed = MSG_host_get_speed(hostA);
+  const double cpu_speed          = MSG_host_get_speed(hostA);
   const double computation_amount = cpu_speed * 10;
-  const char *hostA_name = MSG_host_get_name(hostA);
+  const char* hostA_name          = MSG_host_get_name(hostA);
 
   XBT_INFO("### Test: with/without MSG_task_set_bound");
 
@@ -144,8 +144,8 @@ static void test_two_tasks(msg_host_t hostA, msg_host_t hostB)
   const double cpu_speed = MSG_host_get_speed(hostA);
   xbt_assert(cpu_speed == MSG_host_get_speed(hostB));
   const double computation_amount = cpu_speed * 10;
-  const char *hostA_name = MSG_host_get_name(hostA);
-  const char *hostB_name = MSG_host_get_name(hostB);
+  const char* hostA_name          = MSG_host_get_name(hostA);
+  const char* hostB_name          = MSG_host_get_name(hostB);
 
   XBT_INFO("### Test: no bound for Task1@%s, no bound for Task2@%s", hostA_name, hostB_name);
   launch_worker(hostA, "worker0", computation_amount, 0, 0);
@@ -190,7 +190,7 @@ static void test_two_tasks(msg_host_t hostA, msg_host_t hostB)
   MSG_process_sleep(1000);
 }
 
-static int master_main(int argc, char *argv[])
+static int master_main(int argc, char* argv[])
 {
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_host_t pm1 = MSG_host_by_name("Fafard");
@@ -225,7 +225,7 @@ static int master_main(int argc, char *argv[])
 
   MSG_vm_destroy(vm0);
 
-  vm0 = MSG_vm_create_core(pm0, "VM0");
+  vm0              = MSG_vm_create_core(pm0, "VM0");
   double cpu_speed = MSG_host_get_speed(pm0);
   MSG_vm_set_bound(vm0, cpu_speed / 10);
   MSG_vm_start(vm0);
@@ -285,15 +285,15 @@ static int master_main(int argc, char *argv[])
 
 static void launch_master(msg_host_t host)
 {
-  const char *pr_name = "master_";
-  char **argv = xbt_new(char *, 2);
-  argv[0] = xbt_strdup(pr_name);
-  argv[1] = NULL;
+  const char* pr_name = "master_";
+  char** argv         = xbt_new(char*, 2);
+  argv[0]             = xbt_strdup(pr_name);
+  argv[1]             = NULL;
 
   MSG_process_create_with_arguments(pr_name, master_main, NULL, host, 1, argv);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   /* Get the arguments */
   MSG_init(&argc, argv);

@@ -11,7 +11,6 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/cpu_interface.hpp"
 
-
 #include "simgrid/s4u/Host.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
@@ -32,6 +31,7 @@ simgrid::kernel::activity::ExecImpl::~ExecImpl()
     timeoutDetector->unref();
   XBT_DEBUG("Destroy exec %p", this);
 }
+
 void simgrid::kernel::activity::ExecImpl::suspend()
 {
   XBT_VERB("This exec is suspended (remain: %f)", surfAction_->getRemains());
@@ -54,12 +54,19 @@ double simgrid::kernel::activity::ExecImpl::remains()
 
   return surfAction_ ? surfAction_->getRemains() : 0;
 }
+
 double simgrid::kernel::activity::ExecImpl::remainingRatio()
 {
   if (host_ == nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::remains())
     return surfAction_->getRemains();
   else // Actually compute the ratio for sequential tasks
     return surfAction_->getRemains() / surfAction_->getCost();
+}
+
+void simgrid::kernel::activity::ExecImpl::setBound(double bound)
+{
+  if (surfAction_)
+    surfAction_->setBound(bound);
 }
 
 void simgrid::kernel::activity::ExecImpl::post()
@@ -115,7 +122,6 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
   onMigration(this, to);
   return this;
 }
-
 
 /*************
  * Callbacks *
