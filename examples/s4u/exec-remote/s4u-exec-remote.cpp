@@ -13,18 +13,36 @@ static void wizard()
 {
   simgrid::s4u::Host* fafard  = simgrid::s4u::Host::by_name("Fafard");
   simgrid::s4u::Host* ginette = simgrid::s4u::Host::by_name("Ginette");
+  simgrid::s4u::Host* boivin  = simgrid::s4u::Host::by_name("Boivin");
 
   XBT_INFO("I'm a wizard! I can run a task on the Fafard host from the Ginette one! Look!");
-  simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(48.492e6);
-  activity->setHost(ginette);
-  activity->start();
+  simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(48.492e6);
+  exec->setHost(ginette);
+  exec->start();
   XBT_INFO("It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).");
 
   simgrid::s4u::this_actor::sleep_for(0.1);
-  XBT_INFO("Load on Fafard: %e flops/s; Load on Ginette: %e flops/s.", fafard->getLoad(), ginette->getLoad());
+  XBT_INFO("Loads in flops/s: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f",
+      boivin->getLoad(), fafard->getLoad(), ginette->getLoad());
 
-  activity->wait();
+  exec->wait();
 
+  XBT_INFO("Done!");
+  XBT_INFO("And now, harder. Start a remote task on Ginette and move it to Boivin after 0.5 sec");
+  exec = simgrid::s4u::this_actor::exec_init(73293500)->setHost(ginette);
+  exec->start();
+
+  simgrid::s4u::this_actor::sleep_for(0.5);
+  XBT_INFO("Loads before the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f",
+      boivin->getLoad(), fafard->getLoad(), ginette->getLoad());
+
+  exec->setHost(boivin);
+
+  simgrid::s4u::this_actor::sleep_for(0.1);
+  XBT_INFO("Loads after the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f",
+      boivin->getLoad(), fafard->getLoad(), ginette->getLoad());
+
+  exec->wait();
   XBT_INFO("Done!");
 }
 

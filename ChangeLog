@@ -1,5 +1,8 @@
 SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
 
+ S4U
+ - Execution->setHost() can be called after start() to migrate it.
+
 SimGrid (3.18) Released December 24 2017
 
  The "Ho Ho Ho! SimGrid 4 beta is coming to town" release.

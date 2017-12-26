@@ -34,9 +34,10 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
   }
 }
 
-void SIMIX_simcall_exit(smx_activity_t synchro)
+void SIMIX_simcall_exit(smx_activity_t activity)
 {
-  synchro->post();
+  if (activity != nullptr) // When migrating, the surf activity is disconnected from its simix activity before cancel
+    activity->post();
 }
 
 void SIMIX_run_kernel(std::function<void()> const* code)

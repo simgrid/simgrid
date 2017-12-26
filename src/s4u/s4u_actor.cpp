@@ -76,7 +76,9 @@ void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
 
 void Actor::migrate(Host* new_host)
 {
-  simgrid::simix::kernelImmediate([this, new_host]() { pimpl_->new_host = new_host; });
+  simgrid::simix::kernelImmediate([this, new_host]() {
+    pimpl_->new_host = new_host;
+  });
 }
 
 s4u::Host* Actor::getHost()
@@ -361,8 +363,7 @@ void onExit(int_f_pvoid_pvoid_t fun, void* data)
 
 void migrate(Host* new_host)
 {
-  smx_actor_t process = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([process, new_host] { process->new_host = new_host; });
+  SIMIX_process_self()->iface()->migrate(new_host);
 }
 }
 }

@@ -23,6 +23,7 @@ Activity* Exec::start()
 Activity* Exec::wait()
 {
   simcall_execution_wait(pimpl_);
+  state_ = finished;
   return this;
 }
 
@@ -60,7 +61,9 @@ ExecPtr Exec::setPriority(double priority)
 }
 ExecPtr Exec::setHost(Host* host)
 {
-  xbt_assert(state_ == inited, "Cannot change the host of an exec after its start");
+  xbt_assert(state_ == inited || state_ == started, "Cannot change the host of an exec once it's done (state: %d)", state_);
+  if (state_ == started)
+    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
   return this;
 }
