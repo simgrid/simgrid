@@ -4,7 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
+#include "simgrid/plugins/live_migration.h"
 #include "simgrid/s4u/VirtualMachine.hpp"
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
 static void computation_fun()
@@ -69,6 +71,7 @@ static void master_main()
 {
   s4u_Host* pm0 = simgrid::s4u::Host::by_name("Fafard");
   s4u_Host* pm1 = simgrid::s4u::Host::by_name("Tremblay");
+  s4u_Host* pm2 = simgrid::s4u::Host::by_name("Bourassa");
 
   XBT_INFO("## Test 1 (started): check computation on normal PMs");
 
@@ -186,11 +189,30 @@ static void master_main()
   vm1->destroy();
 
   XBT_INFO("## Test 5 (ended)");
+  XBT_INFO("## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the"
+           " network one");
+  XBT_INFO("### Relocate VM0 between PM0 and PM1");
+  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  s_vm_params_t params;
+  memset(&params, 0, sizeof(params));
+  vm0->setParameters(&params);
+  vm0->setRamsize(1L * 1024 * 1024 * 1024); // 1GiB
+
+  vm0->start();
+  launch_communication_worker(vm0, pm2);
+  simgrid::s4u::this_actor::sleep_for(0.01);
+  sg_vm_migrate(vm0, pm1);
+  simgrid::s4u::this_actor::sleep_for(0.01);
+  sg_vm_migrate(vm0, pm0);
+  simgrid::s4u::this_actor::sleep_for(5);
+  vm0->destroy();
+  XBT_INFO("## Test 6 (ended)");
 }
 
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
+  sg_vm_live_migration_plugin_init();
   e.loadPlatform(argv[1]); /* - Load the platform description */
 
   simgrid::s4u::Actor::createActor("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);

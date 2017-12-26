@@ -41,12 +41,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud-masterworker$EXEEXT --log=no_loc ${platfdir}
 > [VM00:WRK02:(4) 10.280841] [msg_test/INFO] WRK02 executed task(Task02)
 > [VM01:WRK03:(5) 10.361121] [msg_test/INFO] WRK03 received task(Task03) from mailbox(MBOX:WRK03)
 > [node-0.acme.org:master:(1) 10.361121] [msg_test/INFO] # Migrate all VMs to PM(node-1.acme.org)
-> [node-1.acme.org:__pr_mig_tx:VM00(node-1.acme.org-node-1.acme.org):(7) 10.361121] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [node-1.acme.org:__pr_mig_tx:VM00(node-1.acme.org-node-1.acme.org):(7) 10.361121] [vm_live_migration/WARNING] use the default max_downtime value 30ms
 > [VM01:WRK03:(5) 10.371121] [msg_test/INFO] WRK03 executed task(Task03)
-> [node-10.acme.org:__pr_mig_tx:VM01(node-10.acme.org-node-1.acme.org):(9) 19.682922] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [node-10.acme.org:__pr_mig_tx:VM01(node-10.acme.org-node-1.acme.org):(9) 19.682922] [vm_live_migration/WARNING] use the default max_downtime value 30ms
 > [node-0.acme.org:master:(1) 28.561942] [msg_test/INFO] # Migrate all VMs to PM(node-10.acme.org)
-> [node-1.acme.org:__pr_mig_tx:VM00(node-1.acme.org-node-10.acme.org):(11) 28.561942] [msg_vm/WARNING] use the default max_downtime value 30ms
-> [node-1.acme.org:__pr_mig_tx:VM01(node-1.acme.org-node-10.acme.org):(13) 37.440963] [msg_vm/WARNING] use the default max_downtime value 30ms
+> [node-1.acme.org:__pr_mig_tx:VM00(node-1.acme.org-node-10.acme.org):(11) 28.561942] [vm_live_migration/WARNING] use the default max_downtime value 30ms
+> [node-1.acme.org:__pr_mig_tx:VM01(node-1.acme.org-node-10.acme.org):(13) 37.440963] [vm_live_migration/WARNING] use the default max_downtime value 30ms
 > [node-0.acme.org:master:(1) 46.319984] [msg_test/INFO] # Shutdown the half of worker processes gracefully. The remaining half will be forcibly killed.
 > [VM00:WRK00:(2) 46.327790] [msg_test/INFO] WRK00 received task(finalize) from mailbox(MBOX:WRK00)
 > [VM01:WRK01:(3) 46.335596] [msg_test/INFO] WRK01 received task(finalize) from mailbox(MBOX:WRK01)

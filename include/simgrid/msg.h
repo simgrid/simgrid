@@ -481,8 +481,6 @@ XBT_PUBLIC(void) MSG_vm_start(msg_vm_t vm);
 /* Shutdown the guest operating system. */
 XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
 
-XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
-
 /* Suspend the execution of the VM, but keep its state on memory. */
 XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);

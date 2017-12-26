@@ -49,4 +49,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-cloud-simple$EXEEXT --log=no_loc ${platfdir:=.
 > [VM1:comm_rx:(34) 44.291085] [s4u_test/INFO] VM0:comm_tx to VM1:comm_rx => 0.291085 sec
 > [VM1:comm_rx:(32) 44.291085] [s4u_test/INFO] VM0:comm_tx to VM1:comm_rx => 0.291085 sec
 > [Fafard:master_:(1) 49.000000] [s4u_test/INFO] ## Test 5 (ended)
-> [49.000000] [s4u_test/INFO] Simulation time 49
+> [Fafard:master_:(1) 49.000000] [s4u_test/INFO] ## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the network one
+> [Fafard:master_:(1) 49.000000] [s4u_test/INFO] ### Relocate VM0 between PM0 and PM1
+> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [vm_live_migration/WARNING] use the default max_downtime value 30ms
+> [Bourassa:comm_rx:(36) 49.204993] [s4u_test/INFO] VM0:comm_tx to Bourassa:comm_rx => 0.204993 sec
+> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 191.674258] [vm_live_migration/WARNING] use the default max_downtime value 30ms
+> [Fafard:master_:(1) 339.199251] [s4u_test/INFO] ## Test 6 (ended)
+> [339.199251] [s4u_test/INFO] Simulation time 339.199

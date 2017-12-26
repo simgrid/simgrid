@@ -370,6 +370,8 @@ set(PLUGINS_SRC
   src/plugins/vm/VirtualMachineImpl.cpp
   src/plugins/vm/VmHostExt.hpp
   src/plugins/vm/VmHostExt.cpp
+  src/plugins/vm/VmLiveMigration.cpp
+  src/plugins/vm/VmLiveMigration.hpp
   )
   
 set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )

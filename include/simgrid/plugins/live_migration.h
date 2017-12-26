@@ -16,8 +16,10 @@ XBT_PUBLIC(void) sg_vm_live_migration_plugin_init();
 XBT_PUBLIC(void) sg_vm_start_dirty_page_tracking(sg_vm_t vm);
 XBT_PUBLIC(void) sg_vm_stop_dirty_page_tracking(sg_vm_t vm);
 XBT_PUBLIC(double) sg_vm_lookup_computed_flops(sg_vm_t vm);
+XBT_PUBLIC(void) sg_vm_migrate(sg_vm_t vm, sg_host_t dst_pm);
 
 #define MSG_vm_live_migration_plugin_init() sg_vm_live_migration_plugin_init()
+#define MSG_vm_migrate(vm, dst_pm) sg_vm_migrate(vm, dst_pm)
 
 SG_END_DECL()
 
