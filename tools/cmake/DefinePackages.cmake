@@ -391,8 +391,6 @@ set(SIMIX_SRC
   src/simix/smx_network.cpp
   src/simix/ActorImpl.cpp
   src/simix/ActorImpl.hpp
-  src/simix/MutexImpl.cpp
-  src/simix/MutexImpl.hpp
   src/simix/smx_synchro.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
@@ -403,6 +401,8 @@ set(SIMIX_SRC
   src/kernel/activity/ExecImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
+  src/kernel/activity/MutexImpl.cpp
+  src/kernel/activity/MutexImpl.hpp
   src/kernel/activity/SleepImpl.cpp
   src/kernel/activity/SleepImpl.hpp
   src/kernel/activity/SynchroIo.cpp
