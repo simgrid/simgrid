@@ -64,6 +64,8 @@ public:
       comm->wait();
     }
   }
+  /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
+  static int test_any(std::vector<CommPtr> * comms);
 
   /** Creates (but don't start) an async send to the mailbox @p dest */
   XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.") static CommPtr
