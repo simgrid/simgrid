@@ -22,7 +22,7 @@ static int seq_task(int /*argc*/, char* /*argv*/ [])
 
   XBT_INFO("get the progress of %s before the task starts", task->name);
   progress = MSG_task_get_remaining_work_ratio(task);
-  xbt_assert(progress == 0, "Progress should be 0 not %f", progress);
+  xbt_assert(progress == 1.0, "Progress should be 1.0 not %f", progress);
 
   XBT_INFO("Executing task: \"%s\"", task->name);
   MSG_task_execute(task);
@@ -51,7 +51,7 @@ static int par_task(int /*argc*/, char* /*argv*/ [])
 
   XBT_INFO("get the progress of %s before the task starts", task->name);
   progress = MSG_task_get_remaining_work_ratio(task);
-  xbt_assert(progress == 0, "Progress should be 0 not %f", progress);
+  xbt_assert(progress == 1.0, "Progress should be 1.0 not %f", progress);
 
   XBT_INFO("Executing task: \"%s\"", task->name);
   MSG_parallel_task_execute(task);
