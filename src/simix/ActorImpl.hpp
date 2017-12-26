@@ -113,6 +113,10 @@ public:
   void* getUserData() { return userdata; }
 };
 
+/* Used to keep the list of actors blocked on a synchro  */
+typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
+                                                                        &ActorImpl::smx_synchro_hook>>
+    SynchroList;
 }
 }
 

@@ -12,10 +12,10 @@
 #include <xbt/utility.hpp>
 
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/simix/MutexImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
-static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_actor_t issuer, smx_simcall_t simcall);
 static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
@@ -23,7 +23,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
 
 /***************************** Raw synchronization *********************************/
 
-static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
+smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
 {
   XBT_IN("(%p, %f)",smx_host,timeout);
 
@@ -91,130 +91,6 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
   simcall->issuer->waiting_synchro = nullptr;
   SIMIX_simcall_answer(simcall);
   XBT_OUT();
-}
-/*********************************** Mutex ************************************/
-
-namespace simgrid {
-namespace simix {
-
-MutexImpl::MutexImpl() : mutex_(this)
-{
-  XBT_IN("(%p)", this);
-  XBT_OUT();
-}
-
-MutexImpl::~MutexImpl()
-{
-  XBT_IN("(%p)", this);
-  XBT_OUT();
-}
-
-void MutexImpl::lock(smx_actor_t issuer)
-{
-  XBT_IN("(%p; %p)", this, issuer);
-  /* FIXME: check where to validate the arguments */
-  smx_activity_t synchro = nullptr;
-
-  if (this->locked) {
-    /* FIXME: check if the host is active ? */
-    /* Somebody using the mutex, use a synchronization to get host failures */
-    synchro = SIMIX_synchro_wait(issuer->host, -1);
-    synchro->simcalls.push_back(&issuer->simcall);
-    issuer->waiting_synchro = synchro;
-    this->sleeping.push_back(*issuer);
-  } else {
-    /* mutex free */
-    this->locked = true;
-    this->owner = issuer;
-    SIMIX_simcall_answer(&issuer->simcall);
-  }
-  XBT_OUT();
-}
-
-/** Tries to lock the mutex for a process
- *
- * \param  issuer  the process that tries to acquire the mutex
- * \return whether we managed to lock the mutex
- */
-bool MutexImpl::try_lock(smx_actor_t issuer)
-{
-  XBT_IN("(%p, %p)", this, issuer);
-  if (this->locked) {
-    XBT_OUT();
-    return false;
-  }
-
-  this->locked = true;
-  this->owner = issuer;
-  XBT_OUT();
-  return true;
-}
-
-/** Unlock a mutex for a process
- *
- * Unlocks the mutex and gives it to a process waiting for it.
- * If the unlocker is not the owner of the mutex nothing happens.
- * If there are no process waiting, it sets the mutex as free.
- */
-void MutexImpl::unlock(smx_actor_t issuer)
-{
-  XBT_IN("(%p, %p)", this, issuer);
-  if (not this->locked)
-    THROWF(mismatch_error, 0, "Cannot release that mutex: it was not locked.");
-
-  /* If the mutex is not owned by the issuer, that's not good */
-  if (issuer != this->owner)
-    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%lu), not by you.",
-           this->owner->getCname(), this->owner->pid);
-
-  if (not this->sleeping.empty()) {
-    /*process to wake up */
-    smx_actor_t p = &this->sleeping.front();
-    this->sleeping.pop_front();
-    p->waiting_synchro = nullptr;
-    this->owner = p;
-    SIMIX_simcall_answer(&p->simcall);
-  } else {
-    /* nobody to wake up */
-    this->locked = false;
-    this->owner = nullptr;
-  }
-  XBT_OUT();
-}
-
-}
-}
-
-/** Increase the refcount for this mutex */
-smx_mutex_t SIMIX_mutex_ref(smx_mutex_t mutex)
-{
-  if (mutex != nullptr)
-    intrusive_ptr_add_ref(mutex);
-  return mutex;
-}
-
-/** Decrease the refcount for this mutex */
-void SIMIX_mutex_unref(smx_mutex_t mutex)
-{
-  if (mutex != nullptr)
-    intrusive_ptr_release(mutex);
-}
-
-// Simcall handlers:
-
-void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
-{
-  mutex->lock(simcall->issuer);
-}
-
-int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex)
-{
-  return mutex->try_lock(simcall->issuer);
-}
-
-void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex)
-{
-  mutex->unlock(simcall->issuer);
 }
 
 /********************************* Condition **********************************/

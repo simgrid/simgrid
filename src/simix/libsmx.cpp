@@ -23,6 +23,7 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/simix/MutexImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "xbt/ex.h"
 #include "xbt/functional.hpp"

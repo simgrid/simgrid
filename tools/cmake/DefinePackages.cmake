@@ -391,6 +391,8 @@ set(SIMIX_SRC
   src/simix/smx_network.cpp
   src/simix/ActorImpl.cpp
   src/simix/ActorImpl.hpp
+  src/simix/MutexImpl.cpp
+  src/simix/MutexImpl.hpp
   src/simix/smx_synchro.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp

@@ -10,49 +10,7 @@
 #include "src/simix/ActorImpl.hpp"
 #include <boost/intrusive/list.hpp>
 
-namespace simgrid {
-namespace simix {
-
-typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
-                                                                        &ActorImpl::smx_synchro_hook>>
-    SynchroList;
-
-class XBT_PUBLIC() MutexImpl {
-public:
-  MutexImpl();
-  ~MutexImpl();
-  MutexImpl(MutexImpl const&) = delete;
-  MutexImpl& operator=(MutexImpl const&) = delete;
-
-  void lock(smx_actor_t issuer);
-  bool try_lock(smx_actor_t issuer);
-  void unlock(smx_actor_t issuer);
-
-  bool locked       = false;
-  smx_actor_t owner = nullptr;
-  // List of sleeping processes:
-  simgrid::simix::SynchroList sleeping;
-
-  // boost::intrusive_ptr<Mutex> support:
-  friend void intrusive_ptr_add_ref(MutexImpl* mutex)
-  {
-    XBT_ATTRIB_UNUSED auto previous = mutex->refcount_.fetch_add(1);
-    xbt_assert(previous != 0);
-  }
-  friend void intrusive_ptr_release(MutexImpl* mutex)
-  {
-    if (mutex->refcount_.fetch_sub(1) == 1)
-      delete mutex;
-  }
-
-  simgrid::s4u::Mutex& mutex() { return mutex_; }
-
-private:
-  std::atomic_int_fast32_t refcount_{1};
-  simgrid::s4u::Mutex mutex_;
-};
-}
-}
+smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 
 struct s_smx_cond_t {
   s_smx_cond_t() : cond_(this) {}
