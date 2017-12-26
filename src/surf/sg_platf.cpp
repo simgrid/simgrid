@@ -39,13 +39,6 @@ simgrid::xbt::signal<void(ClusterCreationArgs*)> on_cluster;
 }
 }
 
-// FIXME: The following duplicates the content of s4u::Host
-namespace simgrid {
-namespace s4u {
-extern std::map<std::string, simgrid::s4u::Host*> host_list;
-}
-}
-
 static int surf_parse_models_setup_already_called = 0;
 std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
@@ -423,8 +416,11 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     // The requested host does not exist. Do a nice message to the user
     std::string msg = std::string("Cannot create process '") + process->function + "': host '" + process->host +
                       "' does not exist\nExisting hosts: '";
-    for (auto const& kv : simgrid::s4u::host_list) {
-      simgrid::s4u::Host* host = kv.second;
+
+    std::vector<simgrid::s4u::Host*> list;
+    simgrid::s4u::Engine::getInstance()->getHostList(&list);
+
+    for (auto const& host : list) {
       msg += host->getName();
       msg += "', '";
       if (msg.length() > 1024) {

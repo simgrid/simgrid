@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "simgrid/host.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "xbt/Extendable.hpp"
 #include "xbt/dict.h"
@@ -18,39 +19,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
-// FIXME: The following duplicates the content of s4u::Host
-namespace simgrid {
-namespace s4u {
-extern std::map<std::string, simgrid::s4u::Host*> host_list;
-}
-}
-
 extern "C" {
-
-void sg_host_exit()
-{
-  /* copy all names to not modify the map while iterating over it.
-   *
-   * Plus, the hosts are destroyed in the lexicographic order to ensure
-   * that the output is reproducible: we don't want to kill them in the
-   * pointer order as it could be platform-dependent, which would break
-   * the tests.
-   */
-  std::vector<std::string> names = std::vector<std::string>();
-  for (auto const& kv : simgrid::s4u::host_list)
-    names.push_back(kv.second->getName());
-
-  std::sort(names.begin(), names.end());
-
-  for (auto const& name : names)
-    simgrid::s4u::host_list.at(name)->destroy();
-
-  // host_list.clear(); This would be sufficient if the dict would contain smart_ptr. It's now useless
-}
 
 size_t sg_host_count()
 {
-  return simgrid::s4u::host_list.size();
+  return simgrid::s4u::Engine::getInstance()->getHostCount();
 }
 /** @brief Returns the host list
  *
@@ -64,6 +37,7 @@ size_t sg_host_count()
  */
 sg_host_t *sg_host_list() {
   xbt_assert(sg_host_count() > 0, "There is no host!");
+
   return (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
 }
 
@@ -97,8 +71,10 @@ xbt_dynar_t sg_hosts_as_dynar()
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
-  for (auto const& kv : simgrid::s4u::host_list) {
-    simgrid::s4u::Host* host = kv.second;
+  std::vector<simgrid::s4u::Host*> list;
+  simgrid::s4u::Engine::getInstance()->getHostList(&list);
+
+  for (auto const& host : list) {
     if (host && host->pimpl_netpoint && host->pimpl_netpoint->isHost())
       xbt_dynar_push(res, &host);
   }

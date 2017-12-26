@@ -56,6 +56,14 @@ public:
   /** @brief Load a deployment file and launch the actors that it contains */
   void loadDeployment(const char* deploy);
 
+protected:
+  friend s4u::Host;
+  void addHost(std::string name, simgrid::s4u::Host * host);
+  void delHost(std::string name);
+
+public:
+  simgrid::s4u::Host* hostByName(std::string name);
+  simgrid::s4u::Host* hostByNameOrNull(std::string name);
   size_t getHostCount();
   void getHostList(std::vector<Host*> * whereTo);
   size_t getLinkCount();

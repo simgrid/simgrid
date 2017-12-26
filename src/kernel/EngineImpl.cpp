@@ -8,13 +8,31 @@
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 
+#include <algorithm>
+
 namespace simgrid {
 namespace kernel {
 
 EngineImpl::EngineImpl() = default;
 EngineImpl::~EngineImpl()
 {
-  sg_host_exit(); // Hosts should be part of the engine, at some point
+  /* copy all names to not modify the map while iterating over it.
+   *
+   * Plus, the hosts are destroyed in the lexicographic order to ensure
+   * that the output is reproducible: we don't want to kill them in the
+   * pointer order as it could be platform-dependent, which would break
+   * the tests.
+   */
+  std::vector<std::string> names;
+  for (auto const& kv : hosts_)
+    names.push_back(kv.second->getName());
+
+  std::sort(names.begin(), names.end());
+
+  for (auto const& name : names)
+    hosts_.at(name)->destroy();
+
+  /* Also delete the other data */
   delete netRoot_;
   for (auto const& kv : netpoints_)
     delete kv.second;

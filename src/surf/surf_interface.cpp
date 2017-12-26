@@ -321,7 +321,6 @@ void surf_exit()
 {
   TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
 
-  sg_host_exit();
   sg_link_exit();
   for (auto const& e : storage_types) {
     simgrid::surf::StorageType* stype = e.second;

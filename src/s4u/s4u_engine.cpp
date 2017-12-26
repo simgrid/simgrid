@@ -81,19 +81,35 @@ void Engine::loadDeployment(const char *deploy)
 {
   SIMIX_launch_application(deploy);
 }
-// FIXME: The following duplicates the content of s4u::Host
-extern std::map<std::string, simgrid::s4u::Host*> host_list;
 /** @brief Returns the amount of hosts in the platform */
 size_t Engine::getHostCount()
 {
-  return host_list.size();
+  return pimpl->hosts_.size();
 }
 /** @brief Fills the passed list with all hosts found in the platform */
 void Engine::getHostList(std::vector<Host*>* list)
 {
-  for (auto const& kv : host_list)
+  for (auto const& kv : pimpl->hosts_)
     list->push_back(kv.second);
 }
+void Engine::addHost(std::string name, simgrid::s4u::Host* host)
+{
+  pimpl->hosts_[name] = host;
+}
+void Engine::delHost(std::string name)
+{
+  pimpl->hosts_.erase(name);
+}
+simgrid::s4u::Host* Engine::hostByName(std::string name)
+{
+  return pimpl->hosts_.at(name); // Will raise a std::out_of_range if the host does not exist
+}
+simgrid::s4u::Host* Engine::hostByNameOrNull(std::string name)
+{
+  auto host = pimpl->hosts_.find(name);
+  return host == pimpl->hosts_.end() ? nullptr : host->second;
+}
+
 /** @brief Returns the amount of links in the platform */
 size_t Engine::getLinkCount()
 {

@@ -7,6 +7,7 @@
 #include "SmpiHost.hpp"
 #include "private.hpp"
 #include "simgrid/msg.h" /* barrier */
+#include "simgrid/s4u/Engine.hpp"
 #include "smpi_comm.hpp"
 #include <map>
 
@@ -35,9 +36,6 @@ public:
 };
 }
 }
-namespace s4u {
-extern std::map<std::string, simgrid::s4u::Host*> host_list;
-}
 }
 
 using simgrid::smpi::app::Instance;
@@ -63,8 +61,9 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   static int already_called = 0;
   if (not already_called) {
     already_called = 1;
-    for (auto const& item : simgrid::s4u::host_list) {
-      simgrid::s4u::Host* host = item.second;
+    std::vector<simgrid::s4u::Host*> list;
+    simgrid::s4u::Engine::getInstance()->getHostList(&list);
+    for (auto const& host : list) {
       host->extension_set(new simgrid::smpi::SmpiHost(host));
     }
   }

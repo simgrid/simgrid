@@ -33,8 +33,6 @@ template class Extendable<simgrid::s4u::Host>;
 
 namespace s4u {
 
-std::map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
-
 simgrid::xbt::signal<void(Host&)> Host::onCreation;
 simgrid::xbt::signal<void(Host&)> Host::onDestruction;
 simgrid::xbt::signal<void(Host&)> Host::onStateChange;
@@ -44,7 +42,7 @@ Host::Host(const char* name)
   : name_(name)
 {
   xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
-  host_list[name_] = this;
+  Engine::getInstance()->addHost(std::string(name_), this);
   new simgrid::surf::HostImpl(this);
 }
 
@@ -72,27 +70,26 @@ void Host::destroy()
   if (not currentlyDestroying_) {
     currentlyDestroying_ = true;
     onDestruction(*this);
-    host_list.erase(name_);
+    Engine::getInstance()->delHost(std::string(name_));
     delete this;
   }
 }
 
 Host* Host::by_name(std::string name)
 {
-  return host_list.at(name); // Will raise a std::out_of_range if the host does not exist
+  return Engine::getInstance()->hostByName(name);
 }
 Host* Host::by_name(const char* name)
 {
-  return host_list.at(std::string(name)); // Will raise a std::out_of_range if the host does not exist
+  return Engine::getInstance()->hostByName(std::string(name));
 }
 Host* Host::by_name_or_null(const char* name)
 {
-  return by_name_or_null(std::string(name));
+  return Engine::getInstance()->hostByNameOrNull(std::string(name));
 }
 Host* Host::by_name_or_null(std::string name)
 {
-  auto host = host_list.find(name);
-  return host == host_list.end() ? nullptr : host->second;
+  return Engine::getInstance()->hostByNameOrNull(name);
 }
 
 Host *Host::current(){
