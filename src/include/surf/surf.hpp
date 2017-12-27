@@ -6,7 +6,6 @@
 #ifndef SURF_SURF_H
 #define SURF_SURF_H
 
-#include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 #include "src/internal_config.h"
 #include "xbt/config.h"

@@ -6,7 +6,6 @@
 #ifndef SIMGRID_S4U_VM_HPP
 #define SIMGRID_S4U_VM_HPP
 
-#include "simgrid/datatypes.h"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/forward.hpp"
 

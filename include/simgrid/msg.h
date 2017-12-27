@@ -6,7 +6,6 @@
 #ifndef MSG_H
 #define MSG_H
 
-#include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 #include "simgrid/host.h"
 
