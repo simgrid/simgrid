@@ -80,12 +80,12 @@ static void get_set_storage_data(const std::string& storage_name)
   XBT_INFO("*** GET/SET DATA for storage element: %s ***", storage_name.c_str());
   simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(storage_name);
 
-  char* data = static_cast<char*>(storage->getUserdata());
-  XBT_INFO("Get data: '%s'", data);
-  storage->setUserdata(xbt_strdup("Some data"));
-  data = static_cast<char*>(storage->getUserdata());
-  XBT_INFO("\tSet and get data: '%s'", data);
-  xbt_free(data);
+  std::string* data = static_cast<std::string*>(storage->getUserdata());
+  XBT_INFO("Get data: '%s'", data ? data->c_str() : "No User Data");
+  storage->setUserdata(new std::string("Some data"));
+  data = static_cast<std::string*>(storage->getUserdata());
+  XBT_INFO("\tSet and get data: '%s'", data->c_str());
+  delete data;
 }
 
 static void dump_platform_storages()

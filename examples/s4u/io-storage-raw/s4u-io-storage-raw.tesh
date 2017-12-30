@@ -7,6 +7,6 @@ $ ${bindir}/s4u-io-storage-raw$EXEEXT ${platfdir}/storage/storage.xml "--log=roo
 > [  0.003333] (1:@denise) Wrote 200000 bytes on 'Disk4'
 > [  0.004333] (1:@denise) Read 200000 bytes on 'Disk4'
 > [  0.004333] (1:@denise) *** Get/set data for storage element: Disk4 ***
-> [  0.004333] (1:@denise) Get storage data: '(null)'
+> [  0.004333] (1:@denise) Get storage data: 'No user data'
 > [  0.004333] (1:@denise) Set and get data: 'Some user data'
 > [  0.004333] (0:maestro@) Simulated time: 0.00433333

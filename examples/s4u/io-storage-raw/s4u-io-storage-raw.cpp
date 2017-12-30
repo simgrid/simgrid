@@ -34,14 +34,14 @@ static void host()
   /* - Attach some user data to disk1 */
   XBT_INFO("*** Get/set data for storage element: Disk4 ***");
 
-  char* data = static_cast<char*>(storage->getUserdata());
+  std::string* data = static_cast<std::string*>(storage->getUserdata());
 
-  XBT_INFO("Get storage data: '%s'", data);
+  XBT_INFO("Get storage data: '%s'", data ? data->c_str() : "No user data");
 
-  storage->setUserdata(xbt_strdup("Some user data"));
-  data = static_cast<char*>(storage->getUserdata());
-  XBT_INFO("Set and get data: '%s'", data);
-  xbt_free(data);
+  storage->setUserdata(new std::string("Some user data"));
+  data = static_cast<std::string*>(storage->getUserdata());
+  XBT_INFO("Set and get data: '%s'", data->c_str());
+  delete data;
 }
 
 int main(int argc, char** argv)

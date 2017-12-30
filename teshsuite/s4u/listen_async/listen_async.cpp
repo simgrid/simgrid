@@ -17,28 +17,28 @@ static void server()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
 
-  simgrid::s4u::CommPtr sendComm = mailbox->put_async(xbt_strdup("Some data"), 0);
+  simgrid::s4u::CommPtr sendComm = mailbox->put_async(new std::string("Some data"), 0);
 
   xbt_assert(mailbox->listen()); // True (1)
   XBT_INFO("Task listen works on regular mailboxes");
-  char* res = static_cast<char*>(mailbox->get());
+  std::string* res = static_cast<std::string*>(mailbox->get());
 
-  xbt_assert(not strcmp("Some data", res), "Data received: %s", res);
+  xbt_assert(*res == "Some data", "Data received: %s", res->c_str());
   XBT_INFO("Data successfully received from regular mailbox");
-  xbt_free(res);
+  delete res;
   sendComm->wait();
 
   simgrid::s4u::MailboxPtr mailbox2 = simgrid::s4u::Mailbox::byName("mailbox2");
   mailbox2->setReceiver(simgrid::s4u::Actor::self());
 
-  mailbox2->put_init(xbt_strdup("More data"), 0)->detach();
+  mailbox2->put_init(new std::string("More data"), 0)->detach();
 
   xbt_assert(mailbox2->listen()); // used to break.
   XBT_INFO("Task listen works on asynchronous mailboxes");
 
-  res = static_cast<char*>(mailbox2->get());
-  xbt_assert(not strcmp("More data", res));
-  xbt_free(res);
+  res = static_cast<std::string*>(mailbox2->get());
+  xbt_assert(*res == "More data");
+  delete res;
 
   XBT_INFO("Data successfully received from asynchronous mailbox");
 }
