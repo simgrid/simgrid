@@ -159,7 +159,12 @@ msg_error_t MSG_task_receive(msg_task_t * task, const char *alias)
  *
  * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
- * \param rate limit the reception to rate bandwidth
+ * \param rate limit the reception to rate bandwidth (byte/sec)
+ *
+ * The rate parameter can be used to receive a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_receive() if you don't limit the rate (or pass -1 as a
+ * rate value do disable this feature).
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
@@ -196,7 +201,12 @@ msg_error_t MSG_task_receive_with_timeout(msg_task_t * task, const char *alias, 
  * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
  * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_receive)
- *  \param rate limit the reception to rate bandwidth
+ * \param rate limit the reception to rate bandwidth (byte/sec)
+ *
+ * The rate parameter can be used to send a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_receive() if you don't limit the rate (or pass -1 as a
+ * rate value do disable this feature).
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
@@ -236,7 +246,12 @@ msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double ti
  * \param alias name of the mailbox to receive the task from
  * \param timeout is the maximum wait time for completion (provide -1 for no timeout)
  * \param host a #msg_host_t host from where the task was sent
- * \param rate limit the reception to rate bandwidth
+ * \param rate limit the reception to rate bandwidth (byte/sec)
+ *
+ * The rate parameter can be used to receive a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_receive_ext() if you don't limit the rate (or pass -1 as a
+ * rate value do disable this feature).
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
@@ -348,7 +363,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
  *
  * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
- * \param maxrate the maximum communication rate for sending this task .
+ * \param maxrate the maximum communication rate for sending this task (byte/sec).
  * \return the msg_comm_t communication created
  */
 msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
@@ -407,12 +422,17 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
  * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
  * in the SimGrid-user mailing list archive.
  *
+ * The rate parameter can be used to send a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_dsend() if you don't limit the rate (or pass -1 as a rate
+ * value do disable this feature).
+ *
  * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param cleanup a function to destroy the task if the
  * communication fails, e.g. MSG_task_destroy
  * (if nullptr, no function will be called)
- * \param maxrate the maximum communication rate for sending this task
+ * \param maxrate the maximum communication rate for sending this task (byte/sec)
  *
  */
 void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate)
@@ -438,9 +458,14 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
 /** \ingroup msg_task_usage
  * \brief Starts listening for receiving a task from an asynchronous communication at a given rate.
  *
+ * The rate parameter can be used to receive a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_irecv() if you don't limit the rate (or pass -1 as a rate
+ * value do disable this feature).
+ *
  * \param task a memory location for storing a #msg_task_t. has to be valid until the end of the communication.
  * \param name of the mailbox to receive the task on
- * \param rate limit the bandwidth to the given rate
+ * \param rate limit the bandwidth to the given rate (byte/sec)
  * \return the msg_comm_t communication created
  */
 msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
@@ -736,9 +761,14 @@ msg_error_t MSG_task_send(msg_task_t task, const char *alias)
  * This is a blocking function, the execution flow will be blocked until the task is sent. The maxrate parameter allows
  * the application to limit the bandwidth utilization of network links when sending the task.
  *
+ * The maxrate parameter can be used to send a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_send() if you don't limit the rate (or pass -1 as a rate
+ * value do disable this feature).
+ *
  * \param task the task to be sent
  * \param alias the mailbox name to where the task is sent
- * \param maxrate the maximum communication rate for sending this task
+ * \param maxrate the maximum communication rate for sending this task (byte/sec)
  *
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
@@ -819,10 +849,15 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
  *
  * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
  *
+ * The maxrate parameter can be used to send a task with a limited
+ * bandwidth (smaller than the physical available value). Use
+ * MSG_task_send_with_timeout() if you don't limit the rate (or pass -1 as a rate
+ * value do disable this feature).
+ *
  * \param task the task to be sent
  * \param alias the mailbox name to where the task is sent
  * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_send)
- * \param maxrate the maximum communication rate for sending this task
+ * \param maxrate the maximum communication rate for sending this task (byte/sec)
  *
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
