@@ -55,9 +55,6 @@ public:
 
   virtual void setBound(double bound);
 
-  void getParams(vm_params_t params);
-  void setParams(vm_params_t params);
-
   /* The vm object of the lower layer */
   surf::Action* action_ = nullptr;
 
@@ -87,7 +84,6 @@ public:
 
 private:
   simgrid::s4u::Host* hostPM_;
-  s_vm_params_t params_;
   int coreAmount_;
   size_t ramsize_            = 0;
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;

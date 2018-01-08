@@ -283,15 +283,5 @@ void VirtualMachineImpl::setBound(double bound)
   action_->setBound(bound);
 }
 
-void VirtualMachineImpl::getParams(vm_params_t params)
-{
-  *params = params_;
-}
-
-void VirtualMachineImpl::setParams(vm_params_t params)
-{
-  /* may check something here. */
-  params_ = *params;
-}
 }
 }

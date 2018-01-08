@@ -98,7 +98,7 @@ the settings icon of the release you want to change.
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - Hall of Fame in the mail\n
-      git log --after="22 september 2017" --pretty=short |grep Author|sort |uniq -c 
+      git shortlog -sne v3.18..
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section

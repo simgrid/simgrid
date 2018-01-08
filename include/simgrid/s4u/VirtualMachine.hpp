@@ -6,7 +6,6 @@
 #ifndef SIMGRID_S4U_VM_HPP
 #define SIMGRID_S4U_VM_HPP
 
-#include "simgrid/datatypes.h"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/forward.hpp"
 
@@ -52,8 +51,6 @@ public:
 
   bool isMigrating();
 
-  void getParameters(vm_params_t params);
-  void setParameters(vm_params_t params);
   simgrid::s4u::Host* getPm();
   void setPm(simgrid::s4u::Host * pm);
   size_t getRamsize();

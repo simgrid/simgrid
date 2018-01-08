@@ -138,12 +138,12 @@ Activity* Comm::wait(double timeout)
 }
 int Comm::test_any(std::vector<CommPtr>* comms)
 {
-  smx_activity_t* array = static_cast<smx_activity_t*>(malloc(sizeof(smx_activity_t) * comms->size()));
+  smx_activity_t* array = new smx_activity_t[comms->size()];
   for (unsigned int i = 0; i < comms->size(); i++) {
     array[i] = comms->at(i)->pimpl_;
   }
-  int res = simcall_comm_testany(array, static_cast<size_t>(comms->size()));
-  free(array);
+  int res = simcall_comm_testany(array, comms->size());
+  delete[] array;
   return res;
 }
 

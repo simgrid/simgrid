@@ -15,21 +15,21 @@ static int seq_task(int /*argc*/, char* /*argv*/ [])
 {
   double task_comp_size = 5E7;
   double task_comm_size = 1E6;
-  double progress = 0;
+  double progress;
 
   msg_task_t task = MSG_task_create("simple", task_comp_size, task_comm_size, NULL);
   tasks.push_back(task);
 
   XBT_INFO("get the progress of %s before the task starts", task->name);
   progress = MSG_task_get_remaining_work_ratio(task);
-  xbt_assert(progress == 0, "Progress should be 0 not %f", progress);
+  xbt_assert(progress == 1.0, "Progress should be 1.0 not %f", progress);
 
   XBT_INFO("Executing task: \"%s\"", task->name);
   MSG_task_execute(task);
 
   XBT_INFO("get the progress of %s after the task finishes", task->name);
   progress = MSG_task_get_remaining_work_ratio(task);
-  xbt_assert(progress == 0, "Progress should be equal to 1 not %f", progress);
+  xbt_assert(progress == 0.0, "Progress should be equal to 0.0 not %f", progress);
 
   MSG_task_destroy(task);
   XBT_INFO("Goodbye now!");
@@ -40,7 +40,7 @@ static int par_task(int /*argc*/, char* /*argv*/ [])
 {
   double * computation_amount = new double[2] {10E7, 10E7};
   double * communication_amount = new double[4] {1E6, 1E6, 1E6, 1E6};
-  double progress = 0;
+  double progress;
 
   std::vector<msg_host_t> hosts_to_use = std::vector<msg_host_t>();
   hosts_to_use.push_back(MSG_get_host_by_name("Tremblay"));
@@ -51,14 +51,14 @@ static int par_task(int /*argc*/, char* /*argv*/ [])
 
   XBT_INFO("get the progress of %s before the task starts", task->name);
   progress = MSG_task_get_remaining_work_ratio(task);
-  xbt_assert(progress == 0, "Progress should be 0 not %f", progress);
+  xbt_assert(progress == 1.0, "Progress should be 1.0 not %f", progress);
 
   XBT_INFO("Executing task: \"%s\"", task->name);
   MSG_parallel_task_execute(task);
 
   XBT_INFO("get the progress of %s after the task finishes", task->name);
   progress = MSG_task_get_remaining_work_ratio(task);
-  xbt_assert(progress == 0, "Progress should be equal to 1 not %f", progress);
+  xbt_assert(progress == 0.0, "Progress should be equal to 0.0 not %f", progress);
 
   MSG_task_destroy(task);
   delete[] computation_amount;

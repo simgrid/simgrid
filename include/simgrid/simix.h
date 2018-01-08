@@ -6,7 +6,6 @@
 #ifndef _SIMIX_SIMIX_H
 #define _SIMIX_SIMIX_H
 
-#include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 #include "simgrid/host.h"
 #include "xbt/ex.h"

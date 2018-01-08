@@ -78,15 +78,15 @@ void MigrationRx::operator()()
   XBT_DEBUG("mig: rx_done");
 }
 
-static sg_size_t get_updated_size(double computed, double dp_rate, double dp_cap)
+static sg_size_t get_updated_size(double computed, double dp_rate, sg_size_t dp_cap)
 {
-  double updated_size = computed * dp_rate;
-  XBT_DEBUG("updated_size %f dp_rate %f", updated_size, dp_rate);
+  sg_size_t updated_size = static_cast<sg_size_t>(computed * dp_rate);
+  XBT_DEBUG("updated_size %llu dp_rate %f", updated_size, dp_rate);
   if (updated_size > dp_cap) {
     updated_size = dp_cap;
   }
 
-  return static_cast<sg_size_t>(updated_size);
+  return updated_size;
 }
 
 sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_round, double mig_speed, double timeout)
@@ -131,13 +131,12 @@ void MigrationTx::operator()()
   XBT_DEBUG("mig: tx_start");
 
   double host_speed = vm_->getPm()->getSpeed();
-  s_vm_params_t params;
-  vm_->getParameters(&params);
   const sg_size_t ramsize = vm_->getRamsize();
-  const double dp_rate    = host_speed ? (params.mig_speed * params.dp_intensity) / host_speed : 1;
-  const double dp_cap     = params.dp_cap;
-  const double mig_speed  = params.mig_speed;
-  double max_downtime     = params.max_downtime;
+  const double dp_rate =
+      host_speed ? (sg_vm_get_migration_speed(vm_) * sg_vm_get_dirty_page_intensity(vm_)) / host_speed : 1;
+  const sg_size_t dp_cap = sg_vm_get_working_set_memory(vm_);
+  const double mig_speed = sg_vm_get_migration_speed(vm_);
+  double max_downtime    = sg_vm_get_max_downtime(vm_);
 
   double mig_timeout = 10000000.0;
   bool skip_stage2   = false;
@@ -208,7 +207,7 @@ void MigrationTx::operator()()
         updated_size    = get_updated_size(computed, dp_rate, dp_cap);
       }
 
-      XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %f", stage2_round,
+      XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %llu", stage2_round,
                 updated_size, computed_during_stage1, dp_rate, dp_cap);
 
       /* Check whether the remaining size is below the threshold value. If so, move to stage 3. */

@@ -321,6 +321,7 @@ void surf_exit()
 {
   TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
 
+  simgrid::s4u::Engine::shutdown();
   sg_link_exit();
   for (auto const& e : storage_types) {
     simgrid::surf::StorageType* stype = e.second;
@@ -345,7 +346,6 @@ void surf_exit()
 
   tmgr_finalize();
   sg_platf_exit();
-  simgrid::s4u::Engine::shutdown();
 
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
 }

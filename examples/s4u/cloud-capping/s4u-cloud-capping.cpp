@@ -207,9 +207,6 @@ static void master_main()
   vm0->destroy();
 
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  s_vm_params_t params;
-  memset(&params, 0, sizeof(params));
-  vm0->setParameters(&params);
   vm0->setRamsize(1e9); // 1GB
   vm0->start();
 

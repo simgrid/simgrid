@@ -6,7 +6,6 @@
 #ifndef MSG_H
 #define MSG_H
 
-#include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 #include "simgrid/host.h"
 
@@ -463,8 +462,6 @@ XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
 
 XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
-XBT_PUBLIC(void) MSG_vm_get_params(msg_vm_t vm, vm_params_t params);
-XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 XBT_PUBLIC(void) MSG_vm_set_ramsize(msg_vm_t vm, size_t size);
 XBT_PUBLIC(size_t) MSG_vm_get_ramsize(msg_vm_t vm);
 

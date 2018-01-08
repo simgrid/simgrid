@@ -86,7 +86,9 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
 msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_host_t * host_list,
                                     double *flops_amount, double *bytes_amount, void *data)
 {
-  msg_task_t task = MSG_task_create(name, 0, 0, data);
+  // Task's flops amount is set to an arbitrary value > 0.0 to be able to distinguish, in
+  // MSG_task_get_remaining_work_ratio(), a finished task and a task that has not started yet.
+  msg_task_t task        = MSG_task_create(name, 1.0, 0, data);
   simdata_task_t simdata = task->simdata;
 
   /* Simulator Data specific to parallel tasks */
@@ -231,7 +233,6 @@ msg_error_t MSG_task_cancel(msg_task_t task)
  *    to do: starts at 1 and goes to 0. Returns 0 if not started or finished.
  *
  * It works for either parallel or sequential tasks.
- * TODO: Improve this function by returning 1 if the task has not started
  */
 double MSG_task_get_remaining_work_ratio(msg_task_t task) {
 
@@ -240,8 +241,8 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
     // Task in progress
     return task->simdata->compute->remainingRatio();
   } else {
-    // Task not started or finished
-    return 0;
+    // Task not started (flops_amount is > 0.0) or finished (flops_amount is set to 0.0)
+    return task->simdata->flops_amount > 0.0 ? 1.0 : 0.0;
   }
 }
 
