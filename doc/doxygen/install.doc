@@ -65,20 +65,27 @@ Recompiling an official archive is not much more complex. SimGrid only uses very
   - C compiler, C++ compiler, make and friends. SimGrid is rather
     demanding on the compiler. We use the C++11 standard, and older
     compilers tend to fail on us. It seems that g++ 5.0 or higher is
-    required nowadays (because of boost).
+    required nowadays (because of boost). 
+    SimGrid compiles well with `clang` too.
   - perl (but you may try to go without it)
   - We use cmake to configure our compilation
       ([download page](http://www.cmake.org/cmake/resources/software.html)).
-      You need cmake version 2.8.8 or higher. You may want to use ccmake
-      for a graphical interface over cmake.
+      You need cmake version 2.8.8 or higher. 
+      `ccmake` provides a nicer graphical interface compared to `cmake`.
+      Press `t` in `ccmake` if you need to see absolutely all
+      configuration options (e.g., if your python installation is not standard).
   - boost:
     - Debian / Ubuntu: `apt-get install libboost-dev libboost-context-dev`
     - Max OS X: with [fink](http://www.finkproject.org/): `fink install boost1.53.nopython`,
       or with homebrew: `brew install boost`
   - Java (if you want to build the Java bindings): 
-    - Debian / Ubuntu: `apt-get install default-jdk libgcj16-dev`
+    - Debian / Ubuntu: `apt-get install default-jdk libgcj17-dev` (any
+      version of libgcj will do it; you can use libgcj16-dev or libgcj18-dev
+      instead, depending on your version of Debian/Ubuntu)
     - Mac OS X or Windows: Grab a [full JDK](http://www.oracle.com/technetwork/java/javase/downloads)
-  - Lua (if you want to build with lua enabled):
+  - Lua (if you want to build with lua enabled): Your version of Lua
+    must be 5.3. SimGrid won't work with Lua 5.2 nor with 5.1, and
+    probably not with Lua 5.4 either.
     - Debian / Ubuntu: `apt-get install liblua5.3-dev lua5.3`
     - Windows: choco install lua53
     - From the source: you need to patch the sources to build dynamic libraries 
