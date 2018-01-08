@@ -110,7 +110,7 @@ the settings icon of the release you want to change.
   - edit debian/control
     - s/simgrid3.XX/simgrid3.XY/ 
     - libsimgrid3.XY conflicts with libsimgrid3.XX because of smpimain
-- Update the simgrid/package.py for spack: https://github.com/solverstack/spack
+- Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Create the template for the next release in ChangeLog and NEWS files
 - Change the release number in CMakeLists.txt
 
