@@ -25,14 +25,14 @@ SG_BEGIN_DECL()
  *  Here is a little example of use:
 
 \verbatim
- xbt_dict_t mydict = xbt_dict_new();
+ xbt_dict_t mydict = xbt_dict_new_homogeneous(free);
  char buff[512];
 
  sprintf(buff,"some very precious data");
- xbt_dict_set(mydict,"my data", strdup(buff), free);
+ xbt_dict_set(mydict,"my data", strdup(buff), NULL);
 
  sprintf(buff,"another good stuff");
- xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add
+ xbt_dict_set(mydict,"my data", strdup(buff), NULL); // previous data gets erased (and freed) by second add
 \endverbatim
  */
 

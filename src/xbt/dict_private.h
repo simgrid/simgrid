@@ -1,7 +1,7 @@
 /* dict_elm - elements of generic dictionnaries                             */
 /* This file is not to be loaded from anywhere but dict.cpp                 */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,7 +27,6 @@ typedef struct s_xbt_dict {
   int table_size;
   int count;
   int fill;
-  int homogeneous;
 } s_xbt_dict_t;
 
 typedef struct s_xbt_dict_cursor s_xbt_dict_cursor_t;
@@ -40,7 +39,7 @@ XBT_PRIVATE void * dict_elm_mallocator_new_f(void);
 /*####[ Function prototypes ]################################################*/
 XBT_PRIVATE xbt_dictelm_t xbt_dictelm_new(const char* key, int key_len, unsigned int hash_code, void* content);
 XBT_PRIVATE void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
-XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void *data, void_f_pvoid_t free_ctn);
+XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void* data);
 
 SG_END_DECL()
 

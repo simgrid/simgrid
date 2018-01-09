@@ -1,6 +1,6 @@
 /* dict_cursor - iterators over dictionaries                               */
 
-/* Copyright (c) 2004-2017. The SimGrid Team.
+/* Copyright (c) 2004-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -169,10 +169,10 @@ inline void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
  * @brief Set current data
  * @param cursor the cursor
  * @param data the new data
- * @param free_ctn the function to free the new data
+ * @param free_ctn unused parameter (kept for compatibility)
  */
-inline void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor, void *data, void_f_pvoid_t free_ctn)
+inline void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor, void* data, XBT_ATTRIB_UNUSED void_f_pvoid_t free_ctn)
 {
   __cursor_not_null(cursor);
-  xbt_dictelm_set_data(cursor->dict, cursor->current, data, free_ctn);
+  xbt_dictelm_set_data(cursor->dict, cursor->current, data);
 }

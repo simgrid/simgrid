@@ -1,6 +1,6 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -42,12 +42,9 @@ void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
   }
 }
 
-void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void *data, void_f_pvoid_t free_ctn)
+void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void* data)
 {
-  void_f_pvoid_t free_f;
-  free_f = dict->free_f;
-  xbt_assert(!free_ctn, "Cannot set an individual free function in homogeneous dicts.");
-
+  void_f_pvoid_t free_f = dict->free_f;
   if (free_f && element->content)
     free_f(element->content);
 

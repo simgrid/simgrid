@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same fu
  * \brief Constructor
  * \param free_ctn function to call with (\a data as argument) when \a data is removed from the dictionary
  * \return pointer to the destination
- * \see xbt_dict_new(), xbt_dict_free()
+ * \see xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
  * The dictionary is homogeneous: each element share the same free function.
@@ -42,7 +42,6 @@ xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
   dict->table = xbt_new0(xbt_dictelm_t, dict->table_size + 1);
   dict->count = 0;
   dict->fill = 0;
-  dict->homogeneous = 1;
 
   return dict;
 }
@@ -129,20 +128,19 @@ static void xbt_dict_rehash(xbt_dict_t dict)
  * \param key the key to set the new data
  * \param key_len the size of the \a key
  * \param data the data to add in the dict
- * \param free_ctn function to call with (\a data as argument) when \a data is removed from the dictionary. This param
- *        will only be considered when the dict was instantiated with xbt_dict_new() and not xbt_dict_new_homogeneous()
+ * \param free_ctn unused parameter (kept for compatibility)
  *
  * Set the \a data in the structure under the \a key, which can be any kind of data, as long as its length is provided
  * in \a key_len.
  */
-void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data, void_f_pvoid_t free_ctn)
+void xbt_dict_set_ext(xbt_dict_t dict, const char* key, int key_len, void* data,
+                      XBT_ATTRIB_UNUSED void_f_pvoid_t free_ctn)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
   xbt_dictelm_t current;
   xbt_dictelm_t previous = nullptr;
 
-  xbt_assert(not free_ctn, "Cannot set an individual free function in homogeneous dicts.");
   XBT_CDEBUG(xbt_dict, "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
              dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
@@ -168,7 +166,7 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data,
     XBT_CDEBUG(xbt_dict, "Replace %.*s by %.*s under key %.*s",
                key_len, (char *) current->content, key_len, (char *) data, key_len, (char *) key);
     /* there is already an element with the same key: overwrite it */
-    xbt_dictelm_set_data(dict, current, data, free_ctn);
+    xbt_dictelm_set_data(dict, current, data);
   }
 }
 
@@ -178,8 +176,7 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data,
  * \param dict the dict
  * \param key the key to set the new data
  * \param data the data to add in the dict
- * \param free_ctn function to call with (\a data as argument) when \a data is removed from the dictionary. This param
- *        will only be considered when the dict was instantiated with xbt_dict_new() and not xbt_dict_new_homogeneous()
+ * \param free_ctn unused parameter (kept for compatibility)
  *
  * set the \a data in the structure under the \a key, which is anull terminated string.
  */
