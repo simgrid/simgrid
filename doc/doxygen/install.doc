@@ -153,7 +153,19 @@ ccmake .
 
 @subsubsection install_cmake_list SimGrid compilation options
 
-In addition to the classical cmake configuration variables, SimGrid accepts several options, as listed below.
+The SimGrid compilation accepts many configuration options. The
+SimGrid-specific options define the SimGrid modules to compile; They
+are documented below.
+
+In addition, cmake provides many other options defining for example
+the path to various system elements (Python path, compiler to use,
+etc). In most case, cmake automatically discovers the right value for
+these ones, but you can set them manually on need. The best way to
+discover them is to press 't' in the ccmake graphical interface, as
+all options are shown in the advanced mode. You can read their
+documentation by passing over them with the arrow keys. Once you know
+their name, you can use these variable without the graphical
+interface, with the @c -D flag of cmake.
 
   @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
 
