@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (c) 2008, 2010, 2012-2014. The SimGrid Team.
+# Copyright (c) 2008, 2010, 2012-2018. The SimGrid Team.
 # All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
@@ -22,8 +22,6 @@ my %desc;
 # XBT_LOG_NEW_DEFAULT_SUBCATEGORY ie, when the channel toto is initialized (does not work under windows)
 
 # $desc{"toto"} is its description
-my %connected;
-# $connected{"toto"} is defined if XBT_LOG_CONNECT("toto") is used
 
 sub cleanup_ctn {
     my $ctn = shift;        # cleanup the content of a macro call
@@ -59,13 +57,10 @@ sub parse_file {
     }
     close IN;
 
-    # Purge $data from C comments
+    # Purge $data from C and C++ comments
     $data =~ s|/\*.*?\*/||sg;
-
-    # C++ comments are forbiden in SG for portability reasons, but deal with it anyway
     $data =~ s|//.*$||mg;
 
-    my $connect_data = $data; # save a copy for second parsing phase
     while ($data =~ s/^.*?XBT_LOG_NEW(_DEFAULT)?_(SUB)?CATEGORY\(//s) {
 	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data";
 
@@ -78,13 +73,6 @@ sub parse_file {
        $desc{$name}=$desc;
 
        print " $name -> $anc\n" if $debug;
-   }
-
-   # Now, look for XBT_LOG_CONNECT calls
-   $data = $connect_data;
-   while ($data =~ s/^.*?XBT_LOG_CONNECT\(//s) {
-       $data =~ s/\s*(\w+)\s*\)//s || die "unparsable macro: $data";
-       $connected{$1} = 1;
    }
 }
 # Retrieve all the file names, and add their content to $data
@@ -115,9 +103,6 @@ sub display_subtree {
 
 display_subtree("XBT_LOG_ROOT_CAT","");
 
-map {
-    warn "Category $_ does not seem to be connected.  Use XBT_LOG_CONNECT($_).\n";
-} grep {!defined $connected{$_}} sort keys %ancestor;
 map {
     warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";
 } grep {!defined $used{$_}} sort keys %ancestor;
