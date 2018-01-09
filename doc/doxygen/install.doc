@@ -122,50 +122,51 @@ git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid
 
 @subsection install_src_config Build Configuration
 
-Note that compile-time options are very different from @ref options "run-time options".
+This section is about *compile-time options*, that are very different
+from @ref options "run-time options". Compile-time options fall into
+two categories. @ref install_cmake_list "SimGrid-specific options"
+define which part of the framework to compile while 
+@ref install_cmake_howto "generic options" are provided by cmake
+itself. 
 
-@subsubsection install_cmake_howto Compilation Options
+@subsubsection install_cmake_howto Generic build-time options
 
-The default configuration should be fine for most usages, but if you need to change something, there are several ways 
-to do so. First, you can use environment variables. For example, you can change the compilers used by issuing these 
-commands before launching cmake:
+These options specify for example the path to various system elements
+(Python path, compiler to use, etc). In most case, cmake automatically
+discovers the right value for these ones, but you can set them
+manually on need.  Notable such variables include @c CC and @c CXX,
+defining respectively the C and C++ compiler executables, @c CFLAGS
+and @c CXXFLAGS respectively specifying extra options to pass to the C
+and C++ compilers, or @c PYTHON_EXECUTABLE specifying the path to the
+python executable.  The best way to discover the exact name of the
+option that you need to change is to press 't' in the ccmake graphical
+interface, as all options are shown (and documented) in the advanced
+mode.
+
+Once you know their name, there is several ways to change the value of
+build-time options. You can naturally use the ccmake graphical
+interface for that, or you can use environment variables, or you can
+prefer the @c -D flag of @c cmake.
+
+For example, you can change the compilers with environment variables
+by issuing these commands before launching cmake:
 
 @verbatim
 export CC=gcc-5.1
 export CXX=g++-5.1
 @endverbatim
 
-Note that other variables are available, such as CFLAGS and CXXFLAGS to add options respectively for the C and C++ 
-compilers.
-
-Another way to do so is to use the -D argument of cmake as follows.
+The same can be done by passing @c -D parameters to cmake, as follows.
 Note that the ending dot is mandatory (see @ref install_cmake_outsrc).
 
 @verbatim
 cmake -DCC=clang -DCXX=clang++ .
 @endverbatim
 
-Finally, you can use the ccmake graphical interface to change these settings. 
-
-@verbatim
-ccmake .
-@endverbatim
-
 @subsubsection install_cmake_list SimGrid compilation options
 
-The SimGrid compilation accepts many configuration options. The
-SimGrid-specific options define the SimGrid modules to compile; They
-are documented below.
-
-In addition, cmake provides many other options defining for example
-the path to various system elements (Python path, compiler to use,
-etc). In most case, cmake automatically discovers the right value for
-these ones, but you can set them manually on need. The best way to
-discover them is to press 't' in the ccmake graphical interface, as
-all options are shown in the advanced mode. You can read their
-documentation by passing over them with the arrow keys. Once you know
-their name, you can use these variable without the graphical
-interface, with the @c -D flag of cmake.
+Here is the list of SimGrid-specific @ref install_src_config
+"build-time options".
 
   @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
 
