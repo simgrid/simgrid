@@ -94,20 +94,9 @@ typedef enum {
  * This is normally done at the first use of the category.
  *
  * It is however necessary to make this connections as early as possible, if we want the category to be listed by
- * --help-log-categories.
- *
- * When possible, the initializations takes place automatically before the start of main().  It's the case when
- * compiling with gcc.
- *
- * For the other cases, you can use the XBT_LOG_CONNECT(cat) macro to force early initialization.  See, for example,
- * in xbt/log.c, the function xbt_log_connect_categories().
+ * --help-log-categories. We use constructor attributes for these initializations to take place automatically before the
+ * start of main().
  */
-
-#define XBT_LOG_CONNECT(cat)                    \
-  if (1) {                                      \
-    extern void _XBT_LOGV_CTOR(cat)(void);      \
-    _XBT_LOGV_CTOR(cat)();                      \
-  } else ((void)0)
 
 /* XBT_LOG_NEW_SUBCATEGORY_helper:
  * Implementation of XBT_LOG_NEW_SUBCATEGORY, which must declare "extern parent" in addition to avoid an extra

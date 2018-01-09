@@ -1,6 +1,6 @@
 /* Java Wrappers to the MSG API.                                            */
 
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -91,9 +91,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
   int argc = 0;
-
-  XBT_LOG_CONNECT(java);
-  XBT_LOG_CONNECT(jtrace);
 
   env->GetJavaVM(&__java_vm);
 

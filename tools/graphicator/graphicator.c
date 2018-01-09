@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator, "Graphicator Logging System");
 
 int main(int argc, char **argv)
 {
-  XBT_LOG_CONNECT(graphicator);
   MSG_init(&argc, argv);
 
   xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);

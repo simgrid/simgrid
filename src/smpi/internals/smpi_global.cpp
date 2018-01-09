@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -401,37 +401,6 @@ void smpi_global_destroy()
   smpi_free_static();
 }
 
-extern "C" {
-
-static void smpi_init_logs(){
-
-  /* Connect log categories.  See xbt/log.c */
-
-  XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this function: xbt_log_appender_file.c depends on it
-                             DO NOT connect this in XBT or so, or it will be useless to xbt_log_appender_file.c */
-  XBT_LOG_CONNECT(instr_smpi);
-  XBT_LOG_CONNECT(smpi_bench);
-  XBT_LOG_CONNECT(smpi_coll);
-  XBT_LOG_CONNECT(smpi_colls);
-  XBT_LOG_CONNECT(smpi_comm);
-  XBT_LOG_CONNECT(smpi_datatype);
-  XBT_LOG_CONNECT(smpi_dvfs);
-  XBT_LOG_CONNECT(smpi_group);
-  XBT_LOG_CONNECT(smpi_host);
-  XBT_LOG_CONNECT(smpi_kernel);
-  XBT_LOG_CONNECT(smpi_mpi);
-  XBT_LOG_CONNECT(smpi_memory);
-  XBT_LOG_CONNECT(smpi_op);
-  XBT_LOG_CONNECT(smpi_pmpi);
-  XBT_LOG_CONNECT(smpi_process);
-  XBT_LOG_CONNECT(smpi_request);
-  XBT_LOG_CONNECT(smpi_replay);
-  XBT_LOG_CONNECT(smpi_rma);
-  XBT_LOG_CONNECT(smpi_shared);
-  XBT_LOG_CONNECT(smpi_utils);
-}
-}
-
 static void smpi_init_options(){
   // return if already called
   if (smpi_cpu_threshold > -1)
@@ -675,7 +644,6 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
-  smpi_init_logs();
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();

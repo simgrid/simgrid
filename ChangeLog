@@ -8,6 +8,9 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  - Execution->setHost() can be called after start() to migrate it.
  - Comm::test_any() is now implemented.
 
+ XBT
+ - Remove XBT_LOG_CONNECT, it should be useless nowadays.
+
  Fixed bugs:
  - #245: migrating an actor does not migrate its execution
 
