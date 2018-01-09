@@ -1,6 +1,6 @@
 /* dict - a generic dictionary, variation over hash table                   */
 
-/* Copyright (c) 2004-2017. The SimGrid Team.
+/* Copyright (c) 2004-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,15 +19,6 @@
 #include "dict_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
-
-xbt_dict_t xbt_dict_new()
-{
-  XBT_WARN("Function xbt_dict_new() will soon be dropped. Please switch to xbt_dict_new_homogeneous()");
-  xbt_dict_t dict = xbt_dict_new_homogeneous(nullptr);
-  dict->homogeneous = 0;
-
-  return dict;
-}
 
 /**
  * \brief Constructor

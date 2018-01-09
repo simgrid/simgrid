@@ -1,6 +1,6 @@
 /* xbt/dict.h -- api to a generic dictionary                                */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,8 +55,6 @@ typedef struct s_xbt_dictelm {
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
 
-XBT_ATTRIB_DEPRECATED_v319("Use xbt_dict_new_homogeneous(). v3.19 will turn this warning into an error.")
-    XBT_PUBLIC(xbt_dict_t) xbt_dict_new();
 XBT_PUBLIC(xbt_dict_t) xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t * dict);
 XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);

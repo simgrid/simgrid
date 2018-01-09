@@ -71,7 +71,6 @@
 #define XBT_ATTRIB_DEPRECATED(msg) __attribute__((deprecated(msg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v319(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.19 */
 #define XBT_ATTRIB_DEPRECATED_v320(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.20 */
 #define XBT_ATTRIB_DEPRECATED_v321(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.21 */
 

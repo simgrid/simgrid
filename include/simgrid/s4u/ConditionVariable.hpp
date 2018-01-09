@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -103,11 +103,6 @@ public:
 
   void notify_one();
   void notify_all();
-
-  XBT_ATTRIB_DEPRECATED_v319("Use notify_one(): v3.19 will change this warning into an error.") void notify()
-  {
-    notify_one();
-  }
 };
 
 using ConditionVariablePtr = ConditionVariable::Ptr;
