@@ -1,6 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -90,7 +90,7 @@ typedef enum {
 #if defined(__GNUC__) && defined(__APPLE__)
 #  define _XBT_LOGV_CTOR_ATTRIBUTE
 #else
-#  define _XBT_LOGV_CTOR_ATTRIBUTE _XBT_GNUC_CONSTRUCTOR(600)
+#  define _XBT_LOGV_CTOR_ATTRIBUTE XBT_ATTRIB_CONSTRUCTOR(600)
 #endif
 
 /* The root of the category hierarchy. */

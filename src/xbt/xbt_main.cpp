@@ -1,6 +1,6 @@
 /* module handling                                                          */
 
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -47,7 +47,7 @@ int xbt_pagebits = 0;
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
  */
-static void xbt_preinit() _XBT_GNUC_CONSTRUCTOR(200);
+static void xbt_preinit() XBT_ATTRIB_CONSTRUCTOR(200);
 static void xbt_postexit();
 
 #ifdef _WIN32

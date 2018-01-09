@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team.
+/* Copyright (c) 2010-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -119,7 +119,7 @@ static int mm_initialized;
 
 /** Constructor functions used to initialize the malloc implementation
  */
-_XBT_GNUC_CONSTRUCTOR(101) static void mm_legacy_constructor()
+XBT_ATTRIB_CONSTRUCTOR(101) static void mm_legacy_constructor()
 {
   if (mm_initialized)
     return;

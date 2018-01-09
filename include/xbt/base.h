@@ -1,6 +1,6 @@
 /* xbt.h - Public interface to the xbt (simgrid's toolbox)                  */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -75,15 +75,8 @@
 #define XBT_ATTRIB_DEPRECATED_v320(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.20 */
 #define XBT_ATTRIB_DEPRECATED_v321(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.21 */
 
-/* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
- * supported on Macs. */
-#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)) && !defined(__APPLE__)
-#  define _XBT_GNUC_CONSTRUCTOR(prio) __attribute__((__constructor__ (prio)))
-#  define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__ (prio)))
-#else
-#  define _XBT_GNUC_CONSTRUCTOR(prio) __attribute__((__constructor__))
-#  define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__))
-#endif
+#define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
+#define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__(prio)))
 
 #if defined(__GNUC__)
 #  define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
