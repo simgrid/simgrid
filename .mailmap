@@ -1,3 +1,5 @@
+# .mailmap file, used by git shortlog
+#
 Khaled Baati <kbaati@realopt-Latitude-E6530>
 Benoît Bimal <bimal@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Laurent Bobelin <lbobelin@mintcar.lip.ens-lyon.fr> <lbobelin@mintcar.imag.fr>
@@ -71,6 +73,7 @@ El Mehdi Fekari <mido.peace@gmail.com> <coldpeace@48e7efb5-ca39-0410-a469-dd3cf9
 Michael Mercier <michael.mercier@inria.fr>
 Etienne Michon <EtienneM@users.noreply.github.com>
 Pierre Navarro <pierre.navarro@imag.fr>
+Pierre Navarro <pierre.navarro@imag.fr> <Pierre.Navarro@imag.fr>
 Pierre Navarro <pierre.navarro@imag.fr> <navarro@caraja.(none)>
 Pierre Navarro <pierre.navarro@imag.fr> <navarrop@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Pierre Navarro <pierre.navarro@imag.fr> <pierre@.(none)>
@@ -99,6 +102,7 @@ Lucas M. Schnorr <schnorr@inf.ufrgs.br>
 Lucas M. Schnorr <schnorr@inf.ufrgs.br> <lucas.schnorr@imag.fr>
 Lucas M. Schnorr <schnorr@inf.ufrgs.br> <lucas.schnorr@inf.ufrgs.br>
 Lucas M. Schnorr <schnorr@inf.ufrgs.br> <schnorr@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
+Luka Stanisic <luka.stanisic@inria.fr> <luka.stanisic@imag.fr>
 Mark Stillwell <marklee@fortawesome.org> <mark.stillwell@ens-lyon.fr>
 Mark Stillwell <marklee@fortawesome.org> <markls@48e7efb5-ca39-0410-a469-dd3cf9ba447f>
 Mark Stillwell <marklee@fortawesome.org> <mstillwell@griffon-40.nancy.grid5000.fr>
