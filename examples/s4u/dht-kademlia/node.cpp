@@ -216,7 +216,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
           answers++;
 
           nodes_added = node_list->merge(msg->answer_);
-          XBT_DEBUG("Received an answer from %s (%s) with %lu nodes on it", msg->answer_to_->getCname(),
+          XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", msg->answer_to_->getCname(),
                     msg->issuer_host_name_, msg->answer_->nodes.size());
         } else {
           if (msg->answer_) {
