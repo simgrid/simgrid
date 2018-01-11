@@ -139,11 +139,6 @@ typedef enum { // FIXME: move this to s4u::Link; make it an enum class
   SURF_LINK_FATPIPE    = 0
 } e_surf_link_sharing_policy_t;
 
-typedef enum { // FIXME: move this to s4u::Actor; make it an enum class
-  SURF_ACTOR_ON_FAILURE_DIE     = 1,
-  SURF_ACTOR_ON_FAILURE_RESTART = 0
-} e_surf_process_on_failure_t;
-
 /** @ingroup m_datatypes_management_details
  * @brief Type for any simgrid size
  */

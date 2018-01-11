@@ -175,16 +175,18 @@ public:
   std::string element;
 };
 
-struct s_sg_platf_process_cbarg_t {
+enum class ActorOnFailure { DIE, RESTART };
+
+class ActorCreationArgs {
+public:
   std::vector<std::string> args;
   std::map<std::string, std::string>* properties = nullptr;
   const char* host                       = nullptr;
   const char* function                   = nullptr;
   double start_time                      = 0.0;
   double kill_time                       = 0.0;
-  e_surf_process_on_failure_t on_failure = {};
+  ActorOnFailure on_failure;
 };
-typedef s_sg_platf_process_cbarg_t* sg_platf_process_cbarg_t;
 
 class ZoneCreationArgs {
 public:
@@ -220,7 +222,7 @@ XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a st
 XBT_PUBLIC(void) sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
 XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
 
-XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
+XBT_PUBLIC(void) sg_platf_new_process(ActorCreationArgs* actor);
 XBT_PRIVATE void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */

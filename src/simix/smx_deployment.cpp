@@ -117,30 +117,30 @@ simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name)
 void SIMIX_process_set_function(const char* process_host, const char* process_function, xbt_dynar_t arguments,
                                 double process_start_time, double process_kill_time)
 {
-  s_sg_platf_process_cbarg_t process;
+  ActorCreationArgs actor;
 
   sg_host_t host = sg_host_by_name(process_host);
   if (not host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
-  process.host = process_host;
-  process.args.push_back(process_function);
+  actor.host = process_host;
+  actor.args.push_back(process_function);
   /* add arguments */
   unsigned int i;
   char *arg;
   xbt_dynar_foreach(arguments, i, arg) {
-    process.args.push_back(arg);
+    actor.args.push_back(arg);
   }
 
   // Check we know how to handle this function name:
   simgrid::simix::ActorCodeFactory& parse_code = SIMIX_get_actor_code_factory(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
 
-  process.function = process_function;
-  process.host = process_host;
-  process.kill_time = process_kill_time;
-  process.start_time = process_start_time;
-  process.on_failure = SURF_ACTOR_ON_FAILURE_DIE;
-  sg_platf_new_process(&process);
+  actor.function   = process_function;
+  actor.host       = process_host;
+  actor.kill_time  = process_kill_time;
+  actor.start_time = process_start_time;
+  actor.on_failure = ActorOnFailure::DIE;
+  sg_platf_new_process(&actor);
 }
 
 namespace simgrid {

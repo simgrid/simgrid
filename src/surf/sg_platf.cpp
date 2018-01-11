@@ -409,12 +409,12 @@ void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
                                         bypassRoute->link_list, bypassRoute->symmetrical);
 }
 
-void sg_platf_new_process(sg_platf_process_cbarg_t process)
+void sg_platf_new_process(ActorCreationArgs* actor)
 {
-  sg_host_t host = sg_host_by_name(process->host);
+  sg_host_t host = sg_host_by_name(actor->host);
   if (not host) {
     // The requested host does not exist. Do a nice message to the user
-    std::string msg = std::string("Cannot create process '") + process->function + "': host '" + process->host +
+    std::string msg = std::string("Cannot create process '") + actor->function + "': host '" + actor->host +
                       "' does not exist\nExisting hosts: '";
 
     std::vector<simgrid::s4u::Host*> list;
@@ -431,16 +431,16 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     }
     xbt_die("%s", msg.c_str());
   }
-  simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(process->function);
-  xbt_assert(factory, "Function '%s' unknown", process->function);
+  simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(actor->function);
+  xbt_assert(factory, "Function '%s' unknown", actor->function);
 
-  double start_time = process->start_time;
-  double kill_time  = process->kill_time;
-  int auto_restart = process->on_failure == SURF_ACTOR_ON_FAILURE_DIE ? 0 : 1;
+  double start_time = actor->start_time;
+  double kill_time  = actor->kill_time;
+  int auto_restart  = actor->on_failure == ActorOnFailure::DIE ? 0 : 1;
 
-  std::string process_name   = process->args[0];
-  std::function<void()> code = factory(std::move(process->args));
-  std::shared_ptr<std::map<std::string, std::string>> properties(process->properties);
+  std::string process_name   = actor->args[0];
+  std::function<void()> code = factory(std::move(actor->args));
+  std::shared_ptr<std::map<std::string, std::string>> properties(actor->properties);
 
   smx_process_arg_t arg = nullptr;
 

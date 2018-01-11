@@ -904,7 +904,7 @@ void ETag_surfxml_process()
 
 void ETag_surfxml_actor()
 {
-  s_sg_platf_process_cbarg_t actor;
+  ActorCreationArgs actor;
 
   actor.properties     = current_property_set;
   current_property_set = nullptr;
@@ -918,10 +918,10 @@ void ETag_surfxml_actor()
   switch (A_surfxml_actor_on___failure) {
   case AU_surfxml_actor_on___failure:
   case A_surfxml_actor_on___failure_DIE:
-    actor.on_failure =  SURF_ACTOR_ON_FAILURE_DIE;
+    actor.on_failure = ActorOnFailure::DIE;
     break;
   case A_surfxml_actor_on___failure_RESTART:
-    actor.on_failure =  SURF_ACTOR_ON_FAILURE_RESTART;
+    actor.on_failure = ActorOnFailure::RESTART;
     break;
   default:
     surf_parse_error("Invalid on failure behavior");
