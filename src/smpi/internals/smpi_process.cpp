@@ -283,7 +283,7 @@ void Process::init(int *argc, char ***argv){
     char* instance_id = (*argv)[1];
     try {
       int rank = std::stoi(std::string((*argv)[2]));
-      smpi_deployment_register_process(instance_id, rank, index);
+      smpi_deployment_register_process(instance_id, rank, proc);
     } catch (std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Invalid rank: ") + (*argv)[2]);
     }

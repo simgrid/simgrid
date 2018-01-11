@@ -65,7 +65,7 @@ XBT_PRIVATE SMPI_Process* smpi_process();
 XBT_PRIVATE SMPI_Process* smpi_process_remote(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_process_count();
 
-XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index);
+XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const char* instance_id);
 XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
