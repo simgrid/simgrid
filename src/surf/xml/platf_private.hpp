@@ -222,7 +222,7 @@ XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a st
 XBT_PUBLIC(void) sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
 XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
 
-XBT_PUBLIC(void) sg_platf_new_process(ActorCreationArgs* actor);
+XBT_PUBLIC(void) sg_platf_new_actor(ActorCreationArgs* actor);
 XBT_PRIVATE void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */

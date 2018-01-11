@@ -409,12 +409,12 @@ void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
                                         bypassRoute->link_list, bypassRoute->symmetrical);
 }
 
-void sg_platf_new_process(ActorCreationArgs* actor)
+void sg_platf_new_actor(ActorCreationArgs* actor)
 {
   sg_host_t host = sg_host_by_name(actor->host);
   if (not host) {
     // The requested host does not exist. Do a nice message to the user
-    std::string msg = std::string("Cannot create process '") + actor->function + "': host '" + actor->host +
+    std::string msg = std::string("Cannot create actor '") + actor->function + "': host '" + actor->host +
                       "' does not exist\nExisting hosts: '";
 
     std::vector<simgrid::s4u::Host*> list;
@@ -436,33 +436,20 @@ void sg_platf_new_process(ActorCreationArgs* actor)
 
   double start_time = actor->start_time;
   double kill_time  = actor->kill_time;
-  int auto_restart  = actor->on_failure == ActorOnFailure::DIE ? 0 : 1;
+  bool auto_restart = actor->on_failure != ActorOnFailure::DIE;
 
-  std::string process_name   = actor->args[0];
+  std::string actor_name     = actor->args[0];
   std::function<void()> code = factory(std::move(actor->args));
   std::shared_ptr<std::map<std::string, std::string>> properties(actor->properties);
 
-  smx_process_arg_t arg = nullptr;
-
-  arg = new simgrid::simix::ProcessArg();
-  arg->name = process_name;
-  arg->code = code;
-  arg->data = nullptr;
-  arg->host = host;
-  arg->kill_time = kill_time;
-  arg->properties = properties;
+  simgrid::simix::ProcessArg* arg =
+      new simgrid::simix::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
   host->extension<simgrid::simix::Host>()->boot_processes.push_back(arg);
 
   if (start_time > SIMIX_get_clock()) {
 
-    arg = new simgrid::simix::ProcessArg();
-    arg->name = process_name;
-    arg->code = std::move(code);
-    arg->data = nullptr;
-    arg->host = host;
-    arg->kill_time = kill_time;
-    arg->properties = properties;
+    arg = new simgrid::simix::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
     XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->getCname(), start_time);
     SIMIX_timer_set(start_time, [arg, auto_restart]() {

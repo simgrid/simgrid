@@ -25,11 +25,23 @@ class ProcessArg {
 public:
   std::string name;
   std::function<void()> code;
-  void *data            = nullptr;
-  sg_host_t host        = nullptr;
+  void* data            = nullptr;
+  s4u::Host* host       = nullptr;
   double kill_time      = 0.0;
   std::shared_ptr<std::map<std::string, std::string>> properties;
   bool auto_restart     = false;
+  ProcessArg()          = default;
+  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
+                      std::shared_ptr<std::map<std::string, std::string>> properties, bool auto_restart)
+      : name(name)
+      , code(std::move(code))
+      , data(data)
+      , host(host)
+      , kill_time(kill_time)
+      , properties(properties)
+      , auto_restart(auto_restart)
+  {
+  }
 };
 
 class ActorImpl : public simgrid::surf::PropertyHolder {

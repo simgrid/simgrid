@@ -140,7 +140,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
   actor.kill_time  = process_kill_time;
   actor.start_time = process_start_time;
   actor.on_failure = ActorOnFailure::DIE;
-  sg_platf_new_process(&actor);
+  sg_platf_new_actor(&actor);
 }
 
 namespace simgrid {

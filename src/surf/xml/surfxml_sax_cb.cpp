@@ -928,7 +928,7 @@ void ETag_surfxml_actor()
     break;
   }
 
-  sg_platf_new_process(&actor);
+  sg_platf_new_actor(&actor);
 }
 
 void STag_surfxml_argument(){

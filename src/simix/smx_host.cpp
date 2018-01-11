@@ -112,14 +112,9 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::
                                          double kill_time, std::map<std::string, std::string>* properties,
                                          int auto_restart)
 {
-  smx_process_arg_t arg = new simgrid::simix::ProcessArg();
-  arg->name = name;
-  arg->code = std::move(code);
-  arg->data = data;
-  arg->host = host;
-  arg->kill_time = kill_time;
+  simgrid::simix::ProcessArg* arg =
+      new simgrid::simix::ProcessArg(name, code, data, host, kill_time, nullptr, auto_restart);
   arg->properties.reset(properties, [](decltype(properties)) {});
-  arg->auto_restart = auto_restart;
 
   if (host->isOff() && watched_hosts.find(host->getCname()) == watched_hosts.end()) {
     watched_hosts.insert(host->getCname());
@@ -127,6 +122,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::
   }
   host->extension<simgrid::simix::Host>()->auto_restart_processes.push_back(arg);
 }
+
 /** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
@@ -148,7 +144,6 @@ void SIMIX_host_autorestart(sg_host_t host)
 boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 SIMIX_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host)
 {
-
   /* alloc structures and initialize */
   simgrid::kernel::activity::ExecImplPtr exec =
       simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, host));
