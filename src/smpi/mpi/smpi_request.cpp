@@ -333,7 +333,7 @@ void Request::start()
   if ((flags_ & RECV) != 0) {
     this->print_request("New recv");
 
-    simgrid::smpi::Process* process = smpi_process_remote(dst_);
+    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::byPid(dst_+1));
 
     int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
@@ -385,7 +385,7 @@ void Request::start()
     if (async_small_thresh != 0 || (flags_ & RMA) != 0 )
       xbt_mutex_release(mut);
   } else { /* the RECV flag was not set, so this is a send */
-    simgrid::smpi::Process* process = smpi_process_remote(dst_);
+    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::byPid(dst_+1));
     int rank = src_;
     if (TRACE_smpi_view_internals()) {
       TRACE_smpi_send(rank, rank, dst_, tag_, size_);

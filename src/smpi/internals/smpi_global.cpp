@@ -8,6 +8,7 @@
 #include "private.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "simgrid/s4u/forward.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_group.hpp"
@@ -54,7 +55,7 @@ using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 std::unordered_map<std::string, double> location2speedup;
 
-static std::map</*process_id*/ int, simgrid::smpi::Process*> process_data;
+static std::map</*process_id*/ ActorPtr, simgrid::smpi::Process*> process_data;
 int process_count = 0;
 int smpi_universe_size = 0;
 extern double smpi_total_benched_time;
@@ -85,8 +86,8 @@ void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_com
 
 void smpi_add_process(ActorPtr actor)
 {
-  process_data.insert(
-      {actor->getPid()-1, new simgrid::smpi::Process(actor, nullptr)});
+  process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
+  // smpi_deployment_register_process("master_mpi", 0, actor);
 }
 
 int smpi_process_count()
@@ -103,9 +104,9 @@ simgrid::smpi::Process* smpi_process()
   return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 
-simgrid::smpi::Process* smpi_process_remote(int index)
+simgrid::smpi::Process* smpi_process_remote(ActorPtr actor)
 {
-  return process_data.at(index);
+  return process_data.at(actor);
 }
 
 MPI_Comm smpi_process_comm_self(){
@@ -481,6 +482,9 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
+  // TODO This will not be executed in the case where smpi_main is not called,
+  // e.g., not for smpi_msg_masterslave. This should be moved to another location
+  // that is always called -- maybe close to Actor::onCreation?
   simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
     host.extension_set(new simgrid::smpi::SmpiHost(&host));
   });
@@ -490,7 +494,6 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
-
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
 
     std::string executable_copy = executable;
@@ -611,9 +614,10 @@ int smpi_main(const char* executable, int argc, char *argv[])
     }
   }
   int ret   = 0;
-  for (int i = 0, count = smpi_process_count(); i < count; i++) {
-    if (process_data.at(i)->return_value() != 0) {
-      ret = process_data.at(i)->return_value(); // return first non 0 value
+  for (auto& pair : process_data) {
+    auto& smpi_process = pair.second;
+    if (smpi_process->return_value() != 0) {
+      ret = smpi_process->return_value(); // return first non 0 value
       break;
     }
   }

@@ -62,7 +62,7 @@ typedef SMPI_Graph_topology* MPIR_Graph_Topology;
 typedef SMPI_Dist_Graph_topology* MPIR_Dist_Graph_Topology;
 
 XBT_PRIVATE SMPI_Process* smpi_process();
-XBT_PRIVATE SMPI_Process* smpi_process_remote(int index);
+XBT_PRIVATE SMPI_Process* smpi_process_remote(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_process_count();
 
 XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index);

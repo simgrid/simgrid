@@ -6,6 +6,7 @@
 #include "smpi_process.hpp"
 #include "mc/mc.h"
 #include "private.hpp"
+#include "simgrid/s4u/forward.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_group.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -289,7 +290,7 @@ void Process::init(int *argc, char ***argv){
 
     // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
     // this up here so that I can set the privatized region before the switch.
-    Process* process = smpi_process_remote(index);
+    Process* process = smpi_process_remote(proc);
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using the segment index of this process  */
       index = proc->getImpl()->segment_index;
