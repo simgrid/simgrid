@@ -23,12 +23,7 @@ public:
       , present_processes(0)
       , comm_world(comm)
       , finalization_barrier(finalization_barrier)
-  {
-    int cur_process_count = smpi_process_count();
-    for (int i = 0; i < max_no_processes; i++) {
-      smpi_add_process(cur_process_count + i);
-    }
-  }
+  { }
 
   const char* name;
   int size;

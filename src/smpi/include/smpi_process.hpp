@@ -36,7 +36,7 @@ class Process {
     msg_bar_t finalization_barrier_;
     int return_value_ = 0;
     smpi_trace_call_location_t trace_call_loc_;
-    smx_actor_t process_ = nullptr;
+    simgrid::s4u::ActorPtr process_ = nullptr;
     smpi_privatization_region_t privatized_region_;
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
@@ -44,7 +44,7 @@ class Process {
     papi_counter_t papi_counter_data_;
 #endif
   public:
-    explicit Process(int index, msg_bar_t barrier);
+    explicit Process(simgrid::s4u::ActorPtr actor, msg_bar_t barrier);
     void set_data(int index, int* argc, char*** argv);
     void finalize();
     int finalized();
@@ -78,7 +78,7 @@ class Process {
     int return_value();
     void set_return_value(int val);
     static void init(int *argc, char ***argv);
-    smx_actor_t process();
+    simgrid::s4u::ActorPtr process();
 };
 
 

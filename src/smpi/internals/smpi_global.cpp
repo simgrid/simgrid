@@ -50,6 +50,8 @@ struct papi_process_data {
 };
 
 #endif
+using simgrid::s4u::Actor;
+using simgrid::s4u::ActorPtr;
 std::unordered_map<std::string, double> location2speedup;
 
 static std::map</*process_id*/ int, simgrid::smpi::Process*> process_data;
@@ -81,10 +83,10 @@ static simgrid::config::Flag<double> smpi_init_sleep(
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
-void smpi_add_process(int smx_process)
+void smpi_add_process(ActorPtr actor)
 {
   process_data.insert(
-      std::pair<int, simgrid::smpi::Process*>(smx_process, new simgrid::smpi::Process(smx_process, nullptr)));
+      {actor->getPid()-1, new simgrid::smpi::Process(actor, nullptr)});
 }
 
 int smpi_process_count()
@@ -94,10 +96,10 @@ int smpi_process_count()
 
 simgrid::smpi::Process* smpi_process()
 {
-  smx_actor_t me = SIMIX_process_self();
+  ActorPtr me = Actor::self();
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
-  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->userdata);
+  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->getImpl()->userdata);
   return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 
@@ -624,6 +626,9 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
+  simgrid::s4u::Actor::onCreation.connect([](simgrid::s4u::ActorPtr actor) {
+    smpi_add_process(actor);
+  });
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();

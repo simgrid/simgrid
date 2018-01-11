@@ -31,10 +31,14 @@ static char *get_mailbox_name_small(char *str, int index)
 namespace simgrid{
 namespace smpi{
 
-Process::Process(int index, msg_bar_t finalization_barrier)
+using simgrid::s4u::ActorPtr;
+
+Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
   : finalization_barrier_(finalization_barrier)
 {
   char name[MAILBOX_NAME_MAXLEN];
+  process_              = actor;
+  int index             = actor->getPid() - 1; // TODO cheinrich: This needs to be removed! Just a quick hack to make the following 2 lines work
   mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, index));
   mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, index));
   mailboxes_mutex_      = xbt_mutex_init();
@@ -71,8 +75,8 @@ void Process::set_data(int index, int* argc, char*** argv)
     instance_id_ = instance_id;
     index_       = index;
 
-    process_                                                       = SIMIX_process_self();
-    static_cast<simgrid::msg::ActorExt*>(process_->userdata)->data = this;
+    process_                                                       = simgrid::s4u::Actor::self();
+    static_cast<simgrid::msg::ActorExt*>(process_->getImpl()->userdata)->data = this;
 
     if (*argc > 3) {
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
@@ -146,7 +150,7 @@ void *Process::get_user_data()
   return data_;
 }
 
-smx_actor_t Process::process(){
+ActorPtr Process::process(){
   return process_;
 }
 
@@ -270,10 +274,10 @@ void Process::init(int *argc, char ***argv){
     xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
   }
   if (argc != nullptr && argv != nullptr) {
-    smx_actor_t proc = SIMIX_process_self();
-    proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
+    simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
+    proc->getImpl()->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
-    int index = proc->pid - 1; // The maestro process has always ID 0 but we don't need that process here
+    int index = proc->getPid() - 1; // The maestro process has always ID 0 but we don't need that process here
 
     char* instance_id = (*argv)[1];
     try {
@@ -288,7 +292,7 @@ void Process::init(int *argc, char ***argv){
     Process* process = smpi_process_remote(index);
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using the segment index of this process  */
-      index = proc->segment_index;
+      index = proc->getImpl()->segment_index;
       process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
       SMPI_switch_data_segment(index);
