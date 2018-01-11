@@ -19,6 +19,7 @@
 #include <xbt/Extendable.hpp>
 #include <xbt/functional.hpp>
 #include <xbt/string.hpp>
+#include <xbt/signal.hpp>
 
 #include <simgrid/chrono.hpp>
 #include <simgrid/s4u/forward.hpp>
@@ -161,6 +162,9 @@ public:
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
   static ActorPtr self();
+
+  /** Signal to others that a new actor has been created **/
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> onCreation;
 
   /** Create an actor using a function
    *

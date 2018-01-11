@@ -145,6 +145,10 @@ void SIMIX_process_empty_trash()
 }
 
 namespace simgrid {
+
+namespace s4u {
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::onCreation; // TODO cheinrich is this the right location here?
+}
 namespace simix {
 
 ActorImpl::~ActorImpl()
@@ -310,6 +314,8 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   }
 
   smx_actor_t process = new simgrid::simix::ActorImpl();
+  simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
+  simgrid::s4u::Actor::onCreation(tmp);
 
   xbt_assert(code && host != nullptr, "Invalid parameters");
   /* Process data */
