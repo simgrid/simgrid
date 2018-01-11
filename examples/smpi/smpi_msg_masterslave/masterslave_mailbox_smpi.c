@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
   msg_error_t res;
 
   MSG_init(&argc, argv);
+  SMPI_init();
 
   xbt_assert(argc > 2,"Usage: %s platform_file deployment_file\n"
              "\nexample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
@@ -129,7 +130,6 @@ int main(int argc, char *argv[])
   // the second performing an alltoall on 4 nodes
   SMPI_app_instance_register("alltoall_mpi", alltoall_mpi,4);
   MSG_launch_application(argv[2]);
-  SMPI_init();
 
   res = MSG_main();
 
