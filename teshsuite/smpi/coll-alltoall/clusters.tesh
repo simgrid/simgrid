@@ -2,7 +2,7 @@
 ! output sort
 
 p Test classic - backbone
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir}/../hostfile_cluster -platform ${platfdir:=.}/cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> node-0.acme.org
 > [rank 1] -> node-1.acme.org
 > [rank 2] -> node-2.acme.org
