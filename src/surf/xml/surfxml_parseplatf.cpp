@@ -41,25 +41,25 @@ void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect)
              trace_connect->element.c_str());
 
   switch (trace_connect->kind) {
-  case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:
-    trace_connect_list_host_avail.insert({trace_connect->trace, trace_connect->element});
-    break;
-  case SURF_TRACE_CONNECT_KIND_SPEED:
-    trace_connect_list_host_speed.insert({trace_connect->trace, trace_connect->element});
-    break;
-  case SURF_TRACE_CONNECT_KIND_LINK_AVAIL:
-    trace_connect_list_link_avail.insert({trace_connect->trace, trace_connect->element});
-    break;
-  case SURF_TRACE_CONNECT_KIND_BANDWIDTH:
-    trace_connect_list_link_bw.insert({trace_connect->trace, trace_connect->element});
-    break;
-  case SURF_TRACE_CONNECT_KIND_LATENCY:
-    trace_connect_list_link_lat.insert({trace_connect->trace, trace_connect->element});
-    break;
-  default:
-    surf_parse_error(std::string("Cannot connect trace ") + trace_connect->trace + " to " + trace_connect->element +
-                     ": unknown kind of trace");
-    break;
+    case TraceConnectKind::HOST_AVAIL:
+      trace_connect_list_host_avail.insert({trace_connect->trace, trace_connect->element});
+      break;
+    case TraceConnectKind::SPEED:
+      trace_connect_list_host_speed.insert({trace_connect->trace, trace_connect->element});
+      break;
+    case TraceConnectKind::LINK_AVAIL:
+      trace_connect_list_link_avail.insert({trace_connect->trace, trace_connect->element});
+      break;
+    case TraceConnectKind::BANDWIDTH:
+      trace_connect_list_link_bw.insert({trace_connect->trace, trace_connect->element});
+      break;
+    case TraceConnectKind::LATENCY:
+      trace_connect_list_link_lat.insert({trace_connect->trace, trace_connect->element});
+      break;
+    default:
+      surf_parse_error(std::string("Cannot connect trace ") + trace_connect->trace + " to " + trace_connect->element +
+                       ": unknown kind of trace");
+      break;
   }
 }
 

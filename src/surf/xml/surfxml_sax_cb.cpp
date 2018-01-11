@@ -801,19 +801,19 @@ void STag_surfxml_trace___connect()
   switch (A_surfxml_trace___connect_kind) {
   case AU_surfxml_trace___connect_kind:
   case A_surfxml_trace___connect_kind_SPEED:
-    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_SPEED;
+    trace_connect.kind = TraceConnectKind::SPEED;
     break;
   case A_surfxml_trace___connect_kind_BANDWIDTH:
-    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_BANDWIDTH;
+    trace_connect.kind = TraceConnectKind::BANDWIDTH;
     break;
   case A_surfxml_trace___connect_kind_HOST___AVAIL:
-    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_HOST_AVAIL;
+    trace_connect.kind = TraceConnectKind::HOST_AVAIL;
     break;
   case A_surfxml_trace___connect_kind_LATENCY:
-    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LATENCY;
+    trace_connect.kind = TraceConnectKind::LATENCY;
     break;
   case A_surfxml_trace___connect_kind_LINK___AVAIL:
-    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LINK_AVAIL;
+    trace_connect.kind = TraceConnectKind::LINK_AVAIL;
     break;
   default:
     surf_parse_error("Invalid trace kind");

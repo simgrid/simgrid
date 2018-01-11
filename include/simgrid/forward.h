@@ -55,8 +55,8 @@ namespace simix {
   class ActorImpl;
   using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
   class Host;
-
 }
+
 namespace surf {
   class Resource;
   class Cpu;
@@ -138,14 +138,6 @@ typedef enum { // FIXME: move this to s4u::Link; make it an enum class
   SURF_LINK_SHARED     = 1,
   SURF_LINK_FATPIPE    = 0
 } e_surf_link_sharing_policy_t;
-
-typedef enum { // FIXME: move this away; make it an enum class
-  SURF_TRACE_CONNECT_KIND_HOST_AVAIL = 4,
-  SURF_TRACE_CONNECT_KIND_SPEED      = 3,
-  SURF_TRACE_CONNECT_KIND_LINK_AVAIL = 2,
-  SURF_TRACE_CONNECT_KIND_BANDWIDTH  = 1,
-  SURF_TRACE_CONNECT_KIND_LATENCY    = 0
-} e_surf_trace_connect_kind_t;
 
 typedef enum { // FIXME: move this to s4u::Actor; make it an enum class
   SURF_ACTOR_ON_FAILURE_DIE     = 1,

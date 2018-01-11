@@ -166,9 +166,11 @@ public:
   std::string pc_data;
 };
 
+enum class TraceConnectKind { HOST_AVAIL, SPEED, LINK_AVAIL, BANDWIDTH, LATENCY };
+
 class TraceConnectCreationArgs {
 public:
-  e_surf_trace_connect_kind_t kind;
+  TraceConnectKind kind;
   std::string trace;
   std::string element;
 };
