@@ -8,6 +8,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <src/instr/instr_private.hpp>
 #include <src/plugins/vm/VirtualMachineImpl.hpp>
+#include <src/plugins/vm/VmHostExt.hpp>
 #include <src/plugins/vm/VmLiveMigration.hpp>
 #include <xbt/ex.hpp>
 
@@ -45,7 +46,7 @@ void MigrationRx::operator()()
   vm_->resume();
 
   // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-  vm_->pimpl_vm_->isMigrating = false;
+  vm_->getImpl()->isMigrating = false;
   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm_->getCname(), src_pm_->getCname(), dst_pm_->getCname());
 
   if (TRACE_msg_vm_is_enabled()) {
@@ -280,6 +281,28 @@ void MigrationTx::operator()()
 }
 
 SG_BEGIN_DECL()
+simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, const char* name, int coreAmount,
+                                                      int ramsize, int mig_netspeed, int dp_intensity)
+{
+  simgrid::vm::VmHostExt::ensureVmExtInstalled();
+
+  /* For the moment, intensity_rate is the percentage against the migration bandwidth */
+
+  msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
+  sg_vm_set_dirty_page_intensity(vm, dp_intensity / 100.0);
+  sg_vm_set_working_set_memory(vm, vm->getRamsize() * 0.9); // assume working set memory is 90% of ramsize
+  sg_vm_set_migration_speed(vm, mig_netspeed * 1024 * 1024.0);
+
+  XBT_DEBUG("migspeed : %f intensity mem : %d", mig_netspeed * 1024 * 1024.0, dp_intensity);
+
+  return vm;
+}
+
+int sg_vm_is_migrating(simgrid::s4u::VirtualMachine* vm)
+{
+  return vm->isMigrating();
+}
+
 void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
   simgrid::s4u::Host* src_pm = vm->getPm();
@@ -293,7 +316,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   if (vm->isMigrating())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->getCname());
 
-  vm->pimpl_vm_->isMigrating = true;
+  vm->getImpl()->isMigrating = true;
 
   std::string rx_name =
       std::string("__pr_mig_rx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";
@@ -314,6 +337,6 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   tx->join();
   rx->join();
 
-  vm->pimpl_vm_->isMigrating = false;
+  vm->getImpl()->isMigrating = false;
 }
 }

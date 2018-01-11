@@ -118,6 +118,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
   argv[argc] = nullptr;
 
   MSG_init(&argc, argv);
+  sg_vm_live_migration_plugin_init();
 
   JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
@@ -237,11 +238,6 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jde
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
   sg_host_energy_plugin_init();
-}
-
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_liveMigrationInit()
-{
-  sg_vm_live_migration_plugin_init();
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit()

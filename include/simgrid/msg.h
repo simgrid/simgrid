@@ -8,6 +8,7 @@
 
 #include "simgrid/forward.h"
 #include "simgrid/host.h"
+#include "simgrid/plugins/live_migration.h"
 
 #include "xbt/base.h"
 #include "xbt/dict.h"
@@ -406,7 +407,6 @@ XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
 
 XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
 
 XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
@@ -416,8 +416,13 @@ XBT_PUBLIC(size_t) MSG_vm_get_ramsize(msg_vm_t vm);
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
-XBT_PUBLIC(msg_vm_t)
-MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
+
+XBT_ATTRIB_DEPRECATED_v321("Use MSG_vm_create_migratable() from the live migration plugin: "
+                           "v3.21 will drop MSG_vm_create() completely.") static msg_vm_t
+    MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity)
+{
+  return sg_vm_create_migratable(ind_pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity);
+}
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 

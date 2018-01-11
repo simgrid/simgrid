@@ -41,7 +41,6 @@ public final class Msg {
 	/** Tell the kernel that you want to use the energy plugin */
 	public static final native void energyInit();
 	public static final native void fileSystemInit();
-	public static final native void liveMigrationInit();
 
 	/** Run the MSG simulation.
 	 *

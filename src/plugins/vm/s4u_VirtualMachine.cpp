@@ -17,7 +17,7 @@ namespace simgrid {
 namespace s4u {
 
 VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
-    : VirtualMachine(name, pm, coreAmount, 0)
+    : VirtualMachine(name, pm, coreAmount, 1024)
 {
 }
 
@@ -39,8 +39,10 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t host_container = simgrid::instr::Container::byName(pm->getName());
-    new simgrid::instr::Container(name, "MSG_VM", host_container);
+    container_t host_container = instr::Container::byName(pm->getName());
+    new instr::Container(name, "MSG_VM", host_container);
+    instr::Container::byName(getName())->getState("MSG_VM_STATE")->addEntityValue("start", "0 0 1");   // start is blue
+    instr::Container::byName(getName())->getState("MSG_VM_STATE")->addEntityValue("suspend", "1 0 0"); // suspend is red
   }
 }
 
@@ -60,10 +62,19 @@ VirtualMachine::~VirtualMachine()
 
   /* Don't free these things twice: they are the ones of my physical host */
   pimpl_netpoint = nullptr;
+
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t container = simgrid::instr::Container::byName(getName());
+    container->removeFromParent();
+    delete container;
+  }
 }
 
 void VirtualMachine::start()
 {
+  if (TRACE_msg_vm_is_enabled())
+    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->pushEvent("start");
+
   simgrid::simix::kernelImmediate([this]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
@@ -79,8 +90,8 @@ void VirtualMachine::start()
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
       long total_ramsize_of_vms = 0;
       for (simgrid::s4u::VirtualMachine* const& ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
-        if (pm == ws_vm->pimpl_vm_->getPm())
-          total_ramsize_of_vms += ws_vm->pimpl_vm_->getRamsize();
+        if (pm == ws_vm->getPm())
+          total_ramsize_of_vms += ws_vm->getRamsize();
 
       if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
         XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
@@ -92,24 +103,43 @@ void VirtualMachine::start()
 
     this->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
   });
+
+  if (TRACE_msg_vm_is_enabled())
+    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->popEvent();
 }
 
 void VirtualMachine::suspend()
 {
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->suspend(issuer); });
+  if (TRACE_msg_vm_is_enabled())
+    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->pushEvent("suspend");
   XBT_DEBUG("vm_suspend done");
 }
 
 void VirtualMachine::resume()
 {
   pimpl_vm_->resume();
+  if (TRACE_msg_vm_is_enabled())
+    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->popEvent();
 }
 
 void VirtualMachine::shutdown()
 {
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+}
+
+void VirtualMachine::destroy()
+{
+  if (isMigrating())
+    THROWF(vm_error, 0, "Cannot destroy VM '%s', which is migrating.", getCname());
+
+  /* First, terminate all processes on the VM if necessary */
+  shutdown();
+
+  /* Then, destroy the VM object */
+  Host::destroy();
 }
 
 bool VirtualMachine::isMigrating()
@@ -129,7 +159,7 @@ void VirtualMachine::setPm(simgrid::s4u::Host* pm)
 
 e_surf_vm_state_t VirtualMachine::getState()
 {
-  return pimpl_vm_->getState();
+  return simgrid::simix::kernelImmediate([this]() { return pimpl_vm_->getState(); });
 }
 
 size_t VirtualMachine::getRamsize()

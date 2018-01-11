@@ -54,7 +54,7 @@ static void hostStateChange(s4u::Host& host)
       if (vm->getPm() == &host)
         trash.push_back(vm);
     for (s4u::VirtualMachine* vm : trash)
-      vm->pimpl_vm_->shutdown(SIMIX_process_self());
+      vm->shutdown();
   }
 }
 VMModel::VMModel()
@@ -93,9 +93,9 @@ double VMModel::nextOccuringEvent(double now)
     surf::Cpu* cpu = ws_vm->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
-    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()->get_value(); // this is X1 in comment above, what
+    double solved_value = ws_vm->getImpl()->action_->getVariable()->get_value(); // this is X1 in comment above, what
                                                                                  // this VM got in the sharing on the PM
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->pimpl_vm_->getPm()->getCname());
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->getPm()->getCname());
 
     xbt_assert(cpu->model() == surf_cpu_model_vm);
     lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
