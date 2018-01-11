@@ -344,14 +344,6 @@ void smpi_global_init()
     }
   }
 #endif
-
-  if (process_count == 0) { // The program has been dispatched but no other
-                            // SMPI instances have been registered. We're using smpirun.
-    SMPI_app_instance_register(smpi_default_instance_name, nullptr,
-                               SIMIX_process_count()); // This call has a side effect on process_count...
-    MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
-  }
-  smpi_universe_size = process_count;
 }
 
 void smpi_global_destroy()
@@ -585,9 +577,13 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
   }
 
-  SIMIX_launch_application(argv[2]);
-
   SMPI_init();
+  SIMIX_launch_application(argv[2]);
+  SMPI_app_instance_register(smpi_default_instance_name, nullptr,
+                               SIMIX_process_count()); // This call has a side effect on process_count...
+  MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
+  smpi_universe_size = process_count;
+
 
   /* Clean IO before the run */
   fflush(stdout);
