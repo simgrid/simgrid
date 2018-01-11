@@ -443,7 +443,7 @@ static void action_bcast(const char *const *action)
 
   int rank = smpi_process()->index();
   TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->index(root), -1.0, size, -1,
+                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(root)->getPid()-1, -1.0, size, -1,
                                                     encode_datatype(MPI_CURRENT_TYPE), ""));
 
   void *sendbuf = smpi_get_tmp_sendbuffer(size* MPI_CURRENT_TYPE->size());
@@ -471,7 +471,7 @@ static void action_reduce(const char *const *action)
 
   int rank = smpi_process()->index();
   TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->index(root), comp_size,
+                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(root)->getPid()-1, comp_size,
                                                     comm_size, -1, encode_datatype(MPI_CURRENT_TYPE), ""));
 
   void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());

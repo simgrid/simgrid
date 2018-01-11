@@ -70,7 +70,7 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, int dims[], int periods[], in
     oldGroup = comm_old->group();
     newGroup = new  Group(newSize);
     for (int i = 0 ; i < newSize ; i++) {
-      newGroup->set_mapping(oldGroup->index(i), i);
+      newGroup->set_mapping(oldGroup->actor(i), i);
     }
 
     nnodes_ = newSize;

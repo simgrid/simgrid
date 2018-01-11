@@ -231,7 +231,7 @@ MPI_Comm Process::comm_self()
   if(comm_self_==MPI_COMM_NULL){
     MPI_Group group = new  Group(1);
     comm_self_ = new  Comm(group, nullptr);
-    group->set_mapping(index_, 0);
+    group->set_mapping(process_, 0);
   }
   return comm_self_;
 }

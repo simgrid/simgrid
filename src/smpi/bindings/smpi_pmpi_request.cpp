@@ -160,7 +160,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     int rank       = smpi_process()->index();
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("Irecv", comm->group()->index(src),
+                       new simgrid::instr::Pt2PtTIData("Irecv", comm->group()->actor(src)->getPid()-1, // TODO cheinrich was before: index(src); -- make the "-1" go away
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
 
@@ -199,7 +199,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_TAG;
   } else {
     int rank      = smpi_process()->index();
-    int trace_dst = comm->group()->index(dst);
+    int trace_dst = comm->group()->actor(dst)->getPid()-1; // TODO cheinrich
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("Isend", trace_dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
@@ -241,7 +241,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     retval = MPI_ERR_TAG;
   } else {
     int rank      = smpi_process()->index();
-    int trace_dst = comm->group()->index(dst);
+    int trace_dst = comm->group()->actor(dst)->getPid()-1; // TODO cheinrich
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("ISsend", trace_dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
@@ -281,7 +281,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     retval = MPI_ERR_TAG;
   } else {
     int rank               = smpi_process()->index();
-    int src_traced         = comm->group()->index(src);
+    int src_traced         = comm->group()->actor(src)->getPid()-1; // TODO cheinrich
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("recv", src_traced,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
@@ -292,7 +292,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     if (status != MPI_STATUS_IGNORE) {
-      src_traced = comm->group()->index(status->MPI_SOURCE);
+      src_traced = comm->group()->actor(status->MPI_SOURCE)->getPid()-1;
       if (not TRACE_smpi_view_internals()) {
         TRACE_smpi_recv(src_traced, rank, tag);
       }
@@ -324,7 +324,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     retval = MPI_ERR_TAG;
   } else {
     int rank               = smpi_process()->index();
-    int dst_traced         = comm->group()->index(dst);
+    int dst_traced         = comm->group()->actor(dst)->getPid()-1; // TODO cheinrich
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("send", dst_traced,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
@@ -362,7 +362,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     retval = MPI_ERR_TAG;
   } else {
     int rank               = smpi_process()->index();
-    int dst_traced         = comm->group()->index(dst);
+    int dst_traced         = comm->group()->actor(dst)->getPid()-1;
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("Ssend", dst_traced,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
@@ -404,8 +404,8 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     retval = MPI_ERR_TAG;
   } else {
     int rank               = smpi_process()->index();
-    int dst_traced         = comm->group()->index(dst);
-    int src_traced         = comm->group()->index(src);
+    int dst_traced         = comm->group()->actor(dst)->getPid()-1;
+    int src_traced         = comm->group()->actor(src)->getPid()-1;
 
     // FIXME: Hack the way to trace this one
     std::vector<int>* dst_hack = new std::vector<int>;

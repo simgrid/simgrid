@@ -74,7 +74,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
 
-void smpi_deployment_register_process(const char* instance_id, int rank, int index)
+void smpi_deployment_register_process(const char* instance_id, int rank, simgrid::s4u::ActorPtr actor)
 {
   if (smpi_instances.empty()) // no instance registered, we probably used smpirun.
     return;
@@ -82,7 +82,7 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
   Instance& instance = smpi_instances.at(instance_id);
 
   instance.present_processes++;
-  instance.comm_world->group()->set_mapping(index, rank);
+  instance.comm_world->group()->set_mapping(actor, rank);
 }
 
 MPI_Comm* smpi_deployment_comm_world(const char* instance_id)

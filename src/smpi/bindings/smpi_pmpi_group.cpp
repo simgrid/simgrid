@@ -61,8 +61,8 @@ int PMPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1, MPI_Group g
       if(ranks1[i]==MPI_PROC_NULL){
         ranks2[i]=MPI_PROC_NULL;
       }else{
-        int index = group1->index(ranks1[i]);
-        ranks2[i] = group2->rank(index);
+        simgrid::s4u::ActorPtr actor = group1->actor(ranks1[i]);
+        ranks2[i] = group2->rank(actor);
       }
     }
     return MPI_SUCCESS;

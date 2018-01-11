@@ -22,6 +22,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm
 simgrid::smpi::Comm mpi_MPI_COMM_UNINITIALIZED;
 MPI_Comm MPI_COMM_UNINITIALIZED=&mpi_MPI_COMM_UNINITIALIZED;
 
+using simgrid::s4u::ActorPtr;
+
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field SMPI_Topo_type, and replace the MPI_Topology field by an union. */
 
@@ -216,8 +218,8 @@ MPI_Comm Comm::split(int color, int key)
           group_root = group_out; /* Save root's group */
         }
         for (unsigned j = 0; j < rankmap.size(); j++) {
-          int index = group->index(rankmap[j].second);
-          group_out->set_mapping(index, j);
+          ActorPtr actor = group->actor(rankmap[j].second);
+          group_out->set_mapping(actor, j);
         }
         MPI_Request* requests = xbt_new(MPI_Request, rankmap.size());
         int reqs              = 0;
@@ -307,9 +309,9 @@ void Comm::init_smp(){
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto const& actor : process_list) {
     int index = actor.pid - 1;
-    if (this->group()->rank(index) != MPI_UNDEFINED) {
+    // TODO cheinrich: actor is of type ActorImpl here and I'm unsure how to convert that without the lookup byPid() ...
+    if (this->group()->rank(simgrid::s4u::Actor::byPid(actor.pid)) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
-      // the process is in the comm
       if (index < min_index)
         min_index = index;
     }
@@ -318,9 +320,9 @@ void Comm::init_smp(){
   MPI_Group group_intra = new  Group(intra_comm_size);
   int i = 0;
   for (auto const& actor : process_list) {
-    int index = actor.pid - 1;
-    if(this->group()->rank(index)!=MPI_UNDEFINED){
-      group_intra->set_mapping(index, i);
+    // TODO cheinrich : We should not need the const_cast here and above.
+    if(this->group()->rank(simgrid::s4u::Actor::byPid(actor.pid))!=MPI_UNDEFINED){
+      group_intra->set_mapping(simgrid::s4u::Actor::byPid(actor.pid), i);
       i++;
     }
   }
@@ -365,7 +367,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(leader_list[i], i);
+      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]+1), i);
     leader_comm = new  Comm(leaders_group, nullptr);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -373,7 +375,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(leader_list[i], i);
+      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]+1), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new  Comm(leaders_group, nullptr);
@@ -412,9 +414,9 @@ void Comm::init_smp(){
   }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
-  int prev=this->group()->rank(comm_intra->group()->index(0));
+  int prev=this->group()->rank(comm_intra->group()->actor(0));
   for (i = 1; i < my_local_size; i++) {
-    int that = this->group()->rank(comm_intra->group()->index(i));
+    int that = this->group()->rank(comm_intra->group()->actor(i));
     if (that != prev + 1) {
       is_blocked = 0;
       break;
