@@ -122,7 +122,6 @@ doc/msg-tuto-src/masterworker2
 doc/msg-tuto-src/masterworker3
 doc/msg-tuto-src/masterworker4
 examples/msg/cloud-masterworker/cloud-masterworker
-examples/msg/cloud-migration/cloud-migration
 examples/msg/dht-kademlia/dht-kademlia
 examples/msg/dht-pastry/dht-pastry
 examples/msg/energy-onoff/energy-onoff
@@ -176,8 +175,11 @@ examples/s4u/async-wait/s4u-async-wait
 examples/s4u/async-waitall/s4u-async-waitall
 examples/s4u/async-waitany/s4u-async-waitany
 examples/s4u/cloud-capping/s4u-cloud-capping
+examples/s4u/cloud-migration/s4u-cloud-migration
 examples/s4u/cloud-simple/s4u-cloud-simple
 examples/s4u/dht-chord/s4u-dht-chord
+examples/s4u/dht-kademlia/s4u-dht-kademlia
+examples/s4u/energy-boot/s4u-energy-boot
 examples/s4u/energy-exec/s4u-energy-exec
 examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-vm/s4u-energy-vm
@@ -253,6 +255,7 @@ teshsuite/msg/async-wait/async-wait
 teshsuite/msg/async-waitall/async-waitall
 teshsuite/msg/async-waitany/async-waitany
 teshsuite/msg/cloud-capping/cloud-capping
+teshsuite/msg/cloud-migration/cloud-migration
 teshsuite/msg/cloud-sharing/cloud-sharing
 teshsuite/msg/cloud-simple/cloud-simple
 teshsuite/msg/cloud-two-tasks/cloud-two-tasks

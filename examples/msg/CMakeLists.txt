@@ -1,6 +1,5 @@
 # C examples
-foreach(x app-masterworker 
-          cloud-masterworker cloud-migration
+foreach(x app-masterworker cloud-masterworker
           dht-pastry energy-vm platform-failures 
           process-create 
           synchro-semaphore trace-categories 
@@ -59,8 +58,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/two_clusters_d.xml       PARENT_SCOPE)
 
-foreach(x app-masterworker 
-          cloud-masterworker cloud-migration
+foreach(x app-masterworker cloud-masterworker
           dht-pastry dht-kademlia platform-failures
           energy-vm
           process-create 
