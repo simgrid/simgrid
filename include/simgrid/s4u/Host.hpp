@@ -51,7 +51,7 @@ private:
   bool currentlyDestroying_ = false;
 
 public:
-  void destroy();
+  virtual void destroy();
   // No copy/move
   Host(Host const&) = delete;
   Host& operator=(Host const&) = delete;

@@ -6,11 +6,10 @@
 
 #ifndef _KADEMLIA_TASK_HPP_
 #define _KADEMLIA_TASK_HPP_
-#include "answer.hpp"
+#include "s4u-dht-kademlia.hpp"
 #include "simgrid/s4u.hpp"
 
 namespace kademlia {
-class Answer;
 
 class Message {
 public:
