@@ -154,18 +154,18 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
   ZoneCreationArgs zone;
   zone.id = cluster->id;
   switch (cluster->topology) {
-  case SURF_CLUSTER_TORUS:
-    zone.routing = A_surfxml_AS_routing_ClusterTorus;
-    break;
-  case SURF_CLUSTER_DRAGONFLY:
-    zone.routing = A_surfxml_AS_routing_ClusterDragonfly;
-    break;
-  case SURF_CLUSTER_FAT_TREE:
-    zone.routing = A_surfxml_AS_routing_ClusterFatTree;
-    break;
-  default:
-    zone.routing = A_surfxml_AS_routing_Cluster;
-    break;
+    case ClusterTopology::TORUS:
+      zone.routing = A_surfxml_AS_routing_ClusterTorus;
+      break;
+    case ClusterTopology::DRAGONFLY:
+      zone.routing = A_surfxml_AS_routing_ClusterDragonfly;
+      break;
+    case ClusterTopology::FAT_TREE:
+      zone.routing = A_surfxml_AS_routing_ClusterFatTree;
+      break;
+    default:
+      zone.routing = A_surfxml_AS_routing_Cluster;
+      break;
   }
   sg_platf_new_Zone_begin(&zone);
   simgrid::kernel::routing::ClusterZone* current_as = static_cast<ClusterZone*>(routing_get_current());
@@ -250,7 +250,7 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
     }
 
     //call the cluster function that adds the others links
-    if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
+    if (cluster->topology == ClusterTopology::FAT_TREE) {
       static_cast<FatTreeZone*>(current_as)->addProcessingNode(i);
     } else {
       current_as->create_links_for_node(cluster, i, rankId, current_as->nodePositionWithLimiter(rankId));

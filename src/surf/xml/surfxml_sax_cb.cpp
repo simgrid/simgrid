@@ -485,16 +485,16 @@ void ETag_surfxml_cluster(){
 
   switch(AX_surfxml_cluster_topology){
   case A_surfxml_cluster_topology_FLAT:
-    cluster.topology= SURF_CLUSTER_FLAT ;
+    cluster.topology = ClusterTopology::FLAT;
     break;
   case A_surfxml_cluster_topology_TORUS:
-    cluster.topology= SURF_CLUSTER_TORUS ;
+    cluster.topology = ClusterTopology::TORUS;
     break;
   case A_surfxml_cluster_topology_FAT___TREE:
-    cluster.topology = SURF_CLUSTER_FAT_TREE;
+    cluster.topology = ClusterTopology::FAT_TREE;
     break;
   case A_surfxml_cluster_topology_DRAGONFLY:
-    cluster.topology= SURF_CLUSTER_DRAGONFLY ;
+    cluster.topology = ClusterTopology::DRAGONFLY;
     break;
   default:
     surf_parse_error(std::string("Invalid cluster topology for cluster ") + cluster.id);

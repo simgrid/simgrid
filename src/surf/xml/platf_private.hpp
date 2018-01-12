@@ -23,13 +23,6 @@ extern "C" {
 typedef size_t yy_size_t;
 #endif
 
-enum e_surf_cluster_topology_t {
-  SURF_CLUSTER_DRAGONFLY = 3,
-  SURF_CLUSTER_FAT_TREE  = 2,
-  SURF_CLUSTER_FLAT      = 1,
-  SURF_CLUSTER_TORUS     = 0
-};
-
 /* ***************************************** */
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
@@ -93,6 +86,8 @@ public:
   std::vector<simgrid::surf::LinkImpl*> link_list;
 };
 
+enum class ClusterTopology { DRAGONFLY = 3, FAT_TREE = 2, FLAT = 1, TORUS = 0 };
+
 class ClusterCreationArgs {
 public:
   std::string id;
@@ -108,7 +103,7 @@ public:
   double loopback_bw  = 0;
   double loopback_lat = 0;
   double limiter_link = 0;
-  e_surf_cluster_topology_t topology;
+  ClusterTopology topology;
   std::string topo_parameters;
   std::map<std::string, std::string>* properties;
   std::string router_id;
