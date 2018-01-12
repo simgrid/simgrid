@@ -314,8 +314,6 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   }
 
   smx_actor_t process = new simgrid::simix::ActorImpl();
-  simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
-  simgrid::s4u::Actor::onCreation(tmp);
 
   xbt_assert(code && host != nullptr, "Invalid parameters");
   /* Process data */
@@ -366,6 +364,12 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   /* Tracing the process creation */
   TRACE_msg_process_create(process->getName(), process->pid, process->host);
+  /* Note by cheinrich: If you move this directly after the "new ActorImpl", the pid
+   * will not yet be set and you will cause issues when other code relies on that.
+   * This is of course also true for the other properties, so I moved this here.
+   */
+  simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
+  simgrid::s4u::Actor::onCreation(tmp);
 
   return process;
 }
