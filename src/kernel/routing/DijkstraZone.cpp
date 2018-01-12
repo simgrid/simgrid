@@ -17,14 +17,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf
 
 static void graph_node_data_free(void* n)
 {
-  graph_node_data_t data = static_cast<graph_node_data_t>(n);
-  delete data;
+  delete static_cast<graph_node_data_t>(n);
 }
 
 static void graph_edge_data_free(void* e)
 {
-  sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(e);
-  delete e_route;
+  delete static_cast<RouteCreationArgs*>(e);
 }
 
 /* Utility functions */
@@ -56,7 +54,7 @@ void DijkstraZone::seal()
       }
 
       if (not found) {
-        sg_platf_route_cbarg_t e_route = new s_sg_platf_route_cbarg_t;
+        RouteCreationArgs* e_route = new RouteCreationArgs();
         e_route->link_list.push_back(surf_network_model->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
       }
@@ -92,7 +90,7 @@ xbt_node_t DijkstraZone::nodeMapSearch(int id)
 
 /* Parsing */
 
-void DijkstraZone::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route)
+void DijkstraZone::newRoute(int src_id, int dst_id, RouteCreationArgs* e_route)
 {
   XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = nullptr;
@@ -124,7 +122,7 @@ void DijkstraZone::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_rou
   xbt_graph_new_edge(routeGraph_, src, dst, e_route);
 }
 
-void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
+void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   getRouteCheckParams(src, dst);
   int src_id = src->id();
@@ -149,7 +147,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
 
-    sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
+    RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
     for (auto const& link : e_route->link_list) {
       route->link_list.insert(route->link_list.begin(), link);
@@ -194,7 +192,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
         xbt_node_t u_node                  = xbt_graph_edge_get_target(edge);
         graph_node_data_t data             = static_cast<graph_node_data_t>(xbt_graph_node_get_data(u_node));
         int u_id                           = data->graph_id;
-        sg_platf_route_cbarg_t tmp_e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
+        RouteCreationArgs* tmp_e_route     = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
         int cost_v_u                       = tmp_e_route->link_list.size(); /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[v_id] < cost_arr[u_id]) {
@@ -219,7 +217,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cb
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
 
-    sg_platf_route_cbarg_t e_route = static_cast<sg_platf_route_cbarg_t>(xbt_graph_edge_get_data(edge));
+    RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
     NetPoint* prev_gw_src          = gw_src;
     gw_src                         = e_route->gw_src;
@@ -287,7 +285,7 @@ void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::Net
    * nodes */
 
   /* Add the route to the base */
-  sg_platf_route_cbarg_t e_route = newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
+  RouteCreationArgs* e_route = newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
   newRoute(src->id(), dst->id(), e_route);
 
   // Symmetrical YES
@@ -314,7 +312,7 @@ void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::Net
       gw_src           = gw_dst;
       gw_dst           = gw_tmp;
     }
-    sg_platf_route_cbarg_t link_route_back =
+    RouteCreationArgs* link_route_back =
         newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
     newRoute(dst->id(), src->id(), link_route_back);
   }

@@ -73,7 +73,7 @@ void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* 
       if (my_src == my_dst)
         continue;
 
-      sg_platf_route_cbarg_t route = new s_sg_platf_route_cbarg_t;
+      RouteCreationArgs* route = new RouteCreationArgs();
 
       getLocalRoute(my_src, my_dst, route, nullptr);
 
@@ -120,12 +120,11 @@ void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* 
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-sg_platf_route_cbarg_t RoutedZone::newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst,
-                                                    NetPoint* gw_src, NetPoint* gw_dst,
-                                                    std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical,
-                                                    bool change_order)
+RouteCreationArgs* RoutedZone::newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
+                                                NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
+                                                bool symmetrical, bool change_order)
 {
-  sg_platf_route_cbarg_t result = new s_sg_platf_route_cbarg_t;
+  RouteCreationArgs* result = new RouteCreationArgs();
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
              "The hierarchy of this netzone is neither BASIC nor RECURSIVE, I'm lost here.");

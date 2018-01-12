@@ -83,7 +83,8 @@ public:
   tmgr_trace_t state_trace;
 };
 
-struct s_sg_platf_route_cbarg_t {
+class RouteCreationArgs {
+public:
   bool symmetrical     = false;
   sg_netpoint_t src    = nullptr;
   sg_netpoint_t dst    = nullptr;
@@ -91,7 +92,6 @@ struct s_sg_platf_route_cbarg_t {
   sg_netpoint_t gw_dst = nullptr;
   std::vector<simgrid::surf::LinkImpl*> link_list;
 };
-typedef s_sg_platf_route_cbarg_t* sg_platf_route_cbarg_t;
 
 class ClusterCreationArgs {
 public:
@@ -207,8 +207,8 @@ XBT_PUBLIC(void) sg_platf_new_cabinet(CabinetCreationArgs* cabinet);   // Add a 
 XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)                        // Add a router    to the current Zone
 sg_platf_new_router(std::string, const char* coords);
 
-XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
-XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
+XBT_PUBLIC(void) sg_platf_new_route(RouteCreationArgs* route);             // Add a route
+XBT_PUBLIC(void) sg_platf_new_bypassRoute(RouteCreationArgs* bypassroute); // Add a bypassRoute
 
 XBT_PUBLIC(void) sg_platf_new_trace(TraceCreationArgs* trace);
 

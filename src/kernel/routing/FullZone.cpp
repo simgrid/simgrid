@@ -24,16 +24,14 @@ void FullZone::seal()
 
   /* Create table if needed */
   if (not routingTable_)
-    routingTable_ = new sg_platf_route_cbarg_t[table_size * table_size]();
+    routingTable_ = new RouteCreationArgs*[table_size * table_size]();
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
-      sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(i, i);
+      RouteCreationArgs* e_route = TO_ROUTE_FULL(i, i);
       if (not e_route) {
-        e_route            = new s_sg_platf_route_cbarg_t;
-        e_route->gw_src    = nullptr;
-        e_route->gw_dst    = nullptr;
+        e_route = new RouteCreationArgs();
         e_route->link_list.push_back(surf_network_model->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
       }
@@ -53,12 +51,12 @@ FullZone::~FullZone()
   }
 }
 
-void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t res, double* lat)
+void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* res, double* lat)
 {
   XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
 
   unsigned int table_size        = getTableSize();
-  sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(src->id(), dst->id());
+  RouteCreationArgs* e_route     = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route != nullptr) {
     res->gw_src = e_route->gw_src;
@@ -80,7 +78,7 @@ void FullZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoin
   unsigned int table_size = getTableSize();
 
   if (not routingTable_)
-    routingTable_ = new sg_platf_route_cbarg_t[table_size * table_size]();
+    routingTable_ = new RouteCreationArgs*[table_size * table_size]();
 
   /* Check that the route does not already exist */
   if (gw_dst) // inter-zone route (to adapt the error message, if any)

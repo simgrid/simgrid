@@ -48,7 +48,7 @@ public:
   explicit VivaldiZone(NetZone* father, std::string name);
 
   void setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, std::string coord);
-  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 };
 
 namespace vivaldi {

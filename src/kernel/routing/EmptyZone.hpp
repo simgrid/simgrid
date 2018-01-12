@@ -24,7 +24,7 @@ public:
   explicit EmptyZone(NetZone* father, std::string name);
   ~EmptyZone() override;
 
-  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override
+  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override
   {
     /* There can't be route in an Empty zone */
   }

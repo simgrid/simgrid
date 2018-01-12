@@ -69,7 +69,7 @@ class XBT_PRIVATE ClusterZone : public NetZoneImpl {
 public:
   explicit ClusterZone(NetZone* father, std::string name);
 
-  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                 std::map<std::string, xbt_edge_t>* edges) override;
 

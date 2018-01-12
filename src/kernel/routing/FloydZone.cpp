@@ -43,14 +43,14 @@ FloydZone::~FloydZone()
   delete[] costTable_;
 }
 
-void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
+void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   unsigned int table_size = getTableSize();
 
   getRouteCheckParams(src, dst);
 
   /* create a result route */
-  std::vector<sg_platf_route_cbarg_t> route_stack;
+  std::vector<RouteCreationArgs*> route_stack;
   unsigned int cur = dst->id();
   do {
     int pred = TO_FLOYD_PRED(src->id(), cur);
@@ -67,7 +67,7 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg
 
   sg_netpoint_t prev_dst_gw = nullptr;
   while (not route_stack.empty()) {
-    sg_platf_route_cbarg_t e_route = route_stack.back();
+    RouteCreationArgs* e_route = route_stack.back();
     route_stack.pop_back();
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
         prev_dst_gw->getCname() != e_route->gw_src->getCname()) {
@@ -97,7 +97,7 @@ void FloydZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoi
     /* Create Cost, Predecessor and Link tables */
     costTable_        = new double[table_size * table_size];                 /* link cost from host to host */
     predecessorTable_ = new int[table_size * table_size];                    /* predecessor host numbers */
-    linkTable_        = new sg_platf_route_cbarg_t[table_size * table_size]; /* actual link between src and dst */
+    linkTable_        = new RouteCreationArgs*[table_size * table_size];     /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
     for (unsigned int i = 0; i < table_size; i++)
@@ -163,7 +163,7 @@ void FloydZone::seal()
     /* Create Cost, Predecessor and Link tables */
     costTable_        = new double[table_size * table_size];                 /* link cost from host to host */
     predecessorTable_ = new int[table_size * table_size];                    /* predecessor host numbers */
-    linkTable_        = new sg_platf_route_cbarg_t[table_size * table_size]; /* actual link between src and dst */
+    linkTable_        = new RouteCreationArgs*[table_size * table_size];     /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
     for (unsigned int i = 0; i < table_size; i++)
@@ -177,11 +177,9 @@ void FloydZone::seal()
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
-      sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
+      RouteCreationArgs* e_route = TO_FLOYD_LINK(i, i);
       if (not e_route) {
-        e_route            = new s_sg_platf_route_cbarg_t;
-        e_route->gw_src    = nullptr;
-        e_route->gw_dst    = nullptr;
+        e_route = new RouteCreationArgs();
         e_route->link_list.push_back(surf_network_model->loopback_);
         TO_FLOYD_LINK(i, i) = e_route;
         TO_FLOYD_PRED(i, i) = i;

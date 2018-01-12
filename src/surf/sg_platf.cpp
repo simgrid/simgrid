@@ -397,13 +397,13 @@ void sg_platf_new_mount(MountCreationArgs* mount)
   mount_list.insert({mount->name, simgrid::surf::StorageImpl::byName(mount->storageId.c_str())});
 }
 
-void sg_platf_new_route(sg_platf_route_cbarg_t route)
+void sg_platf_new_route(RouteCreationArgs* route)
 {
   routing_get_current()->addRoute(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
                                   route->symmetrical);
 }
 
-void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
+void sg_platf_new_bypassRoute(RouteCreationArgs* bypassRoute)
 {
   routing_get_current()->addBypassRoute(bypassRoute->src, bypassRoute->dst, bypassRoute->gw_src, bypassRoute->gw_dst,
                                         bypassRoute->link_list, bypassRoute->symmetrical);

@@ -26,7 +26,7 @@ public:
   explicit FloydZone(NetZone* father, std::string name);
   ~FloydZone() override;
 
-  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t into, double* latency) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                 kernel::routing::NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
                 bool symmetrical) override;
@@ -36,7 +36,7 @@ private:
   /* vars to compute the Floyd algorithm. */
   int* predecessorTable_;
   double* costTable_;
-  sg_platf_route_cbarg_t* linkTable_;
+  RouteCreationArgs** linkTable_;
 };
 }
 }

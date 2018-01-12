@@ -20,7 +20,7 @@ ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father
 {
 }
 
-void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat)
+void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
   xbt_assert(not privateLinks_.empty(),

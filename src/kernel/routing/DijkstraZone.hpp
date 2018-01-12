@@ -38,7 +38,7 @@ public:
   ~DijkstraZone() override;
   xbt_node_t routeGraphNewNode(int id, int graph_id);
   xbt_node_t nodeMapSearch(int id);
-  void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
+  void newRoute(int src_id, int dst_id, RouteCreationArgs* e_route);
   /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback
    * can potentially already be in the graph, and in that
@@ -50,7 +50,7 @@ public:
    * After this function returns, any node in the graph
    * will have a loopback attached to it.
    */
-  void getLocalRoute(NetPoint* src, NetPoint* dst, sg_platf_route_cbarg_t route, double* lat) override;
+  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat) override;
   void addRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                 std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) override;
 

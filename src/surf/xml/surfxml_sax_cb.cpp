@@ -692,7 +692,7 @@ void STag_surfxml_bypassZoneRoute(){
 }
 
 void ETag_surfxml_route(){
-  s_sg_platf_route_cbarg_t route;
+  RouteCreationArgs route;
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
@@ -716,7 +716,7 @@ void ETag_surfxml_ASroute()
 }
 void ETag_surfxml_zoneRoute()
 {
-  s_sg_platf_route_cbarg_t ASroute;
+  RouteCreationArgs ASroute;
 
   ASroute.src = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_src); // tested to not be nullptr in start tag
   ASroute.dst = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_dst); // tested to not be nullptr in start tag
@@ -742,7 +742,7 @@ void ETag_surfxml_zoneRoute()
 }
 
 void ETag_surfxml_bypassRoute(){
-  s_sg_platf_route_cbarg_t route;
+  RouteCreationArgs route;
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
@@ -765,7 +765,7 @@ void ETag_surfxml_bypassASroute()
 }
 void ETag_surfxml_bypassZoneRoute()
 {
-  s_sg_platf_route_cbarg_t ASroute;
+  RouteCreationArgs ASroute;
 
   ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_src);
   ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_dst);
