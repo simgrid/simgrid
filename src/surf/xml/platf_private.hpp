@@ -152,12 +152,6 @@ public:
   std::string name;
 };
 
-struct s_sg_platf_prop_cbarg_t {
-  const char *id;
-  const char *value;
-};
-typedef s_sg_platf_prop_cbarg_t* sg_platf_prop_cbarg_t;
-
 class TraceCreationArgs {
 public:
   std::string id;
