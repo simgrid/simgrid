@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -302,7 +302,7 @@ int console_add_router(lua_State* L) {
 
 int console_add_route(lua_State *L) {
   XBT_DEBUG("Adding route");
-  s_sg_platf_route_cbarg_t route;
+  RouteCreationArgs route;
   int type;
 
   lua_ensure(lua_istable(L, -1), "Bad Arguments to add a route. Should be a table with named arguments");
@@ -373,7 +373,7 @@ int console_add_route(lua_State *L) {
 }
 
 int console_add_ASroute(lua_State *L) {
-  s_sg_platf_route_cbarg_t ASroute;
+  RouteCreationArgs ASroute;
 
   lua_pushstring(L, "src");
   lua_gettable(L, -2);
