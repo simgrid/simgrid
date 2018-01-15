@@ -617,15 +617,17 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   *index = simgrid::smpi::Request::waitany(count, requests, status);
 
   if(*index!=MPI_UNDEFINED){
-    int src_traced = savedvals[*index].src;
-    //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-    int dst_traced = savedvals[*index].dst;
-    int is_wait_for_receive = savedvals[*index].recv;
-    if (is_wait_for_receive) {
-      if(savedvals[*index].src==MPI_ANY_SOURCE)
-        src_traced = (status != MPI_STATUSES_IGNORE) ? savedvals[*index].comm->group()->rank(status->MPI_SOURCE)
-                                                     : savedvals[*index].src;
-      TRACE_smpi_recv(src_traced, dst_traced, savedvals[*index].tag);
+    MPI_Request req = requests[*index];
+    if (req != nullptr) { // Requests that were already received will be a nullptr
+      int src_traced = req->src();
+      // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+      int dst_traced          = req->dst();
+      int is_wait_for_receive = req->flags() & RECV;
+      if (is_wait_for_receive) {
+        if (req->src() == MPI_ANY_SOURCE)
+          src_traced = (status != MPI_STATUSES_IGNORE) ? req->comm()->group()->rank(status->MPI_SOURCE) : req->src();
+        TRACE_smpi_recv(src_traced, dst_traced, req->tag());
+      }
     }
     TRACE_smpi_comm_out(rank_traced);
   }
