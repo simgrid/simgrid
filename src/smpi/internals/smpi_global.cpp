@@ -64,7 +64,7 @@ xbt_os_timer_t global_timer;
  * "this == MPI_COMM_UNINITIALIZED"? If yes, it uses smpi_process()->comm_world()
  * instead of "this".
  * This is basically how we only have one global variable but all processes have
- * different communicators (basically, the one their SMPI instance uses).
+ * different communicators (the one their SMPI instance uses).
  *
  * See smpi_comm.cpp and the functions therein for details.
  */
