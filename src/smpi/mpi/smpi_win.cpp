@@ -207,14 +207,16 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Put to %d", target_rank);
 
-  if(target_rank != comm_->rank()){
+  if (target_rank != comm_->rank()) {
     //prepare send_request
-    MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype, smpi_process()->index(),
-        comm_->group()->actor(target_rank)->getPid()-1, SMPI_RMA_TAG+1, comm_, MPI_OP_NULL);
+    MPI_Request sreq =
+        Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(),
+                               comm_->group()->actor(target_rank)->getPid() - 1, SMPI_RMA_TAG + 1, comm_, MPI_OP_NULL);
 
     //prepare receiver request
-    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, smpi_process()->index(),
-        comm_->group()->actor(target_rank)->getPid()-1, SMPI_RMA_TAG+1, recv_win->comm_, MPI_OP_NULL);
+    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, comm_->rank(),
+                                              comm_->group()->actor(target_rank)->getPid() - 1, SMPI_RMA_TAG + 1,
+                                              recv_win->comm_, MPI_OP_NULL);
 
     //start send
     sreq->start();
@@ -267,13 +269,13 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   if(target_rank != comm_->rank()){
     //prepare send_request
     MPI_Request sreq = Request::rma_send_init(send_addr, target_count, target_datatype,
-        comm_->group()->actor(target_rank)->getPid()-1, smpi_process()->index(), SMPI_RMA_TAG+2, send_win->comm_,
-        MPI_OP_NULL);
+                                              comm_->group()->actor(target_rank)->getPid() - 1, comm_->rank(),
+                                              SMPI_RMA_TAG + 2, send_win->comm_, MPI_OP_NULL);
 
     //prepare receiver request
     MPI_Request rreq = Request::rma_recv_init(origin_addr, origin_count, origin_datatype,
-        comm_->group()->actor(target_rank)->getPid()-1, smpi_process()->index(), SMPI_RMA_TAG+2, comm_,
-        MPI_OP_NULL);
+                                              comm_->group()->actor(target_rank)->getPid() - 1, comm_->rank(),
+                                              SMPI_RMA_TAG + 2, comm_, MPI_OP_NULL);
 
     //start the send, with another process than us as sender.
     sreq->start();
@@ -329,25 +331,27 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     //As the tag will be used for ordering of the operations, substract count from it (to avoid collisions with other SMPI tags, SMPI_RMA_TAG is set below all the other ones we use )
     //prepare send_request
 
-    MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype,
-        smpi_process()->index(), comm_->group()->actor(target_rank)->getPid()-1, SMPI_RMA_TAG-3-count_, comm_, op);
+  MPI_Request sreq =
+      Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(),
+                             comm_->group()->actor(target_rank)->getPid() - 1, SMPI_RMA_TAG - 3 - count_, comm_, op);
 
-    //prepare receiver request
-    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype,
-        smpi_process()->index(), comm_->group()->actor(target_rank)->getPid()-1, SMPI_RMA_TAG-3-count_, recv_win->comm_, op);
+  // prepare receiver request
+  MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, comm_->rank(),
+                                            comm_->group()->actor(target_rank)->getPid() - 1, SMPI_RMA_TAG - 3 - count_,
+                                            recv_win->comm_, op);
 
-    count_++;
+  count_++;
 
-    //start send
-    sreq->start();
-    //push request to receiver's win
-    xbt_mutex_acquire(recv_win->mut_);
-    recv_win->requests_->push_back(rreq);
-    rreq->start();
-    xbt_mutex_release(recv_win->mut_);
+  // start send
+  sreq->start();
+  // push request to receiver's win
+  xbt_mutex_acquire(recv_win->mut_);
+  recv_win->requests_->push_back(rreq);
+  rreq->start();
+  xbt_mutex_release(recv_win->mut_);
 
-    if(request!=nullptr){
-      *request=sreq;
+  if (request != nullptr) {
+    *request = sreq;
     }else{
       xbt_mutex_acquire(mut_);
       requests_->push_back(sreq);
@@ -449,7 +453,7 @@ int Win::start(MPI_Group group, int assert){
   XBT_DEBUG("Entering MPI_Win_Start");
     while (j != size) {
       int src = group->actor(j)->getPid()-1;
-      if (src != smpi_process()->index() && src != MPI_UNDEFINED) {
+      if (src != comm_->rank() && src != MPI_UNDEFINED) {
         reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, MPI_COMM_WORLD);
         i++;
       }
@@ -479,7 +483,7 @@ int Win::post(MPI_Group group, int assert){
   XBT_DEBUG("Entering MPI_Win_Post");
   while(j!=size){
     int dst=group->actor(j)->getPid()-1;
-    if(dst!=smpi_process()->index() && dst!=MPI_UNDEFINED){
+    if (dst != comm_->rank() && dst != MPI_UNDEFINED) {
       reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+4, MPI_COMM_WORLD);
       i++;
     }
@@ -512,7 +516,7 @@ int Win::complete(){
 
   while(j!=size){
     int dst=group_->actor(j)->getPid()-1;
-    if(dst!=smpi_process()->index() && dst!=MPI_UNDEFINED){
+    if (dst != comm_->rank() && dst != MPI_UNDEFINED) {
       reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+5, MPI_COMM_WORLD);
       i++;
     }
@@ -546,7 +550,7 @@ int Win::wait(){
 
   while(j!=size){
     int src=group_->actor(j)->getPid()-1;
-    if(src!=smpi_process()->index() && src!=MPI_UNDEFINED){
+    if (src != comm_->rank() && src != MPI_UNDEFINED) {
       reqs[i]=Request::irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+5, MPI_COMM_WORLD);
       i++;
     }
