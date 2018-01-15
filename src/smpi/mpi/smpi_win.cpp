@@ -70,8 +70,7 @@ Win::~Win(){
   comm_->remove_rma_win(this);
 
   Colls::barrier(comm_);
-  int rank=comm_->rank();
-  if(rank == 0)
+  if (rank_ == 0)
     MSG_barrier_destroy(bar_);
   xbt_mutex_destroy(mut_);
   xbt_mutex_destroy(lock_mut_);
