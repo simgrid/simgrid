@@ -107,7 +107,7 @@ int Comm::rank()
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->rank();
-  return group_->rank(smpi_process()->index());
+  return group_->rank(simgrid::s4u::Actor::self());
 }
 
 void Comm::get_name (char* name, int* len)
