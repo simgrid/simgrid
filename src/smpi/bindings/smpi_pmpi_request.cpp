@@ -580,11 +580,6 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else {
     int rank = (*request)->comm() != MPI_COMM_NULL ? smpi_process()->index() : -1;
 
-    int src_traced = (*request)->src();
-    int dst_traced = (*request)->dst();
-    int tag_traced= (*request)->tag();
-    MPI_Comm comm = (*request)->comm();
-    int is_wait_for_receive = ((*request)->flags() & RECV);
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("wait"));
 
     simgrid::smpi::Request::wait(request, status);
@@ -592,11 +587,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     TRACE_smpi_comm_out(rank);
-    if (is_wait_for_receive) {
-      if(src_traced==MPI_ANY_SOURCE)
-        src_traced = (status != MPI_STATUS_IGNORE) ? comm->group()->rank(status->MPI_SOURCE) : src_traced;
-      TRACE_smpi_recv(src_traced, dst_traced, tag_traced);
-    }
+    trace_smpi_recv_helper(request, status);
   }
 
   smpi_bench_begin();
