@@ -649,16 +649,16 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   int retval = simgrid::smpi::Request::waitall(count, requests, status);
 
   for (int i = 0; i < count; i++) {
-    if(savedvals[i].valid){
+    MPI_Request req = requests[i];
+    if (req != MPI_REQUEST_NULL) {
       // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-      int src_traced = savedvals[i].src;
-      int dst_traced = savedvals[i].dst;
-      int is_wait_for_receive = savedvals[i].recv;
+      int src_traced          = req->src();
+      int dst_traced          = req->dst();
+      int is_wait_for_receive = req->flags() & RECV;
       if (is_wait_for_receive) {
         if(src_traced==MPI_ANY_SOURCE)
-          src_traced = (status != MPI_STATUSES_IGNORE) ? savedvals[i].comm->group()->rank(status[i].MPI_SOURCE)
-                                                       : savedvals[i].src;
-        TRACE_smpi_recv(src_traced, dst_traced,savedvals[i].tag);
+          src_traced = (status != MPI_STATUSES_IGNORE) ? req->comm()->group()->rank(status[i].MPI_SOURCE) : req->src();
+        TRACE_smpi_recv(src_traced, dst_traced, req->tag());
       }
     }
   }
