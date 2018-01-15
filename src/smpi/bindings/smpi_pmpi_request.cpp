@@ -603,13 +603,12 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 
   if(*index!=MPI_UNDEFINED){
     MPI_Request req = requests[*index];
-    if (req != nullptr) { // Requests that were already received will be a nullptr
+    if (req != MPI_REQUEST_NULL) { // Received requests become null
       int src_traced = req->src();
       // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
       int dst_traced          = req->dst();
-      int is_wait_for_receive = req->flags() & RECV;
-      if (is_wait_for_receive) {
-        if (req->src() == MPI_ANY_SOURCE)
+      if (req->flags() & RECV) {
+        if (src_traced == MPI_ANY_SOURCE)
           src_traced = (status != MPI_STATUSES_IGNORE) ? req->comm()->group()->rank(status->MPI_SOURCE) : req->src();
         TRACE_smpi_recv(src_traced, dst_traced, req->tag());
       }
@@ -634,10 +633,9 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
     MPI_Request req = requests[i];
     if (req != MPI_REQUEST_NULL) {
       // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-      int src_traced          = req->src();
-      int dst_traced          = req->dst();
-      int is_wait_for_receive = req->flags() & RECV;
-      if (is_wait_for_receive) {
+      int src_traced = req->src();
+      int dst_traced = req->dst();
+      if ((req->flags() & RECV)) {
         if(src_traced==MPI_ANY_SOURCE)
           src_traced = (status != MPI_STATUSES_IGNORE) ? req->comm()->group()->rank(status[i].MPI_SOURCE) : req->src();
         TRACE_smpi_recv(src_traced, dst_traced, req->tag());
