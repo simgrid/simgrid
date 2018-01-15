@@ -304,13 +304,12 @@ void Comm::init_smp(){
   }
   //identify neighbours in comm
   //get the indices of all processes sharing the same simix host
-  const auto& process_list = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
+  auto& process_list      = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
-  for (auto const& actor : process_list) {
+  for (auto& actor : process_list) {
     int index = actor.pid - 1;
-    // TODO cheinrich: actor is of type ActorImpl here and I'm unsure how to convert that without the lookup byPid() ...
-    if (this->group()->rank(simgrid::s4u::Actor::byPid(actor.pid)) != MPI_UNDEFINED) { // Is this process in the current group?
+    if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
       if (index < min_index)
         min_index = index;
@@ -319,10 +318,10 @@ void Comm::init_smp(){
   XBT_DEBUG("number of processes deployed on my node : %d", intra_comm_size);
   MPI_Group group_intra = new  Group(intra_comm_size);
   int i = 0;
-  for (auto const& actor : process_list) {
+  for (auto& actor : process_list) {
     // TODO cheinrich : We should not need the const_cast here and above.
-    if(this->group()->rank(simgrid::s4u::Actor::byPid(actor.pid))!=MPI_UNDEFINED){
-      group_intra->set_mapping(simgrid::s4u::Actor::byPid(actor.pid), i);
+    if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) {
+      group_intra->set_mapping(actor.iface(), i);
       i++;
     }
   }
