@@ -624,25 +624,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   smpi_bench_end();
-  //save information from requests
-  struct savedvalstype {
-    int src;
-    int dst;
-    int recv;
-    int tag;
-    int valid;
-    MPI_Comm comm;
-  };
-  savedvalstype* savedvals=xbt_new0(savedvalstype, count);
 
-  for (int i = 0; i < count; i++) {
-    MPI_Request req = requests[i];
-    if(req!=MPI_REQUEST_NULL){
-      savedvals[i]=(savedvalstype){req->src(), req->dst(), (req->flags() & RECV), req->tag(), 1, req->comm()};
-    }else{
-      savedvals[i].valid=0;
-    }
-  }
   int rank_traced = smpi_process()->index();
   TRACE_smpi_comm_in(rank_traced, __FUNCTION__, new simgrid::instr::CpuTIData("waitAll", static_cast<double>(count)));
 
@@ -663,7 +645,6 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
     }
   }
   TRACE_smpi_comm_out(rank_traced);
-  xbt_free(savedvals);
 
   smpi_bench_begin();
   return retval;
