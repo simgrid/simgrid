@@ -548,6 +548,23 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
   return retval;
 }
 
+// TODO: cheinrich: Move declaration to other file? Rename this function - it's used for PMPI_Wait*?
+static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status);
+static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
+{
+  MPI_Request req = *request;
+  if (req != MPI_REQUEST_NULL) { // Received requests become null
+    int src_traced = req->src();
+    // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+    int dst_traced = req->dst();
+    if (req->flags() & RECV) { // Is this request a wait for RECV?
+      if (src_traced == MPI_ANY_SOURCE)
+        src_traced = (status != MPI_STATUSES_IGNORE) ? req->comm()->group()->rank(status->MPI_SOURCE) : req->src();
+      TRACE_smpi_recv(src_traced, dst_traced, req->tag());
+    }
+  }
+}
+
 int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 {
   int retval = 0;
@@ -586,22 +603,6 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   return retval;
 }
 
-// TODO: cheinrich: Move declaration to other file? Rename function - they're used for PMPI_Wait*?
-static void trace_smpi_recv_helper(MPI_Request req, MPI_Status* status);
-static void trace_smpi_recv_helper(MPI_Request req, MPI_Status* status)
-{
-  if (req != MPI_REQUEST_NULL) { // Received requests become null
-    int src_traced = req->src();
-    // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-    int dst_traced = req->dst();
-    if (req->flags() & RECV) { // Is this request a wait for RECV?
-      if (src_traced == MPI_ANY_SOURCE)
-        src_traced = (status != MPI_STATUSES_IGNORE) ? req->comm()->group()->rank(status->MPI_SOURCE) : req->src();
-      TRACE_smpi_recv(src_traced, dst_traced, req->tag());
-    }
-  }
-}
-
 int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
   if (index == nullptr)
@@ -618,7 +619,8 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   *index = simgrid::smpi::Request::waitany(count, requests, status);
 
   if(*index!=MPI_UNDEFINED){
-    trace_smpi_recv_helper(requests[*index], status);
+    trace_smpi_recv_helper(&requests[*index], status);
+    TRACE_smpi_comm_out(rank_traced);
   }
 
   smpi_bench_begin();
@@ -635,7 +637,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   int retval = simgrid::smpi::Request::waitall(count, requests, status);
 
   for (int i = 0; i < count; i++) {
-    trace_smpi_recv_helper(requests[i], &status[i]);
+    trace_smpi_recv_helper(&requests[i], &status[i]);
   }
   TRACE_smpi_comm_out(rank_traced);
 
