@@ -319,7 +319,6 @@ void Comm::init_smp(){
   MPI_Group group_intra = new  Group(intra_comm_size);
   int i = 0;
   for (auto& actor : process_list) {
-    // TODO cheinrich : We should not need the const_cast here and above.
     if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) {
       group_intra->set_mapping(actor.iface(), i);
       i++;
