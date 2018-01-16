@@ -104,10 +104,13 @@ int PMPI_Query_thread(int *provided)
 
 int PMPI_Is_thread_main(int *flag)
 {
+  // FIXME: The MPI standard seems to say that fatal errors need to be triggered
+  // if MPI has been finalized or not yet been initialized
   if (flag == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *flag = smpi_process()->index() == 0;
+    *flag = smpi_process()->index() == 0; // FIXME: I don't think this is correct: This just returns true if the process ID is 1,
+                                          // regardless of whether this process called MPI_Thread_Init() or not.
     return MPI_SUCCESS;
   }
 }
