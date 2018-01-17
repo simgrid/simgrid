@@ -57,7 +57,7 @@ void Comm::destroy(Comm* comm)
 
 int Comm::dup(MPI_Comm* newcomm){
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(smpi_process()->index());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
   }
   MPI_Group cp = new  Group(this->group());
   (*newcomm)   = new  Comm(cp, this->topo());
@@ -300,7 +300,7 @@ void Comm::init_smp(){
   }
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(smpi_process()->index());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
   }
   //identify neighbours in comm
   //get the indices of all processes sharing the same simix host
@@ -336,7 +336,7 @@ void Comm::init_smp(){
   Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(smpi_process()->index());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
   }
 
   if(leaders_map_==nullptr){
@@ -408,7 +408,7 @@ void Comm::init_smp(){
   Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){ //we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(smpi_process()->index());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
   }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;

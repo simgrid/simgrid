@@ -471,7 +471,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     simgrid::smpi::Status::empty(status);
     retval = MPI_SUCCESS;
   } else {
-    int my_proc_id = ((*request)->comm() != MPI_COMM_NULL) ? smpi_process()->index() : -1;
+    int my_proc_id = ((*request)->comm() != MPI_COMM_NULL) ? simgrid::s4u::Actor::self()->getPid() : -1;
 
     TRACE_smpi_testing_in(my_proc_id);
 
@@ -613,7 +613,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 
   smpi_bench_end();
 
-  int rank_traced = smpi_process()->index(); // FIXME: In PMPI_Wait, we check if the comm is null?
+  int rank_traced = simgrid::s4u::Actor::self()->getPid(); // FIXME: In PMPI_Wait, we check if the comm is null?
   TRACE_smpi_comm_in(rank_traced, __FUNCTION__, new simgrid::instr::CpuTIData("waitAny", static_cast<double>(count)));
 
   *index = simgrid::smpi::Request::waitany(count, requests, status);
@@ -631,7 +631,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   smpi_bench_end();
 
-  int rank_traced = smpi_process()->index(); // FIXME: In PMPI_Wait, we check if the comm is null?
+  int rank_traced = simgrid::s4u::Actor::self()->getPid(); // FIXME: In PMPI_Wait, we check if the comm is null?
   TRACE_smpi_comm_in(rank_traced, __FUNCTION__, new simgrid::instr::CpuTIData("waitAll", static_cast<double>(count)));
 
   int retval = simgrid::smpi::Request::waitall(count, requests, status);
