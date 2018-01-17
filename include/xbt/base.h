@@ -73,6 +73,7 @@
 
 #define XBT_ATTRIB_DEPRECATED_v320(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.20 */
 #define XBT_ATTRIB_DEPRECATED_v321(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.21 */
+#define XBT_ATTRIB_DEPRECATED_v322(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.22 */
 
 #define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
 #define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__(prio)))
