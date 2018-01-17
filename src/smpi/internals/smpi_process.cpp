@@ -66,7 +66,7 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
 #endif
 }
 
-void Process::set_data(int index, int* argc, char*** argv)
+void Process::set_data(int* argc, char*** argv)
 {
     char* instance_id = (*argv)[1];
     comm_world_       = smpi_deployment_comm_world(instance_id);
@@ -74,7 +74,6 @@ void Process::set_data(int index, int* argc, char*** argv)
     if (barrier != nullptr) // don't overwrite the current one if the instance has none
       finalization_barrier_ = barrier;
     instance_id_ = instance_id;
-    index_       = index;
 
     process_                                                       = simgrid::s4u::Actor::self();
     static_cast<simgrid::msg::ActorExt*>(process_->getImpl()->userdata)->data = this;
@@ -89,29 +88,26 @@ void Process::set_data(int index, int* argc, char*** argv)
     argv_ = argv;
     // set the process attached to the mailbox
     mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
-    XBT_DEBUG("<%d> New process in the game: %p", index_, process_);
+    XBT_DEBUG("<%lu> New process in the game: %p", process_->getPid(), process_);
 }
 
 /** @brief Prepares the current process for termination. */
 void Process::finalize()
 {
   state_ = SMPI_FINALIZED;
-  XBT_DEBUG("<%d> Process left the game", index_);
+  XBT_DEBUG("<%lu> Process left the game", process_->getPid());
 
-    // This leads to an explosion of the search graph which cannot be reduced:
-    if(MC_is_active() || MC_record_replay_is_active())
-      return;
-    // wait for all pending asynchronous comms to finish
-    MSG_barrier_wait(finalization_barrier_);
+  // This leads to an explosion of the search graph which cannot be reduced:
+  if(MC_is_active() || MC_record_replay_is_active())
+    return;
+  // wait for all pending asynchronous comms to finish
+  MSG_barrier_wait(finalization_barrier_);
 }
 
 /** @brief Check if a process is finalized */
 int Process::finalized()
 {
-    if (index_ != MPI_UNDEFINED)
-      return (state_ == SMPI_FINALIZED);
-    else
-      return 0;
+  return (state_ == SMPI_FINALIZED);
 }
 
 /** @brief Check if a process is initialized */
@@ -119,26 +115,23 @@ int Process::initialized()
 {
   // TODO cheinrich: Check if we still need this. This should be a global condition, not for a
   // single process ... ?
-  return ((index_ != MPI_UNDEFINED) && (state_ == SMPI_INITIALIZED));
+  return (state_ == SMPI_INITIALIZED);
 }
 
 /** @brief Mark a process as initialized (=MPI_Init called) */
 void Process::mark_as_initialized()
 {
-  if ((index_ != MPI_UNDEFINED) && (state_ != SMPI_FINALIZED))
+  if (state_ != SMPI_FINALIZED)
     state_ = SMPI_INITIALIZED;
 }
 
 void Process::set_replaying(bool value){
-  if ((index_ != MPI_UNDEFINED) && (state_ != SMPI_FINALIZED))
+  if (state_ != SMPI_FINALIZED)
     replaying_ = value;
 }
 
 bool Process::replaying(){
-  if (index_ != MPI_UNDEFINED)
-    return replaying_;
-  else
-    return false;
+  return replaying_;
 }
 
 void Process::set_user_data(void *data)
@@ -173,11 +166,6 @@ void Process::set_privatized_region(smpi_privatization_region_t region)
 smpi_privatization_region_t Process::privatized_region()
 {
   return privatized_region_;
-}
-
-int Process::index()
-{
-  return index_;
 }
 
 MPI_Comm Process::comm_world()
@@ -297,7 +285,7 @@ void Process::init(int *argc, char ***argv){
       SMPI_switch_data_segment(my_proc_id);
     }
 
-    process->set_data(my_proc_id, argc, argv);
+    process->set_data(argc, argv);
   }
   xbt_assert(smpi_process(),
       "smpi_process() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "

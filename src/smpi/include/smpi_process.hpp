@@ -28,7 +28,6 @@ class Process {
     MPI_Comm comm_intra_  = MPI_COMM_NULL;
     MPI_Comm* comm_world_ = nullptr;
     void* data_           = nullptr; /* user data */
-    int index_            = MPI_UNDEFINED;
     char state_;
     int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
     char* instance_id_              = nullptr;
@@ -45,7 +44,7 @@ class Process {
 #endif
   public:
     explicit Process(simgrid::s4u::ActorPtr actor, msg_bar_t barrier);
-    void set_data(int index, int* argc, char*** argv);
+    void set_data(int* argc, char*** argv);
     void finalize();
     int finalized();
     int initialized();
@@ -57,7 +56,6 @@ class Process {
     smpi_trace_call_location_t* call_location();
     void set_privatized_region(smpi_privatization_region_t region);
     smpi_privatization_region_t privatized_region();
-    int index();
     smx_mailbox_t mailbox();
     smx_mailbox_t mailbox_small();
     xbt_mutex_t mailboxes_mutex();
