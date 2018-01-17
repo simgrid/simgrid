@@ -87,7 +87,6 @@ void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_com
 void smpi_add_process(ActorPtr actor)
 {
   process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
-  // smpi_deployment_register_process("master_mpi", 0, actor);
 }
 
 int smpi_process_count()
