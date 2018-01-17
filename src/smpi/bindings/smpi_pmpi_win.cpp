@@ -274,7 +274,7 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     MPI_Group group;
     win->get_group(&group);
     int dst_traced = group->actor(target_rank)->getPid();
-    TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::Pt2PtTIData("Put", dst_traced,
+    TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::Pt2PtTIData("Put", target_rank,
                                                        origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
                                                        encode_datatype(origin_datatype)));
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*origin_datatype->size());
@@ -315,7 +315,7 @@ int PMPI_Rput( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
     MPI_Group group;
     win->get_group(&group);
     int dst_traced = group->actor(target_rank)->getPid();
-    TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::Pt2PtTIData("Rput", dst_traced,
+    TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::Pt2PtTIData("Rput", target_rank,
                                                        origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
                                                        encode_datatype(origin_datatype)));
     TRACE_smpi_send(rank, rank, dst_traced, SMPI_RMA_TAG, origin_count*origin_datatype->size());

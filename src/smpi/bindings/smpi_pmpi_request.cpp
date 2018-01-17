@@ -167,7 +167,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     int my_proc_id = simgrid::s4u::Actor::self()->getPid();
 
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("Irecv", src_traced,
+                       new simgrid::instr::Pt2PtTIData("Irecv", src,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
 
@@ -208,7 +208,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     int my_proc_id = simgrid::s4u::Actor::self()->getPid();
     int trace_dst = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("Isend", trace_dst,
+                       new simgrid::instr::Pt2PtTIData("Isend", dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
 
@@ -250,7 +250,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
     int my_proc_id = simgrid::s4u::Actor::self()->getPid();
     int trace_dst = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("ISsend", trace_dst,
+                       new simgrid::instr::Pt2PtTIData("ISsend", dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
     TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
@@ -290,7 +290,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
     int src_traced         = getPid(comm, src);
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("recv", src_traced,
+                       new simgrid::instr::Pt2PtTIData("recv", src,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
 
@@ -333,7 +333,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
     int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
     int dst_traced         = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("send", dst_traced,
+                       new simgrid::instr::Pt2PtTIData("send", dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
     if (not TRACE_smpi_view_internals()) {
@@ -371,7 +371,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
     int dst_traced         = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("Ssend", dst_traced,
+                       new simgrid::instr::Pt2PtTIData("Ssend", dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        encode_datatype(datatype)));
     TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, tag, count * datatype->size());

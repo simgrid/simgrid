@@ -223,7 +223,7 @@ static void action_send(const char *const *action)
   int dst_traced = MPI_COMM_WORLD->group()->rank(to);
 
   TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("send", dst_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+                     new simgrid::instr::Pt2PtTIData("send", to, size, encode_datatype(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
@@ -249,7 +249,7 @@ static void action_Isend(const char *const *action)
   int rank = smpi_process()->index();
   int dst_traced = MPI_COMM_WORLD->group()->rank(to);
   TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Isend", dst_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+                     new simgrid::instr::Pt2PtTIData("Isend", to, size, encode_datatype(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
 
@@ -278,7 +278,7 @@ static void action_recv(const char *const *action) {
   int src_traced = MPI_COMM_WORLD->group()->rank(from);
 
   TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("recv", src_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+                     new simgrid::instr::Pt2PtTIData("recv", from, size, encode_datatype(MPI_CURRENT_TYPE)));
 
   //unknown size from the receiver point of view
   if (size <= 0.0) {
@@ -311,7 +311,7 @@ static void action_Irecv(const char *const *action)
   int rank = smpi_process()->index();
   int src_traced = MPI_COMM_WORLD->group()->rank(from);
   TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Irecv", src_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+                     new simgrid::instr::Pt2PtTIData("Irecv", from, size, encode_datatype(MPI_CURRENT_TYPE)));
   MPI_Status status;
   //unknow size from the receiver pov
   if (size <= 0.0) {
