@@ -39,7 +39,7 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
 {
   char name[MAILBOX_NAME_MAXLEN];
   process_              = actor;
-  int index             = actor->getPid() - 1; // TODO cheinrich: This needs to be removed! Just a quick hack to make the following 2 lines work
+  int index             = actor->getPid(); // TODO cheinrich: This needs to be removed! Just a quick hack to make the following 2 lines work
   mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, index));
   mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, index));
   mailboxes_mutex_      = xbt_mutex_init();
@@ -278,8 +278,6 @@ void Process::init(int *argc, char ***argv){
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
     proc->getImpl()->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
-    int my_proc_id = proc->getPid() - 1; // The maestro process has always ID 0 but we don't need that process here
-
     char* instance_id = (*argv)[1];
     try {
       int rank = std::stoi(std::string((*argv)[2]));
@@ -291,6 +289,7 @@ void Process::init(int *argc, char ***argv){
     // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
     // this up here so that I can set the privatized region before the switch.
     Process* process = smpi_process_remote(proc);
+    int my_proc_id   = proc->getPid();
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using the segment index of this process  */
       my_proc_id = proc->getImpl()->segment_index;

@@ -45,7 +45,7 @@ Group::Group(MPI_Group origin)
 void Group::set_mapping(simgrid::s4u::ActorPtr actor, int rank)
 {
   if (0 <= rank && rank < size_) {
-    int index = actor->getPid()-1;
+    int index = actor->getPid();
     rank_to_index_map_[rank] = index;
     if (index != MPI_UNDEFINED) {
       if ((unsigned)index >= index_to_rank_map_.size())

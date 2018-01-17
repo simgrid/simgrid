@@ -109,7 +109,7 @@ int PMPI_Is_thread_main(int *flag)
   if (flag == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *flag = smpi_process()->index() == 0; // FIXME: I don't think this is correct: This just returns true if the process ID is 1,
+    *flag = smpi_process()->index() == 1; // FIXME: I don't think this is correct: This just returns true if the process ID is 1,
                                           // regardless of whether this process called MPI_Thread_Init() or not.
     return MPI_SUCCESS;
   }

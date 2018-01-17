@@ -308,7 +308,7 @@ void Comm::init_smp(){
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : process_list) {
-    int index = actor.pid - 1;
+    int index = actor.pid;
     if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
       if (index < min_index)
@@ -365,7 +365,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]+1), i);
+      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]), i);
     leader_comm = new  Comm(leaders_group, nullptr);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -373,7 +373,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]+1), i);
+      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new  Comm(leaders_group, nullptr);
