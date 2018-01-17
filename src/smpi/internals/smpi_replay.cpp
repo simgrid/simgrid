@@ -227,7 +227,7 @@ static void action_send(const char *const *action)
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::Pt2PtTIData("send", to, size, encode_datatype(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
+    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
 
   Request::send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
 
@@ -253,7 +253,7 @@ static void action_Isend(const char *const *action)
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::Pt2PtTIData("Isend", to, size, encode_datatype(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
+    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
 
   MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, 0, MPI_COMM_WORLD);
 
@@ -393,17 +393,18 @@ static void action_waitall(const char *const *action){
   if (count_requests>0) {
     MPI_Status status[count_requests];
 
-   int my_proc_id_traced = Actor::self()->getPid();
-   TRACE_smpi_comm_in(my_proc_id_traced, __FUNCTION__, new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
-   int recvs_snd[count_requests];
-   int recvs_rcv[count_requests];
-   for (unsigned int i = 0; i < count_requests; i++) {
-     const auto& req = (*get_reqq_self())[i];
-     if (req && (req->flags () & RECV)){
-       recvs_snd[i]=req->src();
-       recvs_rcv[i]=req->dst();
-     }else
-       recvs_snd[i]=-100;
+    int my_proc_id_traced = Actor::self()->getPid();
+    TRACE_smpi_comm_in(my_proc_id_traced, __FUNCTION__,
+                       new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
+    int recvs_snd[count_requests];
+    int recvs_rcv[count_requests];
+    for (unsigned int i = 0; i < count_requests; i++) {
+      const auto& req = (*get_reqq_self())[i];
+      if (req && (req->flags() & RECV)) {
+        recvs_snd[i] = req->src();
+        recvs_rcv[i] = req->dst();
+      } else
+        recvs_snd[i] = -100;
    }
    Request::waitall(count_requests, &(*get_reqq_self())[0], status);
 
@@ -444,8 +445,8 @@ static void action_bcast(const char *const *action)
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(root)->getPid(), -1.0, size, -1,
-                                                    encode_datatype(MPI_CURRENT_TYPE), ""));
+                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(root)->getPid(), -1.0, size,
+                                                    -1, encode_datatype(MPI_CURRENT_TYPE), ""));
 
   void *sendbuf = smpi_get_tmp_sendbuffer(size* MPI_CURRENT_TYPE->size());
 
@@ -497,7 +498,7 @@ static void action_allReduce(const char *const *action) {
   double clock = smpi_process()->simulated_elapsed();
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::CollTIData("allReduce", -1, comp_size, comm_size, -1,
-                                                                        encode_datatype(MPI_CURRENT_TYPE), ""));
+                                                                              encode_datatype(MPI_CURRENT_TYPE), ""));
 
   void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
   void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
@@ -527,9 +528,10 @@ static void action_allToAll(const char *const *action) {
   void *recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* MPI_CURRENT_TYPE2->size());
 
   int my_proc_id = Actor::self()->getPid();
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::CollTIData("allToAll", -1, -1.0, send_size, recv_size,
-                                                                        encode_datatype(MPI_CURRENT_TYPE),
-                                                                        encode_datatype(MPI_CURRENT_TYPE2)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::CollTIData("allToAll", -1, -1.0, send_size, recv_size,
+                                                    encode_datatype(MPI_CURRENT_TYPE),
+                                                    encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::alltoall(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
@@ -742,7 +744,7 @@ static void action_reducescatter(const char *const *action) {
   CHECK_ACTION_PARAMS(action, comm_size+1, 1)
   int comp_size = parse_double(action[2+comm_size]);
   int recvcounts[comm_size];
-  int my_proc_id = Actor::self()->getPid();
+  int my_proc_id                     = Actor::self()->getPid();
   int size = 0;
   std::vector<int>* trace_recvcounts = new std::vector<int>;
   if(action[3+comm_size])
@@ -798,9 +800,10 @@ static void action_allgather(const char *const *action) {
 
   int my_proc_id = Actor::self()->getPid();
 
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::CollTIData("allGather", -1, -1.0, sendcount, recvcount,
-                                                                        encode_datatype(MPI_CURRENT_TYPE),
-                                                                        encode_datatype(MPI_CURRENT_TYPE2)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::CollTIData("allGather", -1, -1.0, sendcount, recvcount,
+                                                    encode_datatype(MPI_CURRENT_TYPE),
+                                                    encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::allgather(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcount, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
@@ -847,9 +850,10 @@ static void action_allgatherv(const char *const *action) {
   for (int i = 0; i < comm_size; i++) // copy data to avoid bad free
     trace_recvcounts->push_back(recvcounts[i]);
 
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::VarCollTIData(
-                                             "allGatherV", -1, sendcount, nullptr, -1, trace_recvcounts,
-                                             encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::VarCollTIData("allGatherV", -1, sendcount, nullptr, -1, trace_recvcounts,
+                                                       encode_datatype(MPI_CURRENT_TYPE),
+                                                       encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts, disps, MPI_CURRENT_TYPE2,
                           MPI_COMM_WORLD);
@@ -891,7 +895,7 @@ static void action_allToAllv(const char *const *action) {
   else
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
 
-  int my_proc_id       = Actor::self()->getPid();
+  int my_proc_id = Actor::self()->getPid();
   void *sendbuf = smpi_get_tmp_sendbuffer(send_buf_size* MPI_CURRENT_TYPE->size());
   void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* MPI_CURRENT_TYPE2->size());
 
@@ -906,9 +910,10 @@ static void action_allToAllv(const char *const *action) {
     recvdisps[i] = 0;
   }
 
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::VarCollTIData(
-                                             "allToAllV", -1, send_size, trace_sendcounts, recv_size, trace_recvcounts,
-                                             encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::VarCollTIData("allToAllV", -1, send_size, trace_sendcounts, recv_size,
+                                                       trace_recvcounts, encode_datatype(MPI_CURRENT_TYPE),
+                                                       encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::alltoallv(sendbuf, sendcounts, senddisps, MPI_CURRENT_TYPE,recvbuf, recvcounts, recvdisps,
                          MPI_CURRENT_TYPE, MPI_COMM_WORLD);
