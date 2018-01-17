@@ -987,7 +987,7 @@ static void __attribute__((destructor)) __postfini_##name(void) { \
    name = NULL;                                                 \
 }
 
-#define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
+#define SMPI_VARGET_GLOBAL(name) name[SIMIX_process_self()->pid]
 
 /**
  * This is used for the old privatization method, i.e., on old
@@ -1013,7 +1013,7 @@ if(!name) {                                         \
    smpi_register_static(name, xbt_free_f);          \
 }
 
-#define SMPI_VARGET_STATIC(name) name[smpi_process_index()]
+#define SMPI_VARGET_STATIC(name) name[SIMIX_process_self()->pid]
 
 
 SG_END_DECL()
