@@ -25,16 +25,17 @@ static double compute(double d0)
 
 int main(int argc, char *argv[])
 {
-  int n;
+  int n, rank;
   MPI_Init(&argc, &argv);
   int verbose = argc <= 1;
   MPI_Comm_size(MPI_COMM_WORLD, &n);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   double d = 2.0;
   for (int i = 0; i < 5; i++) {
     /* I want no more than n + 1 benchs (thres < 0) */
     SMPI_SAMPLE_GLOBAL(n + 1, -1) {
       if (verbose)
-        fprintf(stderr, "(%12.6f) [rank:%d]", MPI_Wtime(), smpi_process_index());
+        fprintf(stderr, "(%12.6f) [rank:%d]", MPI_Wtime(), rank);
       else
         fprintf(stderr, "(0)");
       fprintf(stderr, " Run the first computation. It's globally benched, "
@@ -56,16 +57,16 @@ int main(int argc, char *argv[])
           fprintf(stderr, "(1)");
         fprintf(stderr,
                 " [rank:%d] Run the first (locally benched) computation. It's locally benched, and I want the "
-                "standard error to go below 0.1 second (count is not >0)\n", smpi_process_index());
+                "standard error to go below 0.1 second (count is not >0)\n", rank);
       }
       d = compute(d);
      }
   }
 
   if (verbose)
-    fprintf(stderr, "(%12.6f) [rank:%d] The result of the computation is: %f\n", MPI_Wtime(), smpi_process_index(), d);
+    fprintf(stderr, "(%12.6f) [rank:%d] The result of the computation is: %f\n", MPI_Wtime(), rank, d);
   else
-    fprintf(stderr, "(2) [rank:%d] Done.\n", smpi_process_index());
+    fprintf(stderr, "(2) [rank:%d] Done.\n", rank);
 
   MPI_Finalize();
   return 0;
