@@ -68,26 +68,26 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
 
 void Process::set_data(int* argc, char*** argv)
 {
-    instance_id_      = std::string((*argv)[1]);
-    comm_world_       = smpi_deployment_comm_world(instance_id_.c_str());
-    msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id_.c_str());
-    if (barrier != nullptr) // don't overwrite the current one if the instance has none
-      finalization_barrier_ = barrier;
+  instance_id_      = std::string((*argv)[1]);
+  comm_world_       = smpi_deployment_comm_world(instance_id_.c_str());
+  msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id_.c_str());
+  if (barrier != nullptr) // don't overwrite the current one if the instance has none
+    finalization_barrier_ = barrier;
 
-    process_                                                       = simgrid::s4u::Actor::self();
-    static_cast<simgrid::msg::ActorExt*>(process_->getImpl()->userdata)->data = this;
+  process_                                                                  = simgrid::s4u::Actor::self();
+  static_cast<simgrid::msg::ActorExt*>(process_->getImpl()->userdata)->data = this;
 
-    if (*argc > 3) {
-      memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
-      (*argv)[(*argc) - 1] = nullptr;
-      (*argv)[(*argc) - 2] = nullptr;
-    }
-    (*argc)-=2;
-    argc_ = argc;
-    argv_ = argv;
-    // set the process attached to the mailbox
-    mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
-    XBT_DEBUG("<%lu> New process in the game: %p", process_->getPid(), process_);
+  if (*argc > 3) {
+    memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
+    (*argv)[(*argc) - 1] = nullptr;
+    (*argv)[(*argc) - 2] = nullptr;
+  }
+  (*argc) -= 2;
+  argc_ = argc;
+  argv_ = argv;
+  // set the process attached to the mailbox
+  mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
+  XBT_DEBUG("<%lu> New process in the game: %p", process_->getPid(), process_);
 }
 
 /** @brief Prepares the current process for termination. */
