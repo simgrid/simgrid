@@ -32,6 +32,7 @@ static char *get_mailbox_name_small(char *str, int index)
 namespace simgrid{
 namespace smpi{
 
+using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 
 Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
@@ -39,9 +40,8 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
 {
   char name[MAILBOX_NAME_MAXLEN];
   process_              = actor;
-  int index             = actor->getPid(); // TODO cheinrich: This needs to be removed! Just a quick hack to make the following 2 lines work
-  mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, index));
-  mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, index));
+  mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, process_->getPid()));
+  mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, process_->getPid()));
   mailboxes_mutex_      = xbt_mutex_init();
   timer_                = xbt_os_timer_new();
   state_                = SMPI_UNINITIALIZED;
