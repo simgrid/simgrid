@@ -26,7 +26,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
   } else if (not datatype->is_valid()) {
     retval = MPI_ERR_ARG;
   } else {
-    int rank = comm->rank();
+    int rank = simgrid::s4u::Actor::self()->getPid();
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("bcast", root, -1.0,
                                                       datatype->is_replayable() ? count : count * datatype->size(), -1,
@@ -50,7 +50,7 @@ int PMPI_Barrier(MPI_Comm comm)
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
-    int rank = comm->rank();
+    int rank = simgrid::s4u::Actor::self()->getPid();
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("barrier"));
 
     simgrid::smpi::Colls::barrier(comm);
@@ -134,7 +134,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
       sendtmptype=recvtype;
     }
 
-    int rank         = comm->rank();
+    int rank         = simgrid::s4u::Actor::self()->getPid();
     int dt_size_recv = recvtype->is_replayable() ? 1 : recvtype->size();
 
     std::vector<int>* trace_recvcounts = new std::vector<int>;
@@ -178,7 +178,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       sendcount=recvcount;
       sendtype=recvtype;
     }
-    int rank = comm->rank();
+    int rank = simgrid::s4u::Actor::self()->getPid();
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("allGather", -1, -1.0,
@@ -215,7 +215,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       sendcount=recvcounts[comm->rank()];
       sendtype=recvtype;
     }
-    int rank               = comm->rank();
+    int rank               = simgrid::s4u::Actor::self()->getPid();
     int dt_size_recv       = recvtype->is_replayable() ? 1 : recvtype->size();
 
     std::vector<int>* trace_recvcounts = new std::vector<int>;
@@ -294,7 +294,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
       recvtype  = sendtype;
       recvcount = sendcounts[comm->rank()];
     }
-    int rank               = comm->rank();
+    int rank               = simgrid::s4u::Actor::self()->getPid();
     int dt_size_send       = sendtype->is_replayable() ? 1 : sendtype->size();
 
     std::vector<int>* trace_sendcounts = new std::vector<int>;
@@ -328,7 +328,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
   } else if (not datatype->is_valid() || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    int rank = comm->rank();
+    int rank = simgrid::s4u::Actor::self()->getPid();
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("reduce", root, 0,
@@ -378,7 +378,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
       sendtmpbuf = static_cast<char*>(xbt_malloc(count*datatype->get_extent()));
       simgrid::smpi::Datatype::copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
     }
-    int rank = comm->rank();
+    int rank = simgrid::s4u::Actor::self()->getPid();
 
     TRACE_smpi_comm_in(rank, __FUNCTION__,
                        new simgrid::instr::CollTIData("allReduce", -1, 0,
@@ -411,7 +411,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
   } else {
-    int rank = comm->rank();
+    int rank = simgrid::s4u::Actor::self()->getPid();
 
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::Pt2PtTIData(
                                                "scan", -1, datatype->is_replayable() ? count : count * datatype->size(),
@@ -438,7 +438,7 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
   } else {
-    int rank         = comm->rank();
+    int rank         = simgrid::s4u::Actor::self()->getPid();
     void* sendtmpbuf = sendbuf;
     if (sendbuf == MPI_IN_PLACE) {
       sendtmpbuf = static_cast<void*>(xbt_malloc(count * datatype->size()));
@@ -474,7 +474,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
   } else if (recvcounts == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
-    int rank                           = comm->rank();
+    int rank                           = simgrid::s4u::Actor::self()->getPid();
     std::vector<int>* trace_recvcounts = new std::vector<int>;
     int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
     int totalcount    = 0;
@@ -523,7 +523,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
   } else {
     int count = comm->size();
 
-    int rank                           = comm->rank();
+    int rank                           = simgrid::s4u::Actor::self()->getPid();
     int dt_send_size                   = datatype->is_replayable() ? 1 : datatype->size();
     std::vector<int>* trace_recvcounts = new std::vector<int>(recvcount * dt_send_size); // copy data to avoid bad free
 
@@ -565,7 +565,7 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
   } else if ((sendbuf != MPI_IN_PLACE && sendtype == MPI_DATATYPE_NULL) || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    int rank                 = comm->rank();
+    int rank                 = simgrid::s4u::Actor::self()->getPid();
     void* sendtmpbuf         = static_cast<char*>(sendbuf);
     int sendtmpcount         = sendcount;
     MPI_Datatype sendtmptype = sendtype;
@@ -610,7 +610,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
              recvdisps == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
-    int rank                           = comm->rank();
+    int rank                           = simgrid::s4u::Actor::self()->getPid();
     int size               = comm->size();
     int send_size                      = 0;
     int recv_size                      = 0;
