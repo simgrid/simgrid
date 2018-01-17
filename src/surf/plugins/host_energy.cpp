@@ -128,6 +128,7 @@ public:
   explicit HostEnergy(simgrid::s4u::Host* ptr);
   ~HostEnergy();
 
+  double getCurrentWattsValue();
   double getCurrentWattsValue(double cpu_load);
   double getConsumedEnergy();
   double getWattMinAt(int pstate);
@@ -159,44 +160,11 @@ void HostEnergy::update()
 {
   double start_time  = this->last_updated;
   double finish_time = surf_get_clock();
-  double current_speed = host->getSpeed();
 
   if (start_time < finish_time) {
-    double cpu_load;
-    // We may have start == finish if the past consumption was updated since the simcall was started
-    // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
-    //
-    // Even in this case, we need to save the pstate for the next call (after this big if),
-    // which may have changed since that recent update.
-
-    if (current_speed <= 0)
-      // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
-      // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
-      cpu_load = 1;
-    else
-      cpu_load = host->pimpl_cpu->constraint()->get_usage() / current_speed;
-
-    /** Divide by the number of cores here **/
-    cpu_load /= host->pimpl_cpu->coreCount();
-
-    if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
-      cpu_load = 1;
-
-    /* The problem with this model is that the load is always 0 or 1, never something less.
-     * Another possibility could be to model the total energy as
-     *
-     *   X/(X+Y)*W_idle + Y/(X+Y)*W_burn
-     *
-     * where X is the amount of idling cores, and Y the amount of computing cores.
-     */
-
     double previous_energy = this->total_energy;
 
-    double instantaneous_consumption;
-    if (this->pstate == pstate_off) // The host was off at the beginning of this time interval
-      instantaneous_consumption = this->watts_off;
-    else
-      instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
+    double instantaneous_consumption = this->getCurrentWattsValue();
 
     double energy_this_step = instantaneous_consumption * (finish_time - start_time);
 
@@ -245,7 +213,51 @@ double HostEnergy::getWattMaxAt(int pstate)
   return power_range_watts_list[pstate].max;
 }
 
-/** @brief Computes the power consumed by the host according to the current pstate and processor load */
+/** @brief Computes the power consumed by the host according to the current situation
+ *
+ * - If the host is off, that's the watts_off value
+ * - if it's on, take the current pstate and the current processor load into account */
+double HostEnergy::getCurrentWattsValue()
+{
+  if (this->pstate == pstate_off) // The host is off (or was off at the beginning of this time interval)
+    return this->watts_off;
+
+  double current_speed = host->getSpeed();
+
+  double cpu_load;
+  // We may have start == finish if the past consumption was updated since the simcall was started
+  // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
+  //
+  // Even in this case, we need to save the pstate for the next call (after this big if),
+  // which may have changed since that recent update.
+
+  if (current_speed <= 0)
+    // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
+    // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
+    cpu_load = 1;
+  else
+    cpu_load = host->pimpl_cpu->constraint()->get_usage() / current_speed;
+
+  /** Divide by the number of cores here **/
+  cpu_load /= host->pimpl_cpu->coreCount();
+
+  if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
+    cpu_load = 1;
+
+  /* The problem with this model is that the load is always 0 or 1, never something less.
+   * Another possibility could be to model the total energy as
+   *
+   *   X/(X+Y)*W_idle + Y/(X+Y)*W_burn
+   *
+   * where X is the amount of idling cores, and Y the amount of computing cores.
+   */
+  return getCurrentWattsValue(cpu_load);
+}
+
+/** @brief Computes the power that the host would consume at the provided processor load
+ *
+ * Whether the host is ON or OFF is not taken into account.
+ */
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
   xbt_assert(not power_range_watts_list.empty(), "No power range properties specified for host %s", host->getCname());
@@ -517,7 +529,6 @@ double sg_host_get_current_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  double cpu_load = host->pimpl_cpu->constraint()->get_usage() / host->getSpeed();
-  return host->extension<HostEnergy>()->getCurrentWattsValue(cpu_load);
+  return host->extension<HostEnergy>()->getCurrentWattsValue();
 }
 }
