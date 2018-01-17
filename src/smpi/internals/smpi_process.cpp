@@ -17,15 +17,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (k
 
 #define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
 
-static char *get_mailbox_name(char *str, int index)
+static char* get_mailbox_name(char* str, int process_id)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
+  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(process_id));
   return str;
 }
 
-static char *get_mailbox_name_small(char *str, int index)
+static char* get_mailbox_name_small(char* str, int process_id)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
+  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(process_id));
   return str;
 }
 
