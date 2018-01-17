@@ -12,22 +12,9 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
-
-#define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
-
-static char* get_mailbox_name(char* str, int process_id)
-{
-  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(process_id));
-  return str;
-}
-
-static char* get_mailbox_name_small(char* str, int process_id)
-{
-  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(process_id));
-  return str;
-}
 
 namespace simgrid{
 namespace smpi{
@@ -38,10 +25,12 @@ using simgrid::s4u::ActorPtr;
 Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
   : finalization_barrier_(finalization_barrier)
 {
-  char name[MAILBOX_NAME_MAXLEN];
+  std::stringstream mailboxname, mailboxname_small;
   process_              = actor;
-  mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, process_->getPid()));
-  mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, process_->getPid()));
+  mailboxname           << std::string("SMPI-")  << process_->getPid();
+  mailboxname_small     << std::string("small-") << process_->getPid();
+  mailbox_              = simgrid::s4u::Mailbox::byName(mailboxname.str());
+  mailbox_small_        = simgrid::s4u::Mailbox::byName(mailboxname_small.str());
   mailboxes_mutex_      = xbt_mutex_init();
   timer_                = xbt_os_timer_new();
   state_                = SMPI_UNINITIALIZED;
