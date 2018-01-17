@@ -417,8 +417,8 @@ XBT_PUBLIC(size_t) MSG_vm_get_ramsize(msg_vm_t vm);
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
 
-XBT_ATTRIB_DEPRECATED_v321("Use MSG_vm_create_migratable() from the live migration plugin: "
-                           "v3.21 will drop MSG_vm_create() completely.") static msg_vm_t
+XBT_ATTRIB_DEPRECATED_v322("Use MSG_vm_create_migratable() from the live migration plugin: "
+                           "v3.22 will drop MSG_vm_create() completely.") static msg_vm_t
     MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity)
 {
   return sg_vm_create_migratable(ind_pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity);
