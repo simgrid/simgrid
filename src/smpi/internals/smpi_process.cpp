@@ -292,7 +292,6 @@ void Process::init(int *argc, char ***argv){
     int my_proc_id   = proc->getPid();
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using the segment index of this process  */
-      my_proc_id = proc->getImpl()->segment_index;
       process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
       SMPI_switch_data_segment(my_proc_id);

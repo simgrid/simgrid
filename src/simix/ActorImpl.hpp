@@ -76,7 +76,6 @@ public:
 
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
-  int segment_index = -1; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 
   /* Refcounting */
 private:
