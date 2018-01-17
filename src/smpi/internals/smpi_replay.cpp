@@ -220,7 +220,7 @@ static void action_send(const char *const *action)
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
-  int dst_traced = MPI_COMM_WORLD->group()->rank(to);
+  int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
 
   TRACE_smpi_comm_in(rank, __FUNCTION__,
                      new simgrid::instr::Pt2PtTIData("send", to, size, encode_datatype(MPI_CURRENT_TYPE)));
@@ -247,7 +247,7 @@ static void action_Isend(const char *const *action)
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
-  int dst_traced = MPI_COMM_WORLD->group()->rank(to);
+  int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
   TRACE_smpi_comm_in(rank, __FUNCTION__,
                      new simgrid::instr::Pt2PtTIData("Isend", to, size, encode_datatype(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
@@ -275,7 +275,7 @@ static void action_recv(const char *const *action) {
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
-  int src_traced = MPI_COMM_WORLD->group()->rank(from);
+  int src_traced = MPI_COMM_WORLD->group()->actor(from)->getPid();
 
   TRACE_smpi_comm_in(rank, __FUNCTION__,
                      new simgrid::instr::Pt2PtTIData("recv", from, size, encode_datatype(MPI_CURRENT_TYPE)));
@@ -309,7 +309,6 @@ static void action_Irecv(const char *const *action)
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   int rank = smpi_process()->index();
-  int src_traced = MPI_COMM_WORLD->group()->rank(from);
   TRACE_smpi_comm_in(rank, __FUNCTION__,
                      new simgrid::instr::Pt2PtTIData("Irecv", from, size, encode_datatype(MPI_CURRENT_TYPE)));
   MPI_Status status;

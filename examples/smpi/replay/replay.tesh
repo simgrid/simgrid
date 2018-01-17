@@ -150,11 +150,11 @@ $ tail -n +3 ./simgrid.trace
 > 0 1 0 MPI
 > 2 2 1 MPI_STATE
 > 4 3 0 1 1 MPI_LINK
-> 6 0 1 1 0 "rank-0"
+> 6 0 1 1 0 "rank-1"
 > 5 4 2 computing "0 1 1"
 > 5 5 2 smpi_replay_run_init "0 1 0"
-> 6 0 2 1 0 "rank-1"
-> 6 0 3 1 0 "rank-2"
+> 6 0 2 1 0 "rank-2"
+> 6 0 3 1 0 "rank-3"
 > 12 0 2 1 5
 > 13 0 2 1
 > 12 0 2 2 5
