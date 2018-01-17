@@ -30,7 +30,7 @@ class Process {
     void* data_           = nullptr; /* user data */
     char state_;
     int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
-    char* instance_id_              = nullptr;
+    std::string instance_id_;
     bool replaying_                 = false; /* is the process replaying a trace */
     msg_bar_t finalization_barrier_;
     int return_value_ = 0;

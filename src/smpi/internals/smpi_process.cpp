@@ -68,12 +68,11 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
 
 void Process::set_data(int* argc, char*** argv)
 {
-    char* instance_id = (*argv)[1];
-    comm_world_       = smpi_deployment_comm_world(instance_id);
-    msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id);
+    instance_id_      = std::string((*argv)[1]);
+    comm_world_       = smpi_deployment_comm_world(instance_id_.c_str());
+    msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id_.c_str());
     if (barrier != nullptr) // don't overwrite the current one if the instance has none
       finalization_barrier_ = barrier;
-    instance_id_ = instance_id;
 
     process_                                                       = simgrid::s4u::Actor::self();
     static_cast<simgrid::msg::ActorExt*>(process_->getImpl()->userdata)->data = this;
