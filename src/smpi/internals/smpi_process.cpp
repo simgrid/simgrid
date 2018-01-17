@@ -278,7 +278,7 @@ void Process::init(int *argc, char ***argv){
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
     proc->getImpl()->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
-    int index = proc->getPid() - 1; // The maestro process has always ID 0 but we don't need that process here
+    int my_proc_id = proc->getPid() - 1; // The maestro process has always ID 0 but we don't need that process here
 
     char* instance_id = (*argv)[1];
     try {
@@ -293,13 +293,13 @@ void Process::init(int *argc, char ***argv){
     Process* process = smpi_process_remote(proc);
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using the segment index of this process  */
-      index = proc->getImpl()->segment_index;
+      my_proc_id = proc->getImpl()->segment_index;
       process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
-      SMPI_switch_data_segment(index);
+      SMPI_switch_data_segment(my_proc_id);
     }
 
-    process->set_data(index, argc, argv);
+    process->set_data(my_proc_id, argc, argv);
   }
   xbt_assert(smpi_process(),
       "smpi_process() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "
