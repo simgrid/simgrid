@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, 2014, 2017. The SimGrid Team.
+/* Copyright (c) 2012, 2014, 2017-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,6 +27,8 @@ class RoutingTable {
 public:
   Bucket** buckets; // Node bucket list - 160 sized.
   explicit RoutingTable(unsigned int node_id);
+  RoutingTable(const RoutingTable&) = delete;
+  RoutingTable& operator=(const RoutingTable&) = delete;
   ~RoutingTable();
   void print();
   Bucket* findBucket(unsigned int id);
