@@ -75,7 +75,7 @@ void Process::set_data(int* argc, char*** argv)
   argc_ = argc;
   argv_ = argv;
   // set the process attached to the mailbox
-  mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
+  mailbox_small_->setReceiver(process_);
   XBT_DEBUG("<%lu> New process in the game: %p", process_->getPid(), process_);
 }
 
