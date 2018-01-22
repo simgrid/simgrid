@@ -136,7 +136,7 @@ int Group::incl(int n, int* ranks, MPI_Group* newgroup)
   } else {
     *newgroup = new Group(n);
     for (i = 0; i < n; i++) {
-      ActorPtr actor = this->actor(ranks[i]);
+      ActorPtr actor = this->actor(ranks[i]); // ranks[] was passed as a param!
       (*newgroup)->set_mapping(actor, i);
     }
   }
