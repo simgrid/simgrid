@@ -142,11 +142,6 @@ void VirtualMachine::destroy()
   Host::destroy();
 }
 
-bool VirtualMachine::isMigrating()
-{
-  return pimpl_vm_ && pimpl_vm_->isMigrating;
-}
-
 simgrid::s4u::Host* VirtualMachine::getPm()
 {
   return pimpl_vm_->getPm();

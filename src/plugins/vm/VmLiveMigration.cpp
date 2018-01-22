@@ -292,7 +292,7 @@ SG_BEGIN_DECL()
 
 static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine* vm)
 {
-  if (vm->isMigrating()) {
+  if (vm->getImpl()->isMigrating) {
     vm->extension<simgrid::vm::VmMigrationExt>()->rx_->kill();
     vm->extension<simgrid::vm::VmMigrationExt>()->tx_->kill();
     vm->extension<simgrid::vm::VmMigrationExt>()->issuer_->kill();
@@ -326,7 +326,7 @@ simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, co
 
 int sg_vm_is_migrating(simgrid::s4u::VirtualMachine* vm)
 {
-  return vm->isMigrating();
+  return vm->getImpl()->isMigrating;
 }
 
 void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
@@ -339,7 +339,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->getCname(), dst_pm->getCname());
   if (vm->getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->getCname());
-  if (vm->isMigrating())
+  if (vm->getImpl()->isMigrating)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->getCname());
 
   vm->getImpl()->isMigrating = true;

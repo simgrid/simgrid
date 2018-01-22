@@ -51,8 +51,6 @@ public:
   void shutdown();
   void destroy();
 
-  bool isMigrating();
-
   simgrid::s4u::Host* getPm();
   void setPm(simgrid::s4u::Host * pm);
   size_t getRamsize();

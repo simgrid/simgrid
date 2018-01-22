@@ -200,7 +200,7 @@ JNICALL Java_org_simgrid_msg_Process_setAutoRestart (JNIEnv *env, jobject jproce
     return;
   }
 
-  MSG_process_auto_restart_set(process, (jauto_restart == JNI_TRUE));
+  process->setAutoRestart(jauto_restart == JNI_TRUE);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart (JNIEnv *env, jobject jprocess) {
