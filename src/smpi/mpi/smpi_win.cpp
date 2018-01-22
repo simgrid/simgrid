@@ -15,6 +15,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 
+using simgrid::s4u::Actor;
+
 namespace simgrid{
 namespace smpi{
 std::unordered_map<int, smpi_key_elem> Win::keyvals_;
@@ -207,15 +209,17 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Put to %d", target_rank);
 
-  if (target_rank != comm_->rank()) {
+  if (target_rank != comm_->rank()) { // This is not for myself, so we need to send messages
     //prepare send_request
     MPI_Request sreq =
-        Request::rma_send_init(origin_addr, origin_count, origin_datatype, simgrid::s4u::Actor::self()->getPid(),
-                               comm_->group()->actor(target_rank)->getPid(), SMPI_RMA_TAG + 1, comm_, MPI_OP_NULL);
+        // TODO cheinrich Check for rank / pid conversion
+        Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(),
+                               target_rank, SMPI_RMA_TAG + 1, comm_, MPI_OP_NULL);
 
     //prepare receiver request
-    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, simgrid::s4u::Actor::self()->getPid(),
-                                              comm_->group()->actor(target_rank)->getPid(), SMPI_RMA_TAG + 1,
+        // TODO cheinrich Check for rank / pid conversion
+    MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, recv_win->comm_->rank(),
+                                              target_rank, SMPI_RMA_TAG + 1,
                                               recv_win->comm_, MPI_OP_NULL);
 
     //start send
@@ -269,12 +273,12 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   if(target_rank != comm_->rank()){
     //prepare send_request
     MPI_Request sreq = Request::rma_send_init(send_addr, target_count, target_datatype,
-                                              comm_->group()->actor(target_rank)->getPid(), simgrid::s4u::Actor::self()->getPid(),
+                                              target_rank, send_win->comm_->rank(),
                                               SMPI_RMA_TAG + 2, send_win->comm_, MPI_OP_NULL);
 
     //prepare receiver request
     MPI_Request rreq = Request::rma_recv_init(origin_addr, origin_count, origin_datatype,
-                                              comm_->group()->actor(target_rank)->getPid(), simgrid::s4u::Actor::self()->getPid(),
+                                              target_rank, comm_->rank(), // TODO cheinrich Check here if comm_->rank() and above send_win->comm_->rank() are correct
                                               SMPI_RMA_TAG + 2, comm_, MPI_OP_NULL);
 
     //start the send, with another process than us as sender.
@@ -332,12 +336,12 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     //prepare send_request
 
   MPI_Request sreq =
-      Request::rma_send_init(origin_addr, origin_count, origin_datatype, simgrid::s4u::Actor::self()->getPid(),
-                             comm_->group()->actor(target_rank)->getPid(), SMPI_RMA_TAG - 3 - count_, comm_, op);
+      Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(),
+                             target_rank, SMPI_RMA_TAG - 3 - count_, comm_, op);
 
   // prepare receiver request
-  MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, simgrid::s4u::Actor::self()->getPid(),
-                                            comm_->group()->actor(target_rank)->getPid(), SMPI_RMA_TAG - 3 - count_,
+  MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, recv_win->comm_->rank(),
+                                            target_rank, SMPI_RMA_TAG - 3 - count_,
                                             recv_win->comm_, op);
 
   count_++;
@@ -452,13 +456,13 @@ int Win::start(MPI_Group group, int assert){
 
   XBT_DEBUG("Entering MPI_Win_Start");
     while (j != size) {
-      int src = group->actor(j)->getPid();
-      if ((unsigned)src != simgrid::s4u::Actor::self()->getPid() && src != MPI_UNDEFINED) {
-        reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, MPI_COMM_WORLD);
+      int src = comm_->group()->rank(group->actor(j));
+      if (src != rank_ && src != MPI_UNDEFINED) { // TODO cheinrich: The check of MPI_UNDEFINED should be useless here
+        reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, comm_);
         i++;
       }
       j++;
-  }
+    }
   size=i;
   Request::startall(size, reqs);
   Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
@@ -482,9 +486,9 @@ int Win::post(MPI_Group group, int assert){
 
   XBT_DEBUG("Entering MPI_Win_Post");
   while(j!=size){
-    int dst=group->actor(j)->getPid();
-    if ((unsigned)dst != simgrid::s4u::Actor::self()->getPid() && dst != MPI_UNDEFINED) {
-      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+4, MPI_COMM_WORLD);
+    int dst = comm_->group()->rank(group->actor(j));
+    if (dst != rank_ && dst != MPI_UNDEFINED) {
+      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+4, comm_);
       i++;
     }
     j++;
@@ -515,9 +519,9 @@ int Win::complete(){
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
-    int dst=group_->actor(j)->getPid();
-    if ((unsigned)dst != simgrid::s4u::Actor::self()->getPid() && dst != MPI_UNDEFINED) {
-      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+5, MPI_COMM_WORLD);
+    int dst = comm_->group()->rank(group_->actor(j));
+    if (dst != rank_ && dst != MPI_UNDEFINED) {
+      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+5, comm_);
       i++;
     }
     j++;
@@ -549,9 +553,9 @@ int Win::wait(){
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
-    int src=group_->actor(j)->getPid();
-    if ((unsigned)src != simgrid::s4u::Actor::self()->getPid() && src != MPI_UNDEFINED) {
-      reqs[i]=Request::irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+5, MPI_COMM_WORLD);
+    int src = comm_->group()->rank(group_->actor(j));
+    if (src != rank_ && src != MPI_UNDEFINED) {
+      reqs[i]=Request::irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+5, comm_);
       i++;
     }
     j++;
