@@ -307,7 +307,7 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Request* request)
 {
-
+  XBT_DEBUG("Entering MPI_Win_Accumulate");
   //get receiver pointer
   MPI_Win recv_win = connected_wins_[target_rank];
 
@@ -355,6 +355,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
       xbt_mutex_release(mut_);
     }
 
+  XBT_DEBUG("Leaving MPI_Win_Accumulate");
   return MPI_SUCCESS;
 }
 
@@ -446,6 +447,7 @@ int Win::start(MPI_Group group, int assert){
     int size          = group->size();
     MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
+  XBT_DEBUG("Entering MPI_Win_Start");
     while (j != size) {
       int src = group->index(j);
       if (src != smpi_process()->index() && src != MPI_UNDEFINED) {
@@ -464,6 +466,7 @@ int Win::start(MPI_Group group, int assert){
   opened_++; //we're open for business !
   group_=group;
   group->ref();
+  XBT_DEBUG("Leaving MPI_Win_Start");
   return MPI_SUCCESS;
 }
 
@@ -474,6 +477,7 @@ int Win::post(MPI_Group group, int assert){
   int size = group->size();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
+  XBT_DEBUG("Entering MPI_Win_Post");
   while(j!=size){
     int dst=group->index(j);
     if(dst!=smpi_process()->index() && dst!=MPI_UNDEFINED){
@@ -493,6 +497,7 @@ int Win::post(MPI_Group group, int assert){
   opened_++; //we're open for business !
   group_=group;
   group->ref();
+  XBT_DEBUG("Leaving MPI_Win_Post");
   return MPI_SUCCESS;
 }
 
