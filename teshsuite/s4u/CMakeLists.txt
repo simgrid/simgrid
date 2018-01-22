@@ -1,4 +1,7 @@
-foreach(x actor comm-pt2pt concurrent_rw host_on_off_wait listen_async pid storage_client_server)
+foreach(x actor
+        comm-pt2pt
+        cloud-interrupt-migration
+        concurrent_rw storage_client_server host_on_off_wait listen_async pid )
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -8,7 +11,7 @@ endforeach()
 
 ## Add the tests.
 ## Some need to be run with all factories, some need not tesh to run
-foreach(x actor concurrent_rw)
+foreach(x actor cloud-interrupt-migration concurrent_rw)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH_FACTORIES(tesh-s4u-${x} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()

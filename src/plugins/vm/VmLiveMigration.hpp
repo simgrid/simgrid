@@ -10,6 +10,18 @@
 
 namespace simgrid {
 namespace vm {
+class VmMigrationExt {
+public:
+  s4u::ActorPtr issuer_ = nullptr;
+  s4u::ActorPtr tx_     = nullptr;
+  s4u::ActorPtr rx_     = nullptr;
+  static simgrid::xbt::Extension<simgrid::s4u::Host, VmMigrationExt> EXTENSION_ID;
+  virtual ~VmMigrationExt() = default;
+  explicit VmMigrationExt(s4u::ActorPtr issuer, s4u::ActorPtr rx, s4u::ActorPtr tx) : issuer_(issuer), tx_(tx), rx_(rx)
+  {
+  }
+  static void ensureVmMigrationExtInstalled();
+};
 
 class MigrationRx {
   /* The miration_rx process uses mbox_ctl to let the caller of do_migration()  know the completion of the migration. */

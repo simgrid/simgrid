@@ -16,6 +16,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(vm_live_migration, "S4U virtual machines live migra
 
 namespace simgrid {
 namespace vm {
+simgrid::xbt::Extension<s4u::Host, VmMigrationExt> VmMigrationExt::EXTENSION_ID;
+
+void VmMigrationExt::ensureVmMigrationExtInstalled()
+{
+  if (not EXTENSION_ID.valid())
+    EXTENSION_ID = simgrid::s4u::Host::extension_create<VmMigrationExt>();
+}
 
 void MigrationRx::operator()()
 {
@@ -111,6 +118,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
       XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
       sent -= remaining;
     }
+    delete msg;
   }
 
   double clock_end    = s4u::Engine::getClock();
@@ -281,6 +289,24 @@ void MigrationTx::operator()()
 }
 
 SG_BEGIN_DECL()
+
+static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine* vm)
+{
+  if (vm->isMigrating()) {
+    vm->extension<simgrid::vm::VmMigrationExt>()->rx_->kill();
+    vm->extension<simgrid::vm::VmMigrationExt>()->tx_->kill();
+    vm->extension<simgrid::vm::VmMigrationExt>()->issuer_->kill();
+    vm->getImpl()->isMigrating = false;
+  }
+}
+
+void sg_vm_live_migration_plugin_init()
+{
+  sg_vm_dirty_page_tracking_init();
+  simgrid::vm::VmMigrationExt::ensureVmMigrationExtInstalled();
+  simgrid::s4u::VirtualMachine::onVmShutdown.connect(&onVirtualMachineShutdown);
+}
+
 simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, const char* name, int coreAmount,
                                                       int ramsize, int mig_netspeed, int dp_intensity)
 {
@@ -328,12 +354,13 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   simgrid::s4u::ActorPtr tx =
       simgrid::s4u::Actor::createActor(tx_name.c_str(), src_pm, simgrid::vm::MigrationTx(vm, dst_pm));
 
+  vm->extension_set<simgrid::vm::VmMigrationExt>(new simgrid::vm::VmMigrationExt(simgrid::s4u::Actor::self(), rx, tx));
+
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
   simgrid::s4u::MailboxPtr mbox_ctl = simgrid::s4u::Mailbox::byName(
       std::string("__mbox_mig_ctl:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")");
   delete static_cast<std::string*>(mbox_ctl->get());
-
   tx->join();
   rx->join();
 

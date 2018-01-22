@@ -13,6 +13,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 
+simgrid::xbt::signal<void(simgrid::s4u::VirtualMachine*)> simgrid::s4u::VirtualMachine::onVmShutdown;
+
 namespace simgrid {
 namespace s4u {
 
@@ -128,13 +130,11 @@ void VirtualMachine::shutdown()
 {
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+  onVmShutdown(this);
 }
 
 void VirtualMachine::destroy()
 {
-  if (isMigrating())
-    THROWF(vm_error, 0, "Cannot destroy VM '%s', which is migrating.", getCname());
-
   /* First, terminate all processes on the VM if necessary */
   shutdown();
 

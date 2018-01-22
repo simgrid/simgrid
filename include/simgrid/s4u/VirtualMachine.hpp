@@ -60,6 +60,7 @@ public:
   void setBound(double bound);
 
   e_surf_vm_state_t getState();
+  static simgrid::xbt::signal<void(simgrid::s4u::VirtualMachine*)> onVmShutdown;
 };
 }
 } // namespace simgrid::s4u

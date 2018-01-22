@@ -1,0 +1,7 @@
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-interrupt-migration ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:master_@Fafard) Start the migration of VM0 from Fafard to Tremblay
+> [  2.000000] (1:master_@Fafard) Wait! change my mind, shutdown VM0. This ends the migration
+> [ 10.000000] (1:master_@Fafard) Start again the migration of VM0 from Fafard to Tremblay
+> [ 10.000000] (1:master_@Fafard) Wait for the completion of the migration this time
+> [142.765801] (5:mig_wrk@Fafard) VM0 migrated: Fafard->Tremblay in 132.766 s
+> [210.000000] (0:maestro@) Bye (simulation time 210)

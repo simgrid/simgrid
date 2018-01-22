@@ -13,6 +13,7 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) sg_vm_live_migration_plugin_init();
+XBT_PRIVATE void sg_vm_dirty_page_tracking_init();
 XBT_PUBLIC(void) sg_vm_start_dirty_page_tracking(sg_vm_t vm);
 XBT_PUBLIC(void) sg_vm_stop_dirty_page_tracking(sg_vm_t vm);
 XBT_PUBLIC(double) sg_vm_lookup_computed_flops(sg_vm_t vm);

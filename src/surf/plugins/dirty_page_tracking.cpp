@@ -104,7 +104,7 @@ static void onExecCompletion(simgrid::kernel::activity::ExecImplPtr exec)
 
 SG_BEGIN_DECL()
 
-void sg_vm_live_migration_plugin_init()
+void sg_vm_dirty_page_tracking_init()
 {
   if (not simgrid::vm::VmDirtyPageTrackingExt::EXTENSION_ID.valid()) {
     simgrid::vm::VmDirtyPageTrackingExt::EXTENSION_ID =
