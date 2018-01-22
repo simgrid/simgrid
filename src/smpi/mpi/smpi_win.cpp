@@ -210,17 +210,16 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   XBT_DEBUG("Entering MPI_Put to %d", target_rank);
 
   if (target_rank != comm_->rank()) { // This is not for myself, so we need to send messages
-    //prepare send_request
+    // prepare send_request
     MPI_Request sreq =
         // TODO cheinrich Check for rank / pid conversion
-        Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(),
-                               target_rank, SMPI_RMA_TAG + 1, comm_, MPI_OP_NULL);
+        Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(), target_rank, SMPI_RMA_TAG + 1,
+                               comm_, MPI_OP_NULL);
 
     //prepare receiver request
-        // TODO cheinrich Check for rank / pid conversion
+    // TODO cheinrich Check for rank / pid conversion
     MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, recv_win->comm_->rank(),
-                                              target_rank, SMPI_RMA_TAG + 1,
-                                              recv_win->comm_, MPI_OP_NULL);
+                                              target_rank, SMPI_RMA_TAG + 1, recv_win->comm_, MPI_OP_NULL);
 
     //start send
     sreq->start();
@@ -272,14 +271,14 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
   if(target_rank != comm_->rank()){
     //prepare send_request
-    MPI_Request sreq = Request::rma_send_init(send_addr, target_count, target_datatype,
-                                              target_rank, send_win->comm_->rank(),
-                                              SMPI_RMA_TAG + 2, send_win->comm_, MPI_OP_NULL);
+    MPI_Request sreq = Request::rma_send_init(send_addr, target_count, target_datatype, target_rank,
+                                              send_win->comm_->rank(), SMPI_RMA_TAG + 2, send_win->comm_, MPI_OP_NULL);
 
     //prepare receiver request
-    MPI_Request rreq = Request::rma_recv_init(origin_addr, origin_count, origin_datatype,
-                                              target_rank, comm_->rank(), // TODO cheinrich Check here if comm_->rank() and above send_win->comm_->rank() are correct
-                                              SMPI_RMA_TAG + 2, comm_, MPI_OP_NULL);
+    MPI_Request rreq = Request::rma_recv_init(
+        origin_addr, origin_count, origin_datatype, target_rank,
+        comm_->rank(), // TODO cheinrich Check here if comm_->rank() and above send_win->comm_->rank() are correct
+        SMPI_RMA_TAG + 2, comm_, MPI_OP_NULL);
 
     //start the send, with another process than us as sender.
     sreq->start();
@@ -335,14 +334,12 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
     //As the tag will be used for ordering of the operations, substract count from it (to avoid collisions with other SMPI tags, SMPI_RMA_TAG is set below all the other ones we use )
     //prepare send_request
 
-  MPI_Request sreq =
-      Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(),
-                             target_rank, SMPI_RMA_TAG - 3 - count_, comm_, op);
+  MPI_Request sreq = Request::rma_send_init(origin_addr, origin_count, origin_datatype, comm_->rank(), target_rank,
+                                            SMPI_RMA_TAG - 3 - count_, comm_, op);
 
   // prepare receiver request
   MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, recv_win->comm_->rank(),
-                                            target_rank, SMPI_RMA_TAG - 3 - count_,
-                                            recv_win->comm_, op);
+                                            target_rank, SMPI_RMA_TAG - 3 - count_, recv_win->comm_, op);
 
   count_++;
 
@@ -356,11 +353,11 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
 
   if (request != nullptr) {
     *request = sreq;
-    }else{
-      xbt_mutex_acquire(mut_);
-      requests_->push_back(sreq);
-      xbt_mutex_release(mut_);
-    }
+  } else {
+    xbt_mutex_acquire(mut_);
+    requests_->push_back(sreq);
+    xbt_mutex_release(mut_);
+  }
 
   XBT_DEBUG("Leaving MPI_Win_Accumulate");
   return MPI_SUCCESS;
@@ -436,37 +433,37 @@ int Win::compare_and_swap(void *origin_addr, void *compare_addr,
 }
 
 int Win::start(MPI_Group group, int assert){
-    /* From MPI forum advices
-    The call to MPI_WIN_COMPLETE does not return until the put call has completed at the origin; and the target window
-    will be accessed by the put operation only after the call to MPI_WIN_START has matched a call to MPI_WIN_POST by
-    the target process. This still leaves much choice to implementors. The call to MPI_WIN_START can block until the
-    matching call to MPI_WIN_POST occurs at all target processes. One can also have implementations where the call to
-    MPI_WIN_START is nonblocking, but the call to MPI_PUT blocks until the matching call to MPI_WIN_POST occurred; or
-    implementations where the first two calls are nonblocking, but the call to MPI_WIN_COMPLETE blocks until the call
-    to MPI_WIN_POST occurred; or even implementations where all three calls can complete before any target process
-    called MPI_WIN_POST --- the data put must be buffered, in this last case, so as to allow the put to complete at the
-    origin ahead of its completion at the target. However, once the call to MPI_WIN_POST is issued, the sequence above
-    must complete, without further dependencies.  */
+  /* From MPI forum advices
+  The call to MPI_WIN_COMPLETE does not return until the put call has completed at the origin; and the target window
+  will be accessed by the put operation only after the call to MPI_WIN_START has matched a call to MPI_WIN_POST by
+  the target process. This still leaves much choice to implementors. The call to MPI_WIN_START can block until the
+  matching call to MPI_WIN_POST occurs at all target processes. One can also have implementations where the call to
+  MPI_WIN_START is nonblocking, but the call to MPI_PUT blocks until the matching call to MPI_WIN_POST occurred; or
+  implementations where the first two calls are nonblocking, but the call to MPI_WIN_COMPLETE blocks until the call
+  to MPI_WIN_POST occurred; or even implementations where all three calls can complete before any target process
+  called MPI_WIN_POST --- the data put must be buffered, in this last case, so as to allow the put to complete at the
+  origin ahead of its completion at the target. However, once the call to MPI_WIN_POST is issued, the sequence above
+  must complete, without further dependencies.  */
 
   //naive, blocking implementation.
-    int i             = 0;
-    int j             = 0;
-    int size          = group->size();
-    MPI_Request* reqs = xbt_new0(MPI_Request, size);
+  int i             = 0;
+  int j             = 0;
+  int size          = group->size();
+  MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   XBT_DEBUG("Entering MPI_Win_Start");
-    while (j != size) {
-      int src = comm_->group()->rank(group->actor(j));
-      if (src != rank_ && src != MPI_UNDEFINED) { // TODO cheinrich: The check of MPI_UNDEFINED should be useless here
-        reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, comm_);
-        i++;
-      }
-      j++;
+  while (j != size) {
+    int src = comm_->group()->rank(group->actor(j));
+    if (src != rank_ && src != MPI_UNDEFINED) { // TODO cheinrich: The check of MPI_UNDEFINED should be useless here
+      reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 4, comm_);
+      i++;
     }
-  size=i;
+    j++;
+  }
+  size = i;
   Request::startall(size, reqs);
   Request::waitall(size, reqs, MPI_STATUSES_IGNORE);
-  for(i=0;i<size;i++){
+  for (i = 0; i < size; i++) {
     Request::unref(&reqs[i]);
   }
   xbt_free(reqs);
@@ -488,7 +485,7 @@ int Win::post(MPI_Group group, int assert){
   while(j!=size){
     int dst = comm_->group()->rank(group->actor(j));
     if (dst != rank_ && dst != MPI_UNDEFINED) {
-      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+4, comm_);
+      reqs[i] = Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG + 4, comm_);
       i++;
     }
     j++;
@@ -521,7 +518,7 @@ int Win::complete(){
   while(j!=size){
     int dst = comm_->group()->rank(group_->actor(j));
     if (dst != rank_ && dst != MPI_UNDEFINED) {
-      reqs[i]=Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG+5, comm_);
+      reqs[i] = Request::send_init(nullptr, 0, MPI_CHAR, dst, SMPI_RMA_TAG + 5, comm_);
       i++;
     }
     j++;
@@ -555,7 +552,7 @@ int Win::wait(){
   while(j!=size){
     int src = comm_->group()->rank(group_->actor(j));
     if (src != rank_ && src != MPI_UNDEFINED) {
-      reqs[i]=Request::irecv_init(nullptr, 0, MPI_CHAR, src,SMPI_RMA_TAG+5, comm_);
+      reqs[i] = Request::irecv_init(nullptr, 0, MPI_CHAR, src, SMPI_RMA_TAG + 5, comm_);
       i++;
     }
     j++;
