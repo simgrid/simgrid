@@ -24,20 +24,20 @@ int Win::keyval_id_=0;
 
 Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated, int dynamic): base_(base), size_(size), disp_unit_(disp_unit), assert_(0), info_(info), comm_(comm), allocated_(allocated), dynamic_(dynamic){
   int comm_size = comm->size();
-  rank_      = comm->rank();
+  rank_         = comm->rank();
   XBT_DEBUG("Creating window");
   if(info!=MPI_INFO_NULL)
     info->ref();
-  name_ = nullptr;
-  opened_ = 0;
-  group_ = MPI_GROUP_NULL;
-  requests_ = new std::vector<MPI_Request>();
-  mut_=xbt_mutex_init();
-  lock_mut_=xbt_mutex_init();
-  atomic_mut_=xbt_mutex_init();
-  connected_wins_ = new MPI_Win[comm_size];
+  name_                  = nullptr;
+  opened_                = 0;
+  group_                 = MPI_GROUP_NULL;
+  requests_              = new std::vector<MPI_Request>();
+  mut_                   = xbt_mutex_init();
+  lock_mut_              = xbt_mutex_init();
+  atomic_mut_            = xbt_mutex_init();
+  connected_wins_        = new MPI_Win[comm_size];
   connected_wins_[rank_] = this;
-  count_ = 0;
+  count_                 = 0;
   if(rank_==0){
     bar_ = MSG_barrier_init(comm_size);
   }
@@ -512,7 +512,7 @@ int Win::complete(){
   XBT_DEBUG("Entering MPI_Win_Complete");
   int i             = 0;
   int j             = 0;
-  int size = group_->size();
+  int size          = group_->size();
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
   while(j!=size){
