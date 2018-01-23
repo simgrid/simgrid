@@ -276,11 +276,6 @@ XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
   msg_global->process_data_cleanup = data_cleanup;
 }
 
-/** \ingroup m_process_management
- * \brief Return the location on which a process is running.
- * \param process a process (nullptr means the current one)
- * \return the msg_host_t corresponding to the location on which \a process is running.
- */
 msg_host_t MSG_process_get_host(msg_process_t process)
 {
   if (process == nullptr) {

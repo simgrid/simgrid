@@ -183,8 +183,6 @@ XBT_PUBLIC(sg_size_t) MSG_storage_read(msg_storage_t storage, sg_size_t size);
 XBT_PUBLIC(sg_size_t) MSG_storage_write(msg_storage_t storage, sg_size_t size);
 
 /************************** Host handling ***********************************/
-XBT_PUBLIC(msg_host_t) MSG_host_by_name(const char *name);
-#define MSG_get_host_by_name(n) MSG_host_by_name(n) /* Rewrite the old name into the new one transparently */
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
 XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 /** \ingroup m_host_management
@@ -193,8 +191,6 @@ XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 #define MSG_host_get_name(host) sg_host_get_name(host)
 XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
-XBT_PUBLIC(msg_host_t) MSG_host_self();
-XBT_PUBLIC(double) MSG_host_get_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
@@ -207,18 +203,6 @@ XBT_ATTRIB_DEPRECATED_v320("Use MSG_host_get_speed(): v3.20 will drop MSG_host_g
 }
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
-XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
-#define MSG_host_get_pstate(h) sg_host_get_pstate(h) /* users don't know that MSG is the C version of SimGrid */
-#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* (same here) */
-XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
-XBT_PUBLIC(int) MSG_get_host_number();
-XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
-XBT_PUBLIC(xbt_dynar_t) MSG_host_get_attached_storage_list(msg_host_t host);
-
-/*property handlers*/
-XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);
-XBT_PUBLIC(const char*) MSG_host_get_property_value(msg_host_t host, const char* name);
-XBT_PUBLIC(void) MSG_host_set_property_value(msg_host_t host, const char* name, char* value);
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
 

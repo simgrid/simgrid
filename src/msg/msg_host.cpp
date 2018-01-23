@@ -24,18 +24,6 @@ extern "C" {
 
 /********************************* Host **************************************/
 /** \ingroup m_host_management
- * \brief Finds a msg_host_t using its name.
- *
- * This is a name directory service
- * \param name the name of an host.
- * \return the corresponding host
- */
-msg_host_t MSG_host_by_name(const char *name)
-{
-  return simgrid::s4u::Host::by_name_or_null(name);
-}
-
-/** \ingroup m_host_management
  *
  * \brief Set the user data of a #msg_host_t.
  *
@@ -54,15 +42,6 @@ msg_error_t MSG_host_set_data(msg_host_t host, void *data) {
  */
 void *MSG_host_get_data(msg_host_t host) {
   return sg_host_user(host);
-}
-
-/** \ingroup m_host_management
- *
- * \brief Return the location on which the current process is executed.
- */
-msg_host_t MSG_host_self()
-{
-  return MSG_process_get_host(nullptr);
 }
 
 /** \ingroup m_host_management
@@ -89,29 +68,6 @@ void MSG_host_off(msg_host_t host)
   host->turnOff();
 }
 
-/** \ingroup m_host_management
- * \brief Return the current number MSG hosts.
- */
-int MSG_get_host_number()
-{
-  return sg_host_count();
-}
-
-/** \ingroup m_host_management
- * \brief Return a dynar containing all the hosts declared at a given point of time (including VMs)
- * \remark The host order in the returned array is generally different from the host creation/declaration order in the
- *         XML platform (we use a hash table internally)
- */
-xbt_dynar_t MSG_hosts_as_dynar() {
-  return sg_hosts_as_dynar();
-}
-
-/** \ingroup m_host_management
- * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
- */
-double MSG_host_get_speed(msg_host_t host) {
-  return host->getSpeed();
-}
 
 /** \ingroup m_host_management
  * \brief Return the number of cores.
@@ -136,49 +92,6 @@ void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
     msg_process_t p = actor.ciface();
     xbt_dynar_push(whereto, &p);
   }
-}
-
-/** \ingroup m_host_management
- * \brief Returns the value of a given host property
- *
- * \param host a host
- * \param name a property name
- * \return value of a property (or nullptr if property not set)
- */
-const char *MSG_host_get_property_value(msg_host_t host, const char *name)
-{
-  return host->getProperty(name);
-}
-
-/** \ingroup m_host_management
- * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
- *
- * \param host a host
- * \return a dict containing the properties
- */
-xbt_dict_t MSG_host_get_properties(msg_host_t host)
-{
-  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::map<std::string, std::string>* props = host->getProperties();
-  if (props == nullptr)
-    return nullptr;
-  for (auto const& elm : *props) {
-    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
-  }
-  return as_dict;
-}
-
-/** \ingroup m_host_management
- * \brief Change the value of a given host property
- *
- * \param host a host
- * \param name a property name
- * \param value what to change the property to
- */
-void MSG_host_set_property_value(msg_host_t host, const char* name, char* value)
-{
-  host->setProperty(name, value);
 }
 
 /** @ingroup m_host_management
@@ -218,33 +131,6 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
   return host->getPstateSpeed(pstate_index);
 }
 
-/** \ingroup m_host_management
- * \brief Return the total count of pstates defined for a host. See also @ref plugin_energy.
- *
- * \param  host host to test
- */
-int MSG_host_get_nb_pstates(msg_host_t host) {
-  return sg_host_get_nb_pstates(host);
-}
 
-/** \ingroup m_host_management
- * \brief Return the list of mount point names on an host.
- * \param host a host
- * \return a dict containing all mount point on the host (mount_name => msg_storage_t)
- */
-xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
-{
-  return sg_host_get_mounted_storage_list(host);
-}
-
-/** \ingroup m_host_management
- * \brief Return the list of storages attached to an host.
- * \param host a host
- * \return a dynar containing all storages (name) attached to the host
- */
-xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
-{
-  return sg_host_get_attached_storage_list(host);
-}
 
 }

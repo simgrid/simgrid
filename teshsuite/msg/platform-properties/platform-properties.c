@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
 
   MSG_create_environment(argv[1]);
 
-  XBT_INFO("There are %d hosts in the environment", MSG_get_host_number());
+  XBT_INFO("There are %lu hosts in the environment", MSG_get_host_number());
 
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   xbt_dynar_foreach (hosts, i, host) {
