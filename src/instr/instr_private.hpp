@@ -176,6 +176,8 @@ public:
 }
 }
 
+XBT_PRIVATE std::string instr_pid(s4u_Actor* proc);
+
 extern "C" {
 
 extern XBT_PRIVATE std::set<std::string> created_categories;
@@ -184,7 +186,6 @@ extern XBT_PRIVATE std::set<std::string> user_host_variables;
 extern XBT_PRIVATE std::set<std::string> user_vm_variables;
 extern XBT_PRIVATE std::set<std::string> user_link_variables;
 extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
-XBT_PRIVATE std::string instr_pid(s4u_Actor* proc);
 
 /* instr_paje_header.c */
 XBT_PRIVATE void TRACE_header(bool basic, int size);
