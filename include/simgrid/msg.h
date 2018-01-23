@@ -183,18 +183,7 @@ XBT_PUBLIC(sg_size_t) MSG_storage_read(msg_storage_t storage, sg_size_t size);
 XBT_PUBLIC(sg_size_t) MSG_storage_write(msg_storage_t storage, sg_size_t size);
 
 /************************** Host handling ***********************************/
-XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
-XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
-/** \ingroup m_host_management
- *
- * \brief Return the name of the #msg_host_t. */
-#define MSG_host_get_name(host) sg_host_get_name(host)
-XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
-XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
-XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
-XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
-XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 
 XBT_ATTRIB_DEPRECATED_v320("Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() "
                            "completely.") static inline double MSG_host_get_current_power_peak(msg_host_t host)

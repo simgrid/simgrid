@@ -46,11 +46,29 @@ XBT_PUBLIC(sg_host_t) sg_host_by_name(const char *name);
 #define MSG_host_by_name(name) sg_host_by_name(name)
 #define MSG_get_host_by_name(n) sg_host_by_name(n) /* Rewrite the old name into the new one transparently */
 
+/** \ingroup m_host_management
+ *
+ * \brief Return the name of the #msg_host_t. */
 XBT_PUBLIC(const char*) sg_host_get_name(sg_host_t host);
+#define MSG_host_get_name(host) sg_host_get_name(host)
 
 // ========== User Data ==============
+/** \ingroup m_host_management
+ *
+ * \brief Return the user data of a #msg_host_t.
+ *
+ * This functions returns the user data associated to \a host if it is possible.
+ */
 XBT_PUBLIC(void*) sg_host_user(sg_host_t host);
+#define MSG_host_get_data(host) sg_host_user(host)
+/** \ingroup m_host_management
+ *
+ * \brief Set the user data of a #msg_host_t.
+ *
+ * This functions attach \a data to \a host if it is possible.
+ */
 XBT_PUBLIC(void) sg_host_user_set(sg_host_t host, void* userdata);
+#define MSG_host_set_data(host, data) sg_host_user_set(host, data)
 XBT_PUBLIC(void) sg_host_user_destroy(sg_host_t host);
 
 // ========= storage related functions ============
@@ -78,6 +96,9 @@ XBT_PUBLIC(double) sg_host_speed(sg_host_t host);
 #define MSG_host_get_speed(host) sg_host_speed(host)
 XBT_PUBLIC(double) sg_host_get_available_speed(sg_host_t host);
 
+XBT_PUBLIC(int) sg_host_core_count(sg_host_t host);
+#define MSG_host_get_core_number(host) sg_host_core_count(host)
+
 /** \ingroup m_process_management
  * \brief Return the location on which a process is running.
  * \param process a process (nullptr means the current one)
@@ -100,6 +121,15 @@ XBT_PUBLIC(int) sg_host_get_pstate(sg_host_t host);
 #define MSG_host_get_pstate(h) sg_host_get_pstate(h) /* users don't know that MSG is the C version of SimGrid */
 XBT_PUBLIC(void) sg_host_set_pstate(sg_host_t host,int pstate);
 #define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate) /* (same here) */
+
+XBT_PUBLIC(void) sg_host_turn_on(sg_host_t host);
+#define MSG_host_on(h) sg_host_turn_on(h)
+XBT_PUBLIC(void) sg_host_turn_off(sg_host_t host);
+#define MSG_host_off(h) sg_host_turn_off(h)
+XBT_PUBLIC(int) sg_host_is_on(sg_host_t host);
+#define MSG_host_is_on(h) sg_host_is_on(h)
+XBT_PUBLIC(int) sg_host_is_off(sg_host_t host);
+#define MSG_host_is_off(h) sg_host_is_off(h)
 
 /** \ingroup m_host_management
  * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this host

@@ -23,61 +23,6 @@ extern "C" {
  */
 
 /********************************* Host **************************************/
-/** \ingroup m_host_management
- *
- * \brief Set the user data of a #msg_host_t.
- *
- * This functions attach \a data to \a host if it is possible.
- */
-msg_error_t MSG_host_set_data(msg_host_t host, void *data) {
-  sg_host_user_set(host, data);
-  return MSG_OK;
-}
-
-/** \ingroup m_host_management
- *
- * \brief Return the user data of a #msg_host_t.
- *
- * This functions returns the user data associated to \a host if it is possible.
- */
-void *MSG_host_get_data(msg_host_t host) {
-  return sg_host_user(host);
-}
-
-/** \ingroup m_host_management
- *
- * \brief Start the host if it is off
- *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
- * for more info on DVFS.
- */
-void MSG_host_on(msg_host_t host)
-{
-  host->turnOn();
-}
-
-/** \ingroup m_host_management
- *
- * \brief Stop the host if it is on
- *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
- * for more info on DVFS.
- */
-void MSG_host_off(msg_host_t host)
-{
-  host->turnOff();
-}
-
-
-/** \ingroup m_host_management
- * \brief Return the number of cores.
- *
- * \param host a host
- * \return the number of cores
- */
-int MSG_host_get_core_number(msg_host_t host) {
-  return host->getCoreCount();
-}
 
 /** \ingroup m_host_management
  * \brief Return the list of processes attached to an host.
@@ -94,31 +39,6 @@ void MSG_host_get_process_list(msg_host_t host, xbt_dynar_t whereto)
   }
 }
 
-/** @ingroup m_host_management
- * @brief Determine if a host is up and running.
- *
- * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref plugin_energy for more info on
- * DVFS.
- *
- * @param host host to test
- * @return Returns true if the host is up and running, and false if it's currently down
- */
-int MSG_host_is_on(msg_host_t host)
-{
-  return host->isOn();
-}
-
-/** @ingroup m_host_management
- * @brief Determine if a host is currently off.
- *
- * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref plugin_energy for more info on
- * DVFS.
- */
-int MSG_host_is_off(msg_host_t host)
-{
-  return host->isOff();
-}
-
 /** \ingroup m_host_management
  * \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
  *
@@ -130,7 +50,5 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
   return host->getPstateSpeed(pstate_index);
 }
-
-
 
 }

@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
   MSG_create_environment(argv[1]); /* - Load the platform description */
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
 
-  XBT_INFO("Number of hosts '%lu'", MSG_get_host_number());
+  XBT_INFO("Number of hosts '%zu'", MSG_get_host_number());
   unsigned int i;
   msg_host_t h;
   xbt_dynar_foreach (hosts, i,

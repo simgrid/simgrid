@@ -126,6 +126,17 @@ double sg_host_speed(sg_host_t host)
   return host->getSpeed();
 }
 
+/** \ingroup m_host_management
+ * \brief Return the number of cores.
+ *
+ * \param host a host
+ * \return the number of cores
+ */
+int sg_host_core_count(sg_host_t host)
+{
+  return host->getCoreCount();
+}
+
 double sg_host_get_available_speed(sg_host_t host)
 {
   return host->pimpl_cpu->getAvailableSpeed();
@@ -152,6 +163,55 @@ int sg_host_get_pstate(sg_host_t host) {
  */
 void sg_host_set_pstate(sg_host_t host,int pstate) {
   host->setPstate(pstate);
+}
+
+/** \ingroup m_host_management
+ *
+ * \brief Start the host if it is off
+ *
+ * See also #sg_host_is_on() and #sg_host_is_off() to test the current state of the host and @ref plugin_energy
+ * for more info on DVFS.
+ */
+void sg_host_turn_on(sg_host_t host)
+{
+  host->turnOn();
+}
+
+/** \ingroup m_host_management
+ *
+ * \brief Stop the host if it is on
+ *
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
+ * for more info on DVFS.
+ */
+void sg_host_turn_off(sg_host_t host)
+{
+  host->turnOff();
+}
+
+/** @ingroup m_host_management
+ * @brief Determine if a host is up and running.
+ *
+ * See also #sg_host_turn_on() and #sg_host_turn_off() to switch the host ON and OFF and @ref plugin_energy for more
+ * info on DVFS.
+ *
+ * @param host host to test
+ * @return Returns true if the host is up and running, and false if it's currently down
+ */
+int sg_host_is_on(sg_host_t host)
+{
+  return host->isOn();
+}
+
+/** @ingroup m_host_management
+ * @brief Determine if a host is currently off.
+ *
+ * See also #sg_host_turn_on() and #sg_host_turn_off() to switch the host ON and OFF and @ref plugin_energy for more
+ * info on DVFS.
+ */
+int sg_host_is_off(sg_host_t host)
+{
+  return host->isOff();
 }
 
 /** @brief Get the properties of an host */
