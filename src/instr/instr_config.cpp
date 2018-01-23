@@ -48,7 +48,7 @@ static bool trace_smpi_sleeping;
 static bool trace_view_internals;
 static bool trace_categorized;
 static bool trace_uncategorized;
-static bool trace_msg_process_enabled;
+static bool trace_actor_enabled;
 static bool trace_msg_vm_enabled;
 static bool trace_buffer;
 static bool trace_onelink_only;
@@ -76,7 +76,7 @@ static void TRACE_getopts()
   trace_view_internals      = xbt_cfg_get_boolean(OPT_TRACING_SMPI_INTERNALS);
   trace_categorized         = xbt_cfg_get_boolean(OPT_TRACING_CATEGORIZED);
   trace_uncategorized       = xbt_cfg_get_boolean(OPT_TRACING_UNCATEGORIZED);
-  trace_msg_process_enabled = xbt_cfg_get_boolean(OPT_TRACING_MSG_PROCESS);
+  trace_actor_enabled       = trace_enabled && xbt_cfg_get_boolean(OPT_TRACING_MSG_PROCESS);
   trace_msg_vm_enabled      = xbt_cfg_get_boolean(OPT_TRACING_MSG_VM);
   trace_buffer              = xbt_cfg_get_boolean(OPT_TRACING_BUFFER);
   trace_onelink_only        = xbt_cfg_get_boolean(OPT_TRACING_ONELINK_ONLY);
@@ -161,8 +161,8 @@ int TRACE_end()
 
 bool TRACE_needs_platform ()
 {
-  return TRACE_msg_process_is_enabled() || TRACE_msg_vm_is_enabled() || TRACE_categorized() ||
-         TRACE_uncategorized() || TRACE_platform () || (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
+  return TRACE_actor_is_enabled() || TRACE_msg_vm_is_enabled() || TRACE_categorized() || TRACE_uncategorized() ||
+         TRACE_platform() || (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
 
 bool TRACE_is_enabled()
@@ -220,9 +220,9 @@ bool TRACE_uncategorized ()
   return trace_uncategorized;
 }
 
-bool TRACE_msg_process_is_enabled()
+bool TRACE_actor_is_enabled()
 {
-  return trace_msg_process_enabled && TRACE_is_enabled();
+  return trace_actor_enabled;
 }
 
 bool TRACE_msg_vm_is_enabled()

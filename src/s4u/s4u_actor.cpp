@@ -130,12 +130,17 @@ aid_t Actor::getPpid()
 
 void Actor::suspend()
 {
+  if (TRACE_actor_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(this))->getState("MSG_PROCESS_STATE")->pushEvent("suspend");
+
   simcall_process_suspend(pimpl_);
 }
 
 void Actor::resume()
 {
   simgrid::simix::kernelImmediate([this] { pimpl_->resume(); });
+  if (TRACE_actor_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(this))->getState("MSG_PROCESS_STATE")->popEvent();
 }
 
 int Actor::isSuspended()
@@ -352,6 +357,10 @@ Host* getHost()
 
 void suspend()
 {
+  if (TRACE_actor_is_enabled())
+    instr::Container::byName(getName() + "-" + std::to_string(getPid()))
+        ->getState("MSG_PROCESS_STATE")
+        ->pushEvent("suspend");
   simcall_process_suspend(SIMIX_process_self());
 }
 
@@ -359,6 +368,9 @@ void resume()
 {
   smx_actor_t process = SIMIX_process_self();
   simgrid::simix::kernelImmediate([process] { process->resume(); });
+
+  if (TRACE_actor_is_enabled())
+    instr::Container::byName(getName() + "-" + std::to_string(getPid()))->getState("MSG_PROCESS_STATE")->popEvent();
 }
 
 bool isSuspended()

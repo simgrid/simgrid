@@ -22,8 +22,7 @@ extern "C" {
  * \param alias The name of the mailbox
  */
 void MSG_mailbox_set_async(const char *alias){
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
-  mailbox->setReceiver(simgrid::s4u::Actor::self());
+  simgrid::s4u::Mailbox::byName(alias)->setReceiver(simgrid::s4u::Actor::self());
   XBT_VERB("%s mailbox set to receive eagerly for myself\n",alias);
 }
 }

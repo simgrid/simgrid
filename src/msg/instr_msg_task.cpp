@@ -48,7 +48,7 @@ void TRACE_msg_task_execute_start(msg_task_t task)
 {
   XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled())
+  if (TRACE_actor_is_enabled())
     simgrid::instr::Container::byName(instr_pid(MSG_process_self()))
         ->getState("MSG_PROCESS_STATE")
         ->pushEvent("task_execute");
@@ -58,7 +58,7 @@ void TRACE_msg_task_execute_end(msg_task_t task)
 {
   XBT_DEBUG("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled())
+  if (TRACE_actor_is_enabled())
     simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->popEvent();
 }
 
@@ -77,7 +77,7 @@ void TRACE_msg_task_get_start()
 {
   XBT_DEBUG("GET,in");
 
-  if (TRACE_msg_process_is_enabled())
+  if (TRACE_actor_is_enabled())
     simgrid::instr::Container::byName(instr_pid(MSG_process_self()))
         ->getState("MSG_PROCESS_STATE")
         ->pushEvent("receive");
@@ -87,7 +87,7 @@ void TRACE_msg_task_get_end(msg_task_t task)
 {
   XBT_DEBUG("GET,out %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled()){
+  if (TRACE_actor_is_enabled()) {
     container_t process_container = simgrid::instr::Container::byName(instr_pid(MSG_process_self()));
     process_container->getState("MSG_PROCESS_STATE")->popEvent();
 
@@ -101,7 +101,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
 {
   XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
-  if (TRACE_msg_process_is_enabled()){
+  if (TRACE_actor_is_enabled()) {
     container_t process_container = simgrid::instr::Container::byName(instr_pid(MSG_process_self()));
     process_container->getState("MSG_PROCESS_STATE")->pushEvent("send");
 
@@ -116,6 +116,6 @@ void TRACE_msg_task_put_end()
 {
   XBT_DEBUG("PUT,out");
 
-  if (TRACE_msg_process_is_enabled())
+  if (TRACE_actor_is_enabled())
     simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->popEvent();
 }

@@ -17,7 +17,7 @@ std::string instr_pid(msg_process_t proc)
 
 void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 {
-  if (TRACE_msg_process_is_enabled()){
+  if (TRACE_actor_is_enabled()) {
     static long long int counter = 0;
 
     std::string key = std::to_string(counter);
@@ -42,7 +42,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
 
 void TRACE_msg_process_create(std::string process_name, int process_pid, msg_host_t host)
 {
-  if (TRACE_msg_process_is_enabled()){
+  if (TRACE_actor_is_enabled()) {
     container_t host_container = simgrid::instr::Container::byName(host->getName());
     new simgrid::instr::Container(process_name + "-" + std::to_string(process_pid), "MSG_PROCESS", host_container);
   }
@@ -50,7 +50,7 @@ void TRACE_msg_process_create(std::string process_name, int process_pid, msg_hos
 
 void TRACE_msg_process_destroy(std::string process_name, int process_pid)
 {
-  if (TRACE_msg_process_is_enabled()) {
+  if (TRACE_actor_is_enabled()) {
     container_t process = simgrid::instr::Container::byNameOrNull(process_name + "-" + std::to_string(process_pid));
     if (process) {
       process->removeFromParent();
@@ -61,32 +61,8 @@ void TRACE_msg_process_destroy(std::string process_name, int process_pid)
 
 void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process)
 {
-  if (TRACE_msg_process_is_enabled() && status == SMX_EXIT_FAILURE) {
+  if (TRACE_actor_is_enabled() && status == SMX_EXIT_FAILURE) {
     //kill means that this process no longer exists, let's destroy it
     TRACE_msg_process_destroy(process->getCname(), process->getPid());
   }
-}
-
-void TRACE_msg_process_suspend(msg_process_t process)
-{
-  if (TRACE_msg_process_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(process))->getState("MSG_PROCESS_STATE")->pushEvent("suspend");
-}
-
-void TRACE_msg_process_resume(msg_process_t process)
-{
-  if (TRACE_msg_process_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(process))->getState("MSG_PROCESS_STATE")->popEvent();
-}
-
-void TRACE_msg_process_sleep_in(msg_process_t process)
-{
-  if (TRACE_msg_process_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(process))->getState("MSG_PROCESS_STATE")->pushEvent("sleep");
-}
-
-void TRACE_msg_process_sleep_out(msg_process_t process)
-{
-  if (TRACE_msg_process_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(process))->getState("MSG_PROCESS_STATE")->popEvent();
 }

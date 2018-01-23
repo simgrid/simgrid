@@ -223,7 +223,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped())
     container->type_->getOrCreateContainerType("MPI")->getOrCreateStateType("MPI_STATE");
 
-  if (TRACE_msg_process_is_enabled()) {
+  if (TRACE_actor_is_enabled()) {
     simgrid::instr::ContainerType* msg_process = container->type_->getOrCreateContainerType("MSG_PROCESS");
     simgrid::instr::StateType* state           = msg_process->getOrCreateStateType("MSG_PROCESS_STATE");
     state->addEntityValue("suspend", "1 0 1");

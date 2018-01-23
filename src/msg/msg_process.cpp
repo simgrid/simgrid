@@ -214,7 +214,7 @@ void MSG_process_kill(msg_process_t process)
 * \param timeout wait until the process is over, or the timeout occurs
 */
 msg_error_t MSG_process_join(msg_process_t process, double timeout){
-  simcall_process_join(process->getImpl(), timeout);
+  process->join(timeout);
   return MSG_OK;
 }
 
@@ -286,7 +286,7 @@ msg_host_t MSG_process_get_host(msg_process_t process)
   if (process == nullptr) {
     return SIMIX_process_self()->host;
   } else {
-    return process->getImpl()->host;
+    return process->getHost();
   }
 }
 
@@ -327,7 +327,7 @@ int MSG_process_get_number()
  */
 msg_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time)
 {
-  simcall_process_set_kill_time(process->getImpl(), kill_time);
+  process->setKillTime(kill_time);
   return MSG_OK;
 }
 
@@ -342,7 +342,7 @@ int MSG_process_get_PID(msg_process_t process)
    * and the exceptions, so it would be called back again and again */
   if (process == nullptr || process->getImpl() == nullptr)
     return 0;
-  return process->getImpl()->pid;
+  return process->getPid();
 }
 
 /** \ingroup m_process_management
@@ -353,7 +353,7 @@ int MSG_process_get_PID(msg_process_t process)
  */
 int MSG_process_get_PPID(msg_process_t process)
 {
-  return process->getImpl()->ppid;
+  return process->getPpid();
 }
 
 /** \ingroup m_process_management
@@ -387,8 +387,7 @@ xbt_dict_t MSG_process_get_properties(msg_process_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::map<std::string, std::string>* props =
-      simgrid::simix::kernelImmediate([process] { return process->getImpl()->getProperties(); });
+  std::map<std::string, std::string>* props = process->getProperties();
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
@@ -444,9 +443,7 @@ msg_process_t MSG_process_self()
 msg_error_t MSG_process_suspend(msg_process_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-
-  TRACE_msg_process_suspend(process);
-  simcall_process_suspend(process->getImpl());
+  process->suspend();
   return MSG_OK;
 }
 
@@ -458,8 +455,6 @@ msg_error_t MSG_process_suspend(msg_process_t process)
 msg_error_t MSG_process_resume(msg_process_t process)
 {
   xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-
-  TRACE_msg_process_resume(process);
   process->resume();
   return MSG_OK;
 }
