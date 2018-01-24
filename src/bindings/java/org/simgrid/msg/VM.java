@@ -66,18 +66,6 @@ public class VM extends Host {
 
 	/** Retrieve a VM from its name */
 	public static native VM getVMByName(String name);
-	
-	/** Shutdown and unref the VM. 
-	 * 
-	 * Actually, this strictly equivalent to shutdown().
-	 * In C and in libvirt, the destroy function also releases the memory associated to the VM, 
-	 * but this is not the way it goes in Java. The VM will only get destroyed by the garbage 
-	 * collector when it is not referenced anymore by your variables. So, to see the VM really 
-	 * destroyed, don't call this function but simply release any ref you have on it. 
-	 */
-	public void destroy() {
-		shutdown();
-	}
 
 	/* Make sure that the GC also destroys the C object */
 	protected void finalize() throws Throwable {
@@ -110,7 +98,6 @@ public class VM extends Host {
 	 */
 	private native void create(Host host, String name, int coreAmount, int ramSize, int migNetSpeed, int dpIntensity);
 
-
 	/**
 	 * Set a CPU bound for a given VM.
 	 * @param bound in flops/s
@@ -120,13 +107,15 @@ public class VM extends Host {
 	/**  start the VM */
 	public native void start();
 
-
 	/**
 	 * Immediately kills all processes within the given VM. 
 	 * 
 	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep()
 	 */
 	public native void shutdown();
+
+	/** Shutdown and unref the VM. */
+	public native void destroy();
 
 	/** Change the host on which all processes are running
 	 * (pre-copy is implemented)
@@ -145,17 +134,15 @@ public class VM extends Host {
 
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
-	 * No suspension cost occurs. If you want to simulate this too, you want to
-	 * use a \ref File.write() before or after, depending on the exact semantic
-	 * of VM suspend to you.
+	 * No suspension cost occurs. If you want to simulate this too, you want to use a \ref File.write() before or 
+	 * after, depending on the exact semantic of VM suspend to you.
 	 */	
 	public native void suspend();
 
 	/** Immediately resumes the execution of all processes within the given VM
 	 *
-	 * No resume cost occurs. If you want to simulate this too, you want to
-	 * use a \ref File.read() before or after, depending on the exact semantic
-	 * of VM resume to you.
+	 * No resume cost occurs. If you want to simulate this too, you want to use a \ref File.read() before or after, 
+	 * depending on the exact semantic of VM resume to you.
 	 */
 	public native void resume();
 

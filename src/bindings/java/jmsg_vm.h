@@ -46,6 +46,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_nativeMigration(JNIEnv* env, jobj
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_suspend(JNIEnv* env, jobject jvm);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_resume(JNIEnv* env, jobject jvm);
 JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_shutdown(JNIEnv* env, jobject jvm);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_destroy(JNIEnv* env, jobject jvm);
 
 SG_END_DECL()
 
