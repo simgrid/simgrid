@@ -693,8 +693,13 @@ int Win::finish_comms(int rank){
     size = 0;
     std::vector<MPI_Request> myreqqs;
     std::vector<MPI_Request>::iterator iter = reqqs->begin();
+    int proc_id                             = comm_->group()->actor(rank)->getPid();
     while (iter != reqqs->end()){
-      if(((*iter)!=MPI_REQUEST_NULL) && (((*iter)->src() == rank) || ((*iter)->dst() == rank))){
+      // Let's see if we're either the destination or the sender of this request
+      // because we only wait for requests that we are responsible for.
+      // Also use the process id here since the request itself returns from src()
+      // and dst() the process id, NOT the rank (which only exists in the context of a communicator).
+      if (((*iter) != MPI_REQUEST_NULL) && (((*iter)->src() == proc_id) || ((*iter)->dst() == proc_id))) {
         myreqqs.push_back(*iter);
         iter = reqqs->erase(iter);
         size++;
