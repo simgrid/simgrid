@@ -207,9 +207,9 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     return MPI_ERR_ARG;
 
   void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_);
-  XBT_DEBUG("Entering MPI_Put to %d", target_rank);
 
   if (target_rank != comm_->rank()) { // This is not for myself, so we need to send messages
+    XBT_DEBUG("Entering MPI_Put to remote rank %d", target_rank);
     // prepare send_request
     MPI_Request sreq =
         // TODO cheinrich Check for rank / pid conversion
@@ -239,6 +239,7 @@ int Win::put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     xbt_mutex_release(recv_win->mut_);
 
   }else{
+    XBT_DEBUG("Entering MPI_Put from myself to myself, rank %d", target_rank);
     Datatype::copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
     if(request!=nullptr)
       *request = MPI_REQUEST_NULL;
