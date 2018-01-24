@@ -339,7 +339,7 @@ int Win::accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
 
   // prepare receiver request
   MPI_Request rreq = Request::rma_recv_init(recv_addr, target_count, target_datatype, recv_win->comm_->rank(),
-                                            target_rank, SMPI_RMA_TAG - 3 - count_, recv_win->comm_, op);
+                                            recv_win->comm_->group()->rank(comm_->group()->actor(target_rank)), SMPI_RMA_TAG - 3 - count_, recv_win->comm_, op);
 
   count_++;
 
