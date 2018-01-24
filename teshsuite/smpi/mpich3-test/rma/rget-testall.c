@@ -33,19 +33,10 @@ int main(int argc, char **argv)
 
     MPI_Win_allocate(2 * sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &baseptr, &win);
 
-    /* 
-     * TODO cheinrich: These assignments were originally after the MPI_Win_lock
-     * and before the MPI_Win_unlock call. However, with compile time optimizations on,
-     * this seems to cause issues with at least gcc. If valgrind or gcc is activated,
-     * everything works fine though.
-     *
-     * I don't know what causes these issues, but moving this here solves the problem for now.
-     */
-    baseptr[0] = 1;
-    baseptr[1] = 2;
-
     /* Initialize window buffer */
     MPI_Win_lock(MPI_LOCK_EXCLUSIVE, rank, 0, win);
+    baseptr[0] = 1;
+    baseptr[1] = 2;
     MPI_Win_unlock(rank, win);
 
     /* Issue request-based get with testall. */
