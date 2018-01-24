@@ -21,6 +21,7 @@ int main(int argc, char *argv[]){
   msg_error_t res;
 
   MSG_init(&argc, argv);
+  SMPI_init();
 
   xbt_assert(argc > 3, "Usage: %s description_file platform_file deployment_file\n"
              "\tExample: %s smpi_multiple_apps msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
@@ -54,7 +55,6 @@ int main(int argc, char *argv[]){
   fclose(fp);
 
   MSG_launch_application(argv[3]);
-  SMPI_init();
 
   res = MSG_main();
 

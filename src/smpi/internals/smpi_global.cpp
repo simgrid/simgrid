@@ -8,6 +8,7 @@
 #include "private.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
+#include "simgrid/s4u/forward.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_group.hpp"
@@ -50,12 +51,13 @@ struct papi_process_data {
 };
 
 #endif
+using simgrid::s4u::Actor;
+using simgrid::s4u::ActorPtr;
 std::unordered_map<std::string, double> location2speedup;
 
-static simgrid::smpi::Process** process_data = nullptr;
+static std::map</*process_id*/ ActorPtr, simgrid::smpi::Process*> process_data;
 int process_count = 0;
 int smpi_universe_size = 0;
-int* index_to_process_data = nullptr;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
 /**
@@ -82,6 +84,11 @@ static simgrid::config::Flag<double> smpi_init_sleep(
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
+void smpi_add_process(ActorPtr actor)
+{
+  process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
+}
+
 int smpi_process_count()
 {
   return process_count;
@@ -89,16 +96,16 @@ int smpi_process_count()
 
 simgrid::smpi::Process* smpi_process()
 {
-  smx_actor_t me = SIMIX_process_self();
+  ActorPtr me = Actor::self();
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
-  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->userdata);
+  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->getImpl()->userdata);
   return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 
-simgrid::smpi::Process* smpi_process_remote(int index)
+simgrid::smpi::Process* smpi_process_remote(ActorPtr actor)
 {
-  return process_data[index_to_process_data[index]];
+  return process_data.at(actor);
 }
 
 MPI_Comm smpi_process_comm_self(){
@@ -110,7 +117,7 @@ void smpi_process_init(int *argc, char ***argv){
 }
 
 int smpi_process_index(){
-  return smpi_process()->index();
+  return simgrid::s4u::Actor::self()->getPid();
 }
 
 void * smpi_process_get_user_data(){
@@ -189,9 +196,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
       (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
 
-    smpi_switch_data_segment(
-        static_cast<simgrid::smpi::Process*>((static_cast<simgrid::msg::ActorExt*>(comm->src_proc->userdata)->data))
-            ->index());
+    smpi_switch_data_segment(Actor::self()->getPid());
     tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
     memcpy_private(tmpbuff, buff, private_blocks);
   }
@@ -199,9 +204,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   if ((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && ((char*)comm->dst_buff >= smpi_data_exe_start) &&
       ((char*)comm->dst_buff < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-    smpi_switch_data_segment(
-        static_cast<simgrid::smpi::Process*>((static_cast<simgrid::msg::ActorExt*>(comm->dst_proc->userdata)->data))
-            ->index());
+    smpi_switch_data_segment(Actor::self()->getPid());
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
   memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
@@ -241,7 +244,7 @@ static void smpi_check_options(){
 }
 
 int smpi_enabled() {
-  return process_data != nullptr;
+  return not process_data.empty();
 }
 
 void smpi_global_init()
@@ -339,31 +342,6 @@ void smpi_global_init()
     }
   }
 #endif
-
-  if (index_to_process_data == nullptr) {
-    index_to_process_data = new int[SIMIX_process_count()];
-  }
-
-  bool smpirun = 0;
-  if (process_count == 0) { // The program has been dispatched but no other
-                            // SMPI instances have been registered. We're using smpirun.
-    smpirun = true;
-    SMPI_app_instance_register(smpi_default_instance_name, nullptr,
-                               SIMIX_process_count()); // This call has a side effect on process_count...
-    MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
-  }
-  smpi_universe_size = process_count;
-  process_data       = new simgrid::smpi::Process*[process_count];
-  for (int i = 0; i < process_count; i++) {
-    if (smpirun) {
-      process_data[i] = new simgrid::smpi::Process(i, smpi_deployment_finalization_barrier(smpi_default_instance_name));
-      smpi_deployment_register_process(smpi_default_instance_name, i, i);
-    } else {
-      // TODO We can pass a nullptr here because Process::set_data() assigns the
-      // barrier from the instance anyway. This is ugly and should be changed
-      process_data[i] = new simgrid::smpi::Process(i, nullptr);
-    }
-  }
 }
 
 void smpi_global_destroy()
@@ -371,20 +349,18 @@ void smpi_global_destroy()
   smpi_bench_destroy();
   smpi_shared_destroy();
   smpi_deployment_cleanup_instances();
-  int count = smpi_process_count();
-  for (int i = 0; i < count; i++) {
-    if(process_data[i]->comm_self()!=MPI_COMM_NULL){
-      simgrid::smpi::Comm::destroy(process_data[i]->comm_self());
+  for (auto& pair : process_data) {
+    auto& process = pair.second;
+    if (process->comm_self() != MPI_COMM_NULL) {
+      simgrid::smpi::Comm::destroy(process->comm_self());
     }
-    if(process_data[i]->comm_intra()!=MPI_COMM_NULL){
-      simgrid::smpi::Comm::destroy(process_data[i]->comm_intra());
+    if (process->comm_intra() != MPI_COMM_NULL) {
+      simgrid::smpi::Comm::destroy(process->comm_intra());
     }
-    xbt_os_timer_free(process_data[i]->timer());
-    xbt_mutex_destroy(process_data[i]->mailboxes_mutex());
-    delete process_data[i];
+    xbt_os_timer_free(process->timer());
+    xbt_mutex_destroy(process->mailboxes_mutex());
   }
-  delete[] process_data;
-  process_data = nullptr;
+  process_data.clear();
 
   if (simgrid::smpi::Colls::smpi_coll_cleanup_callback != nullptr)
     simgrid::smpi::Colls::smpi_coll_cleanup_callback();
@@ -395,7 +371,6 @@ void smpi_global_destroy()
     xbt_os_timer_free(global_timer);
   }
 
-  delete[] index_to_process_data;
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
@@ -502,6 +477,9 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
+  // TODO This will not be executed in the case where smpi_main is not called,
+  // e.g., not for smpi_msg_masterslave. This should be moved to another location
+  // that is always called -- maybe close to Actor::onCreation?
   simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
     host.extension_set(new simgrid::smpi::SmpiHost(&host));
   });
@@ -511,7 +489,6 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
-
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
 
     std::string executable_copy = executable;
@@ -600,9 +577,13 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
   }
 
-  SIMIX_launch_application(argv[2]);
-
   SMPI_init();
+  SIMIX_launch_application(argv[2]);
+  SMPI_app_instance_register(smpi_default_instance_name, nullptr,
+                               SIMIX_process_count()); // This call has a side effect on process_count...
+  MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
+  smpi_universe_size = process_count;
+
 
   /* Clean IO before the run */
   fflush(stdout);
@@ -628,10 +609,10 @@ int smpi_main(const char* executable, int argc, char *argv[])
     }
   }
   int ret   = 0;
-  int count = smpi_process_count();
-  for (int i = 0; i < count; i++) {
-    if(process_data[i]->return_value()!=0){
-      ret=process_data[i]->return_value();//return first non 0 value
+  for (auto& pair : process_data) {
+    auto& smpi_process = pair.second;
+    if (smpi_process->return_value() != 0) {
+      ret = smpi_process->return_value(); // return first non 0 value
       break;
     }
   }
@@ -644,6 +625,9 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
+  simgrid::s4u::Actor::onCreation.connect([](simgrid::s4u::ActorPtr actor) {
+    smpi_add_process(actor);
+  });
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();

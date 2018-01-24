@@ -942,7 +942,7 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
 /* Fortran specific stuff */
 
 XBT_PUBLIC(int) smpi_main(const char* program, int argc, char *argv[]);
-XBT_PUBLIC(int) smpi_process_index();
+XBT_ATTRIB_DEPRECATED_v321("Use Actor::self()->getPid(): v3.21 will turn this warning into an error.") XBT_PUBLIC(int) smpi_process_index();
 XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 
 /* Trace replay specific stuff */
@@ -987,7 +987,7 @@ static void __attribute__((destructor)) __postfini_##name(void) { \
    name = NULL;                                                 \
 }
 
-#define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
+#define SMPI_VARGET_GLOBAL(name) name[SIMIX_process_self()->pid]
 
 /**
  * This is used for the old privatization method, i.e., on old
@@ -1013,7 +1013,7 @@ if(!name) {                                         \
    smpi_register_static(name, xbt_free_f);          \
 }
 
-#define SMPI_VARGET_STATIC(name) name[smpi_process_index()]
+#define SMPI_VARGET_STATIC(name) name[SIMIX_process_self()->pid]
 
 
 SG_END_DECL()

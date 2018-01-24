@@ -17,6 +17,8 @@
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
+using simgrid::s4u::Actor;
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 int communicator_size = 0;
@@ -41,12 +43,12 @@ static void log_timed_action (const char *const *action, double clock){
 
 static std::vector<MPI_Request>* get_reqq_self()
 {
-  return reqq.at(smpi_process()->index());
+  return reqq.at(Actor::self()->getPid());
 }
 
 static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
 {
-   reqq.insert({smpi_process()->index(), mpi_request});
+   reqq.insert({Actor::self()->getPid(), mpi_request});
 }
 
 //allocate a single buffer for all sends, growing it if needed
@@ -198,11 +200,11 @@ static void action_compute(const char *const *action)
   CHECK_ACTION_PARAMS(action, 1, 0)
   double clock = smpi_process()->simulated_elapsed();
   double flops= parse_double(action[2]);
-  int rank = smpi_process()->index();
+  int my_proc_id = Actor::self()->getPid();
 
-  TRACE_smpi_computing_in(rank, flops);
+  TRACE_smpi_computing_in(my_proc_id, flops);
   smpi_execute_flops(flops);
-  TRACE_smpi_computing_out(rank);
+  TRACE_smpi_computing_out(my_proc_id);
 
   log_timed_action (action, clock);
 }
@@ -219,17 +221,17 @@ static void action_send(const char *const *action)
   else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
-  int rank = smpi_process()->index();
-  int dst_traced = MPI_COMM_WORLD->group()->rank(to);
+  int my_proc_id = Actor::self()->getPid();
+  int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("send", dst_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::Pt2PtTIData("send", to, size, encode_datatype(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
+    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
 
   Request::send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
 
   log_timed_action(action, clock);
 }
@@ -246,16 +248,16 @@ static void action_Isend(const char *const *action)
   else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
-  int rank = smpi_process()->index();
-  int dst_traced = MPI_COMM_WORLD->group()->rank(to);
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Isend", dst_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+  int my_proc_id = Actor::self()->getPid();
+  int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::Pt2PtTIData("Isend", to, size, encode_datatype(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(rank, rank, dst_traced, 0, size*MPI_CURRENT_TYPE->size());
+    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
 
   MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, 0, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
 
   get_reqq_self()->push_back(request);
 
@@ -274,11 +276,11 @@ static void action_recv(const char *const *action) {
   else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
-  int rank = smpi_process()->index();
-  int src_traced = MPI_COMM_WORLD->group()->rank(from);
+  int my_proc_id = Actor::self()->getPid();
+  int src_traced = MPI_COMM_WORLD->group()->actor(from)->getPid();
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("recv", src_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::Pt2PtTIData("recv", from, size, encode_datatype(MPI_CURRENT_TYPE)));
 
   //unknown size from the receiver point of view
   if (size <= 0.0) {
@@ -288,9 +290,9 @@ static void action_recv(const char *const *action) {
 
   Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   if (not TRACE_smpi_view_internals()) {
-    TRACE_smpi_recv(src_traced, rank, 0);
+    TRACE_smpi_recv(src_traced, my_proc_id, 0);
   }
 
   log_timed_action (action, clock);
@@ -308,10 +310,9 @@ static void action_Irecv(const char *const *action)
   else
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
-  int rank = smpi_process()->index();
-  int src_traced = MPI_COMM_WORLD->group()->rank(from);
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Irecv", src_traced, size, encode_datatype(MPI_CURRENT_TYPE)));
+  int my_proc_id = Actor::self()->getPid();
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::Pt2PtTIData("Irecv", from, size, encode_datatype(MPI_CURRENT_TYPE)));
   MPI_Status status;
   //unknow size from the receiver pov
   if (size <= 0.0) {
@@ -321,7 +322,7 @@ static void action_Irecv(const char *const *action)
 
   MPI_Request request = Request::irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   get_reqq_self()->push_back(request);
 
   log_timed_action (action, clock);
@@ -339,8 +340,8 @@ static void action_test(const char* const* action)
   //Different times in traced application and replayed version may lead to this
   //In this case, ignore the extra calls.
   if(request!=nullptr){
-    int rank = smpi_process()->index();
-    TRACE_smpi_testing_in(rank);
+    int my_proc_id = Actor::self()->getPid();
+    TRACE_smpi_testing_in(my_proc_id);
 
     int flag = Request::test(&request, &status);
 
@@ -348,7 +349,7 @@ static void action_test(const char* const* action)
     /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now nullptr.*/
     get_reqq_self()->push_back(request);
 
-    TRACE_smpi_testing_out(rank);
+    TRACE_smpi_testing_out(my_proc_id);
   }
   log_timed_action (action, clock);
 }
@@ -392,17 +393,18 @@ static void action_waitall(const char *const *action){
   if (count_requests>0) {
     MPI_Status status[count_requests];
 
-   int rank_traced = smpi_process()->index();
-   TRACE_smpi_comm_in(rank_traced, __FUNCTION__, new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
-   int recvs_snd[count_requests];
-   int recvs_rcv[count_requests];
-   for (unsigned int i = 0; i < count_requests; i++) {
-     const auto& req = (*get_reqq_self())[i];
-     if (req && (req->flags () & RECV)){
-       recvs_snd[i]=req->src();
-       recvs_rcv[i]=req->dst();
-     }else
-       recvs_snd[i]=-100;
+    int my_proc_id_traced = Actor::self()->getPid();
+    TRACE_smpi_comm_in(my_proc_id_traced, __FUNCTION__,
+                       new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
+    int recvs_snd[count_requests];
+    int recvs_rcv[count_requests];
+    for (unsigned int i = 0; i < count_requests; i++) {
+      const auto& req = (*get_reqq_self())[i];
+      if (req && (req->flags() & RECV)) {
+        recvs_snd[i] = req->src();
+        recvs_rcv[i] = req->dst();
+      } else
+        recvs_snd[i] = -100;
    }
    Request::waitall(count_requests, &(*get_reqq_self())[0], status);
 
@@ -410,19 +412,19 @@ static void action_waitall(const char *const *action){
      if (recvs_snd[i]!=-100)
        TRACE_smpi_recv(recvs_snd[i], recvs_rcv[i],0);
    }
-   TRACE_smpi_comm_out(rank_traced);
+   TRACE_smpi_comm_out(my_proc_id_traced);
   }
   log_timed_action (action, clock);
 }
 
 static void action_barrier(const char *const *action){
   double clock = smpi_process()->simulated_elapsed();
-  int rank = smpi_process()->index();
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("barrier"));
+  int my_proc_id = Actor::self()->getPid();
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::NoOpTIData("barrier"));
 
   Colls::barrier(MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -441,16 +443,16 @@ static void action_bcast(const char *const *action)
       MPI_CURRENT_TYPE=decode_datatype(action[4]);
   }
 
-  int rank = smpi_process()->index();
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->index(root), -1.0, size, -1,
-                                                    encode_datatype(MPI_CURRENT_TYPE), ""));
+  int my_proc_id = Actor::self()->getPid();
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(root)->getPid(), -1.0, size,
+                                                    -1, encode_datatype(MPI_CURRENT_TYPE), ""));
 
   void *sendbuf = smpi_get_tmp_sendbuffer(size* MPI_CURRENT_TYPE->size());
 
   Colls::bcast(sendbuf, size, MPI_CURRENT_TYPE, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -469,9 +471,9 @@ static void action_reduce(const char *const *action)
       MPI_CURRENT_TYPE=decode_datatype(action[5]);
   }
 
-  int rank = smpi_process()->index();
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->index(root), comp_size,
+  int my_proc_id = Actor::self()->getPid();
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(root)->getPid(), comp_size,
                                                     comm_size, -1, encode_datatype(MPI_CURRENT_TYPE), ""));
 
   void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
@@ -479,7 +481,7 @@ static void action_reduce(const char *const *action)
   Colls::reduce(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -494,16 +496,16 @@ static void action_allReduce(const char *const *action) {
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
   double clock = smpi_process()->simulated_elapsed();
-  int rank = smpi_process()->index();
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::CollTIData("allReduce", -1, comp_size, comm_size, -1,
-                                                                        encode_datatype(MPI_CURRENT_TYPE), ""));
+  int my_proc_id = Actor::self()->getPid();
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::CollTIData("allReduce", -1, comp_size, comm_size, -1,
+                                                                              encode_datatype(MPI_CURRENT_TYPE), ""));
 
   void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
   void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
   Colls::allreduce(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -525,14 +527,15 @@ static void action_allToAll(const char *const *action) {
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* MPI_CURRENT_TYPE->size());
   void *recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* MPI_CURRENT_TYPE2->size());
 
-  int rank = smpi_process()->index();
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::CollTIData("allToAll", -1, -1.0, send_size, recv_size,
-                                                                        encode_datatype(MPI_CURRENT_TYPE),
-                                                                        encode_datatype(MPI_CURRENT_TYPE2)));
+  int my_proc_id = Actor::self()->getPid();
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::CollTIData("allToAll", -1, -1.0, send_size, recv_size,
+                                                    encode_datatype(MPI_CURRENT_TYPE),
+                                                    encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::alltoall(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -574,7 +577,7 @@ static void action_gather(const char *const *action) {
 
   Colls::gather(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(smpi_process()->index());
+  TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action (action, clock);
 }
 
@@ -617,7 +620,7 @@ static void action_scatter(const char* const* action)
 
   Colls::scatter(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(smpi_process()->index());
+  TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action(action, clock);
 }
 
@@ -670,7 +673,7 @@ static void action_gatherv(const char *const *action) {
 
   Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts, disps, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(smpi_process()->index());
+  TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action (action, clock);
 }
 
@@ -724,7 +727,7 @@ static void action_scatterv(const char* const* action)
 
   Colls::scatterv(send, sendcounts, disps, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(smpi_process()->index());
+  TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action(action, clock);
 }
 
@@ -741,7 +744,7 @@ static void action_reducescatter(const char *const *action) {
   CHECK_ACTION_PARAMS(action, comm_size+1, 1)
   int comp_size = parse_double(action[2+comm_size]);
   int recvcounts[comm_size];
-  int rank = smpi_process()->index();
+  int my_proc_id                     = Actor::self()->getPid();
   int size = 0;
   std::vector<int>* trace_recvcounts = new std::vector<int>;
   if(action[3+comm_size])
@@ -755,7 +758,7 @@ static void action_reducescatter(const char *const *action) {
     size+=recvcounts[i];
   }
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, trace_recvcounts,
                                                        std::to_string(comp_size), /* ugly hack to print comp_size */
                                                        encode_datatype(MPI_CURRENT_TYPE)));
@@ -766,7 +769,7 @@ static void action_reducescatter(const char *const *action) {
   Colls::reduce_scatter(sendbuf, recvbuf, recvcounts, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -795,15 +798,16 @@ static void action_allgather(const char *const *action) {
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
   void *recvbuf = smpi_get_tmp_recvbuffer(recvcount* MPI_CURRENT_TYPE2->size());
 
-  int rank = smpi_process()->index();
+  int my_proc_id = Actor::self()->getPid();
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::CollTIData("allGather", -1, -1.0, sendcount, recvcount,
-                                                                        encode_datatype(MPI_CURRENT_TYPE),
-                                                                        encode_datatype(MPI_CURRENT_TYPE2)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::CollTIData("allGather", -1, -1.0, sendcount, recvcount,
+                                                    encode_datatype(MPI_CURRENT_TYPE),
+                                                    encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::allgather(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcount, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -840,20 +844,21 @@ static void action_allgatherv(const char *const *action) {
   }
   void *recvbuf = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
 
-  int rank = smpi_process()->index();
+  int my_proc_id = Actor::self()->getPid();
 
   std::vector<int>* trace_recvcounts = new std::vector<int>;
   for (int i = 0; i < comm_size; i++) // copy data to avoid bad free
     trace_recvcounts->push_back(recvcounts[i]);
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
-                                             "allGatherV", -1, sendcount, nullptr, -1, trace_recvcounts,
-                                             encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::VarCollTIData("allGatherV", -1, sendcount, nullptr, -1, trace_recvcounts,
+                                                       encode_datatype(MPI_CURRENT_TYPE),
+                                                       encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts, disps, MPI_CURRENT_TYPE2,
                           MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -890,7 +895,7 @@ static void action_allToAllv(const char *const *action) {
   else
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
 
-  int rank       = smpi_process()->index();
+  int my_proc_id = Actor::self()->getPid();
   void *sendbuf = smpi_get_tmp_sendbuffer(send_buf_size* MPI_CURRENT_TYPE->size());
   void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* MPI_CURRENT_TYPE2->size());
 
@@ -905,14 +910,15 @@ static void action_allToAllv(const char *const *action) {
     recvdisps[i] = 0;
   }
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
-                                             "allToAllV", -1, send_size, trace_sendcounts, recv_size, trace_recvcounts,
-                                             encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
+  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                     new simgrid::instr::VarCollTIData("allToAllV", -1, send_size, trace_sendcounts, recv_size,
+                                                       trace_recvcounts, encode_datatype(MPI_CURRENT_TYPE),
+                                                       encode_datatype(MPI_CURRENT_TYPE2)));
 
   Colls::alltoallv(sendbuf, sendcounts, senddisps, MPI_CURRENT_TYPE,recvbuf, recvcounts, recvdisps,
                          MPI_CURRENT_TYPE, MPI_COMM_WORLD);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
 }
 
@@ -925,11 +931,11 @@ void smpi_replay_init(int* argc, char*** argv)
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);
 
-  int rank = smpi_process()->index();
-  TRACE_smpi_init(rank);
-  TRACE_smpi_computing_init(rank);
-  TRACE_smpi_comm_in(rank, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
-  TRACE_smpi_comm_out(rank);
+  int my_proc_id = Actor::self()->getPid();
+  TRACE_smpi_init(my_proc_id);
+  TRACE_smpi_computing_init(my_proc_id);
+  TRACE_smpi_comm_in(my_proc_id, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
+  TRACE_smpi_comm_out(my_proc_id);
   xbt_replay_action_register("init",       simgrid::smpi::action_init);
   xbt_replay_action_register("finalize",   simgrid::smpi::action_finalize);
   xbt_replay_action_register("comm_size",  simgrid::smpi::action_comm_size);
@@ -999,12 +1005,12 @@ void smpi_replay_main(int* argc, char*** argv)
     xbt_free(recvbuffer);
   }
 
-  TRACE_smpi_comm_in(smpi_process()->index(), "smpi_replay_run_finalize", new simgrid::instr::NoOpTIData("finalize"));
+  TRACE_smpi_comm_in(Actor::self()->getPid(), "smpi_replay_run_finalize", new simgrid::instr::NoOpTIData("finalize"));
 
   smpi_process()->finalize();
 
-  TRACE_smpi_comm_out(smpi_process()->index());
-  TRACE_smpi_finalize(smpi_process()->index());
+  TRACE_smpi_comm_out(Actor::self()->getPid());
+  TRACE_smpi_finalize(Actor::self()->getPid());
 }
 
 /** @brief chain a replay initialization and a replay start */

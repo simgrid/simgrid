@@ -156,7 +156,8 @@ void StateEvent::print()
     if (getContainer()->getName().find("rank-") != 0)
       stream << getContainer()->getName() << " " << extra_->print();
     else
-      stream << getContainer()->getName().erase(0, 5) << " " << extra_->print();
+      /* Subtract -1 because this is the process id and we transform it to the rank id */
+      stream << stoi(getContainer()->getName().erase(0, 5)) - 1 << " " << extra_->print();
 
     fprintf(tracing_files.at(getContainer()), "%s\n", stream.str().c_str());
   } else {

@@ -15,7 +15,7 @@
   if (TRACE_is_enabled()) {                                                                                            \
     simgrid::instr::EventType* type = simgrid::instr::Container::getRoot()->type_->getOrCreateEventType(#cat);         \
                                                                                                                        \
-    std::string cont_name = std::string("rank-" + std::to_string(smpi_process()->index()));                            \
+    std::string cont_name = std::string("rank-" + std::to_string(simgrid::s4u::Actor::self()->getPid()));                            \
     type->addEntityValue(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                  \
     new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::byName(cont_name), type,                \
                                  type->getEntityValue(Colls::mpi_coll_##cat##_description[i].name));                   \

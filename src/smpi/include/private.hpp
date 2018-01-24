@@ -62,10 +62,10 @@ typedef SMPI_Graph_topology* MPIR_Graph_Topology;
 typedef SMPI_Dist_Graph_topology* MPIR_Dist_Graph_Topology;
 
 XBT_PRIVATE SMPI_Process* smpi_process();
-XBT_PRIVATE SMPI_Process* smpi_process_remote(int index);
+XBT_PRIVATE SMPI_Process* smpi_process_remote(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_process_count();
 
-XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index);
+XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const char* instance_id);
 XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
@@ -431,6 +431,8 @@ XBT_PRIVATE int smpi_process_papi_event_set();
 #endif
 
 extern std::unordered_map<std::string, double> location2speedup;
+// TODO: Move this to the right location (if we keep this...)
+void smpi_add_process(simgrid::s4u::ActorPtr actor);
 
 /** @brief Returns the last call location (filename, linenumber). Process-specific. */
 extern "C" {

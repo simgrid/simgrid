@@ -322,16 +322,6 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   if (parent_process != nullptr) {
     process->ppid = parent_process->pid;
-/* SMPI process have their own data segment and each other inherit from their father */
-#if HAVE_SMPI
-    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
-      if (parent_process->pid != 0) {
-        process->segment_index = parent_process->segment_index;
-      } else {
-        process->segment_index = process->pid - 1;
-      }
-    }
-#endif
   }
 
   process->code         = code;
@@ -395,16 +385,6 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
   if (parent_process != nullptr) {
     process->ppid = parent_process->pid;
-    /* SMPI process have their own data segment and each other inherit from their father */
-#if HAVE_SMPI
-    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
-      if (parent_process->pid != 0) {
-        process->segment_index = parent_process->segment_index;
-      } else {
-        process->segment_index = process->pid - 1;
-      }
-    }
-#endif
   }
 
   /* Process data for auto-restart */
@@ -780,8 +760,8 @@ void SIMIX_process_yield(smx_actor_t self)
     std::rethrow_exception(std::move(exception));
   }
 
-  if(SMPI_switch_data_segment && self->segment_index != -1){
-    SMPI_switch_data_segment(self->segment_index);
+  if(SMPI_switch_data_segment){
+    SMPI_switch_data_segment(self->pid);
   }
 }
 

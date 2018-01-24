@@ -44,10 +44,10 @@ void smpi_execute_(double *duration)
 
 void smpi_execute_flops(double flops) {
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->process()->host);
+  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->process()->getImpl()->host);
   simcall_set_category (action, TRACE_internal_smpi_get_category());
   simcall_execution_wait(action);
-  smpi_switch_data_segment(smpi_process()->index());
+  smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
 }
 
 void smpi_execute(double duration)
@@ -55,7 +55,7 @@ void smpi_execute(double duration)
   if (duration >= smpi_cpu_threshold) {
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
     double flops = duration * smpi_host_speed;
-    int rank = smpi_process()->index();
+    int rank = simgrid::s4u::Actor::self()->getPid();
     TRACE_smpi_computing_in(rank, flops);
 
     smpi_execute_flops(flops);
@@ -79,7 +79,7 @@ void smpi_execute_benched(double duration)
 void smpi_bench_begin()
 {
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
-    smpi_switch_data_segment(smpi_process()->index());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
   }
 
   if (MC_is_active() || MC_record_replay_is_active())
@@ -157,7 +157,7 @@ void smpi_bench_end()
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
     container_t container =
-        new simgrid::instr::Container(std::string("rank-") + std::to_string(smpi_process()->index()));
+        new simgrid::instr::Container(std::string("rank-") + std::to_string(simgrid::s4u::Actor::self()->getPid()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
@@ -262,7 +262,7 @@ public:
   SampleLocation(bool global, const char* file, int line) : std::string(std::string(file) + ":" + std::to_string(line))
   {
     if (not global)
-      this->append(":" + std::to_string(smpi_process()->index()));
+      this->append(":" + std::to_string(simgrid::s4u::Actor::self()->getPid()));
   }
 };
 

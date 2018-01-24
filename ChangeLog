@@ -12,6 +12,14 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  XBT
  - Remove XBT_LOG_CONNECT, it should be useless nowadays.
 
+ SMPI
+ - Removed index notion from SMPI -- no more "getPid() - 1"! 
+   This also means that the trace files
+   now contain actors called rank-<PROCESS-ID>. These are NOT the real
+   ranks, because tracing several communicators right now is not supported.
+ - Because of this, smpi_process_index() has now been deprecated and will
+   be removed in 3.21
+
  Fixed bugs:
  - #245: migrating an actor does not migrate its execution
 

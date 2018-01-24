@@ -6,39 +6,31 @@
 #include "smpi_process.hpp"
 #include "mc/mc.h"
 #include "private.hpp"
+#include "simgrid/s4u/forward.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_group.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
-
-extern int* index_to_process_data;
-
-#define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
-
-static char *get_mailbox_name(char *str, int index)
-{
-  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
-  return str;
-}
-
-static char *get_mailbox_name_small(char *str, int index)
-{
-  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", static_cast<int>(sizeof(int) * 2), static_cast<unsigned>(index));
-  return str;
-}
 
 namespace simgrid{
 namespace smpi{
 
-Process::Process(int index, msg_bar_t finalization_barrier)
+using simgrid::s4u::Actor;
+using simgrid::s4u::ActorPtr;
+
+Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
   : finalization_barrier_(finalization_barrier)
 {
-  char name[MAILBOX_NAME_MAXLEN];
-  mailbox_              = simgrid::s4u::Mailbox::byName(get_mailbox_name(name, index));
-  mailbox_small_        = simgrid::s4u::Mailbox::byName(get_mailbox_name_small(name, index));
+  std::stringstream mailboxname, mailboxname_small;
+  process_              = actor;
+  mailboxname           << std::string("SMPI-")  << process_->getPid();
+  mailboxname_small     << std::string("small-") << process_->getPid();
+  mailbox_              = simgrid::s4u::Mailbox::byName(mailboxname.str());
+  mailbox_small_        = simgrid::s4u::Mailbox::byName(mailboxname_small.str());
   mailboxes_mutex_      = xbt_mutex_init();
   timer_                = xbt_os_timer_new();
   state_                = SMPI_UNINITIALIZED;
@@ -63,81 +55,71 @@ Process::Process(int index, msg_bar_t finalization_barrier)
 #endif
 }
 
-void Process::set_data(int index, int* argc, char*** argv)
+void Process::set_data(int* argc, char*** argv)
 {
-    char* instance_id = (*argv)[1];
-    comm_world_       = smpi_deployment_comm_world(instance_id);
-    msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id);
-    if (barrier != nullptr) // don't overwrite the current one if the instance has none
-      finalization_barrier_ = barrier;
-    instance_id_ = instance_id;
-    index_       = index;
+  instance_id_      = std::string((*argv)[1]);
+  comm_world_       = smpi_deployment_comm_world(instance_id_.c_str());
+  msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id_.c_str());
+  if (barrier != nullptr) // don't overwrite the current one if the instance has none
+    finalization_barrier_ = barrier;
 
-    process_                                                       = SIMIX_process_self();
-    static_cast<simgrid::msg::ActorExt*>(process_->userdata)->data = this;
+  process_                                                                  = simgrid::s4u::Actor::self();
+  static_cast<simgrid::msg::ActorExt*>(process_->getImpl()->userdata)->data = this;
 
-    if (*argc > 3) {
-      memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
-      (*argv)[(*argc) - 1] = nullptr;
-      (*argv)[(*argc) - 2] = nullptr;
-    }
-    (*argc)-=2;
-    argc_ = argc;
-    argv_ = argv;
-    // set the process attached to the mailbox
-    mailbox_small_->setReceiver(simgrid::s4u::Actor::self());
-    XBT_DEBUG("<%d> New process in the game: %p", index_, process_);
+  if (*argc > 3) {
+    memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
+    (*argv)[(*argc) - 1] = nullptr;
+    (*argv)[(*argc) - 2] = nullptr;
+  }
+  (*argc) -= 2;
+  argc_ = argc;
+  argv_ = argv;
+  // set the process attached to the mailbox
+  mailbox_small_->setReceiver(process_);
+  XBT_DEBUG("<%lu> New process in the game: %p", process_->getPid(), process_.get());
 }
 
 /** @brief Prepares the current process for termination. */
 void Process::finalize()
 {
   state_ = SMPI_FINALIZED;
-  XBT_DEBUG("<%d> Process left the game", index_);
+  XBT_DEBUG("<%lu> Process left the game", process_->getPid());
 
-    // This leads to an explosion of the search graph which cannot be reduced:
-    if(MC_is_active() || MC_record_replay_is_active())
-      return;
-    // wait for all pending asynchronous comms to finish
-    MSG_barrier_wait(finalization_barrier_);
+  // This leads to an explosion of the search graph which cannot be reduced:
+  if(MC_is_active() || MC_record_replay_is_active())
+    return;
+  // wait for all pending asynchronous comms to finish
+  MSG_barrier_wait(finalization_barrier_);
 }
 
 /** @brief Check if a process is finalized */
 int Process::finalized()
 {
-    if (index_ != MPI_UNDEFINED)
-      return (state_ == SMPI_FINALIZED);
-    else
-      return 0;
+  return (state_ == SMPI_FINALIZED);
 }
 
 /** @brief Check if a process is initialized */
 int Process::initialized()
 {
-  if (index_to_process_data == nullptr){
-    return false;
-  } else{
-    return ((index_ != MPI_UNDEFINED) && (state_ == SMPI_INITIALIZED));
-  }
+  // TODO cheinrich: Check if we still need this. This should be a global condition, not for a
+  // single process ... ?
+  return (state_ == SMPI_INITIALIZED);
 }
 
 /** @brief Mark a process as initialized (=MPI_Init called) */
 void Process::mark_as_initialized()
 {
-  if ((index_ != MPI_UNDEFINED) && (state_ != SMPI_FINALIZED))
+  if (state_ != SMPI_FINALIZED)
     state_ = SMPI_INITIALIZED;
 }
 
 void Process::set_replaying(bool value){
-  if ((index_ != MPI_UNDEFINED) && (state_ != SMPI_FINALIZED))
+  if (state_ != SMPI_FINALIZED)
     replaying_ = value;
 }
 
 bool Process::replaying(){
-  if (index_ != MPI_UNDEFINED)
-    return replaying_;
-  else
-    return false;
+  return replaying_;
 }
 
 void Process::set_user_data(void *data)
@@ -150,7 +132,7 @@ void *Process::get_user_data()
   return data_;
 }
 
-smx_actor_t Process::process(){
+ActorPtr Process::process(){
   return process_;
 }
 
@@ -172,11 +154,6 @@ void Process::set_privatized_region(smpi_privatization_region_t region)
 smpi_privatization_region_t Process::privatized_region()
 {
   return privatized_region_;
-}
-
-int Process::index()
-{
-  return index_;
 }
 
 MPI_Comm Process::comm_world()
@@ -231,7 +208,7 @@ MPI_Comm Process::comm_self()
   if(comm_self_==MPI_COMM_NULL){
     MPI_Group group = new  Group(1);
     comm_self_ = new  Comm(group, nullptr);
-    group->set_mapping(index_, 0);
+    group->set_mapping(process_, 0);
   }
   return comm_self_;
 }
@@ -274,35 +251,29 @@ void Process::init(int *argc, char ***argv){
     xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
   }
   if (argc != nullptr && argv != nullptr) {
-    smx_actor_t proc = SIMIX_process_self();
-    proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
-
-    int index = proc->pid - 1; // The maestro process has always ID 0 but we don't need that process here
-
-    if(index_to_process_data == nullptr){
-      index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
-    }
+    simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
+    proc->getImpl()->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
     char* instance_id = (*argv)[1];
     try {
       int rank = std::stoi(std::string((*argv)[2]));
-      smpi_deployment_register_process(instance_id, rank, index);
+      smpi_deployment_register_process(instance_id, rank, proc);
     } catch (std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Invalid rank: ") + (*argv)[2]);
     }
 
     // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
     // this up here so that I can set the privatized region before the switch.
-    Process* process = smpi_process_remote(index);
+    Process* process = smpi_process_remote(proc);
+    int my_proc_id   = proc->getPid();
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using the segment index of this process  */
-      index = proc->segment_index;
       process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
-      SMPI_switch_data_segment(index);
+      SMPI_switch_data_segment(my_proc_id);
     }
 
-    process->set_data(index, argc, argv);
+    process->set_data(argc, argv);
   }
   xbt_assert(smpi_process(),
       "smpi_process() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "

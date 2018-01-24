@@ -39,7 +39,7 @@ char* F2C::get_key(char* key, int id) {
 }
 
 char* F2C::get_key_id(char* key, int id) {
-  std::snprintf(key, KEY_SIZE, "%x_%d", static_cast<unsigned>(id), smpi_process()->index());
+  std::snprintf(key, KEY_SIZE, "%x_%lu", static_cast<unsigned>(id), simgrid::s4u::Actor::self()->getPid());
   return key;
 }
 

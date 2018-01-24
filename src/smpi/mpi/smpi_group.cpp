@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Actor.hpp"
 #include "smpi_group.hpp"
 #include "smpi_comm.hpp"
 #include <string>
@@ -16,13 +17,15 @@ MPI_Group MPI_GROUP_EMPTY=&mpi_MPI_GROUP_EMPTY;
 namespace simgrid{
 namespace smpi{
 
+using simgrid::s4u::ActorPtr;
+
 Group::Group()
 {
   size_              = 0;       /* size */
   refcount_          = 1;       /* refcount_: start > 0 so that this group never gets freed */
 }
 
-Group::Group(int n) : size_(n), rank_to_index_map_(size_, MPI_UNDEFINED)
+Group::Group(int n) : size_(n), rank_to_actor_map_(size_, nullptr), rank_to_index_map_(size_, MPI_UNDEFINED), index_to_rank_map_(size_, MPI_UNDEFINED)
 {
   refcount_ = 1;
 }
@@ -34,29 +37,27 @@ Group::Group(MPI_Group origin)
     refcount_          = 1;
     rank_to_index_map_ = origin->rank_to_index_map_;
     index_to_rank_map_ = origin->index_to_rank_map_;
+    rank_to_actor_map_ = origin->rank_to_actor_map_;
+    actor_to_rank_map_ = origin->actor_to_rank_map_;
   }
 }
 
-void Group::set_mapping(int index, int rank)
+void Group::set_mapping(simgrid::s4u::ActorPtr actor, int rank)
 {
   if (0 <= rank && rank < size_) {
+    int index = actor->getPid();
     rank_to_index_map_[rank] = index;
     if (index != MPI_UNDEFINED) {
       if ((unsigned)index >= index_to_rank_map_.size())
         index_to_rank_map_.resize(index + 1, MPI_UNDEFINED);
       index_to_rank_map_[index] = rank;
     }
-  }
-}
 
-int Group::index(int rank)
-{
-  int index;
-  if (0 <= rank && rank < size_)
-    index = rank_to_index_map_[rank];
-  else
-    index = MPI_UNDEFINED;
-  return index;
+    rank_to_actor_map_[rank] = actor;
+    if (actor != nullptr) {
+      actor_to_rank_map_.insert({actor, rank});
+    }
+  }
 }
 
 int Group::rank(int index)
@@ -66,7 +67,20 @@ int Group::rank(int index)
     rank = index_to_rank_map_[index];
   else
     rank = MPI_UNDEFINED;
+
   return rank;
+}
+
+simgrid::s4u::ActorPtr Group::actor(int rank) {
+  if (0 <= rank && rank < size_)
+    return rank_to_actor_map_[rank];
+  else
+    return nullptr;
+}
+
+int Group::rank(const simgrid::s4u::ActorPtr actor) {
+  auto iterator = actor_to_rank_map_.find(actor);
+  return (iterator == actor_to_rank_map_.end()) ? MPI_UNDEFINED : (*iterator).second;
 }
 
 void Group::ref()
@@ -96,8 +110,8 @@ int Group::compare(MPI_Group group2)
     result = MPI_UNEQUAL;
   } else {
     for (int i = 0; i < size_; i++) {
-      int index = this->index(i);
-      int rank = group2->rank(index);
+      ActorPtr actor = this->actor(i);
+      int rank = group2->rank(actor);
       if (rank == MPI_UNDEFINED) {
         result = MPI_UNEQUAL;
         break;
@@ -113,7 +127,6 @@ int Group::compare(MPI_Group group2)
 int Group::incl(int n, int* ranks, MPI_Group* newgroup)
 {
   int i=0;
-  int index=0;
   if (n == 0) {
     *newgroup = MPI_GROUP_EMPTY;
   } else if (n == size_) {
@@ -123,8 +136,8 @@ int Group::incl(int n, int* ranks, MPI_Group* newgroup)
   } else {
     *newgroup = new Group(n);
     for (i = 0; i < n; i++) {
-      index = this->index(ranks[i]);
-      (*newgroup)->set_mapping(index, i);
+      ActorPtr actor = this->actor(ranks[i]); // ranks[] was passed as a param!
+      (*newgroup)->set_mapping(actor, i);
     }
   }
   return MPI_SUCCESS;
@@ -135,8 +148,8 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
   int size1 = size_;
   int size2 = group2->size();
   for (int i = 0; i < size2; i++) {
-    int proc2 = group2->index(i);
-    int proc1 = this->rank(proc2);
+    ActorPtr actor = group2->actor(i);
+    int proc1 = this->rank(actor);
     if (proc1 == MPI_UNDEFINED) {
       size1++;
     }
@@ -147,12 +160,12 @@ int Group::group_union(MPI_Group group2, MPI_Group* newgroup)
     *newgroup = new  Group(size1);
     size2 = this->size();
     for (int i = 0; i < size2; i++) {
-      int proc1 = this->index(i);
-      (*newgroup)->set_mapping(proc1, i);
+      ActorPtr actor1 = this->actor(i);
+      (*newgroup)->set_mapping(actor1, i);
     }
     for (int i = size2; i < size1; i++) {
-      int proc2 = group2->index(i - size2);
-      (*newgroup)->set_mapping(proc2, i);
+      ActorPtr actor = group2->actor(i - size2);
+      (*newgroup)->set_mapping(actor, i);
     }
   }
   return MPI_SUCCESS;
@@ -162,8 +175,8 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
 {
   int size2 = group2->size();
   for (int i = 0; i < size2; i++) {
-    int proc2 = group2->index(i);
-    int proc1 = this->rank(proc2);
+    ActorPtr actor = group2->actor(i);
+    int proc1 = this->rank(actor);
     if (proc1 == MPI_UNDEFINED) {
       size2--;
     }
@@ -174,10 +187,10 @@ int Group::intersection(MPI_Group group2, MPI_Group* newgroup)
     *newgroup = new  Group(size2);
     int j=0;
     for (int i = 0; i < group2->size(); i++) {
-      int proc2 = group2->index(i);
-      int proc1 = this->rank(proc2);
+      ActorPtr actor = group2->actor(i);
+      int proc1 = this->rank(actor);
       if (proc1 != MPI_UNDEFINED) {
-        (*newgroup)->set_mapping(proc2, j);
+        (*newgroup)->set_mapping(actor, j);
         j++;
       }
     }
@@ -190,8 +203,8 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
   int newsize = size_;
   int size2 = size_;
   for (int i = 0; i < size2; i++) {
-    int proc1 = this->index(i);
-    int proc2 = group2->rank(proc1);
+    ActorPtr actor = this->actor(i);
+    int proc2 = group2->rank(actor);
     if (proc2 != MPI_UNDEFINED) {
       newsize--;
     }
@@ -201,10 +214,10 @@ int Group::difference(MPI_Group group2, MPI_Group* newgroup)
   } else {
     *newgroup = new  Group(newsize);
     for (int i = 0; i < size2; i++) {
-      int proc1 = this->index(i);
-      int proc2 = group2->rank(proc1);
+      ActorPtr actor = this->actor(i);
+      int proc2 = group2->rank(actor);
       if (proc2 == MPI_UNDEFINED) {
-        (*newgroup)->set_mapping(proc1, i);
+        (*newgroup)->set_mapping(actor, i);
       }
     }
   }
@@ -223,8 +236,8 @@ int Group::excl(int n, int *ranks, MPI_Group * newgroup){
   int j = 0;
   for (int i = 0; i < oldsize; i++) {
     if(to_exclude[i]==0){
-      int index = this->index(i);
-      (*newgroup)->set_mapping(index, j);
+      ActorPtr actor = this->actor(i);
+      (*newgroup)->set_mapping(actor, j);
       j++;
     }
   }
@@ -262,8 +275,8 @@ int Group::range_incl(int n, int ranges[][3], MPI_Group * newgroup){
     for (int rank = ranges[i][0];                    /* First */
          rank >= 0 && rank < size_; /* Last */
          ) {
-      int index = this->index(rank);
-      (*newgroup)->set_mapping(index, j);
+      ActorPtr actor = this->actor(rank);
+      (*newgroup)->set_mapping(actor, j);
       j++;
       if(rank == ranges[i][1]){/*already last ?*/
         break;
@@ -314,8 +327,8 @@ int Group::range_excl(int n, int ranges[][3], MPI_Group * newgroup){
         }
       }
       if(add==1){
-        int index = this->index(oldrank);
-        (*newgroup)->set_mapping(index, newrank);
+        ActorPtr actor = this->actor(oldrank);
+        (*newgroup)->set_mapping(actor, newrank);
         newrank++;
       }
       oldrank++;
