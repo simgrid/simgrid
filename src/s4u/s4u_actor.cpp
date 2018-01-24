@@ -21,6 +21,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 namespace simgrid {
 namespace s4u {
 
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::onCreation;
+
 // ***** Actor creation *****
 ActorPtr Actor::self()
 {
