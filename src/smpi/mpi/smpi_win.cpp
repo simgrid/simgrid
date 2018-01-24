@@ -635,9 +635,9 @@ int Win::unlock_all(){
 
 int Win::flush(int rank){
   MPI_Win target_win = connected_wins_[rank];
-  int finished = finish_comms(rank);
+  int finished       = finish_comms(rank_);
   XBT_DEBUG("Win_flush on local %d - Finished %d RMA calls", rank_, finished);
-  finished = target_win->finish_comms(rank_);
+  finished = target_win->finish_comms(rank);
   XBT_DEBUG("Win_flush on remote %d - Finished %d RMA calls", rank, finished);
   return MPI_SUCCESS;
 }
