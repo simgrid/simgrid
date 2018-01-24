@@ -942,7 +942,7 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
 /* Fortran specific stuff */
 
 XBT_PUBLIC(int) smpi_main(const char* program, int argc, char *argv[]);
-XBT_ATTRIB_DEPRECATED_v321("Use Actor::self()->getPid(): v3.21 will turn this warning into an error.") XBT_PUBLIC(int) smpi_process_index();
+XBT_ATTRIB_DEPRECATED_v322("Use Actor::self()->getPid(): v3.21 will turn this warning into an error.") XBT_PUBLIC(int) smpi_process_index();
 XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 
 /* Trace replay specific stuff */
