@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     baseptr[0] = 1;
     baseptr[1] = 2;
     MPI_Win_unlock(rank, win);
-
+    MPI_Barrier(MPI_COMM_WORLD);
     /* Issue request-based get with testall. */
     MPI_Win_lock_all(0, win);
     MPI_Rget(&val1, 1, MPI_INT, 0, 0, 1, MPI_INT, win, &reqs[0]);
