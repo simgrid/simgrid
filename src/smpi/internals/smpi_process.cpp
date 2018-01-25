@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,7 +12,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
-#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
@@ -25,16 +24,11 @@ using simgrid::s4u::ActorPtr;
 Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
     : finalization_barrier_(finalization_barrier), process_(actor)
 {
-  std::stringstream mailboxname;
-  std::stringstream mailboxname_small;
-
-  mailboxname           << std::string("SMPI-")  << process_->getPid();
-  mailboxname_small     << std::string("small-") << process_->getPid();
-  mailbox_              = simgrid::s4u::Mailbox::byName(mailboxname.str());
-  mailbox_small_        = simgrid::s4u::Mailbox::byName(mailboxname_small.str());
-  mailboxes_mutex_      = xbt_mutex_init();
-  timer_                = xbt_os_timer_new();
-  state_                = SMPI_UNINITIALIZED;
+  mailbox_         = simgrid::s4u::Mailbox::byName("SMPI-" + std::to_string(process_->getPid()));
+  mailbox_small_   = simgrid::s4u::Mailbox::byName("small-" + std::to_string(process_->getPid()));
+  mailboxes_mutex_ = xbt_mutex_init();
+  timer_           = xbt_os_timer_new();
+  state_           = SMPI_UNINITIALIZED;
   if (MC_is_active())
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
