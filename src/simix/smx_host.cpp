@@ -120,6 +120,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::
     watched_hosts.insert(host->getCname());
     XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->getCname());
   }
+  XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->getCname());
   host->extension<simgrid::simix::Host>()->auto_restart_processes.push_back(arg);
 }
 

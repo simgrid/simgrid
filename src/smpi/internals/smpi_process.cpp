@@ -23,10 +23,11 @@ using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 
 Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
-  : finalization_barrier_(finalization_barrier)
+    : finalization_barrier_(finalization_barrier), process_(actor)
 {
-  std::stringstream mailboxname, mailboxname_small;
-  process_              = actor;
+  std::stringstream mailboxname;
+  std::stringstream mailboxname_small;
+
   mailboxname           << std::string("SMPI-")  << process_->getPid();
   mailboxname_small     << std::string("small-") << process_->getPid();
   mailbox_              = simgrid::s4u::Mailbox::byName(mailboxname.str());

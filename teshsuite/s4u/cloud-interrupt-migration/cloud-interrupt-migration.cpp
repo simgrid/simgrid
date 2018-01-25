@@ -35,7 +35,7 @@ static void master_main()
   vm0->start();
 
   XBT_INFO("Start the migration of %s from %s to %s", vm0->getCname(), pm0->getCname(), pm1->getCname());
-  simgrid::s4u::ActorPtr migration = vm_migrate_async(vm0, pm1);
+  vm_migrate_async(vm0, pm1);
 
   simgrid::s4u::this_actor::sleep_for(2);
   XBT_INFO("Wait! change my mind, shutdown %s. This ends the migration", vm0->getCname());

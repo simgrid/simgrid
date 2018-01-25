@@ -348,7 +348,6 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   XBT_DEBUG("Inserting %s(%s) in the to_run list", process->getCname(), host->getCname());
   simix_global->process_to_run.push_back(process);
   intrusive_ptr_add_ref(process);
-
   /* Tracing the process creation */
   TRACE_msg_process_create(process->getName(), process->pid, process->host);
 

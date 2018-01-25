@@ -25,7 +25,8 @@ static double compute(double d0)
 
 int main(int argc, char *argv[])
 {
-  int n, rank;
+  int n;
+  int rank;
   MPI_Init(&argc, &argv);
   int verbose = argc <= 1;
   MPI_Comm_size(MPI_COMM_WORLD, &n);

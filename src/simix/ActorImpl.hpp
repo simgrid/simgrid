@@ -130,8 +130,6 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
 }
 }
 
-typedef simgrid::simix::ProcessArg *smx_process_arg_t;
-
 typedef simgrid::simix::ActorImpl* smx_actor_t;
 
 extern "C" {
