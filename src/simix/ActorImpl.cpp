@@ -351,10 +351,8 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   /* Tracing the process creation */
   TRACE_msg_process_create(process->getName(), process->pid, process->host);
-  /* Note by cheinrich: If you move this directly after the "new ActorImpl", the pid
-   * will not yet be set and you will cause issues when other code relies on that.
-   * This is of course also true for the other properties, so I moved this here.
-   */
+
+  /* The onCreation() signal must be delayed until there, where the pid and everything is set */
   simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
   simgrid::s4u::Actor::onCreation(tmp);
 
