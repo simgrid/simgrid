@@ -16,8 +16,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
 
 #define WRAPPED_PMPI_CALL(type,name,args,args2) \
 type name args { \
-XBT_VERB("SMPI - Entering %s", __FUNCTION__);\
-return P##name args2 ; \
+  XBT_VERB("SMPI - Entering %s", __FUNCTION__);\
+  type ret = P##name args2 ; \
+  XBT_VERB("SMPI - Leaving %s", __FUNCTION__);\
+  return ret;\
 }\
 
 #define UNIMPLEMENTED_WRAPPED_PMPI_CALL(type,name,args,args2) \
