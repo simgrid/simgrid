@@ -44,26 +44,23 @@ find_path(PATH_LIBUNWIND_H "libunwind.h"
   /sw
   /usr)
 
-message(STATUS "Looking for libunwind.h")
 if(PATH_LIBUNWIND_H)
-  message(STATUS "Looking for libunwind.h - found")
+  string(REGEX REPLACE "/libunwind.h"               "" PATH_LIBUNWIND_H   "${PATH_LIBUNWIND_H}")
+  message(STATUS "Looking for libunwind.h - found in ${PATH_LIBUNWIND_H}")
+  include_directories(${PATH_LIBUNWIND_H})  
 else()
   message(STATUS "Looking for libunwind.h - not found")
 endif()
 
-message(STATUS "Looking for libunwind")
 if(PATH_LIBUNWIND_LIB)
-  message(STATUS "Looking for libunwind - found")
+  string(REGEX REPLACE "/libunwind.*[.]${LIB_EXE}$" "" PATH_LIBUNWIND_LIB "${PATH_LIBUNWIND_LIB}")
+  message(STATUS "Looking for libunwind.${LIB_EXE} - found in ${PATH_LIBUNWIND_LIB}")
+  link_directories(${PATH_LIBUNWIND_LIB})
 else()
   message(STATUS "Looking for libunwind - not found")
 endif()
 
 if(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
-  string(REGEX REPLACE "/libunwind.*[.]${LIB_EXE}$" "" PATH_LIBUNWIND_LIB "${PATH_LIBUNWIND_LIB}")
-  string(REGEX REPLACE "/libunwind.h"               "" PATH_LIBUNWIND_H   "${PATH_LIBUNWIND_H}")
-      
-  include_directories(${PATH_LIBUNWIND_H})
-  link_directories(${PATH_LIBUNWIND_LIB})
   SET(HAVE_LIBUNWIND 1)
 else()
   SET(HAVE_LIBUNWIND 0)
