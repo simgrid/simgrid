@@ -410,7 +410,7 @@ void ns3_add_cluster(const char* id, double bw, double lat) {
 
   xbt_assert(Nodes.GetN() <= 65000, "Cluster with NS3 is limited to 65000 nodes");
   ns3::CsmaHelper csma;
-  csma.SetDeviceAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw * 8))); // NS3 takes bps, but we provide Bps
+  csma.SetChannelAttribute("DataRate", ns3::DataRateValue(ns3::DataRate(bw * 8))); // NS3 takes bps, but we provide Bps
   csma.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
   ns3::NetDeviceContainer devices = csma.Install(Nodes);
   XBT_DEBUG("Create CSMA");
