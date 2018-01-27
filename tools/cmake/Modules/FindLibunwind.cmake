@@ -1,72 +1,109 @@
-if(SIMGRID_PROCESSOR_x86_64)
-  find_library(PATH_LIBUNWIND_LIB
-    NAMES unwind-x86_64
-    HINTS
-    $ENV{SIMGRID_LIBUNWIND_LIBRARY_PATH}
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{LIBUNWIND_LIBRARY_PATH}
-    PATH_SUFFIXES lib/ GnuWin32/lib lib/system
-    PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr)
+# Search for libunwind and components, both includes and libraries
+#
+# Copyright (C) 2003-2018 The SimGrid Team.
+# This is distributed under the LGPL licence but please contact us for
+# relicensing if you need. This is merely free software, no matter the licence.
+#
+#
+# Input environment variables:
+#    LIBUNWIND_HINT: path to libunwind installation (e.g., /usr)
+#                    (only needed for non-standard installs)
+#
+# You can tune the needed components here.
+# TODO: we should take this as a parameter if I knew how to do so.
+
+# SimGrid needs unwind-ptrace on Linux and FreeBSD
+if("${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
+  set(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-ptrace)
 endif()
 
-if(NOT PATH_LIBUNWIND_LIB)
-  find_library(PATH_LIBUNWIND_LIB
-    NAMES unwind
-    HINTS
-    $ENV{SIMGRID_LIBUNWIND_LIBRARY_PATH}
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{LIBUNWIND_LIBRARY_PATH}
-    PATH_SUFFIXES lib/ GnuWin32/lib lib/system
-    PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
-    /usr/lib/)
+#
+#  Output variables:
+#     HAVE_LIBUNWIND     : if all components were found was found
+#     LIBUNWIND_LIBRARIES: List of all libraries to load (-lunwind -lunwind-x86_64 and such)
+#
+#  Other effects:
+#    - Calls include_directories() on where libunwind.h lives
+#    - Calls link_directories() on where the libs live
+
+# Of course also need the core lib
+set(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} "unwind")
+
+# For some reason, some archs have an arch-specific while other do not.
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
+    SET(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-arm)
+elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64")
+    SET(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-x86_64)
+elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^i.86$")
+    SET(LIBUNWIND_COMPONENTS ${LIBUNWIND_COMPONENTS} unwind-x86)
 endif()
+
+
+message(STATUS "Looking for libunwind:")
+# Let's assume we have it, and invalidate if parts are missing
+SET(HAVE_LIBUNWIND 1)
+
+#
+# Search for the header file
+# 
 
 find_path(PATH_LIBUNWIND_H "libunwind.h"
   HINTS
-  $ENV{SIMGRID_LIBUNWIND_LIBRARY_PATH}
-  $ENV{LD_LIBRARY_PATH}
-  $ENV{LIBUNWIND_LIBRARY_PATH}
+    $ENV{LIBUNWIND_HINT}
+    $ENV{LD_LIBRARY_PATH}
   PATH_SUFFIXES include/ GnuWin32/include
-  PATHS
-  /opt
-  /opt/local
-  /opt/csw
-  /sw
-  /usr)
-
+  PATHS /opt /opt/local /opt/csw /sw /usr)
 if(PATH_LIBUNWIND_H)
   string(REGEX REPLACE "/libunwind.h"               "" PATH_LIBUNWIND_H   "${PATH_LIBUNWIND_H}")
-  message(STATUS "Looking for libunwind.h - found in ${PATH_LIBUNWIND_H}")
+  message("   Found libunwind.h in ${PATH_LIBUNWIND_H}")
   include_directories(${PATH_LIBUNWIND_H})  
 else()
-  message(STATUS "Looking for libunwind.h - not found")
-endif()
-
-if(PATH_LIBUNWIND_LIB)
-  string(REGEX REPLACE "/libunwind.*[.]${LIB_EXE}$" "" PATH_LIBUNWIND_LIB "${PATH_LIBUNWIND_LIB}")
-  message(STATUS "Looking for libunwind.${LIB_EXE} - found in ${PATH_LIBUNWIND_LIB}")
-  link_directories(${PATH_LIBUNWIND_LIB})
-else()
-  message(STATUS "Looking for libunwind - not found")
-endif()
-
-if(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
-  SET(HAVE_LIBUNWIND 1)
-else()
+  message("   NOT FOUND libunwind.h")
   SET(HAVE_LIBUNWIND 0)
 endif()
-
-mark_as_advanced(PATH_LIBDW_H)
-mark_as_advanced(PATH_LIBDW_LIB)
-mark_as_advanced(PATH_LIBUNWIND_LIB)
 mark_as_advanced(PATH_LIBUNWIND_H)
+
+#
+# Search for the library components
+#
+
+foreach(component ${LIBUNWIND_COMPONENTS})
+  find_library(PATH_LIBUNWIND_LIB_${component}
+    NAMES ${component}
+    HINTS
+      $ENV{LIBUNWIND_HINT}
+      $ENV{LD_LIBRARY_PATH}
+    PATH_SUFFIXES lib/ GnuWin32/lib lib/system
+    PATHS /opt /opt/local /opt/csw /sw /usr /usr/lib/)
+  if(PATH_LIBUNWIND_LIB_${component})
+    # message("     ${component}  ${PATH_LIBUNWIND_LIB_${component}}")
+    string(REGEX REPLACE "/lib${component}.*[.]${LIB_EXE}$" "" PATH_LIBUNWIND_LIB_${component} "${PATH_LIBUNWIND_LIB_${component}}")
+    message("   Found lib${component}.${LIB_EXE} in ${PATH_LIBUNWIND_LIB_${component}}")
+    link_directories(${PATH_LIBUNWIND_LIB_${component}})
+    
+    if(${component} STREQUAL "unwind" AND APPLE)
+        # Apple forbids to link directly against its libunwind implementation
+        # So let's comply to that stupid restriction and link against the System framework
+        SET(LIBUNWIND_LIBRARIES "${LIBUNWIND_LIBRARIES} -lSystem")
+    else()
+        SET(LIBUNWIND_LIBRARIES "${LIBUNWIND_LIBRARIES} -l${component}")
+    endif()
+	
+  else()
+    message("   Looking for lib${component}.${LIB_EXE} - not found")
+    SET(HAVE_LIBUNWIND 0)
+  endif()
+  mark_as_advanced(PATH_LIBUNWIND_LIB_${component})
+endforeach()
+unset(component)
+unset(LIBUNWIND_COMPONENTS)
+
+#
+# Conclude and cleanup
+# 
+if(HAVE_LIBUNWIND)
+  message(STATUS "Dependencies induced by libunwind: ${LIBUNWIND_LIBRARIES}")
+else()
+  message(STATUS "Some libunwind components are missing")
+  set(LIBUNWIND_LIBRARIES "")
+endif()
