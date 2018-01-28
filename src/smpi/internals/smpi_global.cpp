@@ -566,7 +566,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SMPI_init();
   SIMIX_launch_application(argv[2]);
   SMPI_app_instance_register(smpi_default_instance_name, nullptr,
-                               SIMIX_process_count()); // This call has a side effect on process_count...
+                             process_data.size()); // This call has a side effect on process_count...
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
   smpi_universe_size = process_count;
 
@@ -604,7 +604,9 @@ int smpi_main(const char* executable, int argc, char *argv[])
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
   simgrid::s4u::Actor::onCreation.connect([](simgrid::s4u::ActorPtr actor) {
-    process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
+    if (not actor->isDaemon()) {
+      process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
+    }
   });
   simgrid::s4u::Actor::onDestruction.connect([](simgrid::s4u::ActorPtr actor) {
     auto it = process_data.find(actor);
