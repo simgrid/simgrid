@@ -111,6 +111,11 @@ void Actor::daemonize()
   simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
 }
 
+bool Actor::isDaemon()
+{
+  return this->pimpl_->isDaemon();
+}
+
 const simgrid::xbt::string& Actor::getName() const
 {
   return this->pimpl_->getName();

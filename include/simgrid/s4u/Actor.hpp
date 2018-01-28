@@ -204,6 +204,9 @@ public:
   /** This actor will be automatically terminated when the last non-daemon actor finishes **/
   void daemonize();
 
+  /** Returns whether or not this actor has been daemonized or not **/
+  bool isDaemon();
+
   /** Retrieves the name of that actor as a C++ string */
   const simgrid::xbt::string& getName() const;
   /** Retrieves the name of that actor as a C string */
