@@ -232,6 +232,9 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
       socket_to_destroy.push_back(ns3Socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3Socket.c_str(), action);
       action->finish(Action::State::done);
+    } else {
+      XBT_DEBUG("Socket %p sent %d bytes out of %d (%d remaining)", ns3Socket.c_str(), sgFlow->sentBytes_,
+                sgFlow->totalBytes_, sgFlow->remaining_);
     }
   }
 

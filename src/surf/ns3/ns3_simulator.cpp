@@ -12,7 +12,7 @@
 std::map<std::string, SgFlow*> flowFromSock; // ns3::sock -> SgFlow
 
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
-static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
+static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
@@ -32,6 +32,7 @@ static SgFlow* getFlowFromSocket(ns3::Ptr<ns3::Socket> socket)
 static void receive_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
+  XBT_DEBUG("received on F[%p, total: %u, remain: %u]", flow, flow->totalBytes_, flow->remaining_);
 
   if (flow->finished_ == false) {
     flow->finished_ = true;
@@ -42,9 +43,10 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
   }
 }
 
-static void WriteUntilBufferFull(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
+static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
 {
   SgFlow* flow = getFlowFromSocket(sock);
+  XBT_DEBUG("Asked to write on F[%p, total: %u, remain: %u]", flow, flow->totalBytes_, flow->remaining_);
 
   if (flow->remaining_ == 0) // all data was already buffered (and socket was already closed)
     return;
@@ -53,8 +55,11 @@ static void WriteUntilBufferFull(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
   while (flow->bufferedBytes_ < flow->totalBytes_ && sock->GetTxAvailable() > 0) {
 
     uint32_t toWrite = std::min({flow->remaining_, sock->GetTxAvailable()});
-    if (toWrite == 0) // buffer full
+    if (toWrite == 0) { // buffer full
+      XBT_DEBUG("%f: buffer full on flow %p (still %u to go)", ns3::Simulator::Now().GetSeconds(), flow,
+                flow->remaining_);
       return;
+    }
     int amountSent = sock->Send(0, toWrite, 0);
 
     xbt_assert(amountSent > 0, "Since TxAvailable>0, amountSent should also >0");
@@ -69,7 +74,7 @@ static void WriteUntilBufferFull(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
     sock->Close();
 }
 
-static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent)
+static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent)
 {
   /* The tracing wants to know */
   SgFlow* flow = getFlowFromSocket(socket);
@@ -111,20 +116,16 @@ void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number)
   ns3::InetSocketAddress serverAddr(to, port_number);
 
   sock->Connect(serverAddr);
-  // tell the tcp implementation to call WriteUntilBufferFull again
+  // tell the tcp implementation to call send_cb again
   // if we blocked and new tx buffer space becomes available
-  sock->SetSendCallback(MakeCallback(&WriteUntilBufferFull));
-  // Note when the send is over
+  sock->SetSendCallback(MakeCallback(&send_cb));
+  // Notice when the send is over
   sock->SetRecvCallback(MakeCallback(&receive_callback));
-  // Keep track of what was used (for the TRACING module)
-  sock->SetDataSentCallback(MakeCallback(&datasent_callback));
+  // Notice when we actually sent some data (mostly for the TRACING module)
+  sock->SetDataSentCallback(MakeCallback(&datasent_cb));
+
   XBT_DEBUG("startFlow of F[%p, %p, %u] dest=%s port=%d", flow, flow->action_, flow->totalBytes_, to, port_number);
 
-  // WriteUntilBufferFull (sock, sock->GetTxAvailable ());
-  /*
-  sock->SetSendCallback(MakeCallback(&send_callback));
   sock->SetConnectCallback(MakeCallback(&succeededConnect_callback), MakeCallback(&failedConnect_callback));
   sock->SetCloseCallbacks(MakeCallback(&normalClose_callback), MakeCallback(&errorClose_callback));
-  send_callback(sock, sock->GetTxAvailable ());
-   */
 }
