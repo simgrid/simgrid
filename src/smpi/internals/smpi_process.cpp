@@ -77,7 +77,7 @@ void Process::set_data(int* argc, char*** argv)
   argv_ = argv;
   // set the process attached to the mailbox
   mailbox_small_->setReceiver(process_);
-  XBT_DEBUG("<%lu> New process in the game: %p", process_->getPid(), process_.get());
+  XBT_DEBUG("<%lu> SMPI process has been initialized: %p", process_->getPid(), process_.get());
 }
 
 /** @brief Prepares the current process for termination. */
