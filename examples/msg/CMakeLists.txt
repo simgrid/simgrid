@@ -55,8 +55,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/crosstraffic_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/dogbone_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/two_clusters_d.xml       PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml        PARENT_SCOPE)
 
 foreach(x app-masterworker cloud-masterworker
           dht-pastry dht-kademlia platform-failures
