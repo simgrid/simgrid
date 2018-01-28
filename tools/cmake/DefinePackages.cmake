@@ -341,6 +341,7 @@ set(SURF_SRC
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
   src/surf/plugins/dirty_page_tracking.cpp
+  src/surf/plugins/host_dvfs.cpp
   src/surf/plugins/host_energy.cpp
   src/surf/plugins/link_energy.cpp
   src/surf/plugins/host_load.cpp
