@@ -65,7 +65,7 @@ if(NS3_INCLUDE_DIR)
     # Compute NS3_PATH
     string(REGEX REPLACE "(.*)/lib" "\\1" NS3_PATH "${NS3_LIBRARY_PATH}")
     
-    message(STATUS "NS-3 found (v3.${NS3_VERSION} in ${NS3_PATH}).")
+    message(STATUS "NS-3 found (v${NS3_VERSION}; incl:${NS3_INCLUDE_DIR}; lib: ${NS3_LIBRARY_PATH}).")
 
     if (NOT NS3_LIBRARY_PATH STREQUAL "/usr/lib") 
       string(REGEX MATCH "${NS3_LIBRARY_PATH}" MatchResult "$ENV{LD_LIBRARY_PATH}")
