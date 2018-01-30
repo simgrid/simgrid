@@ -19,6 +19,7 @@
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/routing/NetPoint.hpp"
 
+#include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 
@@ -143,6 +144,9 @@ namespace simgrid {
 namespace surf {
 
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
+  xbt_assert(not sg_link_energy_is_inited(),
+             "LinkEnergy plugin and NS3 network models are not compatible. Are you looking for Ecofen, maybe?");
+
   NetPointNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetPointNs3>();
 
   ns3_initialize(ns3_tcp_model.get().c_str());

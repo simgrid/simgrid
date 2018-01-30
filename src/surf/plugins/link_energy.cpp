@@ -177,6 +177,10 @@ static void onSimulationEnd()
 }
 /* **************************** Public interface *************************** */
 SG_BEGIN_DECL()
+int sg_link_energy_is_inited()
+{
+  return LinkEnergy::EXTENSION_ID.valid();
+}
 /** \ingroup SURF_plugin_energy
  * \brief Enable energy plugin
  * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before
