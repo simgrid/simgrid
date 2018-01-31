@@ -193,6 +193,8 @@ void sg_link_energy_plugin_init()
     return;
   LinkEnergy::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkEnergy>();
 
+  xbt_assert(sg_host_count() == 0, "Please call sg_link_energy_plugin_init() before initializing the platform.");
+
   simgrid::s4u::Link::onCreation.connect([](simgrid::s4u::Link& link) {
     link.extension_set(new LinkEnergy(&link));
   });
