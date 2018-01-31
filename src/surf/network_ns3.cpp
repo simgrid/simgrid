@@ -48,9 +48,9 @@ simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPoin
 
 NetPointNs3::NetPointNs3()
 {
-  ns3::Ptr<ns3::Node> node = ns3::CreateObject<ns3::Node>(0);
-  stack.Install(node);
-  nodes.Add(node);
+  ns3Node_ = ns3::CreateObject<ns3::Node>(0);
+  stack.Install(ns3Node_);
+  nodes.Add(ns3Node_);
   node_num = number_of_nodes++;
 }
 
@@ -156,6 +156,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
     XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->getCname(), pt->extension<NetPointNs3>()->node_num);
   });
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
+
   simgrid::s4u::onPlatformCreated.connect(&postparse_cb);
   simgrid::s4u::NetZone::onRouteCreation.connect(&routeCreation_cb);
 }
@@ -345,8 +346,8 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
   unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
   unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
 
-  ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
-  ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);
+  ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
+  ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->getCname());
@@ -453,8 +454,8 @@ void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat) {
   int srcNum = src->node_num;
   int dstNum = dst->node_num;
 
-  ns3::Ptr<ns3::Node> a = nodes.Get(srcNum);
-  ns3::Ptr<ns3::Node> b = nodes.Get(dstNum);
+  ns3::Ptr<ns3::Node> a = src->ns3Node_;
+  ns3::Ptr<ns3::Node> b = dst->ns3Node_;
 
   XBT_DEBUG("\tAdd PTP from %d to %d bw:'%f Bps' lat:'%fs'", srcNum, dstNum, bw, lat);
   pointToPoint.SetDeviceAttribute("DataRate",

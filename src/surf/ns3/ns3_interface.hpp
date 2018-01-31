@@ -6,12 +6,16 @@
 #ifndef NS3_INTERFACE_HPP
 #define NS3_INTERFACE_HPP
 
+#include "ns3/ptr.h"
 #include "simgrid/s4u/Host.hpp"
 
 namespace simgrid {
 namespace surf {
 class NetworkNS3Action;
 }
+}
+namespace ns3 {
+class Node;
 }
 
 class NetPointNs3 {
@@ -20,6 +24,7 @@ public:
 
   explicit NetPointNs3();
   int node_num;
+  ns3::Ptr<ns3::Node> ns3Node_;
 };
 
 extern "C" {
