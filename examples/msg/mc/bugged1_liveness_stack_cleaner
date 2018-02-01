@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # Run the same test compiled with -fstack-cleaner / f-no-stack-cleaner
 # and compare the output.
 

@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/usr/bin/env sh
 #
 # This little script rebuilds and runs the SimGrid archive in parallel, extracting a log
 # This is almost an internal script, but others may find this useful

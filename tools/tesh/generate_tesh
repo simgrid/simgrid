@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # Generate a tesh file from a given command (simple case).
 
 command="$1"

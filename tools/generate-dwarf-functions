@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # Generate files from a given dwarf.h
 # Usage: tools/generate-dwarf-functions /usr/include/dwarf.h
 

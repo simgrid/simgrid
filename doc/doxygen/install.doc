@@ -345,7 +345,7 @@ cmake . \
 If needed, implement @c i686-linux-gnu-gfortran as a script:
 
 @verbatim
-#!/bin/sh
+#!/usr/bin/env sh
 exec gfortran -m32 "$@"
 @endverbatim
 

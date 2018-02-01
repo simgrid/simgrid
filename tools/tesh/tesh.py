@@ -296,7 +296,7 @@ class Cmd(object):
             tesh_exit(3)
         except OSError as osE:
             if osE.errno == 8:
-                osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
+                osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/usr/bin/env sh)"
             raise osE
 
         cmdName = FileReader().filename+":"+str(self.linenumber)
