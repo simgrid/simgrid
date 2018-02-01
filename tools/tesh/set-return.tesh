@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 # This suite builds and uses a program returning 1.
 # tesh is instructed of this return code and must not whine.
 

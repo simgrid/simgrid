@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ ${bindir:=.}/io-file ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Number of host '4'

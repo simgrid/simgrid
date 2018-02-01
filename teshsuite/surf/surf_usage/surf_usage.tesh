@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/surf_usage ${platfdir}/two_hosts_platform_with_availability.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'

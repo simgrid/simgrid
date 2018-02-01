@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-yield ${platfdir}/small_platform_fatpipe.xml s4u-actor-yield_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:yielder@Tremblay) I yielded 10 times. Goodbye now!

@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ ${bindir}/io-raw-storage$EXEEXT ${platfdir}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:@denise) *** Storage info on denise ***

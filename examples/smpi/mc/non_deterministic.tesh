@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 ! timeout 60
 $ ../../../smpi_script/bin/smpirun -wrapper ${bindir:=.}/../../../bin/simgrid-mc -hostfile ${srcdir:=.}/hostfile_non_deterministic  -platform ${srcdir:=.}/../../platforms/cluster.xml --log=xbt_cfg.thresh:warning --cfg=model-check/communications-determinism:1 --cfg=smpi/send-is-detached-thresh:0 --cfg=smpi/host-speed:1e9 ./smpi_non_deterministic

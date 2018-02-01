@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/cloud-sharing$EXEEXT --log=root.fmt:%m%n ${platfdir}/cluster_backbone.xml
 > # TEST ON SINGLE-CORE PMs

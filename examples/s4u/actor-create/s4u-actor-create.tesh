@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-create
 > [Tremblay:sender1:(1) 0.000000] [s4u_actor_create/INFO] Hello s4u, I have something to send

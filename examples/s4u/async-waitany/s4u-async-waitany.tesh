@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Testing this_actor->wait_any()
 

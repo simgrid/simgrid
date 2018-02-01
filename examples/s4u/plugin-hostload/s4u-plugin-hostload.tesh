@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p This tests the HostLoad plugin (this allows the user to get the current load of a host and the computed flops)
 

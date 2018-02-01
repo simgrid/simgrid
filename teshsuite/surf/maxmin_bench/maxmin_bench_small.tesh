@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 ! timeout 10
 ! expect return 0

@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Testing a MSG application with properties in the XML for Hosts, Links and Processes
 

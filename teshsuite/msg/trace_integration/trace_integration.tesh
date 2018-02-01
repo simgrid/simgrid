@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 p c=cycle s=step p=priority h=host
 
 p Testing trace integration using trace_B.txt and test-hbp1-c0s0-c0s1.xml, test_trace:start == trace_cycle_0_step_0, test_trace:end < trace_cycle_0_step_1

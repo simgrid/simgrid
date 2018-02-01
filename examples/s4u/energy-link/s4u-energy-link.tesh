@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Testing the mechanism for computing link energy consumption (using CM02 as a network model)
 

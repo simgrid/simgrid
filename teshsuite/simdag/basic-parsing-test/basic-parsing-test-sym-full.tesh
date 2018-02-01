@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 ! output sort
 
 $ ${bindir:=.}/basic-parsing-test ../platforms/one_cluster_fullduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

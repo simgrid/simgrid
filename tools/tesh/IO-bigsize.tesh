@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 # This suite contains two tests:
 #  The first one uses a very big input (150k) to check whether trucated input do work.
 #  The second one uses both a big input and a big output (150k each).

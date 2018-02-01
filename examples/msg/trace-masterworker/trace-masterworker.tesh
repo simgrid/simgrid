@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Tracing master/worker application
 $ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml

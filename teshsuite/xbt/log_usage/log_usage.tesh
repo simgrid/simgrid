@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Check different log thresholds
 $ $SG_TEST_EXENV ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"

@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Testing a S4U application with properties in the XML for Hosts, Links and Actors
 

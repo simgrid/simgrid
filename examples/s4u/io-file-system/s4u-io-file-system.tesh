@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-io-file-system ${platfdir}/storage/storage.xml
 > [denise:host:(1) 0.000000] [s4u_test/INFO] Storage info on denise:

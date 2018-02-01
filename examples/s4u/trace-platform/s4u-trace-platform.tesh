@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Tracing platform only
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-trace-platform$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:trace_platform.trace --cfg=tracing/categorized:yes ${platfdir}/small_platform.xml

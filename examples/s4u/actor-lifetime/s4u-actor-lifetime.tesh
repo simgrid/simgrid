@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-lifetime ${platfdir}/cluster.xml s4u-actor-lifetime_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.

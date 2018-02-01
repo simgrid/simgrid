@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Tracing user variables for hosts
 $ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml

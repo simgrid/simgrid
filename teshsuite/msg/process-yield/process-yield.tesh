@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/process-yield ${platfdir}/small_platform_fatpipe.xml ${srcdir:=.}/process-yield_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:yielder@Tremblay) I yielded 10 times. Goodbye now!

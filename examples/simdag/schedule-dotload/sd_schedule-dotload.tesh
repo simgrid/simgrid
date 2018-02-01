@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 p Test the loader of DAG written in the DOT format
 
 ! expect return 2

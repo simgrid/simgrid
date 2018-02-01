@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-kill ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
 > [  0.000000] (killer@Tremblay) Hello!

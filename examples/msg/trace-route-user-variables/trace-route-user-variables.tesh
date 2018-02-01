@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Trace user variables associated to links of the platform file
 $ $SG_TEST_EXENV ${bindir:=.}/trace-route-user-variables$EXEEXT --cfg=tracing:yes --cfg=tracing/platform:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml

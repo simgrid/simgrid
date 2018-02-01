@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 p Usage test of simdag's typed tasks
 
 ! output sort

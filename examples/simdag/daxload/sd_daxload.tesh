@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 p Test the DAX loader on a small DAX instance
 
 ! output sort

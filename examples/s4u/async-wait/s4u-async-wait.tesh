@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Test1 Sleep_sender > Sleep_receiver
 

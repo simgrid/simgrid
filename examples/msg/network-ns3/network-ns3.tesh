@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p In the NS3 tests, the timings are not shown because the exact values may vary with your NS3 version. 
 p We just want to check that the NS3 bindings of SimGrid are working correctly, we don't want to thoroughly test NS3.

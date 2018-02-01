@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/task-priority$EXEEXT ${platfdir}/small_platform.xml  ${srcdir}/task-priority_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

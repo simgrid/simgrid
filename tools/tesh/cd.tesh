@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 # This example uses the cd command
 

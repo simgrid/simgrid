@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Tracing processes
 $ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${platfdir}/small_platform.xml

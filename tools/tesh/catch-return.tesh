@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 # This suite builds and uses a program returning 1.
 # tesh must detect this condition and report the issue.
 

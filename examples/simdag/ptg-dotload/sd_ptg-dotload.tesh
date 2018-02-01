@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 p Test the loader of PTG (Parallel Task Graph) written in the DOT format
 
 # The order differ when executed with gcc's thread sanitizer

@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 $ ${bindir:=.}/energy-ptask$EXEEXT ${platfdir:=.}/energy_platform.xml --energy "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.

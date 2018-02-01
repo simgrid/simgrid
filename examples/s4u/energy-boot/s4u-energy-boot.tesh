@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Modeling the host energy consumption during boot and shutdown
 

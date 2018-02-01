@@ -1,4 +1,4 @@
-#! ./tesh
+#!/usr/bin/env tesh
 
 p Test1 MSG_comm_test() with Sleep_sender > Sleep_receiver
 
