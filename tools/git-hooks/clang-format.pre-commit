@@ -33,24 +33,8 @@
 # Link:    https://github.com/githubbrowser/Pre-commit-hooks
 # Contact: David Martin, david.martin.mailbox@googlemail.com
 
-
 ##################################################################
-# SETTINGS
-# set path to clang-format binary
-CLANG_FORMAT=$(which clang-format-3.8)
-
-# git subcommand that we want to us
-for name in git-clang-format-3.9 git-clang-format-3.8 git-clang-format ; do
- where=$(which $name)
- if [ x != "x$where" ] ; then
-   GIT_SUBCOMMAND=$(echo $name|sed 's/git-//')
-   break
- fi
-done
-if [ -z $GIT_SUBCOMMAND ] ; then
-  echo "Cannot find git-clang-format (in version >=3.8). Did you install the right package?"
-  exit 1
-fi
+# Settings
 
 # remove any older patches from previous commits. Set to true or false.
 DELETE_OLD_PATCHES=true
@@ -65,49 +49,98 @@ PARSE_EXTS=true
 FILE_EXTS=".c .h .cpp .hpp .cc .hh .cxx"
 
 ##################################################################
+# Potential names for clang-format (debian...)
+CLANG_FMT_PNAMES=(clang-format clang-format-3.8 clang-format-3.9 clang-format-4.0 clang-format-5.0)
+CLANG_FMT_CMD="NOT-FOUND"
+GIT_CLANG_FMT_CMD="NOT-FOUND"
+
+# Find which clang-format should be used
+for name in ${CLANG_FMT_PNAMES[*]}
+do
+    where=$(which ${name} 2> /dev/null)
+    if [ x != "x${where}" ]
+    then
+        echo "clang-format found: ${where}"
+        CLANG_FMT_CMD=${where}
+        break
+    fi
+done
+
+if [[ "${CLANG_FMT_CMD}" == NOT-FOUND ]]
+then
+    echo "Unable to find clang-format! Please install it:"
+    echo "- debian(-like): apt-get install clang-format[-VERSION]"
+    echo "- arch(-like): pacman -S clang"
+    echo "- ..."
+    exit 1
+fi
+
+# Find which git-clang-format should be used
+for name in ${CLANG_FMT_PNAMES[*]}
+do
+    where=$(which "git-${name}" 2> /dev/null)
+    if [ x != "x${where}" ]
+    then
+        echo "git-clang-format found: ${where}"
+        GIT_CLANG_FMT_CMD=${where}
+        break
+    fi
+done
+
+if [[ "${GIT_CLANG_FMT_CMD}" == NOT-FOUND ]]
+then
+    echo "Unable to find git-clang-format! Please install it:"
+    echo "- debian(-like): apt-get install clang-format[-VERSION]"
+    echo "- arch(-like): pacman -S clang"
+    echo "- ..."
+    exit 1
+fi
+
+# error on unset variable expansion
+set -u
+# exit on error
+set -e
+
 # There should be no need to change anything below this line.
 
 # Reference: http://stackoverflow.com/questions/1055671/how-can-i-get-the-behavior-of-gnus-readlink-f-on-a-mac
 canonicalize_filename () {
-    local target_file=$1
+    local target_file=${1}
     local physical_directory=""
     local result=""
 
     # Need to restore the working directory after work.
     pushd $(pwd) > /dev/null
 
-    cd "$(dirname "$target_file")"
-    target_file=$(basename $target_file)
+    cd "$(dirname "${target_file}")"
+    target_file=$(basename ${target_file})
 
     # Iterate down a (possible) chain of symlinks
-    while [ -L "$target_file" ]
+    while [ -L "${target_file}" ]
     do
-        target_file=$(readlink "$target_file")
-        cd "$(dirname "$target_file")"
-        target_file=$(basename "$target_file")
+        target_file=$(readlink "${target_file}")
+        cd "$(dirname "${target_file}")"
+        target_file=$(basename "${target_file}")
     done
 
     # Compute the canonicalized name by finding the physical path
     # for the directory we're in and appending the target file.
     physical_directory=$(pwd -P)
-    result="$physical_directory"/"$target_file"
+    result="${physical_directory}"/"${target_file}"
 
     # restore the working directory after work.
     popd > /dev/null
 
-    echo "$result"
+    echo "${result}"
 }
-
-# exit on error
-set -e
 
 # check whether the given file matches any of the set extensions
 matches_extension() {
-    local filename=$(basename "$1")
+    local filename=$(basename "${1}")
     local extension=".${filename##*.}"
     local ext
 
-    for ext in $FILE_EXTS; do [[ "$ext" == "$extension" ]] && return 0; done
+    for ext in ${FILE_EXTS}; do [[ "${ext}" == "${extension}" ]] && return 0; done
 
     return 1
 }
@@ -120,26 +153,20 @@ else
     against=foobaridonotexist
 fi
 
-if [ ! -x "$CLANG_FORMAT" ] ; then
-    printf "Error: clang-format executable not found. sudo apt-get install clang-format-3.8\n"
-    printf "Set the correct path in $(canonicalize_filename "$0").\n"
-    exit 1
-fi
-
 # create a random filename to store our generated patch
 prefix="pre-commit-clang-format"
 suffix="$(date +%s)"
-patch="/tmp/$prefix-$suffix.patch"
+patch="/tmp/${prefix}-${suffix}.patch"
 
 # clean up any older clang-format patches
-$DELETE_OLD_PATCHES && rm -f /tmp/$prefix*.patch
+${DELETE_OLD_PATCHES} && rm -f /tmp/${prefix}*.patch
 
 # create one patch containing all changes to the files
-git diff-index --cached --diff-filter=ACMR --name-only $against -- | while read file;
+git diff-index --cached --diff-filter=ACMR --name-only ${against} -- | while read file;
 do
     # ignore file if we do check for file extensions and the file
     # does not match any of the extensions specified in $FILE_EXTS
-    if $PARSE_EXTS && ! matches_extension "$file"; then
+    if ${PARSE_EXTS} && ! matches_extension "${file}"; then
         continue;
     fi
 
@@ -149,28 +176,28 @@ do
     #    +++ - timestamp
     # to both lines working on the same file and having a a/ and b/ prefix.
     # Else it can not be applied with 'git apply'.
-    git ${GIT_SUBCOMMAND} --binary ${CLANG_FORMAT} --diff -q "$file" \
+    ${GIT_CLANG_FMT_CMD} --binary ${CLANG_FMT_CMD} --diff -q "${file}" \
       | (grep -v "no modified files to format"||true) \
-      >> "$patch"
-    #"$CLANG_FORMAT" -style=file "$file" | \
-        #diff -u "$file" - | \
-        #sed -e "1s|--- |--- a/|" -e "2s|+++ -|+++ b/$file|" >> "$patch"
+      >> "${patch}"
+    #"${CLANG_FMT_CMD}" -style=file "${file}" | \
+        #diff -u "${file}" - | \
+        #sed -e "1s|--- |--- a/|" -e "2s|+++ -|+++ b/${file}|" >> "${patch}"
 done
 
 # if no patch has been generated all is ok, clean up the file stub and exit
-if [ ! -s "$patch" ] ; then
+if [ ! -s "${patch}" ] ; then
     printf "Files in this commit comply with the clang-format rules.\n"
-    rm -f "$patch"
+    rm -f "${patch}"
     exit 0
 fi
 
 # a patch has been created, notify the user and exit
 printf "\nThe following differences were found between the code to commit "
 printf "and the clang-format rules:\n\n"
-cat "$patch"
+cat "${patch}"
 
 printf "\nYou can apply these changes and readd the files with:\n"
-printf "  git apply $patch &&  git apply --cached $patch\n"
+printf "  git apply ${patch} &&  git apply --cached ${patch}\n"
 printf "(call this command from the root directory of your repository)\n"
 printf "\n\n\n"
 printf "Aborting commit. Apply changes and commit again.\n"

@@ -44,8 +44,11 @@ to install the relevant tool to ensure that your changes follow our
 coding standards:
 
 @verbatim
-sudo apt-get install clang-format-3.8
-ln -s $PWD/tools/git-hooks/clang-format.pre-commit .git/hooks/pre-commit
+# install clang-format
+sudo apt-get install clang-format-3.8 # debian
+
+# tell git to call the script on each commit
+ln -s $(realpath tools/git-hooks/clang-format.pre-commit) .git/hooks/pre-commit
 @endverbatim
 
 This will add an extra verification before integrating any commit that
