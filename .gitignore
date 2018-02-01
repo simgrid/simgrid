@@ -13,6 +13,7 @@
 *.trace
 *.class
 .cproject # Eclipse cruft
+CMakeLists.txt.user
 \#*
 .attach_pid* 
 smpitmp-*
