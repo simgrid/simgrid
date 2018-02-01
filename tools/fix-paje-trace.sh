@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.
 
