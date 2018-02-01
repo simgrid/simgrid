@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 ! output sort 19
 ! timeout 15

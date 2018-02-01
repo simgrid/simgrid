@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 $ java -classpath ${classpath:=.} io/storage/Main ${srcdir:=.}/../platforms/storage/storage.xml
 > [0.000000] [java/INFO] Using regular java threads.

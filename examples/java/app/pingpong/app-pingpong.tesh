@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 $ java -classpath ${classpath:=.} app/pingpong/Main ${srcdir:=.}/../platforms/small_platform.xml
 > [0.000000] [java/INFO] Using regular java threads.

@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms/three_multicore_hosts.xml
 > [0.000000] [java/INFO] Using regular java threads.

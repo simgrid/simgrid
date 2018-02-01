@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 $ java -classpath ${classpath:=.} energy/vm/Main ${srcdir:=.}/../platforms/energy_platform.xml
 > [0.000000] [java/INFO] Using regular java threads.

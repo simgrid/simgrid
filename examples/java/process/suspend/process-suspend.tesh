@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 ! output sort 19
 $ java -classpath ${classpath:=.} process/suspend/Main ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

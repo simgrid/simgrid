@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 $ java -classpath ${classpath:=.} app/masterworker/Main ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/app/masterworker/masterworker.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.

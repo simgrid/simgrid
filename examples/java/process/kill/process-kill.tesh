@@ -1,4 +1,4 @@
-#! tesh
+#!/usr/bin/env tesh
 
 $ java -classpath ${classpath:=.} process/kill/Main ${srcdir:=.}/../platforms/small_platform.xml --lof=no_loc
 > [0.000000] [java/INFO] Using regular java threads.
