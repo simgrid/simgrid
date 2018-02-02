@@ -22,6 +22,7 @@ namespace simgrid {
 namespace s4u {
 
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::onCreation;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::onDestruction;
 
 // ***** Actor creation *****
 ActorPtr Actor::self()

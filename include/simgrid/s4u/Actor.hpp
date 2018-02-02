@@ -165,6 +165,8 @@ public:
 
   /** Signal to others that a new actor has been created **/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> onCreation;
+  /** Signal indicating that the given actor is about to disappear */
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> onDestruction;
 
   /** Create an actor using a function
    *

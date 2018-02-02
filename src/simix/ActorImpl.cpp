@@ -462,6 +462,7 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
     return;
   }
 
+  simgrid::s4u::Actor::onDestruction(process->iface());
   XBT_DEBUG("Killing process %s@%s", process->getCname(), process->host->getCname());
 
   process->context->iwannadie = 1;
