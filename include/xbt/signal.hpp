@@ -37,10 +37,8 @@ namespace xbt {
       for (auto const& handler : handlers_)
         handler(args...);
     }
-    void disconnect_all_slots()
-    {
-      handlers_.clear();
-    }
+    void disconnectSlots() { handlers_.clear(); }
+    int getSlotsAmount() { return handlers_.size(); }
   };
 
 }
