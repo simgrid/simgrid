@@ -84,11 +84,6 @@ static simgrid::config::Flag<double> smpi_init_sleep(
 
 void (*smpi_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &smpi_comm_copy_buffer_callback;
 
-void smpi_add_process(ActorPtr actor)
-{
-  process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
-}
-
 int smpi_process_count()
 {
   return process_count;
@@ -626,7 +621,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
   simgrid::s4u::Actor::onCreation.connect([](simgrid::s4u::ActorPtr actor) {
-    smpi_add_process(actor);
+    process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
   });
   simgrid::s4u::Actor::onDestruction.connect([](simgrid::s4u::ActorPtr actor) {
     if (process_data.find(actor) != process_data.end()) {
