@@ -56,6 +56,12 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
 #endif
 }
 
+Process::~Process()
+{
+  xbt_os_timer_free(timer_);
+  xbt_mutex_destroy(mailboxes_mutex_);
+}
+
 void Process::set_data(int* argc, char*** argv)
 {
   instance_id_      = std::string((*argv)[1]);

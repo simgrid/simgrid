@@ -44,6 +44,7 @@ class Process {
 #endif
   public:
     explicit Process(simgrid::s4u::ActorPtr actor, msg_bar_t barrier);
+    ~Process();
     void set_data(int* argc, char*** argv);
     void finalize();
     int finalized();
