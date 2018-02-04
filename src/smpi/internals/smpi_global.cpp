@@ -623,13 +623,6 @@ void SMPI_init(){
   simgrid::s4u::Actor::onCreation.connect([](simgrid::s4u::ActorPtr actor) {
     process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
   });
-  simgrid::s4u::Actor::onDestruction.connect([](simgrid::s4u::ActorPtr actor) {
-    if (process_data.find(actor) != process_data.end()) {
-      delete process_data.at(actor);
-      process_data.erase(actor);
-    }
-  });
-
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();
