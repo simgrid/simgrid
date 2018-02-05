@@ -404,6 +404,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   simix_global->process_list[process->pid] = process;
   XBT_DEBUG("Inserting %s(%s) in the to_run list", process->getCname(), host->getCname());
   simix_global->process_to_run.push_back(process);
+  intrusive_ptr_add_ref(process);
 
   /* Tracing the process creation */
   TRACE_msg_process_create(process->getName(), process->pid, process->host);
@@ -425,7 +426,6 @@ void SIMIX_process_detach()
   auto process = context->process();
   simix_global->cleanup_process_function(process);
   context->attach_stop();
-  delete process;
 }
 
 /**
@@ -783,6 +783,7 @@ smx_actor_t SIMIX_process_from_PID(aid_t PID)
 }
 
 void SIMIX_process_on_exit_runall(smx_actor_t process) {
+  simgrid::s4u::Actor::onDestruction(process->iface());
   smx_process_exit_status_t exit_status = (process->context->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not process->on_exit.empty()) {
     s_smx_process_exit_fun_t exit_fun = process->on_exit.back();
