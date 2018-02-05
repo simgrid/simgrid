@@ -112,7 +112,10 @@ public:
     if (load > freq_up_threshold) {
       if (pstate != 0) {
         host->setPstate(pstate - 1);
-        XBT_INFO("Reducing pstate to %d", pstate - 1);
+        XBT_INFO("Increasing performance to pstate %d", pstate - 1);
+      }
+      else {
+        XBT_DEBUG("Cannot speed up even more, already in slowest pstate %d", pstate);
       }
     }
 
@@ -120,7 +123,10 @@ public:
       int max_pstate = host->getPstatesCount() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
         host->setPstate(pstate + 1);
-        XBT_INFO("Increasing pstate to %d", pstate + 1);
+        XBT_INFO("Slowing down to pstate %d", pstate + 1);
+      }
+      else {
+        XBT_DEBUG("Cannot slow down even more, already in slowest pstate %d", pstate);
       }
     }
   }
