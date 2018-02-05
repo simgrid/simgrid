@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2016. The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2010, 2012-2018. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -159,7 +159,7 @@ static void on_host_added(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  std::string name              = "dvfs-daemon-" + host.getName();
+  std::string name              = std::string("dvfs-daemon-") + host.getCname();
   simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::createActor(name.c_str(), &host, []() {
     /**
      * This lambda function is the function the actor (daemon) will execute
