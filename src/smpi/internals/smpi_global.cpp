@@ -352,7 +352,8 @@ void smpi_global_destroy()
     if (process->comm_intra() != MPI_COMM_NULL) {
       simgrid::smpi::Comm::destroy(process->comm_intra());
     }
-    delete process;
+    xbt_os_timer_free(process->timer());
+    xbt_mutex_destroy(process->mailboxes_mutex());
   }
   process_data.clear();
 
