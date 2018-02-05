@@ -141,16 +141,11 @@ public:
 
   explicit HostDvfs(simgrid::s4u::Host* ptr);
   ~HostDvfs();
-
-private:
-  simgrid::s4u::Host* host = nullptr;
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostDvfs> HostDvfs::EXTENSION_ID;
 
-HostDvfs::HostDvfs(simgrid::s4u::Host* ptr) : host(ptr)
-{
-}
+HostDvfs::HostDvfs(simgrid::s4u::Host* ptr) {}
 
 HostDvfs::~HostDvfs() = default;
 }
