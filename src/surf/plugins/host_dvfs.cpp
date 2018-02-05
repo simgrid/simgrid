@@ -39,7 +39,7 @@ protected:
 public:
   double sampling_rate;
 
-  Governor(simgrid::s4u::Host* ptr) : host(ptr) { init(); }
+  explicit Governor(simgrid::s4u::Host* ptr) : host(ptr) { init(); }
 
   void init()
   {
@@ -58,14 +58,14 @@ public:
 
 class Performance : public Governor {
 public:
-  Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
   void update() { host->setPstate(0); }
 };
 
 class Powersave : public Governor {
 public:
-  Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
   void update() { host->setPstate(host->getPstatesCount() - 1); }
 };
@@ -74,7 +74,7 @@ class OnDemand : public Governor {
   double freq_up_threshold = 0.95;
 
 public:
-  OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
   void update()
   {
@@ -104,7 +104,7 @@ class Conservative : public Governor {
   double freq_down_threshold = .2;
 
 public:
-  Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
   void update()
   {
