@@ -57,6 +57,7 @@ std::unordered_map<std::string, double> location2speedup;
 
 static std::map</*process_id*/ ActorPtr, simgrid::smpi::Process*> process_data;
 int process_count = 0;
+static int smpi_exit_status = 0;
 int smpi_universe_size = 0;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
@@ -419,6 +420,8 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
     smpi_process()->set_return_value(res);
+    if (smpi_exit_status == 0)
+      smpi_exit_status = res;
   }
   return 0;
 }
@@ -591,19 +594,11 @@ int smpi_main(const char* executable, int argc, char *argv[])
       "You may want to use sampling functions or trace replay to reduce this.");
     }
   }
-  int ret   = 0;
-  for (auto& pair : process_data) {
-    auto& smpi_process = pair.second;
-    if (smpi_process->return_value() != 0) {
-      ret = smpi_process->return_value(); // return first non 0 value
-      break;
-    }
-  }
   smpi_global_destroy();
 
   TRACE_end();
 
-  return ret;
+  return smpi_exit_status;
 }
 
 // Called either directly from the user code, or from the code called by smpirun
