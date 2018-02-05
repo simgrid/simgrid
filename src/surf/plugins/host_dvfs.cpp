@@ -139,7 +139,7 @@ class HostDvfs {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostDvfs> EXTENSION_ID;
 
-  explicit HostDvfs(simgrid::s4u::Host* ptr);
+  explicit HostDvfs(simgrid::s4u::Host*);
   ~HostDvfs();
 };
 
