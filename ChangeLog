@@ -7,7 +7,7 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  S4U
  - Execution->setHost() can be called after start() to migrate it.
  - Comm::test_any() is now implemented.
- - s4u::Actor now has an onCreation() signal.
+ - s4u::Actor now has onCreation() and onDestruction() signals.
 
  XBT
  - Remove XBT_LOG_CONNECT, it should be useless nowadays.
@@ -17,7 +17,7 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
    flexible and allows the use of daemons with SMPI and to add new processes
    while the simulation is running. (Adding new SMPI instances after the
    simulation has already started should also be technically doable now.)
- - Removed index notion from SMPI -- no more "getPid() - 1"! 
+ - Removed index notion from SMPI -- no more "getPid() - 1"!
    This also means that the trace files
    now contain actors called rank-<PROCESS-ID>. These are NOT the real
    ranks, because tracing several communicators right now is not supported.
