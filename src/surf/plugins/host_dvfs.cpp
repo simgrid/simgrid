@@ -11,11 +11,13 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
 #include <simgrid/msg.h>
 #include <simgrid/s4u/Engine.hpp>
 #include <string>
 #include <utility>
 #include <vector>
+#include <xbt/config.hpp>
 
 /** @addtogroup SURF_plugin_load
 
@@ -50,7 +52,7 @@ public:
     }
   }
 
-  virtual void update() = 0;
+  virtual void update() {}
   double samplingRate() { return sampling_rate; }
 };
 
@@ -157,40 +159,55 @@ HostDvfs::~HostDvfs() = default;
 using simgrid::plugin::HostDvfs;
 
 /* **************************** events  callback *************************** */
-static int check(int argc, char* argv[]);
-
 static void on_host_added(simgrid::s4u::Host& host)
 {
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  // host.extension_set(new HostDvfs(&host));
+  std::string name = "dvfs-daemon-" + host.getName();
+  simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::createActor(name.c_str(), &host, []() {
+      /**
+       * This lambda function is the function the actor (daemon) will execute
+       * all the time - in the case of the dvfs plugin, this controls when to
+       * lower/raise the frequency.
+       */
+      simgrid::s4u::ActorPtr daemonProc = simgrid::s4u::Actor::self();
+
+      XBT_DEBUG("DVFS process on %s is a daemon: %d", daemonProc->getHost()->getName().c_str(), daemonProc->isDaemon());
+
+      std::string dvfs_governor;
+      const char* host_conf = daemonProc->getHost()->getProperty("plugin/dvfs/governor");
+      if (host_conf != nullptr) {
+        dvfs_governor = std::string(daemonProc->getHost()->getProperty("plugin/dvfs/governor"));
+        boost::algorithm::to_lower(dvfs_governor);
+      }
+      else {
+        dvfs_governor = xbt_cfg_get_string("plugin/dvfs/governor");
+        boost::algorithm::to_lower(dvfs_governor);
+      }
+
+      simgrid::plugin::dvfs::Governor governor(daemonProc->getHost());
+      if (dvfs_governor == "conservative") {
+        governor = simgrid::plugin::dvfs::Conservative(daemonProc->getHost());
+      }
+
+      while (1) {
+        // Sleep *before* updating; important for startup (i.e., t = 0).
+        // In the beginning, we want to go with the pstates specified in the platform file
+        // (so we sleep first)
+        simgrid::s4u::this_actor::sleep_for(governor.samplingRate());
+        governor.update();
+        XBT_INFO("Governor just updated!");
+      }
+
+
+      XBT_WARN("I should have never reached this point: daemons should be killed when all regular processes are done");
+      return 0;
+  });
+
   // This call must be placed in this function. Otherweise, the daemonize() call comes too late and
   // SMPI will take this process as an MPI process!
-  MSG_process_daemonize(MSG_process_create("daemon", check, NULL, &host));
-}
-
-static int check(int argc, char* argv[])
-{
-  msg_host_t host = MSG_host_self();
-
-  int isDaemon = (MSG_process_self())->getImpl()->isDaemon();
-  XBT_INFO("Bin ein Daemon: %d", isDaemon);
-
-  simgrid::plugin::dvfs::Conservative governor(host);
-  while (1) {
-    // Sleep before updating; important for startup (i.e., t = 0).
-    // In the beginning, we want to go with the pstates specified in the platform file
-    // (so we sleep first)
-    MSG_process_sleep(governor.samplingRate());
-    governor.update();
-    XBT_INFO("Governor just updated!");
-  }
-
-  // const char* dvfs_governor = host->property("plugin/dvfs/governor");
-
-  XBT_INFO("I will never reach that point: daemons are killed when regular processes are done");
-  return 0;
+  daemon->daemonize();
 }
 
 /* **************************** Public interface *************************** */
@@ -212,6 +229,8 @@ void sg_host_dvfs_plugin_init()
   simgrid::s4u::Host::onCreation.connect(&on_host_added);
   xbt_cfg_register_double("plugin/dvfs/sampling_rate", 0.1, nullptr,
                           "How often should the dvfs plugin check whether the frequency needs to be changed?");
+  xbt_cfg_register_string("plugin/dvfs/governor", "performance", nullptr,
+                          "Which Governor should be used that adapts the CPU frequency?");
 }
 
 SG_END_DECL()
