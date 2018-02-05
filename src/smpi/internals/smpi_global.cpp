@@ -344,18 +344,6 @@ void smpi_global_destroy()
   smpi_bench_destroy();
   smpi_shared_destroy();
   smpi_deployment_cleanup_instances();
-  for (auto& pair : process_data) {
-    auto& process = pair.second;
-    if (process->comm_self() != MPI_COMM_NULL) {
-      simgrid::smpi::Comm::destroy(process->comm_self());
-    }
-    if (process->comm_intra() != MPI_COMM_NULL) {
-      simgrid::smpi::Comm::destroy(process->comm_intra());
-    }
-    xbt_os_timer_free(process->timer());
-    xbt_mutex_destroy(process->mailboxes_mutex());
-  }
-  process_data.clear();
 
   if (simgrid::smpi::Colls::smpi_coll_cleanup_callback != nullptr)
     simgrid::smpi::Colls::smpi_coll_cleanup_callback();
