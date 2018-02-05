@@ -9,9 +9,9 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string.hpp>
 #include <simgrid/msg.h>
 #include <simgrid/s4u/Engine.hpp>
 #include <string>
@@ -164,45 +164,43 @@ static void on_host_added(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  std::string name = "dvfs-daemon-" + host.getName();
+  std::string name              = "dvfs-daemon-" + host.getName();
   simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::createActor(name.c_str(), &host, []() {
-      /**
-       * This lambda function is the function the actor (daemon) will execute
-       * all the time - in the case of the dvfs plugin, this controls when to
-       * lower/raise the frequency.
-       */
-      simgrid::s4u::ActorPtr daemonProc = simgrid::s4u::Actor::self();
+    /**
+     * This lambda function is the function the actor (daemon) will execute
+     * all the time - in the case of the dvfs plugin, this controls when to
+     * lower/raise the frequency.
+     */
+    simgrid::s4u::ActorPtr daemonProc = simgrid::s4u::Actor::self();
 
-      XBT_DEBUG("DVFS process on %s is a daemon: %d", daemonProc->getHost()->getName().c_str(), daemonProc->isDaemon());
+    XBT_DEBUG("DVFS process on %s is a daemon: %d", daemonProc->getHost()->getName().c_str(), daemonProc->isDaemon());
 
-      std::string dvfs_governor;
-      const char* host_conf = daemonProc->getHost()->getProperty("plugin/dvfs/governor");
-      if (host_conf != nullptr) {
-        dvfs_governor = std::string(daemonProc->getHost()->getProperty("plugin/dvfs/governor"));
-        boost::algorithm::to_lower(dvfs_governor);
-      }
-      else {
-        dvfs_governor = xbt_cfg_get_string("plugin/dvfs/governor");
-        boost::algorithm::to_lower(dvfs_governor);
-      }
+    std::string dvfs_governor;
+    const char* host_conf = daemonProc->getHost()->getProperty("plugin/dvfs/governor");
+    if (host_conf != nullptr) {
+      dvfs_governor = std::string(daemonProc->getHost()->getProperty("plugin/dvfs/governor"));
+      boost::algorithm::to_lower(dvfs_governor);
+    } else {
+      dvfs_governor = xbt_cfg_get_string("plugin/dvfs/governor");
+      boost::algorithm::to_lower(dvfs_governor);
+    }
 
-      simgrid::plugin::dvfs::Governor governor(daemonProc->getHost());
-      if (dvfs_governor == "conservative") {
-        governor = simgrid::plugin::dvfs::Conservative(daemonProc->getHost());
-      }
+    simgrid::plugin::dvfs::Governor governor(daemonProc->getHost());
+    if (dvfs_governor == "conservative") {
+      governor = simgrid::plugin::dvfs::Conservative(daemonProc->getHost());
+    }
 
-      while (1) {
-        // Sleep *before* updating; important for startup (i.e., t = 0).
-        // In the beginning, we want to go with the pstates specified in the platform file
-        // (so we sleep first)
-        simgrid::s4u::this_actor::sleep_for(governor.samplingRate());
-        governor.update();
-        XBT_INFO("Governor just updated!");
-      }
+    while (1) {
+      // Sleep *before* updating; important for startup (i.e., t = 0).
+      // In the beginning, we want to go with the pstates specified in the platform file
+      // (so we sleep first)
+      simgrid::s4u::this_actor::sleep_for(governor.samplingRate());
+      governor.update();
+      XBT_INFO("Governor just updated!");
+    }
 
-
-      XBT_WARN("I should have never reached this point: daemons should be killed when all regular processes are done");
-      return 0;
+    XBT_WARN("I should have never reached this point: daemons should be killed when all regular processes are done");
+    return 0;
   });
 
   // This call must be placed in this function. Otherweise, the daemonize() call comes too late and
