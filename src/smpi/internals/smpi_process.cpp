@@ -52,6 +52,10 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
 
 Process::~Process()
 {
+  if (comm_self_ != MPI_COMM_NULL)
+    simgrid::smpi::Comm::destroy(comm_self_);
+  if (comm_intra_ != MPI_COMM_NULL)
+    simgrid::smpi::Comm::destroy(comm_intra_);
   xbt_os_timer_free(timer_);
   xbt_mutex_destroy(mailboxes_mutex_);
 }
