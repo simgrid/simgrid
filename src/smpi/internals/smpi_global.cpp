@@ -419,7 +419,6 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   int res = entry_point(argc, argv.get());
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
-    smpi_process()->set_return_value(res);
     if (smpi_exit_status == 0)
       smpi_exit_status = res;
   }

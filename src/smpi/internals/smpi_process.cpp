@@ -242,14 +242,6 @@ msg_bar_t Process::finalization_barrier(){
   return finalization_barrier_;
 }
 
-int Process::return_value(){
-  return return_value_;
-}
-
-void Process::set_return_value(int val){
-  return_value_=val;
-}
-
 void Process::init(int *argc, char ***argv){
 
   if (smpi_process_count() == 0) {

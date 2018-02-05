@@ -33,7 +33,6 @@ class Process {
     std::string instance_id_;
     bool replaying_                 = false; /* is the process replaying a trace */
     msg_bar_t finalization_barrier_;
-    int return_value_ = 0;
     smpi_trace_call_location_t trace_call_loc_;
     simgrid::s4u::ActorPtr process_ = nullptr;
     smpi_privatization_region_t privatized_region_;
@@ -74,8 +73,6 @@ class Process {
     void set_sampling(int s);
     int sampling();
     msg_bar_t finalization_barrier();
-    int return_value();
-    void set_return_value(int val);
     static void init(int *argc, char ***argv);
     simgrid::s4u::ActorPtr process();
 };
