@@ -18,7 +18,7 @@ $ ${bindir:=.}/s4u-energy-boot$EXEEXT ${srcdir:=.}/platform_boot.xml "--log=root
 > [ 27.000000] (1:Boot Monitor@MyHost2) Wait 150s to simulate the boot time.
 > [177.000000] (1:Boot Monitor@MyHost2) The host is now up and running. Switch back to previous pstate 0
 > [177.000000] (1:Boot Monitor@MyHost2) Host1 is now ON again. Current pstate: 0; Energy dissipated so far: 19820.00 J
-> [177.000000] (0:maestro@) Total energy consumption: 37520.000000 Joules (used hosts: 37520.000000 Joules; unused/idle hosts: 0.000000)
+> [177.000000] (0:maestro@) Total energy consumption: 37520.000000 Joules (used hosts: 0.000000 Joules; unused/idle hosts: 37520.000000)
 > [177.000000] (0:maestro@) End of simulation.
 > [177.000000] (0:maestro@) Energy consumption of host MyHost1: 19820.000000 Joules
 > [177.000000] (0:maestro@) Energy consumption of host MyHost2: 17700.000000 Joules
@@ -41,7 +41,7 @@ $ ${bindir:=.}/s4u-energy-boot$EXEEXT ${srcdir:=.}/platform_boot.xml "--log=root
 > [ 27.000000] (1:Boot Monitor@MyHost2) Wait 150s to simulate the boot time.
 > [177.000000] (1:Boot Monitor@MyHost2) The host is now up and running. Switch back to previous pstate 0
 > [177.000000] (1:Boot Monitor@MyHost2) Host1 is now ON again. Current pstate: 0; Energy dissipated so far: 19820.00 J
-> [177.000000] (0:maestro@) Total energy consumption: 37520.000000 Joules (used hosts: 37520.000000 Joules; unused/idle hosts: 0.000000)
+> [177.000000] (0:maestro@) Total energy consumption: 37520.000000 Joules (used hosts: 0.000000 Joules; unused/idle hosts: 37520.000000)
 > [177.000000] (0:maestro@) End of simulation.
 > [177.000000] (0:maestro@) Energy consumption of host MyHost1: 19820.000000 Joules
 > [177.000000] (0:maestro@) Energy consumption of host MyHost2: 17700.000000 Joules

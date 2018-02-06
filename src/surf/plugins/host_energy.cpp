@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/energy.h"
+#include "simgrid/plugins/load.h"
 #include "simgrid/simix.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -438,7 +439,7 @@ static void onSimulationEnd()
   for (int i = 0; i < host_count; i++) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]) == nullptr) { // Ignore virtual machines
 
-      bool host_was_used = (host_list[i]->extension<HostEnergy>()->last_updated != 0);
+      bool host_was_used = (sg_host_get_computed_flops(host_list[i]) != 0);
       double energy      = host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
       total_energy      += energy;
       if (host_was_used)
@@ -461,6 +462,8 @@ void sg_host_energy_plugin_init()
 {
   if (HostEnergy::EXTENSION_ID.valid())
     return;
+
+  sg_host_load_plugin_init();
 
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
