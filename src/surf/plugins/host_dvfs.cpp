@@ -81,7 +81,8 @@ public:
   {
     double load = sg_host_get_current_load(host);
 
-    if (load > freq_up_threshold) {
+    // FIXME I don't like that we multiply with the getCoreCount() just here...
+    if (load*host->getCoreCount() > freq_up_threshold) {
       host->setPstate(0); /* Run at max. performance! */
       XBT_INFO("Changed to pstate %f", 0.0);
     } else {
@@ -109,7 +110,7 @@ public:
 
   void update()
   {
-    double load = sg_host_get_current_load(host);
+    double load = sg_host_get_current_load(host)*host->getCoreCount();
     int pstate  = host->getPstate();
 
     if (load > freq_up_threshold) {
