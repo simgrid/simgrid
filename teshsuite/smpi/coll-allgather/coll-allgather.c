@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2010, 2013-2017. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,11 +9,6 @@
 #include <string.h>
 #include <errno.h>
 #include "mpi.h"
-
-#ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
-#endif
 
 int main(int argc, char *argv[])
 {

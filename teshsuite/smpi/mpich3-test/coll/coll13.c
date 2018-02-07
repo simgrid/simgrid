@@ -16,10 +16,6 @@ From: hook@nas.nasa.gov (Edward C. Hook)
 
 #include <string.h>
 #include <errno.h>
-#ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
-#endif
 
 int main(int argc, char *argv[])
 {
