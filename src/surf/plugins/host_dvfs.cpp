@@ -94,6 +94,8 @@ public:
        * lowest_pstate - load*pstatesCount()
        */
       int max_pstate = host->getPstatesCount() - 1;
+      int new_pstate = max_pstate - load * max_pstate;
+      host->setPstate(new_pstate);
 
       host->setPstate(max_pstate - load * max_pstate);
       XBT_INFO("Changed to pstate %f -- check: %i", max_pstate - load * max_pstate, host->getPstate());
