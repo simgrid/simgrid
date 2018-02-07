@@ -97,8 +97,7 @@ public:
       int new_pstate = max_pstate - load * max_pstate;
       host->setPstate(new_pstate);
 
-      host->setPstate(max_pstate - load * max_pstate);
-      XBT_INFO("Changed to pstate %f -- check: %i", max_pstate - load * max_pstate, host->getPstate());
+      XBT_DEBUG("Load: %f --> changed to pstate %i", load*host->getCoreCount(), new_pstate);
     }
   }
 };
@@ -118,10 +117,10 @@ public:
     if (load > freq_up_threshold) {
       if (pstate != 0) {
         host->setPstate(pstate - 1);
-        XBT_INFO("Increasing performance to pstate %d", pstate - 1);
+        XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold, pstate - 1);
       }
       else {
-        XBT_DEBUG("Cannot speed up even more, already in slowest pstate %d", pstate);
+        XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load, freq_up_threshold, pstate);
       }
     }
 
@@ -129,10 +128,10 @@ public:
       int max_pstate = host->getPstatesCount() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
         host->setPstate(pstate + 1);
-        XBT_INFO("Slowing down to pstate %d", pstate + 1);
+        XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold, pstate + 1);
       }
       else {
-        XBT_DEBUG("Cannot slow down even more, already in slowest pstate %d", pstate);
+        XBT_DEBUG("Load: %f < threshold: %f -> cannot slow down even more, already in slowest pstate %d", load, freq_down_threshold, pstate);
       }
     }
   }
