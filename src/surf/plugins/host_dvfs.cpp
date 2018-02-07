@@ -40,6 +40,7 @@ public:
   double sampling_rate;
 
   explicit Governor(simgrid::s4u::Host* ptr) : host(ptr) { init(); }
+  virtual ~Governor() = default;
 
   void init()
   {
