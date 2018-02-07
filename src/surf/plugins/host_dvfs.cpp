@@ -53,7 +53,8 @@ public:
     }
   }
 
-  virtual void update() {}
+  virtual void update() = 0;
+  virtual std::string getName() =0 ;
   double samplingRate() { return sampling_rate; }
 };
 
@@ -62,6 +63,7 @@ public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
   void update() { host->setPstate(0); }
+  std::string getName() { return "Performance"; }
 };
 
 class Powersave : public Governor {
@@ -69,6 +71,7 @@ public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
   void update() { host->setPstate(host->getPstatesCount() - 1); }
+  std::string getName() { return "Powersave"; }
 };
 
 class OnDemand : public Governor {
@@ -77,6 +80,7 @@ class OnDemand : public Governor {
 public:
   explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
+  std::string getName() { return "OnDemand"; }
   void update()
   {
     double load = sg_host_get_current_load(host);
@@ -109,7 +113,8 @@ class Conservative : public Governor {
 public:
   explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
-  void update()
+  virtual std::string getName() { return "Conservative"; }
+  virtual void update()
   {
     double load = sg_host_get_current_load(host)*host->getCoreCount();
     int pstate  = host->getPstate();
@@ -123,8 +128,7 @@ public:
         XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load, freq_up_threshold, pstate);
       }
     }
-
-    if (load < freq_down_threshold) {
+    else if (load < freq_down_threshold) {
       int max_pstate = host->getPstatesCount() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
         host->setPstate(pstate + 1);
@@ -183,18 +187,32 @@ static void on_host_added(simgrid::s4u::Host& host)
       boost::algorithm::to_lower(dvfs_governor);
     }
 
-    simgrid::plugin::dvfs::Governor governor(daemonProc->getHost());
+    // FIXME This is really ugly. When do we free the governor? Actually, never, because
+    // daemons never stop to run - they will be killed when the simulation is over. :(
+    simgrid::plugin::dvfs::Governor* governor;
     if (dvfs_governor == "conservative") {
-      governor = simgrid::plugin::dvfs::Conservative(daemonProc->getHost());
+      governor = new simgrid::plugin::dvfs::Conservative(daemonProc->getHost());
+    }
+    else if (dvfs_governor == "ondemand") {
+      governor = new simgrid::plugin::dvfs::OnDemand(daemonProc->getHost());
+    }
+    else if (dvfs_governor == "performance") {
+      governor = new simgrid::plugin::dvfs::Performance(daemonProc->getHost());
+    }
+    else if (dvfs_governor == "powersave") {
+      governor = new simgrid::plugin::dvfs::Powersave(daemonProc->getHost());
+    }
+    else {
+      XBT_CRITICAL("No governor specified for host %s", daemonProc->getHost()->getCname());
     }
 
     while (1) {
       // Sleep *before* updating; important for startup (i.e., t = 0).
       // In the beginning, we want to go with the pstates specified in the platform file
       // (so we sleep first)
-      simgrid::s4u::this_actor::sleep_for(governor.samplingRate());
-      governor.update();
-      XBT_INFO("Governor just updated!");
+      simgrid::s4u::this_actor::sleep_for(governor->samplingRate());
+      governor->update();
+      XBT_DEBUG("Governor (%s) just updated!", governor->getName().c_str());
     }
 
     XBT_WARN("I should have never reached this point: daemons should be killed when all regular processes are done");
