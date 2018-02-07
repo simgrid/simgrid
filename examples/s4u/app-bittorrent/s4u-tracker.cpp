@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2017. The SimGrid Team.
+/* Copyright (c) 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -32,12 +32,13 @@ Tracker::Tracker(std::vector<std::string> args)
 void Tracker::operator()()
 {
   simgrid::s4u::CommPtr comm = nullptr;
-  void* received;
+  void* received             = nullptr;
   while (simgrid::s4u::Engine::getClock() < deadline) {
     if (comm == nullptr)
       comm = mailbox->get_async(&received);
     if (comm->test()) {
       // Retrieve the data sent by the peer.
+      xbt_assert(received != nullptr);
       TrackerQuery* tq = static_cast<TrackerQuery*>(received);
 
       // Add the peer to our peer list, if not already known.

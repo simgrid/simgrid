@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -288,7 +288,6 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     retval = MPI_ERR_TAG;
   } else {
     int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
-    int src_traced         = getPid(comm, src);
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                        new simgrid::instr::Pt2PtTIData("recv", src,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
@@ -299,7 +298,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
 
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     if (status != MPI_STATUS_IGNORE) {
-      src_traced = getPid(comm, status->MPI_SOURCE);
+      int src_traced = getPid(comm, status->MPI_SOURCE);
       if (not TRACE_smpi_view_internals()) {
         TRACE_smpi_recv(src_traced, my_proc_id, tag);
       }

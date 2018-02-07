@@ -40,6 +40,7 @@ public:
   double sampling_rate;
 
   explicit Governor(simgrid::s4u::Host* ptr) : host(ptr) { init(); }
+  virtual ~Governor() = default;
 
   void init()
   {
@@ -89,7 +90,7 @@ public:
        *    freq_next = min_f + load * (max_f - min_f) / 100
        *
        * So they assume that frequency increases by 100 MHz. We will just use
-       * lowest_pstate - load*pstatesCount();
+       * lowest_pstate - load*pstatesCount()
        */
       int max_pstate = host->getPstatesCount() - 1;
 

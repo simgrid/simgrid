@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -59,6 +59,7 @@ bool Node::join(unsigned int known_id)
 
   /* Second step: Send a FIND_NODE to a a random node in buckets */
   unsigned int bucket_id = table->findBucket(known_id)->getId();
+  xbt_assert(bucket_id <= identifier_size);
   for (i = 0; ((bucket_id > i) || (bucket_id + i) <= identifier_size) && i < JOIN_BUCKETS_QUERIES; i++) {
     if (bucket_id > i) {
       unsigned int id_in_bucket = get_id_in_prefix(id_, bucket_id - i);
