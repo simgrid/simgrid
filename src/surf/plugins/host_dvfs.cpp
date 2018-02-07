@@ -53,8 +53,8 @@ public:
     }
   }
 
-  virtual void update() = 0;
-  virtual std::string getName() =0 ;
+  virtual void update()         = 0;
+  virtual std::string getName() = 0;
   double samplingRate() { return sampling_rate; }
 };
 
@@ -127,8 +127,7 @@ public:
       else {
         XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load, freq_up_threshold, pstate);
       }
-    }
-    else if (load < freq_down_threshold) {
+    } else if (load < freq_down_threshold) {
       int max_pstate = host->getPstatesCount() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
         host->setPstate(pstate + 1);
@@ -192,17 +191,13 @@ static void on_host_added(simgrid::s4u::Host& host)
     simgrid::plugin::dvfs::Governor* governor;
     if (dvfs_governor == "conservative") {
       governor = new simgrid::plugin::dvfs::Conservative(daemonProc->getHost());
-    }
-    else if (dvfs_governor == "ondemand") {
+    } else if (dvfs_governor == "ondemand") {
       governor = new simgrid::plugin::dvfs::OnDemand(daemonProc->getHost());
-    }
-    else if (dvfs_governor == "performance") {
+    } else if (dvfs_governor == "performance") {
       governor = new simgrid::plugin::dvfs::Performance(daemonProc->getHost());
-    }
-    else if (dvfs_governor == "powersave") {
+    } else if (dvfs_governor == "powersave") {
       governor = new simgrid::plugin::dvfs::Powersave(daemonProc->getHost());
-    }
-    else {
+    } else {
       XBT_CRITICAL("No governor specified for host %s", daemonProc->getHost()->getCname());
     }
 
