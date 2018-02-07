@@ -86,10 +86,10 @@ public:
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
-       *    freq_next = min_f + load * (max_f - min_f) / 100;
+       *    freq_next = min_f + load * (max_f - min_f) / 100
        *
        * So they assume that frequency increases by 100 MHz. We will just use
-       * lowest_pstate - load*pstatesCount();
+       * lowest_pstate - load*pstatesCount()
        */
       int max_pstate = host->getPstatesCount() - 1;
 
