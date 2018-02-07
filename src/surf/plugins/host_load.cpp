@@ -76,7 +76,7 @@ void HostLoad::update()
 
 double HostLoad::getCurrentLoad()
 {
-  return current_flops / (host->getSpeed() * host->getCoreCount());
+  return current_flops / static_cast<double>(host->getSpeed() * host->getCoreCount());
 }
 
 double HostLoad::getAverageLoad()
