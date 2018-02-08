@@ -372,31 +372,32 @@ void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
 }
 
 // initialize the NS3 interface and environment
-void ns3_initialize(const char* TcpProtocol){
-//  tcpModel are:
-//  "ns3::TcpNewReno"
-//  "ns3::TcpReno"
-//  "ns3::TcpTahoe"
+void ns3_initialize(std::string TcpProtocol)
+{
+  //  tcpModel are:
+  //  "ns3::TcpNewReno"
+  //  "ns3::TcpReno"
+  //  "ns3::TcpTahoe"
 
   ns3::Config::SetDefault ("ns3::TcpSocket::SegmentSize", ns3::UintegerValue (1000));
   ns3::Config::SetDefault ("ns3::TcpSocket::DelAckCount", ns3::UintegerValue (1));
   ns3::Config::SetDefault ("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue (false));
 
-  if (not strcmp(TcpProtocol, "default"))
+  if (TcpProtocol == "default")
     return;
 
-  if (not strcmp(TcpProtocol, "Reno")) {
-    XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
+  if (TcpProtocol == "Reno") {
+    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpReno"));
     return;
   }
-  if (not strcmp(TcpProtocol, "NewReno")) {
-    XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
+  if (TcpProtocol == "NewReno") {
+    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpNewReno"));
     return;
   }
-  if (not strcmp(TcpProtocol, "Tahoe")) {
-    XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
+  if (TcpProtocol == "Tahoe") {
+    XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpTahoe"));
     return;
   }

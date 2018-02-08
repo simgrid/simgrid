@@ -27,9 +27,8 @@ public:
   ns3::Ptr<ns3::Node> ns3Node_;
 };
 
+XBT_PUBLIC(void) ns3_initialize(std::string TcpProtocol);
 extern "C" {
-
-XBT_PUBLIC(void) ns3_initialize(const char* TcpProtocol);
 XBT_PUBLIC(void)
 ns3_create_flow(sg_host_t src, sg_host_t dst, u_int32_t TotalBytes, simgrid::surf::NetworkNS3Action* action);
 XBT_PUBLIC(void) ns3_simulator(double maxSeconds);
