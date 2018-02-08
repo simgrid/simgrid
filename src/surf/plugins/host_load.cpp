@@ -126,9 +126,7 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
       return;
 
     if (host != nullptr) {
-      // Get the host_load extension for the relevant host
-      HostLoad* host_load = host->extension<HostLoad>();
-      host_load->update();
+      host->extension<HostLoad>()->update();
     }
   }
 }
