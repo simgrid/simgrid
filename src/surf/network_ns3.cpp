@@ -383,26 +383,24 @@ void ns3_initialize(std::string TcpProtocol)
   ns3::Config::SetDefault ("ns3::TcpSocket::DelAckCount", ns3::UintegerValue (1));
   ns3::Config::SetDefault ("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue (false));
 
-  if (TcpProtocol == "default")
-    return;
+  if (TcpProtocol == "default") {
+    /* nothing to do */
 
-  if (TcpProtocol == "Reno") {
+  } else if (TcpProtocol == "Reno") {
     XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpReno"));
-    return;
-  }
-  if (TcpProtocol == "NewReno") {
+
+  } else if (TcpProtocol == "NewReno") {
     XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpNewReno"));
-    return;
-  }
-  if (TcpProtocol == "Tahoe") {
+
+  } else if (TcpProtocol == "Tahoe") {
     XBT_INFO("Switching Tcp protocol to '%s'", TcpProtocol.c_str());
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpTahoe"));
-    return;
-  }
 
-  xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
+  } else {
+    xbt_die("The ns3/TcpModel must be: NewReno or Reno or Tahoe");
+  }
 }
 
 void ns3_add_cluster(const char* id, double bw, double lat) {
