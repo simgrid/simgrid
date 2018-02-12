@@ -187,7 +187,7 @@ int Process::papi_event_set()
   return papi_event_set_;
 }
 
-papi_counter_t& smpi_process_papi_counters()
+papi_counter_t& Process::papi_counters()
 {
   return papi_counter_data_;
 }
