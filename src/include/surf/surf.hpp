@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -388,8 +388,6 @@ XBT_PUBLIC(void) surf_exit();
 XBT_PUBLIC(void) parse_platform_file(const char* file);
 
 /********** Tracing **********/
-/* from surf_instr.c */
-void TRACE_surf_action(surf_action_t surf_action, const char* category);
 
 /* instr_routing.c */
 void instr_routing_define_callbacks();

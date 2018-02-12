@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -21,12 +21,4 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
     simgrid::instr::Container::byName(resource)->getVariable("bandwidth")->setEvent(date, bandwidth);
   }
-}
-
-void TRACE_surf_action(surf_action_t surf_action, const char *category)
-{
-  if (not TRACE_is_enabled() || not TRACE_categorized() || not category)
-    return;
-
-  surf_action->setCategory(category);
 }
