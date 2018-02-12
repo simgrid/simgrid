@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team.
+/* Copyright (c) 2014-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -137,23 +137,6 @@ int MC_snapshot_region_memcmp(
     ::operator delete(buffer2a);
   }
   return res;
-}
-
-/** Compare memory between snapshots
- *
- * @param addr1 Address in the first snapshot
- * @param snapshot1 First snapshot
- * @param addr2 Address in the second snapshot
- * @param snapshot2 Second snapshot
- * @return same as memcmp
- * */
-int MC_snapshot_memcmp(
-  const void* addr1, simgrid::mc::Snapshot* snapshot1,
-  const void* addr2, simgrid::mc::Snapshot* snapshot2, int process_index, size_t size)
-{
-  mc_mem_region_t region1 = mc_get_snapshot_region(addr1, snapshot1, process_index);
-  mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2, process_index);
-  return MC_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
 }
 
 } // extern "C"

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -162,8 +162,6 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
 
 int MC_snapshot_region_memcmp(const void* addr1, mc_mem_region_t region1, const void* addr2, mc_mem_region_t region2,
                               std::size_t size);
-XBT_PRIVATE int MC_snapshot_memcmp(const void* addr1, simgrid::mc::Snapshot* snapshot1, const void* addr2,
-                                   simgrid::mc::Snapshot* snapshot2, int process_index, std::size_t size);
 
 static XBT_ALWAYS_INLINE const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
 {
