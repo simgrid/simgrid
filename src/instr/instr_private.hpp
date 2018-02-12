@@ -211,8 +211,6 @@ XBT_PRIVATE bool TRACE_disable_destroy();
 XBT_PRIVATE bool TRACE_basic();
 XBT_PRIVATE bool TRACE_display_sizes();
 XBT_PRIVATE int TRACE_precision();
-XBT_PRIVATE void instr_pause_tracing();
-XBT_PRIVATE void instr_resume_tracing();
 
 /* Public functions used in SMPI */
 XBT_PUBLIC(bool) TRACE_smpi_is_enabled();

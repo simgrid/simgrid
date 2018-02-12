@@ -428,34 +428,3 @@ static void output_types (const char *name, xbt_dynar_t types, FILE *file)
   }
   xbt_dynar_free (&types);
 }
-
-static int previous_trace_state = -1;
-
-void instr_pause_tracing ()
-{
-  previous_trace_state = trace_enabled;
-  if (not TRACE_is_enabled()) {
-    XBT_DEBUG ("Tracing is already paused, therefore do nothing.");
-  }else{
-    XBT_DEBUG ("Tracing is being paused.");
-  }
-  trace_enabled = false;
-  XBT_DEBUG ("Tracing is paused.");
-}
-
-void instr_resume_tracing ()
-{
-  if (TRACE_is_enabled()){
-    XBT_DEBUG ("Tracing is already running while trying to resume, therefore do nothing.");
-  }else{
-    XBT_DEBUG ("Tracing is being resumed.");
-  }
-
-  if (previous_trace_state != -1){
-    trace_enabled = previous_trace_state;
-  }else{
-    trace_enabled = true;
-  }
-  XBT_DEBUG ("Tracing is resumed.");
-  previous_trace_state = -1;
-}
