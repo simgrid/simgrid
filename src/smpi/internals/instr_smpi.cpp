@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2017. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -206,7 +206,7 @@ void TRACE_smpi_computing_out(int rank)
     smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
-void TRACE_smpi_sleeping_init(int rank)
+void TRACE_smpi_sleeping_init(int rank) // FIXME: this function is never called
 {
   //first use, initialize the color in the trace
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
