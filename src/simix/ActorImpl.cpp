@@ -649,14 +649,6 @@ const char* SIMIX_process_self_get_name() {
   return process->name.c_str();
 }
 
-smx_actor_t SIMIX_process_get_by_name(const char* name)
-{
-  for (auto const& kv : simix_global->process_list)
-    if (kv.second->name == name)
-      return kv.second;
-  return nullptr;
-}
-
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout)
 {
   if (process->finished) {
