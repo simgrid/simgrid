@@ -50,7 +50,7 @@ double simgrid::kernel::activity::ExecImpl::remains()
 {
   xbt_assert(host_ != nullptr, "Calling remains() on a parallel execution is not allowed. "
                                "We would need to return a vector instead of a scalar. "
-                               "Did you meant remainingRatio() instead?");
+                               "Did you mean remainingRatio() instead?");
 
   return surfAction_ ? surfAction_->getRemains() : 0;
 }
