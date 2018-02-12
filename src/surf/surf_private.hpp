@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,8 +12,6 @@
 #define NO_MAX_DURATION -1.0
 
 extern "C" {
-
-extern XBT_PRIVATE const char* surf_action_state_names[6];
 
 /** @ingroup SURF_interface
  * @brief Possible update mechanisms

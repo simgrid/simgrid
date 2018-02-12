@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -577,15 +577,6 @@ lmm_constraint_t Resource::constraint() const
 /**********
  * Action *
  **********/
-
-const char *surf_action_state_names[6] = {
-  "SURF_ACTION_READY",
-  "SURF_ACTION_RUNNING",
-  "SURF_ACTION_FAILED",
-  "SURF_ACTION_DONE",
-  "SURF_ACTION_TO_FREE",
-  "SURF_ACTION_NOT_IN_THE_SYSTEM"
-};
 
 namespace simgrid {
 namespace surf {
