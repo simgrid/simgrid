@@ -17,7 +17,6 @@
 
 #include "simgrid/msg.h"
 #include "mc/mc.h"
-#include "bugged1_liveness.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
 
