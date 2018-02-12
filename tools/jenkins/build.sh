@@ -120,6 +120,7 @@ echo "XX Configure and build SimGrid"
 echo "XX   pwd: "$(pwd)
 echo "XX"
 cmake -G"$GENERATOR"\
+  -DCMAKE_INSTALL_PREFIX=/builds/simgrid_install \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_smpi_ISP_testsuite=$(onoff test "$build_mode" = "ModelChecker") \
@@ -147,6 +148,14 @@ ctest -T test --output-on-failure --no-compress-output || true
 if [ -f Testing/TAG ] ; then
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults.xml
    mv CTestResults.xml $WORKSPACE
+fi
+
+if test "$(uname -o)" != "Msys"; then
+  echo "XX"
+  echo "XX Test done. Install everything since it's not a Windows build."
+  echo "XX"
+
+  make install
 fi
 
 echo "XX"
