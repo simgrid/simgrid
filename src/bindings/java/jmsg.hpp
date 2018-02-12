@@ -1,6 +1,6 @@
 /* Java Wrappers to the MSG API.                                            */
 
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,7 +25,6 @@ extern "C" {
 extern int JAVA_HOST_LEVEL;
 static std::unordered_map<msg_storage_t, jobject> java_storage_map;
 
-JavaVM* get_java_VM();
 JNIEnv* get_current_thread_env();
 /**
  * This function throws the correct exception according to the status provided.

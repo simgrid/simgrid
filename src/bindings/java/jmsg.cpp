@@ -48,11 +48,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
 JavaVM *__java_vm = nullptr;
 
-JavaVM *get_java_VM()
-{
-  return __java_vm;
-}
-
 JNIEnv *get_current_thread_env()
 {
   using simgrid::kernel::context::JavaContext;
