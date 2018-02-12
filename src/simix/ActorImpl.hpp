@@ -144,7 +144,6 @@ XBT_PRIVATE void SIMIX_process_killall(smx_actor_t issuer, int reset_pid);
 XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
-XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
 XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
 XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
 

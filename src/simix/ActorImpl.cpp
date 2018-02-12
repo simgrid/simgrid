@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -760,13 +760,6 @@ void SIMIX_process_yield(smx_actor_t self)
   if(SMPI_switch_data_segment){
     SMPI_switch_data_segment(self->pid);
   }
-}
-
-/* callback: termination */
-void SIMIX_process_exception_terminate(xbt_ex_t * e)
-{
-  xbt_ex_display(e);
-  xbt_abort();
 }
 
 /** @brief Returns the list of processes to run. */
