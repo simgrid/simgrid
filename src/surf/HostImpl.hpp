@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,16 +13,6 @@
 
 #ifndef SURF_HOST_INTERFACE_HPP_
 #define SURF_HOST_INTERFACE_HPP_
-
-/***********
- * Classes *
- ***********/
-
-namespace simgrid {
-namespace surf {
-class XBT_PRIVATE HostAction;
-}
-}
 
 /*********
  * Tools *
