@@ -391,7 +391,6 @@ XBT_PUBLIC(void) parse_platform_file(const char* file);
 
 /* instr_routing.c */
 void instr_routing_define_callbacks();
-int instr_platform_traced();
 xbt_graph_t instr_routing_platform_graph();
 void instr_routing_platform_graph_export_graphviz(xbt_graph_t g, const char* filename);
 

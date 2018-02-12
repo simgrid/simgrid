@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,7 +16,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
-static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static std::vector<simgrid::instr::NetZoneContainer*> currentContainer; /* push and pop, used only in creation */
 
 static const char *instr_node_name (xbt_node_t node)
@@ -263,7 +262,6 @@ static void instr_routing_parse_end_platform ()
                            filter);
   XBT_DEBUG ("Graph extraction finished.");
   delete filter;
-  platform_created = 1;
   TRACE_paje_dump_buffer(true);
 }
 
@@ -344,11 +342,6 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
 void instr_new_value_for_user_state_type(std::string type_name, const char* value, std::string color)
 {
   recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::getRoot()->type_);
-}
-
-int instr_platform_traced ()
-{
-  return platform_created;
 }
 
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
