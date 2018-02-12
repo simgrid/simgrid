@@ -81,11 +81,6 @@ void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::stri
   surf_parse_error(msg);
 }
 
-void surf_parse_warn(std::string msg)
-{
-  XBT_WARN("%s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg.c_str());
-}
-
 double surf_parse_get_double(std::string s)
 {
   try {

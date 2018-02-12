@@ -19,7 +19,6 @@ XBT_PUBLIC(void) surf_parse_close();
 XBT_PUBLIC(void) surf_parse_assert(bool cond, std::string msg);
 XBT_ATTRIB_NORETURN XBT_PUBLIC(void) surf_parse_error(std::string msg);
 XBT_PUBLIC(void) surf_parse_assert_netpoint(std::string hostname, std::string pre, std::string post);
-XBT_PUBLIC(void) surf_parse_warn(std::string msg);
 
 XBT_PUBLIC(double) surf_parse_get_double(std::string s);
 XBT_PUBLIC(int) surf_parse_get_int(std::string s);
