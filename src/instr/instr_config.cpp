@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,7 +26,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_FORMAT               "tracing/smpi/format"
 #define OPT_TRACING_MSG_PROCESS          "tracing/msg/process"
 #define OPT_TRACING_MSG_VM               "tracing/msg/vm"
-#define OPT_TRACING_ONELINK_ONLY         "tracing/onelink-only"
 #define OPT_TRACING_PLATFORM             "tracing/platform"
 #define OPT_TRACING_PRECISION            "tracing/precision"
 #define OPT_TRACING_SMPI_COMPUTING       "tracing/smpi/computing"
@@ -51,7 +50,6 @@ static bool trace_uncategorized;
 static bool trace_actor_enabled;
 static bool trace_msg_vm_enabled;
 static bool trace_buffer;
-static bool trace_onelink_only;
 static bool trace_disable_destroy;
 static bool trace_basic;
 static bool trace_display_sizes = false;
@@ -79,7 +77,6 @@ static void TRACE_getopts()
   trace_actor_enabled       = trace_enabled && xbt_cfg_get_boolean(OPT_TRACING_MSG_PROCESS);
   trace_msg_vm_enabled      = xbt_cfg_get_boolean(OPT_TRACING_MSG_VM);
   trace_buffer              = xbt_cfg_get_boolean(OPT_TRACING_BUFFER);
-  trace_onelink_only        = xbt_cfg_get_boolean(OPT_TRACING_ONELINK_ONLY);
   trace_disable_destroy     = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_DESTROY);
   trace_basic               = xbt_cfg_get_boolean(OPT_TRACING_BASIC);
   trace_display_sizes       = xbt_cfg_get_boolean(OPT_TRACING_DISPLAY_SIZES);
@@ -245,11 +242,6 @@ bool TRACE_buffer ()
   return trace_buffer && TRACE_is_enabled();
 }
 
-bool TRACE_onelink_only ()
-{
-  return trace_onelink_only && TRACE_is_enabled();
-}
-
 bool TRACE_disable_destroy ()
 {
   return trace_disable_destroy && TRACE_is_enabled();
@@ -311,7 +303,6 @@ void TRACE_global_init()
   xbt_cfg_register_boolean(OPT_TRACING_DISABLE_POWER, "no", nullptr, "Do not trace host power.");
   xbt_cfg_register_boolean(OPT_TRACING_BUFFER, "yes", nullptr, "Buffer trace events to put them in temporal order.");
 
-  xbt_cfg_register_boolean(OPT_TRACING_ONELINK_ONLY, "no", nullptr, "Use only routes with one link to trace platform.");
   xbt_cfg_register_boolean(OPT_TRACING_DISABLE_DESTROY, "no", nullptr, "Disable platform containers destruction.");
   xbt_cfg_register_boolean(OPT_TRACING_BASIC, "no", nullptr, "Avoid extended events (impoverished trace file).");
   xbt_cfg_register_boolean(OPT_TRACING_DISPLAY_SIZES, "no", nullptr, "(smpi only) Extended events with message size information");
@@ -329,7 +320,6 @@ void TRACE_global_init()
   xbt_cfg_register_alias(OPT_TRACING_DISABLE_POWER, "tracing/disable_power");
   xbt_cfg_register_alias(OPT_TRACING_DISPLAY_SIZES, "tracing/smpi/display_sizes");
   xbt_cfg_register_alias(OPT_TRACING_FORMAT_TI_ONEFILE, "tracing/smpi/format/ti_one_file");
-  xbt_cfg_register_alias(OPT_TRACING_ONELINK_ONLY, "tracing/onelink_only");
 
   /* instrumentation can be considered configured now */
   trace_configured = true;
@@ -392,12 +382,6 @@ void TRACE_help (int detailed)
       "  buffer and the cost of the sorting algorithm make this process slow. The\n"
       "  simulator performance can be severely impacted if this option is activated,\n"
       "  but you are sure to get a trace file with events sorted.", detailed);
-  print_line (OPT_TRACING_ONELINK_ONLY, "Consider only one link routes to trace platform",
-      "  This option changes the way SimGrid register its platform on the trace file.\n"
-      "  Normally, the tracing considers all routes (no matter their size) on the\n"
-      "  platform file to re-create the resource topology. If this option is activated,\n"
-      "  only the routes with one link are used to register the topology within an AS.\n"
-      "  Routes among AS continue to be traced as usual.", detailed);
   print_line (OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
       "  Disable the destruction of containers at the end of simulation. This can be\n"
       "  used with simulators that have a different notion of time (different from\n"

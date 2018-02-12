@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -207,7 +207,6 @@ XBT_PRIVATE bool TRACE_msg_vm_is_enabled();
 XBT_PRIVATE bool TRACE_buffer();
 XBT_PRIVATE bool TRACE_disable_link();
 XBT_PRIVATE bool TRACE_disable_speed();
-XBT_PRIVATE bool TRACE_onelink_only();
 XBT_PRIVATE bool TRACE_disable_destroy();
 XBT_PRIVATE bool TRACE_basic();
 XBT_PRIVATE bool TRACE_display_sizes();
