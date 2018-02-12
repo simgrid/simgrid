@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team.
+/* Copyright (c) 2017-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,7 +18,6 @@ XBT_PUBLIC(void) sg_vm_start_dirty_page_tracking(sg_vm_t vm);
 XBT_PUBLIC(void) sg_vm_stop_dirty_page_tracking(sg_vm_t vm);
 XBT_PUBLIC(double) sg_vm_lookup_computed_flops(sg_vm_t vm);
 XBT_PUBLIC(void) sg_vm_migrate(sg_vm_t vm, sg_host_t dst_pm);
-XBT_PUBLIC(int) sg_vm_is_migratable(sg_vm_t vm);
 XBT_PUBLIC(void) sg_vm_set_dirty_page_intensity(sg_vm_t vm, double intensity);
 XBT_PUBLIC(double) sg_vm_get_dirty_page_intensity(sg_vm_t vm);
 XBT_PUBLIC(void) sg_vm_set_working_set_memory(sg_vm_t vm, sg_size_t size);

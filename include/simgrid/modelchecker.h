@@ -1,6 +1,6 @@
 /* simgrid/modelchecker.h - Formal Verification made possible in SimGrid    */
 
-/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,7 +49,6 @@ XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
 
 XBT_PUBLIC(void) MC_ignore_heap(void* address, size_t size);
 XBT_PUBLIC(void) MC_unignore_heap(void* address, size_t size);
-XBT_PUBLIC(void) MC_ignore_local_variable(const char* var_name, const char* frame);
 XBT_PUBLIC(void) MC_ignore_global_variable(const char* var_name);
 
 #else
@@ -65,7 +64,6 @@ XBT_PUBLIC(void) MC_ignore_global_variable(const char* var_name);
 
 #define MC_ignore_heap(a,s)             ((void)0)
 #define MC_remove_ignore_heap(a,s)      ((void)0)
-#define MC_ignore_local_variable(n,f)   ((void)0)
 #define MC_ignore_global_variable(v)    ((void)0)
 
 #endif

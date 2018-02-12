@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,14 +22,10 @@ typedef struct xbt_dynar_iterator_struct xbt_dynar_iterator_s;
 
 /* Iterator methods */
 xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*criteria_fn)(int));
-void xbt_dynar_iterator_reset(xbt_dynar_iterator_t it);
-void xbt_dynar_iterator_seek(xbt_dynar_iterator_t it, int pos);
 void* xbt_dynar_iterator_next(xbt_dynar_iterator_t it);
 void xbt_dynar_iterator_delete(xbt_dynar_iterator_t it);
 
 /* Iterator generators */
 xbt_dynar_t forward_indices_list(int size);
-xbt_dynar_t reverse_indices_list(int size);
-xbt_dynar_t random_indices_list(int size);
 
 #endif /* ITERATOR_H */

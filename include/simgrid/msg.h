@@ -282,7 +282,6 @@ XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task, double bytes_amount)
 
 
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(msg_task_t task);
-XBT_PUBLIC(int) MSG_task_is_latency_bounded(msg_task_t task);
 XBT_PUBLIC(double) MSG_task_get_bytes_amount(msg_task_t task);
 
 XBT_PUBLIC(msg_error_t) MSG_task_receive_ext(msg_task_t* task, const char* alias, double timeout, msg_host_t host);

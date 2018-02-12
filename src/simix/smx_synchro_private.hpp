@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,9 +26,7 @@ struct s_smx_sem_t {
   simgrid::simix::SynchroList sleeping; /* list of sleeping processes */
 };
 
-XBT_PRIVATE void SIMIX_post_synchro(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall);
-XBT_PRIVATE void SIMIX_synchro_destroy(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_synchro_finish(smx_activity_t synchro);
 
 XBT_PRIVATE smx_cond_t SIMIX_cond_init();

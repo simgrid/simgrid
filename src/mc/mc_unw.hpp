@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -74,7 +74,6 @@ public:
   static unw_addr_space_t createUnwindAddressSpace();
 };
 
-void MC_dump_stack_unw(FILE* file, unw_cursor_t cursor);
 void dumpStack(FILE* file, unw_cursor_t cursor);
 void dumpStack(FILE* file, pid_t pid);
 }

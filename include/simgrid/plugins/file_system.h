@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team.
+/* Copyright (c) 2017-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -30,8 +30,6 @@ XBT_PUBLIC(void) sg_file_unlink(sg_file_t fd);
 XBT_PUBLIC(int) sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath);
 XBT_PUBLIC(int) sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath);
 
-XBT_PUBLIC(void*) sg_storage_get_data(sg_storage_t storage);
-XBT_PUBLIC(void) sg_storage_set_data(sg_storage_t storage, void* data);
 XBT_PUBLIC(sg_size_t) sg_storage_get_size_free(sg_storage_t st);
 XBT_PUBLIC(sg_size_t) sg_storage_get_size_used(sg_storage_t st);
 XBT_PUBLIC(sg_size_t) sg_storage_get_size(sg_storage_t st);

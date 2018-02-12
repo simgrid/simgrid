@@ -112,14 +112,6 @@ XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
  */
 XBT_PUBLIC(void) surf_cpu_action_set_bound(surf_action_t action, double bound);
 
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param action The surf network action
- */
-XBT_PUBLIC(double) surf_network_action_get_latency_limited(surf_action_t action);
-
 /** @} */
 
 /**************************************/

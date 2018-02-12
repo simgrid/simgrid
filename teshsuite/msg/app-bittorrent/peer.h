@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team.
+/* Copyright (c) 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -51,7 +51,6 @@ void seed_loop(peer_t peer, double deadline);
 peer_t peer_init(int id, int seed);
 void peer_free(peer_t peer);
 
-char* print_bitfield(unsigned int bitfield);
 int has_finished(unsigned int bitfield);
 
 void handle_message(peer_t peer, msg_task_t task);

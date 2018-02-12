@@ -1,6 +1,6 @@
 /* Declarations for `mmalloc' and friends. */
 
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -305,9 +305,6 @@ static inline int mmalloc_get_increment(malloc_info* heapinfo) {
 }
 
 XBT_PRIVATE int malloc_use_mmalloc(void);
-
-XBT_PRIVATE int mmalloc_exec_using_mm(int argc, const char** argv);
-XBT_PRIVATE void mmalloc_ensure_using_mm(int argc, const char** argv);
 
 XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
 

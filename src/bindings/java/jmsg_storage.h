@@ -1,6 +1,6 @@
 /* Java bindings of the Storage API.                                        */
 
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,9 +30,6 @@ jobject jstorage_ref(JNIEnv * env, jobject jstorage);
 
 /** Release a ref onto the java instance */
 void jstorage_unref(JNIEnv * env, jobject jstorage);
-
-/** Get the name of a java instance. */
-const char *jstorage_get_name(jobject jstorage, JNIEnv * env);
 
 /* Implement the Java API */
 

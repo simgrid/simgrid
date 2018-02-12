@@ -227,7 +227,6 @@ XBT_PRIVATE void TRACE_surf_host_set_utilization(const char* resource, const cha
                                                  double delta);
 XBT_PRIVATE void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now,
                                                  double delta);
-XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 
 /* instr_paje.c */
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;

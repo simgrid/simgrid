@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -427,16 +427,12 @@ XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process(
 #if HAVE_PAPI
 typedef std::vector<std::pair</* counter name */ std::string, /* counter value */ long long>> papi_counter_t;
 XBT_PRIVATE papi_counter_t& smpi_process_papi_counters();
-XBT_PRIVATE int smpi_process_papi_event_set();
 #endif
 
 extern std::unordered_map<std::string, double> location2speedup;
-// TODO: Move this to the right location (if we keep this...)
-void smpi_add_process(simgrid::s4u::ActorPtr actor);
 
 /** @brief Returns the last call location (filename, linenumber). Process-specific. */
 extern "C" {
-XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location();
 XBT_PUBLIC(smpi_trace_call_location_t*) smpi_trace_get_call_location();
 }
 

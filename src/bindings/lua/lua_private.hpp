@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,8 +17,6 @@ void sglua_register_host_functions(lua_State* L);
 msg_host_t sglua_check_host(lua_State* L, int index);
 
 void sglua_register_platf_functions(lua_State* L);
-
-const char* sglua_get_msg_error(msg_error_t err);
 }
 
 #define lua_ensure(...) _XBT_IF_ONE_ARG(_lua_ensure_ARG1, _lua_ensure_ARGN, __VA_ARGS__)(__VA_ARGS__)

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -149,8 +149,6 @@ XBT_PUBLIC(void) SIMIX_process_detach();
 
 /*********************************** Host *************************************/
 XBT_PUBLIC(void) SIMIX_host_off(sg_host_t host, smx_actor_t issuer);
-XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
-XBT_PUBLIC(void*) SIMIX_host_self_get_data();
 
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count();
@@ -169,9 +167,6 @@ XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_activit
 XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_activity_t comm, void* buff, size_t buff_size);
 XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
 
-XBT_PUBLIC(smx_activity_t) SIMIX_comm_get_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
-XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
-XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(void) SIMIX_comm_finish(smx_activity_t synchro);
 
 /******************************************************************************/
@@ -184,7 +179,6 @@ XBT_PUBLIC(void) SIMIX_comm_finish(smx_activity_t synchro);
 XBT_PUBLIC(void) simcall_call(smx_actor_t process);
 
 /******************************* Host simcalls ********************************/
-XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 XBT_PUBLIC(smx_activity_t)
 simcall_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host);
 XBT_PUBLIC(smx_activity_t)
