@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "messages.h"
+#include "bittorrent-messages.h"
 #include "bittorrent.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages, "Messages specific for the message factory");
