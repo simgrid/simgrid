@@ -88,7 +88,7 @@ public:
     // FIXME I don't like that we multiply with the getCoreCount() just here...
     if (load*host->getCoreCount() > freq_up_threshold) {
       host->setPstate(0); /* Run at max. performance! */
-      XBT_INFO("Changed to pstate %f", 0.0);
+      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load * host->getCoreCount(), freq_up_threshold, 0);
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
