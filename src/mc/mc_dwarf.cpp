@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2017. The SimGrid Team.
+/* Copyright (c) 2008-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -1230,17 +1230,6 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 }
 
 // ***** Functions index
-
-static int MC_compare_frame_index_items(simgrid::mc::FunctionIndexEntry* a,
-                                        simgrid::mc::FunctionIndexEntry* b)
-{
-  if (a->low_pc < b->low_pc)
-    return -1;
-  else if (a->low_pc == b->low_pc)
-    return 0;
-  else
-    return 1;
-}
 
 static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
 {
