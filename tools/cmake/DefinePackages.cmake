@@ -709,7 +709,6 @@ set(headers_to_install
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
   include/xbt.h
-  include/xbt/algorithm.hpp
   include/xbt/asserts.h
   include/xbt/automaton.h
   include/xbt/automaton.hpp

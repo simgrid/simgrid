@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +11,6 @@
 #include <csignal> /* Signal handling */
 #include <cstdlib>
 
-#include <xbt/algorithm.hpp>
 #include <xbt/functional.hpp>
 #include <xbt/utility.hpp>
 
