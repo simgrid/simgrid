@@ -122,6 +122,9 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::surf:
   for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->getHost();
 
+    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host)) // Ignore virtual machines
+      return;
+
     if (host != nullptr) {
       // Get the host_load extension for the relevant host
       HostLoad* host_load = host->extension<HostLoad>();
