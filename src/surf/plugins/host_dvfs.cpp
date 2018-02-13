@@ -62,16 +62,16 @@ class Performance : public Governor {
 public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
-  void update() { host->setPstate(0); }
-  std::string getName() { return "Performance"; }
+  void update() override { host->setPstate(0); }
+  std::string getName() override { return "Performance"; }
 };
 
 class Powersave : public Governor {
 public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
-  void update() { host->setPstate(host->getPstatesCount() - 1); }
-  std::string getName() { return "Powersave"; }
+  void update() override { host->setPstate(host->getPstatesCount() - 1); }
+  std::string getName() override { return "Powersave"; }
 };
 
 class OnDemand : public Governor {
@@ -80,8 +80,8 @@ class OnDemand : public Governor {
 public:
   explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
-  std::string getName() { return "OnDemand"; }
-  void update()
+  std::string getName() override { return "OnDemand"; }
+  void update() override
   {
     double load = sg_host_get_current_load(host);
 
@@ -113,8 +113,8 @@ class Conservative : public Governor {
 public:
   explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
-  virtual std::string getName() { return "Conservative"; }
-  virtual void update()
+  virtual std::string getName() override { return "Conservative"; }
+  virtual void update() override
   {
     double load = sg_host_get_current_load(host)*host->getCoreCount();
     int pstate  = host->getPstate();
