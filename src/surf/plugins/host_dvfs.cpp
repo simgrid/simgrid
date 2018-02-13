@@ -139,7 +139,6 @@ public:
     }
   }
 };
-}
 
 class HostDvfs {
 public:
@@ -156,8 +155,9 @@ HostDvfs::HostDvfs(simgrid::s4u::Host* ptr) {}
 HostDvfs::~HostDvfs() = default;
 }
 }
+}
 
-using simgrid::plugin::HostDvfs;
+using simgrid::plugin::dvfs::HostDvfs;
 
 /* **************************** events  callback *************************** */
 static void on_host_added(simgrid::s4u::Host& host)
