@@ -464,7 +464,7 @@ void NetworkCm02Link::setLatency(double value)
 
 void NetworkCm02Action::updateRemainingLazy(double now)
 {
-  if (suspended_ != 0)
+  if (suspended_ != Action::SuspendStates::not_suspended)
     return;
 
   double delta        = now - getLastUpdate();

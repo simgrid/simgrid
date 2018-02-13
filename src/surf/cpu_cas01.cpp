@@ -175,7 +175,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->setMaxDuration(duration);
-  action->suspended_ = 2;
+  action->suspended_ = Action::SuspendStates::sleeping;
   if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);

@@ -473,7 +473,7 @@ void CpuTi::updateActionsFinishTime(double now)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != 0)
+    if (action.suspended_ != Action::SuspendStates::not_suspended)
       continue;
 
     sum_priority += 1.0 / action.getPriority();
@@ -487,7 +487,7 @@ void CpuTi::updateActionsFinishTime(double now)
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action.suspended_ == 0 && action.getPriority() > 0) {
+    if (action.suspended_ == Action::SuspendStates::not_suspended && action.getPriority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
       total_area = (action.getRemains()) * sum_priority * action.getPriority();
 
@@ -550,7 +550,7 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != 0)
+    if (action.suspended_ != Action::SuspendStates::not_suspended)
       continue;
 
     /* action don't need update */
@@ -589,7 +589,7 @@ CpuAction *CpuTi::sleep(double duration)
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
 
   action->setMaxDuration(duration);
-  action->suspended_ = 2;
+  action->suspended_ = Action::SuspendStates::sleeping;
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
@@ -660,8 +660,8 @@ void CpuTiAction::cancel()
 void CpuTiAction::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != 2) {
-    suspended_ = 1;
+  if (suspended_ != Action::SuspendStates::sleeping) {
+    suspended_ = Action::SuspendStates::suspended;
     heapRemove(getModel()->getActionHeap());
     cpu_->modified(true);
   }
@@ -671,8 +671,8 @@ void CpuTiAction::suspend()
 void CpuTiAction::resume()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != 2) {
-    suspended_ = 0;
+  if (suspended_ != Action::SuspendStates::sleeping) {
+    suspended_ = Action::SuspendStates::not_suspended;
     cpu_->modified(true);
   }
   XBT_OUT();

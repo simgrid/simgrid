@@ -717,7 +717,7 @@ int Action::unref(){
 void Action::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != 2) {
+  if (suspended_ != SuspendStates::sleeping) {
     getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
     if (getModel()->getUpdateMechanism() == UM_LAZY){
       heapRemove(getModel()->getActionHeap());
@@ -727,7 +727,7 @@ void Action::suspend()
         updateRemainingLazy(surf_get_clock());
       }
     }
-    suspended_ = 1;
+    suspended_ = SuspendStates::suspended;
   }
   XBT_OUT();
 }
@@ -735,9 +735,9 @@ void Action::suspend()
 void Action::resume()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != 2) {
+  if (suspended_ != SuspendStates::sleeping) {
     getModel()->getMaxminSystem()->update_variable_weight(getVariable(), getPriority());
-    suspended_ = 0;
+    suspended_ = SuspendStates::not_suspended;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
       heapRemove(getModel()->getActionHeap());
   }
@@ -746,7 +746,7 @@ void Action::resume()
 
 bool Action::isSuspended()
 {
-  return suspended_ == 1;
+  return suspended_ == SuspendStates::suspended;
 }
 /* insert action on heap using a given key and a hat (heap_action_type)
  * a hat can be of three types for communications:

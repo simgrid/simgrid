@@ -277,7 +277,7 @@ Action *CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->setMaxDuration(duration);
-  action->suspended_ = 2;
+  action->suspended_ = Action::SuspendStates::sleeping;
   model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);
 
   return action;
@@ -402,7 +402,7 @@ void L07Action::updateBound()
   }
   double lat_bound = sg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
-  if ((latency_ <= 0.0) && (suspended_ == 0)) {
+  if ((latency_ <= 0.0) && (suspended_ == Action::SuspendStates::not_suspended)) {
     if (rate_ < 0)
       getModel()->getMaxminSystem()->update_variable_bound(getVariable(), lat_bound);
     else

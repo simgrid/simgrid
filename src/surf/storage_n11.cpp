@@ -162,9 +162,9 @@ void StorageN11Action::cancel()
 void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
-  if (suspended_ != 2) {
+  if (suspended_ != Action::SuspendStates::sleeping) {
     getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
-    suspended_ = 1;
+    suspended_ = Action::SuspendStates::suspended;
   }
   XBT_OUT();
 }
@@ -176,7 +176,7 @@ void StorageN11Action::resume()
 
 bool StorageN11Action::isSuspended()
 {
-  return suspended_ == 1;
+  return suspended_ == Action::SuspendStates::suspended;
 }
 
 void StorageN11Action::setMaxDuration(double /*duration*/)

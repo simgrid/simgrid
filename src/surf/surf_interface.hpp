@@ -129,6 +129,12 @@ public:
     not_in_the_system /**< Not in the system anymore. Why did you ask ? */
   };
 
+  enum class SuspendStates {
+    not_suspended = 0, /**< Action currently not suspended **/
+    suspended,
+    sleeping
+  };
+
   /**
    * @brief Action constructor
    *
@@ -280,7 +286,7 @@ public:
   enum heap_action_type getHat() const { return hat_; }
   bool is_linked() const { return action_lmm_hook.is_linked(); }
 protected:
-  int suspended_ = 0;
+  Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;
 };
 
 typedef Action::ActionList ActionList;
