@@ -267,24 +267,6 @@ static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
     return dwarf_formstring(&attr);
 }
 
-/** \brief Get the linkage name of a DIE.
- *
- *  Use either DW_AT_linkage_name or DW_AT_MIPS_linkage_name.
- *  DW_AT_linkage_name is standardized since DWARF 4.
- *  Before this version of DWARF, the MIPS extensions
- *  DW_AT_MIPS_linkage_name is used (at least by GCC).
- *
- *  \param  die the DIE
- *  \return linkage name of the given DIE (or nullptr)
- * */
-static const char *MC_dwarf_at_linkage_name(Dwarf_Die * die)
-{
-  const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_linkage_name);
-  if (not name)
-    name = MC_dwarf_attr_integrate_string(die, DW_AT_MIPS_linkage_name);
-  return name;
-}
-
 static Dwarf_Off MC_dwarf_attr_dieoffset(Dwarf_Die * die, int attribute)
 {
   Dwarf_Attribute attr;
