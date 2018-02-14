@@ -143,6 +143,13 @@ void MSG_vm_shutdown(msg_vm_t vm)
   vm->shutdown();
 }
 
+/* Deprecated. Please use MSG_vm_create_migratable() instead */
+msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed,
+                       int dp_intensity)
+{
+  return sg_vm_create_migratable(ind_pm, name, coreAmount, ramsize, mig_netspeed, dp_intensity);
+}
+
 /** @brief Destroy a VM. Destroy the VM object from the simulation.
  *  @ingroup msg_VMs
  */
