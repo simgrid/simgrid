@@ -27,6 +27,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_dvfs, surf, "Logging specific to the SURF HostDvfs plugin");
 
+static const char* property_sampling_rate = "plugin/dvfs/sampling_rate";
+static const char* property_governor      = "plugin/dvfs/governor";
+
 namespace simgrid {
 namespace plugin {
 
@@ -44,8 +47,8 @@ public:
 
   void init()
   {
-    const char* local_sampling_rate_config = host->getProperty("plugin/dvfs/sampling_rate");
-    double global_sampling_rate_config     = xbt_cfg_get_double("plugin/dvfs/sampling_rate");
+    const char* local_sampling_rate_config = host->getProperty(property_sampling_rate);
+    double global_sampling_rate_config     = xbt_cfg_get_double(property_sampling_rate);
     if (local_sampling_rate_config != nullptr) {
       sampling_rate = std::stod(local_sampling_rate_config);
     } else {
@@ -177,12 +180,12 @@ static void on_host_added(simgrid::s4u::Host& host)
     XBT_DEBUG("DVFS process on %s is a daemon: %d", daemonProc->getHost()->getName().c_str(), daemonProc->isDaemon());
 
     std::string dvfs_governor;
-    const char* host_conf = daemonProc->getHost()->getProperty("plugin/dvfs/governor");
+    const char* host_conf = daemonProc->getHost()->getProperty(property_governor);
     if (host_conf != nullptr) {
-      dvfs_governor = std::string(daemonProc->getHost()->getProperty("plugin/dvfs/governor"));
+      dvfs_governor = std::string(daemonProc->getHost()->getProperty(property_governor));
       boost::algorithm::to_lower(dvfs_governor);
     } else {
-      dvfs_governor = xbt_cfg_get_string("plugin/dvfs/governor");
+      dvfs_governor = xbt_cfg_get_string(property_governor);
       boost::algorithm::to_lower(dvfs_governor);
     }
 
@@ -242,9 +245,9 @@ void sg_host_dvfs_plugin_init()
   sg_host_load_plugin_init();
 
   simgrid::s4u::Host::onCreation.connect(&on_host_added);
-  xbt_cfg_register_double("plugin/dvfs/sampling_rate", 0.1, nullptr,
+  xbt_cfg_register_double(property_sampling_rate, 0.1, nullptr,
                           "How often should the dvfs plugin check whether the frequency needs to be changed?");
-  xbt_cfg_register_string("plugin/dvfs/governor", "performance", nullptr,
+  xbt_cfg_register_string(property_governor, "performance", nullptr,
                           "Which Governor should be used that adapts the CPU frequency?");
 }
 }
