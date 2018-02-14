@@ -186,20 +186,26 @@ static void on_host_added(simgrid::s4u::Host& host)
       boost::algorithm::to_lower(dvfs_governor);
     }
 
-    // FIXME This is really ugly. When do we free the governor? Actually, never, because
-    // daemons never stop to run - they will be killed when the simulation is over. :(
-    simgrid::plugin::dvfs::Governor* governor;
-    if (dvfs_governor == "conservative") {
-      governor = new simgrid::plugin::dvfs::Conservative(daemonProc->getHost());
-    } else if (dvfs_governor == "ondemand") {
-      governor = new simgrid::plugin::dvfs::OnDemand(daemonProc->getHost());
-    } else if (dvfs_governor == "performance") {
-      governor = new simgrid::plugin::dvfs::Performance(daemonProc->getHost());
-    } else if (dvfs_governor == "powersave") {
-      governor = new simgrid::plugin::dvfs::Powersave(daemonProc->getHost());
-    } else {
-      XBT_CRITICAL("No governor specified for host %s", daemonProc->getHost()->getCname());
-    }
+    auto governor = [&dvfs_governor, &daemonProc]() {
+      if (dvfs_governor == "conservative") {
+        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
+            new simgrid::plugin::dvfs::Conservative(daemonProc->getHost()));
+      } else if (dvfs_governor == "ondemand") {
+        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
+            new simgrid::plugin::dvfs::OnDemand(daemonProc->getHost()));
+      } else if (dvfs_governor == "performance") {
+        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
+            new simgrid::plugin::dvfs::Performance(daemonProc->getHost()));
+      } else if (dvfs_governor == "powersave") {
+        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
+            new simgrid::plugin::dvfs::Powersave(daemonProc->getHost()));
+      } else {
+        XBT_CRITICAL("No governor specified for host %s, falling back to Performance",
+                     daemonProc->getHost()->getCname());
+        return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
+            new simgrid::plugin::dvfs::Performance(daemonProc->getHost()));
+      }
+    }();
 
     while (1) {
       // Sleep *before* updating; important for startup (i.e., t = 0).
