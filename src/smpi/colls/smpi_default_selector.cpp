@@ -1,6 +1,6 @@
 /* selector with default/naive Simgrid algorithms. These should not be trusted for performance evaluations */
 
-/* Copyright (c) 2009-2010, 2013-2017. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2013-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -213,7 +213,7 @@ int Coll_reduce_default::reduce(void *sendbuf, void *recvbuf, int count, MPI_Dat
 
   int rank = comm->rank();
   int size = comm->size();
-  if(size==0)
+  if (size <= 0)
     return MPI_ERR_COMM;
   //non commutative case, use a working algo from openmpi
   if (op != MPI_OP_NULL && not op->is_commutative()) {
