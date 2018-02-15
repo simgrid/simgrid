@@ -185,6 +185,18 @@ double sg_host_get_current_load(sg_host_t host)
   return host->extension<HostLoad>()->getCurrentLoad();
 }
 
+/** @brief Returns the current load of the host passed as argument
+ *
+ *  See also @ref plugin_load
+ */
+double sg_host_get_avg_load(sg_host_t host)
+{
+  xbt_assert(HostLoad::EXTENSION_ID.valid(),
+             "The Load plugin is not active. Please call sg_host_load_plugin_init() during initialization.");
+
+  return host->extension<HostLoad>()->getAverageLoad();
+}
+
 /** @brief Returns the time this host was idle since the last reset
  *
  *  See also @ref plugin_load
