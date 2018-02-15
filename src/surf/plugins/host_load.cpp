@@ -37,6 +37,7 @@ public:
   double getCurrentLoad();
   double getComputedFlops();
   double getAverageLoad();
+  double getIdleTime();
   void update();
   void reset();
 
@@ -84,6 +85,13 @@ void HostLoad::update()
 double HostLoad::getCurrentLoad()
 {
   return current_flops / static_cast<double>(host->getSpeed() * host->getCoreCount());
+}
+
+/**
+ * Return idle time since last reset
+ */
+double HostLoad::getIdleTime() {
+  return idle_time;
 }
 
 double HostLoad::getAverageLoad()
@@ -175,6 +183,18 @@ double sg_host_get_current_load(sg_host_t host)
              "The Load plugin is not active. Please call sg_host_load_plugin_init() during initialization.");
 
   return host->extension<HostLoad>()->getCurrentLoad();
+}
+
+/** @brief Returns the time this host was idle since the last reset
+ *
+ *  See also @ref plugin_load
+ */
+double sg_host_get_idle_time(sg_host_t host)
+{
+  xbt_assert(HostLoad::EXTENSION_ID.valid(),
+             "The Load plugin is not active. Please call sg_host_load_plugin_init() during initialization.");
+
+  return host->extension<HostLoad>()->getIdleTime();
 }
 
 double sg_host_get_computed_flops(sg_host_t host)
