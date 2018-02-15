@@ -116,7 +116,7 @@ double HostLoad::getIdleTime() {
 
 double HostLoad::getAverageLoad()
 {
-  return getComputedFlops() / (host->getSpeed() * host->getCoreCount() * (surf_get_clock() - last_reset));
+  return getComputedFlops() / theor_max_flops;
 }
 
 double HostLoad::getComputedFlops()
