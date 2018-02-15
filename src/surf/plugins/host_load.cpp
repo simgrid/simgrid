@@ -44,8 +44,12 @@ private:
   simgrid::s4u::Host* host = nullptr;
   double last_updated      = 0;
   double last_reset        = 0;
+  double current_speed     = 0;
   double current_flops     = 0;
   double computed_flops    = 0;
+  double idle_time         = 0;
+  long   theor_max_flops   = 0;
+  bool   was_prev_idle     = true; /* A host is idle at the beginning */
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostLoad> HostLoad::EXTENSION_ID;
@@ -54,7 +58,10 @@ HostLoad::HostLoad(simgrid::s4u::Host* ptr)
     : host(ptr)
     , last_updated(surf_get_clock())
     , last_reset(surf_get_clock())
+    , current_speed(host->getSpeed())
     , current_flops(host->pimpl_cpu->constraint()->get_usage())
+    , theor_max_flops(0)
+    , was_prev_idle(current_flops == 0)
 {
 }
 
