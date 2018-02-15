@@ -90,8 +90,20 @@ void HostLoad::update()
   }
 }
 
+/**
+ * WARNING: This function does not guarantee that you have the real load at any time;
+ * imagine all actions on your CPU terminate at time t. Your load is then 0. Then
+ * you query the load (still 0) and then another action starts (still at time t!).
+ * This means that the load was never really 0 (because the time didn't advance) but
+ * it will still be reported as 0.
+ *
+ * So, use at your own risk.
+ */
 double HostLoad::getCurrentLoad()
 {
+  // We don't need to call update() here because it is called everytime an
+  // action terminates or starts
+  // FIXME: Can this happen at the same time? stop -> call to getCurrentLoad, load = 0 -> next action starts?
   return current_flops / static_cast<double>(host->getSpeed() * host->getCoreCount());
 }
 
@@ -119,9 +131,13 @@ double HostLoad::getComputedFlops()
  */
 void HostLoad::reset()
 {
-  last_updated   = surf_get_clock();
-  last_reset     = surf_get_clock();
-  computed_flops = 0;
+  last_updated    = surf_get_clock();
+  last_reset      = surf_get_clock();
+  idle_time       = 0;
+  computed_flops  = 0;
+  theor_max_flops = 0;
+  current_flops   = host->pimpl_cpu->constraint()->get_usage();
+  was_prev_idle   = (current_flops == 0);
 }
 }
 }
