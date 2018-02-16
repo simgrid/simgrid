@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -60,7 +60,7 @@ public abstract class Process implements Runnable {
 	private Host host = null;
 
 	/** The arguments of the method function of the process. */
-	private ArrayList<String> args = new ArrayList<>();
+	private ArrayList<String> args_ = new ArrayList<>();
 
 	/**
 	 * Constructs a new process from the name of a host and his name. The method
@@ -119,9 +119,9 @@ public abstract class Process implements Runnable {
 		this.host = host;
 		this.name = name;
 
-		this.args = new ArrayList<>();
+		this.args_ = new ArrayList<>();
 		if (null != args)
-			this.args.addAll(Arrays.asList(args));
+			this.args_.addAll(Arrays.asList(args));
 	}
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
@@ -298,9 +298,9 @@ public abstract class Process implements Runnable {
 		String[] args = null;      /* do not fill it before the signal or this.args will be empty */
 
 		try {
-			args = new String[this.args.size()];
-			if (!this.args.isEmpty()) {
-				this.args.toArray(args);
+			args = new String[this.args_.size()];
+			if (!this.args_.isEmpty()) {
+				this.args_.toArray(args);
 			}
 
 			this.main(args);
