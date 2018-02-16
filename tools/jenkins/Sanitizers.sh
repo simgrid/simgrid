@@ -31,6 +31,7 @@ then
     SANITIZER_OPTIONS="-Denable_address_sanitizer=ON -Denable_undefined_sanitizer=OFF -Denable_thread_sanitizer=OFF"
 elif [ "${SANITIZER}" = "thread" ]
 then
+    export SMPI_PRIVATIZATION="mmap"
     export TSAN_OPTIONS="memory_limit_mb=1500"
     SANITIZER_OPTIONS="-Denable_address_sanitizer=OFF -Denable_undefined_sanitizer=OFF -Denable_thread_sanitizer=ON"
 elif [ "${SANITIZER}" = "undefined" ]
