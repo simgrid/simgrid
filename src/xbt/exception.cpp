@@ -1,5 +1,4 @@
-/* Copyright (c) 2005-2017. The SimGrid Team.
- * All rights reserved. */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,8 +37,7 @@ void logException(
   try {
     auto name = simgrid::xbt::demangle(typeid(exception).name());
 
-    auto with_context =
-      dynamic_cast<const simgrid::xbt::WithContextException*>(&exception);
+    auto* with_context = dynamic_cast<const simgrid::xbt::WithContextException*>(&exception);
     if (with_context != nullptr)
       XBT_LOG(prio, "%s %s by %s/%d: %s",
         context, name.get(),
@@ -57,7 +55,7 @@ void logException(
     }
 
     // Do we have a nested exception?
-    auto with_nested = dynamic_cast<const std::nested_exception*>(&exception);
+    auto* with_nested = dynamic_cast<const std::nested_exception*>(&exception);
     if (with_nested == nullptr ||  with_nested->nested_ptr() == nullptr)
       return;
     try {

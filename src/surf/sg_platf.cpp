@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -227,7 +227,7 @@ void sg_platf_new_cluster(ClusterCreationArgs* cluster)
       linkUp   = simgrid::surf::LinkImpl::byName(tmp_link);
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
 
-      auto as_cluster = static_cast<ClusterZone*>(current_as);
+      auto* as_cluster = static_cast<ClusterZone*>(current_as);
       as_cluster->privateLinks_.insert({as_cluster->nodePosition(rankId), {linkUp, linkDown}});
     }
 
@@ -654,7 +654,7 @@ void sg_platf_new_hostlink(HostLinkCreationArgs* hostlink)
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up.c_str());
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down.c_str());
 
-  auto as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
+  auto* as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
   if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");

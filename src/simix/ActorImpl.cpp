@@ -409,7 +409,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   /* Tracing the process creation */
   TRACE_msg_process_create(process->getName(), process->pid, process->host);
 
-  auto context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context);
+  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context);
   if (not context)
     xbt_die("Not a suitable context");
 
@@ -419,7 +419,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
 
 void SIMIX_process_detach()
 {
-  auto context = dynamic_cast<simgrid::kernel::context::AttachContext*>(SIMIX_context_self());
+  auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(SIMIX_context_self());
   if (not context)
     xbt_die("Not a suitable context");
 

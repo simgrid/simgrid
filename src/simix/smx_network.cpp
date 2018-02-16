@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2017. The SimGrid Team.  All rights reserved.         */
+/* Copyright (c) 2009-2018. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -603,7 +603,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         }
         else if (simcall->call == SIMCALL_COMM_TESTANY) {
           e.value = -1;
-          auto comms = simcall_comm_testany__get__comms(simcall);
+          auto* comms  = simcall_comm_testany__get__comms(simcall);
           auto count = simcall_comm_testany__get__count(simcall);
           auto element = std::find(comms, comms + count, synchro);
           if (element == comms + count)

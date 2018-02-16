@@ -1,6 +1,6 @@
 /* Functions related to the Virtual Machines.                               */
 
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -143,7 +143,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_destroy(JNIEnv* env, jobject jvm)
   msg_vm_t vm = jvm_get_native(env, jvm);
   if (vm) {
     MSG_vm_destroy(vm);
-    auto vmList = &simgrid::vm::VirtualMachineImpl::allVms_;
+    auto* vmList = &simgrid::vm::VirtualMachineImpl::allVms_;
     vmList->erase(std::remove(vmList->begin(), vmList->end(), vm), vmList->end());
   }
 }
