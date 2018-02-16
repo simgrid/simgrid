@@ -1,7 +1,6 @@
-/* A crash few tests for the maxmin library                                 */
+/* A few crash tests for the maxmin library                                 */
 
-/* Copyright (c) 2004-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -159,8 +158,8 @@ int main(int argc, char **argv)
     mode=3;
 
   if(mode==1)
-    xbt_log_control_set("surf/maxmin.threshold:DEBUG surf/maxmin.fmt:\'[%r]: [%c/%p] %m%n\'\
-                         surf.threshold:DEBUG surf.fmt:\'[%r]: [%c/%p] %m%n\' ");
+    xbt_log_control_set("surf/maxmin.threshold:DEBUG surf/maxmin.fmt:\'[%r]: [%c/%p] %m%n\' "
+                        "surf.threshold:DEBUG surf.fmt:\'[%r]: [%c/%p] %m%n\' ");
 
   if(mode==2)
     xbt_log_control_set("surf/maxmin.threshold:DEBUG surf.threshold:DEBUG");
