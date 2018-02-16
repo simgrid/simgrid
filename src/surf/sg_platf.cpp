@@ -116,7 +116,7 @@ void sg_platf_new_link(LinkCreationArgs* link)
 {
   std::vector<std::string> names;
 
-  if (link->policy == SURF_LINK_FULLDUPLEX) {
+  if (link->policy == SURF_LINK_SPLITDUPLEX) {
     names.push_back(link->id+ "_UP");
     names.push_back(link->id+ "_DOWN");
   } else {
@@ -315,7 +315,7 @@ void sg_platf_new_cabinet(CabinetCreationArgs* cabinet)
     sg_platf_new_host(&host);
 
     LinkCreationArgs link;
-    link.policy    = SURF_LINK_FULLDUPLEX;
+    link.policy    = SURF_LINK_SPLITDUPLEX;
     link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;
     link.id        = "link_" + hostname;

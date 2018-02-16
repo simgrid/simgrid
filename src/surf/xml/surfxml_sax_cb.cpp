@@ -503,7 +503,7 @@ void ETag_surfxml_cluster(){
     cluster.sharing_policy = SURF_LINK_SHARED;
     break;
   case A_surfxml_cluster_sharing___policy_FULLDUPLEX:
-    cluster.sharing_policy = SURF_LINK_FULLDUPLEX;
+    cluster.sharing_policy = SURF_LINK_SPLITDUPLEX;
     break;
   case A_surfxml_cluster_sharing___policy_FATPIPE:
     cluster.sharing_policy = SURF_LINK_FATPIPE;
@@ -592,8 +592,8 @@ void ETag_surfxml_link(){
      link.policy = SURF_LINK_FATPIPE;
      break;
   case A_surfxml_link_sharing___policy_FULLDUPLEX:
-     link.policy = SURF_LINK_FULLDUPLEX;
-     break;
+    link.policy = SURF_LINK_SPLITDUPLEX;
+    break;
   default:
     surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
     break;

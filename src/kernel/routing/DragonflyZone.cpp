@@ -112,7 +112,7 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
     throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
   }
 
-  if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX)
+  if (cluster->sharing_policy == SURF_LINK_SPLITDUPLEX)
     this->numLinksperLink_ = 2;
 
   this->cluster_ = cluster;
@@ -168,7 +168,7 @@ void DragonflyZone::createLink(const std::string& id, int numlinks, surf::LinkIm
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", id.c_str());
   surf::LinkImpl* link;
-  if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
+  if (this->cluster_->sharing_policy == SURF_LINK_SPLITDUPLEX) {
     *linkup   = surf::LinkImpl::byName(linkTemplate.id + "_UP");   // check link?
     *linkdown = surf::LinkImpl::byName(linkTemplate.id + "_DOWN"); // check link ?
   } else {
@@ -199,7 +199,7 @@ void DragonflyZone::generateLinks()
       this->createLink(id, 1, &linkup, &linkdown);
 
       this->routers_[i]->myNodes_[j] = linkup;
-      if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
+      if (this->cluster_->sharing_policy == SURF_LINK_SPLITDUPLEX)
         this->routers_[i]->myNodes_[j + 1] = linkdown;
 
       uniqueId++;

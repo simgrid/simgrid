@@ -134,9 +134,9 @@ typedef struct s_smx_simcall s_smx_simcall_t;
 typedef struct s_smx_simcall* smx_simcall_t;
 
 typedef enum { // FIXME: move this to s4u::Link; make it an enum class
-  SURF_LINK_FULLDUPLEX = 2,
-  SURF_LINK_SHARED     = 1,
-  SURF_LINK_FATPIPE    = 0
+  SURF_LINK_SPLITDUPLEX = 2,
+  SURF_LINK_SHARED      = 1,
+  SURF_LINK_FATPIPE     = 0
 } e_surf_link_sharing_policy_t;
 
 /** @ingroup m_datatypes_management_details

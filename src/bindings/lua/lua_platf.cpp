@@ -94,7 +94,7 @@ int console_add_backbone(lua_State *L) {
   const char* policy = lua_tostring(L, -1);
   lua_pop(L, 1);
   if (policy && not strcmp(policy, "FULLDUPLEX")) {
-    link.policy = SURF_LINK_FULLDUPLEX;
+    link.policy = SURF_LINK_SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "FATPIPE")) {
     link.policy = SURF_LINK_FATPIPE;
   } else {
@@ -267,7 +267,7 @@ int  console_add_link(lua_State *L) {
   policy = lua_tostring(L, -1);
   lua_pop(L, 1);
   if (policy && not strcmp(policy, "FULLDUPLEX")) {
-    link.policy = SURF_LINK_FULLDUPLEX;
+    link.policy = SURF_LINK_SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "FATPIPE")) {
     link.policy = SURF_LINK_FATPIPE;
   } else {

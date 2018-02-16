@@ -472,7 +472,7 @@ FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, Fa
       "link_from_" + std::to_string(downNode->id) + "_" + std::to_string(upNode->id) + "_" + std::to_string(uniqueId);
   sg_platf_new_link(&linkTemplate);
 
-  if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
+  if (cluster->sharing_policy == SURF_LINK_SPLITDUPLEX) {
     std::string tmpID = std::string(linkTemplate.id) + "_UP";
     this->upLink      = surf::LinkImpl::byName(tmpID); // check link?
     tmpID          = std::string(linkTemplate.id) + "_DOWN";

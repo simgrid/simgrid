@@ -130,7 +130,7 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
 
   surf::LinkImpl *linkUp;
   surf::LinkImpl *linkDown;
-  if (link.policy == SURF_LINK_FULLDUPLEX) {
+  if (link.policy == SURF_LINK_SPLITDUPLEX) {
     linkUp   = surf::LinkImpl::byName(link_id + "_UP");
     linkDown = surf::LinkImpl::byName(link_id + "_DOWN");
   } else {
