@@ -180,7 +180,7 @@ continue to provide 500 Mflop/s from time 21. From time 32 it will provide 250 M
 ``<cluster />`` represents a machine-cluster. It is most commonly used
 when one wants to define many hosts and a network quickly. Technically,
 ``cluster`` is a meta-tag: <b>from the inner SimGrid point of
-view, a cluster is an AS where some optimized routing is defined</b>.
+view, a cluster is a network zone where some optimized routing is defined</b>.
 The default inner organization of the cluster is as follow:
 
 \verbatim
@@ -200,7 +200,7 @@ to a central backbone (backbone is a link itself, as a link can
 be used to represent a switch, see the switch / link section
 below for more details about it). A <b>router</b> allows to connect a
 <b>cluster</b> to the outside world. Internally,
-SimGrid treats a cluster as an AS containing all hosts: the router is the default
+SimGrid treats a cluster as a network zone containing all hosts: the router is the default
 gateway for the cluster.
 
 There is an alternative organization, which is as follows:
@@ -276,7 +276,7 @@ c-99.me
 \subsubsection pf_cabinet &lt;cabinet&gt;
 
 \note
-    This tag is only available when the routing mode of the AS
+    This tag is only available when the routing mode of the network zone
     is set to ``Cluster``.
 
 The ``&lt;cabinet /&gt;`` tag is, like the \ref pf_tag_cluster "&lt;cluster&gt;" tag,
@@ -308,7 +308,7 @@ The following example was taken from ``examples/platforms/meta_cluster.xml`` and
 shows how to use the cabinet tag.
 
 \verbatim
-  <AS  id="my_cluster1"  routing="Cluster">
+  <zone  id="my_cluster1"  routing="Cluster">
     <cabinet id="cabinet1" prefix="host-" suffix=".cluster1"
       speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
     <cabinet id="cabinet2" prefix="host-" suffix=".cluster1"
@@ -317,7 +317,7 @@ shows how to use the cabinet tag.
       speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
 
     <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
-  </AS>
+  </zone>
 \endverbatim
 
 \note
@@ -382,7 +382,7 @@ several other tags that are available only in certain contexts.
     do they increase latency. As a matter of fact, routers are (almost) ignored
     by the simulator when the simulation has begun.
 
-3. ``<backbone/>``: This tag is only available when the containing AS is
+3. ``<backbone/>``: This tag is only available when the containing network zone is
                     used as a cluster (i.e., mode="Cluster")
 
 \remark
@@ -399,7 +399,7 @@ for routing algorithms. So, it does not have any attributes except :
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | The identifier of the router to be used when referring to it.
-coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the router belongs to. More details can be found in the Section \ref pf_P2P_tags.
+coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the network zone the router belongs to. More details can be found in the Section \ref pf_P2P_tags.
 
 #### Example ####
 
@@ -565,7 +565,7 @@ documentation (Section \ref pf_tag_host) for an example.
 \subsubsection pf_backbone <backbone/>
 
 \note
-  This tag is <b>only available</b> when the containing AS uses the "Cluster" routing mode!
+  This tag is <b>only available</b> when the containing network zone uses the "Cluster" routing mode!
 
 Using this tag, you can designate an already existing link to be a backbone.
 
@@ -864,8 +864,8 @@ the shortest paths.
 
 Before SimGrid v3.16, networking zones used to be called Autonomous
 Systems, but this was misleading as zones may include other zones in a
-hierarchical manner. If you find any remaining reference to ASes,
-please report this as a bug.
+hierarchical manner. If you find any remaining reference to network
+zones, please report this as a bug.
 
 Attribute   | Value                                             | Description
 ----------- | ------------------------------------------------- | ----------------------------------------------
@@ -874,20 +874,20 @@ routing     | One of the existing routing algorithm (mandatory) | See Section \r
 
 <b>Example:</b>
 \code
-<AS id="AS0" routing="Full">
+<zone id="zone0" routing="Full">
    <host id="host1" speed="1000000000"/>
    <host id="host2" speed="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
-</AS>
+</zone>
 \endcode
 
-In this example, AS0 contains two hosts (host1 and host2). The route
+In this example, zone0 contains two hosts (host1 and host2). The route
 between the hosts goes through link1.
 
 \subsection pf_rm Routing models
 
-For each AS, you must define explicitly which routing model will
+For each network zone, you must define explicitly which routing model will
 be used. There are 3 different categories for routing models:
 
 1. \ref pf_routing_model_shortest_path "Shortest-path" based models: SimGrid calculates shortest
@@ -899,7 +899,7 @@ be used. There are 3 different categories for routing models:
    Consistent with some manually managed real life routing.
 3. \ref pf_routing_model_simple "Simple/fast models": those models offer fast, low memory routing
    algorithms. You should consider to use this type of model if 
-   you can make some assumptions about your AS. 
+   you can make some assumptions about your network zone.
    Routing in this case is more or less ignored.
 
 \subsubsection pf_raf The router affair
@@ -949,28 +949,28 @@ completely interchangeable. Here are some examples:
 
 Floyd example:
 \verbatim
-<AS  id="AS0"  routing="Floyd">
+<zone  id="zone0"  routing="Floyd">
 
   <cluster id="my_cluster_1" prefix="c-" suffix=""
            radical="0-1" speed="1000000000" bw="125000000" lat="5E-5"
            router_id="router1"/>
 
-  <AS id="AS1" routing="None">
+  <zone id="zone1" routing="None">
     <host id="host1" speed="1000000000"/>
-  </AS>
+  </zone>
 
   <link id="link1" bandwidth="100000" latency="0.01"/>
 
-  <ASroute src="my_cluster_1" dst="AS1"
+  <zoneroute src="my_cluster_1" dst="zone1"
     gw_src="router1"
     gw_dst="host1">
     <link_ctn id="link1"/>
-  </ASroute>
+  </zoneroute>
 
-</AS>
+</zone>
 \endverbatim
 
-ASroute given at the end gives a topological information: link1 is
+zoneroute given at the end gives a topological information: link1 is
 between router1 and host1.
 
 #### Example platform files ####
@@ -992,22 +992,22 @@ routing model (the path is given relative to SimGrid's source directory)
 
 Dijkstra example :
 \verbatim
- <AS id="AS_2" routing="Dijkstra">
-     <host id="AS_2_host1" speed="1000000000"/>
-     <host id="AS_2_host2" speed="1000000000"/>
-     <host id="AS_2_host3" speed="1000000000"/>
-     <link id="AS_2_link1" bandwidth="1250000000" latency="5E-4"/>
-     <link id="AS_2_link2" bandwidth="1250000000" latency="5E-4"/>
-     <link id="AS_2_link3" bandwidth="1250000000" latency="5E-4"/>
-     <link id="AS_2_link4" bandwidth="1250000000" latency="5E-4"/>
+ <zone id="zone_2" routing="Dijkstra">
+     <host id="zone_2_host1" speed="1000000000"/>
+     <host id="zone_2_host2" speed="1000000000"/>
+     <host id="zone_2_host3" speed="1000000000"/>
+     <link id="zone_2_link1" bandwidth="1250000000" latency="5E-4"/>
+     <link id="zone_2_link2" bandwidth="1250000000" latency="5E-4"/>
+     <link id="zone_2_link3" bandwidth="1250000000" latency="5E-4"/>
+     <link id="zone_2_link4" bandwidth="1250000000" latency="5E-4"/>
      <router id="central_router"/>
-     <router id="AS_2_gateway"/>
+     <router id="zone_2_gateway"/>
      <!-- routes providing topological information -->
-     <route src="central_router" dst="AS_2_host1"><link_ctn id="AS_2_link1"/></route>
-     <route src="central_router" dst="AS_2_host2"><link_ctn id="AS_2_link2"/></route>
-     <route src="central_router" dst="AS_2_host3"><link_ctn id="AS_2_link3"/></route>
-     <route src="central_router" dst="AS_2_gateway"><link_ctn id="AS_2_link4"/></route>
-  </AS>
+     <route src="central_router" dst="zone_2_host1"><link_ctn id="zone_2_link1"/></route>
+     <route src="central_router" dst="zone_2_host2"><link_ctn id="zone_2_link2"/></route>
+     <route src="central_router" dst="zone_2_host3"><link_ctn id="zone_2_link3"/></route>
+     <route src="central_router" dst="zone_2_gateway"><link_ctn id="zone_2_link4"/></route>
+  </zone>
 \endverbatim
 
 \anchor pf_routing_model_dijkstracache
@@ -1015,8 +1015,8 @@ Dijkstra example :
 
 DijkstraCache example:
 \verbatim
-<AS id="AS_2" routing="DijkstraCache">
-     <host id="AS_2_host1" speed="1000000000"/>
+<zone id="zone_2" routing="DijkstraCache">
+     <host id="zone_2_host1" speed="1000000000"/>
      ...
 (platform unchanged compared to upper example)
 \endverbatim
@@ -1042,12 +1042,12 @@ if there are no example files listed here, this is likely to be correct.
 
 Full example :
 \verbatim
-<AS  id="AS0"  routing="Full">
+<zone  id="zone0"  routing="Full">
    <host id="host1" speed="1000000000"/>
    <host id="host2" speed="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
- </AS>
+ </zone>
 \endverbatim
 
 #### Example platform files ####
@@ -1083,7 +1083,7 @@ routing model (the path is given relative to SimGrid's source directory):
 ### None ###
 
 This model does exactly what it's name advertises: Nothing. There is no routing
-available within this model and if you try to communicate within the AS that
+available within this model and if you try to communicate within the zone that
 uses this model, SimGrid will fail unless you have explicitly activated the
 \ref options_model_select_network_constant "Constant Network Model" (this model charges
 the same for every single communication). It should
@@ -1145,27 +1145,27 @@ Consider the example below:
 
 The route here from host Alice to Bob will be first link1, then link2,
 and finally link3. What about the reverse route? \ref pf_tag_route "Route" and
-\ref pf_tag_zoneroute "ASroute" have an optional attribute \c symmetrical, that can
+\ref pf_tag_zoneroute "zoneroute" have an optional attribute \c symmetrical, that can
 be either \c YES or \c NO. \c YES means that the reverse route is the same
 route in the inverse order, and is set to \c YES by default. Note that
 this is not the case for bypass*Route, as it is more probable that you
 want to bypass only one default route.
 
-For an \ref pf_tag_zoneroute "ASroute", things are just slightly more complicated, as you have
-to give the id of the gateway which is inside the AS you want to access ... 
+For an \ref pf_tag_zoneroute "zoneroute", things are just slightly more complicated, as you have
+to give the id of the gateway which is inside the zone you want to access ... 
 So it looks like this:
 
 \verbatim
-<ASroute src="AS1" dst="AS2"
+<zoneroute src="zone1" dst="zone2"
   gw_src="router1" gw_dst="router2">
   <link_ctn id="link1"/>
-</ASroute>
+</zoneroute>
 \endverbatim
 
-gw == gateway, so when any message are trying to go from AS1 to AS2,
-it means that it must pass through router1 to get out of the AS, then
-pass through link1, and get into AS2 by being received by router2.
-router1 must belong to AS1 and router2 must belong to AS2.
+gw == gateway, so when any message are trying to go from zone1 to zone2,
+it means that it must pass through router1 to get out of the zone, then
+pass through link1, and get into zone2 by being received by router2.
+router1 must belong to zone1 and router2 must belong to zone2.
 
 \subsubsection pf_tag_linkctn &lt;link_ctn&gt;
 
@@ -1205,16 +1205,16 @@ host \c dst_host that is within \c dst, you need to:
 
 | Attribute name  | Mandatory | Values | Description                                                                                                                                |
 | --------------- | --------- | ------ | -----------                                                                                                                                |
-| src             | yes       | String | The identifier of the source AS                                                                                                            |
+| src             | yes       | String | The identifier of the source zone                                                                                                            |
 | dst             | yes       | String | See the \c src attribute                                                                                                                   |
-| gw_src          | yes       | String | The gateway that will be used within the src AS; this can be any \ref pf_tag_host "Host" or \ref pf_router "Router" defined within the src AS. |
-| gw_dst          | yes       | String | Same as \c gw_src, but with the dst AS instead.                                                                                            |
+| gw_src          | yes       | String | The gateway that will be used within the src zone; this can be any \ref pf_tag_host "Host" or \ref pf_router "Router" defined within the src zone. |
+| gw_dst          | yes       | String | Same as \c gw_src, but with the dst zone instead.                                                                                            |
 | symmetrical     | no        | YES\|NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly.               | 
 
 #### Example ####
 
 \verbatim
-<AS  id="AS0"  routing="Full">
+<zone  id="zone0"  routing="Full">
   <cluster id="my_cluster_1" prefix="c-" suffix=".me"
   		radical="0-149" speed="1000000000" bw="125000000" lat="5E-5"
         bb_bw="2250000000" bb_lat="5E-4"/>
@@ -1225,17 +1225,17 @@ host \c dst_host that is within \c dst, you need to:
 
      <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
 
-     <ASroute src="my_cluster_1" dst="my_cluster_2"
+     <zoneroute src="my_cluster_1" dst="my_cluster_2"
 	 gw_src="c-my_cluster_1_router.me"
 	 gw_dst="c-my_cluster_2_router.me">
  		<link_ctn id="backbone"/>
-     </ASroute>
-     <ASroute src="my_cluster_2" dst="my_cluster_1"
+     </zoneroute>
+     <zoneroute src="my_cluster_2" dst="my_cluster_1"
 	 gw_src="c-my_cluster_2_router.me"
 	 gw_dst="c-my_cluster_1_router.me">
  		<link_ctn id="backbone"/>
-     </ASroute>
-</AS>
+     </zoneroute>
+</zone>
 \endverbatim
 
 \subsubsection pf_tag_route &lt;route&gt; 
@@ -1277,36 +1277,36 @@ A route in the \ref pf_routing_model_shortest_path "Shortest-Path routing model"
     (network-)graph and the employed algorithms need to know which edge connects
     which pair of entities.
 
-\subsubsection pf_tag_bypassasroute bypassASroute
+\subsubsection pf_tag_bypassasroute bypasszoneroute
 
 As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
-to bypass some routes defined in lower level AS at an upper stage:
-<b>bypassASroute</b> is the tag you're looking for. It allows to
-bypass routes defined between already defined between AS (if you want
+to bypass some routes defined in lower level zone at an upper stage:
+<b>bypasszoneroute</b> is the tag you're looking for. It allows to
+bypass routes defined between already defined between zone (if you want
 to bypass route for a specific host, you should just use byPassRoute).
-The principle is the same as ASroute : <b>bypassASroute</b> contains
+The principle is the same as zoneroute : <b>bypasszoneroute</b> contains
 list of links that are in the path between src and dst.
 
 #### Attributes ####
 
 | Attribute name  | Mandatory | Values                  | Description                                                                                                  |
 | --------------- | --------- | ----------------------  | -----------                                                                                                  |
-| src             | yes       | String                  | The value given to the source AS's "id" attribute                                                            |
-| dst             | yes       | String                  | The value given to the destination AS's "id" attribute.                                                      |
-| gw_src          | yes       | String                  | The value given to the source gateway's "id" attribute; this can be any host or router within the src AS     |
-| gw_dst          | yes       | String                  | The value given to the destination gateway's "id" attribute; this can be any host or router within the dst AS|
+| src             | yes       | String                  | The value given to the source zone's "id" attribute                                                            |
+| dst             | yes       | String                  | The value given to the destination zone's "id" attribute.                                                      |
+| gw_src          | yes       | String                  | The value given to the source gateway's "id" attribute; this can be any host or router within the src zone     |
+| gw_dst          | yes       | String                  | The value given to the destination gateway's "id" attribute; this can be any host or router within the dst zone|
 | symmetrical     | no        | YES\| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
 
 #### Example ####
 
 \verbatim
-<bypassASRoute src="my_cluster_1" dst="my_cluster_2"
+<bypasszoneRoute src="my_cluster_1" dst="my_cluster_2"
   gw_src="my_cluster_1_router"
   gw_dst="my_cluster_2_router">
     <link_ctn id="link_tmp"/>
-</bypassASroute>
+</bypasszoneroute>
 \endverbatim
 
 This example shows that link \c link_tmp (definition not displayed here) directly
@@ -1319,7 +1319,7 @@ attribute was not given, this route is presumed to be symmetrical.
 As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
-to bypass some routes defined in lower level AS at an upper stage :
+to bypass some routes defined in lower level zone at an upper stage :
 <b>bypassRoute</b> is the tag you're looking for. It allows to bypass
 routes defined between <b>host/router</b>. The principle is the same
 as route : <b>bypassRoute</b> contains list of links references of
@@ -1329,8 +1329,8 @@ links that are in the path between src and dst.
 
 | Attribute name  | Mandatory | Values                  | Description                                                                                                  |
 | --------------- | --------- | ----------------------  | -----------                                                                                                  |
-| src             | yes       | String                  | The value given to the source AS's "id" attribute                                                            |
-| dst             | yes       | String                  | The value given to the destination AS's "id" attribute.                                                      |
+| src             | yes       | String                  | The value given to the source zone's "id" attribute                                                            |
+| dst             | yes       | String                  | The value given to the destination zone's "id" attribute.                                                      |
 | symmetrical     | no        | YES \| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
 
 #### Examples ####
@@ -1347,71 +1347,71 @@ attribute was not given, this route is presumed to be symmetrical.
 
 \subsection pb_baroex Basic Routing Example
 
-Let's say you have an AS named AS_Big that contains two other AS, AS_1
-and AS_2. If you want to make a host (h1) from AS_1 with another one
-(h2) from AS_2 then you'll have to proceed as follows:
+Let's say you have an zone named zone_Big that contains two other zone, zone_1
+and zone_2. If you want to make a host (h1) from zone_1 with another one
+(h2) from zone_2 then you'll have to proceed as follows:
 \li First, you have to ensure that a route is defined from h1 to the
-    AS_1's exit gateway and from h2 to AS_2's exit gateway.
-\li Then, you'll have to define a route between AS_1 to AS_2. As those
-    AS are both resources belonging to AS_Big, then it has to be done
-    at AS_big level. To define such a route, you have to give the
-    source AS (AS_1), the destination AS (AS_2), and their respective
+    zone_1's exit gateway and from h2 to zone_2's exit gateway.
+\li Then, you'll have to define a route between zone_1 to zone_2. As those
+    zone are both resources belonging to zone_Big, then it has to be done
+    at zone_big level. To define such a route, you have to give the
+    source zone (zone_1), the destination zone (zone_2), and their respective
     gateway (as the route is effectively defined between those two
     entry/exit points). Elements of this route can only be elements
-    belonging to AS_Big, so links and routers in this route should be
-    defined inside AS_Big. If you choose some shortest-path model,
+    belonging to zone_Big, so links and routers in this route should be
+    defined inside zone_Big. If you choose some shortest-path model,
     this route will be computed automatically.
 
 As said before, there are mainly 2 tags for routing :
-\li <b>ASroute</b>: to define routes between two  <b>AS</b>
+\li <b>zoneroute</b>: to define routes between two  <b>zone</b>
 \li <b>route</b>: to define routes between two <b>host/router</b>
 
-As we are dealing with routes between AS, it means that those we'll
-have some definition at AS_Big level. Let consider AS_1 contains 1
-host, 1 link and one router and AS_2 3 hosts, 4 links and one router.
+As we are dealing with routes between zone, it means that those we'll
+have some definition at zone_Big level. Let consider zone_1 contains 1
+host, 1 link and one router and zone_2 3 hosts, 4 links and one router.
 There will be a central router, and a cross-like topology. At the end
 of the crosses arms, you'll find the 3 hosts and the router that will
-act as a gateway. We have to define routes inside those two AS. Let
-say that AS_1 contains full routes, and AS_2 contains some Floyd
+act as a gateway. We have to define routes inside those two zone. Let
+say that zone_1 contains full routes, and zone_2 contains some Floyd
 routing (as we don't want to bother with defining all routes). As
-we're using some shortest path algorithms to route into AS_2, we'll
+we're using some shortest path algorithms to route into zone_2, we'll
 then have to define some <b>route</b> to gives some topological
 information to SimGrid. Here is a file doing it all :
 
 \verbatim
-<AS  id="AS_Big"  routing="Dijkstra">
-  <AS id="AS_1" routing="Full">
-     <host id="AS_1_host1" speed="1000000000"/>
-     <link id="AS_1_link" bandwidth="1250000000" latency="5E-4"/>
-     <router id="AS_1_gateway"/>
-     <route src="AS_1_host1" dst="AS_1_gateway">
-            <link_ctn id="AS_1_link"/>
+<zone  id="zone_Big"  routing="Dijkstra">
+  <zone id="zone_1" routing="Full">
+     <host id="zone_1_host1" speed="1000000000"/>
+     <link id="zone_1_link" bandwidth="1250000000" latency="5E-4"/>
+     <router id="zone_1_gateway"/>
+     <route src="zone_1_host1" dst="zone_1_gateway">
+            <link_ctn id="zone_1_link"/>
      </route>
-  </AS>
-  <AS id="AS_2" routing="Floyd">
-     <host id="AS_2_host1" speed="1000000000"/>
-     <host id="AS_2_host2" speed="1000000000"/>
-     <host id="AS_2_host3" speed="1000000000"/>
-     <link id="AS_2_link1" bandwidth="1250000000" latency="5E-4"/>
-     <link id="AS_2_link2" bandwidth="1250000000" latency="5E-4"/>
-     <link id="AS_2_link3" bandwidth="1250000000" latency="5E-4"/>
-     <link id="AS_2_link4" bandwidth="1250000000" latency="5E-4"/>
+  </zone>
+  <zone id="zone_2" routing="Floyd">
+     <host id="zone_2_host1" speed="1000000000"/>
+     <host id="zone_2_host2" speed="1000000000"/>
+     <host id="zone_2_host3" speed="1000000000"/>
+     <link id="zone_2_link1" bandwidth="1250000000" latency="5E-4"/>
+     <link id="zone_2_link2" bandwidth="1250000000" latency="5E-4"/>
+     <link id="zone_2_link3" bandwidth="1250000000" latency="5E-4"/>
+     <link id="zone_2_link4" bandwidth="1250000000" latency="5E-4"/>
      <router id="central_router"/>
-     <router id="AS_2_gateway"/>
+     <router id="zone_2_gateway"/>
      <!-- routes providing topological information -->
-     <route src="central_router" dst="AS_2_host1"><link_ctn id="AS_2_link1"/></route>
-     <route src="central_router" dst="AS_2_host2"><link_ctn id="AS_2_link2"/></route>
-     <route src="central_router" dst="AS_2_host3"><link_ctn id="AS_2_link3"/></route>
-     <route src="central_router" dst="AS_2_gateway"><link_ctn id="AS_2_link4"/></route>
-  </AS>
+     <route src="central_router" dst="zone_2_host1"><link_ctn id="zone_2_link1"/></route>
+     <route src="central_router" dst="zone_2_host2"><link_ctn id="zone_2_link2"/></route>
+     <route src="central_router" dst="zone_2_host3"><link_ctn id="zone_2_link3"/></route>
+     <route src="central_router" dst="zone_2_gateway"><link_ctn id="zone_2_link4"/></route>
+  </zone>
     <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
 
-     <ASroute src="AS_1" dst="AS_2"
-	 gw_src="AS_1_gateway"
-	 gw_dst="AS_2_gateway">
+     <zoneroute src="zone_1" dst="zone_2"
+	 gw_src="zone_1_gateway"
+	 gw_dst="zone_2_gateway">
  		<link_ctn id="backbone"/>
-     </ASroute>
-</AS>
+     </zoneroute>
+</zone>
 \endverbatim
 
 \section pf_other Other tags
@@ -1449,7 +1449,7 @@ Any such configuration must be given at the very top of the platform file.
 	<prop id="smpi/bw-factor" value="65472:0.940694;15424:0.697866;9376:0.58729" />
 </config>
 
-<AS  id="AS0"  routing="Full">
+<zone  id="zone0"  routing="Full">
 ...
 \endverbatim
 
@@ -1489,9 +1489,9 @@ you say that the file trace must be used by the entity.
 #### Example #### 
 
 \verbatim
-<AS  id="AS0"  routing="Full">
+<zone  id="zone0"  routing="Full">
   <host id="bob" speed="1000000000"/>
-</AS>
+</zone>
 <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
 <trace_connect trace="myTrace" element="bob" kind="POWER"/>
 \endverbatim
@@ -1584,67 +1584,67 @@ This project is dormant since over 10 years (and you will have to
 update the generated platforms with <tt>bin/simgrid_update_xml</tt> to
 use them), but that's the best we have for this right now....
 
-\subsection pf_as_h AS Hierarchy
-The AS design allows SimGrid to go fast, because computing route is
-done only for the set of resources defined in this AS. If you're using
-only a big AS containing all resource with no AS into it and you're
+\subsection pf_zone_h Zone Hierarchy
+The network zone design allows SimGrid to go fast, because computing route is
+done only for the set of resources defined in the current zone. If you're using
+only a big zone containing all resource with no zone into it and you're
 using Full model, then ... you'll loose all interest into it. On the
-other hand, designing a binary tree of AS with, at the lower level,
-only one host, then you'll also loose all the good AS hierarchy can
+other hand, designing a binary tree of zone with, at the lower level,
+only one host, then you'll also loose all the good zone hierarchy can
 give you. Remind you should always be "reasonable" in your platform
 definition when choosing the hierarchy. A good choice if you try to
-describe a real life platform is to follow the AS described in
+describe a real life platform is to follow the zone described in
 reality, since this kind of trade-off works well for real life
 platforms.
 
-\subsection pf_exit_as Exit AS: why and how
+\subsection pf_exit_zone Exit Zone: why and how
 Users that have looked at some of our platforms may have notice a
 non-intuitive schema ... Something like that :
 
 
 \verbatim
-<AS id="AS_4"  routing="Full">
-<AS id="exitAS_4"  routing="Full">
+<zone id="zone_4"  routing="Full">
+<zone id="exitzone_4"  routing="Full">
 	<router id="router_4"/>
-</AS>
+</zone>
 <cluster id="cl_4_1" prefix="c_4_1-" suffix="" radical="1-20" speed="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
 <cluster id="cl_4_2" prefix="c_4_2-" suffix="" radical="1-20" speed="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
 <link id="4_1" bandwidth="2250000000" latency="5E-5"/>
 <link id="4_2" bandwidth="2250000000" latency="5E-5"/>
 <link id="bb_4" bandwidth="2250000000" latency="5E-4"/>
-<ASroute src="cl_4_1"
+<zoneroute src="cl_4_1"
 	dst="cl_4_2"
 	gw_src="c_4_1-cl_4_1_router"
 	gw_dst="c_4_2-cl_4_2_router">
 		<link_ctn id="4_1"/>
 		<link_ctn id="bb_4"/>
 		<link_ctn id="4_2"/>
-</ASroute>
-<ASroute src="cl_4_1"
-	dst="exitAS_4"
+</zoneroute>
+<zoneroute src="cl_4_1"
+	dst="exitzone_4"
 	gw_src="c_4_1-cl_4_1_router"
 	gw_dst="router_4">
 		<link_ctn id="4_1"/>
 		<link_ctn id="bb_4"/>
-</ASroute>
-<ASroute src="cl_4_2"
-	dst="exitAS_4"
+</zoneroute>
+<zoneroute src="cl_4_2"
+	dst="exitzone_4"
 	gw_src="c_4_2-cl_4_2_router"
 	gw_dst="router_4">
 		<link_ctn id="4_2"/>
 		<link_ctn id="bb_4"/>
-</ASroute>
-</AS>
+</zoneroute>
+</zone>
 \endverbatim
 
-In the AS_4, you have an exitAS_4 defined, containing only one router,
-and routes defined to that AS from all other AS (as cluster is only a
-shortcut for an AS, see cluster description for details). If there was
-an upper AS, it would define routes to and from AS_4 with the gateway
+In the zone_4, you have an exitzone_4 defined, containing only one router,
+and routes defined to that zone from all other zone (as cluster is only a
+shortcut for an zone, see cluster description for details). If there was
+an upper zone, it would define routes to and from zone_4 with the gateway
 router_4. It's just because, as we did not allowed (for performances
-issues) to have routes from an AS to a single host/router, you have to
-enclose your gateway, when you have AS included in your AS, within an
-AS to define routes to it.
+issues) to have routes from an zone to a single host/router, you have to
+enclose your gateway, when you have zone included in your zone, within an
+zone to define routes to it.
 
 \subsection pf_P2P_tags P2P or how to use coordinates
 SimGrid allows you to use some coordinated-based system, like vivaldi,
@@ -1658,12 +1658,12 @@ complicated in using it, here is an example:
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="4">
 
- <AS  id="AS0"  routing="Vivaldi">
+ <zone  id="zone0"  routing="Vivaldi">
 	<host id="100030591" coordinates="25.5 9.4 1.4" speed="1.5Gf" />
 	<host id="100036570" coordinates="-12.7 -9.9 2.1" speed="7.3Gf" />
 	...
 	<host id="100429957" coordinates="17.5 6.7 18.8" speed="8.3Gf" />
-	</AS>
+ </zone>
 </platform>
 \endverbatim
 
@@ -1678,24 +1678,24 @@ dimension. This may seem strange, but it was found to allow better
 approximations of the latency matrices (see the paper describing
 Vivaldi).
 
-Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between AS.
+Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between zone.
 That is for example what is commonly done when using peers (see Section \ref pf_peer).
 @verbatim
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="4">
 
- <AS  id="AS0"  routing="Vivaldi">
+ <zone  id="zone0"  routing="Vivaldi">
    <peer id="peer-0" coordinates="173.0 96.8 0.1" speed="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us"/>
    <peer id="peer-1" coordinates="247.0 57.3 0.6" speed="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
    <peer id="peer-2" coordinates="243.4 58.8 1.4" speed="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
-</AS>
+</zone>
 </platform>
 @endverbatim
-In such a case though, we connect the AS created by the <b>peer</b> tag with the Vivaldi routing mechanism.
-This means that to route between AS1 and AS2, it will use the coordinates of router_AS1 and router_AS2.
+In such a case though, we connect the zone created by the <b>peer</b> tag with the Vivaldi routing mechanism.
+This means that to route between zone1 and zone2, it will use the coordinates of router_zone1 and router_zone2.
 This is currently a convention and we may offer to change this convention in the DTD later if needed.
-You may have noted that conveniently, a peer named FOO defines an AS named FOO and a router named router_FOO, which is why it works seamlessly with the <b>peer</b> tag.
+You may have noted that conveniently, a peer named FOO defines an zone named FOO and a router named router_FOO, which is why it works seamlessly with the <b>peer</b> tag.
 
 
 \subsection pf_routing_howto_choose_wisely Choosing wisely the routing model to use
@@ -1720,7 +1720,7 @@ characteristics (lookup : time to resolve a route):
     routes.
 \li <b>None</b>: No routing (usable with Constant network only).
     Defines that there is no routes, so if you try to determine a
-    route without constant network within this AS, SimGrid will raise
+    route without constant network within this zone, SimGrid will raise
     an exception.
 \li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
