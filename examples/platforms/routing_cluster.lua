@@ -13,7 +13,7 @@ simgrid.engine.AS_open{id="AS0",mode="Full"}
     simgrid.engine.host_link_new{id="host1",up="l1_UP",down="l1_DOWN"};
 
     simgrid.engine.host_new{id="host2",speed="1Gf"};
-    simgrid.engine.link_new{id="l2",bandwidth="125MBps",lat="100us",sharing_policy="FULLDUPLEX"};
+    simgrid.engine.link_new{id="l2",bandwidth="125MBps",lat="100us",sharing_policy="SPLITDUPLEX"};
     simgrid.engine.host_link_new{id="host2",up="l2_UP",down="l2_DOWN"};
 
     simgrid.engine.host_new{id="host3",speed="1Gf"};
@@ -32,7 +32,7 @@ simgrid.engine.AS_open{id="AS0",mode="Full"}
     simgrid.engine.host_link_new{id="host4",up="l4_UP",down="l4_DOWN"};
 
     simgrid.engine.host_new{id="host5",speed="1Gf"};
-    simgrid.engine.link_new{id="l5",bandwidth="125MBps",lat="100us",sharing_policy="FULLDUPLEX"};
+    simgrid.engine.link_new{id="l5",bandwidth="125MBps",lat="100us",sharing_policy="SPLITDUPLEX"};
     simgrid.engine.host_link_new{id="host5",up="l5_UP",down="l5_DOWN"};
 
     simgrid.engine.host_new{id="host6",speed="1Gf"};

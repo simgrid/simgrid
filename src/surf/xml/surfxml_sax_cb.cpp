@@ -383,7 +383,7 @@ void STag_surfxml_platform() {
   if (version < 4.1) {
     XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
              "That's fine, the new version is backward compatible. \n\n"
-             "Use simgrid_update_xml to update your file automatically. "
+             "Use simgrid_update_xml to update your file automatically to get ride of this warning. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
              version, surf_parsed_filename);
@@ -503,6 +503,9 @@ void ETag_surfxml_cluster(){
     cluster.sharing_policy = SURF_LINK_SHARED;
     break;
   case A_surfxml_cluster_sharing___policy_FULLDUPLEX:
+    XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
+    /* no break: that's a fallback */
+  case A_surfxml_cluster_sharing___policy_SPLITDUPLEX:
     cluster.sharing_policy = SURF_LINK_SPLITDUPLEX;
     break;
   case A_surfxml_cluster_sharing___policy_FATPIPE:
@@ -592,6 +595,9 @@ void ETag_surfxml_link(){
      link.policy = SURF_LINK_FATPIPE;
      break;
   case A_surfxml_link_sharing___policy_FULLDUPLEX:
+    XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
+    /* no break: that's a fallback */
+  case A_surfxml_cluster_sharing___policy_SPLITDUPLEX:
     link.policy = SURF_LINK_SPLITDUPLEX;
     break;
   default:

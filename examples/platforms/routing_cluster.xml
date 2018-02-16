@@ -21,7 +21,7 @@ l1_up / / l1_down  | l3   l2_up\ \ l2_down   l4_up / / l4_down  | l6   l5_up\ \ 
       <host_link id="host1" up="l1_UP" down="l1_DOWN"/>
 
       <host id="host2" speed="1Gf"/>
-      <link id="l2" bandwidth="125MBps" latency="100us" sharing_policy="FULLDUPLEX"/>
+      <link id="l2" bandwidth="125MBps" latency="100us" sharing_policy="SPLITDUPLEX"/>
       <host_link id="host2" up="l2_UP" down="l2_DOWN"/>
 
       <host id="host3" speed="1Gf"/>
@@ -40,7 +40,7 @@ l1_up / / l1_down  | l3   l2_up\ \ l2_down   l4_up / / l4_down  | l6   l5_up\ \ 
       <host_link id="host4" up="l4_UP" down="l4_DOWN"/>
 
       <host id="host5" speed="1Gf"/>
-      <link id="l5" bandwidth="125MBps" latency="100us" sharing_policy="FULLDUPLEX"/>
+      <link id="l5" bandwidth="125MBps" latency="100us" sharing_policy="SPLITDUPLEX"/>
       <host_link id="host5" up="l5_UP" down="l5_DOWN"/>
 
       <host id="host6" speed="1Gf"/>

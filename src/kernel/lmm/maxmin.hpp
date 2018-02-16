@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -314,7 +314,7 @@ public:
   int concurrency_maximum; /* The maximum number of (enabled and disabled) variables associated to the constraint at any
                             * given time (essentially for tracing)*/
 
-  int sharing_policy; /* see @e_surf_link_sharing_policy_t (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
+  int sharing_policy; /* see @e_surf_link_sharing_policy_t (0: FATPIPE, 1: SHARED, 2: SPLITDUPLEX) */
   int id_int;
   double lambda;
   double new_lambda;

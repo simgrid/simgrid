@@ -5,7 +5,7 @@
     <host id="bob" speed="1Gf"/>
     <host id="alice" speed="500Mf"/>
 
-    <link id="link1" bandwidth="125MBps" latency="50us" sharing_policy="FULLDUPLEX"/>
+    <link id="link1" bandwidth="125MBps" latency="50us" sharing_policy="SPLITDUPLEX"/>
 
     <route src="alice" dst="bob" symmetrical="NO">
       <link_ctn id="link1" direction="UP"/>

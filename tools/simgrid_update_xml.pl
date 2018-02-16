@@ -138,6 +138,16 @@ Rename a few tags, but in a backward-compatible manner: the old names are still 
 
 =back
 
+=item Other backward-compatible changes (old syntax is still accepted) for which we did not bump the DTD version:
+
+=over 4
+
+=item
+
+Rename the FULLDUPLEX sharing into SPLITDUPLEX.
+ 
+=back
+
 =back
 
 =head1 AUTHORS
@@ -146,7 +156,7 @@ Rename a few tags, but in a backward-compatible manner: the old names are still 
   
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.
+Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.
   
 This program is free software; you may redistribute it and/or modify it
 under the terms of GNU LGPL (v2.1) license.
@@ -246,6 +256,7 @@ while (defined($line = <INPUT>)) {
 	$line =~ s/\bbypassAsRoute\b/bypassZoneRoute/g;
 	$line =~ s/\bprocess\b/actor/g;
     }
+    $line =~ s/\bFULLDUPLEX\b/SPLITDUPLEX/g;
 	
     $output_string .= "$line\n";
 }

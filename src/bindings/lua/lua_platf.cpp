@@ -94,6 +94,9 @@ int console_add_backbone(lua_State *L) {
   const char* policy = lua_tostring(L, -1);
   lua_pop(L, 1);
   if (policy && not strcmp(policy, "FULLDUPLEX")) {
+    XBT_WARN("Please update your platform to use SPLITDUPLEX instead of FULLDUPLEX");
+    link.policy = SURF_LINK_SPLITDUPLEX;
+  } else if (policy && not strcmp(policy, "SPLITDUPLEX")) {
     link.policy = SURF_LINK_SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "FATPIPE")) {
     link.policy = SURF_LINK_FATPIPE;
@@ -267,6 +270,9 @@ int  console_add_link(lua_State *L) {
   policy = lua_tostring(L, -1);
   lua_pop(L, 1);
   if (policy && not strcmp(policy, "FULLDUPLEX")) {
+    XBT_WARN("Please update your platform to use SPLITDUPLEX instead of FULLDUPLEX");
+    link.policy = SURF_LINK_SPLITDUPLEX;
+  } else if (policy && not strcmp(policy, "SPLITDUPLEX")) {
     link.policy = SURF_LINK_SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "FATPIPE")) {
     link.policy = SURF_LINK_FATPIPE;

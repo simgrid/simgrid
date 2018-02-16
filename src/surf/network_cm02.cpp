@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -331,7 +331,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     maxminSystem_->expand(link->constraint(), action->getVariable(), 1.0);
 
   if (not back_route.empty()) { //  sg_network_crosstraffic was activated
-    XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
+    XBT_DEBUG("Crosstraffic active adding backward flow using 5%%");
     for (auto const& link : back_route)
       maxminSystem_->expand(link->constraint(), action->getVariable(), .05);
 

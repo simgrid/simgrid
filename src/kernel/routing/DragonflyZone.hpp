@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -80,7 +80,7 @@ private:
   unsigned int numLinksGreen_       = 0;
   unsigned int numLinksBlack_       = 0;
   unsigned int numLinksBlue_        = 0;
-  unsigned int numLinksperLink_     = 1; // fullduplex -> 2, only for local link
+  unsigned int numLinksperLink_     = 1; // splitduplex -> 2, only for local link
   DragonflyRouter** routers_        = nullptr;
 };
 }

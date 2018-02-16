@@ -9,6 +9,10 @@ To upgrade your files, use the tool simgrid_update_xml
     - <include> spits an error since v3.18
     - <random> does nothing since a very long time
     - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
+  - FULLDUPLEX sharing will be removed, deprecated in DTD4.2 (v3.19)
+
+* New in DTD version 4.2 (in SimGrid 3.19): backward compatible change (v4 files are valid v4.2 files)
+   - SPLITDUPLEX is the new spelling of the deprecated FULLDUPLEX
 
 * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
    - <zone> can be used as a synonym for the now deprecated <as>
@@ -146,7 +150,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST cluster core CDATA "1">
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
-<!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "FULLDUPLEX">
+<!ATTLIST cluster sharing_policy (SHARED|SPLITDUPLEX|FULLDUPLEX|FATPIPE) "SPLITDUPLEX">
 <!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE|DRAGONFLY) "FLAT">
 <!ATTLIST cluster topo_parameters CDATA "">
 <!ATTLIST cluster bb_bw CDATA "">
@@ -192,7 +196,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST link latency CDATA "0">
 <!ATTLIST link latency_file CDATA "">
 <!ATTLIST link state_file CDATA "">
-<!ATTLIST link sharing_policy (SHARED|FATPIPE|FULLDUPLEX) "SHARED">
+<!ATTLIST link sharing_policy (SHARED|SPLITDUPLEX|FULLDUPLEX|FATPIPE) "SHARED">
 
 <!ELEMENT route (link_ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
