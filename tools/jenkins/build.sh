@@ -150,11 +150,12 @@ if [ -f Testing/TAG ] ; then
    mv CTestResults.xml $WORKSPACE
 fi
 
-if test "$(uname -o)" != "Msys" -a "$(build_mode)" = "Debug" ; then
+if test "$(uname -o)" != "Msys" -a "${build_mode}" = "Debug" ; then
   echo "XX"
   echo "XX Test done. Install everything since it's a regular build + not on a Windows."
   echo "XX"
 
+  rm -rf /builds/simgrid_install
   make install
 fi
 
