@@ -46,7 +46,7 @@
            bb_bw="2.25GBps"  bb_lat="500us"/>
 	   
 
-  <!-- This cluster has a backbone link, but no links are fullduplex.
+  <!-- This cluster has a backbone link, but no links are splitduplex.
     -- It means that up and down communications compete as if they
     -- were using exactly the same resource. If you send and receive
     -- at the same time, then each get half of the bandwidth.

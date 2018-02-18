@@ -60,7 +60,7 @@
     id="AS0",
     bw="125MBps",
     lat="50us",
-    sharing_sharing_policy="FULLDUPLEX"
+    sharing_sharing_policy="SPLITDUPLEX"
   }()
   --my_cluster{prefix="node2-", suffix=".acme.org", radical=seq(0,44) }
 

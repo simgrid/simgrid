@@ -38,7 +38,7 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/host_attributes.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link_attributes.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_multicore.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_fullduplex.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_splitduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_router_id.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_4p_1switch.xml
@@ -51,7 +51,7 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_missing_src_gateway.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_missing_dst_gateway.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_two_hosts_asymetric.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link_fullduplex.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link_splitduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/Dijkstra.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/platform_2p_1bb.xml

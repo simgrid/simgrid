@@ -48,7 +48,7 @@ public:
   /** @brief Get the latency in seconds of current Link */
   double latency();
 
-  /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX)
+  /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: SPLITDUPLEX)
    */
   int sharingPolicy();
 

@@ -159,11 +159,11 @@
 /doc/simgrid/examples/msg/sendrecv/sendrecv.c  5098
 /doc/simgrid/examples/msg/sendrecv/platform_sendrecv.xml  528
 /doc/simgrid/examples/msg/gtnets/onelink-p.xml 439
-/doc/simgrid/examples/msg/gtnets/fullduplex-p.xml 575
+/doc/simgrid/examples/msg/gtnets/splitduplex-p.xml 575
 /doc/simgrid/examples/msg/gtnets/dogbone-d.xml 576
 /doc/simgrid/examples/msg/gtnets/waxman-d.xml  46642
 /doc/simgrid/examples/msg/gtnets/waxman-p.xml 4964600  
-/doc/simgrid/examples/msg/gtnets/fullduplex-d.xml 1029
+/doc/simgrid/examples/msg/gtnets/splitduplex-d.xml 1029
 /doc/simgrid/examples/msg/gtnets/onelink-d.xml 356
 /doc/simgrid/examples/msg/gtnets/gtnets.c  6172
 /doc/simgrid/examples/msg/gtnets/dogbone-p.xml 1482

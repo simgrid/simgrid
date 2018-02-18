@@ -26,6 +26,9 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  Fixed bugs:
  - #245: migrating an actor does not migrate its execution
 
+ PLATFORM:
+ - Rename FULLDUPLEX into SPLITDUPLEX (old name still accepted)
+
  TRACING
  - Remove unused run-time parameter "tracing/onelink-only".
 
