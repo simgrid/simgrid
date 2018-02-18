@@ -235,7 +235,7 @@ sharing_policy  | no        | string | Sharing policy for the links between node
 bb_bw           | no        | int    | Bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If bb_bw and bb_lat (see below) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
 bb_lat          | no        | int    | Latency for backbone (if any). See <b>link</b> section for syntax/details. If bb_lat and bb_bw (see above) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
 bb_sharing_policy | no      | string | Sharing policy for the backbone (if any). See <b>link</b> section for syntax/details.
-limiter_link      | no        | int    | Bandwidth for limiter link (if any). This adds a specific link for each node, to set the maximum bandwidth reached when communicating in both directions at the same time. In theory this value should be 2*bw for fullduplex links, but in reality this might be less. This value will depend heavily on the communication model, and on the cluster's hardware, so no default value can be set, this has to be measured. More details can be obtained in <a href="https://hal.inria.fr/hal-00919507/"> "Toward Better Simulation of MPI Applications on Ethernet/TCP Networks"</a>
+limiter_link      | no        | int    | Bandwidth for limiter link (if any). This adds a specific link for each node, to set the maximum bandwidth reached when communicating in both directions at the same time. In theory this value should be 2*bw for splitduplex links, but in reality this might be less. This value will depend heavily on the communication model, and on the cluster's hardware, so no default value can be set, this has to be measured. More details can be obtained in <a href="https://hal.inria.fr/hal-00919507/"> "Toward Better Simulation of MPI Applications on Ethernet/TCP Networks"</a>
 loopback_bw       | no      | int    | Bandwidth for loopback (if any). See <b>link</b> section for syntax/details. If loopback_bw and loopback_lat (see below) attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node. Loopback link is a \ref pf_sharing_policy_fatpipe "\b FATPIPE".
 loopback_lat      | no      | int    | Latency for loopback (if any). See <b>link</b> section for syntax/details. See loopback_bw for more info.
 topology          | no      | FLAT\|TORUS\|FAT_TREE\|DRAGONFLY (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a>, FAT_TREE, and DRAGONFLY attributes for this tag.
@@ -300,7 +300,7 @@ lat             | yes       | int    | Latency for the links between nodes and b
 \note
     Please note that as of now, it is impossible to change attributes such as,
     amount of cores (always set to 1), the initial state of hosts/links
-    (always set to ON), the sharing policy of the links (always set to \ref pf_sharing_policy_fullduplex "FULLDUPLEX").
+    (always set to ON), the sharing policy of the links (always set to \ref pf_sharing_policy_splitduplex "SPLITDUPLEX").
 
 #### Example ####
 
@@ -349,7 +349,7 @@ speed           | yes       | int    | See the description of the ``host`` tag f
 bw_in           | yes       | int    | Bandwidth of the private downstream link
 bw_out          | yes       | int    | Bandwidth of the private upstream link
 coordinates     | no        | string | Coordinates of the gateway for this peer. Example value: 12.8 14.4 6.4
-sharing_policy  | no        | SHARED\|FULLDUPLEX (default: FULLDUPLEX) | Sharing policy for links. See <b>link</b> description for details.
+sharing_policy  | no        | SHARED\|SPLITDUPLEX (default: SPLITDUPLEX) | Sharing policy for links. See <b>link</b> description for details.
 availability_file| no       | string | Availability file for the peer. Same as host availability file. See <b>host</b> description for details.
 state_file      | no        | string | State file for the peer. Same as host state file. See <b>host</b> description for details.
 
@@ -420,7 +420,7 @@ Attribute name  | Mandatory | Values | Description
 id              | yes       | string | The identifier of the link to be used when referring to it.
 bandwidth       | yes       | int    | Maximum bandwidth for this link, given in bytes/s
 latency         | no        | double (default: 0.0) | Latency for this link.
-sharing_policy  | no        | \ref sharing_policy_shared "SHARED"\|\ref pf_sharing_policy_fatpipe "FATPIPE"\|\ref pf_sharing_policy_fullduplex "FULLDUPLEX" (default: SHARED) | Sharing policy for the link.
+sharing_policy  | no        | \ref sharing_policy_shared "SHARED"\|\ref pf_sharing_policy_fatpipe "FATPIPE"\|\ref pf_sharing_policy_splitduplex "SPLITDUPLEX" (default: SHARED) | Sharing policy for the link.
 state           | no        | ON\|OFF (default: ON) | Allows you to to turn this link on or off (working / not working)
 bandwidth_file  | no        | string | Allows you to use a file as input for bandwidth.
 latency_file    | no        | string | Allows you to use a file as input for latency.
@@ -471,8 +471,8 @@ is ``number_of_flows*bandwidth``, with at most ``bandwidth`` being available per
 Using the FATPIPE mode allows to model backbones that won't affect performance
 (except latency).
 
-\anchor pf_sharing_policy_fullduplex
-The last mode available is \b FULLDUPLEX. This means that SimGrid will
+\anchor pf_sharing_policy_splitduplex
+The last mode available is \b SPLITDUPLEX. This means that SimGrid will
 automatically generate two links (one carrying the suffix _UP and the other the
 suffix _DOWN) for each ``<link>`` tag. This models situations when the direction
 of traffic is important.
@@ -1176,7 +1176,7 @@ can only occur as a child of \ref pf_tag_route "&lt;route/&gt;"
 | Attribute name  | Mandatory | Values | Description                                                   |
 | --------------- | --------- | ------ | -----------                                                   |
 | id              | yes       | String | The identifier of the link that should be added to the route. |
-| direction       | maybe     | UP\|DOWN | If the link referenced by \c id has been declared as \ref pf_sharing_policy_fullduplex "FULLDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use FULLDUPLEX, do not use this attribute or SimGrid will not find the right link.
+| direction       | maybe     | UP\|DOWN | If the link referenced by \c id has been declared as \ref pf_sharing_policy_splitduplex "SPLITDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use SPLITDUPLEX, do not use this attribute or SimGrid will not find the right link.
 
 #### Example Files ####
 
