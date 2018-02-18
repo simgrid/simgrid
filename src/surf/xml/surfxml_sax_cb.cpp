@@ -599,7 +599,7 @@ void ETag_surfxml_link(){
     XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
     link.policy = SURF_LINK_SPLITDUPLEX;
     break;
-  case A_surfxml_cluster_sharing___policy_SPLITDUPLEX:
+  case A_surfxml_link_sharing___policy_SPLITDUPLEX:
     link.policy = SURF_LINK_SPLITDUPLEX;
     break;
   default:
