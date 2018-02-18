@@ -504,7 +504,8 @@ void ETag_surfxml_cluster(){
     break;
   case A_surfxml_cluster_sharing___policy_FULLDUPLEX:
     XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
-    /* no break: that's a fallback */
+    cluster.sharing_policy = SURF_LINK_SPLITDUPLEX;
+    break;
   case A_surfxml_cluster_sharing___policy_SPLITDUPLEX:
     cluster.sharing_policy = SURF_LINK_SPLITDUPLEX;
     break;
@@ -596,7 +597,8 @@ void ETag_surfxml_link(){
      break;
   case A_surfxml_link_sharing___policy_FULLDUPLEX:
     XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
-    /* no break: that's a fallback */
+    link.policy = SURF_LINK_SPLITDUPLEX;
+    break;
   case A_surfxml_cluster_sharing___policy_SPLITDUPLEX:
     link.policy = SURF_LINK_SPLITDUPLEX;
     break;
