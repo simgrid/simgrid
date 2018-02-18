@@ -89,6 +89,12 @@ fi
 mkdir $WORKSPACE/build
 cd $WORKSPACE/build
 
+have_NS3="no"
+if dpkg -l libns3-dev 2>&1|grep -q "ii  libns3-dev" ; then
+  have_NS3="yes"
+fi
+echo "XX have_NS3: ${have_NS3}"
+
 # This is for Windows:
 PATH="$WORKSPACE/build/lib:$PATH"
 
@@ -119,6 +125,7 @@ echo "XX"
 echo "XX Configure and build SimGrid"
 echo "XX   pwd: "$(pwd)
 echo "XX"
+set -x
 cmake -G"$GENERATOR"\
   -DCMAKE_INSTALL_PREFIX=/builds/simgrid_install \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
@@ -129,8 +136,10 @@ cmake -G"$GENERATOR"\
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
+  -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
   -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
+set +x
 
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
