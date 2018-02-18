@@ -60,7 +60,7 @@ public abstract class Process implements Runnable {
 	private Host host = null;
 
 	/** The arguments of the method function of the process. */
-	private ArrayList<String> args_ = new ArrayList<>();
+	private ArrayList<String> args = new ArrayList<>();
 
 	/**
 	 * Constructs a new process from the name of a host and his name. The method
@@ -109,7 +109,7 @@ public abstract class Process implements Runnable {
 	 * @param name			The name of the process.
 	 * @param args			The arguments of main method of the process.
 	 */	
-	public Process(Host host, String name, String[]args) 
+	public Process(Host host, String name, String[]argsParam) 
 	{
 		if (host == null)
 			throw new IllegalArgumentException("Cannot create a process on the null host");
@@ -119,9 +119,9 @@ public abstract class Process implements Runnable {
 		this.host = host;
 		this.name = name;
 
-		this.args_ = new ArrayList<>();
-		if (null != args)
-			this.args_.addAll(Arrays.asList(args));
+		this.args = new ArrayList<>();
+		if (null != argsParam)
+			this.args.addAll(Arrays.asList(argsParam));
 	}
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
@@ -295,15 +295,11 @@ public abstract class Process implements Runnable {
 	@Override
 	public void run() {
 
-		String[] args = null;      /* do not fill it before the signal or this.args will be empty */
-
 		try {
-			args = new String[this.args_.size()];
-			if (!this.args_.isEmpty()) {
-				this.args_.toArray(args);
-			}
+			String[] argsArray = new String[this.args.size()];
+		        this.args.toArray(argsArray);
 
-			this.main(args);
+			this.main(argsArray);
 		}
 		catch(MsgException e) {
 			e.printStackTrace();

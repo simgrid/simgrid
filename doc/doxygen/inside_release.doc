@@ -112,7 +112,7 @@ the settings icon of the release you want to change.
     - libsimgrid3.XY conflicts with libsimgrid3.XX because of smpimain
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Create the template for the next release in ChangeLog and NEWS files
-- Change the release number in CMakeLists.txt
+- Change the release number in CMakeLists.txt and sonar-project.properties
 - Deal with deprecations:
   - Introduce the XBT_ATTRIB_DEPRECATED_v??? macro for the next release.
   - Kill the one for the current release and remove all code that were
