@@ -304,7 +304,7 @@ class Cmd(object):
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
-            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
             tesh_exit(3)
 
         if self.output_display:
