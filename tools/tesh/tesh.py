@@ -290,7 +290,7 @@ class Cmd(object):
         #print (args)
 
         try:
-            proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+            proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, preexec_fn=os.setsid)
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
             tesh_exit(3)
@@ -304,7 +304,7 @@ class Cmd(object):
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
-            proc.kill()
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
             tesh_exit(3)
 
         if self.output_display:
