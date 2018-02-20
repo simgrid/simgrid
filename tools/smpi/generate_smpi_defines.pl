@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 # Copyright 2016 Vincent Danjean <vincent.danjean@inria.fr>
+#                Christian Heinrich <franz-christian.heinrich@inria.fr>
 # 
 # Call this script like this:
 # C/C++  : ./generate_smpi_defines.pl ../../include/smpi/smpi.h
@@ -37,7 +38,8 @@ sub output_macro {
   # This is a GCC extension. The last statement is the value of the expression
   # in parentheses.
   if (defined $options{f}) {
-    print "#define ". uc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__); call ". lc $id ."\n";
+    print "#define ". lc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__); call ". ucfirst $id ."\n";
+    print "#define ". uc($id) ." smpi_trace_set_call_location(__FILE__,__LINE__); call ". ucfirst $id ."\n";
   }
   else {
     if ($id eq "MPI_Init") {
