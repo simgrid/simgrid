@@ -57,7 +57,7 @@ std::set<SD_task_t>* simulate(double how_long){
     /* let's see which tasks are done */
     for (auto const& model : *all_existing_models) {
       surf_action_t action = surf_model_extract_done_action_set(model);
-      while (action != nullptr) {
+      while (action != nullptr && action->getData() != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->getData());
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
         SD_task_set_state(task, SD_DONE);
