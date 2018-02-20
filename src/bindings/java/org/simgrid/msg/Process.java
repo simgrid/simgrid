@@ -107,7 +107,7 @@ public abstract class Process implements Runnable {
 	 *
 	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
-	 * @param args			The arguments of main method of the process.
+	 * @param argsParam		The arguments of main method of the process.
 	 */	
 	public Process(Host host, String name, String[]argsParam) 
 	{
