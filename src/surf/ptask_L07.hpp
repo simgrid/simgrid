@@ -76,8 +76,9 @@ public:
   ~CpuL07() override;
   bool isUsed() override;
   void apply_event(tmgr_trace_event_t event, double value) override;
-  Action *execution_start(double size) override;
-  Action *sleep(double duration) override;
+  Action* execution_start(double size) override;
+  Action* sleep(double duration) override;
+
 protected:
   void onSpeedChange() override;
 };
