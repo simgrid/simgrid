@@ -44,7 +44,7 @@ void smpi_execute_(double *duration)
 
 void smpi_execute_flops(double flops) {
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->process()->getImpl()->host);
+  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->process()->getHost());
   simcall_set_category (action, TRACE_internal_smpi_get_category());
   simcall_execution_wait(action);
   smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
