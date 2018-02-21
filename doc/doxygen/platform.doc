@@ -2,6 +2,17 @@
 
 @tableofcontents
 
+\htmlonly
+<div align="center">
+\endhtmlonly
+\htmlinclude doc-toc.svg
+\htmlonly
+</div>
+<script>
+document.getElementById("VirtualPlatform").style="opacity:0.93999999;fill:#ff0000;fill-opacity:0.1;stroke:#000000;stroke-width:0.35277778;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1";
+</script>
+\endhtmlonly
+
 As @ref starting_components "explained in the introduction," any
 SimGrid study must entail the description of the platform on which you
 want to simulate your application. You have to describe **each element

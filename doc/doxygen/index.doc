@@ -7,7 +7,7 @@
 @htmlonly
 <br/><br/><br/>
 <table border=0>
-<tr><td width="50%">
+<tr><td width="40%">
 @endhtmlonly
 
 - @subpage getting_started
@@ -48,11 +48,12 @@
 - @subpage FAQ
 
 @htmlonly
-</td><td width="50%" align="center">
+</td><td width="60%" align="center">
 @endhtmlonly
 
-\htmlinclude simgrid_modules.map
-<br><b>SimGrid Components (click to jump to API)</b>
+\htmlinclude doc-toc.svg
+
+<br><b>SimGrid Usage (click to jump to the relevant parts)</b>
 
 @htmlonly
 </td></tr></table>
