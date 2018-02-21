@@ -39,8 +39,6 @@ if sys.version_info[0] == 3:
 else:
     raise "This program is expected to run with Python3 only"
 
-
-
 ##############
 #
 # Utilities
@@ -97,6 +95,26 @@ try:
 except NameError:
     #py2
     FileNotFoundError = OSError
+
+##############
+#
+# Cleanup on signal
+#
+#
+
+# Global variable. Stores which process group should be killed (or -1 if none)
+pgtokill = -1
+
+def kill_process_group(pgid):
+    # print("Kill process group {}".format(pgid))
+    os.killpg(pgid, signal.SIGTERM)
+
+def signal_handler(signal, frame):
+    print("Caught signal {}".format(SIGNALS_TO_NAMES_DICT[signal]))
+    if pgtokill != -1:
+        kill_process_group(pgtokill)
+    tesh_exit(5)
+
 
 
 ##############
@@ -289,8 +307,11 @@ class Cmd(object):
         args = shlex.split(self.args)
         #print (args)
 
+        global pgtokill
+
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, preexec_fn=os.setsid)
+            pgtokill = os.getpgid(proc.pid)
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
             tesh_exit(3)
@@ -302,9 +323,10 @@ class Cmd(object):
         cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
+            pgtokill = -1
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
-            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            kill_process_group(pgtokill)
             tesh_exit(3)
 
         if self.output_display:
@@ -396,6 +418,8 @@ class Cmd(object):
 
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
     parser = argparse.ArgumentParser(description='tesh -- testing shell', add_help=True)
     group1 = parser.add_argument_group('Options')
