@@ -109,7 +109,8 @@ def kill_process_group(pgid):
     # print("Kill process group {}".format(pgid))
     try:
         os.killpg(pgid, signal.SIGTERM)
-    except: # Ugly and psychorigid. Please improve python doc so we know what exceptions killpg can throw.
+    except OSError:
+        # os.killpg failed. OK. Some subprocesses may still be running.
         pass
 
 def signal_handler(signal, frame):
@@ -316,8 +317,8 @@ class Cmd(object):
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, preexec_fn=os.setsid)
             try:
                 pgtokill = os.getpgid(proc.pid)
-            except: # Ugly and psychorigid. Please improve python doc so we know what exceptions getpgid can throw.
-                # os.getpgid failed. OK, no cleanup.
+            except OSError:
+                # os.getpgid failed. OK. No cleanup.
                 pass
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
