@@ -102,9 +102,8 @@ except NameError:
 #
 #
 
-DO_NOT_CLEAN_SUBPROCESSES = -1
-# Global variable. Stores which process group should be killed (or -1 if none)
-pgtokill = DO_NOT_CLEAN_SUBPROCESSES
+# Global variable. Stores which process group should be killed (or None otherwise)
+pgtokill = None
 
 def kill_process_group(pgid):
     # print("Kill process group {}".format(pgid))
@@ -115,7 +114,7 @@ def kill_process_group(pgid):
 
 def signal_handler(signal, frame):
     print("Caught signal {}".format(SIGNALS_TO_NAMES_DICT[signal]))
-    if pgtokill != DO_NOT_CLEAN_SUBPROCESSES:
+    if pgtokill is not None:
         kill_process_group(pgtokill)
     tesh_exit(5)
 
@@ -331,7 +330,7 @@ class Cmd(object):
         cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
-            pgtokill = DO_NOT_CLEAN_SUBPROCESSES
+            pgtokill = None
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
             kill_process_group(pgtokill)
