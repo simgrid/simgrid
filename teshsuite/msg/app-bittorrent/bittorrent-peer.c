@@ -4,8 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "bittorrent-peer.h"
+#include "bittorrent-messages.h"
 #include "connection.h"
-#include "messages.h"
 #include "tracker.h"
 #include <limits.h>
 #include <simgrid/msg.h>

@@ -102,16 +102,20 @@ except NameError:
 #
 #
 
-# Global variable. Stores which process group should be killed (or -1 if none)
-pgtokill = -1
+# Global variable. Stores which process group should be killed (or None otherwise)
+pgtokill = None
 
 def kill_process_group(pgid):
     # print("Kill process group {}".format(pgid))
-    os.killpg(pgid, signal.SIGTERM)
+    try:
+        os.killpg(pgid, signal.SIGTERM)
+    except OSError:
+        # os.killpg failed. OK. Some subprocesses may still be running.
+        pass
 
 def signal_handler(signal, frame):
     print("Caught signal {}".format(SIGNALS_TO_NAMES_DICT[signal]))
-    if pgtokill != -1:
+    if pgtokill is not None:
         kill_process_group(pgtokill)
     tesh_exit(5)
 
@@ -311,7 +315,11 @@ class Cmd(object):
 
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, preexec_fn=os.setsid)
-            pgtokill = os.getpgid(proc.pid)
+            try:
+                pgtokill = os.getpgid(proc.pid)
+            except OSError:
+                # os.getpgid failed. OK. No cleanup.
+                pass
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
             tesh_exit(3)
@@ -323,7 +331,7 @@ class Cmd(object):
         cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
-            pgtokill = -1
+            pgtokill = None
         except subprocess.TimeoutExpired:
             print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
             kill_process_group(pgtokill)
