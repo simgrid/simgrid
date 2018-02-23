@@ -84,6 +84,9 @@ public:
   /** @brief Retrieve the netzone of the given name (or nullptr if not found) */
   simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name);
 
+  /** @brief Retrieves all netzones of the same type than the subtype of the whereto vector */
+  template <class T> void getNetzoneByType(std::vector<T*> * whereto);
+
   /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
   simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name);
   void getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);

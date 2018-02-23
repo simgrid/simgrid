@@ -59,10 +59,15 @@ void NetZone::setProperty(const char* key, const char* value)
   });
 }
 
+/** @brief Returns the list of direct children (no grand-children)
+ *
+ * This function returns the internal copy of the childrens, not a copy. Don't mess with it!
+ */
 std::vector<NetZone*>* NetZone::getChildren()
 {
   return children_;
 }
+
 const char* NetZone::getCname() const
 {
   return name_.c_str();

@@ -154,6 +154,21 @@ NetZone* Engine::getNetzoneByNameOrNull(const char* name)
   return netzoneByNameRecursive(getNetRoot(), name);
 }
 
+template <class T> void netzoneByTypeRecursive(s4u::NetZone* current, std::vector<T*>* whereto)
+{
+  for (auto const& elem : *(current->getChildren())) {
+    netzoneByTypeRecursive(elem, whereto);
+    if (elem == dynamic_cast<T*>(elem))
+      whereto->push_back(elem);
+  }
+}
+
+/** @brief Retrieve all existing NetZones of the subtype of the whereto vector */
+template <class T> void Engine::getNetzoneByType(std::vector<T*>* whereto)
+{
+  netzoneByTypeRecursive(getNetRoot(), whereto);
+}
+
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
 simgrid::kernel::routing::NetPoint* Engine::getNetpointByNameOrNull(std::string name)
 {
