@@ -90,7 +90,7 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
     elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
       set(SMPI_Fortran_FLAGS "\"-fPIC\" \"-nofor-main\"")
       set(SMPI_Fortran_LIBS "\"-lifcore\"")
-    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI") # flang
+    elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI|Flang") # flang
       set(SMPI_Fortran_FLAGS "\"-fPIC\"")
       set(SMPI_Fortran_LIBS "")
     endif()
