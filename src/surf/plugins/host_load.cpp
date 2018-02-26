@@ -49,7 +49,7 @@ private:
   double current_flops     = 0;
   double computed_flops    = 0;
   double idle_time         = 0;
-  long   theor_max_flops   = 0;
+  double theor_max_flops   = 0;
   bool   was_prev_idle     = true; /* A host is idle at the beginning */
 };
 
@@ -71,23 +71,22 @@ HostLoad::~HostLoad() = default;
 void HostLoad::update()
 {
   double now = surf_get_clock();
-  if (last_updated < now) {
-    /* flops == pstate_speed * cores_being_currently_used */
-    computed_flops += (now - last_updated) * current_flops;
 
-    /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k \in {0, 1, ..., cores}
-     * number of active cores */
-    current_flops = host->pimpl_cpu->constraint()->get_usage();
+  /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k \in {0, 1, ..., cores}
+   * number of active cores */
+  current_flops = host->pimpl_cpu->constraint()->get_usage();
 
-    if (was_prev_idle) {
-      idle_time += (now - last_updated);
-    }
+  /* flops == pstate_speed * cores_being_currently_used */
+  computed_flops += (now - last_updated) * current_flops;
 
-    theor_max_flops += current_speed * host->getCoreCount() * (now - last_updated);
-    current_speed    = host->getSpeed();
-    last_updated     = now;
-    was_prev_idle    = (current_flops == 0);
+  if (was_prev_idle) {
+    idle_time += (now - last_updated);
   }
+
+  theor_max_flops += current_speed * host->getCoreCount() * (now - last_updated);
+  current_speed    = host->getSpeed();
+  last_updated     = now;
+  was_prev_idle    = (current_flops == 0);
 }
 
 /**
@@ -116,13 +115,15 @@ double HostLoad::getIdleTime() {
 
 double HostLoad::getAverageLoad()
 {
-  return getComputedFlops() / theor_max_flops;
+  if (theor_max_flops == 0) { // Avoid division by 0
+    return 0;
+  }
+
+  return computed_flops / theor_max_flops;
 }
 
 double HostLoad::getComputedFlops()
 {
-  update();
-
   return computed_flops;
 }
 
@@ -137,6 +138,7 @@ void HostLoad::reset()
   computed_flops  = 0;
   theor_max_flops = 0;
   current_flops   = host->pimpl_cpu->constraint()->get_usage();
+  current_speed   = host->getSpeed();
   was_prev_idle   = (current_flops == 0);
 }
 }
