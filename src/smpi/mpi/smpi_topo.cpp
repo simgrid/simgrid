@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -112,8 +112,8 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
   }
 
   if (newNDims > 0) {
-    newDims = xbt_new(int, newNDims);
-    newPeriodic = xbt_new(int, newNDims);
+    newDims     = new int[newNDims];
+    newPeriodic = new int[newNDims];
 
     // that should not segfault
     int j = 0;
@@ -125,7 +125,10 @@ Topo_Cart* Topo_Cart::sub(const int remain_dims[], MPI_Comm *newcomm) {
       }
     }
   }
-  return new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
+  Topo_Cart* res = new Topo_Cart(getComm(), newNDims, newDims, newPeriodic, 0, newcomm);
+  delete[] newDims;
+  delete[] newPeriodic;
+  return res;
 }
 
 int Topo_Cart::coords(int rank, int maxdims, int coords[]) {
