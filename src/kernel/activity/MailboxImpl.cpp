@@ -53,7 +53,10 @@ MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
  */
 void MailboxImpl::setReceiver(s4u::ActorPtr actor)
 {
-  this->permanent_receiver = actor.get()->getImpl();
+  if (actor != nullptr)
+    this->permanent_receiver = actor.get()->getImpl();
+  else
+    this->permanent_receiver = nullptr;
 }
 /** @brief Pushes a communication activity into a mailbox
  *  @param comm What to add
