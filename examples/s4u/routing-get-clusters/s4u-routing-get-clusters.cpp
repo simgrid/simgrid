@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u.hpp"
 #include "src/kernel/routing/ClusterZone.hpp"
+#include "src/kernel/routing/DragonflyZone.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
@@ -28,6 +29,23 @@ int main(int argc, char* argv[])
   }
 
   delete clusters;
+
+  std::vector<simgrid::kernel::routing::DragonflyZone*>* dragonfly_clusters =
+      new std::vector<simgrid::kernel::routing::DragonflyZone*>;
+
+  e.getNetzoneByType<simgrid::kernel::routing::DragonflyZone>(dragonfly_clusters);
+
+  if (not dragonfly_clusters->empty()) {
+    for (auto d : *dragonfly_clusters) {
+      XBT_INFO("%s' dragonfly topology:", d->getCname());
+      for (int i = 0; i < d->getHostCount(); i++) {
+        unsigned int coords[4];
+        d->rankId_to_coords(i, &coords);
+        XBT_INFO("   %d: (%u, %u, %u, %u)", i, coords[0], coords[1], coords[2], coords[3]);
+      }
+    }
+  }
+  delete dragonfly_clusters;
 
   return 0;
 }

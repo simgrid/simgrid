@@ -47,6 +47,7 @@ public:
 
   std::vector<NetZone*>* getChildren();             // Sub netzones
   void getHosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
+  int getHostCount();
 
   /** Get the properties assigned to a host */
   std::unordered_map<std::string, std::string>* getProperties();

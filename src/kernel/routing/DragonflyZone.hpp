@@ -12,7 +12,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-class XBT_PRIVATE DragonflyRouter {
+class DragonflyRouter {
 public:
   unsigned int group_;
   unsigned int chassis_;
@@ -58,7 +58,7 @@ public:
  *    is also not realistic, as blue level can use more links than a single
  *    Aries can handle, thus it should use several routers.
  */
-class XBT_PRIVATE DragonflyZone : public ClusterZone {
+class DragonflyZone : public ClusterZone {
 public:
   explicit DragonflyZone(NetZone* father, std::string name);
   ~DragonflyZone() override;
@@ -70,8 +70,9 @@ public:
   void generateLinks();
   void createLink(const std::string& id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown);
 
-private:
   void rankId_to_coords(int rankId, unsigned int (*coords)[4]);
+
+private:
   ClusterCreationArgs* cluster_     = nullptr;
   unsigned int numNodesPerBlade_    = 0;
   unsigned int numBladesPerChassis_ = 0;

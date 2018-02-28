@@ -86,6 +86,17 @@ void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
   }
 }
 
+int NetZone::getHostCount()
+{
+  int count = 0;
+  for (auto const& card : vertices_) {
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->getName());
+    if (host != nullptr)
+      count++;
+  }
+  return count;
+}
+
 int NetZone::addComponent(kernel::routing::NetPoint* elm)
 {
   vertices_.push_back(elm);

@@ -26,3 +26,247 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-routing-get-clusters$EXEEXT ${platfdir}/cluste
 > [  0.000000] (maestro@)    node-5.4cores.org
 > [  0.000000] (maestro@)    node-6.4cores.org
 > [  0.000000] (maestro@)    node-7.4cores.org
+
+$ $SG_TEST_EXENV ${bindir:=.}/s4u-routing-get-clusters$EXEEXT ${platfdir}/cluster_dragonfly.xml "--log=root.fmt:[%10.6r]%e(%P@%h)%e%m%n"
+> [  0.000000] (maestro@) bob_cluster
+> [  0.000000] (maestro@)    node-0.acme.org
+> [  0.000000] (maestro@)    node-1.acme.org
+> [  0.000000] (maestro@)    node-2.acme.org
+> [  0.000000] (maestro@)    node-3.acme.org
+> [  0.000000] (maestro@)    node-4.acme.org
+> [  0.000000] (maestro@)    node-5.acme.org
+> [  0.000000] (maestro@)    node-6.acme.org
+> [  0.000000] (maestro@)    node-7.acme.org
+> [  0.000000] (maestro@)    node-8.acme.org
+> [  0.000000] (maestro@)    node-9.acme.org
+> [  0.000000] (maestro@)    node-10.acme.org
+> [  0.000000] (maestro@)    node-11.acme.org
+> [  0.000000] (maestro@)    node-12.acme.org
+> [  0.000000] (maestro@)    node-13.acme.org
+> [  0.000000] (maestro@)    node-14.acme.org
+> [  0.000000] (maestro@)    node-15.acme.org
+> [  0.000000] (maestro@)    node-16.acme.org
+> [  0.000000] (maestro@)    node-17.acme.org
+> [  0.000000] (maestro@)    node-18.acme.org
+> [  0.000000] (maestro@)    node-19.acme.org
+> [  0.000000] (maestro@)    node-20.acme.org
+> [  0.000000] (maestro@)    node-21.acme.org
+> [  0.000000] (maestro@)    node-22.acme.org
+> [  0.000000] (maestro@)    node-23.acme.org
+> [  0.000000] (maestro@)    node-24.acme.org
+> [  0.000000] (maestro@)    node-25.acme.org
+> [  0.000000] (maestro@)    node-26.acme.org
+> [  0.000000] (maestro@)    node-27.acme.org
+> [  0.000000] (maestro@)    node-28.acme.org
+> [  0.000000] (maestro@)    node-29.acme.org
+> [  0.000000] (maestro@)    node-30.acme.org
+> [  0.000000] (maestro@)    node-31.acme.org
+> [  0.000000] (maestro@)    node-32.acme.org
+> [  0.000000] (maestro@)    node-33.acme.org
+> [  0.000000] (maestro@)    node-34.acme.org
+> [  0.000000] (maestro@)    node-35.acme.org
+> [  0.000000] (maestro@)    node-36.acme.org
+> [  0.000000] (maestro@)    node-37.acme.org
+> [  0.000000] (maestro@)    node-38.acme.org
+> [  0.000000] (maestro@)    node-39.acme.org
+> [  0.000000] (maestro@)    node-40.acme.org
+> [  0.000000] (maestro@)    node-41.acme.org
+> [  0.000000] (maestro@)    node-42.acme.org
+> [  0.000000] (maestro@)    node-43.acme.org
+> [  0.000000] (maestro@)    node-44.acme.org
+> [  0.000000] (maestro@)    node-45.acme.org
+> [  0.000000] (maestro@)    node-46.acme.org
+> [  0.000000] (maestro@)    node-47.acme.org
+> [  0.000000] (maestro@)    node-48.acme.org
+> [  0.000000] (maestro@)    node-49.acme.org
+> [  0.000000] (maestro@)    node-50.acme.org
+> [  0.000000] (maestro@)    node-51.acme.org
+> [  0.000000] (maestro@)    node-52.acme.org
+> [  0.000000] (maestro@)    node-53.acme.org
+> [  0.000000] (maestro@)    node-54.acme.org
+> [  0.000000] (maestro@)    node-55.acme.org
+> [  0.000000] (maestro@)    node-56.acme.org
+> [  0.000000] (maestro@)    node-57.acme.org
+> [  0.000000] (maestro@)    node-58.acme.org
+> [  0.000000] (maestro@)    node-59.acme.org
+> [  0.000000] (maestro@)    node-60.acme.org
+> [  0.000000] (maestro@)    node-61.acme.org
+> [  0.000000] (maestro@)    node-62.acme.org
+> [  0.000000] (maestro@)    node-63.acme.org
+> [  0.000000] (maestro@)    node-64.acme.org
+> [  0.000000] (maestro@)    node-65.acme.org
+> [  0.000000] (maestro@)    node-66.acme.org
+> [  0.000000] (maestro@)    node-67.acme.org
+> [  0.000000] (maestro@)    node-68.acme.org
+> [  0.000000] (maestro@)    node-69.acme.org
+> [  0.000000] (maestro@)    node-70.acme.org
+> [  0.000000] (maestro@)    node-71.acme.org
+> [  0.000000] (maestro@)    node-72.acme.org
+> [  0.000000] (maestro@)    node-73.acme.org
+> [  0.000000] (maestro@)    node-74.acme.org
+> [  0.000000] (maestro@)    node-75.acme.org
+> [  0.000000] (maestro@)    node-76.acme.org
+> [  0.000000] (maestro@)    node-77.acme.org
+> [  0.000000] (maestro@)    node-78.acme.org
+> [  0.000000] (maestro@)    node-79.acme.org
+> [  0.000000] (maestro@)    node-80.acme.org
+> [  0.000000] (maestro@)    node-81.acme.org
+> [  0.000000] (maestro@)    node-82.acme.org
+> [  0.000000] (maestro@)    node-83.acme.org
+> [  0.000000] (maestro@)    node-84.acme.org
+> [  0.000000] (maestro@)    node-85.acme.org
+> [  0.000000] (maestro@)    node-86.acme.org
+> [  0.000000] (maestro@)    node-87.acme.org
+> [  0.000000] (maestro@)    node-88.acme.org
+> [  0.000000] (maestro@)    node-89.acme.org
+> [  0.000000] (maestro@)    node-90.acme.org
+> [  0.000000] (maestro@)    node-91.acme.org
+> [  0.000000] (maestro@)    node-92.acme.org
+> [  0.000000] (maestro@)    node-93.acme.org
+> [  0.000000] (maestro@)    node-94.acme.org
+> [  0.000000] (maestro@)    node-95.acme.org
+> [  0.000000] (maestro@)    node-96.acme.org
+> [  0.000000] (maestro@)    node-97.acme.org
+> [  0.000000] (maestro@)    node-98.acme.org
+> [  0.000000] (maestro@)    node-99.acme.org
+> [  0.000000] (maestro@)    node-100.acme.org
+> [  0.000000] (maestro@)    node-101.acme.org
+> [  0.000000] (maestro@)    node-102.acme.org
+> [  0.000000] (maestro@)    node-103.acme.org
+> [  0.000000] (maestro@)    node-104.acme.org
+> [  0.000000] (maestro@)    node-105.acme.org
+> [  0.000000] (maestro@)    node-106.acme.org
+> [  0.000000] (maestro@)    node-107.acme.org
+> [  0.000000] (maestro@)    node-108.acme.org
+> [  0.000000] (maestro@)    node-109.acme.org
+> [  0.000000] (maestro@)    node-110.acme.org
+> [  0.000000] (maestro@)    node-111.acme.org
+> [  0.000000] (maestro@)    node-112.acme.org
+> [  0.000000] (maestro@)    node-113.acme.org
+> [  0.000000] (maestro@)    node-114.acme.org
+> [  0.000000] (maestro@)    node-115.acme.org
+> [  0.000000] (maestro@)    node-116.acme.org
+> [  0.000000] (maestro@)    node-117.acme.org
+> [  0.000000] (maestro@)    node-118.acme.org
+> [  0.000000] (maestro@)    node-119.acme.org
+> [  0.000000] (maestro@) bob_cluster' dragonfly topology:
+> [  0.000000] (maestro@)    0: (0, 0, 0, 0)
+> [  0.000000] (maestro@)    1: (0, 0, 0, 1)
+> [  0.000000] (maestro@)    2: (0, 0, 1, 0)
+> [  0.000000] (maestro@)    3: (0, 0, 1, 1)
+> [  0.000000] (maestro@)    4: (0, 0, 2, 0)
+> [  0.000000] (maestro@)    5: (0, 0, 2, 1)
+> [  0.000000] (maestro@)    6: (0, 0, 3, 0)
+> [  0.000000] (maestro@)    7: (0, 0, 3, 1)
+> [  0.000000] (maestro@)    8: (0, 0, 4, 0)
+> [  0.000000] (maestro@)    9: (0, 0, 4, 1)
+> [  0.000000] (maestro@)    10: (0, 1, 0, 0)
+> [  0.000000] (maestro@)    11: (0, 1, 0, 1)
+> [  0.000000] (maestro@)    12: (0, 1, 1, 0)
+> [  0.000000] (maestro@)    13: (0, 1, 1, 1)
+> [  0.000000] (maestro@)    14: (0, 1, 2, 0)
+> [  0.000000] (maestro@)    15: (0, 1, 2, 1)
+> [  0.000000] (maestro@)    16: (0, 1, 3, 0)
+> [  0.000000] (maestro@)    17: (0, 1, 3, 1)
+> [  0.000000] (maestro@)    18: (0, 1, 4, 0)
+> [  0.000000] (maestro@)    19: (0, 1, 4, 1)
+> [  0.000000] (maestro@)    20: (0, 2, 0, 0)
+> [  0.000000] (maestro@)    21: (0, 2, 0, 1)
+> [  0.000000] (maestro@)    22: (0, 2, 1, 0)
+> [  0.000000] (maestro@)    23: (0, 2, 1, 1)
+> [  0.000000] (maestro@)    24: (0, 2, 2, 0)
+> [  0.000000] (maestro@)    25: (0, 2, 2, 1)
+> [  0.000000] (maestro@)    26: (0, 2, 3, 0)
+> [  0.000000] (maestro@)    27: (0, 2, 3, 1)
+> [  0.000000] (maestro@)    28: (0, 2, 4, 0)
+> [  0.000000] (maestro@)    29: (0, 2, 4, 1)
+> [  0.000000] (maestro@)    30: (0, 3, 0, 0)
+> [  0.000000] (maestro@)    31: (0, 3, 0, 1)
+> [  0.000000] (maestro@)    32: (0, 3, 1, 0)
+> [  0.000000] (maestro@)    33: (0, 3, 1, 1)
+> [  0.000000] (maestro@)    34: (0, 3, 2, 0)
+> [  0.000000] (maestro@)    35: (0, 3, 2, 1)
+> [  0.000000] (maestro@)    36: (0, 3, 3, 0)
+> [  0.000000] (maestro@)    37: (0, 3, 3, 1)
+> [  0.000000] (maestro@)    38: (0, 3, 4, 0)
+> [  0.000000] (maestro@)    39: (0, 3, 4, 1)
+> [  0.000000] (maestro@)    40: (1, 0, 0, 0)
+> [  0.000000] (maestro@)    41: (1, 0, 0, 1)
+> [  0.000000] (maestro@)    42: (1, 0, 1, 0)
+> [  0.000000] (maestro@)    43: (1, 0, 1, 1)
+> [  0.000000] (maestro@)    44: (1, 0, 2, 0)
+> [  0.000000] (maestro@)    45: (1, 0, 2, 1)
+> [  0.000000] (maestro@)    46: (1, 0, 3, 0)
+> [  0.000000] (maestro@)    47: (1, 0, 3, 1)
+> [  0.000000] (maestro@)    48: (1, 0, 4, 0)
+> [  0.000000] (maestro@)    49: (1, 0, 4, 1)
+> [  0.000000] (maestro@)    50: (1, 1, 0, 0)
+> [  0.000000] (maestro@)    51: (1, 1, 0, 1)
+> [  0.000000] (maestro@)    52: (1, 1, 1, 0)
+> [  0.000000] (maestro@)    53: (1, 1, 1, 1)
+> [  0.000000] (maestro@)    54: (1, 1, 2, 0)
+> [  0.000000] (maestro@)    55: (1, 1, 2, 1)
+> [  0.000000] (maestro@)    56: (1, 1, 3, 0)
+> [  0.000000] (maestro@)    57: (1, 1, 3, 1)
+> [  0.000000] (maestro@)    58: (1, 1, 4, 0)
+> [  0.000000] (maestro@)    59: (1, 1, 4, 1)
+> [  0.000000] (maestro@)    60: (1, 2, 0, 0)
+> [  0.000000] (maestro@)    61: (1, 2, 0, 1)
+> [  0.000000] (maestro@)    62: (1, 2, 1, 0)
+> [  0.000000] (maestro@)    63: (1, 2, 1, 1)
+> [  0.000000] (maestro@)    64: (1, 2, 2, 0)
+> [  0.000000] (maestro@)    65: (1, 2, 2, 1)
+> [  0.000000] (maestro@)    66: (1, 2, 3, 0)
+> [  0.000000] (maestro@)    67: (1, 2, 3, 1)
+> [  0.000000] (maestro@)    68: (1, 2, 4, 0)
+> [  0.000000] (maestro@)    69: (1, 2, 4, 1)
+> [  0.000000] (maestro@)    70: (1, 3, 0, 0)
+> [  0.000000] (maestro@)    71: (1, 3, 0, 1)
+> [  0.000000] (maestro@)    72: (1, 3, 1, 0)
+> [  0.000000] (maestro@)    73: (1, 3, 1, 1)
+> [  0.000000] (maestro@)    74: (1, 3, 2, 0)
+> [  0.000000] (maestro@)    75: (1, 3, 2, 1)
+> [  0.000000] (maestro@)    76: (1, 3, 3, 0)
+> [  0.000000] (maestro@)    77: (1, 3, 3, 1)
+> [  0.000000] (maestro@)    78: (1, 3, 4, 0)
+> [  0.000000] (maestro@)    79: (1, 3, 4, 1)
+> [  0.000000] (maestro@)    80: (2, 0, 0, 0)
+> [  0.000000] (maestro@)    81: (2, 0, 0, 1)
+> [  0.000000] (maestro@)    82: (2, 0, 1, 0)
+> [  0.000000] (maestro@)    83: (2, 0, 1, 1)
+> [  0.000000] (maestro@)    84: (2, 0, 2, 0)
+> [  0.000000] (maestro@)    85: (2, 0, 2, 1)
+> [  0.000000] (maestro@)    86: (2, 0, 3, 0)
+> [  0.000000] (maestro@)    87: (2, 0, 3, 1)
+> [  0.000000] (maestro@)    88: (2, 0, 4, 0)
+> [  0.000000] (maestro@)    89: (2, 0, 4, 1)
+> [  0.000000] (maestro@)    90: (2, 1, 0, 0)
+> [  0.000000] (maestro@)    91: (2, 1, 0, 1)
+> [  0.000000] (maestro@)    92: (2, 1, 1, 0)
+> [  0.000000] (maestro@)    93: (2, 1, 1, 1)
+> [  0.000000] (maestro@)    94: (2, 1, 2, 0)
+> [  0.000000] (maestro@)    95: (2, 1, 2, 1)
+> [  0.000000] (maestro@)    96: (2, 1, 3, 0)
+> [  0.000000] (maestro@)    97: (2, 1, 3, 1)
+> [  0.000000] (maestro@)    98: (2, 1, 4, 0)
+> [  0.000000] (maestro@)    99: (2, 1, 4, 1)
+> [  0.000000] (maestro@)    100: (2, 2, 0, 0)
+> [  0.000000] (maestro@)    101: (2, 2, 0, 1)
+> [  0.000000] (maestro@)    102: (2, 2, 1, 0)
+> [  0.000000] (maestro@)    103: (2, 2, 1, 1)
+> [  0.000000] (maestro@)    104: (2, 2, 2, 0)
+> [  0.000000] (maestro@)    105: (2, 2, 2, 1)
+> [  0.000000] (maestro@)    106: (2, 2, 3, 0)
+> [  0.000000] (maestro@)    107: (2, 2, 3, 1)
+> [  0.000000] (maestro@)    108: (2, 2, 4, 0)
+> [  0.000000] (maestro@)    109: (2, 2, 4, 1)
+> [  0.000000] (maestro@)    110: (2, 3, 0, 0)
+> [  0.000000] (maestro@)    111: (2, 3, 0, 1)
+> [  0.000000] (maestro@)    112: (2, 3, 1, 0)
+> [  0.000000] (maestro@)    113: (2, 3, 1, 1)
+> [  0.000000] (maestro@)    114: (2, 3, 2, 0)
+> [  0.000000] (maestro@)    115: (2, 3, 2, 1)
+> [  0.000000] (maestro@)    116: (2, 3, 3, 0)
+> [  0.000000] (maestro@)    117: (2, 3, 3, 1)
+> [  0.000000] (maestro@)    118: (2, 3, 4, 0)
+> [  0.000000] (maestro@)    119: (2, 3, 4, 1)
