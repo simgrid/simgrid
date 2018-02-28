@@ -119,7 +119,8 @@ public:
   std::string getName() override { return "OnDemand"; }
   void update() override
   {
-    double load = sg_host_get_current_load(host);
+    double load = host->getCoreCount() * sg_host_get_avg_load(host);
+    sg_host_load_reset(host); // Only consider the period between two calls to this method!
 
     // FIXME I don't like that we multiply with the getCoreCount() just here...
     if (load*host->getCoreCount() > freq_up_threshold) {
@@ -164,8 +165,9 @@ public:
   virtual std::string getName() override { return "Conservative"; }
   virtual void update() override
   {
-    double load = sg_host_get_current_load(host)*host->getCoreCount();
+    double load = host->getCoreCount() * sg_host_get_avg_load(host);
     int pstate  = host->getPstate();
+    sg_host_load_reset(host); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold) {
       if (pstate != 0) {
