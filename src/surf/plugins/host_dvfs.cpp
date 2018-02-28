@@ -122,10 +122,9 @@ public:
     double load = host->getCoreCount() * sg_host_get_avg_load(host);
     sg_host_load_reset(host); // Only consider the period between two calls to this method!
 
-    // FIXME I don't like that we multiply with the getCoreCount() just here...
-    if (load*host->getCoreCount() > freq_up_threshold) {
+    if (load > freq_up_threshold) {
       host->setPstate(0); /* Run at max. performance! */
-      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load * host->getCoreCount(), freq_up_threshold, 0);
+      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold, 0);
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
@@ -135,10 +134,12 @@ public:
        * lowest_pstate - load*pstatesCount()
        */
       int max_pstate = host->getPstatesCount() - 1;
-      int new_pstate = max_pstate - load * max_pstate;
+      // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
+      // because pstate 0 can only be selected if load > freq_up_threshold
+      int new_pstate = max_pstate - load * (max_pstate + 1);
       host->setPstate(new_pstate);
 
-      XBT_DEBUG("Load: %f --> changed to pstate %i", load*host->getCoreCount(), new_pstate);
+      XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold, new_pstate);
     }
   }
 };
