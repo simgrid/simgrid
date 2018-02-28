@@ -15,6 +15,7 @@
 
 #include <simgrid/simix.hpp>
 
+#include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
@@ -85,8 +86,7 @@ public:
   simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name);
 
   /** @brief Retrieves all netzones of the same type than the subtype of the whereto vector */
-  template <class T> void getNetzoneByType(std::vector<T*> * whereto);
-
+  template <class T> void getNetzoneByType(std::vector<T*> * whereto) { netzoneByTypeRecursive(getNetRoot(), whereto); }
   /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
   simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name);
   void getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);
@@ -140,6 +140,15 @@ extern XBT_PUBLIC(xbt::signal<void(double)>) onTimeAdvance;
 
 /** Callback fired when the time cannot jump because of inter-actors deadlock */
 extern XBT_PUBLIC(xbt::signal<void(void)>) onDeadlock;
+
+template <class T> XBT_PRIVATE void netzoneByTypeRecursive(s4u::NetZone* current, std::vector<T*>* whereto)
+{
+  for (auto const& elem : *(current->getChildren())) {
+    netzoneByTypeRecursive(elem, whereto);
+    if (elem == dynamic_cast<T*>(elem))
+      whereto->push_back(dynamic_cast<T*>(elem));
+  }
+}
 }
 } // namespace simgrid::s4u
 

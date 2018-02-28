@@ -30,7 +30,6 @@ xbt::signal<void(void)> onDeadlock;
 
 Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
-
 Engine::Engine(int *argc, char **argv) {
   xbt_assert(s4u::Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   TRACE_global_init();
@@ -152,21 +151,6 @@ static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* n
 NetZone* Engine::getNetzoneByNameOrNull(const char* name)
 {
   return netzoneByNameRecursive(getNetRoot(), name);
-}
-
-template <class T> void netzoneByTypeRecursive(s4u::NetZone* current, std::vector<T*>* whereto)
-{
-  for (auto const& elem : *(current->getChildren())) {
-    netzoneByTypeRecursive(elem, whereto);
-    if (elem == dynamic_cast<T*>(elem))
-      whereto->push_back(elem);
-  }
-}
-
-/** @brief Retrieve all existing NetZones of the subtype of the whereto vector */
-template <class T> void Engine::getNetzoneByType(std::vector<T*>* whereto)
-{
-  netzoneByTypeRecursive(getNetRoot(), whereto);
 }
 
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */

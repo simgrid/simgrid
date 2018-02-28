@@ -65,7 +65,7 @@ namespace routing {
  *  (because the private router is directly connected to the cluster core).
  */
 
-class XBT_PRIVATE ClusterZone : public NetZoneImpl {
+class ClusterZone : public NetZoneImpl {
 public:
   explicit ClusterZone(NetZone* father, std::string name);
 

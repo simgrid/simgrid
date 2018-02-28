@@ -9,6 +9,7 @@ foreach (example actor-create actor-daemon actor-join actor-kill actor-kill-pid
                  mutex
                  platform-properties plugin-hostload 
                  replay-comm replay-storage
+                 routing-get-clusters
                  trace-platform)
   add_executable       (s4u-${example}  ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example}  simgrid)
@@ -94,7 +95,9 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-kill-pid
                 exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                 platform-properties plugin-hostload mutex
                 io-file-system io-file-remote io-storage-raw
-                replay-comm replay-storage)
+                replay-comm replay-storage
+                routing-get-clusters
+                )
   ADD_TESH_FACTORIES(s4u-${example} "thread;ucontext;raw;boost" 
                                     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
 				    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
