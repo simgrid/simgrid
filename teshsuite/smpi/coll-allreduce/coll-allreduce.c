@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   if (maxlen > 1)
     mult = maxlen > size ? size : maxlen;
-  int* sb = (int *) xbt_malloc(size *maxlen * sizeof(int));
-  int* rb = (int *) xbt_malloc(size *maxlen * sizeof(int));
+  int* sb = xbt_new0(int, size * maxlen);
+  int* rb = xbt_new0(int, size * maxlen);
 
   for (i = 0; i < size *maxlen; ++i) {
     sb[i] = rank*size + i;
