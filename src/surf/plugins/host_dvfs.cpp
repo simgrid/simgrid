@@ -61,6 +61,16 @@ public:
   double samplingRate() { return sampling_rate; }
 };
 
+/**
+ * The linux kernel doc describes this governor as follows:
+ * https://www.kernel.org/doc/Documentation/cpu-freq/governors.txt
+ *
+ * > The CPUfreq governor "performance" sets the CPU statically to the
+ * > highest frequency within the borders of scaling_min_freq and
+ * > scaling_max_freq.
+ *
+ * We do not support scaling_min_freq/scaling_max_freq -- we just pick the lowest frequency.
+ */
 class Performance : public Governor {
 public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
@@ -69,6 +79,16 @@ public:
   std::string getName() override { return "Performance"; }
 };
 
+/**
+ * The linux kernel doc describes this governor as follows:
+ * https://www.kernel.org/doc/Documentation/cpu-freq/governors.txt
+ *
+ * > The CPUfreq governor "powersave" sets the CPU statically to the
+ * > lowest frequency within the borders of scaling_min_freq and
+ * > scaling_max_freq.
+ *
+ * We do not support scaling_min_freq/scaling_max_freq -- we just pick the lowest frequency.
+ */
 class Powersave : public Governor {
 public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
@@ -77,8 +97,21 @@ public:
   std::string getName() override { return "Powersave"; }
 };
 
+/**
+ * The linux kernel doc describes this governor as follows:
+ * https://www.kernel.org/doc/Documentation/cpu-freq/governors.txt
+ *
+ * > The CPUfreq governor "ondemand" sets the CPU frequency depending on the
+ * > current system load. [...] when triggered, cpufreq checks
+ * > the CPU-usage statistics over the last period and the governor sets the
+ * > CPU accordingly.
+ */
 class OnDemand : public Governor {
-  double freq_up_threshold = 0.95;
+  /**
+   * See https://elixir.bootlin.com/linux/v4.15.4/source/drivers/cpufreq/cpufreq_ondemand.c 
+   * DEF_FREQUENCY_UP_THRESHOLD and od_update()
+   */
+  double freq_up_threshold = 0.80;
 
 public:
   explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
@@ -109,6 +142,18 @@ public:
   }
 };
 
+/**
+ * This is the conservative governor, which is very similar to the
+ * OnDemand governor. The Linux Kernel Documentation describes it
+ * very well, see https://www.kernel.org/doc/Documentation/cpu-freq/governors.txt:
+ *
+ * > The CPUfreq governor "conservative", much like the "ondemand"
+ * > governor, sets the CPU frequency depending on the current usage.  It
+ * > differs in behaviour in that it gracefully increases and decreases the
+ * > CPU speed rather than jumping to max speed the moment there is any load
+ * > on the CPU. This behaviour is more suitable in a battery powered
+ * > environment.
+ */
 class Conservative : public Governor {
   double freq_up_threshold   = .8;
   double freq_down_threshold = .2;
