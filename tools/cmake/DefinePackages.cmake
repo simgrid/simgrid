@@ -462,7 +462,6 @@ set(MSG_SRC
   src/msg/msg_process.cpp
   src/msg/msg_synchro.cpp
   src/msg/msg_task.cpp
-  src/msg/msg_vm.cpp
   )
 
 set(SIMDAG_SRC

@@ -199,3 +199,113 @@ void VirtualMachine::setBound(double bound)
 
 } // namespace simgrid
 } // namespace s4u
+
+/* **************************** Public C interface *************************** */
+
+SG_BEGIN_DECL()
+/** @brief Create a new VM object with the default parameters
+ * A VM is treated as a host. The name of the VM must be unique among all hosts.
+ */
+msg_vm_t sg_vm_create_core(sg_host_t pm, const char* name)
+{
+  return sg_vm_create_multicore(pm, name, 1);
+}
+/** @brief Create a new VM object with the default parameters, but with a specified amount of cores
+ * A VM is treated as a host. The name of the VM must be unique among all hosts.
+ */
+msg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
+{
+  xbt_assert(sg_host_by_name(name) == nullptr,
+             "Cannot create a VM named %s: this name is already used by an host or a VM", name);
+
+  return new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
+}
+
+const char* sg_vm_get_name(sg_vm_t vm)
+{
+  return vm->getCname();
+}
+
+/** @brief Get the physical host of a given VM. */
+sg_host_t sg_vm_get_pm(sg_vm_t vm)
+{
+  return vm->getPm();
+}
+
+void sg_vm_set_ramsize(sg_vm_t vm, size_t size)
+{
+  vm->setRamsize(size);
+}
+
+size_t sg_vm_get_ramsize(sg_vm_t vm)
+{
+  return vm->getRamsize();
+}
+
+void sg_vm_set_bound(sg_vm_t vm, double bound)
+{
+  vm->setBound(bound);
+}
+
+/** @brief Returns whether the given VM has just created, not running. */
+int sg_vm_is_created(sg_vm_t vm)
+{
+  return vm->getState() == SURF_VM_STATE_CREATED;
+}
+
+/** @brief Returns whether the given VM is currently running */
+int sg_vm_is_running(sg_vm_t vm)
+{
+  return vm->getState() == SURF_VM_STATE_RUNNING;
+}
+
+/** @brief Returns whether the given VM is currently suspended, not running. */
+int sg_vm_is_suspended(sg_vm_t vm)
+{
+  return vm->getState() == SURF_VM_STATE_SUSPENDED;
+}
+
+/** @brief Start a vm (i.e., boot the guest operating system)
+ *  If the VM cannot be started (because of memory over-provisioning), an exception is generated.
+ */
+void sg_vm_start(sg_vm_t vm)
+{
+  vm->start();
+}
+
+/** @brief Immediately suspend the execution of all processes within the given VM.
+ *
+ * This function stops the execution of the VM. All the processes on this VM
+ * will pause. The state of the VM is preserved. We can later resume it again.
+ *
+ * No suspension cost occurs.
+ */
+void sg_vm_suspend(sg_vm_t vm)
+{
+  vm->suspend();
+}
+
+/** @brief Resume the execution of the VM. All processes on the VM run again.
+ * No resume cost occurs.
+ */
+void sg_vm_resume(sg_vm_t vm)
+{
+  vm->resume();
+}
+
+/** @brief Immediately kills all processes within the given VM.
+ * Any memory that they allocated will be leaked, unless you used #MSG_process_on_exit().
+ *
+ * No extra delay occurs. If you want to simulate this too, you want to use a #MSG_process_sleep().
+ */
+void sg_vm_shutdown(sg_vm_t vm)
+{
+  vm->shutdown();
+}
+
+/** @brief Destroy a VM. Destroy the VM object from the simulation. */
+void sg_vm_destroy(sg_vm_t vm)
+{
+  vm->destroy();
+}
+SG_END_DECL()

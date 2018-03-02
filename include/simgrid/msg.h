@@ -377,35 +377,43 @@ XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
  *
  */
 
-XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
-XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
+XBT_PUBLIC(int) sg_vm_is_created(sg_vm_t vm);
+#define MSG_vm_is_created(vm) sg_vm_is_created(vm)
+XBT_PUBLIC(int) sg_vm_is_running(sg_vm_t vm);
+#define MSG_vm_is_running(vm) sg_vm_is_running(vm)
+XBT_PUBLIC(int) sg_vm_is_suspended(sg_vm_t vm);
+#define MSG_vm_is_suspended(vm) sg_vm_is_suspended(vm)
 
-XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
-XBT_PUBLIC(void) MSG_vm_set_ramsize(msg_vm_t vm, size_t size);
-XBT_PUBLIC(size_t) MSG_vm_get_ramsize(msg_vm_t vm);
+XBT_PUBLIC(const char*) sg_vm_get_name(sg_vm_t vm);
+#define MSG_vm_get_name(vm) sg_vm_get_name(vm)
+XBT_PUBLIC(void) sg_vm_set_ramsize(sg_vm_t vm, size_t size);
+#define MSG_vm_set_ramsize(vm, size) sg_vm_set_ramsize(vm, size)
+XBT_PUBLIC(size_t) sg_vm_get_ramsize(sg_vm_t vm);
+#define MSG_vm_get_ramsize(vm) sg_vm_get_ramsize(vm)
 
-// TODO add VDI later
-XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
-XBT_PUBLIC(msg_vm_t) MSG_vm_create_multicore(msg_host_t pm, const char* name, int coreAmount);
+XBT_PUBLIC(sg_vm_t) sg_vm_create_core(sg_host_t pm, const char* name);
+#define MSG_vm_create_core(vm, name) sg_vm_create_core(vm, name)
+XBT_PUBLIC(sg_vm_t) sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount);
+#define MSG_vm_create_multicore(vm, name, coreAmount) sg_vm_create_multicore(vm, name, coreAmount)
 
-XBT_ATTRIB_DEPRECATED_v322("Use MSG_vm_create_migratable() from the live migration plugin: "
+XBT_ATTRIB_DEPRECATED_v322("Use sg_vm_create_migratable() from the live migration plugin: "
                            "v3.22 will drop MSG_vm_create() completely.") XBT_PUBLIC(msg_vm_t)
     MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
 
-XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
-
-XBT_PUBLIC(void) MSG_vm_start(msg_vm_t vm);
-
-/* Shutdown the guest operating system. */
-XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
-
-/* Suspend the execution of the VM, but keep its state on memory. */
-XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
-XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);
-
-XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
-XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
+XBT_PUBLIC(void) sg_vm_start(msg_vm_t vm);
+#define MSG_vm_start(vm) sg_vm_start(vm)
+XBT_PUBLIC(void) sg_vm_suspend(msg_vm_t vm);
+#define MSG_vm_suspend(vm) sg_vm_suspend(vm)
+XBT_PUBLIC(void) sg_vm_resume(msg_vm_t vm);
+#define MSG_vm_resume(vm) sg_vm_resume(vm)
+XBT_PUBLIC(void) sg_vm_shutdown(msg_vm_t vm);
+#define MSG_vm_shutdown(vm) sg_vm_shutdown(vm)
+XBT_PUBLIC(void) sg_vm_destroy(msg_vm_t vm);
+#define MSG_vm_destroy(vm) sg_vm_destroy(vm)
+XBT_PUBLIC(sg_host_t) sg_vm_get_pm(sg_vm_t vm);
+#define MSG_vm_get_pm(vm) sg_vm_get_pm(vm)
+XBT_PUBLIC(void) sg_vm_set_bound(sg_vm_t vm, double bound);
+#define MSG_vm_set_bound(vm, bound) sg_vm_set_bound(vm, bound)
 
 #include "simgrid/instr.h"
 
