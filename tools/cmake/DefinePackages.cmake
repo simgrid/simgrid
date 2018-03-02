@@ -457,7 +457,6 @@ set(MSG_SRC
   src/msg/msg_global.cpp
   src/msg/msg_gos.cpp
   src/msg/msg_host.cpp
-  src/msg/msg_io.cpp
   src/msg/msg_mailbox.cpp
   src/msg/msg_process.cpp
   src/msg/msg_synchro.cpp

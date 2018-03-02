@@ -170,17 +170,28 @@ XBT_PUBLIC(void) MSG_zone_set_property_value(msg_netzone_t netzone, const char* 
 XBT_PUBLIC(void) MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
 
 /************************** Storage handling ***********************************/
-XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
-XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
-XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
-XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char* name, char* value);
-XBT_PUBLIC(const char *)MSG_storage_get_property_value(msg_storage_t storage, const char *name);
-XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar();
-XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
-XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
-XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
-XBT_PUBLIC(sg_size_t) MSG_storage_read(msg_storage_t storage, sg_size_t size);
-XBT_PUBLIC(sg_size_t) MSG_storage_write(msg_storage_t storage, sg_size_t size);
+XBT_PUBLIC(const char*) sg_storage_get_name(sg_storage_t storage);
+#define MSG_storage_get_name(storage) sg_storage_get_name(storage)
+XBT_PUBLIC(sg_storage_t) sg_storage_get_by_name(const char* name);
+#define MSG_storage_get_by_name(name) sg_storage_get_by_name(name)
+XBT_PUBLIC(xbt_dict_t) sg_storage_get_properties(sg_storage_t storage);
+#define MSG_storage_get_properties(storage) sg_storage_get_properties(storage)
+XBT_PUBLIC(void) sg_storage_set_property_value(sg_storage_t storage, const char* name, char* value);
+#define MSG_storage_set_property_value(storage, name, value) sg_storage_set_property_value(storage, name, value)
+XBT_PUBLIC(const char*) sg_storage_get_property_value(sg_storage_t storage, const char* name);
+#define MSG_storage_get_property_value(storage, name) sg_storage_get_property_value(storage, name)
+XBT_PUBLIC(xbt_dynar_t) sg_storages_as_dynar();
+#define MSG_storages_as_dynar() sg_storages_as_dynar()
+XBT_PUBLIC(void) sg_storage_set_data(sg_storage_t host, void* data);
+#define MSG_storage_set_data(storage, data) sg_storage_set_data(storage, data)
+XBT_PUBLIC(void*) sg_storage_get_data(sg_storage_t storage);
+#define MSG_storage_get_data(storage) sg_storage_get_data(storage)
+XBT_PUBLIC(const char*) sg_storage_get_host(sg_storage_t storage);
+#define MSG_storage_get_host(storage) sg_storage_get_host(storage)
+XBT_PUBLIC(sg_size_t) sg_storage_read(sg_storage_t storage, sg_size_t size);
+#define MSG_storage_read(storage, size) sg_storage_read(storage, size)
+XBT_PUBLIC(sg_size_t) sg_storage_write(sg_storage_t storage, sg_size_t size);
+#define MSG_storage_write(storage, size) sg_storage_write(storage, size)
 
 /************************** Host handling ***********************************/
 XBT_PUBLIC(void) MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
