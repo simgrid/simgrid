@@ -33,10 +33,10 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1053916774" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
 								<option id="gnu.c.compiler.option.include.paths.100642505" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="/usr/include/ns3.26"/>
 									<listOptionValue builtIn="false" value="/opt/gtnets/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/lua5.3"/>
 									<listOptionValue builtIn="false" value="/usr/lib/jvm/java-8-openjdk-amd64/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/ns3.27"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.538328935" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>

@@ -42,7 +42,6 @@ static int number_of_nodes = 0;
 static int number_of_clusters_nodes = 0;
 static int number_of_links = 1;
 static int number_of_networks = 1;
-static int port_number = 1025; //Port number is limited from 1025 to 65 000
 
 simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPointNs3::EXTENSION_ID;
 
@@ -285,14 +284,41 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(Model* model, double size, s4u::Host* src, s4u::Host* dst)
-    : NetworkAction(model, size, false)
+NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
+    : NetworkAction(model, totalBytes, false)
 {
   XBT_DEBUG("Communicate from %s to %s", src->getCname(), dst->getCname());
 
   src_ = src;
   dst_ = dst;
-  ns3_create_flow(src, dst, size, this);
+  static int port_number = 1025; // Port number is limited from 1025 to 65 000
+
+  unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+  unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
+
+  ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
+  ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
+
+  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+             dst->pimpl_netpoint->getCname());
+  std::string& addr = IPV4addr[node2];
+  xbt_assert(not addr.empty(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
+             dst->pimpl_netpoint->getCname());
+
+  XBT_DEBUG("ns3_create_flow %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
+  ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
+  sink.Install(dst_node);
+
+  ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
+
+  flowFromSock.insert({transformSocketPtr(sock), new SgFlow(totalBytes, this)});
+
+  sock->Bind(ns3::InetSocketAddress(port_number));
+
+  ns3::Simulator::ScheduleNow(&StartFlow, sock, addr.c_str(), port_number);
+
+  port_number++;
+  xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
   s4u::Link::onCommunicate(this, src, dst);
 }
@@ -340,36 +366,6 @@ void ns3_simulator(double maxSeconds)
   ns3::Simulator::Run ();
 }
 
-void ns3_create_flow(simgrid::s4u::Host* src, simgrid::s4u::Host* dst,
-    u_int32_t TotalBytes,
-    simgrid::surf::NetworkNS3Action* action) {
-  unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
-  unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
-
-  ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
-  ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
-
-  xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->getCname());
-  std::string& addr = IPV4addr[node2];
-  xbt_assert(not addr.empty(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->getCname());
-
-  XBT_DEBUG("ns3_create_flow %u Bytes from %u to %u with Interface %s", TotalBytes, node1, node2, addr.c_str());
-  ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
-  sink.Install (dst_node);
-
-  ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
-
-  flowFromSock.insert({transformSocketPtr(sock), new SgFlow(TotalBytes, action)});
-
-  sock->Bind(ns3::InetSocketAddress(port_number));
-
-  ns3::Simulator::ScheduleNow(&StartFlow, sock, addr.c_str(), port_number);
-
-  port_number++;
-  xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
-}
 
 // initialize the NS3 interface and environment
 void ns3_initialize(std::string TcpProtocol)
