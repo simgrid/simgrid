@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2017-2018 The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -51,9 +51,9 @@ static void killer()
   try
   {
     simgrid::s4u::Actor::kill(pidB);
+  } catch (const std::runtime_error& e) {
+    XBT_DEBUG("Caught exception: %s", e.what());
   }
-  catch (const std::runtime_error &)
-  {}
   simgrid::s4u::this_actor::sleep_for(1);
 
   XBT_INFO("Killing everybody but myself");
