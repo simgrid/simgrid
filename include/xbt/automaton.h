@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2015. The SimGrid Team.
+/* Copyright (c) 2011-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -55,7 +55,6 @@ typedef struct xbt_automaton_transition {
 
 typedef struct xbt_automaton_transition* xbt_automaton_transition_t;
 
-typedef struct xbt_automaton_propositional_symbol s_xbt_automaton_propositional_symbol;
 typedef struct xbt_automaton_propositional_symbol* xbt_automaton_propositional_symbol_t;
 
 typedef int (*xbt_automaton_propositional_symbol_callback_type)(void*);
