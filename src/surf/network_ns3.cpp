@@ -310,7 +310,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   xbt_assert(not addr.empty(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->getCname());
 
-  XBT_DEBUG("ns3_create_flow %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
+  XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));
   sink.Install(dst_node);
 
