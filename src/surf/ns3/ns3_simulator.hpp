@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,17 +6,11 @@
 #ifndef NS3_SIMULATOR_HPP
 #define NS3_SIMULATOR_HPP
 
-#include <cstdint>
-
 #include "ns3_interface.hpp"
 
-#include <ns3/csma-helper.h>
-#include <ns3/global-route-manager.h>
-#include <ns3/internet-stack-helper.h>
-#include <ns3/ipv4-address-helper.h>
-#include <ns3/packet-sink-helper.h>
-#include <ns3/point-to-point-helper.h>
 #include <ns3/tcp-socket-factory.h>
+
+#include <cstdint>
 
 class XBT_PRIVATE SgFlow {
 public:
