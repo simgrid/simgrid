@@ -6,11 +6,34 @@
 #ifndef NS3_SIMULATOR_HPP
 #define NS3_SIMULATOR_HPP
 
-#include "ns3_interface.hpp"
+#include "simgrid/s4u/Host.hpp"
 
+#include <ns3/node.h>
 #include <ns3/tcp-socket-factory.h>
 
 #include <cstdint>
+
+namespace simgrid {
+namespace surf {
+class NetworkNS3Action;
+}
+} // namespace simgrid
+
+class NetPointNs3 {
+public:
+  static simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> EXTENSION_ID;
+
+  explicit NetPointNs3();
+  int node_num;
+  ns3::Ptr<ns3::Node> ns3Node_;
+};
+
+XBT_PUBLIC(void) ns3_initialize(std::string TcpProtocol);
+extern "C" {
+XBT_PUBLIC(void) ns3_simulator(double maxSeconds);
+XBT_PUBLIC(void) ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat);
+XBT_PUBLIC(void) ns3_add_cluster(const char* id, double bw, double lat);
+}
 
 class XBT_PRIVATE SgFlow {
 public:

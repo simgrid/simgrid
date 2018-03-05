@@ -42,7 +42,6 @@ set(EXTRA_DIST
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
-  src/surf/ns3/ns3_interface.hpp
   src/surf/ns3/ns3_simulator.hpp
   src/surf/trace_mgr_test.cpp
   src/surf/xml/simgrid.dtd
