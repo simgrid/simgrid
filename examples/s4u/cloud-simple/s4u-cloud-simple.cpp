@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,7 +33,7 @@ struct s_payload {
 static void communication_tx_fun(std::vector<std::string> args)
 {
   simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(args.at(0));
-  struct s_payload* payload     = xbt_new(struct s_payload, 1);
+  s_payload* payload            = new s_payload;
   payload->tx_actor_name        = simgrid::s4u::Actor::self()->getCname();
   payload->tx_host              = simgrid::s4u::this_actor::getHost();
   payload->clock_sta            = simgrid::s4u::Engine::getClock();
@@ -53,7 +53,7 @@ static void communication_rx_fun(std::vector<std::string> args)
   XBT_INFO("%s:%s to %s:%s => %g sec", payload->tx_host->getCname(), payload->tx_actor_name, host_name, actor_name,
            clock_end - payload->clock_sta);
 
-  xbt_free(payload);
+  delete payload;
 }
 
 static void launch_communication_worker(s4u_Host* tx_host, s4u_Host* rx_host)
