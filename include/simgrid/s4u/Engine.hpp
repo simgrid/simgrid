@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,15 +13,12 @@
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 
+#include <simgrid/forward.h>
 #include <simgrid/simix.hpp>
 
 #include <simgrid/s4u/NetZone.hpp>
-#include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
-namespace kernel {
-class EngineImpl;
-}
 namespace s4u {
 /** @brief Simulation engine
  *

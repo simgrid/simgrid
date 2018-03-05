@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2018. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,13 +10,12 @@
 
 #include "xbt/graph.h"
 
+#include "simgrid/forward.h"
 #include "simgrid/s4u/NetZone.hpp"
-#include "simgrid/s4u/forward.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 
 namespace simgrid {
 namespace kernel {
-class EngineImpl;
 namespace routing {
 class BypassRoute;
 
