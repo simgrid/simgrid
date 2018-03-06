@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -169,7 +169,7 @@ public final class NativeLib {
 				if (! dir.delete() && !dir.getAbsolutePath().contains("appveyor") )
 					System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");			    	
 			} catch(Exception e) {
-				System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
+				System.out.println("Error while cleaning temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
 				e.printStackTrace();
 			}
 		}
