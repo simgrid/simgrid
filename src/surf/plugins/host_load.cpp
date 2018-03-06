@@ -90,7 +90,7 @@ void HostLoad::update()
 }
 
 /**
- * WARNING: This function does not guarantee that you have the real load at any time;
+ * WARNING: This function does not guarantee that you have the real load at any time
  * imagine all actions on your CPU terminate at time t. Your load is then 0. Then
  * you query the load (still 0) and then another action starts (still at time t!).
  * This means that the load was never really 0 (because the time didn't advance) but
