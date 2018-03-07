@@ -493,7 +493,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
           + "_" + std::to_string(rank++) + ".so";
 
         int fdin = open(executable_copy.c_str(), O_RDONLY);
-        xbt_assert(fdin >= 0, "Cannot read from %s", executable_copy.c_str());
+        xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.",
+                   executable_copy.c_str());
         int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
         xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
 
