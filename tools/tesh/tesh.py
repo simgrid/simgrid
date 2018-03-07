@@ -465,6 +465,8 @@ if __name__ == '__main__':
            re.compile("For details see https://github.com/google/sanitizers/issues/189"),
            re.compile("Python runtime initialized with LC_CTYPE=C .*"),
            re.compile("cmake: /usr/local/lib/libcurl.so.4: no version information available (required by cmake)"), # Seen on CircleCI
+           re.compile(".*mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts."),
+           re.compile(".*dlopen+thread broken on Apple and BSD. Switching to raw contexts."),
            ]
         TeshState().jenkins = True # This is a Jenkins build
 
