@@ -272,9 +272,9 @@ void Process::init(int *argc, char ***argv){
 
     process->set_data(argc, argv);
   }
-  xbt_assert(smpi_process(),
-      "smpi_process() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "
-      "Although it's required by MPI-2, this is currently not supported by SMPI.");
+  xbt_assert(smpi_process(), "smpi_process() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "
+                             "Although it's required by MPI-2, this is currently not supported by SMPI. "
+                             "Please use MPI_Init(&argc, &argv) as usual instead.");
 }
 
 }
