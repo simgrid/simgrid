@@ -453,20 +453,20 @@ if __name__ == '__main__':
         print("Ignore all cruft seen on SimGrid's continous integration servers")
         # Note: regexps should match at the beginning of lines
         TeshState().ignore_regexps_common = [
-           re.compile("profiling:"),
-           re.compile("Unable to clean temporary file C:"),
-           re.compile(".*Configuration change: Set \'contexts/"),
-           re.compile("Picked up JAVA_TOOL_OPTIONS: "),
-           re.compile("Picked up _JAVA_OPTIONS: "),
-           re.compile("==[0-9]+== ?WARNING: ASan doesn\'t fully support"),
-           re.compile("==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
-           re.compile("False positive error reports may follow"),
-           re.compile("For details see http://code.google.com/p/address-sanitizer/issues/detail\\?id=189"),
-           re.compile("For details see https://github.com/google/sanitizers/issues/189"),
-           re.compile("Python runtime initialized with LC_CTYPE=C .*"),
-           re.compile("cmake: /usr/local/lib/libcurl.so.4: no version information available (required by cmake)"), # Seen on CircleCI
-           re.compile(".*mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts."),
-           re.compile(".*dlopen+thread broken on Apple and BSD. Switching to raw contexts."),
+           re.compile(r"profiling:"),
+           re.compile(r"Unable to clean temporary file C:"),
+           re.compile(r".*Configuration change: Set 'contexts/"),
+           re.compile(r"Picked up JAVA_TOOL_OPTIONS: "),
+           re.compile(r"Picked up _JAVA_OPTIONS: "),
+           re.compile(r"==[0-9]+== ?WARNING: ASan doesn't fully support"),
+           re.compile(r"==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack top:"),
+           re.compile(r"False positive error reports may follow"),
+           re.compile(r"For details see http://code.google.com/p/address-sanitizer/issues/detail\?id=189"),
+           re.compile(r"For details see https://github.com/google/sanitizers/issues/189"),
+           re.compile(r"Python runtime initialized with LC_CTYPE=C .*"),
+           re.compile(r"cmake: /usr/local/lib/libcurl\.so\.4: no version information available \(required by cmake\)"), # Seen on CircleCI
+           re.compile(r".*mmap broken on FreeBSD, but dlopen\+thread broken too. Switching to dlopen\+raw contexts\."),
+           re.compile(r".*dlopen\+thread broken on Apple and BSD\. Switching to raw contexts\."),
            ]
         TeshState().jenkins = True # This is a Jenkins build
 
