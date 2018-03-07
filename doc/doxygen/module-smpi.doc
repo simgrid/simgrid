@@ -45,7 +45,9 @@ requires some specific care from you.
    - @ref SMPI_adapting_speed
  - @ref SMPI_accuracy
  - @ref SMPI_troubleshooting
-   - @ref SMPI_trouble_buildchain
+   - @ref SMPI_trouble_configure_refuses_smpicc
+   - @ref SMPI_trouble_configure_dont_find_smpicc
+   - @ref SMPI_trouble_useconds_t
 
 
 @section SMPI_use Using SMPI
@@ -626,11 +628,10 @@ in modeling distributed systems.
 
 @section SMPI_troubleshooting Troubleshooting with SMPI
 
-@subsection SMPI_trouble_buildchain My ./configure refuses to use smpicc
+@subsection SMPI_trouble_configure_refuses_smpicc ./configure refuses to use smpicc
 
-Alas, some building infrastructures cannot use smpicc as a project
-compiler, and your <tt>./configure</tt> may report that the compiler
-is not functional. If this happens, define the
+If your <tt>./configure</tt> reports that the compiler is not
+functional or that you are cross-compiling, try to define the
 <tt>SMPI_PRETEND_CC</tt> environment variable before running the
 configuration.
 
@@ -639,12 +640,44 @@ SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
 make
 @endverbatim
 
+Indeed, the programs compiled with <tt>smpicc</tt> cannot be executed
+without <tt>smpirun</tt>, while configure wants to test them directly.
+With <tt>SMPI_PRETEND_CC</tt>, any program compiled with smpicc stops
+and returns 0 before doing anything that would fail without
+<tt>smpirun</tt>.
+
 \warning 
 
   Make sure that SMPI_PRETEND_CC is only set when calling ./configure,
-  not during the actual compilation. With that variable, smpicc does
-  not do anything, to not hurt the ./configure feelings. But you need
-  smpicc do actually do something to get your application compiled.
+  not during the actual execution, or any program compiled with smpicc
+  will stop before starting.
+
+@subsection SMPI_trouble_configure_dont_find_smpicc ./configure does not pick smpicc as a compiler
+
+In addition to the previous answers, some projects also need to be
+explicitely told what compiler to use, as follows:
+
+@verbatim
+SMPI_PRETEND_CC=1 ./configure CC=smpicc # here come the other configure parameters
+make
+@endverbatim
+
+Maybe your configure is using another variable, such as <tt>cc</tt> or
+similar. Just check the logs.
+
+@subsection SMPI_trouble_useconds_t  error: unknown type name 'useconds_t'
+
+Try to add <tt>-D_GNU_SOURCE</tt> to your compilation line to get ride
+of that error.
+
+The reason is that SMPI provides its own version of <tt>usleep(3)</tt>
+to override it and to block in the simulation world, not in the real
+one. It needs the <tt>useconds_t</tt> type for that, which is declared
+only if you declare <tt>_GNU_SOURCE</tt> before including
+<tt>unistd.h</tt>. If your project includes that header file before
+SMPI, then you need to ensure that you pass the right configuration
+defines as advised above.
+
 
 */
 
