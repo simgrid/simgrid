@@ -6,9 +6,7 @@
 #ifndef SMPI_H
 #define SMPI_H
 
-#define __USE_XOPEN /* pick useconds_t in unistd.h */
 #include <unistd.h>
-
 #include <sys/time.h>
 #if _POSIX_TIMERS
 #include <time.h>
