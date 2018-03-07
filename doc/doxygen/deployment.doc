@@ -5,7 +5,7 @@
 \htmlonly
 <div align="center">
 \endhtmlonly
-\htmlinclude doc-toc.svg
+\htmlinclude graphical-toc.svg
 \htmlonly
 </div>
 <script>

@@ -51,7 +51,7 @@
 </td><td width="60%" align="center">
 @endhtmlonly
 
-\htmlinclude doc-toc.svg
+\htmlinclude graphical-toc.svg
 
 <br><b>SimGrid Usage (click to jump to the relevant parts)</b>
 

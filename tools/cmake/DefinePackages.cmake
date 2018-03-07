@@ -829,6 +829,7 @@ endif()
 set(DOC_SOURCES
   doc/Doxyfile.in
   doc/Layout.xml
+  doc/graphical-toc.svg
   doc/sg_thread_model.fig
   doc/simix.fig
   doc/surf_nutshell.fig
