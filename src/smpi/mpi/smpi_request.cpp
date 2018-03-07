@@ -309,6 +309,12 @@ void Request::sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int d
   unsigned int myid = simgrid::s4u::Actor::self()->getPid();
   if ((comm->group()->actor(dst)->getPid() == myid) && (comm->group()->actor(src)->getPid() == myid)){
       Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
+      if(status !=MPI_STATUS_IGNORE){
+          status->MPI_SOURCE = comm->group()->rank(src);
+          status->MPI_TAG = recvtag;
+          status->MPI_ERROR = MPI_SUCCESS;
+          status->count = sendcount*sendtype->size();
+      }
       return;
   }
   requests[0] = isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
