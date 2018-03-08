@@ -17,7 +17,6 @@ class Coll;
 class Colls;
 class Comm;
 class Datatype;
-class F2C;
 class Group;
 class Info;
 class Keyval;
