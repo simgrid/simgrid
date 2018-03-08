@@ -1,6 +1,6 @@
 /* cunit - A little C Unit facility                                         */
 
-/* Copyright (c) 2005-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -322,10 +322,11 @@ int s_xbt_test_suite::run(int verbosity)
   if (this->enabled_) {
     bool first = true; /* for result pretty printing */
 
-    _xbt_test_out << " ====================================================================="
-                  << (this->nb_units_ ? (this->unit_failed_ ? "== FAILED" : "====== OK")
-                                      : (this->unit_disabled_ ? " DISABLED" : "==== SKIP"))
-                  << "\n";
+    _xbt_test_out << " =====================================================================";
+    if (this->nb_units_)
+      _xbt_test_out << (this->unit_failed_ ? "== FAILED\n" : "====== OK\n");
+    else
+      _xbt_test_out << (this->unit_disabled_ ? " DISABLED\n" : "==== SKIP\n");
     _xbt_test_out.setf(std::ios::fixed);
     _xbt_test_out.precision(0);
     _xbt_test_out << " Summary: Units: "

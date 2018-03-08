@@ -121,10 +121,12 @@ int MC_snapshot_region_memcmp(
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
   bool stack_alloc = size < 64;
-  const bool region1_need_buffer = region1==nullptr || region1->storage_type()==simgrid::mc::StorageType::Flat;
-  const bool region2_need_buffer = region2==nullptr || region2->storage_type()==simgrid::mc::StorageType::Flat;
-  void* buffer1a                 = region1_need_buffer ? nullptr : stack_alloc ? alloca(size) : ::operator new(size);
-  void* buffer2a                 = region2_need_buffer ? nullptr : stack_alloc ? alloca(size) : ::operator new(size);
+  void* buffer1a   = nullptr;
+  void* buffer2a   = nullptr;
+  if (region1 != nullptr && region1->storage_type() != simgrid::mc::StorageType::Flat)
+    buffer1a = stack_alloc ? alloca(size) : ::operator new(size);
+  if (region2 != nullptr && region2->storage_type() != simgrid::mc::StorageType::Flat)
+    buffer2a = stack_alloc ? alloca(size) : ::operator new(size);
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
   const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
   int res;
