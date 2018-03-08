@@ -19,8 +19,8 @@ WARNING = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
 	  -Wnested-externs -Wpointer-arith -Wwrite-strings
 WARNING += -Werror # Comment that line to not be in paranoid mode
 
-# CFLAGS = -g -O0 $(WARNINGS) # Use this line to make debugging easier
-CFLAGS = -g -O2 $(WARNINGS) # Use this line to get better performance
+# CFLAGS = -std=gnu99 -g -O0 $(WARNINGS) # Use this line to make debugging easier
+CFLAGS = -std=gnu99 -g -O2 $(WARNINGS) # Use this line to get better performance
 
 # No change should be mandated past that line
 #############################################
