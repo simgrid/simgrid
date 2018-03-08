@@ -4,6 +4,10 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  - Fix MSG_task_get_remaining_work_ratio() to return 1.0 for tasks that have
    not started.
 
+ Documentation
+ - Use a graphical TOC to make it easier to find the documentation you need
+ - Revamp the MSG tutorial
+
  S4U
  - Execution->setHost() can be called after start() to migrate it.
  - Comm::test_any() is now implemented.
