@@ -674,8 +674,8 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  * \param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
  * \see SD_schedule()
  */
-double SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_t *host_list,
-                                  const double *flops_amount, const double *bytes_amount)
+double SD_task_get_execution_time(SD_task_t /*task*/, int host_count, const sg_host_t* host_list,
+                                  const double* flops_amount, const double* bytes_amount)
 {
   xbt_assert(host_count > 0, "Invalid parameter");
   double max_time = 0.0;
