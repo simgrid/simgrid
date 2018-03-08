@@ -4,23 +4,20 @@
 # http://simgrid.gforge.inria.fr/simgrid/latest/doc/install_yours.html
 
 # Some configuration
-SIMGRID_INSTALL_PATH = /opt/simgrid # Where you installed simgrid
+SIMGRID_INSTALL_PATH = ../.. # Where you installed simgrid 
 CC = gcc                            # Your compiler (on Mac, use clang instead)
 
 # No change needed bellow for this tutorial.
 ############################################################################
 
-all: masterworker0 masterworker1 masterworker2 masterworker3 masterworker4
-masterworker0: masterworker0.o
-masterworker1: masterworker1.o
-masterworker2: masterworker2.o
-masterworker3: masterworker3.o
-masterworker4: masterworker4.o
+all: masterworker
+masterworker: masterworker.o
 
 WARNING = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
           -Wmissing-declarations -Wstrict-prototypes -Wmissing-prototypes \
           -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls \
 	  -Wnested-externs -Wpointer-arith -Wwrite-strings
+WARNING += -Werror # Comment that line to not be in paranoid mode
 
 # CFLAGS = -g -O0 $(WARNINGS) # Use this line to make debugging easier
 CFLAGS = -g -O2 $(WARNINGS) # Use this line to get better performance
@@ -35,8 +32,10 @@ CFLAGS = -g -O2 $(WARNINGS) # Use this line to get better performance
 	$(CC) -L$(strip $(SIMGRID_INSTALL_PATH))/lib/    $(CFLAGS) $^ -lsimgrid -o $@
 %.o: %.c
 	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include $(CFLAGS) -c -o $@ $<
+%: %.c
+	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include -L$(strip $(SIMGRID_INSTALL_PATH))/lib/  $(CFLAGS) $^ -lsimgrid -o $@ 
 
 clean:
-	rm -f *.o *~ masterworker0 masterworker1 masterworker2 masterworker3 masterworker4
+	rm -f *.o *~ masterworker
 .PHONY: clean
 

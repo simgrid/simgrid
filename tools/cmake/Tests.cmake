@@ -89,8 +89,6 @@ ENDIF()
 ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
 # New tests should use the Boost Unit Test Framework
-
-
 if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   add_executable       (unit_tmgr src/surf/trace_mgr_test.cpp)
   target_link_libraries(unit_tmgr simgrid ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
@@ -99,3 +97,7 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       src/surf/trace_mgr_test.cpp)
 endif()
+
+
+# Also test the tutorial
+ADD_TEST(tuto-msg-1 sh -c "make -C doc/tuto-msg/src masterworker0 && doc/tuto-msg/src/masterworker0 examples/platforms/small_platform.xml doc/tuto-msg/src/deployment0.xml")

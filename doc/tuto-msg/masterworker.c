@@ -7,14 +7,14 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-#define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
+#define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
 
 /** Master expects 3+ arguments given in the XML deployment file: */
-static int master(int argc, char *argv[])
+static int master(int argc, char* argv[])
 {
-  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");    /** - Number of tasks      */
-  double comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");  /** - Task compute cost    */
-  double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");  /** - Task communication size */
+  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");       /** - Number of tasks      */
+  double comp_size     = xbt_str_parse_double(argv[2], "Invalid computational size: %s"); /** - Task compute cost    */
+  double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s"); /** - Task communication size */
 
   /* Create the tasks in advance */
   msg_task_t* todo = xbt_new0(msg_task_t, number_of_tasks);
@@ -58,8 +58,8 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-/** Worker expects a single argument given in the XML deployment file: */
-static int worker(int argc, char *argv[])
+/** Worker does not expect any argument from XML deployment file. */
+static int worker(int argc, char* argv[])
 {
   while (1) {
     msg_task_t task = NULL;
@@ -79,15 +79,17 @@ static int worker(int argc, char *argv[])
   }
   XBT_INFO("I'm done. See you!");
   return 0;
-}                               /* end_of_worker */
+} /* end_of_worker */
 
 /** Main function */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 2,
+             "Usage: %s platform_file deployment_file\n"
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+             argv[0], argv[0]);
 
   /*  Create a simulated platform */
   MSG_create_environment(argv[1]);
@@ -102,4 +104,4 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
   return (res != MSG_OK);
-}                               /* end_of_main */
+} /* end_of_main */

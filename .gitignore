@@ -117,11 +117,11 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
-doc/msg-tuto-src/masterworker0
-doc/msg-tuto-src/masterworker1
-doc/msg-tuto-src/masterworker2
-doc/msg-tuto-src/masterworker3
-doc/msg-tuto-src/masterworker4
+doc/tuto-msg/masterworker
+doc/tuto-msg/masterworker-sol1
+doc/tuto-msg/masterworker2
+doc/tuto-msg/masterworker3
+doc/tuto-msg/masterworker4
 examples/msg/cloud-masterworker/cloud-masterworker
 examples/msg/dht-kademlia/dht-kademlia
 examples/msg/dht-pastry/dht-pastry

@@ -863,7 +863,7 @@ set(DOC_SOURCES
   doc/doxygen/install.doc
   doc/doxygen/install_yours.doc
   doc/doxygen/java.doc
-  doc/doxygen/tutorial_msg.doc
+  doc/tuto-msg/tuto-msg.doc
   doc/doxygen/tutorial_smpi.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
@@ -896,17 +896,17 @@ set(DOC_SOURCES
   doc/manpage/smpirun.1
   doc/manpage/tesh.pod
 
-  doc/msg-tuto-src/deployment0.xml
-  doc/msg-tuto-src/deployment1.xml
-  doc/msg-tuto-src/deployment2.xml
-  doc/msg-tuto-src/deployment3.xml
-  doc/msg-tuto-src/deployment_general.xml
-  doc/msg-tuto-src/Makefile
-  doc/msg-tuto-src/masterworker0.c
-  doc/msg-tuto-src/masterworker1.c
-  doc/msg-tuto-src/masterworker2.c
-  doc/msg-tuto-src/masterworker3.c
-  doc/msg-tuto-src/masterworker4.c
+  doc/tuto-msg/deployment0.xml
+  doc/tuto-msg/deployment1.xml
+  doc/tuto-msg/deployment2.xml
+  doc/tuto-msg/deployment3.xml
+  doc/tuto-msg/deployment_general.xml
+  doc/tuto-msg/Makefile
+  doc/tuto-msg/masterworker.c
+  doc/tuto-msg/masterworker-sol1.c
+  doc/tuto-msg/masterworker-sol2.c
+  doc/tuto-msg/masterworker-sol3.c
+  doc/tuto-msg/masterworker-sol4.c
 
   CITATION.bib
   )

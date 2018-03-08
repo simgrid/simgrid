@@ -7,9 +7,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-#define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
+#define FINALIZE ((void*)221297) /* a magic number to tell people to stop working */
 
-static char * build_channel_name(char *buffer, const char *sender, const char* receiver)
+static char* build_channel_name(char* buffer, const char* sender, const char* receiver)
 {
   strcpy(buffer, sender);
   strcat(buffer, ":");
@@ -21,20 +21,20 @@ static char * build_channel_name(char *buffer, const char *sender, const char* r
 static int master(int argc, char* argv[]);
 static int worker(int argc, char* argv[]);
 
-static int master(int argc, char *argv[])
+static int master(int argc, char* argv[])
 {
   msg_host_t host_self = MSG_host_self();
-  char *master_name = (char *) MSG_host_get_name(host_self);
+  char* master_name    = (char*)MSG_host_get_name(host_self);
   char channel[1024];
 
   TRACE_category(master_name);
 
-  double timeout   = xbt_str_parse_double(argv[1], "Invalid timeout: %s");             /** - timeout      */
-  double comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");  /** - Task compute cost    */
-  double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");  /** - Task communication size */
+  double timeout   = xbt_str_parse_double(argv[1], "Invalid timeout: %s");            /** - timeout      */
+  double comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s"); /** - Task compute cost    */
+  double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s"); /** - Task communication size */
 
   /* Get the info about the worker processes */
-  int workers_count   = argc - 4;
+  int workers_count   = MSG_get_host_number();
   msg_host_t* workers = xbt_dynar_to_array(MSG_hosts_as_dynar());
 
   for (int i = 0; i < workers_count; i++) // Remove my host from the list
@@ -50,41 +50,25 @@ static int master(int argc, char *argv[])
 
   /* Dispatch the tasks */
   xbt_dynar_t idle_hosts = xbt_dynar_new(sizeof(msg_host_t), NULL);
-  msg_host_t request_host = NULL;
-  int task_num            = 0;
-  while (1) {
+  int task_num           = 0;
+  while (MSG_get_clock() < timeout) {
 
-    while (MSG_task_listen(master_name)) {
-      msg_task_t request = NULL;
-      int res            = MSG_task_receive(&(request), master_name);
-      xbt_assert(res == MSG_OK, "MSG_task_receive failed");
-      request_host = MSG_task_get_data(request);
-      xbt_dynar_push(idle_hosts, &request_host);
-      MSG_task_destroy(request);
-    }
+    /* Retrieve the next incomming request */
+    XBT_DEBUG("Retrieve the next incomming request on %s", master_name);
+    msg_task_t request = NULL;
+    int res            = MSG_task_receive(&(request), master_name);
+    xbt_assert(res == MSG_OK, "MSG_task_receive failed");
+    msg_host_t requester = MSG_task_get_data(request);
+    MSG_task_destroy(request);
 
-    if(MSG_get_clock()>timeout) {
-      if(xbt_dynar_length(idle_hosts) == workers_count) break;
-      else {
-        MSG_process_sleep(.1);
-        continue;
-      }
-    }
-
-    if(xbt_dynar_length(idle_hosts)<=0) {
-      /* No request. Let's wait... */
-      MSG_process_sleep(.1);
-      continue;
-    }
-
+    /* Prepare the task to be sent */
     char sprintf_buffer[64];
     sprintf(sprintf_buffer, "Task_%d", task_num);
     msg_task_t task = MSG_task_create(sprintf_buffer, comp_size, comm_size, NULL);
     MSG_task_set_category(task, master_name);
 
-    xbt_dynar_shift(idle_hosts, &request_host);
-
-    build_channel_name(channel,master_name, MSG_host_get_name(request_host));
+    /* Send this out */
+    build_channel_name(channel, master_name, MSG_host_get_name(requester));
 
     XBT_DEBUG("Sending '%s' to channel '%s'", task->name, channel);
     MSG_task_send(task, channel);
@@ -92,10 +76,19 @@ static int master(int argc, char *argv[])
     task_num++;
   }
 
-  XBT_DEBUG ("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (int i = 0; i < workers_count; i++) {
+  XBT_DEBUG("Time is up. Let's tell everybody the computation is over.");
+  for (int i = 0; i < workers_count; i++) { /* We don't write in order, but the total amount is right
+
+    /* Don't write to a worker that did not request for work, or it will deadlock: both would be sending something */
+    msg_task_t request = NULL;
+    int res            = MSG_task_receive(&(request), master_name);
+    xbt_assert(res == MSG_OK, "MSG_task_receive failed");
+    msg_host_t requester = MSG_task_get_data(request);
+    MSG_task_destroy(request);
+
+    XBT_DEBUG("Stop worker %s", MSG_host_get_name(requester));
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
-    MSG_task_send(finalize, build_channel_name(channel,master_name, MSG_host_get_name(workers[i % workers_count])));
+    MSG_task_send(finalize, build_channel_name(channel, master_name, MSG_host_get_name(requester)));
   }
 
   XBT_INFO("Sent %d tasks in total!", task_num);
@@ -104,17 +97,18 @@ static int master(int argc, char *argv[])
 }
 
 /** Worker function  */
-static int worker(int argc, char *argv[])
+static int worker(int argc, char* argv[])
 {
   char channel[1024];
 
-  const char *my_master = MSG_process_get_data(MSG_process_self());
+  const char* my_master = MSG_process_get_data(MSG_process_self());
   build_channel_name(channel, my_master, MSG_host_get_name(MSG_host_self()));
 
   XBT_DEBUG("Receiving on channel \"%s\"", channel);
 
   while (1) {
     /* Send a request */
+    XBT_DEBUG("Sent a request to my master on %s", my_master);
     msg_task_t request = MSG_task_create("request", 0, 0, MSG_host_self());
     MSG_task_send(request, my_master);
 
@@ -139,11 +133,13 @@ static int worker(int argc, char *argv[])
 }
 
 /** Main function */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 2,
+             "Usage: %s platform_file deployment_file\n"
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+             argv[0], argv[0]);
 
   /*  Create a simulated platform */
   MSG_create_environment(argv[1]);
