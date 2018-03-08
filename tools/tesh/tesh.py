@@ -314,7 +314,7 @@ class Cmd(object):
         global pgtokill
 
         try:
-            proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, preexec_fn=os.setsid)
+            proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, start_new_session=True)
             try:
                 pgtokill = os.getpgid(proc.pid)
             except OSError:
