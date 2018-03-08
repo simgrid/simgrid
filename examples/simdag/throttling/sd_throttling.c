@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2006-2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -29,10 +29,10 @@ int main(int argc, char **argv)
   SD_task_t taskD = SD_task_create_comm_e2e("Task D", NULL, 1e7);
   SD_task_t taskE = SD_task_create_comp_seq("Task E", NULL, 5e9);
 
-  SD_task_dependency_add(NULL, NULL, taskA, taskB);
-  SD_task_dependency_add(NULL, NULL, taskB, taskC);
-  SD_task_dependency_add(NULL, NULL, taskC, taskD);
-  SD_task_dependency_add(NULL, NULL, taskD, taskE);
+  SD_task_dependency_add(taskA, taskB);
+  SD_task_dependency_add(taskB, taskC);
+  SD_task_dependency_add(taskC, taskD);
+  SD_task_dependency_add(taskD, taskE);
 
   /* Add watchpoints on completion of compute tasks */
   SD_task_watch(taskA, SD_DONE);

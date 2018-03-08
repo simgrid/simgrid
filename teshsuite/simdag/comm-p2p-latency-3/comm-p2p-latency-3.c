@@ -1,6 +1,6 @@
 /* Latency tests                                                            */
 
-/* Copyright (c) 2007, 2009-2011, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2011, 2013-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -36,8 +36,8 @@ int main(int argc, char **argv)
   SD_task_schedule(task2, 2, hosts, no_cost, communication_amount2, -1.0);
   xbt_free(hosts);
 
-  SD_task_dependency_add(NULL, NULL, root, task1);
-  SD_task_dependency_add(NULL, NULL, root, task2);
+  SD_task_dependency_add(root, task1);
+  SD_task_dependency_add(root, task2);
 
   SD_simulate(-1.0);
 

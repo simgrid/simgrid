@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010, 2012-2017. The SimGrid Team.
+/* Copyright (c) 2006-2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -128,7 +128,7 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
  *  @see SD_task_api
  *  @{
  */
-XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
+XBT_PUBLIC(void) SD_task_dependency_add(SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(void) SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2016. The SimGrid Team.
+/* Copyright (c) 2009-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
     if (last_scheduled_task && (SD_task_get_state(last_scheduled_task) != SD_DONE) &&
         (SD_task_get_state(last_scheduled_task) != SD_FAILED) &&
         !SD_task_dependency_exists(sg_host_get_last_scheduled_task(selected_host), selected_task))
-      SD_task_dependency_add("resource", NULL, last_scheduled_task, selected_task);
+      SD_task_dependency_add(last_scheduled_task, selected_task);
 
     sg_host_set_last_scheduled_task(selected_host, selected_task);
     sg_host_set_available_at(selected_host, min_finish_time);

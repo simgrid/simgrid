@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012, 2014-2015. The SimGrid Team.
+/* Copyright (c) 2007-2012, 2014-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -38,9 +38,9 @@ int main(int argc, char **argv)
   SD_task_t taskC = SD_task_create("Task C", NULL, 1.0);
   SD_task_t taskD = SD_task_create("Task D", NULL, 1.0);
 
-  SD_task_dependency_add(NULL, NULL, taskInit, taskA);
-  SD_task_dependency_add(NULL, NULL, taskInit, taskB);
-  SD_task_dependency_add(NULL, NULL, taskC, taskD);
+  SD_task_dependency_add(taskInit, taskA);
+  SD_task_dependency_add(taskInit, taskB);
+  SD_task_dependency_add(taskC, taskD);
 
   sg_host_t *hosts = sg_host_list();
   SD_task_schedule(taskInit, 1, hosts, &no_cost, &no_cost, -1.0);

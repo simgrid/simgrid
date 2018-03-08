@@ -266,8 +266,8 @@ create 3 SD_tasks: t1, t2 and c and add dependencies in the following
 way:
 
 \code
-SD_task_dependency_add(NULL, NULL, t1, c);
-SD_task_dependency_add(NULL, NULL, c, t2);
+SD_task_dependency_add(t1, c);
+SD_task_dependency_add(c, t2);
 \endcode
 
 This way task t2 cannot start before the termination of communication c

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2017. The SimGrid Team.
+/* Copyright (c) 2009-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -188,15 +188,15 @@ xbt_dynar_t SD_daxload(const char *filename)
     if (file->predecessors->empty()) {
       for (SD_task_t const& it : *file->successors) {
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
-        SD_task_dependency_add(nullptr, nullptr, root_task, newfile);
-        SD_task_dependency_add(nullptr, nullptr, newfile, it);
+        SD_task_dependency_add(root_task, newfile);
+        SD_task_dependency_add(newfile, it);
         xbt_dynar_push(result, &newfile);
       }
     } else if (file->successors->empty()) {
       for (SD_task_t const& it : *file->predecessors) {
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
-        SD_task_dependency_add(nullptr, nullptr, it, newfile);
-        SD_task_dependency_add(nullptr, nullptr, newfile, end_task);
+        SD_task_dependency_add(it, newfile);
+        SD_task_dependency_add(newfile, end_task);
         xbt_dynar_push(result, &newfile);
       }
     } else {
@@ -207,8 +207,8 @@ xbt_dynar_t SD_daxload(const char *filename)
                       "This loop dependency will prevent the execution of the task.", file->name, it->name);
           }
           newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
-          SD_task_dependency_add(nullptr, nullptr, it, newfile);
-          SD_task_dependency_add(nullptr, nullptr, newfile, it2);
+          SD_task_dependency_add(it, newfile);
+          SD_task_dependency_add(newfile, it2);
           xbt_dynar_push(result, &newfile);
         }
       }
@@ -231,9 +231,9 @@ xbt_dynar_t SD_daxload(const char *filename)
        */
       if ((file != root_task) && (file != end_task)) {
         if (file->inputs->empty())
-          SD_task_dependency_add(nullptr, nullptr, root_task, file);
+          SD_task_dependency_add(root_task, file);
         if (file->outputs->empty())
-          SD_task_dependency_add(nullptr, nullptr, file, end_task);
+          SD_task_dependency_add(file, end_task);
       }
     } else {
       THROW_IMPOSSIBLE;
@@ -302,9 +302,9 @@ void STag_dax__uses()
     }
   }
   if (is_input) {
-    SD_task_dependency_add(nullptr, nullptr, file, current_job);
+    SD_task_dependency_add(file, current_job);
   } else {
-    SD_task_dependency_add(nullptr, nullptr, current_job, file);
+    SD_task_dependency_add(current_job, file);
     if ((file->predecessors->size() + file->inputs->size()) > 1) {
       XBT_WARN("File %s created at more than one location...", file->name);
     }
@@ -333,7 +333,7 @@ void STag_dax__parent()
   auto job = jobs.find(A_dax__parent_ref);
   if (job != jobs.end()) {
     SD_task_t parent = job->second;
-    SD_task_dependency_add(nullptr, nullptr, parent, current_child);
+    SD_task_dependency_add(parent, current_child);
     XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name, parent->name);
   } else {
     throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +

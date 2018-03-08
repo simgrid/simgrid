@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team.
+/* Copyright (c) 2006-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -527,13 +527,11 @@ void SD_task_dotty(SD_task_t task, void *out)
  * \a dst will depend on \a src, ie \a dst will not start before \a src is finished.
  * Their \ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_RUNNABLE.
  *
- * \param name the name of the new dependency (can be \c nullptr)
- * \param data the user data you want to associate with this dependency (can be \c nullptr)
  * \param src the task which must be executed first
  * \param dst the task you want to make depend on \a src
  * \see SD_task_dependency_remove()
  */
-void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst)
+void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
 {
   if (src == dst)
     THROWF(arg_error, 0, "Cannot add a dependency between task '%s' and itself", SD_task_get_name(src));

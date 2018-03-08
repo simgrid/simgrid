@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2017. The SimGrid Team.
+/* Copyright (c) 2009-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -177,15 +177,15 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
             task = SD_task_create_comm_e2e(name.c_str(), nullptr, size);
           else
             task = SD_task_create_comm_par_mxn_1d_block(name.c_str(), nullptr, size);
-          SD_task_dependency_add(nullptr, nullptr, src, task);
-          SD_task_dependency_add(nullptr, nullptr, task, dst);
+          SD_task_dependency_add(src, task);
+          SD_task_dependency_add(task, dst);
           jobs.insert({name, task});
           xbt_dynar_push(result, &task);
         } else {
           XBT_WARN("Task '%s' is defined more than once", name.c_str());
         }
       } else {
-        SD_task_dependency_add(nullptr, nullptr, src, dst);
+        SD_task_dependency_add(src, dst);
       }
     }
   }
@@ -198,12 +198,12 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   xbt_dynar_foreach (result, i, task){
     if (task->predecessors->empty() && task->inputs->empty() && task != root) {
       XBT_DEBUG("Task '%s' has no source. Add dependency from 'root'", task->name);
-      SD_task_dependency_add(nullptr, nullptr, root, task);
+      SD_task_dependency_add(root, task);
     }
 
     if (task->successors->empty() && task->outputs->empty() && task != end) {
       XBT_DEBUG("Task '%s' has no destination. Add dependency to 'end'", task->name);
-      SD_task_dependency_add(nullptr, nullptr, task, end);
+      SD_task_dependency_add(task, end);
     }
   }
 
@@ -219,7 +219,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
           /* add dependency between the previous and the task to avoid parallel execution */
           if(task){
             if (previous_task && not SD_task_dependency_exists(previous_task, task))
-              SD_task_dependency_add(nullptr, nullptr, previous_task, task);
+              SD_task_dependency_add(previous_task, task);
 
             SD_task_schedulel(task, 1, workstations[atoi(elm.first.c_str())]);
             previous_task = task;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010, 2012-2016. The SimGrid Team.
+/* Copyright (c) 2006-2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -34,11 +34,11 @@ int main(int argc, char **argv)
   SD_task_t par_comp2 = SD_task_create_comp_par_amdahl("Par. Comp. 2", NULL, 3e8, 0.5);
   SD_task_t par_comp3 = SD_task_create("Par. Comp. 3", NULL, 1e9);
 
-  SD_task_dependency_add(NULL, NULL, seq_comp1, e2e_comm);
-  SD_task_dependency_add(NULL, NULL, e2e_comm, seq_comp2);
+  SD_task_dependency_add(seq_comp1, e2e_comm);
+  SD_task_dependency_add(e2e_comm, seq_comp2);
 
-  SD_task_dependency_add(NULL, NULL, par_comp1, redist);
-  SD_task_dependency_add(NULL, NULL, redist, par_comp2);
+  SD_task_dependency_add(par_comp1, redist);
+  SD_task_dependency_add(redist, par_comp2);
 
   SD_task_schedulel(seq_comp1, 1, hosts[8]);
   SD_task_schedulel(seq_comp2, 1, hosts[9]);

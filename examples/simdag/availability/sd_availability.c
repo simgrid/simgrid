@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2016. The SimGrid Team.
+/* Copyright (c) 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -52,12 +52,12 @@ int main(int argc, char **argv)
   SD_task_t t4 = SD_task_create_comp_seq("t4", NULL, 25000000);
 
   /* Add dependencies: t1->c1->t2->c2->t3 */
-  SD_task_dependency_add(NULL, NULL, t1, c1);
-  SD_task_dependency_add(NULL, NULL, c1, t2);
-  SD_task_dependency_add(NULL, NULL, t2, c2);
-  SD_task_dependency_add(NULL, NULL, c2, t3);
-  SD_task_dependency_add(NULL, NULL, t3, c3);
-  SD_task_dependency_add(NULL, NULL, c3, t4);
+  SD_task_dependency_add(t1, c1);
+  SD_task_dependency_add(c1, t2);
+  SD_task_dependency_add(t2, c2);
+  SD_task_dependency_add(c2, t3);
+  SD_task_dependency_add(t3, c3);
+  SD_task_dependency_add(c3, t4);
 
   /* Schedule tasks t1 and w3 on first host, t2 on second host */
   /* Transfers are auto-scheduled */

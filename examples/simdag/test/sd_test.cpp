@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team.
+/* Copyright (c) 2006-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -63,14 +63,14 @@ int main(int argc, char **argv)
   if (fabs(comp_amount1 - (*(static_cast<double*>(SD_task_get_data(taskA))))) > 1e-12)
       XBT_ERROR("User data was corrupted by a simple set/get");
 
-  SD_task_dependency_add(NULL, NULL, taskB, taskA);
-  SD_task_dependency_add(NULL, NULL, taskC, taskA);
-  SD_task_dependency_add(NULL, NULL, taskD, taskB);
-  SD_task_dependency_add(NULL, NULL, taskD, taskC);
-  SD_task_dependency_add(NULL, NULL, taskB, taskC);
+  SD_task_dependency_add(taskB, taskA);
+  SD_task_dependency_add(taskC, taskA);
+  SD_task_dependency_add(taskD, taskB);
+  SD_task_dependency_add(taskD, taskC);
+  SD_task_dependency_add(taskB, taskC);
 
   try {
-    SD_task_dependency_add(NULL, NULL, taskA, taskA);   /* shouldn't work and must raise an exception */
+    SD_task_dependency_add(taskA, taskA); /* shouldn't work and must raise an exception */
     xbt_die("Hey, I can add a dependency between Task A and Task A!");
   } catch (xbt_ex& ex) {
     if (ex.category != arg_error)
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
   }
 
   try {
-    SD_task_dependency_add(NULL, NULL, taskB, taskA);   /* shouldn't work and must raise an exception */
+    SD_task_dependency_add(taskB, taskA); /* shouldn't work and must raise an exception */
     xbt_die("Oh oh, I can add an already existing dependency!");
   } catch (xbt_ex& ex) {
     if (ex.category != arg_error)
