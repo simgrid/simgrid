@@ -6,6 +6,12 @@
 
 \subsection tuto-msg-intro-settings Settings
 
+\warning Before you take this tutorial, you should remember that the
+MSG interface is currently deprecated. It means that it will remain as
+is, inchanged, for a few years, but that new developments should use
+the new S4U interface instead. Unfortunately, the S4U tutorial is not
+written yet. Sorry about that.
+
 This tutorial will guide your create and run your first SimGrid
 simulator. Let's consider the following scenario:
 
