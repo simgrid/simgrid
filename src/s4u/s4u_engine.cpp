@@ -85,14 +85,17 @@ size_t Engine::getHostCount()
 {
   return pimpl->hosts_.size();
 }
-/** @brief Fills the passed list with all hosts found in the platform */
-void Engine::getHostList(std::vector<Host*>* list)
+/** @brief Fills the passed list with all hosts found in the platform
+ *  @deprecated Please prefer Engine::getAllHosts()
+ */
+void XBT_ATTRIB_DEPRECATED_v322("Engine::getHostList() is deprecated in favor of Engine::getAllHosts(). Please switch before v3.22")
+Engine::getHostList(std::vector<Host*>* list)
 {
   for (auto const& kv : pimpl->hosts_)
     list->push_back(kv.second);
 }
 /** @brief Returns the list of all hosts found in the platform */
-std::vector<Host*> Engine::getHostList()
+std::vector<Host*> Engine::getAllHosts()
 {
   std::vector<Host*> res;
   for (auto const& kv : pimpl->hosts_)
@@ -122,13 +125,16 @@ size_t Engine::getLinkCount()
 {
   return simgrid::surf::LinkImpl::linksCount();
 }
-/** @brief Fills the passed list with all links found in the platform */
-void Engine::getLinkList(std::vector<Link*>* list)
+/** @brief Fills the passed list with all links found in the platform
+ *
+ *  @deprecated. Prefer Engine::getAllLinks() */
+void XBT_ATTRIB_DEPRECATED_v322("Engine::getLinkList() is deprecated in favor of Engine::getAllLinks(). Please switch before v3.22")
+Engine::getLinkList(std::vector<Link*>* list)
 {
   simgrid::surf::LinkImpl::linksList(list);
 }
 /** @brief Returns the list of all links found in the platform */
-std::vector<Link*> Engine::getLinkList()
+std::vector<Link*> Engine::getAllLinks()
 {
   std::vector<Link*> res;
   simgrid::surf::LinkImpl::linksList(&res);

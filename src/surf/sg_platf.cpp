@@ -417,7 +417,7 @@ void sg_platf_new_actor(ActorCreationArgs* actor)
     std::string msg = std::string("Cannot create actor '") + actor->function + "': host '" + actor->host +
                       "' does not exist\nExisting hosts: '";
 
-    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getHostList();
+    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
 
     for (auto const& host : list) {
       msg += host->getName();

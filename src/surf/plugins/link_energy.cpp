@@ -164,7 +164,7 @@ static void onCommunicate(simgrid::surf::NetworkAction* action, simgrid::s4u::Ho
 
 static void onSimulationEnd()
 {
-  std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::getInstance()->getLinkList();
+  std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::getInstance()->getAllLinks();
 
   double total_energy = 0.0; // Total dissipated energy (whole platform)
   for (const auto link : links) {
