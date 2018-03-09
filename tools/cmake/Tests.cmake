@@ -100,7 +100,7 @@ endif()
 
 # Also test the tutorial, if SIMGRID_INSTALL_PATH is defined and gcc used
 set(tuto-path "${CMAKE_SOURCE_DIR}/doc/tuto-msg")
-set(tuto-make "make -C ${tuto-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=-I${CMAKE_HOME_DIRECTORY}")
+set(tuto-make "make -C ${tuto-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=-I${CMAKE_BINARY_DIR}/include")
 ADD_TEST(tuto-msg-0 sh -c "${tuto-make} masterworker      && ${tuto-path}/masterworker      ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment0.xml")
 ADD_TEST(tuto-msg-1 sh -c "${tuto-make} masterworker-sol1 && ${tuto-path}/masterworker-sol1 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment1.xml")
 ADD_TEST(tuto-msg-2 sh -c "${tuto-make} masterworker-sol2 && ${tuto-path}/masterworker-sol2 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment2.xml")
