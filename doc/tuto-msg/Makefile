@@ -36,6 +36,6 @@ CFLAGS = -std=gnu99 -g -O2 $(WARNINGS) # Use this line to get better performance
 	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include -L$(strip $(SIMGRID_INSTALL_PATH))/lib/  $(CFLAGS) $^ -lsimgrid -o $@ 
 
 clean:
-	rm -f *.o *~ masterworker
+	rm -f *.o *~ masterworker masterworker-sol1 masterworker-sol2 masterworker-sol3 masterworker-sol4
 .PHONY: clean
 

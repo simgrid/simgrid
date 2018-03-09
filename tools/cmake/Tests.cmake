@@ -100,8 +100,13 @@ endif()
 
 
 # Also test the tutorial
-ADD_TEST(tuto-msg-0 sh -c "make -C doc/tuto-msg masterworker && doc/tuto-msg/masterworker examples/platforms/small_platform.xml doc/tuto-msg/deployment0.xml")
+ADD_TEST(tuto-msg-0 sh -c "make -C doc/tuto-msg masterworker      && doc/tuto-msg/masterworker examples/platforms/small_platform.xml doc/tuto-msg/deployment0.xml")
 ADD_TEST(tuto-msg-1 sh -c "make -C doc/tuto-msg masterworker-sol1 && doc/tuto-msg/masterworker-sol1 examples/platforms/small_platform.xml doc/tuto-msg/deployment1.xml")
 ADD_TEST(tuto-msg-2 sh -c "make -C doc/tuto-msg masterworker-sol2 && doc/tuto-msg/masterworker-sol2 examples/platforms/small_platform.xml doc/tuto-msg/deployment2.xml")
 ADD_TEST(tuto-msg-3 sh -c "make -C doc/tuto-msg masterworker-sol3 && doc/tuto-msg/masterworker-sol3 examples/platforms/small_platform.xml doc/tuto-msg/deployment3.xml")
 ADD_TEST(tuto-msg-4 sh -c "make -C doc/tuto-msg masterworker-sol4 && doc/tuto-msg/masterworker-sol4 examples/platforms/small_platform.xml doc/tuto-msg/deployment3.xml")
+
+FOREACH(TUTOTEST tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4)
+    SET_TESTS_PROPERTIES(${TUTOTEST} 
+                         PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=lib")
+ENDFOREACH()
