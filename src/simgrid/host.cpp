@@ -37,8 +37,13 @@ size_t sg_host_count()
  */
 sg_host_t *sg_host_list() {
   xbt_assert(sg_host_count() > 0, "There is no host!");
+  std::vector<simgrid::s4u::Host*> hosts;
+  simgrid::s4u::Engine::getInstance()->getHostList(&hosts);
 
-  return (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
+  sg_host_t* res = (sg_host_t*)malloc(sizeof(sg_host_t) * hosts.size());
+  memcpy(res, hosts.data(), sizeof(sg_host_t) * hosts.size());
+
+  return res;
 }
 
 const char *sg_host_get_name(sg_host_t host)

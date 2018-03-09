@@ -432,15 +432,16 @@ static void onHostDestruction(simgrid::s4u::Host& host)
 
 static void onSimulationEnd()
 {
-  sg_host_t* host_list     = sg_host_list();
-  int host_count           = sg_host_count();
+  std::vector<simgrid::s4u::Host*> hosts;
+  simgrid::s4u::Engine::getInstance()->getHostList(&hosts);
+
   double total_energy      = 0.0; // Total energy consumption (whole platform)
   double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
-  for (int i = 0; i < host_count; i++) {
-    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]) == nullptr) { // Ignore virtual machines
+  for (size_t i = 0; i < hosts.size(); i++) {
+    if (dynamic_cast<simgrid::s4u::VirtualMachine*>(hosts[i]) == nullptr) { // Ignore virtual machines
 
-      bool host_was_used = (sg_host_get_computed_flops(host_list[i]) != 0);
-      double energy      = host_list[i]->extension<HostEnergy>()->getConsumedEnergy();
+      bool host_was_used = (sg_host_get_computed_flops(hosts[i]) != 0);
+      double energy      = hosts[i]->extension<HostEnergy>()->getConsumedEnergy();
       total_energy      += energy;
       if (host_was_used)
         used_hosts_energy += energy;
@@ -448,7 +449,6 @@ static void onSimulationEnd()
   }
   XBT_INFO("Total energy consumption: %f Joules (used hosts: %f Joules; unused/idle hosts: %f)",
            total_energy, used_hosts_energy, total_energy - used_hosts_energy);
-  xbt_free(host_list);
 }
 
 /* **************************** Public interface *************************** */

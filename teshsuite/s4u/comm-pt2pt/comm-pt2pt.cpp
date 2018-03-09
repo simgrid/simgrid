@@ -182,10 +182,11 @@ int main(int argc, char* argv[])
   }
   xbt_assert(argSend.front().size() == argRecv.front().size(), "Sender and receiver spec must be of the same size");
 
-  simgrid::s4u::Host** hosts = sg_host_list();
+  std::vector<simgrid::s4u::Host*> hosts;
+  e.getHostList(&hosts);
+
   simgrid::s4u::Actor::createActor("sender", hosts[0], sender, argSend);
   simgrid::s4u::Actor::createActor("recver", hosts[1], receiver, argRecv);
-  xbt_free(hosts);
 
   e.run();
   XBT_INFO("Simulation time %g", e.getClock());

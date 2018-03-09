@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simdag_private.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/simdag.h"
 #include "src/internal_config.h"
 #include "xbt/file.hpp"
@@ -212,7 +213,9 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
 
   if(schedule){
     if (schedule_success) {
-      sg_host_t* workstations = sg_host_list();
+      std::vector<simgrid::s4u::Host*> hosts;
+      simgrid::s4u::Engine::getInstance()->getHostList(&hosts);
+
       for (auto const& elm : computers) {
         SD_task_t previous_task = nullptr;
         for (auto const& task : *elm.second) {
@@ -221,13 +224,12 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
             if (previous_task && not SD_task_dependency_exists(previous_task, task))
               SD_task_dependency_add(previous_task, task);
 
-            SD_task_schedulel(task, 1, workstations[atoi(elm.first.c_str())]);
+            SD_task_schedulel(task, 1, hosts[atoi(elm.first.c_str())]);
             previous_task = task;
           }
         }
         delete elm.second;
       }
-      xbt_free(workstations);
     } else {
       XBT_WARN("The scheduling is ignored");
       for (auto const& elm : computers)
