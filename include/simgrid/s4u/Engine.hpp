@@ -62,11 +62,14 @@ protected:
 public:
   simgrid::s4u::Host* hostByName(std::string name);
   simgrid::s4u::Host* hostByNameOrNull(std::string name);
+
   size_t getHostCount();
   void getHostList(std::vector<Host*> * whereTo);
   std::vector<Host*> getHostList();
+
   size_t getLinkCount();
   void getLinkList(std::vector<Link*> * list);
+  std::vector<Link*> getLinkList();
 
   /** @brief Run the simulation */
   void run();

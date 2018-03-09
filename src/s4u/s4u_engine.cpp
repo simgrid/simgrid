@@ -122,10 +122,17 @@ size_t Engine::getLinkCount()
 {
   return simgrid::surf::LinkImpl::linksCount();
 }
-/** @brief Fills the passed list with all hosts found in the platform */
+/** @brief Fills the passed list with all links found in the platform */
 void Engine::getLinkList(std::vector<Link*>* list)
 {
   simgrid::surf::LinkImpl::linksList(list);
+}
+/** @brief Returns the list of all links found in the platform */
+std::vector<Link*> Engine::getLinkList()
+{
+  std::vector<Link*> res;
+  simgrid::surf::LinkImpl::linksList(&res);
+  return res;
 }
 
 void Engine::run() {
