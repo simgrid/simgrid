@@ -126,6 +126,7 @@ echo "XX Configure and build SimGrid"
 echo "XX   pwd: "$(pwd)
 echo "XX"
 set -x
+export SIMGRID_INSTALL_PATH=/builds/simgrid_install
 cmake -G"$GENERATOR"\
   -DCMAKE_INSTALL_PREFIX=/builds/simgrid_install \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \

@@ -4,7 +4,7 @@
 # http://simgrid.gforge.inria.fr/simgrid/latest/doc/install_yours.html
 
 # Some configuration
-SIMGRID_INSTALL_PATH = ../.. # Where you installed simgrid 
+SIMGRID_INSTALL_PATH ?= ../.. # Where you installed simgrid 
 CC = gcc                            # Your compiler (on Mac, use clang instead)
 
 # No change needed bellow for this tutorial.

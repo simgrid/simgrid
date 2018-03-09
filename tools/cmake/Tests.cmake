@@ -98,8 +98,9 @@ else()
   set(EXTRA_DIST       ${EXTRA_DIST}       src/surf/trace_mgr_test.cpp)
 endif()
 
-# Also test the tutorial
-if(CMAKE_COMPILER_IS_GNUCC)
+# Also test the tutorial, if SIMGRID_INSTALL_PATH is defined and gcc used
+if(CMAKE_COMPILER_IS_GNUCC AND
+   (NOT "${SIMGRID_INSTALL_PATH}" STREQUAL ""))
   ADD_TEST(tuto-msg-0 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker      && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker      ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment0.xml")
   ADD_TEST(tuto-msg-1 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker-sol1 && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker-sol1 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment1.xml")
   ADD_TEST(tuto-msg-2 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker-sol2 && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker-sol2 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment2.xml")
