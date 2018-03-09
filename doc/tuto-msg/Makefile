@@ -5,7 +5,7 @@
 
 # Some configuration
 SIMGRID_INSTALL_PATH ?= ../.. # Where you installed simgrid 
-CC = gcc                            # Your compiler (on Mac, use clang instead)
+CC ?= gcc                     # Your compiler (on Mac, use clang instead)
 
 # No change needed bellow for this tutorial.
 ############################################################################
@@ -19,8 +19,8 @@ WARNING = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
 	  -Wnested-externs -Wpointer-arith -Wwrite-strings
 WARNING += -Werror # Comment that line to not be in paranoid mode
 
-# CFLAGS = -std=gnu99 -g -O0 $(WARNINGS) # Use this line to make debugging easier
-CFLAGS = -std=gnu99 -g -O2 $(WARNINGS) # Use this line to get better performance
+# CFLAGS = -std=gnu99 -g -O0 $(WARNINGS) $(EXTRA_CFLAGS) # Use this line to make debugging easier
+CFLAGS = -std=gnu99 -g -O2 $(WARNINGS) $(EXTRA_CFLAGS) # Use this line to get better performance
 
 # No change should be mandated past that line
 #############################################

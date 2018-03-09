@@ -99,16 +99,15 @@ else()
 endif()
 
 # Also test the tutorial, if SIMGRID_INSTALL_PATH is defined and gcc used
-if(CMAKE_COMPILER_IS_GNUCC AND
-   (NOT "${SIMGRID_INSTALL_PATH}" STREQUAL ""))
-  ADD_TEST(tuto-msg-0 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker      && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker      ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment0.xml")
-  ADD_TEST(tuto-msg-1 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker-sol1 && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker-sol1 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment1.xml")
-  ADD_TEST(tuto-msg-2 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker-sol2 && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker-sol2 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment2.xml")
-  ADD_TEST(tuto-msg-3 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker-sol3 && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker-sol3 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment3.xml")
-  ADD_TEST(tuto-msg-4 sh -c "make -C ${CMAKE_SOURCE_DIR}/doc/tuto-msg masterworker-sol4 && ${CMAKE_SOURCE_DIR}/doc/tuto-msg/masterworker-sol4 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${CMAKE_SOURCE_DIR}/doc/tuto-msg/deployment3.xml")
+set(tuto-path "${CMAKE_SOURCE_DIR}/doc/tuto-msg")
+set(tuto-make "make -C ${tuto-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=-I${CMAKE_HOME_DIRECTORY}")
+ADD_TEST(tuto-msg-0 sh -c "${tuto-make} masterworker      && ${tuto-path}/masterworker      ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment0.xml")
+ADD_TEST(tuto-msg-1 sh -c "${tuto-make} masterworker-sol1 && ${tuto-path}/masterworker-sol1 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment1.xml")
+ADD_TEST(tuto-msg-2 sh -c "${tuto-make} masterworker-sol2 && ${tuto-path}/masterworker-sol2 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment2.xml")
+ADD_TEST(tuto-msg-3 sh -c "${tuto-make} masterworker-sol3 && ${tuto-path}/masterworker-sol3 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment3.xml")
+ADD_TEST(tuto-msg-4 sh -c "${tuto-make} masterworker-sol4 && ${tuto-path}/masterworker-sol4 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment3.xml")
 
-  FOREACH(TUTOTEST tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4)
-    SET_TESTS_PROPERTIES(${TUTOTEST} 
-                         PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-  ENDFOREACH()
-endif()
+FOREACH(TUTOTEST tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4)
+SET_TESTS_PROPERTIES(${TUTOTEST} 
+                     PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+ENDFOREACH()
