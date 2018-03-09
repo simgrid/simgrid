@@ -91,6 +91,14 @@ void Engine::getHostList(std::vector<Host*>* list)
   for (auto const& kv : pimpl->hosts_)
     list->push_back(kv.second);
 }
+/** @brief Returns the list of all hosts found in the platform */
+std::vector<Host*> Engine::getHostList()
+{
+  std::vector<Host*> res;
+  for (auto const& kv : pimpl->hosts_)
+    res.push_back(kv.second);
+  return res;
+}
 void Engine::addHost(std::string name, simgrid::s4u::Host* host)
 {
   pimpl->hosts_[name] = host;

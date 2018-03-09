@@ -21,8 +21,7 @@ int main(int argc, char* argv[])
 
   HostBittorrent::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostBittorrent>();
 
-  std::vector<simgrid::s4u::Host*> list;
-  simgrid::s4u::Engine::getInstance()->getHostList(&list);
+  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getHostList();
   for (auto const& host : list)
     host->extension_set(new HostBittorrent(host));
 

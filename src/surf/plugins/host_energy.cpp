@@ -432,8 +432,7 @@ static void onHostDestruction(simgrid::s4u::Host& host)
 
 static void onSimulationEnd()
 {
-  std::vector<simgrid::s4u::Host*> hosts;
-  simgrid::s4u::Engine::getInstance()->getHostList(&hosts);
+  std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::getInstance()->getHostList();
 
   double total_energy      = 0.0; // Total energy consumption (whole platform)
   double used_hosts_energy = 0.0; // Energy consumed by hosts that computed something
@@ -484,8 +483,7 @@ void sg_host_energy_plugin_init()
 void sg_host_energy_update_all()
 {
   simgrid::simix::kernelImmediate([]() {
-    std::vector<simgrid::s4u::Host*> list;
-    simgrid::s4u::Engine::getInstance()->getHostList(&list);
+    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getHostList();
     for (auto const& host : list)
       if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) // Ignore virtual machines
         host->extension<HostEnergy>()->update();

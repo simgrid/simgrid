@@ -213,8 +213,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
 
   if(schedule){
     if (schedule_success) {
-      std::vector<simgrid::s4u::Host*> hosts;
-      simgrid::s4u::Engine::getInstance()->getHostList(&hosts);
+      std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::getInstance()->getHostList();
 
       for (auto const& elm : computers) {
         SD_task_t previous_task = nullptr;
