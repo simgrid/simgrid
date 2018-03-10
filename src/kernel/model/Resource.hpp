@@ -74,6 +74,12 @@ public: /* LMM */
 
 protected:
   const kernel::lmm::Constraint* constraint_ = nullptr;
+
+  struct Metric {
+    double peak;              /**< The peak of the metric, ie its max value */
+    double scale;             /**< Current availability of the metric according to the traces, in [0,1] */
+    tmgr_trace_event_t event; /**< The associated trace event associated to the metric */
+  };
 };
 } // namespace model
 } // namespace kernel

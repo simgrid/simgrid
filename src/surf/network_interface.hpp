@@ -160,8 +160,8 @@ public:
                                    Trace must contain absolute values */
 
   tmgr_trace_event_t stateEvent_    = nullptr;
-  s_surf_metric_t latency_          = {1.0, 0, nullptr};
-  s_surf_metric_t bandwidth_        = {1.0, 0, nullptr};
+  Metric latency_                   = {1.0, 0, nullptr};
+  Metric bandwidth_                 = {1.0, 0, nullptr};
 
   /* User data */
   void* getData() { return userData; }

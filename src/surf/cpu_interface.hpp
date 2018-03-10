@@ -135,7 +135,7 @@ public:
   virtual void setSpeedTrace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
 
   tmgr_trace_event_t stateEvent_ = nullptr;
-  s_surf_metric_t speed_ = {1.0, 0, nullptr};
+  Metric speed_                  = {1.0, 0, nullptr};
 };
 
 /**********
