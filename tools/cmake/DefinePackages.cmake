@@ -867,6 +867,7 @@ set(DOC_SOURCES
   doc/doxygen/install_yours.doc
   doc/doxygen/java.doc
   doc/tuto-msg/tuto-msg.doc
+  doc/tuto-msg/overview.svg
   doc/doxygen/tutorial_smpi.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
