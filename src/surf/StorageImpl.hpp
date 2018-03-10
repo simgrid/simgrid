@@ -8,6 +8,7 @@
 #include <xbt/signal.hpp>
 
 #include "simgrid/s4u/Storage.hpp"
+#include "src/kernel/model/Resource.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "surf_interface.hpp"
 #include <map>

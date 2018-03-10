@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
+#include "src/kernel/model/Resource.hpp"
 #include "src/plugins/file_system/FileSystem.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include <unordered_map>

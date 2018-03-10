@@ -515,66 +515,6 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
  * Resource *
  ************/
 
-namespace simgrid {
-namespace kernel {
-namespace model {
-
-Resource::Resource(surf::Model* model, const std::string& name, lmm::Constraint* constraint)
-    : name_(name), model_(model), constraint_(constraint)
-{}
-
-Resource::~Resource() = default;
-
-bool Resource::isOn() const {
-  return isOn_;
-}
-bool Resource::isOff() const {
-  return not isOn_;
-}
-
-void Resource::turnOn()
-{
-  isOn_ = true;
-}
-
-void Resource::turnOff()
-{
-  isOn_ = false;
-}
-
-double Resource::getLoad()
-{
-  return constraint_->get_usage();
-}
-
-surf::Model* Resource::model() const
-{
-  return model_;
-}
-
-const std::string& Resource::getName() const
-{
-  return name_;
-}
-
-const char* Resource::getCname() const
-{
-  return name_.c_str();
-}
-
-bool Resource::operator==(const Resource &other) const {
-  return name_ == other.name_;
-}
-
-kernel::lmm::Constraint* Resource::constraint() const
-{
-  return const_cast<kernel::lmm::Constraint*>(constraint_);
-}
-
-}
-} // namespace kernel
-}
-
 /**********
  * Action *
  **********/
