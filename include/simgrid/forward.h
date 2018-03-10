@@ -47,6 +47,9 @@ class Constraint;
 class ConstraintLight;
 class System;
 }
+namespace model {
+class Resource;
+}
 namespace routing {
   class NetPoint;
   class NetZoneImpl;
@@ -59,7 +62,6 @@ namespace simix {
 }
 
 namespace surf {
-  class Resource;
   class Cpu;
   class LinkImpl;
   class HostImpl;
@@ -81,7 +83,7 @@ typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::s4u::VirtualMachine s4u_VM;
 typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activity_t;
 typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
-typedef simgrid::surf::Resource surf_Resource;
+typedef simgrid::kernel::model::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 typedef simgrid::kernel::context::Context* smx_context_t;

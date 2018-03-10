@@ -516,9 +516,10 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
  ************/
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace model {
 
-Resource::Resource(Model* model, const std::string& name, kernel::lmm::Constraint* constraint)
+Resource::Resource(surf::Model* model, const std::string& name, lmm::Constraint* constraint)
     : name_(name), model_(model), constraint_(constraint)
 {}
 
@@ -546,7 +547,7 @@ double Resource::getLoad()
   return constraint_->get_usage();
 }
 
-Model* Resource::model() const
+surf::Model* Resource::model() const
 {
   return model_;
 }
@@ -571,6 +572,7 @@ kernel::lmm::Constraint* Resource::constraint() const
 }
 
 }
+} // namespace kernel
 }
 
 /**********

@@ -45,7 +45,8 @@ public:
 * @brief SURF cpu resource interface class
 * @details A Cpu represent a cpu associated to a host
 */
-XBT_PUBLIC_CLASS Cpu : public simgrid::surf::Resource {
+XBT_PUBLIC_CLASS Cpu : public simgrid::kernel::model::Resource
+{
 public:
   /**
    * @brief Cpu constructor

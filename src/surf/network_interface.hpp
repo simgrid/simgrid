@@ -113,7 +113,7 @@ public:
  * @brief SURF network link interface class
  * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
  */
-class LinkImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
+class LinkImpl : public simgrid::kernel::model::Resource, public simgrid::surf::PropertyHolder {
 protected:
   LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, kernel::lmm::Constraint* constraint);
   ~LinkImpl() override;

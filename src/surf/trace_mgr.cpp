@@ -121,7 +121,7 @@ tmgr_trace_t tmgr_trace_new_from_file(std::string filename)
 }
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
-tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, surf::Resource* resource)
+tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, kernel::model::Resource* resource)
 {
   tmgr_trace_event_t trace_iterator = nullptr;
 
@@ -146,7 +146,7 @@ double simgrid::trace_mgr::future_evt_set::next_date() const
 
 /** @brief Retrieves the next occurring event, or nullptr if none happens before #date */
 tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, double* value,
-                                                               simgrid::surf::Resource** resource)
+                                                               kernel::model::Resource** resource)
 {
   double event_date = next_date();
   if (event_date > date)

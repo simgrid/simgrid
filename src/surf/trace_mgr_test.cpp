@@ -23,9 +23,9 @@ namespace tmgr = simgrid::trace_mgr;
 XBT_LOG_NEW_DEFAULT_CATEGORY(unit, "Unit tests of the Trace Manager");
 
 double thedate;
-class MockedResource : public simgrid::surf::Resource {
+class MockedResource : public simgrid::kernel::model::Resource {
 public:
-  explicit MockedResource() : simgrid::surf::Resource(nullptr, "fake", nullptr) {}
+  explicit MockedResource() : simgrid::kernel::model::Resource(nullptr, "fake", nullptr) {}
   void apply_event(tmgr_trace_event_t event, double value)
   {
     XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", thedate, value, event->idx);
@@ -49,7 +49,7 @@ static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto
   while (fes.next_date() <= 20.0 && fes.next_date() >= 0) {
     thedate = fes.next_date();
     double value;
-    simgrid::surf::Resource* res;
+    simgrid::kernel::model::Resource* res;
     tmgr_trace_event_t it = fes.pop_leq(thedate, &value, &res);
     if (it == nullptr)
       continue;

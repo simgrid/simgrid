@@ -383,7 +383,8 @@ struct s_surf_metric_t {
 };
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace model {
 
 /** @ingroup SURF_interface
  * @brief SURF resource interface class
@@ -398,12 +399,12 @@ public:
    * @param name The name of the Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(Model * model, const std::string& name, kernel::lmm::Constraint* constraint);
+  Resource(surf::Model * model, const std::string& name, lmm::Constraint* constraint);
 
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model* model() const;
+  surf::Model* model() const;
 
   /** @brief Get the name of the current Resource */
   const std::string& getName() const;
@@ -437,7 +438,7 @@ public:
 
 private:
   std::string name_;
-  Model *model_;
+  surf::Model* model_;
   bool isOn_ = true;
 
 public: /* LMM */
@@ -447,14 +448,17 @@ public: /* LMM */
 protected:
   const kernel::lmm::Constraint* constraint_ = nullptr;
 };
-
+} // namespace model
 }
 }
 
 namespace std {
-template <> class hash<simgrid::surf::Resource> {
+template <> class hash<simgrid::kernel::model::Resource> {
 public:
-  std::size_t operator()(const simgrid::surf::Resource& r) const { return (std::size_t)xbt_str_hash(r.getCname()); }
+  std::size_t operator()(const simgrid::kernel::model::Resource& r) const
+  {
+    return (std::size_t)xbt_str_hash(r.getCname());
+  }
 };
 }
 

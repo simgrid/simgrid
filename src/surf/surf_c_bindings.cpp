@@ -21,7 +21,7 @@ void surf_presolve()
   double next_event_date = -1.0;
   tmgr_trace_event_t event          = nullptr;
   double value = -1.0;
-  simgrid::surf::Resource *resource = nullptr;
+  simgrid::kernel::model::Resource* resource = nullptr;
 
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
   while ((next_event_date = future_evt_set->next_date()) != -1.0) {
@@ -44,7 +44,7 @@ double surf_solve(double max_date)
   double time_delta = -1.0; /* duration */
   double model_next_action_end = -1.0;
   double value = -1.0;
-  simgrid::surf::Resource *resource = nullptr;
+  simgrid::kernel::model::Resource* resource = nullptr;
   tmgr_trace_event_t event          = nullptr;
 
   if (max_date > 0.0) {
