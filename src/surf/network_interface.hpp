@@ -115,7 +115,7 @@ public:
  */
 class LinkImpl : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 protected:
-  LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, lmm_constraint_t constraint);
+  LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, kernel::lmm::Constraint* constraint);
   ~LinkImpl() override;
 
 public:
@@ -204,7 +204,7 @@ public:
    * @param failed [description]
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  NetworkAction(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var)
+  NetworkAction(simgrid::surf::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
       : simgrid::surf::Action(model, cost, failed, var){};
 
   void setState(simgrid::surf::Action::State state) override;

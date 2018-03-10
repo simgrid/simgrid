@@ -49,7 +49,7 @@ static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, 
   for (Constraint const& cnst : cnst_list) {
     double tmp = 0;
     for (Element const& elem : cnst.enabled_element_set) {
-      lmm_variable_t var = elem.variable;
+      Variable* var = elem.variable;
       xbt_assert(var->sharing_weight > 0);
       tmp += var->value;
     }

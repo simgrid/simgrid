@@ -56,8 +56,8 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::surf::Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint,
-      std::vector<double>* speedPerPstate, int core);
+  Cpu(simgrid::surf::Model * model, simgrid::s4u::Host * host, kernel::lmm::Constraint * constraint,
+      std::vector<double> * speedPerPstate, int core);
 
   /**
    * @brief Cpu constructor
@@ -157,7 +157,7 @@ public:
   static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
 
   CpuAction(simgrid::surf::Model* model, double cost, bool failed) : Action(model, cost, failed) {}
-  CpuAction(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var)
+  CpuAction(simgrid::surf::Model * model, double cost, bool failed, kernel::lmm::Variable* var)
       : Action(model, cost, failed, var)
   {
   }

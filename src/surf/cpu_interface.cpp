@@ -85,8 +85,8 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPs
 {
 }
 
-Cpu::Cpu(Model* model, simgrid::s4u::Host* host, lmm_constraint_t constraint, std::vector<double>* speedPerPstate,
-         int core)
+Cpu::Cpu(Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
+         std::vector<double>* speedPerPstate, int core)
     : Resource(model, host->getCname(), constraint), coresAmount_(core), host_(host)
 {
   xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->getCname());

@@ -97,7 +97,7 @@ bool CpuCas01::isUsed()
 
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::onSpeedChange() {
-  lmm_variable_t var       = nullptr;
+  kernel::lmm::Variable* var = nullptr;
   const_lmm_element_t elem = nullptr;
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), coresAmount_ * speed_.scale * speed_.peak);
@@ -130,8 +130,8 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
         host_that_restart.push_back(getHost());
       turnOn();
     } else {
-      lmm_constraint_t cnst    = constraint();
-      lmm_variable_t var       = nullptr;
+      kernel::lmm::Constraint* cnst = constraint();
+      kernel::lmm::Variable* var    = nullptr;
       const_lmm_element_t elem = nullptr;
       double date              = surf_get_clock();
 
@@ -199,8 +199,8 @@ CpuAction *CpuCas01::sleep(double duration)
 /**********
  * Action *
  **********/
-CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint,
-                               int requestedCore)
+CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed,
+                               kernel::lmm::Constraint* constraint, int requestedCore)
     : CpuAction(model, cost, failed,
                 model->getMaxminSystem()->variable_new(this, 1.0 / requestedCore, requestedCore * speed, 1))
     , requestedCore_(requestedCore)
@@ -212,7 +212,8 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
   model->getMaxminSystem()->expand(constraint, getVariable(), 1.0);
 }
 
-CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm_constraint_t constraint)
+CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed,
+                               kernel::lmm::Constraint* constraint)
     : CpuCas01Action(model, cost, failed, speed, constraint, 1)
 {
 }

@@ -1,6 +1,6 @@
 /* A few tests for the maxmin library                                       */
 
-/* Copyright (c) 2007-2017. The SimGrid Team.
+/* Copyright (c) 2007-2018s. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -99,14 +99,14 @@ static void test1(method_t method)
                                   simgrid::kernel::lmm::func_reno_fpi);
 
   lmm_system_t Sys    = new simgrid::kernel::lmm::System(true);
-  lmm_constraint_t L1 = Sys->constraint_new(nullptr, a);
-  lmm_constraint_t L2 = Sys->constraint_new(nullptr, b);
-  lmm_constraint_t L3 = Sys->constraint_new(nullptr, a);
+  simgrid::kernel::lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
+  simgrid::kernel::lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
+  simgrid::kernel::lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
 
-  lmm_variable_t R_1_2_3 = Sys->variable_new(nullptr, 1.0, -1.0, 3);
-  lmm_variable_t R_1     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  lmm_variable_t R_2     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  lmm_variable_t R_3     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  simgrid::kernel::lmm::Variable* R_1_2_3 = Sys->variable_new(nullptr, 1.0, -1.0, 3);
+  simgrid::kernel::lmm::Variable* R_1     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  simgrid::kernel::lmm::Variable* R_2     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  simgrid::kernel::lmm::Variable* R_3     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
   Sys->update_variable_weight(R_1_2_3, 1.0);
   Sys->update_variable_weight(R_1, 1.0);
@@ -187,11 +187,11 @@ static void test2(method_t method)
                                   simgrid::kernel::lmm::func_reno_fpi);
 
   lmm_system_t Sys      = new simgrid::kernel::lmm::System(true);
-  lmm_constraint_t CPU1 = Sys->constraint_new(nullptr, 200.0);
-  lmm_constraint_t CPU2 = Sys->constraint_new(nullptr, 100.0);
+  simgrid::kernel::lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
+  simgrid::kernel::lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
 
-  lmm_variable_t T1 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  lmm_variable_t T2 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  simgrid::kernel::lmm::Variable* T1 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  simgrid::kernel::lmm::Variable* T2 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
   Sys->update_variable_weight(T1, 1.0);
   Sys->update_variable_weight(T2, 1.0);
@@ -262,12 +262,12 @@ static void test3(method_t method)
   lmm_system_t Sys = new simgrid::kernel::lmm::System(true);
 
   /* Creates the constraints */
-  lmm_constraint_t* tmp_cnst = new lmm_constraint_t[15];
+  simgrid::kernel::lmm::Constraint** tmp_cnst = new simgrid::kernel::lmm::Constraint*[15];
   for (int i = 0; i < 15; i++)
     tmp_cnst[i] = Sys->constraint_new(nullptr, B[i]);
 
   /* Creates the variables */
-  lmm_variable_t* tmp_var = new lmm_variable_t[16];
+  simgrid::kernel::lmm::Variable** tmp_var = new simgrid::kernel::lmm::Variable*[16];
   for (int j = 0; j < 16; j++) {
     tmp_var[j] = Sys->variable_new(nullptr, 1.0, -1.0, 15);
     Sys->update_variable_weight(tmp_var[j], 1.0);

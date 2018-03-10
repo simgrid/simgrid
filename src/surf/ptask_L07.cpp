@@ -120,7 +120,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
-      lmm_constraint_t cnst = action.getVariable()->get_constraint(i);
+      kernel::lmm::Constraint* cnst = action.getVariable()->get_constraint(i);
       while (cnst != nullptr) {
         i++;
         void* constraint_id = cnst->get_id();
@@ -289,7 +289,7 @@ bool CpuL07::isUsed(){
 
 /** @brief take into account changes of speed (either load or max) */
 void CpuL07::onSpeedChange() {
-  lmm_variable_t var       = nullptr;
+  kernel::lmm::Variable* var = nullptr;
   const_lmm_element_t elem = nullptr;
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), speed_.peak * speed_.scale);
@@ -358,7 +358,7 @@ void LinkL07::setBandwidth(double value)
 
 void LinkL07::setLatency(double value)
 {
-  lmm_variable_t var = nullptr;
+  kernel::lmm::Variable* var = nullptr;
   L07Action *action;
   const_lmm_element_t elem = nullptr;
 

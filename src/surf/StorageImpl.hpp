@@ -119,8 +119,8 @@ public:
 
   static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
 
-  lmm_constraint_t constraintWrite_; /* Constraint for maximum write bandwidth*/
-  lmm_constraint_t constraintRead_;  /* Constraint for maximum write bandwidth*/
+  kernel::lmm::Constraint* constraintWrite_; /* Constraint for maximum write bandwidth*/
+  kernel::lmm::Constraint* constraintRead_;  /* Constraint for maximum write bandwidth*/
 
   std::string typeId_;
   std::string content_name; // Only used at parsing time then goes to the FileSystemExtension
@@ -172,7 +172,7 @@ public:
  * @param storage The Storage associated to this StorageAction
  * @param type [description]
  */
-  StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, StorageImpl* storage,
+  StorageAction(Model* model, double cost, bool failed, kernel::lmm::Variable* var, StorageImpl* storage,
                 e_surf_action_storage_type_t type)
       : Action(model, cost, failed, var), type_(type), storage_(storage){};
 

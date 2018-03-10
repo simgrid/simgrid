@@ -40,8 +40,8 @@ static unsigned int int_random(int max)
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                  float rate_no_limit, int max_share, int mode)
 {
-  lmm_constraint_t cnst[nb_cnst];
-  lmm_variable_t var[nb_var];
+  simgrid::kernel::lmm::Constraint* cnst[nb_cnst];
+  simgrid::kernel::lmm::Variable* var[nb_var];
   int used[nb_cnst];
 
   lmm_system_t Sys = new simgrid::kernel::lmm::System(true);

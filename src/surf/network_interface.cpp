@@ -100,7 +100,7 @@ namespace simgrid {
      * Resource *
      ************/
 
-    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, lmm_constraint_t constraint)
+    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, kernel::lmm::Constraint* constraint)
         : Resource(model, name, constraint), piface_(this)
     {
 

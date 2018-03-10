@@ -136,7 +136,7 @@ public:
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  Action(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var);
+  Action(simgrid::surf::Model * model, double cost, bool failed, kernel::lmm::Variable* var);
 
   /** @brief Destructor */
   virtual ~Action();
@@ -251,7 +251,7 @@ private:
   /* LMM */
   double lastUpdate_                                  = 0;
   double lastValue_                                   = 0;
-  lmm_variable_t variable_                            = nullptr;
+  kernel::lmm::Variable* variable_                    = nullptr;
   Action::Type hat_                                   = Action::Type::NOTSET;
   boost::optional<heap_type::handle_type> heapHandle_ = boost::none;
 
@@ -261,8 +261,8 @@ public:
   void heapRemove(heap_type& heap);
   void heapUpdate(heap_type & heap, double key, Action::Type hat);
   void clearHeapHandle() { heapHandle_ = boost::none; }
-  lmm_variable_t getVariable() const { return variable_; }
-  void setVariable(lmm_variable_t var) { variable_ = var; }
+  kernel::lmm::Variable* getVariable() const { return variable_; }
+  void setVariable(kernel::lmm::Variable * var) { variable_ = var; }
   double getLastUpdate() const { return lastUpdate_; }
   void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
   double getLastValue() const { return lastValue_; }
@@ -398,7 +398,7 @@ public:
    * @param name The name of the Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(Model * model, const std::string& name, lmm_constraint_t constraint);
+  Resource(Model * model, const std::string& name, kernel::lmm::Constraint* constraint);
 
   virtual ~Resource();
 
@@ -442,10 +442,10 @@ private:
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
-  lmm_constraint_t constraint() const;
+  kernel::lmm::Constraint* constraint() const;
 
 protected:
-  const lmm_constraint_t constraint_ = nullptr;
+  const kernel::lmm::Constraint* constraint_ = nullptr;
 };
 
 }

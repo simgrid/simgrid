@@ -183,8 +183,8 @@ public:
   boost::intrusive::list_member_hook<> disabled_element_set_hook;
   boost::intrusive::list_member_hook<> active_element_set_hook;
 
-  lmm_constraint_t constraint;
-  lmm_variable_t variable;
+  Constraint* constraint;
+  Variable* variable;
 
   // consumption_weight: impact of 1 byte or flop of your application onto the resource (in byte or flop)
   //   - if CPU, then probably 1.
@@ -194,7 +194,7 @@ public:
 
 struct ConstraintLight {
   double remaining_over_usage;
-  lmm_constraint_t cnst;
+  Constraint* cnst;
 };
 
 /**
@@ -274,7 +274,7 @@ public:
    * @param elem A element of constraint of the constraint or NULL
    * @return A variable associated to a constraint
    */
-  lmm_variable_t get_variable(const_lmm_element_t* elem) const;
+  Variable* get_variable(const_lmm_element_t * elem) const;
 
   /**
    * @brief Get a var associated to a constraint
@@ -284,7 +284,7 @@ public:
    * @param numelem parameter representing the number of elements to go
    * @return A variable associated to a constraint
    */
-  lmm_variable_t get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem, int* numelem) const;
+  Variable* get_variable_safe(const_lmm_element_t * elem, const_lmm_element_t * nextelem, int* numelem) const;
 
   /**
    * @brief Get the data associated to a constraint
@@ -362,7 +362,7 @@ public:
    * @param num The rank of constraint we want to get
    * @return The numth constraint
    */
-  lmm_constraint_t get_constraint(unsigned num) const { return num < cnsts.size() ? cnsts[num].constraint : nullptr; }
+  Constraint* get_constraint(unsigned num) const { return num < cnsts.size() ? cnsts[num].constraint : nullptr; }
 
   /**
    * @brief Get the weigth of the numth constraint associated to the variable
@@ -458,7 +458,7 @@ public:
    * @param id Data associated to the constraint (e.g.: a network link)
    * @param bound_value The bound value of the constraint
    */
-  lmm_constraint_t constraint_new(void* id, double bound_value);
+  Constraint* constraint_new(void* id, double bound_value);
 
   /**
    * @brief Create a new Linear MaxMin variable
@@ -467,13 +467,13 @@ public:
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
    * @param number_of_constraints The maximum number of constraint to associate to the variable
    */
-  lmm_variable_t variable_new(simgrid::surf::Action* id, double weight_value, double bound, int number_of_constraints);
+  Variable* variable_new(simgrid::surf::Action * id, double weight_value, double bound, int number_of_constraints);
 
   /**
    * @brief Free a variable
    * @param var The variable to free
    */
-  void variable_free(lmm_variable_t var);
+  void variable_free(Variable * var);
 
   /**
    * @brief Associate a variable to a constraint with a coefficient
@@ -481,7 +481,7 @@ public:
    * @param var A variable
    * @param value The coefficient associated to the variable in the constraint
    */
-  void expand(lmm_constraint_t cnst, lmm_variable_t var, double value);
+  void expand(Constraint * cnst, Variable * var, double value);
 
   /**
    * @brief Add value to the coefficient between a constraint and a variable or create one
@@ -489,35 +489,35 @@ public:
    * @param var A variable
    * @param value The value to add to the coefficient associated to the variable in the constraint
    */
-  void expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value);
+  void expand_add(Constraint * cnst, Variable * var, double value);
 
   /**
    * @brief Update the bound of a variable
    * @param var A constraint
    * @param bound The new bound
    */
-  void update_variable_bound(lmm_variable_t var, double bound);
+  void update_variable_bound(Variable * var, double bound);
 
   /**
    * @brief Update the weight of a variable
    * @param var A variable
    * @param weight The new weight of the variable
    */
-  void update_variable_weight(lmm_variable_t var, double weight);
+  void update_variable_weight(Variable * var, double weight);
 
   /**
    * @brief Update a constraint bound
    * @param cnst A constraint
    * @param bound The new bound of the consrtaint
    */
-  void update_constraint_bound(lmm_constraint_t cnst, double bound);
+  void update_constraint_bound(Constraint * cnst, double bound);
 
   /**
    * @brief [brief description]
    * @param cnst A constraint
    * @return [description]
    */
-  int constraint_used(lmm_constraint_t cnst) { return cnst->active_constraint_set_hook.is_linked(); }
+  int constraint_used(Constraint * cnst) { return cnst->active_constraint_set_hook.is_linked(); }
 
   /** @brief Print the lmm system */
   void print() const;
@@ -529,38 +529,38 @@ private:
   static void* variable_mallocator_new_f();
   static void variable_mallocator_free_f(void* var);
 
-  void var_free(lmm_variable_t var);
-  void cnst_free(lmm_constraint_t cnst);
-  lmm_variable_t extract_variable()
+  void var_free(Variable * var);
+  void cnst_free(Constraint * cnst);
+  Variable* extract_variable()
   {
     if (variable_set.empty())
       return nullptr;
-    lmm_variable_t res = &variable_set.front();
+    Variable* res = &variable_set.front();
     variable_set.pop_front();
     return res;
   }
-  lmm_constraint_t extract_constraint()
+  Constraint* extract_constraint()
   {
     if (constraint_set.empty())
       return nullptr;
-    lmm_constraint_t res = &constraint_set.front();
+    Constraint* res = &constraint_set.front();
     constraint_set.pop_front();
     return res;
   }
-  void insert_constraint(lmm_constraint_t cnst) { constraint_set.push_back(*cnst); }
-  void remove_variable(lmm_variable_t var)
+  void insert_constraint(Constraint * cnst) { constraint_set.push_back(*cnst); }
+  void remove_variable(Variable * var)
   {
     if (var->variable_set_hook.is_linked())
       simgrid::xbt::intrusive_erase(variable_set, *var);
     if (var->saturated_variable_set_hook.is_linked())
       simgrid::xbt::intrusive_erase(saturated_variable_set, *var);
   }
-  void make_constraint_active(lmm_constraint_t cnst)
+  void make_constraint_active(Constraint * cnst)
   {
     if (not cnst->active_constraint_set_hook.is_linked())
       active_constraint_set.push_back(*cnst);
   }
-  void make_constraint_inactive(lmm_constraint_t cnst)
+  void make_constraint_inactive(Constraint * cnst)
   {
     if (cnst->active_constraint_set_hook.is_linked())
       simgrid::xbt::intrusive_erase(active_constraint_set, *cnst);
@@ -568,9 +568,9 @@ private:
       simgrid::xbt::intrusive_erase(modified_constraint_set, *cnst);
   }
 
-  void enable_var(lmm_variable_t var);
-  void disable_var(lmm_variable_t var);
-  void on_disabled_var(lmm_constraint_t cnstr);
+  void enable_var(Variable * var);
+  void disable_var(Variable * var);
+  void on_disabled_var(Constraint * cnstr);
 
   /**
    * @brief Update the value of element linking the constraint and the variable
@@ -578,10 +578,10 @@ private:
    * @param var A variable
    * @param value The new value
    */
-  void update(lmm_constraint_t cnst, lmm_variable_t var, double value);
+  void update(Constraint * cnst, Variable * var, double value);
 
-  void update_modified_set(lmm_constraint_t cnst);
-  void update_modified_set_rec(lmm_constraint_t cnst);
+  void update_modified_set(Constraint * cnst);
+  void update_modified_set_rec(Constraint * cnst);
 
   /** @brief Remove all constraints of the modified_constraint_set. */
   void remove_all_modified_set();

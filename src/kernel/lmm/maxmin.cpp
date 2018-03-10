@@ -109,7 +109,7 @@ void System::check_concurrency() const
   }
 }
 
-void System::var_free(lmm_variable_t var)
+void System::var_free(Variable* var)
 {
   XBT_IN("(sys=%p, var=%p)", this, var);
   modified = true;
@@ -158,8 +158,8 @@ System::System(bool selective_update) : selective_update_active(selective_update
 
 System::~System()
 {
-  lmm_variable_t var;
-  lmm_constraint_t cnst;
+  Variable* var;
+  Constraint* cnst;
 
   while ((var = extract_variable())) {
     auto demangled = simgrid::xbt::demangle(typeid(*var->id).name());
@@ -173,7 +173,7 @@ System::~System()
   xbt_mallocator_free(variable_mallocator);
 }
 
-void System::cnst_free(lmm_constraint_t cnst)
+void System::cnst_free(Constraint* cnst)
 {
   make_constraint_inactive(cnst);
   delete cnst;
@@ -195,9 +195,9 @@ Constraint::Constraint(void* id_value, double bound_value) : bound(bound_value),
   cnst_light = nullptr;
 }
 
-lmm_constraint_t System::constraint_new(void* id, double bound_value)
+Constraint* System::constraint_new(void* id, double bound_value)
 {
-  lmm_constraint_t cnst = new Constraint(id, bound_value);
+  Constraint* cnst = new Constraint(id, bound_value);
   insert_constraint(cnst);
   return cnst;
 }
@@ -209,15 +209,15 @@ void* System::variable_mallocator_new_f()
 
 void System::variable_mallocator_free_f(void* var)
 {
-  delete static_cast<lmm_variable_t>(var);
+  delete static_cast<Variable*>(var);
 }
 
-lmm_variable_t System::variable_new(simgrid::surf::Action* id, double sharing_weight, double bound,
-                                    int number_of_constraints)
+Variable* System::variable_new(simgrid::surf::Action* id, double sharing_weight, double bound,
+                               int number_of_constraints)
 {
   XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", this, id, sharing_weight, bound, number_of_constraints);
 
-  lmm_variable_t var = static_cast<lmm_variable_t>(xbt_mallocator_get(variable_mallocator));
+  Variable* var = static_cast<Variable*>(xbt_mallocator_get(variable_mallocator));
   var->initialize(id, sharing_weight, bound, number_of_constraints, visited_counter - 1);
   if (sharing_weight)
     variable_set.push_front(*var);
@@ -228,13 +228,13 @@ lmm_variable_t System::variable_new(simgrid::surf::Action* id, double sharing_we
   return var;
 }
 
-void System::variable_free(lmm_variable_t var)
+void System::variable_free(Variable* var)
 {
   remove_variable(var);
   var_free(var);
 }
 
-void System::expand(lmm_constraint_t cnst, lmm_variable_t var, double consumption_weight)
+void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 {
   modified = true;
 
@@ -287,7 +287,7 @@ void System::expand(lmm_constraint_t cnst, lmm_variable_t var, double consumptio
   check_concurrency();
 }
 
-void System::expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value)
+void System::expand_add(Constraint* cnst, Variable* var, double value)
 {
   modified = true;
 
@@ -325,7 +325,7 @@ void System::expand_add(lmm_constraint_t cnst, lmm_variable_t var, double value)
   check_concurrency();
 }
 
-lmm_variable_t Constraint::get_variable(const_lmm_element_t* elem) const
+Variable* Constraint::get_variable(const_lmm_element_t* elem) const
 {
   if (*elem == nullptr) {
     // That is the first call, pick the first element among enabled_element_set (or disabled_element_set if
@@ -360,8 +360,7 @@ lmm_variable_t Constraint::get_variable(const_lmm_element_t* elem) const
 
 // if we modify the list between calls, normal version may loop forever
 // this safe version ensures that we browse the list elements only once
-lmm_variable_t Constraint::get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem,
-                                             int* numelem) const
+Variable* Constraint::get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem, int* numelem) const
 {
   if (*elem == nullptr) {
     *numelem = enabled_element_set.size() + disabled_element_set.size() - 1;
@@ -602,7 +601,7 @@ template <class CnstList> void System::solve(CnstList& cnst_list)
 
       /* Update the usage of contraints where this variable is involved */
       for (Element& elem : var.cnsts) {
-        lmm_constraint_t cnst = elem.constraint;
+        Constraint* cnst = elem.constraint;
         if (cnst->sharing_policy) {
           // Remember: shared constraints require that sum(elem.value * var.value) < cnst->bound
           double_update(&(cnst->remaining), elem.consumption_weight * var.value, cnst->bound * sg_maxmin_precision);
@@ -698,13 +697,13 @@ void lmm_solve(lmm_system_t sys)
 
 /** \brief Attribute the value bound to var->bound.
  *
- *  \param var the lmm_variable_t
+ *  \param var the Variable*
  *  \param bound the new bound to associate with var
  *
  *  Makes var->bound equal to bound. Whenever this function is called a change is  signed in the system. To
  *  avoid false system changing detection it is a good idea to test (bound != 0) before calling it.
  */
-void System::update_variable_bound(lmm_variable_t var, double bound)
+void System::update_variable_bound(Variable* var, double bound)
 {
   modified   = true;
   var->bound = bound;
@@ -754,7 +753,7 @@ int Variable::get_min_concurrency_slack() const
 // with var when running System::update_modified_set().
 // A priori not a big performance issue, but we might do better by calling System::update_modified_set() within the for
 // loops (after doing the first for enabling==1, and before doing the last for disabling==1)
-void System::enable_var(lmm_variable_t var)
+void System::enable_var(Variable* var)
 {
   xbt_assert(not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug) || var->can_enable());
 
@@ -779,7 +778,7 @@ void System::enable_var(lmm_variable_t var)
   // Anyway, caller functions all call check_concurrency() in the end.
 }
 
-void System::disable_var(lmm_variable_t var)
+void System::disable_var(Variable* var)
 {
   xbt_assert(not var->staged_weight, "Staged weight should have been cleared");
   // Disabling the variable, move to var to list tail. Subtlety is: here, we need to call update_modified_set
@@ -809,7 +808,7 @@ void System::disable_var(lmm_variable_t var)
  * If yes, check that none of the constraints that this variable is involved in is at the limit of its concurrency
  * And then add it to enabled variables
  */
-void System::on_disabled_var(lmm_constraint_t cnstr)
+void System::on_disabled_var(Constraint* cnstr)
 {
   if (cnstr->get_concurrency_limit() < 0)
     return;
@@ -853,7 +852,7 @@ void System::on_disabled_var(lmm_constraint_t cnstr)
 /* \brief update the weight of a variable, and enable/disable it.
  * @return Returns whether a change was made
  */
-void System::update_variable_weight(lmm_variable_t var, double weight)
+void System::update_variable_weight(Variable* var, double weight)
 {
   xbt_assert(weight >= 0, "Variable weight should not be negative!");
 
@@ -891,7 +890,7 @@ void System::update_variable_weight(lmm_variable_t var, double weight)
   XBT_OUT();
 }
 
-void System::update_constraint_bound(lmm_constraint_t cnst, double bound)
+void System::update_constraint_bound(Constraint* cnst, double bound)
 {
   modified = true;
   update_modified_set(cnst);
@@ -901,15 +900,15 @@ void System::update_constraint_bound(lmm_constraint_t cnst, double bound)
 /** \brief Update the constraint set propagating recursively to other constraints so the system should not be entirely
  *  computed.
  *
- *  \param cnst the lmm_constraint_t affected by the change
+ *  \param cnst the Constraint* affected by the change
  *
  *  A recursive algorithm to optimize the system recalculation selecting only constraints that have changed. Each
  *  constraint change is propagated to the list of constraints for each variable.
  */
-void System::update_modified_set_rec(lmm_constraint_t cnst)
+void System::update_modified_set_rec(Constraint* cnst)
 {
   for (Element const& elem : cnst->enabled_element_set) {
-    lmm_variable_t var = elem.variable;
+    Variable* var = elem.variable;
     for (Element const& elem2 : var->cnsts) {
       if (var->visited == visited_counter)
         break;
@@ -923,7 +922,7 @@ void System::update_modified_set_rec(lmm_constraint_t cnst)
   }
 }
 
-void System::update_modified_set(lmm_constraint_t cnst)
+void System::update_modified_set(Constraint* cnst)
 {
   /* nothing to do if selective update isn't active */
   if (selective_update_active && not cnst->modified_constraint_set_hook.is_linked()) {

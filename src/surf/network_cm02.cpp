@@ -182,7 +182,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       int n = action->getVariable()->get_number_of_constraint();
 
       for (int i = 0; i < n; i++){
-        lmm_constraint_t constraint = action->getVariable()->get_constraint(i);
+        kernel::lmm::Constraint* constraint = action->getVariable()->get_constraint(i);
         NetworkCm02Link* link       = static_cast<NetworkCm02Link*>(constraint->get_id());
         double value = action->getVariable()->get_value() * action->getVariable()->get_constraint_weight(i);
         TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), value, action->getLastUpdate(),
@@ -231,7 +231,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
     if (TRACE_is_enabled()) {
       int n = action.getVariable()->get_number_of_constraint();
       for (int i = 0; i < n; i++) {
-        lmm_constraint_t constraint = action.getVariable()->get_constraint(i);
+        kernel::lmm::Constraint* constraint = action.getVariable()->get_constraint(i);
         NetworkCm02Link* link = static_cast<NetworkCm02Link*>(constraint->get_id());
         TRACE_surf_link_set_utilization(
             link->getCname(), action.getCategory(),
@@ -380,7 +380,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
     if (value > 0)
       turnOn();
     else {
-      lmm_variable_t var       = nullptr;
+      kernel::lmm::Variable* var = nullptr;
       const_lmm_element_t elem = nullptr;
       double now               = surf_get_clock();
 
@@ -414,7 +414,7 @@ void NetworkCm02Link::setBandwidth(double value)
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
 
-    lmm_variable_t var;
+    kernel::lmm::Variable* var;
     const_lmm_element_t elem     = nullptr;
     const_lmm_element_t nextelem = nullptr;
     int numelem                  = 0;
@@ -430,7 +430,7 @@ void NetworkCm02Link::setBandwidth(double value)
 void NetworkCm02Link::setLatency(double value)
 {
   double delta                 = value - latency_.peak;
-  lmm_variable_t var           = nullptr;
+  kernel::lmm::Variable* var   = nullptr;
   const_lmm_element_t elem     = nullptr;
   const_lmm_element_t nextelem = nullptr;
   int numelem                  = 0;

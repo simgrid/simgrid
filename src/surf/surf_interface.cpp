@@ -518,7 +518,7 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 namespace simgrid {
 namespace surf {
 
-Resource::Resource(Model* model, const std::string& name, lmm_constraint_t constraint)
+Resource::Resource(Model* model, const std::string& name, kernel::lmm::Constraint* constraint)
     : name_(name), model_(model), constraint_(constraint)
 {}
 
@@ -565,9 +565,9 @@ bool Resource::operator==(const Resource &other) const {
   return name_ == other.name_;
 }
 
-lmm_constraint_t Resource::constraint() const
+kernel::lmm::Constraint* Resource::constraint() const
 {
-  return constraint_;
+  return const_cast<kernel::lmm::Constraint*>(constraint_);
 }
 
 }
@@ -584,7 +584,7 @@ Action::Action(simgrid::surf::Model* model, double cost, bool failed) : Action(m
 {
 }
 
-Action::Action(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var)
+Action::Action(simgrid::surf::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
     : remains_(cost), start_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
 {
   if (failed)
