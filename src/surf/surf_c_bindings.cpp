@@ -66,6 +66,15 @@ double surf_solve(double max_date)
       time_delta = next_event_virt;
   }
 
+  for (auto const& model : *all_existing_models) {
+    if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
+        model != surf_storage_model) {
+      double next_event_model = model->nextOccuringEvent(NOW);
+      if ((time_delta < 0.0 || next_event_model < time_delta) && next_event_model >= 0.0)
+        time_delta = next_event_model;
+    }
+  }
+
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 
   XBT_DEBUG("Looking for next trace event");
