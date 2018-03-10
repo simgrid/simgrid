@@ -28,10 +28,6 @@ CFLAGS = -std=gnu99 -g -O2 $(WARNINGS) $(EXTRA_CFLAGS) # Use this line to get be
 # the targets for which you listed the dependencies above.
 
 # The blanks before the $(CC) must be a Tab char, not spaces
-%: %.o
-	$(CC) -L$(strip $(SIMGRID_INSTALL_PATH))/lib/    $(CFLAGS) $^ -lsimgrid -o $@
-%.o: %.c
-	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include $(CFLAGS) -c -o $@ $<
 %: %.c
 	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include -L$(strip $(SIMGRID_INSTALL_PATH))/lib/  $(CFLAGS) $^ -lsimgrid -o $@ 
 
