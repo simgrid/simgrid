@@ -351,7 +351,7 @@ int NetworkNS3Action::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (action_hook.is_linked())
+    if (stateSetHook_.is_linked())
       simgrid::xbt::intrusive_erase(*stateSet_, *this);
     XBT_DEBUG ("Removing action %p", this);
     delete this;

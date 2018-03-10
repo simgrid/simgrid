@@ -636,7 +636,7 @@ int CpuTiAction::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (action_hook.is_linked())
+    if (stateSetHook_.is_linked())
       simgrid::xbt::intrusive_erase(*getStateSet(), *this);
     /* remove from action_set */
     if (action_ti_hook.is_linked())

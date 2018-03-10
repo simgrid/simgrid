@@ -96,10 +96,11 @@ typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_
  */
 XBT_PUBLIC_CLASS Action {
 public:
-  boost::intrusive::list_member_hook<> action_hook;
-  boost::intrusive::list_member_hook<> action_lmm_hook;
-  typedef boost::intrusive::member_hook<
-    Action, boost::intrusive::list_member_hook<>, &Action::action_hook> ActionOptions;
+  boost::intrusive::list_member_hook<> modifiedSetHook_; /* Used by the lazy update to list the actions to track */
+
+  boost::intrusive::list_member_hook<> stateSetHook_;
+  typedef boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::stateSetHook_>
+      ActionOptions;
   typedef boost::intrusive::list<Action, ActionOptions> ActionList;
 
   enum class State {
@@ -138,7 +139,6 @@ public:
    */
   Action(simgrid::surf::Model * model, double cost, bool failed, kernel::lmm::Variable* var);
 
-  /** @brief Destructor */
   virtual ~Action();
 
   /**
@@ -252,7 +252,7 @@ private:
   double lastUpdate_                                  = 0;
   double lastValue_                                   = 0;
   kernel::lmm::Variable* variable_                    = nullptr;
-  Action::Type hat_                                   = Action::Type::NOTSET;
+  Action::Type type_                                  = Action::Type::NOTSET;
   boost::optional<heap_type::handle_type> heapHandle_ = boost::none;
 
 public:
@@ -267,16 +267,17 @@ public:
   void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
   double getLastValue() const { return lastValue_; }
   void setLastValue(double val) { lastValue_ = val; }
-  Action::Type getHat() const { return hat_; }
-  bool is_linked() const { return action_lmm_hook.is_linked(); }
+  Action::Type getType() const { return type_; }
+  bool is_linked() const { return modifiedSetHook_.is_linked(); }
+
 protected:
   Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;
 };
 
 typedef Action::ActionList ActionList;
 
-typedef boost::intrusive::member_hook<
-  Action, boost::intrusive::list_member_hook<>, &Action::action_lmm_hook> ActionLmmOptions;
+typedef boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::modifiedSetHook_>
+    ActionLmmOptions;
 typedef boost::intrusive::list<Action, ActionLmmOptions> ActionLmmList;
 typedef ActionLmmList* ActionLmmListPtr;
 

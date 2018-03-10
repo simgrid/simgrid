@@ -414,7 +414,7 @@ int L07Action::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (action_hook.is_linked())
+    if (stateSetHook_.is_linked())
       simgrid::xbt::intrusive_erase(*stateSet_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());

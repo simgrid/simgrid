@@ -412,7 +412,7 @@ double Model::nextOccuringEventLazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action->getPriority() <= 0 || action->getHat() == Action::Type::LATENCY)
+    if (action->getPriority() <= 0 || action->getType() == Action::Type::LATENCY)
       continue;
 
     action->updateRemainingLazy(now);
@@ -630,7 +630,7 @@ void Action::setSharingWeight(double weight)
 void Action::cancel(){
   setState(Action::State::failed);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
-    if (action_lmm_hook.is_linked())
+    if (modifiedSetHook_.is_linked())
       simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
     heapRemove(getModel()->getActionHeap());
   }
@@ -639,14 +639,14 @@ void Action::cancel(){
 int Action::unref(){
   refcount_--;
   if (not refcount_) {
-    if (action_hook.is_linked())
+    if (stateSetHook_.is_linked())
       simgrid::xbt::intrusive_erase(*stateSet_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
       /* remove from heap */
       heapRemove(getModel()->getActionHeap());
-      if (action_lmm_hook.is_linked())
+      if (modifiedSetHook_.is_linked())
         simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
     }
     delete this;
@@ -698,13 +698,13 @@ bool Action::isSuspended()
  */
 void Action::heapInsert(heap_type& heap, double key, Action::Type hat)
 {
-  hat_ = hat;
+  type_       = hat;
   heapHandle_ = heap.emplace(std::make_pair(key, this));
 }
 
 void Action::heapRemove(heap_type& heap)
 {
-  hat_ = Action::Type::NOTSET;
+  type_ = Action::Type::NOTSET;
   if (heapHandle_) {
     heap.erase(*heapHandle_);
     clearHeapHandle();
@@ -713,7 +713,7 @@ void Action::heapRemove(heap_type& heap)
 
 void Action::heapUpdate(heap_type& heap, double key, Action::Type hat)
 {
-  hat_ = hat;
+  type_ = hat;
   if (heapHandle_) {
     heap.update(*heapHandle_, std::make_pair(key, this));
   } else {

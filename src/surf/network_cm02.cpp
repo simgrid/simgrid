@@ -191,14 +191,14 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     }
 
     // if I am wearing a latency hat
-    if (action->getHat() == Action::Type::LATENCY) {
+    if (action->getType() == Action::Type::LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       maxminSystem_->update_variable_weight(action->getVariable(), action->weight_);
       action->heapRemove(getActionHeap());
       action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
-    } else if (action->getHat() == Action::Type::MAX_DURATION || action->getHat() == Action::Type::NORMAL) {
+    } else if (action->getType() == Action::Type::MAX_DURATION || action->getType() == Action::Type::NORMAL) {
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
