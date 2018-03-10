@@ -97,6 +97,11 @@ typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_
 XBT_PUBLIC_CLASS Action {
 public:
   boost::intrusive::list_member_hook<> modifiedSetHook_; /* Used by the lazy update to list the actions to track */
+  bool isLinkedModifiedSet() const { return modifiedSetHook_.is_linked(); }
+
+  typedef boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::modifiedSetHook_>
+      ActionLmmOptions;
+  typedef boost::intrusive::list<Action, ActionLmmOptions> ActionLmmList;
 
   boost::intrusive::list_member_hook<> stateSetHook_;
   typedef boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::stateSetHook_>
@@ -268,18 +273,14 @@ public:
   double getLastValue() const { return lastValue_; }
   void setLastValue(double val) { lastValue_ = val; }
   Action::Type getType() const { return type_; }
-  bool is_linked() const { return modifiedSetHook_.is_linked(); }
 
 protected:
   Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;
 };
 
 typedef Action::ActionList ActionList;
-
-typedef boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::modifiedSetHook_>
-    ActionLmmOptions;
-typedef boost::intrusive::list<Action, ActionLmmOptions> ActionLmmList;
-typedef ActionLmmList* ActionLmmListPtr;
+typedef Action::ActionLmmList ActionLmmList;
+typedef Action::ActionLmmList* ActionLmmListPtr;
 
 /*********
  * Model *

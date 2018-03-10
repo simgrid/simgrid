@@ -536,7 +536,7 @@ template <class CnstList> void System::solve(CnstList& cnst_list)
 
         elem.make_active();
         simgrid::surf::Action* action = static_cast<simgrid::surf::Action*>(elem.variable->id);
-        if (keep_track && not action->is_linked())
+        if (keep_track && not action->isLinkedModifiedSet())
           keep_track->push_back(*action);
       }
     }
