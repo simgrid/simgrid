@@ -507,7 +507,7 @@ void CpuTi::updateActionsFinishTime(double now)
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
-      action.heapUpdate(model()->getActionHeap(), min_finish, NOTSET);
+      action.heapUpdate(model()->getActionHeap(), min_finish, Action::Type::NOTSET);
     else
       action.heapRemove(model()->getActionHeap());
 
@@ -693,7 +693,7 @@ void CpuTiAction::setMaxDuration(double duration)
     min_finish = getFinishTime();
 
   /* add in action heap */
-  heapUpdate(getModel()->getActionHeap(), min_finish, NOTSET);
+  heapUpdate(getModel()->getActionHeap(), min_finish, Action::Type::NOTSET);
 
   XBT_OUT();
 }

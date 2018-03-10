@@ -191,16 +191,16 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     }
 
     // if I am wearing a latency hat
-    if (action->getHat() == LATENCY) {
+    if (action->getHat() == Action::Type::LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       maxminSystem_->update_variable_weight(action->getVariable(), action->weight_);
       action->heapRemove(getActionHeap());
       action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
-    } else if (action->getHat() == MAX_DURATION || action->getHat() == NORMAL) {
-        // no need to communicate anymore
-        // assume that flows that reached max_duration have remaining of 0
+    } else if (action->getHat() == Action::Type::MAX_DURATION || action->getHat() == Action::Type::NORMAL) {
+      // no need to communicate anymore
+      // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
       action->setRemains(0);
       action->finish(Action::State::done);
@@ -312,7 +312,8 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     if (getUpdateMechanism() == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->getLastUpdate());
-      action->heapInsert(getActionHeap(), action->latency_ + action->getLastUpdate(), route.empty() ? NORMAL : LATENCY);
+      action->heapInsert(getActionHeap(), action->latency_ + action->getLastUpdate(),
+                         route.empty() ? Action::Type::NORMAL : Action::Type::LATENCY);
     }
   } else
     action->setVariable(maxminSystem_->variable_new(action, 1.0, -1.0, constraints_per_variable));

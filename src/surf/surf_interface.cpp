@@ -413,7 +413,7 @@ double Model::nextOccuringEventLazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action->getPriority() <= 0 || action->getHat()==LATENCY)
+    if (action->getPriority() <= 0 || action->getHat() == Action::Type::LATENCY)
       continue;
 
     action->updateRemainingLazy(now);
@@ -445,7 +445,7 @@ double Model::nextOccuringEventLazy(double now)
         action->getMaxDuration());
 
     if (min > -1) {
-      action->heapUpdate(actionHeap_, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      action->heapUpdate(actionHeap_, min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
       DIE_IMPOSSIBLE;
@@ -755,7 +755,7 @@ bool Action::isSuspended()
  * LATENCY = this is a heap entry to warn us when the latency is payed
  * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
  */
-void Action::heapInsert(heap_type& heap, double key, enum heap_action_type hat)
+void Action::heapInsert(heap_type& heap, double key, Action::Type hat)
 {
   hat_ = hat;
   heapHandle_ = heap.emplace(std::make_pair(key, this));
@@ -763,14 +763,14 @@ void Action::heapInsert(heap_type& heap, double key, enum heap_action_type hat)
 
 void Action::heapRemove(heap_type& heap)
 {
-  hat_ = NOTSET;
+  hat_ = Action::Type::NOTSET;
   if (heapHandle_) {
     heap.erase(*heapHandle_);
     clearHeapHandle();
   }
 }
 
-void Action::heapUpdate(heap_type& heap, double key, enum heap_action_type hat)
+void Action::heapUpdate(heap_type& heap, double key, Action::Type hat)
 {
   hat_ = hat;
   if (heapHandle_) {

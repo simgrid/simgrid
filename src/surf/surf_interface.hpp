@@ -80,17 +80,6 @@ extern XBT_PRIVATE simgrid::xbt::signal<void()> surfExitCallbacks;
 
 int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
 
-/***********
- * Classes *
- ***********/
-
-enum heap_action_type{
-  LATENCY = 100,
-  MAX_DURATION,
-  NORMAL,
-  NOTSET
-};
-
 /**********
  * Action *
  **********/
@@ -134,6 +123,8 @@ public:
     suspended,
     sleeping
   };
+
+  enum class Type { LATENCY = 100, MAX_DURATION, NORMAL, NOTSET };
 
   /**
    * @brief Action constructor
@@ -268,14 +259,14 @@ private:
   double lastUpdate_                                  = 0;
   double lastValue_                                   = 0;
   lmm_variable_t variable_                            = nullptr;
-  enum heap_action_type hat_                          = NOTSET;
+  Action::Type hat_                                   = Action::Type::NOTSET;
   boost::optional<heap_type::handle_type> heapHandle_ = boost::none;
 
 public:
   virtual void updateRemainingLazy(double now) { THROW_IMPOSSIBLE; };
-  void heapInsert(heap_type& heap, double key, enum heap_action_type hat);
+  void heapInsert(heap_type & heap, double key, Action::Type hat);
   void heapRemove(heap_type& heap);
-  void heapUpdate(heap_type& heap, double key, enum heap_action_type hat);
+  void heapUpdate(heap_type & heap, double key, Action::Type hat);
   void clearHeapHandle() { heapHandle_ = boost::none; }
   lmm_variable_t getVariable() const { return variable_; }
   void setVariable(lmm_variable_t var) { variable_ = var; }
@@ -283,7 +274,7 @@ public:
   void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
   double getLastValue() const { return lastValue_; }
   void setLastValue(double val) { lastValue_ = val; }
-  enum heap_action_type getHat() const { return hat_; }
+  Action::Type getHat() const { return hat_; }
   bool is_linked() const { return action_lmm_hook.is_linked(); }
 protected:
   Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;
