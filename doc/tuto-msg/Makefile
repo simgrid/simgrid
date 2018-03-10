@@ -11,7 +11,6 @@ CC ?= gcc                     # Your compiler (on Mac, use clang instead)
 ############################################################################
 
 all: masterworker
-masterworker: masterworker.o
 
 WARNING = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
           -Wmissing-declarations -Wstrict-prototypes -Wmissing-prototypes \
