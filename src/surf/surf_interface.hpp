@@ -71,13 +71,6 @@ XBT_PUBLIC(double) surf_get_clock();
  */
 XBT_PUBLIC_DATA(std::vector<sg_host_t>) host_that_restart;
 
-namespace simgrid {
-namespace surf {
-
-extern XBT_PRIVATE simgrid::xbt::signal<void()> surfExitCallbacks;
-}
-}
-
 int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
 
 /**********

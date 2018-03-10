@@ -337,7 +337,6 @@ void surf_exit()
     delete model;
   delete all_existing_models;
 
-  simgrid::surf::surfExitCallbacks();
 
   if (future_evt_set) {
     delete future_evt_set;

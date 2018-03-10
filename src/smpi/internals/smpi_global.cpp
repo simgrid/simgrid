@@ -6,6 +6,7 @@
 #include "SmpiHost.hpp"
 #include "mc/mc.h"
 #include "private.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/forward.hpp"
@@ -620,7 +621,7 @@ void SMPI_init(){
   smpi_global_init();
   smpi_check_options();
   TRACE_smpi_alloc();
-  simgrid::surf::surfExitCallbacks.connect(TRACE_smpi_release);
+  simgrid::s4u::onSimulationEnd.connect(TRACE_smpi_release);
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
     smpi_backup_global_memory_segment();
 }
