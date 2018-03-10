@@ -100,7 +100,7 @@ foreach(x
     platform-properties
     plugin-hostload
     trace_integration)
-  ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw;boost" 
+  ADD_TESH_FACTORIES(tesh-msg-${x} "raw" 
                                    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
 				   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/${x}
 				   --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} 
@@ -111,4 +111,4 @@ foreach(x cloud-sharing)
   ADD_TESH(tesh-msg-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/${x}/${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(tesh-app-bittorrent-parallel         "thread;ucontext;raw;boost" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/app-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/app-bittorrent app-bittorrent.tesh)
+ADD_TESH_FACTORIES(tesh-app-bittorrent-parallel         "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/app-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/app-bittorrent app-bittorrent.tesh)
