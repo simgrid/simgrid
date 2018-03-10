@@ -85,7 +85,7 @@ namespace lmm {
  *
  *     max( var1.weight * var1.value * elem5.value  ,  var3.weight * var3.value * elem6.value ) <= cons3.bound
  *
- * This is usefull for the sharing of resources for various models.
+ * This is useful for the sharing of resources for various models.
  * For instance, for the network model, each link is associated to a constraint and each communication to a variable.
  *
  * Implementation details
@@ -209,7 +209,7 @@ struct ConstraintLight {
 XBT_PUBLIC_CLASS Constraint
 {
 public:
-  Constraint() = default;
+  Constraint() = delete;
   Constraint(void* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
