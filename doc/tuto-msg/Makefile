@@ -12,10 +12,10 @@ CC ?= gcc                     # Your compiler (on Mac, use clang instead)
 
 all: masterworker
 
-WARNINGS = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
-          -Wmissing-declarations -Wstrict-prototypes -Wmissing-prototypes \
-          -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls \
-	  -Wnested-externs -Wpointer-arith -Wwrite-strings
+WARNINGS = -Wall -Wextra -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
+          -Wmissing-declarations -Wmissing-prototypes -Wpointer-arith -Wwrite-strings \
+          -Wmissing-noreturn -Wredundant-decls \
+	  -Wno-nested-externs  -Wno-strict-prototypes -Wno-unused-parameter
 WARNINGS += -Werror # Comment that line to not be in paranoid mode
 
 # CFLAGS = -std=gnu99 -g -O0 $(WARNINGS) $(EXTRA_CFLAGS) # Use this line to make debugging easier

@@ -49,8 +49,7 @@ static int master(int argc, char* argv[])
   XBT_INFO("Got %d workers and will send tasks for %g seconds", workers_count, timeout);
 
   /* Dispatch the tasks */
-  xbt_dynar_t idle_hosts = xbt_dynar_new(sizeof(msg_host_t), NULL);
-  int task_num           = 0;
+  int task_num = 0;
   while (MSG_get_clock() < timeout) {
 
     /* Retrieve the next incomming request */
@@ -77,7 +76,7 @@ static int master(int argc, char* argv[])
   }
 
   XBT_DEBUG("Time is up. Let's tell everybody the computation is over.");
-  for (int i = 0; i < workers_count; i++) { /* We don't write in order, but the total amount is right
+  for (int i = 0; i < workers_count; i++) { /* We don't write in order, but the total amount is right */
 
     /* Don't write to a worker that did not request for work, or it will deadlock: both would be sending something */
     msg_task_t request = NULL;
