@@ -26,9 +26,10 @@ CFLAGS = -std=gnu99 -g -O2 $(WARNINGS) $(EXTRA_CFLAGS) # Use this line to get be
 # The following are implicit rules, used by default to actually build
 # the targets for which you listed the dependencies above.
 
+.SUFFIXES: .c
 # The blanks before the $(CC) must be a Tab char, not spaces
-%: %.c
-	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include -L$(strip $(SIMGRID_INSTALL_PATH))/lib/  $(CFLAGS) $^ -lsimgrid -o $@ 
+.c:
+	$(CC) -I$(strip $(SIMGRID_INSTALL_PATH))/include -L$(strip $(SIMGRID_INSTALL_PATH))/lib/ $(CFLAGS) $^ -lsimgrid -o $@
 
 clean:
 	rm -f *.o *~ masterworker masterworker-sol1 masterworker-sol2 masterworker-sol3 masterworker-sol4
