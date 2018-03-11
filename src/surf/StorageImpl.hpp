@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team.
+/* Copyright (c) 2004-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,7 +8,7 @@
 #include <xbt/signal.hpp>
 
 #include "simgrid/s4u/Storage.hpp"
-#include "src/kernel/model/Resource.hpp"
+#include "src/kernel/resource/Resource.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "surf_interface.hpp"
 #include <map>

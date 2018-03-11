@@ -9,7 +9,7 @@ bool init_unit_test(); // boost forget to give this prototype on NetBSD, which d
 #define BOOST_TEST_NO_MAIN
 #include <boost/test/unit_test.hpp>
 
-#include "src/kernel/model/Resource.hpp"
+#include "src/kernel/resource/Resource.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
 

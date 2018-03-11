@@ -8,7 +8,7 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/kernel/model/Resource.hpp"
+#include "src/kernel/resource/Resource.hpp"
 
 #include <list>
 

@@ -303,8 +303,8 @@ set(SURF_SRC
   src/kernel/lmm/maxmin.hpp
   src/kernel/lmm/maxmin.cpp
   
-  src/kernel/model/Resource.hpp
-  src/kernel/model/Resource.cpp
+  src/kernel/resource/Resource.hpp
+  src/kernel/resource/Resource.cpp
   
   src/kernel/routing/ClusterZone.cpp
   src/kernel/routing/ClusterZone.hpp

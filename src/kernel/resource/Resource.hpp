@@ -81,7 +81,7 @@ protected:
     tmgr_trace_event_t event; /**< The associated trace event associated to the metric */
   };
 };
-} // namespace model
+} // namespace resource
 } // namespace kernel
 } // namespace simgrid
 
