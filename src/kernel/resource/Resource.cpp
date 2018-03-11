@@ -64,7 +64,7 @@ bool Resource::operator==(const Resource& other) const
 
 kernel::lmm::Constraint* Resource::constraint() const
 {
-  return const_cast<kernel::lmm::Constraint*>(constraint_);
+  return constraint_;
 }
 
 } // namespace resource

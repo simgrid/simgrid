@@ -73,7 +73,7 @@ public: /* LMM */
   kernel::lmm::Constraint* constraint() const;
 
 protected:
-  const kernel::lmm::Constraint* constraint_ = nullptr;
+  kernel::lmm::Constraint* const constraint_ = nullptr;
 
   struct Metric {
     double peak;              /**< The peak of the metric, ie its max value */
