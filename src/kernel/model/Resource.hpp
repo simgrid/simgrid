@@ -10,7 +10,7 @@
 
 namespace simgrid {
 namespace kernel {
-namespace model {
+namespace resource {
 
 /** @ingroup SURF_interface
  * @brief SURF resource interface class
@@ -86,9 +86,9 @@ protected:
 } // namespace simgrid
 
 namespace std {
-template <> class hash<simgrid::kernel::model::Resource> {
+template <> class hash<simgrid::kernel::resource::Resource> {
 public:
-  std::size_t operator()(const simgrid::kernel::model::Resource& r) const
+  std::size_t operator()(const simgrid::kernel::resource::Resource& r) const
   {
     return (std::size_t)xbt_str_hash(r.getCname());
   }

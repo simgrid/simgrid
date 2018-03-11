@@ -124,7 +124,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
       while (cnst != nullptr) {
         i++;
         void* constraint_id = cnst->get_id();
-        if (static_cast<simgrid::kernel::model::Resource*>(constraint_id)->isOff()) {
+        if (static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", &action);
           action.finish(Action::State::failed);
           break;

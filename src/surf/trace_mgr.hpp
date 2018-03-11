@@ -87,8 +87,8 @@ public:
   future_evt_set();
   virtual ~future_evt_set();
   double next_date() const;
-  tmgr_trace_event_t pop_leq(double date, double* value, simgrid::kernel::model::Resource** resource);
-  tmgr_trace_event_t add_trace(tmgr_trace_t trace, simgrid::kernel::model::Resource * resource);
+  tmgr_trace_event_t pop_leq(double date, double* value, simgrid::kernel::resource::Resource** resource);
+  tmgr_trace_event_t add_trace(tmgr_trace_t trace, simgrid::kernel::resource::Resource * resource);
 
 private:
   typedef std::pair<double, tmgr_trace_event_t> Qelt;

@@ -81,7 +81,7 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class StorageImpl : public kernel::model::Resource, public PropertyHolder {
+class StorageImpl : public kernel::resource::Resource, public PropertyHolder {
 public:
   /** @brief Storage constructor */
   StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
