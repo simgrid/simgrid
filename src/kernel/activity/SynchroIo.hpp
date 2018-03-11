@@ -20,7 +20,7 @@ public:
   void resume() override;
   void post() override;
 
-  surf_action_t surf_io = nullptr;
+  simgrid::kernel::resource::Action* surf_io = nullptr;
   };
 
 }}} // namespace simgrid::kernel::activity

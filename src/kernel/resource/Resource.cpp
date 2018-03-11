@@ -11,7 +11,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-Resource::Resource(surf::Model* model, const std::string& name, lmm::Constraint* constraint)
+Resource::Resource(Model* model, const std::string& name, lmm::Constraint* constraint)
     : name_(name), model_(model), constraint_(constraint)
 {
 }
@@ -42,7 +42,7 @@ double Resource::getLoad()
   return constraint_->get_usage();
 }
 
-surf::Model* Resource::model() const
+Model* Resource::model() const
 {
   return model_;
 }

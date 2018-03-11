@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -56,7 +56,7 @@ public:
   virtual void setBound(double bound);
 
   /* The vm object of the lower layer */
-  surf::Action* action_ = nullptr;
+  kernel::resource::Action* action_ = nullptr;
 
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);

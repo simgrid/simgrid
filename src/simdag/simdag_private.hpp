@@ -47,7 +47,7 @@ struct s_SD_task_t {
   double alpha;          /* used by typed parallel tasks */
   double start_time;
   double finish_time;
-  surf_action_t surf_action;
+  simgrid::kernel::resource::Action* surf_action;
   unsigned short watch_points;  /* bit field xor()ed with masks */
 
   int marked;                   /* used to check if the task DAG has some cycle*/

@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -362,7 +361,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
   while (not actionHeapIsEmpty() && actionHeapTopDate() <= now) {
     CpuTiAction* action = static_cast<CpuTiAction*>(actionHeapPop());
     XBT_DEBUG("Action %p: finish", action);
-    action->finish(Action::State::done);
+    action->finish(kernel::resource::Action::State::done);
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
     /* update remaining amount of all actions */
@@ -440,10 +439,11 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
       /* put all action running on cpu to failed */
       for (CpuTiAction& action : actionSet_) {
-        if (action.getState() == Action::State::running || action.getState() == Action::State::ready ||
-            action.getState() == Action::State::not_in_the_system) {
+        if (action.getState() == kernel::resource::Action::State::running ||
+            action.getState() == kernel::resource::Action::State::ready ||
+            action.getState() == kernel::resource::Action::State::not_in_the_system) {
           action.setFinishTime(date);
-          action.setState(Action::State::failed);
+          action.setState(kernel::resource::Action::State::failed);
           action.heapRemove(model()->getActionHeap());
         }
       }
@@ -473,7 +473,7 @@ void CpuTi::updateActionsFinishTime(double now)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != Action::SuspendStates::not_suspended)
+    if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
       continue;
 
     sum_priority += 1.0 / action.getPriority();
@@ -487,7 +487,7 @@ void CpuTi::updateActionsFinishTime(double now)
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action.suspended_ == Action::SuspendStates::not_suspended && action.getPriority() > 0) {
+    if (action.suspended_ == kernel::resource::Action::SuspendStates::not_suspended && action.getPriority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
       total_area = (action.getRemains()) * sum_priority * action.getPriority();
 
@@ -507,7 +507,7 @@ void CpuTi::updateActionsFinishTime(double now)
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
-      action.heapUpdate(model()->getActionHeap(), min_finish, Action::Type::NOTSET);
+      action.heapUpdate(model()->getActionHeap(), min_finish, kernel::resource::Action::Type::NOTSET);
     else
       action.heapRemove(model()->getActionHeap());
 
@@ -550,7 +550,7 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* action suspended, skip it */
-    if (action.suspended_ != Action::SuspendStates::not_suspended)
+    if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
       continue;
 
     /* action don't need update */
@@ -589,7 +589,7 @@ CpuAction *CpuTi::sleep(double duration)
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
 
   action->setMaxDuration(duration);
-  action->suspended_ = Action::SuspendStates::sleeping;
+  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);

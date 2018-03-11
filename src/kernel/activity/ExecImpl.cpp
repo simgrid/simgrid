@@ -75,10 +75,10 @@ void simgrid::kernel::activity::ExecImpl::post()
                                  /* If the host running the synchro failed, notice it. This way, the asking
                                   * process can be killed if it runs on that host itself */
     state = SIMIX_FAILED;
-  } else if (surfAction_->getState() == simgrid::surf::Action::State::failed) {
+  } else if (surfAction_->getState() == simgrid::kernel::resource::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state = SIMIX_CANCELED;
-  } else if (timeoutDetector && timeoutDetector->getState() == simgrid::surf::Action::State::done) {
+  } else if (timeoutDetector && timeoutDetector->getState() == simgrid::kernel::resource::Action::State::done) {
     state = SIMIX_TIMEOUT;
   } else {
     state = SIMIX_DONE;
@@ -104,8 +104,8 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
 {
 
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    surf_action_t oldAction = this->surfAction_;
-    surf_action_t newAction = to->pimpl_cpu->execution_start(oldAction->getCost());
+    simgrid::kernel::resource::Action* oldAction = this->surfAction_;
+    simgrid::kernel::resource::Action* newAction = to->pimpl_cpu->execution_start(oldAction->getCost());
     newAction->setRemains(oldAction->getRemains());
     newAction->setData(this);
     newAction->setSharingWeight(oldAction->getPriority());

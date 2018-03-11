@@ -9,7 +9,8 @@
 #include "src/kernel/resource/Action.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /** @ingroup SURF_interface
  * @brief SURF model interface class
@@ -96,5 +97,5 @@ private:
 
 } // namespace surf
 } // namespace simgrid
-
+} // namespace simgrid
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,8 +29,8 @@ public:
 
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
   sg_host_t host_               = nullptr;
-  surf_action_t surfAction_     = nullptr; /* The Surf execution action encapsulated */
-  surf::Action* timeoutDetector = nullptr;
+  kernel::resource::Action* surfAction_     = nullptr; /* The Surf execution action encapsulated */
+  kernel::resource::Action* timeoutDetector = nullptr;
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCreation;
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCompletion;
   static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> onMigration;

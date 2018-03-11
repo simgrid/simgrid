@@ -30,7 +30,7 @@ namespace surf {
  * @brief SURF network model interface class
  * @details A model is an object which handles the interactions between its Resources and its Actions
  */
-class NetworkModel : public Model {
+class NetworkModel : public kernel::resource::Model {
 public:
   /** @brief Constructor */
   NetworkModel() : Model() {}
@@ -61,7 +61,7 @@ public:
    * unlimited.
    * @return The action representing the communication
    */
-  virtual Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) = 0;
+  virtual kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) = 0;
 
   /** @brief Function pointer to the function to use to solve the lmm_system_t
    *
@@ -188,7 +188,7 @@ public:
  * @brief SURF network action interface class
  * @details A NetworkAction represents a communication between two [hosts](\ref HostImpl)
  */
-class NetworkAction : public simgrid::surf::Action {
+class NetworkAction : public simgrid::kernel::resource::Action {
 public:
   /** @brief Constructor
    *
@@ -196,7 +196,10 @@ public:
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
    */
-  NetworkAction(simgrid::surf::Model* model, double cost, bool failed) : simgrid::surf::Action(model, cost, failed) {}
+  NetworkAction(simgrid::kernel::resource::Model* model, double cost, bool failed)
+      : simgrid::kernel::resource::Action(model, cost, failed)
+  {
+  }
 
   /**
    * @brief NetworkAction constructor
@@ -206,10 +209,10 @@ public:
    * @param failed [description]
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  NetworkAction(simgrid::surf::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
-      : simgrid::surf::Action(model, cost, failed, var){};
+  NetworkAction(simgrid::kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
+      : simgrid::kernel::resource::Action(model, cost, failed, var){};
 
-  void setState(simgrid::surf::Action::State state) override;
+  void setState(simgrid::kernel::resource::Action::State state) override;
   virtual std::list<LinkImpl*> links();
 
   double latency_    = {};

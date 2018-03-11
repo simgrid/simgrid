@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,8 +40,8 @@ public:
 
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
-  Action *executeParallelTask(int host_nb, sg_host_t *host_list,
-                              double *flops_amount, double *bytes_amount, double rate) override;
+  kernel::resource::Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount,
+                                                double* bytes_amount, double rate) override;
 };
 
 class CpuL07Model : public CpuModel {
@@ -61,7 +60,7 @@ public:
   LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
 
-  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 
   HostL07Model *hostModel_;
 };
@@ -76,8 +75,8 @@ public:
   ~CpuL07() override;
   bool isUsed() override;
   void apply_event(tmgr_trace_event_t event, double value) override;
-  Action* execution_start(double size) override;
-  Action* sleep(double duration) override;
+  kernel::resource::Action* execution_start(double size) override;
+  kernel::resource::Action* sleep(double duration) override;
 
 protected:
   void onSpeedChange() override;
@@ -103,8 +102,9 @@ class L07Action : public CpuAction {
   friend Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t*host_list,
                                                    double *flops_amount, double *bytes_amount, double rate);
 public:
-  L07Action(Model *model, int host_nb, sg_host_t *host_list, double *flops_amount, double *bytes_amount, double rate);
- ~L07Action();
+  L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* host_list, double* flops_amount,
+            double* bytes_amount, double rate);
+  ~L07Action();
 
   void updateBound();
 

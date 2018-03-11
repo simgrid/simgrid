@@ -31,13 +31,13 @@ namespace surf {
  * @brief SURF Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class XBT_PRIVATE HostModel : public Model {
+class XBT_PRIVATE HostModel : public kernel::resource::Model {
 public:
   HostModel() : Model() {}
 
   virtual void ignoreEmptyVmInPmLMM();
-  virtual Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount,
-                                      double rate);
+  virtual kernel::resource::Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount,
+                                                        double* bytes_amount, double rate);
 };
 
 /************

@@ -26,12 +26,12 @@ public:
    * @param name The name of the Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(surf::Model * model, const std::string& name, lmm::Constraint* constraint);
+  Resource(Model * model, const std::string& name, lmm::Constraint* constraint);
 
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  surf::Model* model() const;
+  Model* model() const;
 
   /** @brief Get the name of the current Resource */
   const std::string& getName() const;
@@ -65,7 +65,7 @@ public:
 
 private:
   std::string name_;
-  surf::Model* model_;
+  Model* model_;
   bool isOn_ = true;
 
 public: /* LMM */

@@ -1,6 +1,6 @@
 /* A few basic tests for the surf library                                   */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
-    surf_action_t action = nullptr;
+    simgrid::kernel::resource::Action* action = nullptr;
     running = 0;
 
     double now = surf_get_clock();

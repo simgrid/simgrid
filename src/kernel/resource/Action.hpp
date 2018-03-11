@@ -9,9 +9,10 @@
 #include "src/surf/surf_interface.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
-typedef std::pair<double, simgrid::surf::Action*> heap_element_type;
+typedef std::pair<double, simgrid::kernel::resource::Action*> heap_element_type;
 typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_size<false>, boost::heap::stable<true>,
                                   boost::heap::compare<simgrid::xbt::HeapComparator<heap_element_type>>>
     heap_type;
@@ -59,7 +60,7 @@ public:
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    */
-  Action(simgrid::surf::Model * model, double cost, bool failed);
+  Action(simgrid::kernel::resource::Model * model, double cost, bool failed);
 
   /**
    * @brief Action constructor
@@ -69,20 +70,20 @@ public:
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  Action(simgrid::surf::Model * model, double cost, bool failed, kernel::lmm::Variable* var);
+  Action(simgrid::kernel::resource::Model * model, double cost, bool failed, kernel::lmm::Variable* var);
 
   virtual ~Action();
 
   /**
    * @brief Mark that the action is now finished
    *
-   * @param state the new [state](\ref simgrid::surf::Action::State) of the current Action
+   * @param state the new [state](\ref simgrid::kernel::resource::Action::State) of the current Action
    */
   void finish(Action::State state);
 
-  /** @brief Get the [state](\ref simgrid::surf::Action::State) of the current Action */
+  /** @brief Get the [state](\ref simgrid::kernel::resource::Action::State) of the current Action */
   Action::State getState() const; /**< get the state*/
-  /** @brief Set the [state](\ref simgrid::surf::Action::State) of the current Action */
+  /** @brief Set the [state](\ref simgrid::kernel::resource::Action::State) of the current Action */
   virtual void setState(Action::State state);
 
   /** @brief Get the bound of the current Action */
@@ -161,7 +162,7 @@ public:
   /** @brief Get the state set in which the action is */
   ActionList* getStateSet() const { return stateSet_; };
 
-  simgrid::surf::Model* getModel() const { return model_; }
+  simgrid::kernel::resource::Model* getModel() const { return model_; }
 
 protected:
   ActionList* stateSet_;
@@ -177,7 +178,7 @@ private:
       -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
   double cost_;
-  simgrid::surf::Model* model_;
+  simgrid::kernel::resource::Model* model_;
   void* data_ = nullptr; /**< for your convenience */
 
   /* LMM */
@@ -209,5 +210,6 @@ typedef Action::ActionList ActionList;
 typedef Action::ActionLmmList ActionLmmList;
 typedef Action::ActionLmmList* ActionLmmListPtr;
 } // namespace surf
+} // namespace simgrid
 } // namespace simgrid
 #endif

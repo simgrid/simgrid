@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2011, 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -56,7 +55,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   maxminSystem_ = new simgrid::kernel::lmm::System(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    modifiedSet_ = new ActionLmmList();
+    modifiedSet_              = new kernel::resource::ActionLmmList();
     maxminSystem_->keep_track = modifiedSet_;
   }
 }
@@ -138,13 +137,13 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
       turnOff();
 
       while ((var = cnst->get_variable(&elem))) {
-        Action* action = static_cast<Action*>(var->get_id());
+        kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
-        if (action->getState() == Action::State::running ||
-            action->getState() == Action::State::ready ||
-            action->getState() == Action::State::not_in_the_system) {
+        if (action->getState() == kernel::resource::Action::State::running ||
+            action->getState() == kernel::resource::Action::State::ready ||
+            action->getState() == kernel::resource::Action::State::not_in_the_system) {
           action->setFinishTime(date);
-          action->setState(Action::State::failed);
+          action->setState(kernel::resource::Action::State::failed);
         }
       }
     }
@@ -176,7 +175,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->setMaxDuration(duration);
-  action->suspended_ = Action::SuspendStates::sleeping;
+  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
   if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
@@ -199,7 +198,7 @@ CpuAction *CpuCas01::sleep(double duration)
 /**********
  * Action *
  **********/
-CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed,
+CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
                                kernel::lmm::Constraint* constraint, int requestedCore)
     : CpuAction(model, cost, failed,
                 model->getMaxminSystem()->variable_new(this, 1.0 / requestedCore, requestedCore * speed, 1))
@@ -212,7 +211,7 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
   model->getMaxminSystem()->expand(constraint, getVariable(), 1.0);
 }
 
-CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double speed,
+CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
                                kernel::lmm::Constraint* constraint)
     : CpuCas01Action(model, cost, failed, speed, constraint, 1)
 {

@@ -212,7 +212,7 @@ void System::variable_mallocator_free_f(void* var)
   delete static_cast<Variable*>(var);
 }
 
-Variable* System::variable_new(simgrid::surf::Action* id, double sharing_weight, double bound,
+Variable* System::variable_new(simgrid::kernel::resource::Action* id, double sharing_weight, double bound,
                                int number_of_constraints)
 {
   XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", this, id, sharing_weight, bound, number_of_constraints);
@@ -535,7 +535,7 @@ template <class CnstList> void System::solve(CnstList& cnst_list)
           cnst.usage = elem.consumption_weight / elem.variable->sharing_weight;
 
         elem.make_active();
-        simgrid::surf::Action* action = static_cast<simgrid::surf::Action*>(elem.variable->id);
+        simgrid::kernel::resource::Action* action = static_cast<simgrid::kernel::resource::Action*>(elem.variable->id);
         if (keep_track && not action->isLinkedModifiedSet())
           keep_track->push_back(*action);
       }
@@ -712,7 +712,7 @@ void System::update_variable_bound(Variable* var, double bound)
     update_modified_set(var->cnsts[0].constraint);
 }
 
-void Variable::initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
+void Variable::initialize(simgrid::kernel::resource::Action* id_value, double sharing_weight_value, double bound_value,
                           int number_of_constraints, unsigned visited_value)
 {
   id     = id_value;

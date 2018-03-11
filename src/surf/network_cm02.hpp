@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -42,7 +42,7 @@ public:
                        e_surf_link_sharing_policy_t policy) override;
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
-  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 };
 
 /************
@@ -67,7 +67,7 @@ class NetworkCm02Action : public NetworkAction {
   friend NetworkSmpiModel;
 
 public:
-  NetworkCm02Action(Model* model, double cost, bool failed) : NetworkAction(model, cost, failed){};
+  NetworkCm02Action(kernel::resource::Model* model, double cost, bool failed) : NetworkAction(model, cost, failed){};
   virtual ~NetworkCm02Action() = default;
   void updateRemainingLazy(double now) override;
 };

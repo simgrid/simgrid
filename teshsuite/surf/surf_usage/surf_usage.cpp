@@ -11,18 +11,18 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-static const char *string_action(simgrid::surf::Action::State state)
+static const char* string_action(simgrid::kernel::resource::Action::State state)
 {
   switch (state) {
-    case simgrid::surf::Action::State::ready:
+    case simgrid::kernel::resource::Action::State::ready:
       return "SURF_ACTION_READY";
-    case simgrid::surf::Action::State::running:
+    case simgrid::kernel::resource::Action::State::running:
       return "SURF_ACTION_RUNNING";
-    case simgrid::surf::Action::State::failed:
+    case simgrid::kernel::resource::Action::State::failed:
       return "SURF_ACTION_FAILED";
-    case simgrid::surf::Action::State::done:
+    case simgrid::kernel::resource::Action::State::done:
       return "SURF_ACTION_DONE";
-    case simgrid::surf::Action::State::not_in_the_system:
+    case simgrid::kernel::resource::Action::State::not_in_the_system:
       return "SURF_ACTION_NOT_IN_THE_SYSTEM";
     default:
       return "INVALID STATE";
@@ -44,13 +44,13 @@ int main(int argc, char **argv)
   simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
   /* Let's do something on it */
-  simgrid::surf::Action* actionA = hostA->pimpl_cpu->execution_start(1000.0);
-  simgrid::surf::Action* actionB = hostB->pimpl_cpu->execution_start(1000.0);
-  simgrid::surf::Action* actionC = hostB->pimpl_cpu->sleep(7.32);
+  simgrid::kernel::resource::Action* actionA = hostA->pimpl_cpu->execution_start(1000.0);
+  simgrid::kernel::resource::Action* actionB = hostB->pimpl_cpu->execution_start(1000.0);
+  simgrid::kernel::resource::Action* actionC = hostB->pimpl_cpu->sleep(7.32);
 
-  simgrid::surf::Action::State stateActionA = actionA->getState();
-  simgrid::surf::Action::State stateActionB = actionB->getState();
-  simgrid::surf::Action::State stateActionC = actionC->getState();
+  simgrid::kernel::resource::Action::State stateActionA = actionA->getState();
+  simgrid::kernel::resource::Action::State stateActionB = actionB->getState();
+  simgrid::kernel::resource::Action::State stateActionC = actionC->getState();
 
   /* And just look at the state of these tasks */
   XBT_INFO("actionA state: %s", string_action(stateActionA));
@@ -66,9 +66,9 @@ int main(int argc, char **argv)
     XBT_INFO("Next Event : %g", surf_get_clock());
     XBT_DEBUG("\t CPU actions");
 
-    simgrid::surf::ActionList* action_list = surf_cpu_model_pm->getFailedActionSet();
+    simgrid::kernel::resource::ActionList* action_list = surf_cpu_model_pm->getFailedActionSet();
     while (not action_list->empty()) {
-      simgrid::surf::Action& action = action_list->front();
+      simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Failed action");
       XBT_DEBUG("\t * Failed : %p", &action);
       action.unref();
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
     action_list = surf_cpu_model_pm->getDoneActionSet();
     while (not action_list->empty()) {
-      simgrid::surf::Action& action = action_list->front();
+      simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Done action");
       XBT_DEBUG("\t * Done : %p", &action);
       action.unref();
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
     action_list = surf_network_model->getFailedActionSet();
     while (not action_list->empty()) {
-      simgrid::surf::Action& action = action_list->front();
+      simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   Network Failed action");
       XBT_DEBUG("\t * Failed : %p", &action);
       action.unref();
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
     action_list = surf_network_model->getDoneActionSet();
     while (not action_list->empty()) {
-      simgrid::surf::Action& action = action_list->front();
+      simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   Network Done action");
       XBT_DEBUG("\t * Done : %p", &action);
       action.unref();

@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
  * Utils *
  *********/
 
-std::vector<surf_model_t> * all_existing_models = nullptr; /* to destroy models correctly */
+std::vector<simgrid::kernel::resource::Model*>* all_existing_models = nullptr; /* to destroy models correctly */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 std::vector<std::string> surf_path;
@@ -307,7 +307,7 @@ void surf_init(int *argc, char **argv)
 
   xbt_init(argc, argv);
   if (not all_existing_models)
-    all_existing_models = new std::vector<simgrid::surf::Model*>();
+    all_existing_models = new std::vector<simgrid::kernel::resource::Model*>();
   if (not future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 

@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,7 +32,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
                                       action->getLastUpdate(), now - action->getLastUpdate());
     }
 
-    action->finish(Action::State::done);
+    action->finish(kernel::resource::Action::State::done);
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
 
     /* set the remains to 0 due to precision problems when updating the remaining amount */
@@ -43,7 +42,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    for (Action const& action : *getRunningActionSet()) {
+    for (kernel::resource::Action const& action : *getRunningActionSet()) {
       if (smaller < 0 || action.getLastUpdate() < smaller)
         smaller = action.getLastUpdate();
     }
@@ -72,7 +71,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 
     if (((action.getRemainsNoUpdate() <= 0) && (action.getVariable()->get_weight() > 0)) ||
         ((action.getMaxDuration() != NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
-      action.finish(Action::State::done);
+      action.finish(kernel::resource::Action::State::done);
     }
   }
 }
@@ -80,12 +79,12 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu(Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
- : Cpu(model, host, nullptr/*constraint*/, speedPerPstate, core)
+Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core)
+    : Cpu(model, host, nullptr /*constraint*/, speedPerPstate, core)
 {
 }
 
-Cpu::Cpu(Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
+Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
          std::vector<double>* speedPerPstate, int core)
     : Resource(model, host->getCname(), constraint), coresAmount_(core), host_(host)
 {
@@ -198,7 +197,7 @@ void CpuAction::updateRemainingLazy(double now)
   setLastValue(getVariable()->get_value());
 }
 
-simgrid::xbt::signal<void(simgrid::surf::CpuAction*, Action::State)> CpuAction::onStateChange;
+simgrid::xbt::signal<void(simgrid::surf::CpuAction*, kernel::resource::Action::State)> CpuAction::onStateChange;
 
 void CpuAction::suspend(){
   Action::State previous = getState();

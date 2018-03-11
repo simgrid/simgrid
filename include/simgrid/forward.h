@@ -48,6 +48,8 @@ class ConstraintLight;
 class System;
 }
 namespace resource {
+class Action;
+class Model;
 class Resource;
 }
 namespace routing {

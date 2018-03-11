@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -87,7 +87,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
 
     if (((action.getRemainsNoUpdate() <= 0) && (action.getVariable()->get_weight() > 0)) ||
         ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
-      action.finish(Action::State::done);
+      action.finish(kernel::resource::Action::State::done);
     }
   }
 }
@@ -118,7 +118,7 @@ StorageAction* StorageN11::write(sg_size_t size)
  * Action *
  **********/
 
-StorageN11Action::StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage,
+StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
                                    e_surf_action_storage_type_t type)
     : StorageAction(model, cost, failed, model->getMaxminSystem()->variable_new(this, 1.0, -1.0, 3), storage, type)
 {

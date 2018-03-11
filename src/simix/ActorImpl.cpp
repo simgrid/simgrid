@@ -670,7 +670,7 @@ smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, doubl
                         [](void*, void* arg) {
                           auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
                           if (sleep->surf_sleep)
-                            sleep->surf_sleep->finish(simgrid::surf::Action::State::done);
+                            sleep->surf_sleep->finish(simgrid::kernel::resource::Action::State::done);
                           intrusive_ptr_release(sleep);
                           return 0;
                         },

@@ -150,28 +150,31 @@ double surf_solve(double max_date)
 /*********
  * MODEL *
  *********/
-static surf_action_t ActionListExtract(simgrid::surf::ActionList* list)
+static simgrid::kernel::resource::Action* ActionListExtract(simgrid::kernel::resource::ActionList* list)
 {
   if (list->empty())
     return nullptr;
-  surf_action_t res = &list->front();
+  simgrid::kernel::resource::Action* res = &list->front();
   list->pop_front();
   return res;
 }
 
-surf_action_t surf_model_extract_done_action_set(surf_model_t model)
+simgrid::kernel::resource::Action* surf_model_extract_done_action_set(simgrid::kernel::resource::Model* model)
 {
   return ActionListExtract(model->getDoneActionSet());
 }
 
-surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
+simgrid::kernel::resource::Action* surf_model_extract_failed_action_set(simgrid::kernel::resource::Model* model)
+{
   return ActionListExtract(model->getFailedActionSet());
 }
 
-int surf_model_running_action_set_size(surf_model_t model){
+int surf_model_running_action_set_size(simgrid::kernel::resource::Model* model)
+{
   return model->getRunningActionSet()->size();
 }
 
-void surf_cpu_action_set_bound(surf_action_t action, double bound) {
+void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* action, double bound)
+{
   static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
 }

@@ -46,9 +46,9 @@ expectations of the other side, too. See  */
   void (*copy_data_fun)(smx_activity_t, void*, size_t) = nullptr;
 
   /* Surf action data */
-  surf_action_t surfAction_ = nullptr; /* The Surf communication action encapsulated */
-  surf_action_t src_timeout = nullptr; /* Surf's actions to instrument the timeouts */
-  surf_action_t dst_timeout = nullptr; /* Surf's actions to instrument the timeouts */
+  simgrid::kernel::resource::Action* surfAction_ = nullptr; /* The Surf communication action encapsulated */
+  simgrid::kernel::resource::Action* src_timeout = nullptr; /* Surf's actions to instrument the timeouts */
+  simgrid::kernel::resource::Action* dst_timeout = nullptr; /* Surf's actions to instrument the timeouts */
   smx_actor_t src_proc      = nullptr;
   smx_actor_t dst_proc      = nullptr;
   double rate               = 0.0;

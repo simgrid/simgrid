@@ -52,10 +52,11 @@ XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageImpl*, int, int)>) storageState
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @details Callback functions have the following signature: `void(StorageAction *action, simgrid::surf::Action::State
- * old, simgrid::surf::Action::State current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action,
+ * simgrid::kernel::resource::Action::State old, simgrid::kernel::resource::Action::State current)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)>)
+XBT_PUBLIC_DATA(
+    simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>)
 storageActionStateChangedCallbacks;
 
 /*********
@@ -65,7 +66,7 @@ storageActionStateChangedCallbacks;
  * @brief SURF storage model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class StorageModel : public Model {
+class StorageModel : public kernel::resource::Model {
 public:
   StorageModel();
   ~StorageModel();
@@ -86,7 +87,7 @@ public:
 class StorageImpl : public kernel::resource::Resource, public PropertyHolder {
 public:
   /** @brief Storage constructor */
-  StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
+  StorageImpl(kernel::resource::Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
               std::string type_id, std::string content_name, sg_size_t size, std::string attach);
 
   ~StorageImpl() override;
@@ -151,7 +152,7 @@ enum e_surf_action_storage_type_t {
 /** @ingroup SURF_storage_interface
  * @brief SURF storage action interface class
  */
-class StorageAction : public Action {
+class StorageAction : public kernel::resource::Action {
 public:
   /**
    * @brief StorageAction constructor
@@ -162,7 +163,8 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(Model* model, double cost, bool failed, StorageImpl* storage, e_surf_action_storage_type_t type)
+  StorageAction(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
+                e_surf_action_storage_type_t type)
       : Action(model, cost, failed), type_(type), storage_(storage){};
 
   /**
@@ -175,11 +177,11 @@ public:
  * @param storage The Storage associated to this StorageAction
  * @param type [description]
  */
-  StorageAction(Model* model, double cost, bool failed, kernel::lmm::Variable* var, StorageImpl* storage,
-                e_surf_action_storage_type_t type)
+  StorageAction(kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var,
+                StorageImpl* storage, e_surf_action_storage_type_t type)
       : Action(model, cost, failed, var), type_(type), storage_(storage){};
 
-  void setState(simgrid::surf::Action::State state) override;
+  void setState(simgrid::kernel::resource::Action::State state) override;
 
   e_surf_action_storage_type_t type_;
   StorageImpl* storage_;

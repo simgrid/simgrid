@@ -9,7 +9,8 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(resource);
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 Model::Model() : maxminSystem_(nullptr)
 {
@@ -164,4 +165,5 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 }
 
 } // namespace surf
+} // namespace simgrid
 } // namespace simgrid

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,7 +25,8 @@ namespace simgrid {
      *********/
     class NetworkConstantModel : public NetworkModel {
     public:
-      Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) override;
+      kernel::resource::Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size,
+                                            double rate) override;
       double nextOccuringEvent(double now) override;
       void updateActionsState(double now, double delta) override;
 

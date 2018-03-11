@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,7 +21,8 @@ namespace surf {
 simgrid::xbt::signal<void(StorageImpl*)> storageCreatedCallbacks;
 simgrid::xbt::signal<void(StorageImpl*)> storageDestructedCallbacks;
 simgrid::xbt::signal<void(StorageImpl*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
-simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storageActionStateChangedCallbacks;
+simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
+    storageActionStateChangedCallbacks;
 
 /* List of storages */
 std::unordered_map<std::string, StorageImpl*>* StorageImpl::storages =
@@ -53,8 +53,9 @@ StorageModel::~StorageModel()
  * Resource *
  ************/
 
-StorageImpl::StorageImpl(Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
-                         std::string type_id, std::string content_name, sg_size_t size, std::string attach)
+StorageImpl::StorageImpl(kernel::resource::Model* model, std::string name, lmm_system_t maxminSystem, double bread,
+                         double bwrite, std::string type_id, std::string content_name, sg_size_t size,
+                         std::string attach)
     : Resource(model, name.c_str(), maxminSystem->constraint_new(this, std::max(bread, bwrite)))
     , piface_(this)
     , typeId_(type_id)

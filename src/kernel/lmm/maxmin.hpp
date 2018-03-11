@@ -337,7 +337,7 @@ private:
 XBT_PUBLIC_CLASS Variable
 {
 public:
-  void initialize(simgrid::surf::Action* id_value, double sharing_weight_value, double bound_value,
+  void initialize(simgrid::kernel::resource::Action * id_value, double sharing_weight_value, double bound_value,
                   int number_of_constraints, unsigned visited_value);
 
   /**
@@ -382,7 +382,7 @@ public:
    * @brief Get the data associated to a variable
    * @return The data associated to the variable
    */
-  simgrid::surf::Action* get_id() const { return id; }
+  simgrid::kernel::resource::Action* get_id() const { return id; }
 
   /**
    * @brief Get the weight of a variable
@@ -415,7 +415,7 @@ public:
   double bound;
   double value;
   short int concurrency_share; /* The maximum number of elements that variable will add to a constraint */
-  simgrid::surf::Action* id;
+  simgrid::kernel::resource::Action* id;
   int id_int;
   unsigned visited; /* used by System::update_modified_set() */
   /* \begin{For Lagrange only} */
@@ -468,7 +468,8 @@ public:
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
    * @param number_of_constraints The maximum number of constraint to associate to the variable
    */
-  Variable* variable_new(simgrid::surf::Action * id, double weight_value, double bound, int number_of_constraints);
+  Variable* variable_new(simgrid::kernel::resource::Action * id, double weight_value, double bound,
+                         int number_of_constraints);
 
   /**
    * @brief Free a variable
@@ -604,7 +605,7 @@ public:
                                                                    &Constraint::saturated_constraint_set_hook>>
       saturated_constraint_set;
 
-  simgrid::surf::ActionLmmListPtr keep_track;
+  simgrid::kernel::resource::ActionLmmListPtr keep_track;
 
   void (*solve_fun)(lmm_system_t self);
 

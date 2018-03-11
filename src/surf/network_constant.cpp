@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -32,7 +32,7 @@ LinkImpl* NetworkConstantModel::createLink(const std::string& name, double bw, d
 double NetworkConstantModel::nextOccuringEvent(double /*now*/)
 {
   double min = -1.0;
-  for (Action const& action : *getRunningActionSet()) {
+  for (kernel::resource::Action const& action : *getRunningActionSet()) {
     const NetworkConstantAction& net_action = static_cast<const NetworkConstantAction&>(action);
     if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min))
       min = net_action.latency_;
@@ -58,12 +58,12 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 
     if ((action.getRemainsNoUpdate() <= 0) ||
         ((action.getMaxDuration() != NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
-      action.finish(Action::State::done);
+      action.finish(kernel::resource::Action::State::done);
     }
   }
 }
 
-Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+kernel::resource::Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   NetworkConstantAction* action = new NetworkConstantAction(this, size, sg_latency_factor);
 

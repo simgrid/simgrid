@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -51,10 +51,10 @@ static inline double has_cost(double* array, int pos)
     return -1.0;
 }
 
-Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_list, double* flops_amount,
-    double* bytes_amount, double rate)
+kernel::resource::Action* HostModel::executeParallelTask(int host_nb, s4u::Host** host_list, double* flops_amount,
+                                                         double* bytes_amount, double rate)
 {
-  Action* action = nullptr;
+  kernel::resource::Action* action = nullptr;
   if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0)) {
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
   } else if ((host_nb == 1) && (has_cost(flops_amount, 0) <= 0)) {

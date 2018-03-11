@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -85,7 +84,7 @@ namespace simgrid {
     {
       double minRes = Model::nextOccuringEventFull(now);
 
-      for (Action const& action : *getRunningActionSet()) {
+      for (kernel::resource::Action const& action : *getRunningActionSet()) {
         const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
         if (net_action.latency_ > 0)
           minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);

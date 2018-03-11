@@ -11,11 +11,14 @@ XBT_LOG_NEW_CATEGORY(kernel, "Logging specific to the internals of SimGrid");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(resource, kernel, "Logging specific to the resources");
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
-Action::Action(simgrid::surf::Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr) {}
+Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr)
+{
+}
 
-Action::Action(simgrid::surf::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
+Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
     : remains_(cost), start_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
 {
   if (failed)
@@ -225,4 +228,5 @@ double Action::getRemains()
 }
 
 } // namespace surf
+} // namespace simgrid
 } // namespace simgrid

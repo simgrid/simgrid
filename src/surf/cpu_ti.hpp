@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -85,7 +84,7 @@ class CpuTiAction: public CpuAction {
 public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
 
-  void setState(simgrid::surf::Action::State state) override;
+  void setState(simgrid::kernel::resource::Action::State state) override;
   int unref() override;
   void cancel() override;
   void suspend() override;
@@ -147,7 +146,7 @@ public:
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 
-  ActionList runningActionSetThatDoesNotNeedBeingChecked_;
+  kernel::resource::ActionList runningActionSetThatDoesNotNeedBeingChecked_;
   CpuTiList modifiedCpu_;
 };
 

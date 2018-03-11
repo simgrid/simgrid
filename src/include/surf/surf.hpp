@@ -20,13 +20,11 @@
 
 namespace simgrid {
 namespace surf {
-class Model;
 class CpuModel;
 class HostModel;
 class NetworkModel;
 class StorageModel;
 class NetworkCm02Link;
-class Action;
 }
 }
 
@@ -36,20 +34,10 @@ class Action;
  *  Generic data structure for a model. The hosts,
  *  the CPUs and the network links are examples of models.
  */
-typedef simgrid::surf::Model* surf_model_t;
 typedef simgrid::surf::CpuModel* surf_cpu_model_t;
 typedef simgrid::surf::HostModel* surf_host_model_t;
 typedef simgrid::surf::NetworkModel* surf_network_model_t;
 typedef simgrid::surf::StorageModel* surf_storage_model_t;
-/** @ingroup SURF_c_bindings
- *  \brief Action structure
- *
- *  Never create s_surf_action_t by yourself ! The actions are created
- *  on the fly when you call execute or communicate on a model.
- *
- *  \see e_surf_action_state_t
- */
-typedef simgrid::surf::Action* surf_action_t;
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
@@ -85,7 +73,8 @@ XBT_PUBLIC(void) model_help(const char* category, s_surf_model_description_t* ta
  * @param model The model from which the action is extracted
  * @return An action in done state
  */
-XBT_PUBLIC(surf_action_t) surf_model_extract_done_action_set(surf_model_t model);
+XBT_PUBLIC(simgrid::kernel::resource::Action*)
+surf_model_extract_done_action_set(simgrid::kernel::resource::Model* model);
 
 /**
  * @brief Pop an action from the failed actions set
@@ -93,7 +82,8 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_done_action_set(surf_model_t model)
  * @param model The model from which the action is extracted
  * @return An action in failed state
  */
-XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t model);
+XBT_PUBLIC(simgrid::kernel::resource::Action*)
+surf_model_extract_failed_action_set(simgrid::kernel::resource::Model* model);
 
 /**
  * @brief Get the size of the running action set of a model
@@ -101,7 +91,7 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  * @param model The model
  * @return The size of the running action set
  */
-XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
+XBT_PUBLIC(int) surf_model_running_action_set_size(simgrid::kernel::resource::Model* model);
 
 /**
  * @brief [brief description]
@@ -110,7 +100,7 @@ XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
  * @param action The surf cpu action
  * @param bound [description]
  */
-XBT_PUBLIC(void) surf_cpu_action_set_bound(surf_action_t action, double bound);
+XBT_PUBLIC(void) surf_cpu_action_set_bound(simgrid::kernel::resource::Action* action, double bound);
 
 /** @} */
 

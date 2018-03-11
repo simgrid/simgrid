@@ -24,7 +24,8 @@ namespace surf {
  * @brief SURF cpu model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-XBT_PUBLIC_CLASS CpuModel : public Model {
+XBT_PUBLIC_CLASS CpuModel : public kernel::resource::Model
+{
 public:
   /**
    * @brief Create a Cpu
@@ -59,7 +60,7 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::surf::Model * model, simgrid::s4u::Host * host, kernel::lmm::Constraint * constraint,
+  Cpu(simgrid::kernel::resource::Model * model, simgrid::s4u::Host * host, kernel::lmm::Constraint * constraint,
       std::vector<double> * speedPerPstate, int core);
 
   /**
@@ -70,7 +71,8 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::surf::Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core);
+  Cpu(simgrid::kernel::resource::Model * model, simgrid::s4u::Host * host, std::vector<double> * speedPerPstate,
+      int core);
 
   ~Cpu();
 
@@ -80,7 +82,7 @@ public:
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
-  virtual simgrid::surf::Action *execution_start(double size)=0;
+  virtual simgrid::kernel::resource::Action* execution_start(double size) = 0;
 
   /**
    * @brief Execute some quantity of computation on more than one core
@@ -89,7 +91,7 @@ public:
    * @param requestedCores The desired amount of cores. Must be >= 1
    * @return The CpuAction corresponding to the processing
    */
-  virtual simgrid::surf::Action* execution_start(double size, int requestedCores)
+  virtual simgrid::kernel::resource::Action* execution_start(double size, int requestedCores)
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
@@ -101,7 +103,7 @@ public:
    * @param duration The number of seconds to sleep
    * @return The CpuAction corresponding to the sleeping
    */
-  virtual simgrid::surf::Action *sleep(double duration)=0;
+  virtual simgrid::kernel::resource::Action* sleep(double duration) = 0;
 
   /** @brief Get the amount of cores */
   virtual int coreCount();
@@ -146,26 +148,27 @@ public:
  /** @ingroup SURF_cpu_interface
  * @brief A CpuAction represents the execution of code on one or several Cpus
  */
-XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
+XBT_PUBLIC_CLASS CpuAction : public simgrid::kernel::resource::Action
+{
   friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction* action);
 
 public:
   /** @brief Signal emitted when the action state changes (ready/running/done, etc)
-   *  Signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
+   *  Signature: `void(CpuAction *action, simgrid::kernel::resource::Action::State previous)`
    */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::kernel::resource::Action::State)> onStateChange;
   /** @brief Signal emitted when the action share changes (amount of flops it gets)
    *  Signature: `void(CpuAction *action)`
    */
   static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
 
-  CpuAction(simgrid::surf::Model* model, double cost, bool failed) : Action(model, cost, failed) {}
-  CpuAction(simgrid::surf::Model * model, double cost, bool failed, kernel::lmm::Variable* var)
+  CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed) : Action(model, cost, failed) {}
+  CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed, kernel::lmm::Variable* var)
       : Action(model, cost, failed, var)
   {
   }
 
-  void setState(simgrid::surf::Action::State state) override;
+  void setState(simgrid::kernel::resource::Action::State state) override;
 
   void updateRemainingLazy(double now) override;
   std::list<Cpu*> cpus();

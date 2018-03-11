@@ -175,7 +175,7 @@ LinkImpl* NetworkNS3Model::createLink(const std::string& name, double bandwidth,
   return new LinkNS3(this, name, bandwidth, latency);
 }
 
-Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+kernel::resource::Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   return new NetworkNS3Action(this, size, src, dst);
 }
@@ -223,8 +223,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
     action->setRemains(action->getCost() - sgFlow->sentBytes_);
 
-    if (TRACE_is_enabled() &&
-        action->getState() == Action::State::running){
+    if (TRACE_is_enabled() && action->getState() == kernel::resource::Action::State::running) {
       double data_delta_sent = sgFlow->sentBytes_ - action->lastSent_;
 
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
@@ -240,7 +239,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     if(sgFlow->finished_){
       socket_to_destroy.push_back(ns3Socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3Socket.c_str(), action);
-      action->finish(Action::State::done);
+      action->finish(kernel::resource::Action::State::done);
     } else {
       XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3Socket.c_str(), sgFlow->sentBytes_,
                 sgFlow->totalBytes_, sgFlow->remaining_);
@@ -289,7 +288,7 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
+NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, totalBytes, false)
 {
   XBT_DEBUG("Communicate from %s to %s", src->getCname(), dst->getCname());

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2010, 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -71,7 +70,7 @@ NetworkL07Model::~NetworkL07Model()
 double HostL07Model::nextOccuringEvent(double now)
 {
   double min = HostModel::nextOccuringEventFull(now);
-  for (Action const& action : *getRunningActionSet()) {
+  for (kernel::resource::Action const& action : *getRunningActionSet()) {
     const L07Action& net_action = static_cast<const L07Action&>(action);
     if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min)) {
       min = net_action.latency_;
@@ -116,7 +115,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
 
     if (((action.getRemains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
         ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
-      action.finish(Action::State::done);
+      action.finish(kernel::resource::Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
@@ -126,7 +125,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
         void* constraint_id = cnst->get_id();
         if (static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", &action);
-          action.finish(Action::State::failed);
+          action.finish(kernel::resource::Action::State::failed);
           break;
         }
         cnst = action.getVariable()->get_constraint(i);
@@ -135,17 +134,15 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
   }
 }
 
-Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t *host_list,
-                                          double *flops_amount, double *bytes_amount,double rate) {
+kernel::resource::Action* HostL07Model::executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount,
+                                                            double* bytes_amount, double rate)
+{
   return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
 }
 
-L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
-                     double *flops_amount, double *bytes_amount, double rate)
-  : CpuAction(model, 1, 0)
-  , computationAmount_(flops_amount)
-  , communicationAmount_(bytes_amount)
-  , rate_(rate)
+L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* host_list, double* flops_amount,
+                     double* bytes_amount, double rate)
+    : CpuAction(model, 1, 0), computationAmount_(flops_amount), communicationAmount_(bytes_amount), rate_(rate)
 {
   int nb_link = 0;
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
@@ -214,7 +211,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
   delete[] host_list;
 }
 
-Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   sg_host_t* host_list = new sg_host_t[2]();
   double* flops_amount = new double[2]();
@@ -262,7 +259,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
   s4u::Link::onCreation(this->piface_);
 }
 
-Action *CpuL07::execution_start(double size)
+kernel::resource::Action* CpuL07::execution_start(double size)
 {
   sg_host_t* host_list = new sg_host_t[1]();
   double* flops_amount = new double[1]();
@@ -273,11 +270,11 @@ Action *CpuL07::execution_start(double size)
   return static_cast<CpuL07Model*>(model())->hostModel_->executeParallelTask(1, host_list, flops_amount, nullptr, -1);
 }
 
-Action *CpuL07::sleep(double duration)
+kernel::resource::Action* CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->setMaxDuration(duration);
-  action->suspended_ = Action::SuspendStates::sleeping;
+  action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
   model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);
 
   return action;
@@ -294,7 +291,7 @@ void CpuL07::onSpeedChange() {
 
   model()->getMaxminSystem()->update_constraint_bound(constraint(), speed_.peak * speed_.scale);
   while ((var = constraint()->get_variable(&elem))) {
-    Action* action = static_cast<Action*>(var->get_id());
+    kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
     model()->getMaxminSystem()->update_variable_bound(action->getVariable(), speed_.scale * speed_.peak);
   }

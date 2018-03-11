@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,7 +52,8 @@ public:
 
 class StorageN11Action : public StorageAction {
 public:
-  StorageN11Action(Model* model, double cost, bool failed, StorageImpl* storage, e_surf_action_storage_type_t type);
+  StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
+                   e_surf_action_storage_type_t type);
   void suspend();
   int unref();
   void cancel();
