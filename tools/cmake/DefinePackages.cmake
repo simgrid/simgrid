@@ -303,6 +303,10 @@ set(SURF_SRC
   src/kernel/lmm/maxmin.hpp
   src/kernel/lmm/maxmin.cpp
   
+  src/kernel/resource/Action.hpp
+  src/kernel/resource/Action.cpp
+  src/kernel/resource/Model.hpp
+  src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.hpp
   src/kernel/resource/Resource.cpp
   

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/resource/Action.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/surf_interface.hpp"
 

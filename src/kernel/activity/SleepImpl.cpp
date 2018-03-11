@@ -7,6 +7,7 @@
 
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/context/Context.hpp"
+#include "src/kernel/resource/Action.hpp"
 
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/popping_private.hpp"

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_KERNEL_MODEL_RESOURCE_HPP
-#define SIMGRID_KERNEL_MODEL_RESOURCE_HPP
+#ifndef SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
+#define SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
 
 #include "src/surf/surf_interface.hpp"
 

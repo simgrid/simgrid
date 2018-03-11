@@ -8,6 +8,7 @@
 
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/resource/Model.hpp"
 #include "src/kernel/resource/Resource.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "src/surf/surf_interface.hpp"

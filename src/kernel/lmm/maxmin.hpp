@@ -7,6 +7,7 @@
 #define SURF_MAXMIN_HPP
 
 #include "src/internal_config.h"
+#include "src/kernel/resource/Action.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 #include "xbt/asserts.h"
