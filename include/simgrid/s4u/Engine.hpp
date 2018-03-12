@@ -56,12 +56,17 @@ public:
 
 protected:
   friend s4u::Host;
+  friend s4u::Storage;
   void addHost(std::string name, simgrid::s4u::Host * host);
   void delHost(std::string name);
 
 public:
+  void addStorage(std::string name, simgrid::s4u::Storage * storage);
+  void delStorage(std::string name);
   simgrid::s4u::Host* hostByName(std::string name);
   simgrid::s4u::Host* hostByNameOrNull(std::string name);
+  simgrid::s4u::Storage* storageByName(std::string name);
+  simgrid::s4u::Storage* storageByNameOrNull(std::string name);
 
   size_t getHostCount();
   void getHostList(std::vector<Host*> * whereTo);
@@ -70,6 +75,8 @@ public:
   size_t getLinkCount();
   void getLinkList(std::vector<Link*> * list);
   std::vector<Link*> getAllLinks();
+
+  std::vector<Storage*> getAllStorages();
 
   /** @brief Run the simulation */
   void run();

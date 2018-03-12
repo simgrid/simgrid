@@ -73,8 +73,6 @@ public:
 
   virtual StorageImpl* createStorage(std::string id, std::string type_id, std::string content_name,
                                      std::string attach) = 0;
-
-  std::vector<StorageImpl*> p_storageList;
 };
 
 /************
@@ -94,7 +92,6 @@ public:
 
   /** @brief Public interface */
   s4u::Storage piface_;
-  static StorageImpl* byName(std::string name);
 
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed() override;
@@ -121,8 +118,6 @@ public:
   virtual StorageAction* write(sg_size_t size) = 0;
   virtual std::string getHost() { return attach_; }
 
-  static std::unordered_map<std::string, StorageImpl*>* storagesMap() { return StorageImpl::storages; }
-
   kernel::lmm::Constraint* constraintWrite_; /* Constraint for maximum write bandwidth*/
   kernel::lmm::Constraint* constraintRead_;  /* Constraint for maximum write bandwidth*/
 
@@ -131,7 +126,6 @@ public:
   sg_size_t size_;          // Only used at parsing time then goes to the FileSystemExtension
 
 private:
-  static std::unordered_map<std::string, StorageImpl*>* storages;
   // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
   // the Host directly.
   std::string attach_;

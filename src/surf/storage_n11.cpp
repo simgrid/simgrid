@@ -5,6 +5,7 @@
 
 #include "storage_n11.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "xbt/utility.hpp"
@@ -19,13 +20,13 @@ extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
 static void check_disk_attachment()
 {
-  for (auto const& s : *simgrid::surf::StorageImpl::storagesMap()) {
-    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s.second->getHost().c_str());
+  for (auto const& s : simgrid::s4u::Engine::getInstance()->getAllStorages()) {
+    simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s->getImpl()->getHost().c_str());
     if (not host_elm)
-      surf_parse_error(std::string("Unable to attach storage ") + s.second->getCname() + ": host " +
-                       s.second->getHost() + " does not exist.");
+      surf_parse_error(std::string("Unable to attach storage ") + s->getCname() + ": host " +
+                       s->getImpl()->getHost().c_str() + " does not exist.");
     else
-      s.second->piface_.attached_to_ = sg_host_by_name(s.second->getHost().c_str());
+      s->attached_to_ = sg_host_by_name(s->getImpl()->getHost().c_str());
   }
 }
 
@@ -64,8 +65,6 @@ StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id,
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
             Bread);
-
-  p_storageList.push_back(storage);
 
   return storage;
 }

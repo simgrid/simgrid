@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
+#include "src/surf/StorageImpl.hpp"
 
 #include <algorithm>
 
@@ -36,6 +37,10 @@ EngineImpl::~EngineImpl()
   delete netRoot_;
   for (auto const& kv : netpoints_)
     delete kv.second;
+
+  for (auto const& kv : storages_)
+    if (kv.second)
+      delete kv.second->getImpl();
 }
 }
 }

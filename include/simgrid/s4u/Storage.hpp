@@ -21,7 +21,7 @@ extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Storage>;
 }
 namespace s4u {
 
-XBT_ATTRIB_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
+void getStorageList(std::map<std::string, Storage*>* whereTo);
 
 XBT_PUBLIC_CLASS Storage : public simgrid::xbt::Extendable<Storage>
 {
@@ -29,7 +29,7 @@ XBT_PUBLIC_CLASS Storage : public simgrid::xbt::Extendable<Storage>
   friend simgrid::surf::StorageImpl;
 
 public:
-  explicit Storage(surf::StorageImpl * pimpl) : pimpl_(pimpl) {}
+  explicit Storage(std::string name, surf::StorageImpl * pimpl);
   virtual ~Storage() = default;
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* byName(std::string name);

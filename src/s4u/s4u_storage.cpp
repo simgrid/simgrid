@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
@@ -19,28 +20,32 @@ template class Extendable<simgrid::s4u::Storage>;
 
 namespace s4u {
 
-void getStorageList(std::map<std::string, Storage*>* whereTo)
+void XBT_ATTRIB_DEPRECATED_v322(
+    "simgrid::s4u::getStorageList() is deprecated in favor of Engine::getAllStorages(). Please switch before v3.22")
+    getStorageList(std::map<std::string, Storage*>* whereTo)
 {
-  for (auto const& s : *surf::StorageImpl::storagesMap())
-    whereTo->insert({s.first, &(s.second->piface_)}); // Convert each entry into its interface
+  for (auto const& s : simgrid::s4u::Engine::getInstance()->getAllStorages())
+    whereTo->insert({s->getName(), s});
+}
+
+Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
+{
+  simgrid::s4u::Engine::getInstance()->addStorage(name, this);
 }
 
 Storage* Storage::byName(std::string name)
 {
-  surf::StorageImpl* res = surf::StorageImpl::byName(name);
-  if (res == nullptr)
-    return nullptr;
-  return &res->piface_;
+  return Engine::getInstance()->storageByNameOrNull(name);
 }
 
 const std::string& Storage::getName() const
 {
-  return pimpl_->getName();
+  return name_;
 }
 
 const char* Storage::getCname() const
 {
-  return pimpl_->getCname();
+  return name_.c_str();
 }
 
 const char* Storage::getType()
@@ -168,12 +173,10 @@ sg_storage_t sg_storage_get_by_name(const char* name)
  */
 xbt_dynar_t sg_storages_as_dynar()
 {
-  std::map<std::string, simgrid::s4u::Storage*>* storage_list = new std::map<std::string, simgrid::s4u::Storage*>;
-  simgrid::s4u::getStorageList(storage_list);
+  std::vector<simgrid::s4u::Storage*> storage_list = simgrid::s4u::Engine::getInstance()->getAllStorages();
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_storage_t), nullptr);
-  for (auto const& s : *storage_list)
-    xbt_dynar_push(res, &(s.second));
-  delete storage_list;
+  for (auto const& s : storage_list)
+    xbt_dynar_push(res, &s);
   return res;
 }
 

@@ -94,6 +94,7 @@ Engine::getHostList(std::vector<Host*>* list)
   for (auto const& kv : pimpl->hosts_)
     list->push_back(kv.second);
 }
+
 /** @brief Returns the list of all hosts found in the platform */
 std::vector<Host*> Engine::getAllHosts()
 {
@@ -102,22 +103,56 @@ std::vector<Host*> Engine::getAllHosts()
     res.push_back(kv.second);
   return res;
 }
+
 void Engine::addHost(std::string name, simgrid::s4u::Host* host)
 {
   pimpl->hosts_[name] = host;
 }
+
 void Engine::delHost(std::string name)
 {
   pimpl->hosts_.erase(name);
 }
+
 simgrid::s4u::Host* Engine::hostByName(std::string name)
 {
   return pimpl->hosts_.at(name); // Will raise a std::out_of_range if the host does not exist
 }
+
 simgrid::s4u::Host* Engine::hostByNameOrNull(std::string name)
 {
   auto host = pimpl->hosts_.find(name);
   return host == pimpl->hosts_.end() ? nullptr : host->second;
+}
+
+/** @brief Returns the list of all storages found in the platform */
+std::vector<Storage*> Engine::getAllStorages()
+{
+  std::vector<Storage*> res;
+  for (auto const& kv : pimpl->storages_)
+    res.push_back(kv.second);
+  return res;
+}
+
+simgrid::s4u::Storage* Engine::storageByName(std::string name)
+{
+  return pimpl->storages_.at(name); // Will raise a std::out_of_range if the host does not exist
+}
+
+simgrid::s4u::Storage* Engine::storageByNameOrNull(std::string name)
+{
+  auto storage = pimpl->storages_.find(name);
+  return storage == pimpl->storages_.end() ? nullptr : storage->second;
+}
+
+void Engine::addStorage(std::string name, simgrid::s4u::Storage* storage)
+{
+  pimpl->storages_[name] = storage;
+}
+
+void Engine::delStorage(std::string name)
+{
+  pimpl->storages_.erase(name);
 }
 
 /** @brief Returns the amount of links in the platform */
@@ -125,6 +160,7 @@ size_t Engine::getLinkCount()
 {
   return simgrid::surf::LinkImpl::linksCount();
 }
+
 /** @brief Fills the passed list with all links found in the platform
  *
  *  @deprecated. Prefer Engine::getAllLinks() */
@@ -133,6 +169,7 @@ Engine::getLinkList(std::vector<Link*>* list)
 {
   simgrid::surf::LinkImpl::linksList(list);
 }
+
 /** @brief Returns the list of all links found in the platform */
 std::vector<Link*> Engine::getAllLinks()
 {

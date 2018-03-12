@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "StorageImpl.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "surf_private.hpp"
 
@@ -23,17 +25,6 @@ simgrid::xbt::signal<void(StorageImpl*)> storageDestructedCallbacks;
 simgrid::xbt::signal<void(StorageImpl*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
 simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
     storageActionStateChangedCallbacks;
-
-/* List of storages */
-std::unordered_map<std::string, StorageImpl*>* StorageImpl::storages =
-    new std::unordered_map<std::string, StorageImpl*>();
-
-StorageImpl* StorageImpl::byName(std::string name)
-{
-  if (storages->find(name) == storages->end())
-    return nullptr;
-  return storages->at(name);
-}
 
 /*********
  * Model *
@@ -57,7 +48,7 @@ StorageImpl::StorageImpl(kernel::resource::Model* model, std::string name, lmm_s
                          double bwrite, std::string type_id, std::string content_name, sg_size_t size,
                          std::string attach)
     : Resource(model, name.c_str(), maxminSystem->constraint_new(this, std::max(bread, bwrite)))
-    , piface_(this)
+    , piface_(name, this)
     , typeId_(type_id)
     , content_name(content_name)
     , size_(size)
@@ -67,14 +58,12 @@ StorageImpl::StorageImpl(kernel::resource::Model* model, std::string name, lmm_s
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = maxminSystem->constraint_new(this, bread);
   constraintWrite_ = maxminSystem->constraint_new(this, bwrite);
-  storages->insert({name, this});
 }
 
 StorageImpl::~StorageImpl()
 {
   storageDestructedCallbacks(this);
 }
-
 
 bool StorageImpl::isUsed()
 {
