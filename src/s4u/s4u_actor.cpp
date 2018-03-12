@@ -168,24 +168,26 @@ double Actor::getKillTime()
 
 void Actor::kill(aid_t pid)
 {
+  smx_actor_t killer  = SIMIX_process_self();
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if(process != nullptr) {
-    simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
+    simgrid::simix::kernelImmediate([killer, process] { SIMIX_process_kill(process, killer); });
   } else {
     std::ostringstream oss;
-    oss << "kill: ("<< pid <<") - No such process" << std::endl;
+    oss << "kill: (" << pid << ") - No such actor" << std::endl;
     throw std::runtime_error(oss.str());
   }
-}
-
-smx_actor_t Actor::getImpl() {
-  return pimpl_;
 }
 
 void Actor::kill() {
   smx_actor_t process = SIMIX_process_self();
   simgrid::simix::kernelImmediate(
       [this, process] { SIMIX_process_kill(pimpl_, (pimpl_ == simix_global->maestro_process) ? pimpl_ : process); });
+}
+
+smx_actor_t Actor::getImpl()
+{
+  return pimpl_;
 }
 
 // ***** Static functions *****
