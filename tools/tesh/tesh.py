@@ -467,6 +467,7 @@ if __name__ == '__main__':
            re.compile(r"cmake: /usr/local/lib/libcurl\.so\.4: no version information available \(required by cmake\)"), # Seen on CircleCI
            re.compile(r".*mmap broken on FreeBSD, but dlopen\+thread broken too. Switching to dlopen\+raw contexts\."),
            re.compile(r".*dlopen\+thread broken on Apple and BSD\. Switching to raw contexts\."),
+           re.compile(r"Sanitizers don.t like dlopen, switching to mmap privatization instead\."),
            ]
         TeshState().jenkins = True # This is a Jenkins build
 
