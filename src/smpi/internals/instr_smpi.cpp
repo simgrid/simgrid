@@ -206,13 +206,6 @@ void TRACE_smpi_computing_out(int rank)
     smpi_container(rank)->getState("MPI_STATE")->popEvent();
 }
 
-void TRACE_smpi_sleeping_init(int rank) // FIXME: this function is never called
-{
-  //first use, initialize the color in the trace
-  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
-    smpi_container(rank)->getState("MPI_STATE")->addEntityValue("sleeping", instr_find_color("sleeping"));
-}
-
 void TRACE_smpi_sleeping_in(int rank, double duration)
 {
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
