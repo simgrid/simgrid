@@ -388,13 +388,6 @@ static void smpi_init_options(){
     }
 #endif
 
-#if defined(HAVE_SANITIZER)
-    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
-      XBT_INFO("Sanitizers don't like dlopen, switching to mmap privatization instead.");
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_MMAP;
-    }
-#endif
-
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 

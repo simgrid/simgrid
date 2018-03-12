@@ -618,10 +618,6 @@ endif()
 file(REMOVE test_stackgrowth)
 #--------------------------------------------------------------------------------------------------
 
-if(enable_address_sanitizer OR enable_thread_sanitizer OR enable_undefined_sanitizer)
-  set(HAVE_SANITIZER 1)
-endif()
-
 ### check for addr2line
 find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS)
 if(ADDR2LINE)

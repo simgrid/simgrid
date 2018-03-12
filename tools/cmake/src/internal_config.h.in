@@ -109,5 +109,3 @@
 #cmakedefine01 HAVE_GRAPHVIZ
 /* The lib unwind library (for MC and backtrace display) */
 #cmakedefine01 HAVE_LIBUNWIND
-/* Whether we are built under a sanitizer (to disable dlopen privatization) */
-#cmakedefine01 HAVE_SANITIZER
