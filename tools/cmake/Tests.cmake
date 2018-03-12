@@ -100,13 +100,20 @@ endif()
 
 # Also test the tutorial, unless under Sanitizer or memcheck
 if((NOT enable_memcheck) AND (NOT enable_address_sanitizer) AND (NOT enable_undefined_sanitizer) AND (NOT enable_thread_sanitizer))
-  set(tuto-path "${CMAKE_SOURCE_DIR}/doc/tuto-msg")
-  set(tuto-make "make -C ${tuto-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=\"-I${CMAKE_HOME_DIRECTORY}/include -I${CMAKE_BINARY_DIR}/include -L${CMAKE_BINARY_DIR}/lib\"")
-  ADD_TEST(tuto-msg-0 sh -xc "${tuto-make} clean masterworker      && ${tuto-path}/masterworker      ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment0.xml")
-  ADD_TEST(tuto-msg-1 sh -xc "${tuto-make} clean masterworker-sol1 && ${tuto-path}/masterworker-sol1 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment1.xml")
-  ADD_TEST(tuto-msg-2 sh -xc "${tuto-make} clean masterworker-sol2 && ${tuto-path}/masterworker-sol2 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment2.xml")
-  ADD_TEST(tuto-msg-3 sh -xc "${tuto-make} clean masterworker-sol3 && ${tuto-path}/masterworker-sol3 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment3.xml")
-  ADD_TEST(tuto-msg-4 sh -xc "${tuto-make} clean masterworker-sol4 && ${tuto-path}/masterworker-sol4 ${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml ${tuto-path}/deployment3.xml")
+  FILE(COPY doc/tuto-msg DESTINATION doc FILES_MATCHING PATTERN "Makefile" PATTERN "*.c")
+  set(tuto-src-path "${CMAKE_SOURCE_DIR}/doc/tuto-msg")
+  set(tuto-bin-path "${CMAKE_BINARY_DIR}/doc/tuto-msg")
+  set(tuto-platform-file "${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml")
+  set(tuto-make "make -C ${tuto-bin-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=\"-I${CMAKE_SOURCE_DIR}/include -I${CMAKE_BINARY_DIR}/include -L${CMAKE_BINARY_DIR}/lib\"")
+  ADD_TEST(tuto-msg-clean sh -xc "${tuto-make} clean")
+  ADD_TEST(tuto-msg-0 sh -xc "${tuto-make} masterworker      && ${tuto-bin-path}/masterworker      ${tuto-platform-file} ${tuto-src-path}/deployment0.xml")
+  ADD_TEST(tuto-msg-1 sh -xc "${tuto-make} masterworker-sol1 && ${tuto-bin-path}/masterworker-sol1 ${tuto-platform-file} ${tuto-src-path}/deployment1.xml")
+  ADD_TEST(tuto-msg-2 sh -xc "${tuto-make} masterworker-sol2 && ${tuto-bin-path}/masterworker-sol2 ${tuto-platform-file} ${tuto-src-path}/deployment2.xml")
+  ADD_TEST(tuto-msg-3 sh -xc "${tuto-make} masterworker-sol3 && ${tuto-bin-path}/masterworker-sol3 ${tuto-platform-file} ${tuto-src-path}/deployment3.xml")
+  ADD_TEST(tuto-msg-4 sh -xc "${tuto-make} masterworker-sol4 && ${tuto-bin-path}/masterworker-sol4 ${tuto-platform-file} ${tuto-src-path}/deployment3.xml")
+
+  SET_TESTS_PROPERTIES(tuto-msg-clean PROPERTIES FIXTURES_SETUP tuto-msg-clean)
+  SET_TESTS_PROPERTIES(tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4 PROPERTIES FIXTURES_REQUIRED tuto-msg-clean)
 
   FOREACH(TUTOTEST tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4)
   SET_TESTS_PROPERTIES(${TUTOTEST} 

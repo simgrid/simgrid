@@ -72,9 +72,10 @@ public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   kernel::lmm::Constraint* constraint() const;
 
-protected:
+private:
   kernel::lmm::Constraint* const constraint_ = nullptr;
 
+protected:
   struct Metric {
     double peak;              /**< The peak of the metric, ie its max value */
     double scale;             /**< Current availability of the metric according to the traces, in [0,1] */
