@@ -339,9 +339,9 @@ double SIMIX_get_clock()
 /** Wake up all processes waiting for a Surf action to finish */
 static void SIMIX_wake_processes()
 {
-  simgrid::kernel::resource::Action* action;
-
   for (auto const& model : *all_existing_models) {
+    simgrid::kernel::resource::Action* action;
+
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
