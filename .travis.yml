@@ -10,12 +10,7 @@ dist: trusty
 language: cpp
 compiler:
    - gcc
-#  - clang # boost 1.48 raises an error on clang:
-#            /usr/include/boost/signals2/detail/auto_buffer.hpp:565:57: error:
-#              reference to non-static member function must be called
-#                        std::uninitialized_fill( buffer_, buffer_ + size, init_value );
-#                                                                    ^~~~
-#
+#  - clang 
 addons:
   apt:
     packages:
