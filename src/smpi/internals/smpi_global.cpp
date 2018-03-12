@@ -383,7 +383,7 @@ static void smpi_init_options(){
 
 #if defined(__FreeBSD__)
     if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
-      XBT_INFO("Mixing mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
+      XBT_INFO("mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
       smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
     }
 #endif
