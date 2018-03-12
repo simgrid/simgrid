@@ -619,9 +619,7 @@ static void action_gatherv(const char *const *action) {
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
 
-  std::vector<int>* trace_recvcounts = new std::vector<int>;
-  for (int i = 0; i < comm_size; i++) // copy data to avoid bad free
-    trace_recvcounts->push_back(recvcounts[i]);
+  std::vector<int>* trace_recvcounts = new std::vector<int>(recvcounts, recvcounts + comm_size);
 
   TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
                                              "gatherV", root, send_size, nullptr, -1, trace_recvcounts,
@@ -671,9 +669,7 @@ static void action_scatterv(const char* const* action)
   if (rank == root)
     send = smpi_get_tmp_sendbuffer(send_sum * MPI_CURRENT_TYPE2->size());
 
-  std::vector<int>* trace_sendcounts = new std::vector<int>;
-  for (int i = 0; i < comm_size; i++) // copy data to avoid bad free
-    trace_sendcounts->push_back(sendcounts[i]);
+  std::vector<int>* trace_sendcounts = new std::vector<int>(sendcounts, sendcounts + comm_size);
 
   TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
                                              "gatherV", root, -1, trace_sendcounts, recv_size, nullptr,
@@ -790,9 +786,7 @@ static void action_allgatherv(const char *const *action) {
 
   int my_proc_id = Actor::self()->getPid();
 
-  std::vector<int>* trace_recvcounts = new std::vector<int>;
-  for (int i = 0; i < comm_size; i++) // copy data to avoid bad free
-    trace_recvcounts->push_back(recvcounts[i]);
+  std::vector<int>* trace_recvcounts = new std::vector<int>(recvcounts, recvcounts + comm_size);
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::VarCollTIData("allGatherV", -1, sendcount, nullptr, -1, trace_recvcounts,
