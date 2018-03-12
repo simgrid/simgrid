@@ -575,21 +575,19 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
 
 }
 
-void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid) {
-  SIMIX_process_killall(simcall->issuer, reset_pid);
+void simcall_HANDLER_process_killall(smx_simcall_t simcall)
+{
+  SIMIX_process_killall(simcall->issuer);
 }
 /**
  * \brief Kills all running processes.
  * \param issuer this one will not be killed
  */
-void SIMIX_process_killall(smx_actor_t issuer, int reset_pid)
+void SIMIX_process_killall(smx_actor_t issuer)
 {
   for (auto const& kv : simix_global->process_list)
     if (kv.second != issuer)
       SIMIX_process_kill(kv.second, issuer);
-
-  if (reset_pid > 0)
-    simix_process_maxpid = reset_pid;
 }
 
 void SIMIX_process_change_host(smx_actor_t actor, sg_host_t dest)

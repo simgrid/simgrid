@@ -221,7 +221,7 @@ XBT_PUBLIC(msg_process_t) MSG_process_attach(const char* name, void* data, msg_h
 XBT_PUBLIC(void) MSG_process_detach();
 
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
-XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
+XBT_PUBLIC(int) MSG_process_killall();
 XBT_PUBLIC(msg_error_t) MSG_process_migrate(msg_process_t process, msg_host_t host);
 XBT_PUBLIC(void) MSG_process_yield();
 

@@ -203,12 +203,7 @@ ActorPtr Actor::byPid(aid_t pid)
 
 void Actor::killAll()
 {
-  simcall_process_killall(1);
-}
-
-void Actor::killAll(int resetPid)
-{
-  simcall_process_killall(resetPid);
+  simcall_process_killall();
 }
 
 std::map<std::string, std::string>* Actor::getProperties()

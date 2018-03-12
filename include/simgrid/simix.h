@@ -199,7 +199,7 @@ simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_ho
                        std::map<std::string, std::string>* properties);
 #endif
 
-XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
+XBT_PUBLIC(void) simcall_process_killall();
 XBT_PUBLIC(void) SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char *msg);
 
 

@@ -282,7 +282,7 @@ void SIMIX_clean()
 #endif
 
   /* Kill all processes (but maestro) */
-  SIMIX_process_killall(simix_global->maestro_process, 1);
+  SIMIX_process_killall(simix_global->maestro_process);
   SIMIX_context_runall();
   SIMIX_process_empty_trash();
 
