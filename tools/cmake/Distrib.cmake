@@ -5,7 +5,7 @@
 # doc
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/)
+  DESTINATION doc/simgrid/html/)
 
 # binaries
 if(enable_smpi)
@@ -14,27 +14,27 @@ if(enable_smpi)
     ${CMAKE_BINARY_DIR}/bin/smpicxx
     ${CMAKE_BINARY_DIR}/bin/smpirun
     ${CMAKE_BINARY_DIR}/bin/smpimain
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+    DESTINATION bin/)
   if(SMPI_FORTRAN)
     install(PROGRAMS
       ${CMAKE_BINARY_DIR}/bin/smpif90
       ${CMAKE_BINARY_DIR}/bin/smpiff
-      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+      DESTINATION bin/)
   endif()
 endif()
 
 if(enable_model-checking)
   install(
     PROGRAMS ${CMAKE_BINARY_DIR}/bin/simgrid-mc
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+    DESTINATION bin/)
 endif()
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION bin/)
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION bin/)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
+  DESTINATION bin/
   RENAME simgrid-colorizer)
 
 add_custom_target(simgrid-colorizer ALL
@@ -42,7 +42,7 @@ add_custom_target(simgrid-colorizer ALL
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl ${CMAKE_BINARY_DIR}/bin/colorize)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
+  DESTINATION bin/
   RENAME simgrid_update_xml)
 
 add_custom_target(simgrid_update_xml ALL
@@ -50,13 +50,13 @@ add_custom_target(simgrid_update_xml ALL
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml)
 
 # libraries
-install(TARGETS simgrid DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
+install(TARGETS simgrid DESTINATION lib/)
 
 if(enable_java)
   set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_JAR}")
-  install(TARGETS simgrid-java   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
+  install(TARGETS simgrid-java   DESTINATION lib/)
   install(FILES ${SIMGRID_JAR_TO_INSTALL}
-      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/
+      DESTINATION java/
       RENAME simgrid.jar)
 endif()
 
@@ -65,7 +65,7 @@ foreach(file ${headers_to_install}  ${generated_headers_to_install})
   get_filename_component(location ${file} PATH)
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
   string(REPLACE "src/" "include/simgrid/" location "${location}") # For kernel headers
-  install(FILES ${file} DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${location})
+  install(FILES ${file} DESTINATION ${location})
 endforeach()
 
 # example files
@@ -73,7 +73,7 @@ foreach(file ${examples_to_install})
   string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
+    DESTINATION doc/simgrid/examples/${location})
 endforeach(file ${examples_to_install})
 
 ###########################################
