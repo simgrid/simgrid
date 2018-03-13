@@ -5,8 +5,10 @@
 
 #ifndef XBT_GRAPH_H
 #define XBT_GRAPH_H
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
-#include "xbt/dynar.h"
+
+#include <xbt/dynar.h>
+#include <xbt/misc.h> /* SG_BEGIN_DECL */
+
 SG_BEGIN_DECL()
 
   /** @addtogroup XBT_graph

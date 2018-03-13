@@ -6,8 +6,8 @@
 #ifndef SIMGRID_S4U_VM_HPP
 #define SIMGRID_S4U_VM_HPP
 
-#include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/forward.hpp"
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/forward.hpp>
 
 enum e_surf_vm_state_t {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */

@@ -1,10 +1,12 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
 #include <simgrid/plugins/file_system.h>
+
+#include <stdio.h> /* sscanf */
 
 #define INMEGA (1024 * 1024)
 

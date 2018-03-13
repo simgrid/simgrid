@@ -1,6 +1,6 @@
 /* function_type.h - classical types for pointer to function                */
 
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +8,7 @@
 #ifndef XBT_FUNCTION_TYPE_H
 #define XBT_FUNCTION_TYPE_H
 
-#include "xbt/base.h"
+#include <xbt/base.h>
 
 SG_BEGIN_DECL()
 

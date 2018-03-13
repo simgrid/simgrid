@@ -1,7 +1,6 @@
 /*  xbt/asserts.h -- assertion mechanism                                    */
 
-/* Copyright (c) 2005-2007, 2009-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,9 +8,9 @@
 #ifndef XBT_ASSERTS_H
 #define XBT_ASSERTS_H
 
-#include "xbt/misc.h"
-#include "xbt/log.h"
-#include "xbt/ex.h"
+#include <xbt/ex.h>
+#include <xbt/log.h>
+#include <xbt/misc.h>
 
 SG_BEGIN_DECL()
 XBT_PUBLIC_DATA int xbt_log_no_loc; /* Do not show the backtrace on failed backtrace when doing our tests */

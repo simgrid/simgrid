@@ -49,9 +49,15 @@
  *   http://www.ijs.si/software/snprintf/
  */
 
+/* find vasprintf in stdio.h */
+#ifndef _GNU_SOURCE
+#  define _GNU_SOURCE
+#endif
+#include <stdio.h>
+
 #include "xbt/sysdep.h"           /* xbt_abort() */
 #include "src/internal_config.h"  /* Do we need vasprintf? */
-#include <stdio.h>
+
 #include <assert.h>
 
 #if !HAVE_VASPRINTF

@@ -8,8 +8,8 @@
 #ifndef XBT_THREAD_H
 #define XBT_THREAD_H
 
-#include "xbt/function_types.h"
-#include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include <xbt/function_types.h>
+#include <xbt/misc.h> /* SG_BEGIN_DECL */
 
 SG_BEGIN_DECL()
 

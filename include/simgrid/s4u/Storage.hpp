@@ -1,5 +1,4 @@
-/* Copyright (c) 2006-2015, 2017-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,13 +6,14 @@
 #ifndef INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
-#include "xbt/Extendable.hpp"
-#include <map>
 #include <simgrid/s4u/forward.hpp>
 #include <simgrid/simix.h>
+#include <xbt/Extendable.hpp>
+#include <xbt/base.h>
+
+#include <map>
 #include <string>
 #include <unordered_map>
-#include <xbt/base.h>
 
 namespace simgrid {
 namespace xbt {

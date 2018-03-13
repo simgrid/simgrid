@@ -3,20 +3,20 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef MSG_H
-#define MSG_H
+#ifndef SIMGRID_MSG_H
+#define SIMGRID_MSG_H
 
-#include "simgrid/forward.h"
-#include "simgrid/host.h"
-#include "simgrid/plugins/live_migration.h"
-
-#include "xbt/base.h"
-#include "xbt/dict.h"
-#include "xbt/dynar.h"
+#include <simgrid/forward.h>
+#include <simgrid/host.h>
+#include <simgrid/instr.h>
+#include <simgrid/plugins/live_migration.h>
+#include <xbt/base.h>
+#include <xbt/dict.h>
+#include <xbt/dynar.h>
 
 #ifdef __cplusplus
-#include "simgrid/simix.h"
 #include <map>
+#include <simgrid/simix.h>
 namespace simgrid {
 namespace msg {
 class Comm;
@@ -412,8 +412,6 @@ XBT_PUBLIC sg_host_t sg_vm_get_pm(sg_vm_t vm);
 #define MSG_vm_get_pm(vm) sg_vm_get_pm(vm)
 XBT_PUBLIC void sg_vm_set_bound(sg_vm_t vm, double bound);
 #define MSG_vm_set_bound(vm, bound) sg_vm_set_bound(vm, bound)
-
-#include "simgrid/instr.h"
 
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */

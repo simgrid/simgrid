@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,6 +8,8 @@
 #include "tracker.h"
 #include <simgrid/msg.h>
 #include <xbt/RngStream.h>
+
+#include <stdio.h> /* snprintf */
 
 /** Bittorrent example launcher */
 int main(int argc, char* argv[])

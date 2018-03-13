@@ -2,8 +2,7 @@
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
 
-/* Copyright (c) 2004-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,11 +10,11 @@
 #ifndef XBT_SYSDEP_H
 #define XBT_SYSDEP_H
 
-#include "xbt/log.h"
-#include "xbt/misc.h"
-#include "xbt/asserts.h"
+#include <xbt/asserts.h>
+#include <xbt/log.h>
+#include <xbt/misc.h>
 
-#include "simgrid_config.h"
+#include <simgrid_config.h>
 
 #include <string.h>
 #include <stdlib.h>

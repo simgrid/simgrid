@@ -1,7 +1,6 @@
 /* xbt/mallocator.h -- api to recycle allocated objects                     */
 
-/* Copyright (c) 2006-2007, 2009-2010, 2012-2014, 2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,8 +8,9 @@
 #ifndef XBT_MALLOCATOR_H
 #define XBT_MALLOCATOR_H
 
-#include "xbt/function_types.h"
-#include "xbt/misc.h"
+#include <xbt/function_types.h>
+#include <xbt/misc.h>
+
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_mallocator

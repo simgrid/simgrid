@@ -1,16 +1,16 @@
-/* Copyright (c) 2010-2012, 2014-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef JEDULE_HPP_
 #define JEDULE_HPP_
-#include "simgrid_config.h"
-#include <cstdio>
 
-#include "jedule_events.hpp"
-#include "jedule_platform.hpp"
+#include <simgrid/jedule/jedule_events.hpp>
+#include <simgrid/jedule/jedule_platform.hpp>
+#include <simgrid_config.h>
+
+#include <cstdio>
 
 #if SIMGRID_HAVE_JEDULE
 

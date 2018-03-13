@@ -1,7 +1,6 @@
 /* str.h - XBT string related functions.                                    */
 
-/* Copyright (c) 2007-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,12 +8,11 @@
 #ifndef XBT_STR_H
 #define XBT_STR_H
 
-#include "xbt/dict.h"
-#include "xbt/dynar.h"
-#include "xbt/misc.h"
+#include <xbt/dict.h>
+#include <xbt/dynar.h>
+#include <xbt/misc.h>
 
-#include <stdarg.h>             /* va_* */
-#include <stdio.h>  /* FILE */
+#include <stdarg.h> /* va_* */
 
 SG_BEGIN_DECL()
 

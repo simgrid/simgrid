@@ -8,10 +8,10 @@
 #ifndef XBT_VIRTU_H
 #define XBT_VIRTU_H
 
-#include "xbt/misc.h"
-#include "xbt/base.h"
-#include "xbt/function_types.h"
-#include "xbt/dynar.h"
+#include <xbt/base.h>
+#include <xbt/dynar.h>
+#include <xbt/function_types.h>
+#include <xbt/misc.h>
 
 SG_BEGIN_DECL()
 

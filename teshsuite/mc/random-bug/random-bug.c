@@ -1,11 +1,12 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/msg.h>
 #include <simgrid/modelchecker.h>
+
+#include <stdio.h> /* snprintf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "Application");
 

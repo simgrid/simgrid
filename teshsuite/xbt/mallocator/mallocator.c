@@ -1,6 +1,8 @@
 #include "xbt/mallocator.h"
 #include "xbt.h"
 
+#include <stdio.h> /* snprintf */
+
 typedef struct element {
   int value;
 } s_element_t;

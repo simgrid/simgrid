@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_SIMIX_H
-#define _SIMIX_SIMIX_H
+#ifndef SIMGRID_SIMIX_H
+#define SIMGRID_SIMIX_H
 
-#include "simgrid/forward.h"
-#include "simgrid/host.h"
-#include "xbt/ex.h"
-#include "xbt/parmap.h"
+#include <simgrid/forward.h>
+#include <simgrid/host.h>
+#include <xbt/ex.h>
+#include <xbt/parmap.h>
 #ifdef __cplusplus
 #include <map>
 #endif
@@ -280,4 +280,4 @@ XBT_PUBLIC int simcall_mc_random(int min, int max);
 
 SG_END_DECL()
 
-#endif                          /* _SIMIX_SIMIX_H */
+#endif

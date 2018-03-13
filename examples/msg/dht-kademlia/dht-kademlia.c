@@ -1,5 +1,4 @@
-/* Copyright (c) 2012, 2014-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,6 +8,9 @@
 #include "task.h"
 
 #include "simgrid/msg.h"
+
+#include <stdio.h> /* snprintf */
+
 /** @addtogroup MSG_examples
   * <b>kademlia/kademlia.c: Kademlia protocol</b>
   * Implements the Kademlia protocol, using 32 bits identifiers.

@@ -28,9 +28,9 @@
 #ifndef XBT_LOG_H
 #define XBT_LOG_H
 
-#include "xbt/misc.h"
 #include <stdarg.h>
-#include <stddef.h>             /* NULL */
+#include <stddef.h> /* NULL */
+#include <xbt/misc.h>
 SG_BEGIN_DECL()
 /**\brief Log priorities
  * \ingroup XBT_log

@@ -6,8 +6,9 @@
 
 #include "simgrid/msg.h"
 #include "xbt/dynar.h"
-#include <math.h>
 
+#include <math.h>
+#include <stdio.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pastry, "Messages specific for this msg example");
 

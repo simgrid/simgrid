@@ -11,8 +11,8 @@
 
 #include <boost/intrusive_ptr.hpp>
 
+#include <simgrid/simix.h>
 #include <xbt/base.h>
-#include "simgrid/simix.h"
 
 namespace simgrid {
 namespace s4u {

@@ -8,8 +8,9 @@
 #ifndef XBT_DICT_H
 #define XBT_DICT_H
 
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
-#include "xbt/dynar.h"          /* void_f_pvoid_t */
+#include <xbt/dynar.h> /* void_f_pvoid_t */
+#include <xbt/misc.h>  /* SG_BEGIN_DECL */
+
 #include <stdint.h>             /* uintptr_t */
 
 SG_BEGIN_DECL()

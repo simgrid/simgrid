@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,9 +7,11 @@
 #include "bittorrent-messages.h"
 #include "connection.h"
 #include "tracker.h"
-#include <limits.h>
 #include <simgrid/msg.h>
 #include <xbt/RngStream.h>
+
+#include <limits.h>
+#include <stdio.h> /* snprintf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peers, "Messages specific for the peers");
 

@@ -1,7 +1,6 @@
 /* xbt/replay_reader.h -- Tools to parse a replay file                */
 
-/* Copyright (c) 2010, 2012-2015, 2017-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,7 +8,8 @@
 #ifndef XBT_REPLAY_HPP
 #define XBT_REPLAY_HPP
 
-#include "xbt/misc.h" /* SG_BEGIN_DECL */
+#include <xbt/misc.h> /* SG_BEGIN_DECL */
+
 #ifdef __cplusplus
 #include <fstream>
 #include <queue>

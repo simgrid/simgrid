@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,6 +6,8 @@
 #include "simgrid/msg.h"
 #include "simgrid/plugins/file_system.h"
 #include <xbt/replay.hpp>
+
+#include <stdio.h> /* snprintf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage_actions, "Messages specific for this example");
 

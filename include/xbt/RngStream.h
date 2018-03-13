@@ -1,5 +1,4 @@
-/* Copyright (c) 2012, 2014-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +7,7 @@
 #ifndef RNGSTREAM_H
 #define RNGSTREAM_H
 
-#include "misc.h"
+#include <xbt/misc.h>
 
 typedef struct RngStream_InfoState * RngStream;
 

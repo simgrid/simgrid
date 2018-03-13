@@ -1,10 +1,13 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef XBT_FUNCTIONAL_HPP
 #define XBT_FUNCTIONAL_HPP
+
+#include <xbt/sysdep.h>
+#include <xbt/utility.hpp>
 
 #include <cstddef>
 #include <cstdlib>
@@ -19,9 +22,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "xbt/sysdep.h"
-#include "xbt/utility.hpp"
 
 namespace simgrid {
 namespace xbt {

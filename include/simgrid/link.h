@@ -1,7 +1,6 @@
 /* Public interface to the Link datatype                                    */
 
-/* Copyright (c) 2015-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,8 +8,8 @@
 #ifndef INCLUDE_SIMGRID_LINK_H_
 #define INCLUDE_SIMGRID_LINK_H_
 
-#include "simgrid/forward.h"
-#include "xbt/base.h"
+#include <simgrid/forward.h>
+#include <xbt/base.h>
 
 /* C interface */
 SG_BEGIN_DECL()

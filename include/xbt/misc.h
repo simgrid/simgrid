@@ -1,7 +1,6 @@
-/* xbt.h - Public interface to the xbt (simgrid's toolbox)                     */
+/* xbt.h - Public interface to the xbt (simgrid's toolbox)                  */
 
-/* Copyright (c) 2004-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,9 +8,9 @@
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
-#include "simgrid_config.h"
-#include "base.h"
-#include "dynar.h"
+#include <simgrid_config.h>
+#include <xbt/base.h>
+#include <xbt/dynar.h>
 
 #include <stdarg.h>
 

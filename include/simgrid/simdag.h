@@ -1,19 +1,20 @@
-/* Copyright (c) 2006-2010, 2012-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMDAG_SIMDAG_H
-#define SIMDAG_SIMDAG_H
+#ifndef SIMGRID_SIMDAG_H
+#define SIMGRID_SIMDAG_H
 
-#include "simgrid/host.h"
-#include "simgrid/link.h"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
+#include <simgrid/host.h>
+#include <simgrid/link.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+
 #ifdef __cplusplus
 #include <set>
 #endif
+
 SG_BEGIN_DECL()
 
 /** @brief Link opaque datatype

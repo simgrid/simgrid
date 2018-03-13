@@ -51,7 +51,7 @@ namespace s4u {
  * pure function or as an object. It is very simple with functions:
  *
  * @code{.cpp}
- * #include "s4u/actor.hpp"
+ * #include <simgrid/s4u/actor.hpp>
  *
  * // Declare the code of your worker
  * void worker() {
@@ -69,7 +69,7 @@ namespace s4u {
  * The syntax is slightly more complicated, but not much.
  *
  * @code{.cpp}
- * #include "s4u/actor.hpp"
+ * #include <simgrid/s4u/actor.hpp>
  *
  * // Declare the class representing your actors
  * class Worker {

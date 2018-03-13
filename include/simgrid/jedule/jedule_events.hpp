@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2012, 2014-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,13 +6,14 @@
 #ifndef JEDULE_EVENTS_H_
 #define JEDULE_EVENTS_H_
 
-#include "simgrid_config.h"
-#include "simgrid/forward.h"
+#include <simgrid/jedule/jedule_platform.hpp>
+
+#include <simgrid/forward.h>
+#include <simgrid_config.h>
+
 #include <vector>
 #include <string>
 #include <unordered_map>
-
-#include "jedule_platform.hpp"
 
 #if SIMGRID_HAVE_JEDULE
 namespace simgrid {

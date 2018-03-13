@@ -1,5 +1,4 @@
-/* Copyright (c) 2005-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,10 +8,10 @@
 
 #include <stdlib.h>
 
-#include "xbt/base.h"
-#include "xbt/sysdep.h"
-#include "xbt/misc.h"
-#include "xbt/virtu.h"
+#include <xbt/base.h>
+#include <xbt/misc.h>
+#include <xbt/sysdep.h>
+#include <xbt/virtu.h>
 
 /** @addtogroup XBT_ex_c
  *  @brief Exceptions support (C)

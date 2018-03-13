@@ -1,10 +1,12 @@
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/msg.h>
 #include <xbt/replay.hpp>
+
+#include <stdio.h> /* snprintf */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions, "Messages specific for this msg example");
 int communicator_size = 0;
