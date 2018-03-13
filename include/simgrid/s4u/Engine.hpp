@@ -59,10 +59,10 @@ protected:
   friend s4u::Storage;
   void addHost(std::string name, simgrid::s4u::Host * host);
   void delHost(std::string name);
-
-public:
   void addStorage(std::string name, simgrid::s4u::Storage * storage);
   void delStorage(std::string name);
+
+public:
   simgrid::s4u::Host* hostByName(std::string name);
   simgrid::s4u::Host* hostByNameOrNull(std::string name);
   simgrid::s4u::Storage* storageByName(std::string name);
