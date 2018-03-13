@@ -2,7 +2,7 @@
 /* This is the tuning used by MVAPICH for Stampede platform based on (MV2_ARCH_INTEL_XEON_E5_2680_16,
  * MV2_HCA_MLX_CX_FDR) */
 
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,7 +16,7 @@
 
 #define MV2_MAX_NB_THRESHOLDS 32
 
-XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
+XBT_PUBLIC void smpi_coll_cleanup_mvapich2(void);
 
 struct mv2_alltoall_tuning_element {
   int min;

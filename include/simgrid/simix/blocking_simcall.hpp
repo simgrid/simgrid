@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017. The SimGrid Team.
+/* Copyright (c) 2016-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,12 +19,12 @@
 #include <simgrid/simix.h>
 #include <simgrid/simix.hpp>
 
-XBT_PUBLIC(void) simcall_run_blocking(std::function<void()> const& code);
+XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code);
 
 namespace simgrid {
 namespace simix {
 
-XBT_PUBLIC(void) unblock(smx_actor_t process);
+XBT_PUBLIC void unblock(smx_actor_t process);
 
 /** Execute some code in kernel mode and wakes up the actor when
  *  the result is available.

@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,17 +25,17 @@
 SG_BEGIN_DECL()
 
 /********************************** Configuration of MC **************************************/
-extern XBT_PUBLIC(int) _sg_do_model_check;
+extern XBT_PUBLIC int _sg_do_model_check;
 extern XBT_PRIVATE int _sg_do_model_check_record;
 extern XBT_PRIVATE int _sg_mc_checkpoint;
-extern XBT_PUBLIC(int) _sg_mc_sparse_checkpoint;
-extern XBT_PUBLIC(int) _sg_mc_ksm;
+extern XBT_PUBLIC int _sg_mc_sparse_checkpoint;
+extern XBT_PUBLIC int _sg_mc_ksm;
 extern XBT_PRIVATE int _sg_mc_timeout;
 extern XBT_PRIVATE int _sg_mc_hash;
 extern XBT_PRIVATE int _sg_mc_max_depth;
-extern XBT_PUBLIC(int) _sg_mc_max_visited_states;
-extern XBT_PUBLIC(int) _sg_mc_comms_determinism;
-extern XBT_PUBLIC(int) _sg_mc_send_determinism;
+extern XBT_PUBLIC int _sg_mc_max_visited_states;
+extern XBT_PUBLIC int _sg_mc_comms_determinism;
+extern XBT_PUBLIC int _sg_mc_send_determinism;
 extern XBT_PRIVATE int _sg_mc_snapshot_fds;
 extern XBT_PRIVATE int _sg_mc_termination;
 
@@ -55,13 +55,13 @@ XBT_PRIVATE void _mc_cfg_cb_comms_determinism(const char *name);
 XBT_PRIVATE void _mc_cfg_cb_send_determinism(const char *name);
 XBT_PRIVATE void _mc_cfg_cb_termination(const char *name);
 
-XBT_PUBLIC(void) MC_run();
-XBT_PUBLIC(void) MC_process_clock_add(smx_actor_t, double);
-XBT_PUBLIC(double) MC_process_clock_get(smx_actor_t);
+XBT_PUBLIC void MC_run();
+XBT_PUBLIC void MC_process_clock_add(smx_actor_t, double);
+XBT_PUBLIC double MC_process_clock_get(smx_actor_t);
 XBT_PRIVATE void MC_automaton_load(const char *file);
 
 /********************************* Memory *************************************/
-XBT_PUBLIC(void) MC_memory_init();  /* Initialize the memory subsystem */
+XBT_PUBLIC void MC_memory_init(); /* Initialize the memory subsystem */
 
 SG_END_DECL()
 

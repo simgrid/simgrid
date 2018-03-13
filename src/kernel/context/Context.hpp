@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -153,8 +153,8 @@ extern "C" {
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
 
-XBT_PUBLIC(smx_context_t)
-SIMIX_context_new(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t simix_process);
+XBT_PUBLIC smx_context_t SIMIX_context_new(std::function<void()> code, void_pfn_smxprocess_t cleanup_func,
+                                           smx_actor_t simix_process);
 
 #ifndef WIN32
 XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
@@ -173,15 +173,15 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 /** @brief Executes all the processes to run (in parallel if possible). */
 XBT_PRIVATE void SIMIX_context_runall();
 /** @brief returns the current running context */
-XBT_PUBLIC(smx_context_t) SIMIX_context_self(); // public because it's used in simgrid-java
+XBT_PUBLIC smx_context_t SIMIX_context_self(); // public because it's used in simgrid-java
 
 XBT_PRIVATE void *SIMIX_context_stack_new();
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 
-XBT_PUBLIC(void) SIMIX_context_set_current(smx_context_t context);
+XBT_PUBLIC void SIMIX_context_set_current(smx_context_t context);
 XBT_PRIVATE smx_context_t SIMIX_context_get_current();
 
-XBT_PUBLIC(int) SIMIX_process_get_maxpid();
+XBT_PUBLIC int SIMIX_process_get_maxpid();
 
 XBT_PRIVATE void SIMIX_post_create_environment();
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2011, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2010-2011, 2013-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,10 +12,10 @@
 
 #if SIMGRID_HAVE_JEDULE
 SG_BEGIN_DECL()
-XBT_PUBLIC(void) jedule_log_sd_event(SD_task_t task);
-XBT_PUBLIC(void) jedule_sd_init(void);
-XBT_PUBLIC(void) jedule_sd_exit(void);
-XBT_PUBLIC(void) jedule_sd_dump(const char* filename);
+XBT_PUBLIC void jedule_log_sd_event(SD_task_t task);
+XBT_PUBLIC void jedule_sd_init(void);
+XBT_PUBLIC void jedule_sd_exit(void);
+XBT_PUBLIC void jedule_sd_dump(const char* filename);
 SG_END_DECL()
 #endif /* JEDULE_SD_BINDING_H_ */
 

@@ -60,57 +60,58 @@ typedef struct xbt_automaton_propositional_symbol* xbt_automaton_propositional_s
 typedef int (*xbt_automaton_propositional_symbol_callback_type)(void*);
 typedef void (*xbt_automaton_propositional_symbol_free_function_type)(void*);
 
-XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new(void);
-XBT_PUBLIC(void) xbt_automaton_load(xbt_automaton_t automaton, const char *file);
-XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_state_new(xbt_automaton_t a, int type, char* id);
-XBT_PUBLIC(xbt_automaton_transition_t)
-    xbt_automaton_transition_new(xbt_automaton_t a, xbt_automaton_state_t src, xbt_automaton_state_t dst,
-                                 xbt_automaton_exp_label_t label);
-XBT_PUBLIC(xbt_automaton_exp_label_t) xbt_automaton_exp_label_new(int type, ...);
-XBT_PUBLIC(xbt_dynar_t) xbt_automaton_get_states(xbt_automaton_t a);
-XBT_PUBLIC(xbt_dynar_t) xbt_automaton_get_transitions(xbt_automaton_t a);
-XBT_PUBLIC(xbt_automaton_transition_t) xbt_automaton_get_transition(xbt_automaton_t a, xbt_automaton_state_t src,
-                                                                    xbt_automaton_state_t dst);
-XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_transition_get_source(xbt_automaton_transition_t t);
-XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_transition_get_destination(xbt_automaton_transition_t t);
-XBT_PUBLIC(void) xbt_automaton_transition_set_source(xbt_automaton_transition_t t, xbt_automaton_state_t src);
-XBT_PUBLIC(void) xbt_automaton_transition_set_destination(xbt_automaton_transition_t t, xbt_automaton_state_t dst);
-XBT_PUBLIC(xbt_dynar_t) xbt_automaton_state_get_out_transitions(xbt_automaton_state_t s);
-XBT_PUBLIC(xbt_dynar_t) xbt_automaton_state_get_in_transitions(xbt_automaton_state_t s);
-XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_state_exists(xbt_automaton_t a, char *id);
-XBT_PUBLIC(void) xbt_automaton_display(xbt_automaton_t a);
-XBT_PUBLIC(void) xbt_automaton_exp_label_display(xbt_automaton_exp_label_t l);
+XBT_PUBLIC xbt_automaton_t xbt_automaton_new(void);
+XBT_PUBLIC void xbt_automaton_load(xbt_automaton_t automaton, const char* file);
+XBT_PUBLIC xbt_automaton_state_t xbt_automaton_state_new(xbt_automaton_t a, int type, char* id);
+XBT_PUBLIC xbt_automaton_transition_t xbt_automaton_transition_new(xbt_automaton_t a, xbt_automaton_state_t src,
+                                                                   xbt_automaton_state_t dst,
+                                                                   xbt_automaton_exp_label_t label);
+XBT_PUBLIC xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...);
+XBT_PUBLIC xbt_dynar_t xbt_automaton_get_states(xbt_automaton_t a);
+XBT_PUBLIC xbt_dynar_t xbt_automaton_get_transitions(xbt_automaton_t a);
+XBT_PUBLIC xbt_automaton_transition_t xbt_automaton_get_transition(xbt_automaton_t a, xbt_automaton_state_t src,
+                                                                   xbt_automaton_state_t dst);
+XBT_PUBLIC xbt_automaton_state_t xbt_automaton_transition_get_source(xbt_automaton_transition_t t);
+XBT_PUBLIC xbt_automaton_state_t xbt_automaton_transition_get_destination(xbt_automaton_transition_t t);
+XBT_PUBLIC void xbt_automaton_transition_set_source(xbt_automaton_transition_t t, xbt_automaton_state_t src);
+XBT_PUBLIC void xbt_automaton_transition_set_destination(xbt_automaton_transition_t t, xbt_automaton_state_t dst);
+XBT_PUBLIC xbt_dynar_t xbt_automaton_state_get_out_transitions(xbt_automaton_state_t s);
+XBT_PUBLIC xbt_dynar_t xbt_automaton_state_get_in_transitions(xbt_automaton_state_t s);
+XBT_PUBLIC xbt_automaton_state_t xbt_automaton_state_exists(xbt_automaton_t a, char* id);
+XBT_PUBLIC void xbt_automaton_display(xbt_automaton_t a);
+XBT_PUBLIC void xbt_automaton_exp_label_display(xbt_automaton_exp_label_t l);
 
 // xbt_automaton_propositional_symbol constructors:
-XBT_PUBLIC(xbt_automaton_propositional_symbol_t)
-   xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, int(*fct)(void));
-XBT_PUBLIC(xbt_automaton_propositional_symbol_t)
-   xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a, const char* id, int* value);
-XBT_PUBLIC(xbt_automaton_propositional_symbol_t)
-   xbt_automaton_propositional_symbol_new_callback(xbt_automaton_t a, const char* id,
-  xbt_automaton_propositional_symbol_callback_type callback,
-  void* data, xbt_automaton_propositional_symbol_free_function_type free_function);
+XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a,
+                                                                                       const char* id,
+                                                                                       int (*fct)(void));
+XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a,
+                                                                                               const char* id,
+                                                                                               int* value);
+XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new_callback(
+    xbt_automaton_t a, const char* id, xbt_automaton_propositional_symbol_callback_type callback, void* data,
+    xbt_automaton_propositional_symbol_free_function_type free_function);
 
 // xbt_automaton_propositional_symbol accessors:
-XBT_PUBLIC(xbt_automaton_propositional_symbol_callback_type)
-   xbt_automaton_propositional_symbol_get_callback(xbt_automaton_propositional_symbol_t symbol);
-XBT_PUBLIC(void*) xbt_automaton_propositional_symbol_get_data(xbt_automaton_propositional_symbol_t symbol);
-XBT_PUBLIC(const char*) xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol);
+XBT_PUBLIC xbt_automaton_propositional_symbol_callback_type
+xbt_automaton_propositional_symbol_get_callback(xbt_automaton_propositional_symbol_t symbol);
+XBT_PUBLIC void* xbt_automaton_propositional_symbol_get_data(xbt_automaton_propositional_symbol_t symbol);
+XBT_PUBLIC const char* xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol);
 
 // xbt_automaton_propositional_symbol methods!
-XBT_PUBLIC(int) xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol);
+XBT_PUBLIC int xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol);
 
-XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_get_current_state(xbt_automaton_t a);
-XBT_PUBLIC(int) xbt_automaton_state_compare(xbt_automaton_state_t s1, xbt_automaton_state_t s2);
-XBT_PUBLIC(int) xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2);
-XBT_PUBLIC(int) xbt_automaton_transition_compare(const void *t1, const void *t2);
-XBT_PUBLIC(int) xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_exp_label_t l2);
-XBT_PUBLIC(void) xbt_automaton_state_free_voidp(void *s);
-XBT_PUBLIC(void) xbt_automaton_state_free(xbt_automaton_state_t s);
-XBT_PUBLIC(void) xbt_automaton_transition_free_voidp(void *t);
-XBT_PUBLIC(void) xbt_automaton_exp_label_free_voidp(void *e);
-XBT_PUBLIC(void) xbt_automaton_propositional_symbol_free_voidp(void *ps);
-XBT_PUBLIC(void) xbt_automaton_free(xbt_automaton_t a);
+XBT_PUBLIC xbt_automaton_state_t xbt_automaton_get_current_state(xbt_automaton_t a);
+XBT_PUBLIC int xbt_automaton_state_compare(xbt_automaton_state_t s1, xbt_automaton_state_t s2);
+XBT_PUBLIC int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2);
+XBT_PUBLIC int xbt_automaton_transition_compare(const void* t1, const void* t2);
+XBT_PUBLIC int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_exp_label_t l2);
+XBT_PUBLIC void xbt_automaton_state_free_voidp(void* s);
+XBT_PUBLIC void xbt_automaton_state_free(xbt_automaton_state_t s);
+XBT_PUBLIC void xbt_automaton_transition_free_voidp(void* t);
+XBT_PUBLIC void xbt_automaton_exp_label_free_voidp(void* e);
+XBT_PUBLIC void xbt_automaton_propositional_symbol_free_voidp(void* ps);
+XBT_PUBLIC void xbt_automaton_free(xbt_automaton_t a);
 
 SG_END_DECL()
 

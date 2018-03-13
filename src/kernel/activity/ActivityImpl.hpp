@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -32,8 +32,8 @@ namespace activity {
     virtual void post() =0; // What to do when a simcall terminates
 
     // boost::intrusive_ptr<ActivityImpl> support:
-    friend XBT_PUBLIC(void) intrusive_ptr_add_ref(ActivityImpl * activity);
-    friend XBT_PUBLIC(void) intrusive_ptr_release(ActivityImpl * activity);
+    friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl * activity);
+    friend XBT_PUBLIC void intrusive_ptr_release(ActivityImpl * activity);
 
   private:
     std::atomic_int_fast32_t refcount_{0};

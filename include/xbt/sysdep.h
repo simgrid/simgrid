@@ -2,7 +2,7 @@
 /*  no system header should be loaded out of this file so that we have only */
 /*  one file to check when porting to another OS                            */
 
-/* Copyright (c) 2004-2017. The SimGrid Team.
+/* Copyright (c) 2004-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -31,7 +31,7 @@ SG_BEGIN_DECL()
  * @{
  */
 /** @brief Kill the program in silence */
-XBT_ATTRIB_NORETURN XBT_PUBLIC(void) xbt_abort(void);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
 
 /**
  * @brief Kill the program with an error message
@@ -71,7 +71,7 @@ static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   return res;
 }
 
-XBT_PUBLIC(void) xbt_backtrace_display_current();
+XBT_PUBLIC void xbt_backtrace_display_current();
 
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */
@@ -114,9 +114,9 @@ static XBT_ALWAYS_INLINE void *xbt_realloc(void *p, size_t s) {
 #define xbt_free(p) free(p) /*nothing specific to do here. A poor valgrind replacement? */
 
 /** @brief like free, but you can be sure that it is a function  */
-XBT_PUBLIC(void) xbt_free_f(void *p);
+XBT_PUBLIC void xbt_free_f(void* p);
 /** @brief should be given a pointer to pointer, and frees the second one */
-XBT_PUBLIC(void) xbt_free_ref(void *d);
+XBT_PUBLIC void xbt_free_ref(void* d);
 
 SG_END_DECL()
 

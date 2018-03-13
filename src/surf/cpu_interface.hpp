@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -146,7 +146,7 @@ public:
  */
 XBT_PUBLIC_CLASS CpuAction : public simgrid::kernel::resource::Action
 {
-  friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction* action);
+  friend XBT_PUBLIC Cpu* getActionCpu(CpuAction * action);
 
 public:
   /** @brief Signal emitted when the action state changes (ready/running/done, etc)

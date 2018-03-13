@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team.
+/* Copyright (c) 2015-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,7 @@ namespace mc {
  *
  *  Send messages to the model-checker and handles message from it.
  */
-class XBT_PUBLIC() Client {
+class XBT_PUBLIC Client {
 private:
   Channel channel_;
   static std::unique_ptr<Client> instance_;

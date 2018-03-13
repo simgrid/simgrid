@@ -40,8 +40,8 @@ public:
   ConditionVariable(ConditionVariable const&) = delete;
   ConditionVariable& operator=(ConditionVariable const&) = delete;
 
-  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(ConditionVariable * cond);
-  friend XBT_PUBLIC(void) intrusive_ptr_release(ConditionVariable * cond);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariable * cond);
+  friend XBT_PUBLIC void intrusive_ptr_release(ConditionVariable * cond);
   using Ptr = boost::intrusive_ptr<ConditionVariable>;
 
   static Ptr createConditionVariable();

@@ -5,7 +5,7 @@
 /*                                                                            */
 /* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -259,7 +259,7 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
-XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data)
+XBT_PUBLIC void simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data)
 {
   simcall_BODY_process_on_exit(process, fun, data);
 }

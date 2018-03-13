@@ -48,16 +48,16 @@
 #define _FLEXML_dax_H
 
 /* XML application entry points. */
-XBT_PUBLIC(void) STag_dax__adag(void);
-XBT_PUBLIC(void) ETag_dax__adag(void);
-XBT_PUBLIC(void) STag_dax__child(void);
-XBT_PUBLIC(void) ETag_dax__child(void);
-XBT_PUBLIC(void) STag_dax__job(void);
-XBT_PUBLIC(void) ETag_dax__job(void);
-XBT_PUBLIC(void) STag_dax__parent(void);
-XBT_PUBLIC(void) ETag_dax__parent(void);
-XBT_PUBLIC(void) STag_dax__uses(void);
-XBT_PUBLIC(void) ETag_dax__uses(void);
+XBT_PUBLIC void STag_dax__adag(void);
+XBT_PUBLIC void ETag_dax__adag(void);
+XBT_PUBLIC void STag_dax__child(void);
+XBT_PUBLIC void ETag_dax__child(void);
+XBT_PUBLIC void STag_dax__job(void);
+XBT_PUBLIC void ETag_dax__job(void);
+XBT_PUBLIC void STag_dax__parent(void);
+XBT_PUBLIC void ETag_dax__parent(void);
+XBT_PUBLIC void STag_dax__uses(void);
+XBT_PUBLIC void ETag_dax__uses(void);
 
 /* XML application data. */
 typedef int AT_dax__adag_childCount;
@@ -188,10 +188,10 @@ XBT_PUBLIC_DATA(AT_dax__uses_type) AX_dax__uses_type;
 XBT_PUBLIC_DATA(short int) dax__uses_type_isset;
 
 /* XML application utilities. */
-XBT_PUBLIC(int) dax__element_context(int);
+XBT_PUBLIC int dax__element_context(int);
 
 /* XML processor entry point. */
-XBT_PUBLIC(int) yylex(void);
+XBT_PUBLIC int yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
 const char * dax__parse_err_msg(void);

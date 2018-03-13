@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -300,13 +300,13 @@ typedef std::string string;
  *
  * @ingroup XBT_str
 */
-XBT_PUBLIC(std::string) string_printf(const char* fmt, ...);
+XBT_PUBLIC std::string string_printf(const char* fmt, ...);
 
 /** Create a C++ string from a C-style format
  *
  * @ingroup XBT_str
 */
-XBT_PUBLIC(std::string) string_vprintf(const char* fmt, va_list ap);
+XBT_PUBLIC std::string string_vprintf(const char* fmt, va_list ap);
 }
 }
 

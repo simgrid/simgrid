@@ -22,15 +22,15 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(int) MC_random(int min, int max);
+XBT_PUBLIC int MC_random(int min, int max);
 
 #if SIMGRID_HAVE_MC
 
 /* Internal variable used to check if we're running under the MC
  *
  * Please don't use directly: you should use MC_is_active. */
-extern XBT_PUBLIC(int) _sg_do_model_check;
-extern XBT_PUBLIC(int) _sg_mc_max_visited_states;
+extern XBT_PUBLIC int _sg_do_model_check;
+extern XBT_PUBLIC int _sg_mc_max_visited_states;
 
 #define MC_is_active()                  _sg_do_model_check
 #define MC_visited_reduction() _sg_mc_max_visited_states
@@ -39,17 +39,17 @@ extern XBT_PUBLIC(int) _sg_mc_max_visited_states;
  *
  *  This function is used to define safety properties to verify.
  */
-XBT_PUBLIC(void) MC_assert(int);
+XBT_PUBLIC void MC_assert(int);
 
-XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, int(*fct)(void));
-XBT_PUBLIC(void) MC_automaton_new_propositional_symbol_pointer(const char *id, int* value);
+XBT_PUBLIC void MC_automaton_new_propositional_symbol(const char* id, int (*fct)(void));
+XBT_PUBLIC void MC_automaton_new_propositional_symbol_pointer(const char* id, int* value);
 
-XBT_PUBLIC(void) MC_cut(void);
-XBT_PUBLIC(void) MC_ignore(void *addr, size_t size);
+XBT_PUBLIC void MC_cut(void);
+XBT_PUBLIC void MC_ignore(void* addr, size_t size);
 
-XBT_PUBLIC(void) MC_ignore_heap(void* address, size_t size);
-XBT_PUBLIC(void) MC_unignore_heap(void* address, size_t size);
-XBT_PUBLIC(void) MC_ignore_global_variable(const char* var_name);
+XBT_PUBLIC void MC_ignore_heap(void* address, size_t size);
+XBT_PUBLIC void MC_unignore_heap(void* address, size_t size);
+XBT_PUBLIC void MC_ignore_global_variable(const char* var_name);
 
 #else
 

@@ -138,29 +138,28 @@ namespace lmm {
  * @brief Solve the lmm system
  * @param sys The lmm system to solve
  */
-XBT_PUBLIC(void) lmm_solve(lmm_system_t sys);
+XBT_PUBLIC void lmm_solve(lmm_system_t sys);
 
-XBT_PUBLIC(void) lagrange_solve(lmm_system_t sys);
-XBT_PUBLIC(void) bottleneck_solve(lmm_system_t sys);
+XBT_PUBLIC void lagrange_solve(lmm_system_t sys);
+XBT_PUBLIC void bottleneck_solve(lmm_system_t sys);
 
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
-XBT_PUBLIC(void)
-set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                              double (*func_fp)(const Variable& var, double x),
-                              double (*func_fpi)(const Variable& var, double x));
+XBT_PUBLIC void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
+                                              double (*func_fp)(const Variable& var, double x),
+                                              double (*func_fpi)(const Variable& var, double x));
 
-XBT_PUBLIC(double) func_reno_f(const Variable& var, double x);
-XBT_PUBLIC(double) func_reno_fp(const Variable& var, double x);
-XBT_PUBLIC(double) func_reno_fpi(const Variable& var, double x);
+XBT_PUBLIC double func_reno_f(const Variable& var, double x);
+XBT_PUBLIC double func_reno_fp(const Variable& var, double x);
+XBT_PUBLIC double func_reno_fpi(const Variable& var, double x);
 
-XBT_PUBLIC(double) func_reno2_f(const Variable& var, double x);
-XBT_PUBLIC(double) func_reno2_fp(const Variable& var, double x);
-XBT_PUBLIC(double) func_reno2_fpi(const Variable& var, double x);
+XBT_PUBLIC double func_reno2_f(const Variable& var, double x);
+XBT_PUBLIC double func_reno2_fp(const Variable& var, double x);
+XBT_PUBLIC double func_reno2_fpi(const Variable& var, double x);
 
-XBT_PUBLIC(double) func_vegas_f(const Variable& var, double x);
-XBT_PUBLIC(double) func_vegas_fp(const Variable& var, double x);
-XBT_PUBLIC(double) func_vegas_fpi(const Variable& var, double x);
+XBT_PUBLIC double func_vegas_f(const Variable& var, double x);
+XBT_PUBLIC double func_vegas_fp(const Variable& var, double x);
+XBT_PUBLIC double func_vegas_fpi(const Variable& var, double x);
 
 /**
  * @brief LMM element

@@ -213,11 +213,11 @@ XBT_PRIVATE bool TRACE_display_sizes();
 XBT_PRIVATE int TRACE_precision();
 
 /* Public functions used in SMPI */
-XBT_PUBLIC(bool) TRACE_smpi_is_enabled();
-XBT_PUBLIC(bool) TRACE_smpi_is_grouped();
-XBT_PUBLIC(bool) TRACE_smpi_is_computing();
-XBT_PUBLIC(bool) TRACE_smpi_is_sleeping();
-XBT_PUBLIC(bool) TRACE_smpi_view_internals();
+XBT_PUBLIC bool TRACE_smpi_is_enabled();
+XBT_PUBLIC bool TRACE_smpi_is_grouped();
+XBT_PUBLIC bool TRACE_smpi_is_computing();
+XBT_PUBLIC bool TRACE_smpi_is_sleeping();
+XBT_PUBLIC bool TRACE_smpi_view_internals();
 
 /* from resource_utilization.c */
 XBT_PRIVATE void TRACE_surf_host_set_utilization(const char* resource, const char* category, double value, double now,

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team.
+/* Copyright (c) 2017-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,7 +12,7 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(void) sg_host_dvfs_plugin_init();
+XBT_PUBLIC void sg_host_dvfs_plugin_init();
 
 #define MSG_host_dvfs_plugin_init() sg_host_dvfs_plugin_init()
 

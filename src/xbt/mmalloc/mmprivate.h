@@ -281,9 +281,9 @@ XBT_PUBLIC_DATA( struct mdesc ) *__mmalloc_default_mdp;
 
 /* Remap a mmalloc region that was previously mapped. */
 
-XBT_PUBLIC( void *)__mmalloc_remap_core(xbt_mheap_t mdp);
+XBT_PUBLIC void* __mmalloc_remap_core(xbt_mheap_t mdp);
 
-XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, ssize_t size);
+XBT_PUBLIC void* mmorecore(struct mdesc* mdp, ssize_t size);
 
 /** Thread-safety (if the mutex is already created)
  *

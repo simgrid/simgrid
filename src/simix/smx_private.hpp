@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,7 +20,7 @@ namespace simgrid {
 namespace simix {
 
 class Global {
-  friend XBT_PUBLIC(bool) simgrid::s4u::this_actor::isMaestro();
+  friend XBT_PUBLIC bool simgrid::s4u::this_actor::isMaestro();
 
 public:
   smx_context_factory_t context_factory = nullptr;
@@ -68,7 +68,7 @@ extern "C" {
 
 XBT_PUBLIC_DATA(std::unique_ptr<simgrid::simix::Global>) simix_global;
 
-XBT_PUBLIC(void) SIMIX_clean();
+XBT_PUBLIC void SIMIX_clean();
 
 /******************************** Exceptions *********************************/
 /** @brief Ask to the provided ActorImpl to raise the provided exception */

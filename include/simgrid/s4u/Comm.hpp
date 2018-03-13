@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,8 +25,8 @@ XBT_PUBLIC_CLASS Comm : public Activity
 {
   Comm() : Activity() {}
 public:
-  friend XBT_PUBLIC(void) intrusive_ptr_release(simgrid::s4u::Comm* c);
-  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(simgrid::s4u::Comm* c);
+  friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Comm * c);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(simgrid::s4u::Comm * c);
   friend Mailbox; // Factory of comms
 
   virtual ~Comm();

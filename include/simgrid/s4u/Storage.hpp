@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015, 2017. The SimGrid Team.
+/* Copyright (c) 2006-2015, 2017-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,11 +17,11 @@
 
 namespace simgrid {
 namespace xbt {
-extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Storage>;
+extern template class XBT_PUBLIC Extendable<simgrid::s4u::Storage>;
 }
 namespace s4u {
 
-XBT_PUBLIC(void) getStorageList(std::map<std::string, Storage*>* whereTo);
+XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
 
 XBT_PUBLIC_CLASS Storage : public simgrid::xbt::Extendable<Storage>
 {

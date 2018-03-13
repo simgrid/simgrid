@@ -138,16 +138,16 @@ private:
 
 /** Callback fired when the platform is created (ie, the xml file parsed),
  * right before the actual simulation starts. */
-extern XBT_PUBLIC(xbt::signal<void()>) onPlatformCreated;
+extern XBT_PUBLIC xbt::signal<void()> onPlatformCreated;
 
 /** Callback fired when the main simulation loop ends, just before MSG_run (or similar) ends */
-extern XBT_PUBLIC(xbt::signal<void()>) onSimulationEnd;
+extern XBT_PUBLIC xbt::signal<void()> onSimulationEnd;
 
 /** Callback fired when the time jumps into the future */
-extern XBT_PUBLIC(xbt::signal<void(double)>) onTimeAdvance;
+extern XBT_PUBLIC xbt::signal<void(double)> onTimeAdvance;
 
 /** Callback fired when the time cannot jump because of inter-actors deadlock */
-extern XBT_PUBLIC(xbt::signal<void(void)>) onDeadlock;
+extern XBT_PUBLIC xbt::signal<void(void)> onDeadlock;
 
 template <class T> XBT_PRIVATE void netzoneByTypeRecursive(s4u::NetZone* current, std::vector<T*>* whereto)
 {

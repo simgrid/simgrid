@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2009-2017. The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2007, 2009-2018. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,13 +30,13 @@ double smpi_host_speed;
 shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
 double smpi_total_benched_time = 0;
 
-extern "C" XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
+extern "C" XBT_PUBLIC void smpi_execute_flops_(double* flops);
 void smpi_execute_flops_(double *flops)
 {
   smpi_execute_flops(*flops);
 }
 
-extern "C" XBT_PUBLIC(void) smpi_execute_(double *duration);
+extern "C" XBT_PUBLIC void smpi_execute_(double* duration);
 void smpi_execute_(double *duration)
 {
   smpi_execute(*duration);

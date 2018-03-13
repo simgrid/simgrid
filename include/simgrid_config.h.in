@@ -1,6 +1,6 @@
 /* simgrid_config.h - Results of the configure made visible to user code.   */
 
-/* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,10 +20,10 @@
 SG_BEGIN_DECL()
 /** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib), while
     SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
-XBT_PUBLIC(void) sg_version_get(int *major,int *minor,int *patch);
+XBT_PUBLIC void sg_version_get(int* major, int* minor, int* patch);
 
 /** Display the version information and some additional blurb. */
-XBT_PUBLIC(void) sg_version();
+XBT_PUBLIC void sg_version();
 SG_END_DECL()
 
 

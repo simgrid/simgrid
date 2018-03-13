@@ -432,7 +432,7 @@ extern std::unordered_map<std::string, double> location2speedup;
 
 /** @brief Returns the last call location (filename, linenumber). Process-specific. */
 extern "C" {
-XBT_PUBLIC(smpi_trace_call_location_t*) smpi_trace_get_call_location();
+XBT_PUBLIC smpi_trace_call_location_t* smpi_trace_get_call_location();
 }
 
 enum smpi_priv_strategies {

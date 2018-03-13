@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,6 +26,6 @@ struct xbt_log_layout_s {
  *
  * Programatically alter a category's parent (don't use).
  */
-XBT_PUBLIC(void) xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent);
+XBT_PUBLIC void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent);
 
 #endif

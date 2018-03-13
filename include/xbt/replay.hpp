@@ -1,6 +1,6 @@
 /* xbt/replay_reader.h -- Tools to parse a replay file                */
 
-/* Copyright (c) 2010, 2012-2015, 2017. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2015, 2017-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,7 +22,7 @@ typedef std::vector<std::string> ReplayAction;
 static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
 
 XBT_PUBLIC_DATA(std::ifstream*) action_fs;
-XBT_PUBLIC(int) replay_runner(int argc, char* argv[]);
+XBT_PUBLIC int replay_runner(int argc, char* argv[]);
 }
 }
 #endif
@@ -30,8 +30,8 @@ XBT_PUBLIC(int) replay_runner(int argc, char* argv[]);
 SG_BEGIN_DECL()
 
 typedef void (*action_fun)(const char* const* args);
-XBT_PUBLIC(void) xbt_replay_action_register(const char* action_name, action_fun function);
-XBT_PUBLIC(action_fun) xbt_replay_action_get(const char* action_name);
+XBT_PUBLIC void xbt_replay_action_register(const char* action_name, action_fun function);
+XBT_PUBLIC action_fun xbt_replay_action_get(const char* action_name);
 
 SG_END_DECL()
 

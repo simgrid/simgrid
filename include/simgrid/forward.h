@@ -22,8 +22,8 @@ class ContextFactory;
 namespace activity {
   class ActivityImpl;
   using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
-  XBT_PUBLIC(void) intrusive_ptr_add_ref(ActivityImpl* activity);
-  XBT_PUBLIC(void) intrusive_ptr_release(ActivityImpl* activity);
+  XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
+  XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
 
   class CommImpl;
   using CommImplPtr = boost::intrusive_ptr<CommImpl>;

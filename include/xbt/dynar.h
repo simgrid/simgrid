@@ -1,6 +1,6 @@
 /* dynar - a generic dynamic array                                          */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -64,14 +64,14 @@ SG_BEGIN_DECL()
    /** \brief Dynar data type (opaque type) */
 typedef struct xbt_dynar_s *xbt_dynar_t;
 
-XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new(const unsigned long elm_size, void_f_pvoid_t const free_f);
-XBT_PUBLIC(void) xbt_dynar_init(xbt_dynar_t dynar, const unsigned long elmsize, void_f_pvoid_t const free_f);
-XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
-XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
-XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
-XBT_PUBLIC(void) xbt_dynar_free_data(xbt_dynar_t dynar);
-XBT_PUBLIC(void) xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
-XBT_PUBLIC(void) xbt_dynar_dump(xbt_dynar_t dynar);
+XBT_PUBLIC xbt_dynar_t xbt_dynar_new(const unsigned long elm_size, void_f_pvoid_t const free_f);
+XBT_PUBLIC void xbt_dynar_init(xbt_dynar_t dynar, const unsigned long elmsize, void_f_pvoid_t const free_f);
+XBT_PUBLIC void xbt_dynar_free(xbt_dynar_t* dynar);
+XBT_PUBLIC void xbt_dynar_free_voidp(void* dynar);
+XBT_PUBLIC void xbt_dynar_free_container(xbt_dynar_t* dynar);
+XBT_PUBLIC void xbt_dynar_free_data(xbt_dynar_t dynar);
+XBT_PUBLIC void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
+XBT_PUBLIC void xbt_dynar_dump(xbt_dynar_t dynar);
 
 /** @} */
 /** @defgroup XBT_dynar_array Dynar as a regular array
@@ -80,21 +80,21 @@ XBT_PUBLIC(void) xbt_dynar_dump(xbt_dynar_t dynar);
  *  @{
  */
 
-XBT_PUBLIC(void) xbt_dynar_get_cpy(const xbt_dynar_t dynar, const unsigned long idx, void *const dst);
-XBT_PUBLIC(void) xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void *src);
-XBT_PUBLIC(void) xbt_dynar_replace(xbt_dynar_t dynar, const unsigned long idx, const void *object);
+XBT_PUBLIC void xbt_dynar_get_cpy(const xbt_dynar_t dynar, const unsigned long idx, void* const dst);
+XBT_PUBLIC void xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void* src);
+XBT_PUBLIC void xbt_dynar_replace(xbt_dynar_t dynar, const unsigned long idx, const void* object);
 
-XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t const dynar, const int idx, const void *src);
-XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx, void *const dst);
-XBT_PUBLIC(void) xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned int n, const int idx);
+XBT_PUBLIC void xbt_dynar_insert_at(xbt_dynar_t const dynar, const int idx, const void* src);
+XBT_PUBLIC void xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx, void* const dst);
+XBT_PUBLIC void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned int n, const int idx);
 
-XBT_PUBLIC(unsigned int) xbt_dynar_search(xbt_dynar_t const dynar, void *elem);
-XBT_PUBLIC(signed int) xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void *const elem);
-XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
-XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t compar_fn);
-XBT_PUBLIC(xbt_dynar_t) xbt_dynar_sort_strings(xbt_dynar_t dynar);
-XBT_PUBLIC(int) xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2, int(*compar)(const void *, const void *));
-XBT_PUBLIC(void *) xbt_dynar_to_array (xbt_dynar_t dynar);
+XBT_PUBLIC unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* elem);
+XBT_PUBLIC signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void* const elem);
+XBT_PUBLIC int xbt_dynar_member(xbt_dynar_t const dynar, void* elem);
+XBT_PUBLIC void xbt_dynar_sort(xbt_dynar_t const dynar, int_f_cpvoid_cpvoid_t compar_fn);
+XBT_PUBLIC xbt_dynar_t xbt_dynar_sort_strings(xbt_dynar_t dynar);
+XBT_PUBLIC int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2, int (*compar)(const void*, const void*));
+XBT_PUBLIC void* xbt_dynar_to_array(xbt_dynar_t dynar);
 
 /** @} */
 /** @defgroup XBT_dynar_misc Dynar miscellaneous functions
@@ -103,10 +103,10 @@ XBT_PUBLIC(void *) xbt_dynar_to_array (xbt_dynar_t dynar);
  *  @{
  */
 
-XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
-XBT_PUBLIC(int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
-XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
-XBT_PUBLIC(void) xbt_dynar_merge(xbt_dynar_t *d1, xbt_dynar_t *d2);
+XBT_PUBLIC unsigned long xbt_dynar_length(const xbt_dynar_t dynar);
+XBT_PUBLIC int xbt_dynar_is_empty(const xbt_dynar_t dynar);
+XBT_PUBLIC void xbt_dynar_reset(xbt_dynar_t const dynar);
+XBT_PUBLIC void xbt_dynar_merge(xbt_dynar_t* d1, xbt_dynar_t* d2);
 
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
@@ -115,11 +115,11 @@ XBT_PUBLIC(void) xbt_dynar_merge(xbt_dynar_t *d1, xbt_dynar_t *d2);
  *  @{
  */
 
-XBT_PUBLIC(void) xbt_dynar_push(xbt_dynar_t const dynar, const void *src);
-XBT_PUBLIC(void) xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst);
-XBT_PUBLIC(void) xbt_dynar_unshift(xbt_dynar_t const dynar, const void *src);
-XBT_PUBLIC(void) xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst);
-XBT_PUBLIC(void) xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op);
+XBT_PUBLIC void xbt_dynar_push(xbt_dynar_t const dynar, const void* src);
+XBT_PUBLIC void xbt_dynar_pop(xbt_dynar_t const dynar, void* const dst);
+XBT_PUBLIC void xbt_dynar_unshift(xbt_dynar_t const dynar, const void* src);
+XBT_PUBLIC void xbt_dynar_shift(xbt_dynar_t const dynar, void* const dst);
+XBT_PUBLIC void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op);
 
 /** @} */
 /** @defgroup XBT_dynar_ctn Direct manipulation to the dynars content
@@ -130,11 +130,11 @@ XBT_PUBLIC(void) xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
  *  @{
  */
 
-XBT_PUBLIC(void *) xbt_dynar_set_at_ptr(const xbt_dynar_t dynar, const unsigned long idx);
-XBT_PUBLIC(void *) xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx);
-XBT_PUBLIC(void *) xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx);
-XBT_PUBLIC(void *) xbt_dynar_push_ptr(xbt_dynar_t const dynar);
-XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
+XBT_PUBLIC void* xbt_dynar_set_at_ptr(const xbt_dynar_t dynar, const unsigned long idx);
+XBT_PUBLIC void* xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx);
+XBT_PUBLIC void* xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx);
+XBT_PUBLIC void* xbt_dynar_push_ptr(xbt_dynar_t const dynar);
+XBT_PUBLIC void* xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
 
 /** @} */
 /** @defgroup XBT_dynar_speed Speed optimized access to dynars of scalars
@@ -187,7 +187,7 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  *  @{
  */
 
-XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor);
+XBT_PUBLIC void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int* const cursor);
 
 /*
  * \warning DO NOT USE THIS STRUCTURE DIRECTLY! Instead, use the public interface:
@@ -205,7 +205,7 @@ typedef struct xbt_dynar_s {
   void_f_pvoid_t free_f;
 } s_xbt_dynar_t;
 
-static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void *const dst)
+static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void* const dst)
 {
   if (!dynar) /* iterating over a NULL dynar is a no-op */
     return FALSE;

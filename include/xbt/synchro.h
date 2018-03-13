@@ -1,6 +1,6 @@
 /* xbt/synchro.h -- Simulated synchronization                               */
 
-/* Copyright (c) 2009-2016. The SimGrid Team.                               */
+/* Copyright (c) 2009-2018. The SimGrid Team.                               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,10 +29,10 @@ SG_BEGIN_DECL()
 typedef struct s_smx_mutex_* xbt_mutex_t;
 
 /** @brief Creates a new mutex variable */
-XBT_PUBLIC(xbt_mutex_t) xbt_mutex_init(void);
+XBT_PUBLIC xbt_mutex_t xbt_mutex_init(void);
 
 /** @brief Blocks onto the given mutex variable */
-XBT_PUBLIC(void) xbt_mutex_acquire(xbt_mutex_t mutex);
+XBT_PUBLIC void xbt_mutex_acquire(xbt_mutex_t mutex);
 
 /** @brief Tries to block onto the given mutex variable
  * Tries to lock a mutex, return 1 if the mutex is unlocked, else 0.
@@ -40,13 +40,13 @@ XBT_PUBLIC(void) xbt_mutex_acquire(xbt_mutex_t mutex);
  * \param mutex The mutex
  * \return 1 - mutex free, 0 - mutex used
  */
-XBT_PUBLIC(int) xbt_mutex_try_acquire(xbt_mutex_t mutex);
+XBT_PUBLIC int xbt_mutex_try_acquire(xbt_mutex_t mutex);
 
 /** @brief Releases the given mutex variable */
-XBT_PUBLIC(void) xbt_mutex_release(xbt_mutex_t mutex);
+XBT_PUBLIC void xbt_mutex_release(xbt_mutex_t mutex);
 
 /** @brief Destroyes the given mutex variable */
-XBT_PUBLIC(void) xbt_mutex_destroy(xbt_mutex_t mutex);
+XBT_PUBLIC void xbt_mutex_destroy(xbt_mutex_t mutex);
 
 /** @brief Thread condition data type (opaque object)
  *  @hideinitializer
@@ -54,19 +54,19 @@ XBT_PUBLIC(void) xbt_mutex_destroy(xbt_mutex_t mutex);
 typedef struct s_smx_cond_* xbt_cond_t;
 
 /** @brief Creates a condition variable */
-XBT_PUBLIC(xbt_cond_t) xbt_cond_init(void);
+XBT_PUBLIC xbt_cond_t xbt_cond_init(void);
 
 /** @brief Blocks onto the given condition variable */
-XBT_PUBLIC(void) xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex);
+XBT_PUBLIC void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex);
 /** @brief Blocks onto the given condition variable, but only for the given amount of time.
  *  @return 0 on success, 1 on timeout */
-XBT_PUBLIC(int) xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay);
+XBT_PUBLIC int xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay);
 /** @brief Signals the given mutex variable */
-XBT_PUBLIC(void) xbt_cond_signal(xbt_cond_t cond);
+XBT_PUBLIC void xbt_cond_signal(xbt_cond_t cond);
 /** @brief Broadcasts the given mutex variable */
-XBT_PUBLIC(void) xbt_cond_broadcast(xbt_cond_t cond);
+XBT_PUBLIC void xbt_cond_broadcast(xbt_cond_t cond);
 /** @brief Destroys the given mutex variable */
-XBT_PUBLIC(void) xbt_cond_destroy(xbt_cond_t cond);
+XBT_PUBLIC void xbt_cond_destroy(xbt_cond_t cond);
 
 /** @} */
 

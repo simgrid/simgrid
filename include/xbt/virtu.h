@@ -1,6 +1,6 @@
 /* virtu - virtualization layer for the logging to know about the actors    */
 
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,9 +15,9 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(const char*) xbt_procname(void);
+XBT_PUBLIC const char* xbt_procname(void);
 
-XBT_PUBLIC(int) xbt_getpid(void);
+XBT_PUBLIC int xbt_getpid(void);
 
 /* Get the name of the UNIX process englobing the world */
 XBT_PUBLIC_DATA(char*) xbt_binary_name;

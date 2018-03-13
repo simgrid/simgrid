@@ -1,6 +1,6 @@
 /* platf_private.h - Interface to the SimGrid platforms which visibility should be limited to this directory */
 
-/* Copyright (c) 2004-2017. The SimGrid Team.
+/* Copyright (c) 2004-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -187,46 +187,46 @@ public:
 void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
 /*** END of the parsing cruft ***/
 
-XBT_PUBLIC(void) sg_platf_begin();  // Start a new platform
-XBT_PUBLIC(void) sg_platf_end(); // Finish the creation of the platform
+XBT_PUBLIC void sg_platf_begin(); // Start a new platform
+XBT_PUBLIC void sg_platf_end();   // Finish the creation of the platform
 
-XBT_PUBLIC(simgrid::s4u::NetZone*) sg_platf_new_Zone_begin(ZoneCreationArgs* zone); // Begin description of new Zone
-XBT_PUBLIC(void) sg_platf_new_Zone_seal();                                          // That Zone is fully described
+XBT_PUBLIC simgrid::s4u::NetZone* sg_platf_new_Zone_begin(ZoneCreationArgs* zone); // Begin description of new Zone
+XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
-XBT_PUBLIC(void) sg_platf_new_host(sg_platf_host_cbarg_t host);        // Add a host      to the current Zone
-XBT_PUBLIC(void) sg_platf_new_hostlink(HostLinkCreationArgs* h);       // Add a host_link to the current Zone
-XBT_PUBLIC(void) sg_platf_new_link(LinkCreationArgs* link);            // Add a link      to the current Zone
-XBT_PUBLIC(void) sg_platf_new_peer(PeerCreationArgs* peer);            // Add a peer      to the current Zone
-XBT_PUBLIC(void) sg_platf_new_cluster(ClusterCreationArgs* clust);     // Add a cluster   to the current Zone
-XBT_PUBLIC(void) sg_platf_new_cabinet(CabinetCreationArgs* cabinet);   // Add a cabinet   to the current Zone
-XBT_PUBLIC(simgrid::kernel::routing::NetPoint*)                        // Add a router    to the current Zone
-sg_platf_new_router(std::string, const char* coords);
+XBT_PUBLIC void sg_platf_new_host(sg_platf_host_cbarg_t host);      // Add a host      to the current Zone
+XBT_PUBLIC void sg_platf_new_hostlink(HostLinkCreationArgs* h);     // Add a host_link to the current Zone
+XBT_PUBLIC void sg_platf_new_link(LinkCreationArgs* link);          // Add a link      to the current Zone
+XBT_PUBLIC void sg_platf_new_peer(PeerCreationArgs* peer);          // Add a peer      to the current Zone
+XBT_PUBLIC void sg_platf_new_cluster(ClusterCreationArgs* clust);   // Add a cluster   to the current Zone
+XBT_PUBLIC void sg_platf_new_cabinet(CabinetCreationArgs* cabinet); // Add a cabinet   to the current Zone
+XBT_PUBLIC simgrid::kernel::routing::NetPoint*                      // Add a router    to the current Zone
+    sg_platf_new_router(std::string, const char* coords);
 
-XBT_PUBLIC(void) sg_platf_new_route(RouteCreationArgs* route);             // Add a route
-XBT_PUBLIC(void) sg_platf_new_bypassRoute(RouteCreationArgs* bypassroute); // Add a bypassRoute
+XBT_PUBLIC void sg_platf_new_route(RouteCreationArgs* route);             // Add a route
+XBT_PUBLIC void sg_platf_new_bypassRoute(RouteCreationArgs* bypassroute); // Add a bypassRoute
 
-XBT_PUBLIC(void) sg_platf_new_trace(TraceCreationArgs* trace);
+XBT_PUBLIC void sg_platf_new_trace(TraceCreationArgs* trace);
 
-XBT_PUBLIC(void) sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the current Zone
-XBT_PUBLIC(void) sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
-XBT_PUBLIC(void) sg_platf_new_mount(MountCreationArgs* mount);
+XBT_PUBLIC void sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the current Zone
+XBT_PUBLIC void sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
+XBT_PUBLIC void sg_platf_new_mount(MountCreationArgs* mount);
 
-XBT_PUBLIC(void) sg_platf_new_actor(ActorCreationArgs* actor);
+XBT_PUBLIC void sg_platf_new_actor(ActorCreationArgs* actor);
 XBT_PRIVATE void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */
-XBT_PUBLIC(int) surf_parse_lex();
-XBT_PUBLIC(int) surf_parse_get_lineno();
-XBT_PUBLIC(FILE *) surf_parse_get_in();
-XBT_PUBLIC(FILE *) surf_parse_get_out();
-XBT_PUBLIC(int) surf_parse_get_leng();
-XBT_PUBLIC(char *) surf_parse_get_text();
-XBT_PUBLIC(void) surf_parse_set_lineno(int line_number);
-XBT_PUBLIC(void) surf_parse_set_in(FILE * in_str);
-XBT_PUBLIC(void) surf_parse_set_out(FILE * out_str);
-XBT_PUBLIC(int) surf_parse_get_debug();
-XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
-XBT_PUBLIC(int) surf_parse_lex_destroy();
+XBT_PUBLIC int surf_parse_lex();
+XBT_PUBLIC int surf_parse_get_lineno();
+XBT_PUBLIC FILE* surf_parse_get_in();
+XBT_PUBLIC FILE* surf_parse_get_out();
+XBT_PUBLIC int surf_parse_get_leng();
+XBT_PUBLIC char* surf_parse_get_text();
+XBT_PUBLIC void surf_parse_set_lineno(int line_number);
+XBT_PUBLIC void surf_parse_set_in(FILE* in_str);
+XBT_PUBLIC void surf_parse_set_out(FILE* out_str);
+XBT_PUBLIC int surf_parse_get_debug();
+XBT_PUBLIC void surf_parse_set_debug(int bdebug);
+XBT_PUBLIC int surf_parse_lex_destroy();
 }
 
 namespace simgrid {

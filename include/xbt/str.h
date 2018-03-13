@@ -1,6 +1,6 @@
 /* str.h - XBT string related functions.                                    */
 
-/* Copyright (c) 2007-2017. The SimGrid Team.
+/* Copyright (c) 2007-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,14 +26,14 @@ SG_BEGIN_DECL()
  * @{
  */
 
-XBT_PUBLIC(xbt_dynar_t) xbt_str_split(const char *s, const char *sep);
-XBT_PUBLIC(xbt_dynar_t) xbt_str_split_quoted(const char *s);
-XBT_PUBLIC(xbt_dynar_t) xbt_str_split_quoted_in_place(char *s);
+XBT_PUBLIC xbt_dynar_t xbt_str_split(const char* s, const char* sep);
+XBT_PUBLIC xbt_dynar_t xbt_str_split_quoted(const char* s);
+XBT_PUBLIC xbt_dynar_t xbt_str_split_quoted_in_place(char* s);
 
-XBT_PUBLIC(char *) xbt_str_join_array(const char *const *strs, const char *sep);
+XBT_PUBLIC char* xbt_str_join_array(const char* const* strs, const char* sep);
 
-XBT_PUBLIC(long int) xbt_str_parse_int(const char* str, const char* error_msg);
-XBT_PUBLIC(double) xbt_str_parse_double(const char* str, const char* error_msg);
+XBT_PUBLIC long int xbt_str_parse_int(const char* str, const char* error_msg);
+XBT_PUBLIC double xbt_str_parse_double(const char* str, const char* error_msg);
 
 #define XBT_DJB2_HASH_FUNCTION
 //#define XBT_FNV_HASH_FUNCTION
@@ -41,7 +41,7 @@ XBT_PUBLIC(double) xbt_str_parse_double(const char* str, const char* error_msg);
 /**
  * @brief Returns the hash code of a string.
  */
-static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
+static inline unsigned int xbt_str_hash_ext(const char* str, int str_len)
 {
 #ifdef XBT_DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */

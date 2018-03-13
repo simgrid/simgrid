@@ -1,6 +1,6 @@
 /* cunit - A little C Unit facility                                         */
 
-/* Copyright (c) 2005-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,8 +27,8 @@ typedef struct s_xbt_test_unit *xbt_test_unit_t;
 typedef void (*ts_test_cb_t) ();
 
 /* test suite operations */
-XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_by_name(const char *name, const char *fmt, ...);
-XBT_PUBLIC(void) xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t func, const char *fmt, ...);
+XBT_PUBLIC xbt_test_suite_t xbt_test_suite_by_name(const char* name, const char* fmt, ...);
+XBT_PUBLIC void xbt_test_suite_push(xbt_test_suite_t suite, const char* name, ts_test_cb_t func, const char* fmt, ...);
 
 /* Run all the specified tests. what_to_do allows to disable some tests.
  * It is a coma (,) separated list of directives. They are applied from left to right.
@@ -46,11 +46,11 @@ XBT_PUBLIC(void) xbt_test_suite_push(xbt_test_suite_t suite, const char *name, t
  * * testname: if given, the test on which the directive acts. If not, acts on any tests.
  */
 
-XBT_PUBLIC(int) xbt_test_run(char *selection, int verbosity);
+XBT_PUBLIC int xbt_test_run(char* selection, int verbosity);
 /* Show information about the selection of tests */
-XBT_PUBLIC(void) xbt_test_dump(char *selection);
+XBT_PUBLIC void xbt_test_dump(char* selection);
 /* Cleanup the mess */
-XBT_PUBLIC(void) xbt_test_exit();
+XBT_PUBLIC void xbt_test_exit();
 
 /**
  * @addtogroup XBT_cunit
@@ -96,9 +96,9 @@ XBT_PUBLIC(void) xbt_test_exit();
 #endif
 
 /* test operations */
-XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
-XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line, const char *fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
-XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
+XBT_PUBLIC void _xbt_test_add(const char* file, int line, const char* fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
+XBT_PUBLIC void _xbt_test_fail(const char* file, int line, const char* fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
+XBT_PUBLIC void _xbt_test_log(const char* file, int line, const char* fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
 /** @brief Declare that a new test begins (printf-like parameters, describing the test)
  *  @hideinitializer */
 #define xbt_test_add(...)       _xbt_test_add(__FILE__, __LINE__, __VA_ARGS__)
@@ -124,12 +124,12 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt, ...)
 #define xbt_test_log(...)       _xbt_test_log(__FILE__, __LINE__, __VA_ARGS__)
 
 /** @brief Declare that the lastly started test failed because of the provided exception */
-XBT_PUBLIC(void) xbt_test_exception(xbt_ex_t e);
+XBT_PUBLIC void xbt_test_exception(xbt_ex_t e);
 
 /** @brief Declare that the lastly started test was expected to fail (and actually failed) */
-XBT_PUBLIC(void) xbt_test_expect_failure();
+XBT_PUBLIC void xbt_test_expect_failure();
 /** @brief Declare that the lastly started test should be skipped today */
-XBT_PUBLIC(void) xbt_test_skip();
+XBT_PUBLIC void xbt_test_skip();
 
 /** @} */
 

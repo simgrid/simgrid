@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.*/
+/* Copyright (c) 2016, 2018. The SimGrid Team. All rights reserved.*/
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,11 +16,8 @@ namespace xbt {
  *
  *  @ingroup XBT_ex
  */
-XBT_PUBLIC(void) logException(
-  e_xbt_log_priority_t priority,
-  const char* context, std::exception const& exception);
+XBT_PUBLIC void logException(e_xbt_log_priority_t priority, const char* context, std::exception const& exception);
 
-XBT_PUBLIC(void) installExceptionHandler();
-
+XBT_PUBLIC void installExceptionHandler();
 }
 }

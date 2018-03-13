@@ -1,6 +1,6 @@
 /* module - modularize the code                                             */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,7 +12,7 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(void) xbt_init(int *argc, char **argv);
+XBT_PUBLIC void xbt_init(int* argc, char** argv);
 
 SG_END_DECL()
 

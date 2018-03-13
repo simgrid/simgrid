@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,7 +14,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-class XBT_PUBLIC() MutexImpl {
+class XBT_PUBLIC MutexImpl {
 public:
   MutexImpl();
   ~MutexImpl();

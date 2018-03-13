@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -272,7 +272,8 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
  * \brief Sets a cleanup function to be called to free the userdata of a process when a process is destroyed.
  * \param data_cleanup a cleanup function for the userdata of a process, or nullptr to call no function
  */
-XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
+XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup)
+{
   msg_global->process_data_cleanup = data_cleanup;
 }
 
@@ -481,21 +482,23 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
  * \brief Sets the "auto-restart" flag of the process.
  * If the flag is set to 1, the process will be automatically restarted when its host comes back up.
  */
-XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart) {
+XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_restart)
+{
   process->setAutoRestart(auto_restart);
 }
 /**
  * \ingroup m_process_management
  * \brief Restarts a process from the beginning.
  */
-XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
+XBT_PUBLIC msg_process_t MSG_process_restart(msg_process_t process)
+{
   return process->restart();
 }
 
 /** @ingroup m_process_management
  * @brief This process will be terminated automatically when the last non-daemon process finishes
  */
-XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
+XBT_PUBLIC void MSG_process_daemonize(msg_process_t process)
 {
   process->daemonize();
 }
@@ -503,14 +506,14 @@ XBT_PUBLIC(void) MSG_process_daemonize(msg_process_t process)
 /** @ingroup m_process_management
  * @brief Take an extra reference on that process to prevent it to be garbage-collected
  */
-XBT_PUBLIC(void) MSG_process_ref(msg_process_t process)
+XBT_PUBLIC void MSG_process_ref(msg_process_t process)
 {
   intrusive_ptr_add_ref(process);
 }
 /** @ingroup m_process_management
  * @brief Release a reference on that process so that it can get be garbage-collected
  */
-XBT_PUBLIC(void) MSG_process_unref(msg_process_t process)
+XBT_PUBLIC void MSG_process_unref(msg_process_t process)
 {
   intrusive_ptr_release(process);
 }

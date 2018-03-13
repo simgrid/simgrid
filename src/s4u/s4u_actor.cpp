@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -257,7 +257,7 @@ void yield()
   simgrid::simix::kernelImmediate([] { /* do nothing*/ });
 }
 
-XBT_PUBLIC(void) sleep_until(double timeout)
+XBT_PUBLIC void sleep_until(double timeout)
 {
   double now = SIMIX_get_clock();
   if (timeout > now)

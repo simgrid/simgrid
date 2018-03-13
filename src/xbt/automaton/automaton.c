@@ -1,6 +1,6 @@
 /* automaton - representation of büchi automaton */
 
-/* Copyright (c) 2011-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2011-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -212,7 +212,9 @@ static int call_simple_function(void* function)
   return ((int (*)(void)) function)();
 }
 
-xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id, int(*fct)(void)){
+xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_automaton_t a, const char* id,
+                                                                            int (*fct)(void))
+{
   xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
   prop_symb->callback                            = &call_simple_function;
@@ -222,7 +224,9 @@ xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new(xbt_
   return prop_symb;
 }
 
-XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a, const char* id, int* value)
+XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new_pointer(xbt_automaton_t a,
+                                                                                               const char* id,
+                                                                                               int* value)
 {
   xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
@@ -233,10 +237,9 @@ XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_sym
   return prop_symb;
 }
 
-XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_symbol_new_callback(
-  xbt_automaton_t a, const char* id,
-  xbt_automaton_propositional_symbol_callback_type callback,
-  void* data, xbt_automaton_propositional_symbol_free_function_type free_function)
+XBT_PUBLIC xbt_automaton_propositional_symbol_t xbt_automaton_propositional_symbol_new_callback(
+    xbt_automaton_t a, const char* id, xbt_automaton_propositional_symbol_callback_type callback, void* data,
+    xbt_automaton_propositional_symbol_free_function_type free_function)
 {
   xbt_automaton_propositional_symbol_t prop_symb = xbt_new0(struct xbt_automaton_propositional_symbol, 1);
   prop_symb->pred = xbt_strdup(id);
@@ -247,7 +250,7 @@ XBT_PUBLIC(xbt_automaton_propositional_symbol_t) xbt_automaton_propositional_sym
   return prop_symb;
 }
 
-XBT_PUBLIC(int) xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol)
+XBT_PUBLIC int xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propositional_symbol_t symbol)
 {
   if (symbol->callback)
     return (symbol->callback)(symbol->data);
@@ -255,17 +258,18 @@ XBT_PUBLIC(int) xbt_automaton_propositional_symbol_evaluate(xbt_automaton_propos
     return *(int*) symbol->data;
 }
 
-XBT_PUBLIC(xbt_automaton_propositional_symbol_callback_type) xbt_automaton_propositional_symbol_get_callback(xbt_automaton_propositional_symbol_t symbol)
+XBT_PUBLIC xbt_automaton_propositional_symbol_callback_type
+xbt_automaton_propositional_symbol_get_callback(xbt_automaton_propositional_symbol_t symbol)
 {
   return symbol->callback;
 }
 
-XBT_PUBLIC(void*) xbt_automaton_propositional_symbol_get_data(xbt_automaton_propositional_symbol_t symbol)
+XBT_PUBLIC void* xbt_automaton_propositional_symbol_get_data(xbt_automaton_propositional_symbol_t symbol)
 {
   return symbol->data;
 }
 
-XBT_PUBLIC(const char*) xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol)
+XBT_PUBLIC const char* xbt_automaton_propositional_symbol_get_name(xbt_automaton_propositional_symbol_t symbol)
 {
   return symbol->pred;
 }

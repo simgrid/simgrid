@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,7 +12,7 @@
 #include <ucontext.h>           /* context relative declarations */
 
 SG_BEGIN_DECL();
-XBT_PUBLIC(void) MC_register_stack_area(void *stack, smx_actor_t process, ucontext_t* context, size_t size);
+XBT_PUBLIC void MC_register_stack_area(void* stack, smx_actor_t process, ucontext_t* context, size_t size);
 SG_END_DECL();
 
 #endif

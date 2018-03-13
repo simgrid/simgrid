@@ -25,9 +25,7 @@
  *
  *  @ingroup XBT_ex_c
  */
-struct XBT_PUBLIC() xbt_ex :
-  std::runtime_error,
-  simgrid::xbt::WithContextException {
+struct XBT_PUBLIC xbt_ex : std::runtime_error, simgrid::xbt::WithContextException {
 
   xbt_ex() :
     std::runtime_error("")

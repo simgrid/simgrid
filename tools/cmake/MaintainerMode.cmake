@@ -158,7 +158,7 @@ if(enable_maintainer_mode AND NOT WIN32)
     ENDIF()
 
     set(string1  "'s/extern *\\([^(]*\\)\\( \\|\\( \\*\\)\\)/XBT_PUBLIC_DATA(\\1\\3) /'")
-    set(string2  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
+    set(string2  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC \\1 \\2(/'")
     set(string5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
     set(string9  "'s/#include <unistd.h>/#if defined(_WIN32)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
     set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")

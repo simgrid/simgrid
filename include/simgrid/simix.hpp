@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2017. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -15,7 +15,7 @@
 #include <map>
 #include <string>
 
-XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
+XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code);
 
 /** Execute some code in the kernel and block
  *
@@ -26,7 +26,7 @@ XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
  *
  * @ref simix::kernelSync() is a higher level wrapper for this.
  */
-XBT_PUBLIC(void) simcall_run_blocking(std::function<void()> const& code);
+XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code);
 
 template<class F> inline
 void simcall_run_kernel(F& f)
@@ -69,10 +69,10 @@ typename std::result_of<F()>::type kernelImmediate(F&& code)
   return result.get();
 }
 
-XBT_PUBLIC(const std::vector<smx_actor_t>&) process_get_runnable();
+XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();
 
-XBT_PUBLIC(void) set_maestro(std::function<void()> code);
-XBT_PUBLIC(void) create_maestro(std::function<void()> code);
+XBT_PUBLIC void set_maestro(std::function<void()> code);
+XBT_PUBLIC void create_maestro(std::function<void()> code);
 
 // What's executed as SIMIX actor code:
 typedef std::function<void()> ActorCode;
@@ -80,7 +80,7 @@ typedef std::function<void()> ActorCode;
 // Create ActorCode based on argv:
 typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
-XBT_PUBLIC(void) registerFunction(const char* name, ActorCodeFactory factory);
+XBT_PUBLIC void registerFunction(const char* name, ActorCodeFactory factory);
 
 /** These functions will be called when we detect a deadlock: any remaining process is locked on an action
  *
@@ -108,14 +108,12 @@ typedef smx_actor_t (*smx_creation_func_t)(
     /* props */ std::map<std::string, std::string>*,
     /* parent_process */ smx_actor_t);
 
-extern "C"
-XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
+extern "C" XBT_PUBLIC void SIMIX_function_register_process_create(smx_creation_func_t function);
 
-XBT_PUBLIC(smx_actor_t)
-simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                       std::map<std::string, std::string>* properties);
+XBT_PUBLIC smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+                                              std::map<std::string, std::string>* properties);
 
-XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
+XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 
 template<class F> inline
 smx_timer_t SIMIX_timer_set(double date, F callback)

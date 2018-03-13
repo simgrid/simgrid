@@ -1,5 +1,5 @@
 /*High level handling of collective algorithms*/
-/* Copyright (c) 2009-2010, 2012-2017. The SimGrid Team.
+/* Copyright (c) 2009-2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -90,8 +90,8 @@ struct s_mpi_coll_description_t {
 
 class Colls{
   public:
-    static XBT_PUBLIC(void) coll_help(const char *category, s_mpi_coll_description_t * table);
-    static XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t* table, std::string name, const char* desc);
+    static XBT_PUBLIC void coll_help(const char* category, s_mpi_coll_description_t* table);
+    static XBT_PUBLIC int find_coll_description(s_mpi_coll_description_t* table, std::string name, const char* desc);
     static void set_collectives();
 
     // for each collective type, create the set_* prototype, the description array and the function pointer

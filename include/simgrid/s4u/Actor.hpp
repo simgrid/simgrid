@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -156,8 +156,8 @@ public:
   Actor& operator=(Actor const&) = delete;
 
   // ***** Reference count *****
-  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(Actor * actor);
-  friend XBT_PUBLIC(void) intrusive_ptr_release(Actor * actor);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Actor * actor);
+  friend XBT_PUBLIC void intrusive_ptr_release(Actor * actor);
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
@@ -290,11 +290,11 @@ public:
  *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
 namespace this_actor {
 
-XBT_PUBLIC(bool) isMaestro();
+XBT_PUBLIC bool isMaestro();
 
 /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
-XBT_PUBLIC(void) sleep_for(double duration);
-XBT_PUBLIC(void) sleep_until(double timeout);
+XBT_PUBLIC void sleep_for(double duration);
+XBT_PUBLIC void sleep_until(double timeout);
 
 template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
 {
@@ -315,76 +315,76 @@ XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into a
 }
 
 /** Block the actor, computing the given amount of flops */
-XBT_PUBLIC(void) execute(double flop);
+XBT_PUBLIC void execute(double flop);
 
 /** Block the actor, computing the given amount of flops at the given priority.
  *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
-XBT_PUBLIC(void) execute(double flop, double priority);
+XBT_PUBLIC void execute(double flop, double priority);
 
-XBT_PUBLIC(void) parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount);
-XBT_PUBLIC(void)
-parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double timeout);
+XBT_PUBLIC void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount);
+XBT_PUBLIC void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount,
+                                 double timeout);
 
-XBT_PUBLIC(ExecPtr) exec_init(double flops_amounts);
-XBT_PUBLIC(ExecPtr) exec_async(double flops_amounts);
+XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
+XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
 
 /** Block the actor until it gets a message from the given mailbox.
  *
  * See \ref Comm for the full communication API (including non blocking communications).
  */
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void*)
-    recv(MailboxPtr chan);
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void*)
-    recv(MailboxPtr chan, double timeout);
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC(CommPtr)
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC
+    void* recv(MailboxPtr chan);
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC
+    void* recv(MailboxPtr chan, double timeout);
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC CommPtr
     irecv(MailboxPtr chan, void** data);
 
 /** Block the actor until it delivers a message of the given simulated size to the given mailbox
  *
  * See \ref Comm for the full communication API (including non blocking communications).
 */
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void)
-    send(MailboxPtr chan, void* payload, double simulatedSize);
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC(void)
-    send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC
+    void send(MailboxPtr chan, void* payload, double simulatedSize);
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC
+    void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
 
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC(CommPtr)
+XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC CommPtr
     isend(MailboxPtr chan, void* payload, double simulatedSize);
 
 /** @brief Returns the actor ID of the current actor). */
-XBT_PUBLIC(aid_t) getPid();
+XBT_PUBLIC aid_t getPid();
 
 /** @brief Returns the ancestor's actor ID of the current actor. */
-XBT_PUBLIC(aid_t) getPpid();
+XBT_PUBLIC aid_t getPpid();
 
 /** @brief Returns the name of the current actor. */
-XBT_PUBLIC(std::string) getName();
+XBT_PUBLIC std::string getName();
 
 /** @brief Returns the name of the current actor as a C string. */
-XBT_PUBLIC(const char*) getCname();
+XBT_PUBLIC const char* getCname();
 
 /** @brief Returns the name of the host on which the actor is running. */
-XBT_PUBLIC(Host*) getHost();
+XBT_PUBLIC Host* getHost();
 
 /** @brief Suspend the actor. */
-XBT_PUBLIC(void) suspend();
+XBT_PUBLIC void suspend();
 
 /** @brief yield the actor. */
-XBT_PUBLIC(void) yield();
+XBT_PUBLIC void yield();
 
 /** @brief Resume the actor. */
-XBT_PUBLIC(void) resume();
+XBT_PUBLIC void resume();
 
-XBT_PUBLIC(bool) isSuspended();
+XBT_PUBLIC bool isSuspended();
 
 /** @brief kill the actor. */
-XBT_PUBLIC(void) kill();
+XBT_PUBLIC void kill();
 
 /** @brief Add a function to the list of "on_exit" functions. */
-XBT_PUBLIC(void) onExit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
-XBT_PUBLIC(void) migrate(Host* new_host);
+XBT_PUBLIC void migrate(Host* new_host);
 }
 
 /** @} */

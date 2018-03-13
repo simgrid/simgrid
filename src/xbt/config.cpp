@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.     */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,9 +30,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = nullptr;
-extern "C" {
-  XBT_PUBLIC(void) sg_config_finalize();
-}
+extern "C" XBT_PUBLIC void sg_config_finalize();
 
 namespace simgrid {
 namespace config {
@@ -379,16 +377,15 @@ void Config::help()
 
 // ***** getConfig *****
 
-template<class T>
-XBT_PUBLIC(T const&) getConfig(const char* name)
+template <class T> XBT_PUBLIC T const& getConfig(const char* name)
 {
   return (*simgrid_config)[name].getValue<T>();
 }
 
-template XBT_PUBLIC(int const&) getConfig<int>(const char* name);
-template XBT_PUBLIC(double const&) getConfig<double>(const char* name);
-template XBT_PUBLIC(bool const&) getConfig<bool>(const char* name);
-template XBT_PUBLIC(std::string const&) getConfig<std::string>(const char* name);
+template XBT_PUBLIC int const& getConfig<int>(const char* name);
+template XBT_PUBLIC double const& getConfig<double>(const char* name);
+template XBT_PUBLIC bool const& getConfig<bool>(const char* name);
+template XBT_PUBLIC std::string const& getConfig<std::string>(const char* name);
 
 // ***** alias *****
 
@@ -399,9 +396,8 @@ void alias(const char* realname, const char* aliasname)
 
 // ***** declareFlag *****
 
-template<class T>
-XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
-  T value, std::function<void(const T&)> callback)
+template <class T>
+XBT_PUBLIC void declareFlag(const char* name, const char* description, T value, std::function<void(const T&)> callback)
 {
   if (simgrid_config == nullptr) {
     simgrid_config = xbt_cfg_new();
@@ -411,15 +407,14 @@ XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
     name, description, std::move(value), std::move(callback));
 }
 
-template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, int value, std::function<void(int const &)> callback);
-template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, double value, std::function<void(double const &)> callback);
-template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, bool value, std::function<void(bool const &)> callback);
-template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, std::string value, std::function<void(std::string const &)> callback);
-
+template XBT_PUBLIC void declareFlag(const char* name, const char* description, int value,
+                                     std::function<void(int const&)> callback);
+template XBT_PUBLIC void declareFlag(const char* name, const char* description, double value,
+                                     std::function<void(double const&)> callback);
+template XBT_PUBLIC void declareFlag(const char* name, const char* description, bool value,
+                                     std::function<void(bool const&)> callback);
+template XBT_PUBLIC void declareFlag(const char* name, const char* description, std::string value,
+                                     std::function<void(std::string const&)> callback);
 }
 }
 

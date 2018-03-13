@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017. The SimGrid Team.
+/* Copyright (c) 2016-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -48,7 +48,7 @@ public:
   FutureStateBase(FutureStateBase const&) = delete;
   FutureStateBase& operator=(FutureStateBase const&) = delete;
 
-  XBT_PUBLIC(void) schedule(simgrid::xbt::Task<void()>&& job);
+  XBT_PUBLIC void schedule(simgrid::xbt::Task<void()>&& job);
 
   void set_exception(std::exception_ptr exception)
   {

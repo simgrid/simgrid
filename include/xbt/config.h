@@ -1,7 +1,7 @@
 /* config - Dictionary where the type of each cell is provided.             */
 /* This is useful to build named structs, like option or property sets.     */
 
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -67,26 +67,26 @@ typedef void* xbt_cfg_t;
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(void) xbt_cfg_set_parse(const char *options);
+XBT_PUBLIC void xbt_cfg_set_parse(const char* options);
 
 /* Set the value of the cell \a name in \a cfg with the provided value.*/
-XBT_PUBLIC(void) xbt_cfg_set_int       (const char *name, int val);
-XBT_PUBLIC(void) xbt_cfg_set_double    (const char *name, double val);
-XBT_PUBLIC(void) xbt_cfg_set_boolean   (const char *name, const char *val);
-XBT_PUBLIC(void) xbt_cfg_set_string(const char* name, const char* val);
-XBT_PUBLIC(void) xbt_cfg_set_as_string(const char *name, const char *val);
+XBT_PUBLIC void xbt_cfg_set_int(const char* name, int val);
+XBT_PUBLIC void xbt_cfg_set_double(const char* name, double val);
+XBT_PUBLIC void xbt_cfg_set_boolean(const char* name, const char* val);
+XBT_PUBLIC void xbt_cfg_set_string(const char* name, const char* val);
+XBT_PUBLIC void xbt_cfg_set_as_string(const char* name, const char* val);
 
 /*
   Set the default value of the cell \a name in \a cfg with the provided value.
   If it was already set to something (possibly from the command line), do nothing.
  */
-XBT_PUBLIC(void) xbt_cfg_setdefault_int    (const char *name, int val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_double (const char *name, double val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_string (const char *name, const char *val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_boolean(const char *name, const char *val);
+XBT_PUBLIC void xbt_cfg_setdefault_int(const char* name, int val);
+XBT_PUBLIC void xbt_cfg_setdefault_double(const char* name, double val);
+XBT_PUBLIC void xbt_cfg_setdefault_string(const char* name, const char* val);
+XBT_PUBLIC void xbt_cfg_setdefault_boolean(const char* name, const char* val);
 
 /** @brief Return if configuration is set by default*/
-XBT_PUBLIC(int) xbt_cfg_is_default_value(const char *name);
+XBT_PUBLIC int xbt_cfg_is_default_value(const char* name);
 
 /* @} */
 
@@ -97,13 +97,13 @@ XBT_PUBLIC(int) xbt_cfg_is_default_value(const char *name);
  */
 
 /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
-typedef void (*xbt_cfg_cb_t) (const char * name);
+typedef void (*xbt_cfg_cb_t)(const char* name);
 
-XBT_PUBLIC(xbt_cfg_t) xbt_cfg_new();
-XBT_PUBLIC(void) xbt_cfg_free(xbt_cfg_t * cfg);
-XBT_PUBLIC(void) xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg);
+XBT_PUBLIC xbt_cfg_t xbt_cfg_new();
+XBT_PUBLIC void xbt_cfg_free(xbt_cfg_t* cfg);
+XBT_PUBLIC void xbt_cfg_dump(const char* name, const char* indent, xbt_cfg_t cfg);
 
- /** @} */
+/** @} */
 
 /** @defgroup XBT_cfg_register  Registering stuff
  *  @ingroup XBT_config
@@ -112,14 +112,16 @@ XBT_PUBLIC(void) xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cf
  *
  *  @{
  */
-XBT_PUBLIC(void) xbt_cfg_register_double (const char *name, double default_val,    xbt_cfg_cb_t cb_set, const char *desc);
-XBT_PUBLIC(void) xbt_cfg_register_int    (const char *name, int default_val,       xbt_cfg_cb_t cb_set, const char *desc);
-XBT_PUBLIC(void) xbt_cfg_register_string (const char *name, const char*default_val,xbt_cfg_cb_t cb_set, const char *desc);
-XBT_PUBLIC(void) xbt_cfg_register_boolean(const char *name, const char*default_val,xbt_cfg_cb_t cb_set, const char *desc);
-XBT_PUBLIC(void) xbt_cfg_register_alias(const char *newname, const char *oldname);
+XBT_PUBLIC void xbt_cfg_register_double(const char* name, double default_val, xbt_cfg_cb_t cb_set, const char* desc);
+XBT_PUBLIC void xbt_cfg_register_int(const char* name, int default_val, xbt_cfg_cb_t cb_set, const char* desc);
+XBT_PUBLIC void xbt_cfg_register_string(const char* name, const char* default_val, xbt_cfg_cb_t cb_set,
+                                        const char* desc);
+XBT_PUBLIC void xbt_cfg_register_boolean(const char* name, const char* default_val, xbt_cfg_cb_t cb_set,
+                                         const char* desc);
+XBT_PUBLIC void xbt_cfg_register_alias(const char* newname, const char* oldname);
 
-XBT_PUBLIC(void) xbt_cfg_aliases();
-XBT_PUBLIC(void) xbt_cfg_help();
+XBT_PUBLIC void xbt_cfg_aliases();
+XBT_PUBLIC void xbt_cfg_help();
 
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
@@ -135,9 +137,9 @@ XBT_PUBLIC(void) xbt_cfg_help();
  *  @{
  */
 
-XBT_PUBLIC(int)    xbt_cfg_get_int(const char *name);
-XBT_PUBLIC(double) xbt_cfg_get_double(const char *name);
-XBT_PUBLIC(int)    xbt_cfg_get_boolean(const char *name);
+XBT_PUBLIC int xbt_cfg_get_int(const char* name);
+XBT_PUBLIC double xbt_cfg_get_double(const char* name);
+XBT_PUBLIC int xbt_cfg_get_boolean(const char* name);
 
 /** @} */
 

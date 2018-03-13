@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,11 +20,11 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Activity {
   friend Comm;
-  friend XBT_PUBLIC(void) intrusive_ptr_release(Comm * c);
-  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(Comm * c);
+  friend XBT_PUBLIC void intrusive_ptr_release(Comm * c);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm * c);
   friend Exec;
-  friend XBT_PUBLIC(void) intrusive_ptr_release(Exec * e);
-  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(Exec * e);
+  friend XBT_PUBLIC void intrusive_ptr_release(Exec * e);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Exec * e);
 
 protected:
   Activity()  = default;

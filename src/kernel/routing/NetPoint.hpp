@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -54,6 +54,6 @@ private:
 }
 }
 
-XBT_PUBLIC(sg_netpoint_t) sg_netpoint_by_name_or_null(const char* name);
+XBT_PUBLIC sg_netpoint_t sg_netpoint_by_name_or_null(const char* name);
 
 #endif /* KERNEL_ROUTING_NETPOINT_HPP_ */

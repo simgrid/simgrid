@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -52,13 +52,12 @@ inline std::string to_string(std::string&& value)
 
 // Get config
 
-template<class T>
-XBT_PUBLIC(T const&) getConfig(const char* name);
+template <class T> XBT_PUBLIC T const& getConfig(const char* name);
 
-extern template XBT_PUBLIC(int const&) getConfig<int>(const char* name);
-extern template XBT_PUBLIC(double const&) getConfig<double>(const char* name);
-extern template XBT_PUBLIC(bool const&) getConfig<bool>(const char* name);
-extern template XBT_PUBLIC(std::string const&) getConfig<std::string>(const char* name);
+extern template XBT_PUBLIC int const& getConfig<int>(const char* name);
+extern template XBT_PUBLIC double const& getConfig<double>(const char* name);
+extern template XBT_PUBLIC bool const& getConfig<bool>(const char* name);
+extern template XBT_PUBLIC std::string const& getConfig<std::string>(const char* name);
 
 // Register:
 
@@ -69,22 +68,22 @@ extern template XBT_PUBLIC(std::string const&) getConfig<std::string>(const char
  *  @param value       Initial/default value
  *  @param callback    called with the option value
  */
-template<class T>
-XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
-  T value, std::function<void(const T&)> callback = std::function<void(const T&)>());
+template <class T>
+XBT_PUBLIC void declareFlag(const char* name, const char* description, T value,
+                            std::function<void(const T&)> callback = std::function<void(const T&)>());
 
-extern template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, int value, std::function<void(int const &)> callback);
-extern template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, double value, std::function<void(double const &)> callback);
-extern template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, bool value, std::function<void(bool const &)> callback);
-extern template XBT_PUBLIC(void) declareFlag(const char* name,
-  const char* description, std::string value, std::function<void(std::string const &)> callback);
+extern template XBT_PUBLIC void declareFlag(const char* name, const char* description, int value,
+                                            std::function<void(int const&)> callback);
+extern template XBT_PUBLIC void declareFlag(const char* name, const char* description, double value,
+                                            std::function<void(double const&)> callback);
+extern template XBT_PUBLIC void declareFlag(const char* name, const char* description, bool value,
+                                            std::function<void(bool const&)> callback);
+extern template XBT_PUBLIC void declareFlag(const char* name, const char* description, std::string value,
+                                            std::function<void(std::string const&)> callback);
 
 // ***** alias *****
 
-XBT_PUBLIC(void) alias(const char* realname, const char* aliasname);
+XBT_PUBLIC void alias(const char* realname, const char* aliasname);
 
 inline
 void alias(std::initializer_list<const char*> names)
@@ -238,6 +237,6 @@ public:
 
 }
 }
-XBT_PUBLIC(std::string) xbt_cfg_get_string(const char* name);
+XBT_PUBLIC std::string xbt_cfg_get_string(const char* name);
 
 #endif

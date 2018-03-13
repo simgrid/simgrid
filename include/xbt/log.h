@@ -218,7 +218,7 @@ typedef enum {
 
 /* Functions you may call */
 
-XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
+XBT_PUBLIC void xbt_log_control_set(const char* cs);
 
 /* Forward declarations */
 typedef struct xbt_log_appender_s  s_xbt_log_appender_t;
@@ -264,7 +264,7 @@ struct xbt_log_event_s {
  *
  * Programatically alters a category's threshold priority (don't use).
  */
-XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priority_t thresholdPriority);
+XBT_PUBLIC void xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priority_t thresholdPriority);
 
 /**
  * \ingroup XBT_log_implem
@@ -273,7 +273,7 @@ XBT_PUBLIC(void) xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priorit
  *
  * Programatically sets the category's appender. (the preferred interface is through xbt_log_control_set())
  */
-XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app);
+XBT_PUBLIC void xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t app);
 /**
  * \ingroup XBT_log_implem
  * \param cat the category (not only its name, but the variable)
@@ -281,7 +281,7 @@ XBT_PUBLIC(void) xbt_log_appender_set(xbt_log_category_t cat, xbt_log_appender_t
  *
  * Programatically sets the category's layout. (the preferred interface is through xbt_log_control_set())
  */
-XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay);
+XBT_PUBLIC void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay);
 
 /**
  * \ingroup XBT_log_implem
@@ -291,23 +291,23 @@ XBT_PUBLIC(void) xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay
  * Programatically sets whether the logging actions must be passed to the parent category.
  * (the preferred interface is through xbt_log_control_set())
  */
-XBT_PUBLIC(void) xbt_log_additivity_set(xbt_log_category_t cat, int additivity);
+XBT_PUBLIC void xbt_log_additivity_set(xbt_log_category_t cat, int additivity);
 
 /** @brief create a new simple layout
  *
  * This layout is not as flexible as the pattern one
  */
-XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_simple_new(char *arg);
-XBT_PUBLIC(xbt_log_layout_t) xbt_log_layout_format_new(char *arg);
-XBT_PUBLIC(xbt_log_appender_t) xbt_log_appender_file_new(char *arg);
-XBT_PUBLIC(xbt_log_appender_t) xbt_log_appender2_file_new(char *arg,int roll);
+XBT_PUBLIC xbt_log_layout_t xbt_log_layout_simple_new(char* arg);
+XBT_PUBLIC xbt_log_layout_t xbt_log_layout_format_new(char* arg);
+XBT_PUBLIC xbt_log_appender_t xbt_log_appender_file_new(char* arg);
+XBT_PUBLIC xbt_log_appender_t xbt_log_appender2_file_new(char* arg, int roll);
 
 /* ********************************** */
 /* Functions that you shouldn't call  */
 /* ********************************** */
-XBT_PUBLIC(void) xbt_log_init(int *argc, char **argv);
-XBT_PUBLIC(void) _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...) XBT_ATTRIB_PRINTF(2, 3);
-XBT_PUBLIC(int) _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority);
+XBT_PUBLIC void xbt_log_init(int* argc, char** argv);
+XBT_PUBLIC void _xbt_log_event_log(xbt_log_event_t ev, const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);
+XBT_PUBLIC int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority);
 
 #ifdef DLL_EXPORT
 XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
