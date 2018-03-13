@@ -420,8 +420,6 @@ static void action_bcast(const char *const *action)
   double clock = smpi_process()->simulated_elapsed();
   int root     = (action[3]) ? atoi(action[3]) : 0;
   /* Initialize MPI_CURRENT_TYPE in order to decrease the number of the checks */
-  MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
-
   MPI_CURRENT_TYPE = (action[3] && action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
