@@ -21,7 +21,7 @@ extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Storage>;
 }
 namespace s4u {
 
-void getStorageList(std::map<std::string, Storage*>* whereTo);
+XBT_PUBLIC(void) getStorageList(std::map<std::string, Storage*>* whereTo);
 
 XBT_PUBLIC_CLASS Storage : public simgrid::xbt::Extendable<Storage>
 {
