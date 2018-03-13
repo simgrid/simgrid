@@ -594,8 +594,7 @@ static void action_gatherv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int send_size = parse_double(action[2]);
   std::vector<int> disps(comm_size, 0);
-  int recvcounts[comm_size];
-  int recv_sum=0;
+  std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
 
   MPI_CURRENT_TYPE =
       (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
@@ -605,9 +604,9 @@ static void action_gatherv(const char *const *action) {
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
   void *recv = nullptr;
   for(int i=0;i<comm_size;i++) {
-    recvcounts[i] = atoi(action[i+3]);
-    recv_sum=recv_sum+recvcounts[i];
+    (*recvcounts)[i] = atoi(action[i + 3]);
   }
+  int recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
 
   int root = (action[3 + comm_size]) ? atoi(action[3 + comm_size]) : 0;
   int rank = MPI_COMM_WORLD->rank();
@@ -615,13 +614,11 @@ static void action_gatherv(const char *const *action) {
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
 
-  std::vector<int>* trace_recvcounts = new std::vector<int>(recvcounts, recvcounts + comm_size);
-
   TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
-                                             "gatherV", root, send_size, nullptr, -1, trace_recvcounts,
+                                             "gatherV", root, send_size, nullptr, -1, recvcounts,
                                              encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
 
-  Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts, disps.data(), MPI_CURRENT_TYPE2, root,
+  Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts->data(), disps.data(), MPI_CURRENT_TYPE2, root,
                  MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(Actor::self()->getPid());
