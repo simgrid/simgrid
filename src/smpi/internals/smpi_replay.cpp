@@ -12,6 +12,7 @@
 #include "smpi_request.hpp"
 #include "xbt/replay.hpp"
 
+#include <memory>
 #include <numeric>
 #include <unordered_map>
 #include <vector>
@@ -804,12 +805,8 @@ static void action_allToAllv(const char *const *action) {
 
   int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
-  int send_size = 0;
-  int recv_size = 0;
-  int sendcounts[comm_size];
-  std::vector<int>* trace_sendcounts = new std::vector<int>;
-  int recvcounts[comm_size];
-  std::vector<int>* trace_recvcounts = new std::vector<int>;
+  std::shared_ptr<std::vector<int>> sendcounts(new std::vector<int>(comm_size));
+  std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
   std::vector<int> senddisps(comm_size, 0);
   std::vector<int> recvdisps(comm_size, 0);
 
@@ -827,21 +824,19 @@ static void action_allToAllv(const char *const *action) {
   void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* MPI_CURRENT_TYPE2->size());
 
   for(int i=0;i<comm_size;i++) {
-    sendcounts[i] = atoi(action[i+3]);
-    trace_sendcounts->push_back(sendcounts[i]);
-    send_size += sendcounts[i];
-    recvcounts[i] = atoi(action[i+4+comm_size]);
-    trace_recvcounts->push_back(recvcounts[i]);
-    recv_size += recvcounts[i];
+    (*sendcounts)[i] = atoi(action[3 + i]);
+    (*recvcounts)[i] = atoi(action[4 + comm_size + i]);
   }
+  int send_size = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
+  int recv_size = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::VarCollTIData("allToAllV", -1, send_size, trace_sendcounts, recv_size,
-                                                       trace_recvcounts, encode_datatype(MPI_CURRENT_TYPE),
+                     new simgrid::instr::VarCollTIData("allToAllV", -1, send_size, sendcounts, recv_size, recvcounts,
+                                                       encode_datatype(MPI_CURRENT_TYPE),
                                                        encode_datatype(MPI_CURRENT_TYPE2)));
 
-  Colls::alltoallv(sendbuf, sendcounts, senddisps.data(), MPI_CURRENT_TYPE,recvbuf, recvcounts, recvdisps.data(),
-                         MPI_CURRENT_TYPE, MPI_COMM_WORLD);
+  Colls::alltoallv(sendbuf, sendcounts->data(), senddisps.data(), MPI_CURRENT_TYPE, recvbuf, recvcounts->data(),
+                   recvdisps.data(), MPI_CURRENT_TYPE, MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
