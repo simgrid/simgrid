@@ -297,43 +297,47 @@ endif()
 set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cpp )
 
+set(KERNEL_HEADERS
+  src/kernel/resource/Action.hpp
+  src/kernel/resource/Model.hpp
+  src/kernel/resource/Resource.hpp
+
+  src/kernel/routing/ClusterZone.hpp
+  src/kernel/routing/DijkstraZone.hpp
+  src/kernel/routing/DragonflyZone.hpp
+  src/kernel/routing/EmptyZone.hpp
+  src/kernel/routing/FatTreeZone.hpp
+  src/kernel/routing/FloydZone.hpp
+  src/kernel/routing/FullZone.hpp
+  src/kernel/routing/NetPoint.hpp
+  src/kernel/routing/RoutedZone.hpp
+  src/kernel/routing/TorusZone.hpp
+  src/kernel/routing/VivaldiZone.hpp  
+)
+
 set(SURF_SRC
   src/kernel/lmm/fair_bottleneck.cpp
   src/kernel/lmm/lagrange.cpp
   src/kernel/lmm/maxmin.hpp
   src/kernel/lmm/maxmin.cpp
   
-  src/kernel/resource/Action.hpp
   src/kernel/resource/Action.cpp
-  src/kernel/resource/Model.hpp
   src/kernel/resource/Model.cpp
-  src/kernel/resource/Resource.hpp
   src/kernel/resource/Resource.cpp
   
   src/kernel/routing/ClusterZone.cpp
-  src/kernel/routing/ClusterZone.hpp
   src/kernel/routing/DijkstraZone.cpp
-  src/kernel/routing/DijkstraZone.hpp
   src/kernel/routing/DragonflyZone.cpp
-  src/kernel/routing/DragonflyZone.hpp
   src/kernel/routing/EmptyZone.cpp
-  src/kernel/routing/EmptyZone.hpp
   src/kernel/routing/FatTreeZone.cpp
-  src/kernel/routing/FatTreeZone.hpp
   src/kernel/routing/FloydZone.cpp
-  src/kernel/routing/FloydZone.hpp
   src/kernel/routing/FullZone.cpp
-  src/kernel/routing/FullZone.hpp
   src/kernel/routing/NetPoint.cpp
-  src/kernel/routing/NetPoint.hpp
   src/kernel/routing/NetZoneImpl.cpp
   src/kernel/routing/NetZoneImpl.hpp
-  src/kernel/routing/RoutedZone.cpp
-  src/kernel/routing/RoutedZone.hpp
   src/kernel/routing/TorusZone.cpp
-  src/kernel/routing/TorusZone.hpp
+  src/kernel/routing/RoutedZone.cpp
   src/kernel/routing/VivaldiZone.cpp
-  src/kernel/routing/VivaldiZone.hpp  
   
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
@@ -674,6 +678,8 @@ set(MC_SRC
 set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
+  ${KERNEL_HEADERS}
+
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h

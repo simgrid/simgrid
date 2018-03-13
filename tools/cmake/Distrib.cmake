@@ -61,12 +61,12 @@ if(enable_java)
 endif()
 
 # include files
-set(HEADERS  ${headers_to_install}  ${generated_headers_to_install})
-foreach(file ${HEADERS})
+foreach(file ${headers_to_install}  ${generated_headers_to_install})
   get_filename_component(location ${file} PATH)
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
+  string(REPLACE "src/" "include/simgrid/" location "${location}") # For kernel headers
   install(FILES ${file} DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${location})
-endforeach(file ${HEADERS})
+endforeach()
 
 # example files
 foreach(file ${examples_to_install})
