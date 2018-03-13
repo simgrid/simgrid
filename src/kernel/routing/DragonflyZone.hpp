@@ -58,7 +58,7 @@ public:
  *    is also not realistic, as blue level can use more links than a single
  *    Aries can handle, thus it should use several routers.
  */
-XBT_PUBLIC_CLASS DragonflyZone : public ClusterZone {
+class XBT_PUBLIC DragonflyZone : public ClusterZone {
 public:
   explicit DragonflyZone(NetZone* father, std::string name);
   ~DragonflyZone() override;

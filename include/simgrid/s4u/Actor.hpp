@@ -129,8 +129,7 @@ namespace s4u {
  */
 
 /** @brief Simulation Agent */
-XBT_PUBLIC_CLASS Actor : public simgrid::xbt::Extendable<Actor>
-{
+class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
   friend Exec;
   friend Mailbox;
   friend simgrid::simix::ActorImpl;

@@ -24,8 +24,7 @@ namespace s4u {
  *
  * This class is an interface to the simulation engine.
  */
-XBT_PUBLIC_CLASS Engine
-{
+class XBT_PUBLIC Engine {
 public:
   /** Constructor, taking the command line parameters of your main function */
   Engine(int* argc, char** argv);

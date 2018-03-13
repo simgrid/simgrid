@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,8 +31,7 @@ namespace s4u {
  * The total computing power that the contained actors can get is constrained to the virtual machine size.
  *
  */
-XBT_PUBLIC_CLASS VirtualMachine : public s4u::Host
-{
+class XBT_PUBLIC VirtualMachine : public s4u::Host {
   simgrid::vm::VirtualMachineImpl* pimpl_vm_ = nullptr;
   virtual ~VirtualMachine();
 

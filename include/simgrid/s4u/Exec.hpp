@@ -15,8 +15,7 @@
 namespace simgrid {
 namespace s4u {
 
-XBT_PUBLIC_CLASS Exec : public Activity
-{
+class XBT_PUBLIC Exec : public Activity {
   Exec() : Activity() {}
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Exec * e);

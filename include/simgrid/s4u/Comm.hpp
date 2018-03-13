@@ -21,8 +21,7 @@ namespace s4u {
  *
  * Represents all asynchronous communications, that you can test or wait onto.
  */
-XBT_PUBLIC_CLASS Comm : public Activity
-{
+class XBT_PUBLIC Comm : public Activity {
   Comm() : Activity() {}
 public:
   friend XBT_PUBLIC void intrusive_ptr_release(simgrid::s4u::Comm * c);

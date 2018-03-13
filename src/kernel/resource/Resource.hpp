@@ -16,8 +16,7 @@ namespace resource {
  * @brief SURF resource interface class
  * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or storage
  */
-XBT_PUBLIC_CLASS Resource
-{
+class XBT_PUBLIC Resource {
 public:
   /**
    * @brief Constructor of LMM Resources

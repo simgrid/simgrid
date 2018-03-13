@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, 2014-2017. The SimGrid Team.
+/* Copyright (c) 2010-2012, 2014-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,29 +19,29 @@
 namespace simgrid {
 namespace jedule{
 
-XBT_PUBLIC_CLASS Event{
-  public:
-    Event(std::string name, double start_time, double end_time, std::string type);
-    ~Event();
-    void addCharacteristic(char *characteristic);
-    void addResources(std::vector<sg_host_t> *host_selection);
-    void addInfo(char *key, char *value);
-    void print(FILE *file);
+class XBT_PUBLIC Event {
+public:
+  Event(std::string name, double start_time, double end_time, std::string type);
+  ~Event();
+  void addCharacteristic(char* characteristic);
+  void addResources(std::vector<sg_host_t>* host_selection);
+  void addInfo(char* key, char* value);
+  void print(FILE* file);
 
-  private:
-    std::string name;
-    double start_time;
-    double end_time;
-    std::string type;
-    std::vector<jed_subset_t> *resource_subsets;
-    std::vector<char*> characteristics_list; /* just a list of names (strings) */
-    std::unordered_map<char*, char*> info_map;     /* key/value pairs */
+private:
+  std::string name;
+  double start_time;
+  double end_time;
+  std::string type;
+  std::vector<jed_subset_t>* resource_subsets;
+  std::vector<char*> characteristics_list;   /* just a list of names (strings) */
+  std::unordered_map<char*, char*> info_map; /* key/value pairs */
 };
 }
 }
 
 extern "C" {
-typedef simgrid::jedule::Event * jed_event_t;
+typedef simgrid::jedule::Event* jed_event_t;
 }
 
 #endif

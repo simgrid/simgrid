@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,8 +13,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-XBT_PUBLIC_CLASS SleepImpl : public ActivityImpl
-{
+class XBT_PUBLIC SleepImpl : public ActivityImpl {
 public:
   void suspend() override;
   void resume() override;

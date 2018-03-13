@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2018. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -28,8 +28,7 @@ namespace s4u {
  * netzones. In SimGrid, there is a hierarchy of netzones, with a unique root zone (that you can retrieve from the
  * s4u::Engine).
  */
-XBT_PUBLIC_CLASS NetZone
-{
+class XBT_PUBLIC NetZone {
 protected:
   friend simgrid::kernel::routing::NetZoneImpl;
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -104,7 +104,7 @@ namespace s4u {
  *
  * @section s4u_mb_api The API
  */
-XBT_PUBLIC_CLASS Mailbox {
+class XBT_PUBLIC Mailbox {
   friend Comm;
   friend simgrid::kernel::activity::MailboxImpl;
 

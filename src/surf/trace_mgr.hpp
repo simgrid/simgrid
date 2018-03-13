@@ -49,8 +49,7 @@ namespace simgrid {
  * - #future_evt_set: makes it easy to find the next occuring event of all traces
  */
 namespace trace_mgr {
-XBT_PUBLIC_CLASS DatedValue
-{
+class XBT_PUBLIC DatedValue {
 public:
   double date_          = 0;
   double value_         = 0;
@@ -62,8 +61,7 @@ public:
 std::ostream& operator<<(std::ostream& out, const DatedValue& e);
 
 /** @brief A trace_iterator links a trace to a resource */
-XBT_PUBLIC_CLASS trace_event{
-
+class XBT_PUBLIC trace_event {
 };
 
 /** @brief A trace is a set of timed values, encoding the value that a variable takes at what time *
@@ -71,7 +69,7 @@ XBT_PUBLIC_CLASS trace_event{
  * It is useful to model dynamic platforms, where an external load that makes the resource availability change over time.
  * To model that, you have to set several traces per resource: one for the on/off state and one for each numerical value (computational speed, bandwidth and latency).
  */
-XBT_PUBLIC_CLASS trace {
+class XBT_PUBLIC trace {
 public:
   /**  Creates an empty trace */
   explicit trace();
@@ -82,7 +80,7 @@ public:
 
 /** @brief Future Event Set (collection of iterators over the traces)
  * That's useful to quickly know which is the next occurring event in a set of traces. */
-XBT_PUBLIC_CLASS future_evt_set {
+class XBT_PUBLIC future_evt_set {
 public:
   future_evt_set();
   virtual ~future_evt_set();

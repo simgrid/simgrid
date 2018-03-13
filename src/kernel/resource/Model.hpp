@@ -16,8 +16,7 @@ namespace resource {
  * @brief SURF model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-XBT_PUBLIC_CLASS Model
-{
+class XBT_PUBLIC Model {
 public:
   Model();
   virtual ~Model();

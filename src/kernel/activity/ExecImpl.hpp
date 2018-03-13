@@ -13,8 +13,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-XBT_PUBLIC_CLASS ExecImpl : public ActivityImpl
-{
+class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl() override;
 
 public:

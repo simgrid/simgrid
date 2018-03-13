@@ -23,7 +23,7 @@
 namespace simgrid {
 namespace config {
 
-XBT_PUBLIC_CLASS missing_key_error : public std::runtime_error {
+class XBT_PUBLIC missing_key_error : public std::runtime_error {
 public:
   explicit missing_key_error(const std::string& what)
     : std::runtime_error(what) {}

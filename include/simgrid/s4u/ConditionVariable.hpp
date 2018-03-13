@@ -30,8 +30,7 @@ namespace s4u {
  *  semantic. But we currently use (only) double for both durations and
  *  timestamp timeouts.
  */
-XBT_PUBLIC_CLASS ConditionVariable
-{
+class XBT_PUBLIC ConditionVariable {
 private:
   friend s_smx_cond_t;
   smx_cond_t cond_;

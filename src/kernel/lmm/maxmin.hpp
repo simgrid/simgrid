@@ -168,8 +168,7 @@ XBT_PUBLIC double func_vegas_fpi(const Variable& var, double x);
  * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or
  * vice-versa list all constraints for a given variable.
  */
-XBT_PUBLIC_CLASS Element
-{
+class XBT_PUBLIC Element {
 public:
   int get_concurrency() const;
   void decrease_concurrency();
@@ -206,8 +205,7 @@ struct ConstraintLight {
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero.
  *     LMM_solve iterates over active elements during resolution, dynamically making them active or unactive.
  */
-XBT_PUBLIC_CLASS Constraint
-{
+class XBT_PUBLIC Constraint {
 public:
   Constraint() = delete;
   Constraint(void* id_value, double bound_value);
@@ -333,8 +331,7 @@ private:
  * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as
  * soon as possible we enable the variable with desired weight
  */
-XBT_PUBLIC_CLASS Variable
-{
+class XBT_PUBLIC Variable {
 public:
   void initialize(simgrid::kernel::resource::Action * id_value, double sharing_weight_value, double bound_value,
                   int number_of_constraints, unsigned visited_value);
@@ -442,8 +439,7 @@ inline void Element::make_inactive()
 /**
  * @brief LMM system
  */
-XBT_PUBLIC_CLASS System
-{
+class XBT_PUBLIC System {
 public:
   /**
    * @brief Create a new Linear MaxMim system

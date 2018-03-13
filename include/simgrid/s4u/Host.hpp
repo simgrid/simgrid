@@ -37,8 +37,7 @@ namespace s4u {
  * You can retrieve a particular host using simgrid::s4u::Host::byName()
  * and actors can retrieve the host on which they run using simgrid::s4u::Host::current().
  */
-XBT_PUBLIC_CLASS Host : public simgrid::xbt::Extendable<Host>
-{
+class XBT_PUBLIC Host : public simgrid::xbt::Extendable<Host> {
 
 public:
   explicit Host(const char* name);

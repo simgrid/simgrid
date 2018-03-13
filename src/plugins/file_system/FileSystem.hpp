@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -24,8 +24,7 @@ namespace s4u {
  * mountpoints.
  * For now, you cannot change the mountpoints programatically, and must declare them from your platform file.
  */
-XBT_PUBLIC_CLASS File
-{
+class XBT_PUBLIC File {
 public:
   File(std::string fullpath, void* userdata);
   File(std::string fullpath, sg_host_t host, void* userdata);
@@ -70,7 +69,7 @@ private:
   void* userdata_             = nullptr;
 };
 
-XBT_PUBLIC_CLASS FileSystemStorageExt {
+class XBT_PUBLIC FileSystemStorageExt {
 public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
   explicit FileSystemStorageExt(Storage* ptr);
@@ -87,8 +86,7 @@ private:
   sg_size_t size_     = 0;
 };
 
-XBT_PUBLIC_CLASS FileDescriptorHostExt
-{
+class XBT_PUBLIC FileDescriptorHostExt {
 public:
   static simgrid::xbt::Extension<Host, FileDescriptorHostExt> EXTENSION_ID;
   FileDescriptorHostExt() = default;

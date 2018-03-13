@@ -54,7 +54,7 @@ struct string_data {
  *  * the [C++11-conforming implementation](https://gcc.gnu.org/gcc-5/changes.html)
  *    does not use refcouting/COW but has a small string optimization.
  */
-XBT_PUBLIC_CLASS string : private string_data {
+class XBT_PUBLIC string : private string_data {
   static char NUL;
 
 public:

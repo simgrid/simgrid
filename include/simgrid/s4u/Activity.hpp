@@ -18,7 +18,7 @@ namespace s4u {
  *
  * This class is the ancestor of every activities that an actor can undertake, that is, of the actions that do take time in the simulated world.
  */
-XBT_PUBLIC_CLASS Activity {
+class XBT_PUBLIC Activity {
   friend Comm;
   friend XBT_PUBLIC void intrusive_ptr_release(Comm * c);
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Comm * c);

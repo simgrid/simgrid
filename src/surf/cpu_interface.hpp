@@ -24,8 +24,7 @@ namespace surf {
  * @brief SURF cpu model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-XBT_PUBLIC_CLASS CpuModel : public kernel::resource::Model
-{
+class XBT_PUBLIC CpuModel : public kernel::resource::Model {
 public:
   /**
    * @brief Create a Cpu
@@ -48,8 +47,7 @@ public:
 * @brief SURF cpu resource interface class
 * @details A Cpu represent a cpu associated to a host
 */
-XBT_PUBLIC_CLASS Cpu : public simgrid::kernel::resource::Resource
-{
+class XBT_PUBLIC Cpu : public simgrid::kernel::resource::Resource {
 public:
   /**
    * @brief Cpu constructor
@@ -144,8 +142,7 @@ public:
  /** @ingroup SURF_cpu_interface
  * @brief A CpuAction represents the execution of code on one or several Cpus
  */
-XBT_PUBLIC_CLASS CpuAction : public simgrid::kernel::resource::Action
-{
+class XBT_PUBLIC CpuAction : public simgrid::kernel::resource::Action {
   friend XBT_PUBLIC Cpu* getActionCpu(CpuAction * action);
 
 public:

@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2017. The SimGrid Team.All rights reserved. */
+/* Copyright (c) 2005-2018. The SimGrid Team.All rights reserved. */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -65,7 +65,7 @@ class ThrowPoint {
  *  However, you can try `dynamic_cast` an exception to this type in order to
  *  get contextual information about the exception.
  */
-XBT_PUBLIC_CLASS WithContextException {
+class XBT_PUBLIC WithContextException {
 public:
   WithContextException() :
     backtrace_(simgrid::xbt::backtrace()),

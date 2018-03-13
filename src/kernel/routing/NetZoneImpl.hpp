@@ -48,8 +48,7 @@ class BypassRoute;
  * called Autonomous Systems in this article).
  *
  */
-XBT_PUBLIC_CLASS NetZoneImpl : public s4u::NetZone
-{
+class XBT_PUBLIC NetZoneImpl : public s4u::NetZone {
   friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:

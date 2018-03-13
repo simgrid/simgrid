@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,8 +23,7 @@ class NetworkAction;
 };
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
-XBT_PUBLIC_CLASS Link : public simgrid::xbt::Extendable<Link>
-{
+class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
   friend simgrid::surf::LinkImpl;
 
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends

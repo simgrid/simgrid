@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,7 +33,7 @@ class ConditionVariable;
  * Use createMutex() to get a ::MutexPtr to a newly created mutex and only manipulate ::MutexPtr.
  *
  */
-XBT_PUBLIC_CLASS Mutex {
+class XBT_PUBLIC Mutex {
   friend ConditionVariable;
   friend simgrid::kernel::activity::MutexImpl;
   simgrid::kernel::activity::MutexImpl* mutex_;

@@ -27,8 +27,7 @@ namespace vm {
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-XBT_PUBLIC_CLASS VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt::Extendable<VirtualMachineImpl>
-{
+class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt::Extendable<VirtualMachineImpl> {
   friend simgrid::s4u::VirtualMachine;
 
 public:

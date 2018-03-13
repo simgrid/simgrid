@@ -37,103 +37,84 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-  XBT_PUBLIC_CLASS ContextFactory {
-  private:
-    std::string name_;
-  public:
+class XBT_PUBLIC ContextFactory {
+private:
+  std::string name_;
 
-    explicit ContextFactory(std::string name) : name_(std::move(name)) {}
-    virtual ~ContextFactory();
-    virtual Context* create_context(std::function<void()> code,
-      void_pfn_smxprocess_t cleanup, smx_actor_t process) = 0;
+public:
+  explicit ContextFactory(std::string name) : name_(std::move(name)) {}
+  virtual ~ContextFactory();
+  virtual Context* create_context(std::function<void()> code, void_pfn_smxprocess_t cleanup, smx_actor_t process) = 0;
 
-    // Optional methods for attaching main() as a context:
+  // Optional methods for attaching main() as a context:
 
-    /** Creates a context from the current context of execution
+  /** Creates a context from the current context of execution
+   *
+   *  This will not work on all implementation of `ContextFactory`.
+   */
+  virtual Context* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
+
+  virtual void run_all() = 0;
+  virtual Context* self();
+  std::string const& name() const { return name_; }
+private:
+  void declare_context(void* T, std::size_t size);
+
+protected:
+  template <class T, class... Args> T* new_context(Args&&... args)
+  {
+    T* context = new T(std::forward<Args>(args)...);
+    this->declare_context(context, sizeof(T));
+    return context;
+  }
+};
+
+class XBT_PUBLIC Context {
+private:
+  std::function<void()> code_;
+  void_pfn_smxprocess_t cleanup_func_ = nullptr;
+  smx_actor_t process_                = nullptr;
+
+public:
+  class StopRequest {
+    /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
      *
-     *  This will not work on all implementation of `ContextFactory`.
+     * Nope, Sonar, this should not inherit of std::exception.
+     * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
      */
-    virtual Context* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
-    virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
-
-    virtual void run_all() = 0;
-    virtual Context* self();
-    std::string const& name() const
-    {
-      return name_;
-    }
-  private:
-    void declare_context(void* T, std::size_t size);
-  protected:
-    template<class T, class... Args>
-    T* new_context(Args&&... args)
-    {
-      T* context = new T(std::forward<Args>(args)...);
-      this->declare_context(context, sizeof(T));
-      return context;
-    }
   };
+  bool iwannadie;
 
-  XBT_PUBLIC_CLASS Context {
-  private:
-    std::function<void()> code_;
-    void_pfn_smxprocess_t cleanup_func_ = nullptr;
-    smx_actor_t process_ = nullptr;
-  public:
-    class StopRequest {
-      /** @brief Exception launched to kill a process, in order to properly unwind its stack and release RAII stuff
-       *
-       * Nope, Sonar, this should not inherit of std::exception.
-       * Otherwise, users may accidentally catch it with a try {} catch (std::exception)
-       */
-    };
-    bool iwannadie;
+  Context(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+  void operator()() { code_(); }
+  bool has_code() const { return static_cast<bool>(code_); }
+  smx_actor_t process() { return this->process_; }
+  void set_cleanup(void_pfn_smxprocess_t cleanup) { cleanup_func_ = cleanup; }
 
-    Context(std::function<void()> code,
-            void_pfn_smxprocess_t cleanup_func,
-            smx_actor_t process);
-    void operator()()
-    {
-      code_();
-    }
-    bool has_code() const
-    {
-      return static_cast<bool>(code_);
-    }
-    smx_actor_t process()
-    {
-      return this->process_;
-    }
-    void set_cleanup(void_pfn_smxprocess_t cleanup)
-    {
-      cleanup_func_ = cleanup;
-    }
+  // Virtual methods
+  virtual ~Context();
+  virtual void stop();
+  virtual void suspend() = 0;
+};
 
-    // Virtual methods
-    virtual ~Context();
-    virtual void stop();
-    virtual void suspend() = 0;
-  };
-
-  XBT_PUBLIC_CLASS AttachContext : public Context {
-  public:
-
-    AttachContext(std::function<void()> code,
-            void_pfn_smxprocess_t cleanup_func,
-            smx_actor_t process)
+class XBT_PUBLIC AttachContext : public Context {
+public:
+  AttachContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
       : Context(std::move(code), cleanup_func, process)
-    {}
+  {
+  }
 
-    ~AttachContext() override;
+  ~AttachContext() override;
 
-    /** Called by the context when it is ready to give control
-     *  to the maestro.
-     */
-    virtual void attach_start() = 0;
+  /** Called by the context when it is ready to give control
+   *  to the maestro.
+   */
+  virtual void attach_start() = 0;
 
-    /** Called by the context when it has finished its job */
-    virtual void attach_stop() = 0;
-  };
+  /** Called by the context when it has finished its job */
+  virtual void attach_stop() = 0;
+};
 
 /* This allows Java to hijack the context factory (Java induces factories of factory :) */
 typedef ContextFactory* (*ContextFactoryInitializer)();

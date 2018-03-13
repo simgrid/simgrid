@@ -23,8 +23,7 @@ namespace s4u {
 
 XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
 
-XBT_PUBLIC_CLASS Storage : public simgrid::xbt::Extendable<Storage>
-{
+class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
   friend s4u::Engine;
   friend simgrid::surf::StorageImpl;
 

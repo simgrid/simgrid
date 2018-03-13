@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2012, 2014-2017. The SimGrid Team.
+/* Copyright (c) 2010-2012, 2014-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
 
 namespace simgrid {
 namespace jedule{
-XBT_PUBLIC_CLASS Container {
+class XBT_PUBLIC Container {
 public:
   Container(std::string name);
   virtual ~Container();
@@ -39,7 +39,7 @@ public:
   void printResources(FILE *file);
 };
 
-XBT_PUBLIC_CLASS Subset {
+class XBT_PUBLIC Subset {
 public:
   Subset(int s, int n, Container* p);
   virtual ~Subset()=default;
