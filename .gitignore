@@ -146,7 +146,6 @@ examples/msg/*.tr
 examples/s4u/actor-create/s4u-actor-create
 examples/s4u/actor-daemon/s4u-actor-daemon
 examples/s4u/actor-join/s4u-actor-join
-examples/s4u/actor-kill-pid/s4u-actor-kill-pid
 examples/s4u/actor-kill/s4u-actor-kill
 examples/s4u/actor-lifetime/s4u-actor-lifetime
 examples/s4u/actor-migration/s4u-actor-migration
