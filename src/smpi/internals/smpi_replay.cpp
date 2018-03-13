@@ -592,7 +592,7 @@ static void action_gatherv(const char *const *action) {
   int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int send_size = parse_double(action[2]);
-  int disps[comm_size];
+  std::vector<int> disps(comm_size, 0);
   int recvcounts[comm_size];
   int recv_sum=0;
 
@@ -606,7 +606,6 @@ static void action_gatherv(const char *const *action) {
   for(int i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
-    disps[i]=0;
   }
 
   int root = (action[3 + comm_size]) ? atoi(action[3 + comm_size]) : 0;
@@ -621,7 +620,8 @@ static void action_gatherv(const char *const *action) {
                                              "gatherV", root, send_size, nullptr, -1, trace_recvcounts,
                                              encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
 
-  Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts, disps, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
+  Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts, disps.data(), MPI_CURRENT_TYPE2, root,
+                 MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action (action, clock);
@@ -642,7 +642,7 @@ static void action_scatterv(const char* const* action)
   int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
   int recv_size = parse_double(action[2 + comm_size]);
-  int disps[comm_size];
+  std::vector<int> disps(comm_size, 0);
   int sendcounts[comm_size];
   int send_sum = 0;
 
@@ -656,7 +656,6 @@ static void action_scatterv(const char* const* action)
   for (int i = 0; i < comm_size; i++) {
     sendcounts[i] = atoi(action[i + 2]);
     send_sum += sendcounts[i];
-    disps[i] = 0;
   }
 
   int root = (action[3 + comm_size]) ? atoi(action[3 + comm_size]) : 0;
@@ -671,7 +670,7 @@ static void action_scatterv(const char* const* action)
                                              "gatherV", root, -1, trace_sendcounts, recv_size, nullptr,
                                              encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
 
-  Colls::scatterv(send, sendcounts, disps, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
+  Colls::scatterv(send, sendcounts, disps.data(), MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action(action, clock);
@@ -760,7 +759,7 @@ static void action_allgatherv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int sendcount=atoi(action[2]);
   int recvcounts[comm_size];
-  int disps[comm_size];
+  std::vector<int> disps(comm_size, 0);
   int recv_sum=0;
 
   MPI_CURRENT_TYPE =
@@ -773,7 +772,6 @@ static void action_allgatherv(const char *const *action) {
   for(int i=0;i<comm_size;i++) {
     recvcounts[i] = atoi(action[i+3]);
     recv_sum=recv_sum+recvcounts[i];
-    disps[i] = 0;
   }
   void *recvbuf = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
 
@@ -786,7 +784,7 @@ static void action_allgatherv(const char *const *action) {
                                                        encode_datatype(MPI_CURRENT_TYPE),
                                                        encode_datatype(MPI_CURRENT_TYPE2)));
 
-  Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts, disps, MPI_CURRENT_TYPE2,
+  Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts, disps.data(), MPI_CURRENT_TYPE2,
                           MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
@@ -812,8 +810,8 @@ static void action_allToAllv(const char *const *action) {
   std::vector<int>* trace_sendcounts = new std::vector<int>;
   int recvcounts[comm_size];
   std::vector<int>* trace_recvcounts = new std::vector<int>;
-  int senddisps[comm_size];
-  int recvdisps[comm_size];
+  std::vector<int> senddisps(comm_size, 0);
+  std::vector<int> recvdisps(comm_size, 0);
 
   MPI_CURRENT_TYPE = (action[4 + 2 * comm_size] && action[5 + 2 * comm_size])
                          ? decode_datatype(action[4 + 2 * comm_size])
@@ -835,8 +833,6 @@ static void action_allToAllv(const char *const *action) {
     recvcounts[i] = atoi(action[i+4+comm_size]);
     trace_recvcounts->push_back(recvcounts[i]);
     recv_size += recvcounts[i];
-    senddisps[i] = 0;
-    recvdisps[i] = 0;
   }
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -844,7 +840,7 @@ static void action_allToAllv(const char *const *action) {
                                                        trace_recvcounts, encode_datatype(MPI_CURRENT_TYPE),
                                                        encode_datatype(MPI_CURRENT_TYPE2)));
 
-  Colls::alltoallv(sendbuf, sendcounts, senddisps, MPI_CURRENT_TYPE,recvbuf, recvcounts, recvdisps,
+  Colls::alltoallv(sendbuf, sendcounts, senddisps.data(), MPI_CURRENT_TYPE,recvbuf, recvcounts, recvdisps.data(),
                          MPI_CURRENT_TYPE, MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
