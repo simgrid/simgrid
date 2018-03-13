@@ -139,7 +139,7 @@ class FileReader(Singleton):
             self.filename_raw = filename
             self.filename = os.path.basename(filename)
             self.abspath = os.path.abspath(filename)
-            self.f = open(self.filename_raw, encoding="utf-8")
+            self.f = open(self.filename_raw)
 
         self.linenumber = 0
 
