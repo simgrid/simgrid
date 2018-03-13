@@ -90,14 +90,12 @@ static void get_set_storage_data(const std::string& storage_name)
 
 static void dump_platform_storages()
 {
-  std::map<std::string, simgrid::s4u::Storage*>* storages = new std::map<std::string, simgrid::s4u::Storage*>;
-  simgrid::s4u::getStorageList(storages);
+  std::vector<simgrid::s4u::Storage*> storages = simgrid::s4u::Engine::getInstance()->getAllStorages();
 
-  for (auto const& storage : *storages) {
-    XBT_INFO("Storage %s is attached to %s", storage.first.c_str(), storage.second->getHost()->getCname());
-    storage.second->setProperty("other usage", "gpfs");
+  for (auto const& s : storages) {
+    XBT_INFO("Storage %s is attached to %s", s->getCname(), s->getHost()->getCname());
+    s->setProperty("other usage", "gpfs");
   }
-  delete storages;
 }
 
 static void storage_info(simgrid::s4u::Host* host)
