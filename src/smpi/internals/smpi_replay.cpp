@@ -644,8 +644,7 @@ static void action_scatterv(const char* const* action)
   CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
   int recv_size = parse_double(action[2 + comm_size]);
   std::vector<int> disps(comm_size, 0);
-  int sendcounts[comm_size];
-  int send_sum = 0;
+  std::shared_ptr<std::vector<int>> sendcounts(new std::vector<int>(comm_size));
 
   MPI_CURRENT_TYPE =
       (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
@@ -655,9 +654,9 @@ static void action_scatterv(const char* const* action)
   void* send = nullptr;
   void* recv = smpi_get_tmp_recvbuffer(recv_size * MPI_CURRENT_TYPE->size());
   for (int i = 0; i < comm_size; i++) {
-    sendcounts[i] = atoi(action[i + 2]);
-    send_sum += sendcounts[i];
+    (*sendcounts)[i] = atoi(action[i + 2]);
   }
+  int send_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
 
   int root = (action[3 + comm_size]) ? atoi(action[3 + comm_size]) : 0;
   int rank = MPI_COMM_WORLD->rank();
@@ -665,13 +664,12 @@ static void action_scatterv(const char* const* action)
   if (rank == root)
     send = smpi_get_tmp_sendbuffer(send_sum * MPI_CURRENT_TYPE2->size());
 
-  std::vector<int>* trace_sendcounts = new std::vector<int>(sendcounts, sendcounts + comm_size);
+  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData("gatherV", root, -1, sendcounts, recv_size,
+                                                                           nullptr, encode_datatype(MPI_CURRENT_TYPE),
+                                                                           encode_datatype(MPI_CURRENT_TYPE2)));
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
-                                             "gatherV", root, -1, trace_sendcounts, recv_size, nullptr,
-                                             encode_datatype(MPI_CURRENT_TYPE), encode_datatype(MPI_CURRENT_TYPE2)));
-
-  Colls::scatterv(send, sendcounts, disps.data(), MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
+  Colls::scatterv(send, sendcounts->data(), disps.data(), MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root,
+                  MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action(action, clock);
