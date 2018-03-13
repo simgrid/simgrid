@@ -41,6 +41,13 @@ if(enable_compile_warnings)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat")
   endif()
 
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    # ignore remark  #1418: external function definition with no prior declaration
+    # 3179: deprecated conversion of string literal to char* (should be const char*)
+    # 191: type qualifier is meaningless on cast type
+    set(warnCXXFLAGS "${warnCXXFLAGS} -wd1418 -wd191 -wd3179")
+  endif()
+
   # the one specific to C but refused by C++
   set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
