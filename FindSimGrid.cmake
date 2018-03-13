@@ -5,23 +5,49 @@
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# Once done, the following will be defined:
 #
-#  CMake >= 2.8.12:
-#    Target SimGrid::Simgrid
+# USERS OF PROGRAMS USING SIMGRID
+# -------------------------------
 #
-#    Use as:
-#      target_link_libraries(your-simulator SimGrid::SimGrid)
+# If cmake does not find this file, add its path to CMAKE_PREFIX_PATH:
+#    CMAKE_PREFIX_PATH="/path/to/FindSimGrid.cmake:$CMAKE_PREFIX_PATH"  cmake .
 #
-#  Older CMake (< 2.8.12)
-#    SimGrid_INCLUDE_DIR - the SimGrid include directories
-#    SimGrid_LIBRARY - link your simulator against it to use SimGrid
+# If this file does not find SimGrid, define SimGrid_PATH:
+#    SimGrid_PATH=/path/to/simgrid  cmake .
+
 #
+# DEVELOPERS OF PROGRAMS USING SIMGRID
+# ------------------------------------
+#
+#  1. Include this file in your own CMakeLists.txt
+#     Either by copying it in your tree, or (recommended) by using the
+#     version automatically installed by SimGrid.
+#    
+#  2. Afterward, if you have CMake >= 2.8.12, this will define a
+#     target called 'SimGrid::Simgrid'. Use it as:
+#       target_link_libraries(your-simulator SimGrid::SimGrid)
+#
+#    With older CMake (< 2.8.12), it simply defines several variables:
+#       SimGrid_INCLUDE_DIR - the SimGrid include directories
+#       SimGrid_LIBRARY - link your simulator against it to use SimGrid
 #    Use as:
 #      include_directories("${SimGrid_INCLUDE_DIR}" SYSTEM)
 #      target_link_libraries(your-simulator ${SimGrid_LIBRARY})
 #
-# This could be improved:
+#  In both cases, it also define a SimGrid_VERSION macro, that you
+#    can use to deal with API evolutions as follows:
+#
+#    #if SimGrid_VERSION < 31800
+#      (code to use if the installed version is lower than v3.18)
+#    #elif SimGrid_VERSION < 31900
+#      (code to use if we are using SimGrid v3.18.x)
+#    #else
+#      (code to use with SimGrid v3.19+)
+#    #endif
+
+# 
+# IMPROVING THIS FILE
+# -------------------
 #  - Use automatic SimGridConfig.cmake creation via export/install(EXPORT in main CMakeLists.txt:
 #    https://cliutils.gitlab.io/modern-cmake/chapters/exporting.html
 #    https://cmake.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
@@ -31,11 +57,11 @@ cmake_minimum_required(VERSION 2.8)
 
 find_path(SimGrid_INCLUDE_DIR
   NAMES simgrid_config.h
-  PATHS /opt/simgrid/include
+  PATHS ${SimGrid_PATH}/include /opt/simgrid/include
 )
 find_library(SimGrid_LIBRARY
   NAMES simgrid
-  PATHS /opt/simgrid/lib
+  PATHS ${SimGrid_PATH}/lib /opt/simgrid/lib
 )
 mark_as_advanced(SimGrid_INCLUDE_DIR)
 mark_as_advanced(SimGrid_LIBRARY)
@@ -71,7 +97,7 @@ if (SimGrid_FOUND AND NOT CMAKE_VERSION VERSION_LESS 2.8.12)
     INTERFACE_COMPILE_FEATURES cxx_alias_templates
     IMPORTED_LOCATION ${SimGrid_LIBRARY}
   )
-  # We need C++11, so check for it
+  # We need C++11, so check for it just in case the user removed it since compiling SimGrid
   if (NOT CMAKE_VERSION VERSION_LESS 3.8)
     # 3.8+ allows us to simply require C++11 (or higher)
     set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_11)
@@ -84,7 +110,7 @@ if (SimGrid_FOUND AND NOT CMAKE_VERSION VERSION_LESS 2.8.12)
     set(CMAKE_REQUIRED_FLAGS "${CMAKE_CXX_FLAGS}")
     check_cxx_source_compiles("using Foo = int; int main(){}" _SIMGRID_CXX11_ENABLED)
     if (NOT _SIMGRID_CXX11_ENABLED)
-        message(WARNING "C++11 is required to use this library. Enable it with e.g. -std=c++11")
+        message(WARNING "C++11 is required to use SimGrid. Enable it with e.g. -std=c++11")
     endif ()
     unset(_SIMGRID_CXX11_ENABLED CACHE)
   endif ()
