@@ -93,31 +93,30 @@ static MPI_Datatype decode_datatype(const char *const action)
 {
   switch(atoi(action)) {
     case 0:
-      MPI_CURRENT_TYPE=MPI_DOUBLE;
+      return MPI_DOUBLE;
       break;
     case 1:
-      MPI_CURRENT_TYPE=MPI_INT;
+      return MPI_INT;
       break;
     case 2:
-      MPI_CURRENT_TYPE=MPI_CHAR;
+      return MPI_CHAR;
       break;
     case 3:
-      MPI_CURRENT_TYPE=MPI_SHORT;
+      return MPI_SHORT;
       break;
     case 4:
-      MPI_CURRENT_TYPE=MPI_LONG;
+      return MPI_LONG;
       break;
     case 5:
-      MPI_CURRENT_TYPE=MPI_FLOAT;
+      return MPI_FLOAT;
       break;
     case 6:
-      MPI_CURRENT_TYPE=MPI_BYTE;
+      return MPI_BYTE;
       break;
     default:
-      MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
+      return MPI_DEFAULT_TYPE;
       break;
   }
-   return MPI_CURRENT_TYPE;
 }
 
 const char* encode_datatype(MPI_Datatype datatype)
