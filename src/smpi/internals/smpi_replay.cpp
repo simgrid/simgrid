@@ -690,23 +690,23 @@ static void action_reducescatter(const char *const *action) {
   CHECK_ACTION_PARAMS(action, comm_size+1, 1)
   int comp_size = parse_double(action[2+comm_size]);
   int my_proc_id                     = Actor::self()->getPid();
-  std::vector<int>* trace_recvcounts = new std::vector<int>;
+  std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>);
   MPI_CURRENT_TYPE = (action[3 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
 
   for(int i=0;i<comm_size;i++) {
-    trace_recvcounts->push_back(atoi(action[i + 2]));
+    recvcounts->push_back(atoi(action[i + 2]));
   }
-  int size{std::accumulate(trace_recvcounts->begin(), trace_recvcounts->end(), 0)};
+  int size{std::accumulate(recvcounts->begin(), recvcounts->end(), 0)};
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, trace_recvcounts,
+                     new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, recvcounts,
                                                        std::to_string(comp_size), /* ugly hack to print comp_size */
                                                        encode_datatype(MPI_CURRENT_TYPE)));
 
   void *sendbuf = smpi_get_tmp_sendbuffer(size* MPI_CURRENT_TYPE->size());
   void *recvbuf = smpi_get_tmp_recvbuffer(size* MPI_CURRENT_TYPE->size());
 
-  Colls::reduce_scatter(sendbuf, recvbuf, trace_recvcounts->data(), MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
+  Colls::reduce_scatter(sendbuf, recvbuf, recvcounts->data(), MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
   TRACE_smpi_comm_out(my_proc_id);
