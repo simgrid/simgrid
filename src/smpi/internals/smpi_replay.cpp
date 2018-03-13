@@ -15,8 +15,6 @@
 #include <unordered_map>
 #include <vector>
 
-#define KEY_SIZE (sizeof(int) * 2 + 1)
-
 using simgrid::s4u::Actor;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
