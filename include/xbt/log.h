@@ -112,8 +112,7 @@ typedef enum {
     }                                                                                                                  \
   }                                                                                                                    \
   SG_END_DECL()                                                                                                        \
-  XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t)                                                                           \
-  _XBT_LOGV(catName) = {                                                                                               \
+  XBT_EXPORT_NO_IMPORT s_xbt_log_category_t _XBT_LOGV(catName) = {                                                     \
       &_XBT_LOGV(parent),                                                                                              \
       NULL /* firstChild */,                                                                                           \
       NULL /* nextSibling */,                                                                                          \
