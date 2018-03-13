@@ -41,7 +41,7 @@ public:
     simgrid::xbt::WithContextException(throwpoint, simgrid::xbt::backtrace())
   {}
 
-  ~xbt_ex();
+  ~xbt_ex(); // DO NOT define it here -- see ex.cpp for a rational
 
   /** Category (what went wrong) */
   xbt_errcat_t category = unknown_error;
