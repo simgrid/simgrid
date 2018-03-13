@@ -310,7 +310,7 @@ XBT_PUBLIC void _xbt_log_event_log(xbt_log_event_t ev, const char* fmt, ...) XBT
 XBT_PUBLIC int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority);
 
 #ifdef DLL_EXPORT
-XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
+XBT_PUBLIC_DATA s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT);
 #else
 // If we `dllexport` the root log category, MinGW does not want us to take its address with the error:
 // > initializer element is not constant

@@ -277,7 +277,7 @@ struct mdesc {
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 
-XBT_PUBLIC_DATA( struct mdesc ) *__mmalloc_default_mdp;
+XBT_PUBLIC_DATA struct mdesc* __mmalloc_default_mdp;
 
 /* Remap a mmalloc region that was previously mapped. */
 

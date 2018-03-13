@@ -111,12 +111,12 @@ XBT_PUBLIC void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* act
 /** \ingroup SURF_models
  *  \brief The CPU model object for the physical machine layer
  */
-XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model_pm;
+XBT_PUBLIC_DATA surf_cpu_model_t surf_cpu_model_pm;
 
 /** \ingroup SURF_models
  *  \brief The CPU model object for the virtual machine layer
  */
-XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model_vm;
+XBT_PUBLIC_DATA surf_cpu_model_t surf_cpu_model_vm;
 
 /** \ingroup SURF_models
  *  \brief Initializes the CPU model with the model Cas01
@@ -140,17 +140,17 @@ XBT_PUBLIC void surf_cpu_model_init_ti();
  *  \brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:...
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_optimization_mode_description[];
+XBT_PUBLIC_DATA s_surf_model_description_t surf_optimization_mode_description[];
 
 /** \ingroup SURF_plugins
  *  \brief The list of all available surf plugins
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_plugin_description[];
+XBT_PUBLIC_DATA s_surf_model_description_t surf_plugin_description[];
 
 /** \ingroup SURF_models
  *  \brief The list of all available cpu model models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
+XBT_PUBLIC_DATA s_surf_model_description_t surf_cpu_model_description[];
 
 /** \ingroup SURF_models
  *  \brief The network model
@@ -158,7 +158,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
  *  When creating a new API on top on SURF, you shouldn't use the network model unless you know what you are doing.
  *  Only the host model should be accessed because depending on the platform model, the network model can be NULL.
  */
-XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
+XBT_PUBLIC_DATA surf_network_model_t surf_network_model;
 
 /** \ingroup SURF_models
  *  \brief Same as network model 'LagrangeVelho', only with different correction factors.
@@ -262,7 +262,7 @@ XBT_PUBLIC void surf_network_model_init_Vegas();
 /** \ingroup SURF_models
  *  \brief The list of all available network model models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
+XBT_PUBLIC_DATA s_surf_model_description_t surf_network_model_description[];
 
 /** \ingroup SURF_models
  *  \brief The storage model
@@ -273,9 +273,9 @@ XBT_PUBLIC void surf_storage_model_init_default();
  *  \brief The list of all available storage modes.
  *  This storage mode can be set using --cfg=storage/model:...
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
+XBT_PUBLIC_DATA s_surf_model_description_t surf_storage_model_description[];
 
-XBT_PUBLIC_DATA(surf_storage_model_t) surf_storage_model;
+XBT_PUBLIC_DATA surf_storage_model_t surf_storage_model;
 
 /** \ingroup SURF_models
  *  \brief The host model
@@ -283,7 +283,7 @@ XBT_PUBLIC_DATA(surf_storage_model_t) surf_storage_model;
  *  Note that when you create an API on top of SURF, the host model should be the only one you use
  *  because depending on the platform model, the network model and the CPU model may not exist.
  */
-XBT_PUBLIC_DATA(surf_host_model_t) surf_host_model;
+XBT_PUBLIC_DATA surf_host_model_t surf_host_model;
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with a compound host model
@@ -313,7 +313,7 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
 /** \ingroup SURF_models
  *  \brief The list of all available host model models
  */
-XBT_PUBLIC_DATA(s_surf_model_description_t) surf_host_model_description[];
+XBT_PUBLIC_DATA s_surf_model_description_t surf_host_model_description[];
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the current best network and cpu models at hand

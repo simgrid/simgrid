@@ -47,8 +47,7 @@ typedef s4u_NetZone* msg_netzone_t;
  */
 typedef sg_host_t msg_host_t;
 
-
-XBT_PUBLIC_DATA(int) sg_storage_max_file_descriptors;
+XBT_PUBLIC_DATA int sg_storage_max_file_descriptors;
 /* ******************************** Task ************************************ */
 
 typedef struct s_simdata_task_t* simdata_task_t;

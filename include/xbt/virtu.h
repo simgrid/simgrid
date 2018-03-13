@@ -20,10 +20,10 @@ XBT_PUBLIC const char* xbt_procname(void);
 XBT_PUBLIC int xbt_getpid(void);
 
 /* Get the name of the UNIX process englobing the world */
-XBT_PUBLIC_DATA(char*) xbt_binary_name;
+XBT_PUBLIC_DATA char* xbt_binary_name;
 
 /** Contains all the parameters we got from the command line (including argv[0]) */
-XBT_PUBLIC_DATA(xbt_dynar_t) xbt_cmdline;
+XBT_PUBLIC_DATA xbt_dynar_t xbt_cmdline;
 
 SG_END_DECL()
 #endif /* XBT_VIRTU_H */

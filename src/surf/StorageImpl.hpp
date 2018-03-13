@@ -35,29 +35,29 @@ class StorageAction;
  * @brief Callbacks handler which emit the callbacks after Storage creation *
  * @details Callback functions have the following signature: `void(Storage*)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageImpl*)>) storageCreatedCallbacks;
+XBT_PUBLIC_DATA simgrid::xbt::signal<void(StorageImpl*)> storageCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage destruction *
  * @details Callback functions have the following signature: `void(StoragePtr)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageImpl*)>) storageDestructedCallbacks;
+XBT_PUBLIC_DATA simgrid::xbt::signal<void(StorageImpl*)> storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
  * @details Callback functions have the following signature: `void(StorageAction *action, int previouslyOn, int
  * currentlyOn)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(StorageImpl*, int, int)>) storageStateChangedCallbacks;
+XBT_PUBLIC_DATA simgrid::xbt::signal<void(StorageImpl*, int, int)> storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
  * @details Callback functions have the following signature: `void(StorageAction *action,
  * simgrid::kernel::resource::Action::State old, simgrid::kernel::resource::Action::State current)`
  */
-XBT_PUBLIC_DATA(
-    simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>)
-storageActionStateChangedCallbacks;
+XBT_PUBLIC_DATA
+simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
+    storageActionStateChangedCallbacks;
 
 /*********
  * Model *

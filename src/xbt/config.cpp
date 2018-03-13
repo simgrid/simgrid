@@ -760,7 +760,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
 XBT_TEST_SUITE("config", "Configuration support");
 
-XBT_PUBLIC_DATA(xbt_cfg_t) simgrid_config;
+XBT_PUBLIC_DATA xbt_cfg_t simgrid_config;
 
 static void make_set()
 {

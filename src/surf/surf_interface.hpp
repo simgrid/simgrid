@@ -28,9 +28,9 @@
  *********/
 
 /* user-visible parameters */
-XBT_PUBLIC_DATA(double) sg_maxmin_precision;
-XBT_PUBLIC_DATA(double) sg_surf_precision;
-XBT_PUBLIC_DATA(int) sg_concurrency_limit;
+XBT_PUBLIC_DATA double sg_maxmin_precision;
+XBT_PUBLIC_DATA double sg_surf_precision;
+XBT_PUBLIC_DATA int sg_concurrency_limit;
 
 extern XBT_PRIVATE double sg_tcp_gamma;
 extern XBT_PRIVATE double sg_latency_factor;
@@ -69,7 +69,7 @@ XBT_PUBLIC double surf_get_clock();
 /** \ingroup SURF_simulation
  *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
  */
-XBT_PUBLIC_DATA(std::vector<sg_host_t>) host_that_restart;
+XBT_PUBLIC_DATA std::vector<sg_host_t> host_that_restart;
 
 int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
 
@@ -80,6 +80,6 @@ int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
 /** \ingroup SURF_models
  *  \brief List of initialized models
  */
-XBT_PUBLIC_DATA(std::vector<simgrid::kernel::resource::Model*>*) all_existing_models;
+XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*>* all_existing_models;
 
 #endif /* SURF_MODEL_H_ */

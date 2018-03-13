@@ -18,7 +18,7 @@
 extern "C" {
 
 /********************************* Simcalls *********************************/
-XBT_PUBLIC_DATA(const char*) simcall_names[]; /* Name of each simcall */
+XBT_PUBLIC_DATA const char* simcall_names[]; /* Name of each simcall */
 
 #include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
 

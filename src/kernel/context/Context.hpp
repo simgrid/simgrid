@@ -118,7 +118,7 @@ public:
 
 /* This allows Java to hijack the context factory (Java induces factories of factory :) */
 typedef ContextFactory* (*ContextFactoryInitializer)();
-XBT_PUBLIC_DATA(ContextFactoryInitializer) factory_initializer;
+XBT_PUBLIC_DATA ContextFactoryInitializer factory_initializer;
 
 XBT_PRIVATE ContextFactory* thread_factory();
 XBT_PRIVATE ContextFactory* sysv_factory();
@@ -138,7 +138,7 @@ XBT_PUBLIC smx_context_t SIMIX_context_new(std::function<void()> code, void_pfn_
                                            smx_actor_t simix_process);
 
 #ifndef WIN32
-XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
+XBT_PUBLIC_DATA char sigsegv_stack[SIGSTKSZ];
 #endif
 
 /* We are using the bottom of the stack to save some information, like the

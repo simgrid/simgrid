@@ -89,7 +89,7 @@ XBT_PRIVATE void TRACE_msg_process_destroy(std::string process_name, int process
 
 extern "C" {
 
-XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
+XBT_PUBLIC_DATA MSG_Global_t msg_global;
 
 /*************************************************************/
 XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc);

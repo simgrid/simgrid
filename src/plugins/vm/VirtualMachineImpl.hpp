@@ -106,6 +106,6 @@ public:
 }
 }
 
-XBT_PUBLIC_DATA(simgrid::vm::VMModel*) surf_vm_model;
+XBT_PUBLIC_DATA simgrid::vm::VMModel* surf_vm_model;
 
 #endif /* VM_INTERFACE_HPP_ */

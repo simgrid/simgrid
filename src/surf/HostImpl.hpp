@@ -18,7 +18,7 @@
  * Tools *
  *********/
 
-XBT_PUBLIC_DATA(simgrid::surf::HostModel*) surf_host_model;
+XBT_PUBLIC_DATA simgrid::surf::HostModel* surf_host_model;
 
 /*********
  * Model *
