@@ -245,7 +245,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);
 
-  XBT_DEBUG("Insert incomplete comm pattern %p for process %lu", pattern.get(), issuer->pid);
+  XBT_DEBUG("Insert incomplete comm pattern %p for process %ld", pattern.get(), issuer->pid);
   xbt_dynar_t dynar = xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid, xbt_dynar_t);
   simgrid::mc::PatternCommunication* pattern2 = pattern.release();
   xbt_dynar_push(dynar, &pattern2);

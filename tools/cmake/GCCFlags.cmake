@@ -24,6 +24,12 @@ if(enable_compile_warnings)
   if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    # ignore remark  #1418: external function definition with no prior declaration
+    # 3179: deprecated conversion of string literal to char* (should be const char*)
+    # 191: type qualifier is meaningless on cast type
+    set(warnCFLAGS "${warnCFLAGS} -wd1418 -wd191 -wd3179")
+  endif()
 
   set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
   if(CMAKE_COMPILER_IS_GNUCXX AND (NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")))
@@ -39,13 +45,6 @@ if(enable_compile_warnings)
     # don't care about class that become struct, avoid issue of empty C structs
     # size (coming from libunwind.h)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat")
-  endif()
-
-  if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    # ignore remark  #1418: external function definition with no prior declaration
-    # 3179: deprecated conversion of string literal to char* (should be const char*)
-    # 191: type qualifier is meaningless on cast type
-    set(warnCXXFLAGS "${warnCXXFLAGS} -wd1418 -wd191 -wd3179")
   endif()
 
   # the one specific to C but refused by C++
