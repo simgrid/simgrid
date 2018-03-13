@@ -32,6 +32,10 @@ static char* sendbuffer    = nullptr;
 static int recvbuffer_size = 0;
 static char* recvbuffer    = nullptr;
 
+class ReplayActionArg {
+  ReplayActionArg() {}
+};
+
 static void log_timed_action (const char *const *action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     char *name = xbt_str_join_array(action, " ");
@@ -753,9 +757,8 @@ static void action_allgatherv(const char *const *action) {
   int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int sendcount=atoi(action[2]);
-  int recvcounts[comm_size];
+  std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
   std::vector<int> disps(comm_size, 0);
-  int recv_sum=0;
 
   MPI_Datatype MPI_CURRENT_TYPE =
       (action[3 + comm_size] && action[4 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
@@ -765,22 +768,20 @@ static void action_allgatherv(const char *const *action) {
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
 
   for(int i=0;i<comm_size;i++) {
-    recvcounts[i] = atoi(action[i+3]);
-    recv_sum=recv_sum+recvcounts[i];
+    (*recvcounts)[i] = atoi(action[i + 3]);
   }
+  int recv_sum  = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
   void *recvbuf = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
 
   int my_proc_id = Actor::self()->getPid();
 
-  std::vector<int>* trace_recvcounts = new std::vector<int>(recvcounts, recvcounts + comm_size);
-
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::VarCollTIData("allGatherV", -1, sendcount, nullptr, -1, trace_recvcounts,
+                     new simgrid::instr::VarCollTIData("allGatherV", -1, sendcount, nullptr, -1, recvcounts,
                                                        encode_datatype(MPI_CURRENT_TYPE),
                                                        encode_datatype(MPI_CURRENT_TYPE2)));
 
-  Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts, disps.data(), MPI_CURRENT_TYPE2,
-                          MPI_COMM_WORLD);
+  Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts->data(), disps.data(), MPI_CURRENT_TYPE2,
+                    MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
