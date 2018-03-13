@@ -91,11 +91,7 @@ public:
    * @param requestedCores The desired amount of cores. Must be >= 1
    * @return The CpuAction corresponding to the processing
    */
-  virtual simgrid::kernel::resource::Action* execution_start(double size, int requestedCores)
-  {
-    THROW_UNIMPLEMENTED;
-    return nullptr;
-  }
+  virtual simgrid::kernel::resource::Action* execution_start(double size, int requestedCores) = 0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)

@@ -76,6 +76,11 @@ public:
   bool isUsed() override;
   void apply_event(tmgr_trace_event_t event, double value) override;
   kernel::resource::Action* execution_start(double size) override;
+  simgrid::kernel::resource::Action* execution_start(double size, int requestedCores) override
+  {
+    THROW_UNIMPLEMENTED;
+    return nullptr;
+  }
   kernel::resource::Action* sleep(double duration) override;
 
 protected:
