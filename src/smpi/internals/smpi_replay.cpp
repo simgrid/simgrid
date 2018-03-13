@@ -21,17 +21,17 @@ using simgrid::s4u::Actor;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
-int communicator_size = 0;
-static int active_processes = 0;
-std::unordered_map<int,std::vector<MPI_Request>*> reqq;
+static int communicator_size = 0;
+static int active_processes  = 0;
+static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 
-MPI_Datatype MPI_DEFAULT_TYPE;
-MPI_Datatype MPI_CURRENT_TYPE;
+static MPI_Datatype MPI_DEFAULT_TYPE;
+static MPI_Datatype MPI_CURRENT_TYPE;
 
-static int sendbuffer_size=0;
-char* sendbuffer=nullptr;
-static int recvbuffer_size=0;
-char* recvbuffer=nullptr;
+static int sendbuffer_size = 0;
+static char* sendbuffer    = nullptr;
+static int recvbuffer_size = 0;
+static char* recvbuffer    = nullptr;
 
 static void log_timed_action (const char *const *action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
