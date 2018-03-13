@@ -152,6 +152,6 @@ typedef unsigned long long sg_size_t;
  */
 typedef long long sg_offset_t;
 
-typedef unsigned long aid_t;
+typedef long aid_t;
 
 #endif /* SIMGRID_TYPES_H */

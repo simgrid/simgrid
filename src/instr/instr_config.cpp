@@ -55,7 +55,6 @@ static bool trace_basic;
 static bool trace_display_sizes = false;
 static bool trace_disable_link;
 static bool trace_disable_power;
-static int trace_precision;
 
 static bool trace_configured = false;
 static bool trace_active     = false;
@@ -82,7 +81,6 @@ static void TRACE_getopts()
   trace_display_sizes       = xbt_cfg_get_boolean(OPT_TRACING_DISPLAY_SIZES);
   trace_disable_link        = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_LINK);
   trace_disable_power       = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_POWER);
-  trace_precision           = xbt_cfg_get_int(OPT_TRACING_PRECISION);
 }
 
 int TRACE_start()
