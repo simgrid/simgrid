@@ -396,10 +396,20 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
     retval = MPI_ERR_COMM;
   } else if (not sendtype->is_valid() || not recvtype->is_valid()) {
     retval = MPI_ERR_TYPE;
-  } else if (src == MPI_PROC_NULL || dst == MPI_PROC_NULL) {
-    simgrid::smpi::Status::empty(status);
-    status->MPI_SOURCE = MPI_PROC_NULL;
+  } else if (src == MPI_PROC_NULL && dst == MPI_PROC_NULL) {
+    if(status!=MPI_STATUS_IGNORE){
+      simgrid::smpi::Status::empty(status);
+      status->MPI_SOURCE = MPI_PROC_NULL;
+    }
     retval             = MPI_SUCCESS;
+  }else if (src == MPI_PROC_NULL){
+    if(status!=MPI_STATUS_IGNORE){
+      simgrid::smpi::Status::empty(status);
+      status->MPI_SOURCE = MPI_PROC_NULL;
+    }
+    return PMPI_Send(sendbuf, sendcount, sendtype, dst, sendtag, comm);
+  }else if (dst == MPI_PROC_NULL){
+    return PMPI_Recv(recvbuf, recvcount, recvtype, src, recvtag, comm, status);
   }else if (dst >= comm->group()->size() || dst <0 ||
       (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0))){
     retval = MPI_ERR_RANK;
