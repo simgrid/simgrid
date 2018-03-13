@@ -26,7 +26,6 @@ static int active_processes  = 0;
 static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 
 static MPI_Datatype MPI_DEFAULT_TYPE;
-static MPI_Datatype MPI_CURRENT_TYPE;
 
 static int sendbuffer_size = 0;
 static char* sendbuffer    = nullptr;
@@ -215,7 +214,7 @@ static void action_send(const char *const *action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
@@ -239,7 +238,7 @@ static void action_Isend(const char *const *action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
@@ -264,7 +263,7 @@ static void action_recv(const char *const *action) {
   double clock = smpi_process()->simulated_elapsed();
   MPI_Status status;
 
-  MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int src_traced = MPI_COMM_WORLD->group()->actor(from)->getPid();
@@ -295,7 +294,7 @@ static void action_Irecv(const char *const *action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -422,7 +421,7 @@ static void action_bcast(const char *const *action)
   double clock = smpi_process()->simulated_elapsed();
   int root     = (action[3]) ? atoi(action[3]) : 0;
   /* Initialize MPI_CURRENT_TYPE in order to decrease the number of the checks */
-  MPI_CURRENT_TYPE = (action[3] && action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[3] && action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -445,7 +444,7 @@ static void action_reduce(const char *const *action)
   double clock = smpi_process()->simulated_elapsed();
   int root         = (action[4]) ? atoi(action[4]) : 0;
 
-  MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -466,7 +465,7 @@ static void action_allReduce(const char *const *action) {
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
 
-  MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   double clock = smpi_process()->simulated_elapsed();
   int my_proc_id = Actor::self()->getPid();
@@ -488,7 +487,7 @@ static void action_allToAll(const char *const *action) {
   int comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{(action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* MPI_CURRENT_TYPE->size());
@@ -521,7 +520,7 @@ static void action_gather(const char *const *action) {
   int comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_CURRENT_TYPE = (action[5] && action[6]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[5] && action[6]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{(action[5] && action[6]) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
@@ -558,7 +557,7 @@ static void action_scatter(const char* const* action)
   int comm_size                  = MPI_COMM_WORLD->size();
   int send_size                  = parse_double(action[2]);
   int recv_size                  = parse_double(action[3]);
-  MPI_CURRENT_TYPE               = (action[5] && action[6]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE  = (action[5] && action[6]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{(action[5] && action[6]) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
 
   void* send = smpi_get_tmp_sendbuffer(send_size * MPI_CURRENT_TYPE->size());
@@ -596,7 +595,7 @@ static void action_gatherv(const char *const *action) {
   std::vector<int> disps(comm_size, 0);
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
 
-  MPI_CURRENT_TYPE =
+  MPI_Datatype MPI_CURRENT_TYPE =
       (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{
       (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[5 + comm_size]) : MPI_DEFAULT_TYPE};
@@ -643,7 +642,7 @@ static void action_scatterv(const char* const* action)
   std::vector<int> disps(comm_size, 0);
   std::shared_ptr<std::vector<int>> sendcounts(new std::vector<int>(comm_size));
 
-  MPI_CURRENT_TYPE =
+  MPI_Datatype MPI_CURRENT_TYPE =
       (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{
       (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[5 + comm_size]) : MPI_DEFAULT_TYPE};
@@ -686,7 +685,7 @@ static void action_reducescatter(const char *const *action) {
   int comp_size = parse_double(action[2+comm_size]);
   int my_proc_id                     = Actor::self()->getPid();
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>);
-  MPI_CURRENT_TYPE = (action[3 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[3 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
 
   for(int i=0;i<comm_size;i++) {
     recvcounts->push_back(atoi(action[i + 2]));
@@ -722,7 +721,7 @@ static void action_allgather(const char *const *action) {
   int sendcount=atoi(action[2]);
   int recvcount=atoi(action[3]);
 
-  MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{(action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
 
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
@@ -758,7 +757,7 @@ static void action_allgatherv(const char *const *action) {
   std::vector<int> disps(comm_size, 0);
   int recv_sum=0;
 
-  MPI_CURRENT_TYPE =
+  MPI_Datatype MPI_CURRENT_TYPE =
       (action[3 + comm_size] && action[4 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{
       (action[3 + comm_size] && action[4 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE};
@@ -805,9 +804,9 @@ static void action_allToAllv(const char *const *action) {
   std::vector<int> senddisps(comm_size, 0);
   std::vector<int> recvdisps(comm_size, 0);
 
-  MPI_CURRENT_TYPE = (action[4 + 2 * comm_size] && action[5 + 2 * comm_size])
-                         ? decode_datatype(action[4 + 2 * comm_size])
-                         : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action[4 + 2 * comm_size] && action[5 + 2 * comm_size])
+                                      ? decode_datatype(action[4 + 2 * comm_size])
+                                      : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{(action[4 + 2 * comm_size] && action[5 + 2 * comm_size])
                                      ? decode_datatype(action[5 + 2 * comm_size])
                                      : MPI_DEFAULT_TYPE};
