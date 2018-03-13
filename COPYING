@@ -3,7 +3,7 @@ Upstream-Name: SimGrid
 Source: https://gforge.inria.fr/frs/?group_id=12
 
 Files: *
-Copyright: 2003-2016. The SimGrid Team. All rights reserved.
+Copyright: 2003-2018. The SimGrid Team. All rights reserved.
 License: LGPL-2.1
 
 Files: src/xbt/snprintf.c
