@@ -117,6 +117,11 @@ public:
 
   bool isUsed() override;
   CpuAction *execution_start(double size) override;
+  simgrid::kernel::resource::Action* execution_start(double size, int requestedCores) override
+  {
+    THROW_UNIMPLEMENTED;
+    return nullptr;
+  }
   CpuAction *sleep(double duration) override;
   double getAvailableSpeed() override;
 

@@ -103,9 +103,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_daemonize(JNIEnv* env, jobje
   MSG_process_daemonize(process);
 }
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv * env, jclass cls, jint jresetPID)
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv* env, jclass cls)
 {
-  return (jint) MSG_process_killall((int) jresetPID);
+  return (jint)MSG_process_killall();
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jclass cls, jint pid)

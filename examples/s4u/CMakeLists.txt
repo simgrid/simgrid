@@ -1,4 +1,4 @@
-foreach (example actor-create actor-daemon actor-join actor-kill actor-kill-pid
+foreach (example actor-create actor-daemon actor-join actor-kill
                  actor-lifetime actor-migration actor-suspend actor-yield
                  app-chainsend app-masterworker app-pingpong app-token-ring
                  async-wait async-waitany async-waitall
@@ -85,7 +85,7 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-re
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-storage/s4u-replay-storage.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
-foreach(example actor-create actor-daemon actor-join actor-kill actor-kill-pid
+foreach(example actor-create actor-daemon actor-join actor-kill
                 actor-lifetime actor-migration actor-suspend actor-yield
                 app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring 
                 async-wait async-waitall async-waitany

@@ -74,7 +74,7 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
     return;
   switch (simcall->call) {
 case SIMCALL_PROCESS_KILLALL:
-  simcall_HANDLER_process_killall(simcall, simgrid::simix::unmarshal<int>(simcall->args[0]));
+  simcall_HANDLER_process_killall(simcall);
   SIMIX_simcall_answer(simcall);
   break;
 

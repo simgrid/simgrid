@@ -43,10 +43,13 @@ static void killer()
   simgrid::s4u::this_actor::sleep_for(2);
 
   XBT_INFO("Kill the victim A"); /* - and then kill it */
-  victimA->kill();
+  simgrid::s4u::Actor::kill(victimA->getPid()); // Kill by PID is legit
+
+  simgrid::s4u::this_actor::sleep_for(1);
 
   XBT_INFO("Kill victimB, even if it's already dead"); /* that's a no-op, there is no zombies in SimGrid */
-  victimB->kill();
+  victimB->kill(); // the actor is automatically garbage-collected after this last reference
+
   simgrid::s4u::this_actor::sleep_for(1);
 
   XBT_INFO("Killing everybody but myself");

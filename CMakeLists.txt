@@ -105,11 +105,11 @@ endif()
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "19")
-set(SIMGRID_VERSION_PATCH "0")
+set(SIMGRID_VERSION_MINOR "18")
+set(SIMGRID_VERSION_PATCH "90")
 set(SIMGRID_VERSION_EXTRA "-DEVEL") # Extra words to add to version string (e.g. -rc1)
 
-set(SIMGRID_VERSION_DATE  "2017") # Year for copyright information
+set(SIMGRID_VERSION_DATE  "2018") # Year for copyright information
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")

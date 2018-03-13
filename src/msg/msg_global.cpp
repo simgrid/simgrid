@@ -93,13 +93,10 @@ void MSG_config(const char *key, const char *value){
 /** \ingroup msg_simulation
  * \brief Kill all running process
 
- * \param reset_PIDs should we reset the PID numbers. A negative
- *   number means no reset and a positive number will be used to set the PID
- *   of the next newly created process.
  */
-int MSG_process_killall(int reset_PIDs)
+int MSG_process_killall()
 {
-  simcall_process_killall(reset_PIDs);
+  simcall_process_killall();
 
   return 0;
 }

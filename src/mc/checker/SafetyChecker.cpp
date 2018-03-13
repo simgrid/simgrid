@@ -245,7 +245,7 @@ void SafetyChecker::backtrack()
         } else {
 
           const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
-          XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independent",
+          XBT_DEBUG("Simcall %d, process %ld (state %d) and simcall %d, process %ld (state %d) are independent",
                     req->call, issuer->pid, state->num,
                     prev_state->internal_req.call,
                     previous_issuer->pid,

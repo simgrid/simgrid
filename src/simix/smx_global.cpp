@@ -282,7 +282,7 @@ void SIMIX_clean()
 #endif
 
   /* Kill all processes (but maestro) */
-  SIMIX_process_killall(simix_global->maestro_process, 1);
+  SIMIX_process_killall(simix_global->maestro_process);
   SIMIX_context_runall();
   SIMIX_process_empty_trash();
 
@@ -339,9 +339,9 @@ double SIMIX_get_clock()
 /** Wake up all processes waiting for a Surf action to finish */
 static void SIMIX_wake_processes()
 {
-  simgrid::kernel::resource::Action* action;
-
   for (auto const& model : *all_existing_models) {
+    simgrid::kernel::resource::Action* action;
+
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
@@ -661,12 +661,12 @@ void SIMIX_display_process_status()
       if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
+      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
                process->getCname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),
                process->waiting_synchro->name.c_str(), (int)process->waiting_synchro->state);
     }
     else {
-      XBT_INFO("Process %lu (%s@%s)", process->pid, process->getCname(), process->host->getCname());
+      XBT_INFO("Process %ld (%s@%s)", process->pid, process->getCname(), process->host->getCname());
     }
   }
 }

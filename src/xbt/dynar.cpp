@@ -444,7 +444,7 @@ extern "C" unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void* const el
     }
 
   THROWF(not_found_error, 0, "Element %p not part of dynar %p", elem, dynar);
-  return -1; // Won't happen, just to please eclipse
+  return 0; // Won't happen, just to please eclipse
 }
 
 /** @brief Returns the position of the element in the dynar (or -1 if not found)

@@ -3,6 +3,8 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  MSG
  - Fix MSG_task_get_remaining_work_ratio() to return 1.0 for tasks that have
    not started.
+ - Remove parameter of MSG_process_killall().
+   Resetting the PID was bogus anyway (several actors could have the same PID).
 
  Documentation
  - Use a graphical TOC to make it easier to find the documentation you need
@@ -38,6 +40,9 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
 
  TRACING
  - Remove unused run-time parameter "tracing/onelink-only".
+
+ Fixed bugs:
+ - #254: Something seems wrong with s4u::Actor::kill(aid_t)
 
 SimGrid (3.18) Released December 24 2017
 

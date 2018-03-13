@@ -306,7 +306,7 @@ void Request::sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int d
 {
   MPI_Request requests[2];
   MPI_Status stats[2];
-  unsigned int myid = simgrid::s4u::Actor::self()->getPid();
+  int myid = simgrid::s4u::Actor::self()->getPid();
   if ((comm->group()->actor(dst)->getPid() == myid) && (comm->group()->actor(src)->getPid() == myid)){
       Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
       if(status !=MPI_STATUS_IGNORE){

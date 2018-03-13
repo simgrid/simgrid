@@ -180,9 +180,9 @@ e_smx_state_t simcall_execution_test(smx_activity_t execution)
  * \ingroup simix_process_management
  * \brief Kills all SIMIX processes.
  */
-void simcall_process_killall(int reset_pid)
+void simcall_process_killall()
 {
-  simcall_BODY_process_killall(reset_pid);
+  simcall_BODY_process_killall();
 }
 
 /**

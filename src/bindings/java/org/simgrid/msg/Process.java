@@ -148,14 +148,10 @@ public abstract class Process implements Runnable {
 	/**
 	 * This method kills all running process of the simulation.
 	 *
-	 * @param resetPID		Should we reset the PID numbers. A negative number means no reset
-	 *						and a positive number will be used to set the PID of the next newly
-	 *						created process.
-	 *
 	 * @return				The function returns the PID of the next created process.
 	 *			
 	 */ 
-	public static native int killAll(int resetPID);
+	public static native int killAll();
 
 	/** Simply kills the receiving process.
 	 *

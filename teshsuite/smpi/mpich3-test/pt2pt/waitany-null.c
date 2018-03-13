@@ -11,8 +11,6 @@
 #endif
 #include "mpi.h"
 
-static int verbose = 0;
-
 int main(int argc, char *argv[]);
 int parse_args(int argc, char **argv);
 
@@ -74,12 +72,10 @@ int parse_args(int argc, char **argv)
      * {
      * switch (ret) {
      * case 'v':
-     * verbose = 1;
+     * verbose = 1; <-- never used, thus removed
      * break;
      * }
      * }
      */
-    if (argc > 1 && strcmp(argv[1], "-v") == 0)
-        verbose = 1;
     return 0;
 }
