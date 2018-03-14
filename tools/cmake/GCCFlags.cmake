@@ -84,6 +84,10 @@ if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
   # This is redundant (already in -03):
   set(optCFLAGS "${optCFLAGS} -finline-functions ")
 endif()
+if (CMAKE_C_COMPILER_ID MATCHES "Intel")
+  # honor parentheses when determining the order of expression evaluation.
+  set(optCFLAGS "${optCFLAGS} -fprotect-parens ")
+endif()
 
 # Do not leak the current directory into the binaries
 if(CMAKE_COMPILER_IS_GNUCC)
