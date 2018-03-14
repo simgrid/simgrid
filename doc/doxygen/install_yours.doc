@@ -22,9 +22,6 @@ documentation.
 Here is a `CMakeLists.txt` that you can use as a starting point for
 your project. It builds two simulators from a given set of source files.
 
-You first need to copy the `FindSimGrid.cmake` (at the root of the
-SimGrid tree) into the `cmake/Modules` directory of your project.
-
 @verbatim
 project(MyFirstScheduler)
 
@@ -42,6 +39,15 @@ set(OTHER_SOURCES blah.c bar.c foo.h)
 add_executable(other_xp ${OTHER_SOURCES})
 target_link_libraries(other_xp ${SimGrid_LIBRARY})
 @endverbatim
+
+For that, you need <a href="https://github.com/simgrid/simgrid/blob/master/FindSimGrid.cmake">FindSimGrid.cmake</a>,
+that is located at the root of the SimGrid tree. You can either copy
+this file into the `cmake/Modules` directory of your project, or use
+the version installed on the disk. Both solutions present advantages
+and drawback: if you copy the file, you have to keep it in sync
+manually but your project will produce relevant error messages when
+trying to compile on a machine where SimGrid is not installed. Please
+also refer to the file header for more information.
 
 @section install_yours_makefile Building your project with Makefile
 
