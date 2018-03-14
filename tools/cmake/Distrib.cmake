@@ -64,7 +64,6 @@ endif()
 foreach(file ${headers_to_install}  ${generated_headers_to_install})
   get_filename_component(location ${file} PATH)
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
-  string(REPLACE "src/" "include/simgrid/" location "${location}") # For kernel headers
   install(FILES ${file} DESTINATION ${location})
 endforeach()
 

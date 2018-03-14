@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/resource/Resource.hpp"
+#include "simgrid/kernel/resource/Resource.hpp"
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
 #include "src/surf/surf_interface.hpp"
 

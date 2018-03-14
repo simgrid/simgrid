@@ -6,7 +6,7 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_MODEL_HPP
 #define SIMGRID_KERNEL_RESOURCE_MODEL_HPP
 
-#include "src/kernel/resource/Action.hpp"
+#include <simgrid/kernel/resource/Action.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -94,7 +94,7 @@ private:
   heap_type actionHeap_;
 };
 
-} // namespace surf
-} // namespace simgrid
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid
 #endif

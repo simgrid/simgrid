@@ -64,9 +64,9 @@ protected:
                            kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                            std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical);
 };
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 extern "C" {
 XBT_PRIVATE xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char* name,

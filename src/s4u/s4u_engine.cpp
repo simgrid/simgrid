@@ -1,12 +1,13 @@
 /* s4u::Engine Simulation Engine and global functions. */
 
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
@@ -14,7 +15,6 @@
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/routing/NetPoint.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON

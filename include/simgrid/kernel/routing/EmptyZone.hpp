@@ -32,8 +32,8 @@ public:
   void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* /*nodes*/,
                 std::map<std::string, xbt_edge_t>* /*edges*/) override;
 };
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* SURF_ROUTING_NONE_HPP_ */

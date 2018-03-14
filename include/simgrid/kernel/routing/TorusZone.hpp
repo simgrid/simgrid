@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,7 +6,8 @@
 #ifndef SURF_ROUTING_CLUSTER_TORUS_HPP_
 #define SURF_ROUTING_CLUSTER_TORUS_HPP_
 
-#include "src/kernel/routing/ClusterZone.hpp"
+#include <simgrid/kernel/routing/ClusterZone.hpp>
+
 #include <vector>
 
 namespace simgrid {
@@ -28,7 +29,7 @@ public:
 private:
   std::vector<unsigned int> dimensions_;
 };
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 #endif

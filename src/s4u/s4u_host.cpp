@@ -9,11 +9,11 @@
 
 #include <map>
 
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
-#include "src/kernel/routing/NetPoint.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"

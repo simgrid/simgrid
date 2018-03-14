@@ -1,11 +1,11 @@
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/routing/ClusterZone.hpp"
-#include "src/kernel/routing/NetPoint.hpp"
-#include "src/kernel/routing/RoutedZone.hpp"
+#include "simgrid/kernel/routing/ClusterZone.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");

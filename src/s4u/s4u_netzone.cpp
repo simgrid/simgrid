@@ -5,10 +5,10 @@
 
 #include "xbt/log.h"
 
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/simix.hpp"
-#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");

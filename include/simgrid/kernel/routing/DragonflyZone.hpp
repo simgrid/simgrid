@@ -6,7 +6,7 @@
 #ifndef SURF_ROUTING_CLUSTER_DRAGONFLY_HPP_
 #define SURF_ROUTING_CLUSTER_DRAGONFLY_HPP_
 
-#include "src/kernel/routing/ClusterZone.hpp"
+#include <simgrid/kernel/routing/ClusterZone.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -84,7 +84,7 @@ private:
   unsigned int numLinksperLink_     = 1; // splitduplex -> 2, only for local link
   DragonflyRouter** routers_        = nullptr;
 };
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 #endif

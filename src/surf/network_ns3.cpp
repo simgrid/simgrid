@@ -21,12 +21,11 @@
 #include "network_ns3.hpp"
 #include "ns3/ns3_simulator.hpp"
 
-#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
-#include "src/kernel/routing/NetPoint.hpp"
-
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
+#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 

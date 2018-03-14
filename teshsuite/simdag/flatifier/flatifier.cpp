@@ -1,16 +1,14 @@
-/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt/xbt_os_time.h>
 
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-
 #include "simgrid/simdag.h"
-
-#include "src/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include <algorithm>

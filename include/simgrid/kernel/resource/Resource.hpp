@@ -25,7 +25,7 @@ public:
    * @param name The name of the Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(Model * model, const std::string& name, lmm::Constraint* constraint);
+  Resource(Model* model, const std::string& name, lmm::Constraint* constraint);
 
   virtual ~Resource();
 

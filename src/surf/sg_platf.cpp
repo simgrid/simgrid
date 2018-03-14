@@ -15,17 +15,17 @@
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 
-#include "src/kernel/routing/ClusterZone.hpp"
-#include "src/kernel/routing/DijkstraZone.hpp"
-#include "src/kernel/routing/DragonflyZone.hpp"
-#include "src/kernel/routing/EmptyZone.hpp"
-#include "src/kernel/routing/FatTreeZone.hpp"
-#include "src/kernel/routing/FloydZone.hpp"
-#include "src/kernel/routing/FullZone.hpp"
-#include "src/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/ClusterZone.hpp"
+#include "simgrid/kernel/routing/DijkstraZone.hpp"
+#include "simgrid/kernel/routing/DragonflyZone.hpp"
+#include "simgrid/kernel/routing/EmptyZone.hpp"
+#include "simgrid/kernel/routing/FatTreeZone.hpp"
+#include "simgrid/kernel/routing/FloydZone.hpp"
+#include "simgrid/kernel/routing/FullZone.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/TorusZone.hpp"
+#include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "src/kernel/routing/NetZoneImpl.hpp"
-#include "src/kernel/routing/TorusZone.hpp"
-#include "src/kernel/routing/VivaldiZone.hpp"
 #include <string>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,7 +6,8 @@
 #ifndef SURF_ROUTING_VIVALDI_HPP_
 #define SURF_ROUTING_VIVALDI_HPP_
 
-#include "src/kernel/routing/ClusterZone.hpp"
+#include <simgrid/kernel/routing/ClusterZone.hpp>
+#include <xbt/Extendable.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -60,9 +61,9 @@ public:
 
   std::vector<double> coords;
 };
-}
-}
-}
-} // namespace
+} // namespace vivaldi
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* SURF_ROUTING_VIVALDI_HPP_ */

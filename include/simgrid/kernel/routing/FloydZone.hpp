@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,7 +6,7 @@
 #ifndef SURF_ROUTING_FLOYD_HPP_
 #define SURF_ROUTING_FLOYD_HPP_
 
-#include "src/kernel/routing/RoutedZone.hpp"
+#include <simgrid/kernel/routing/RoutedZone.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -38,8 +38,8 @@ private:
   double* costTable_;
   RouteCreationArgs** linkTable_;
 };
-}
-}
-} // namespaces
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* SURF_ROUTING_FLOYD_HPP_ */

@@ -297,24 +297,6 @@ endif()
 set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cpp )
 
-set(KERNEL_HEADERS
-  src/kernel/resource/Action.hpp
-  src/kernel/resource/Model.hpp
-  src/kernel/resource/Resource.hpp
-
-  src/kernel/routing/ClusterZone.hpp
-  src/kernel/routing/DijkstraZone.hpp
-  src/kernel/routing/DragonflyZone.hpp
-  src/kernel/routing/EmptyZone.hpp
-  src/kernel/routing/FatTreeZone.hpp
-  src/kernel/routing/FloydZone.hpp
-  src/kernel/routing/FullZone.hpp
-  src/kernel/routing/NetPoint.hpp
-  src/kernel/routing/RoutedZone.hpp
-  src/kernel/routing/TorusZone.hpp
-  src/kernel/routing/VivaldiZone.hpp  
-)
-
 set(SURF_SRC
   src/kernel/lmm/fair_bottleneck.cpp
   src/kernel/lmm/lagrange.cpp
@@ -678,7 +660,6 @@ set(MC_SRC
 set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
-  ${KERNEL_HEADERS}
 
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
@@ -712,6 +693,23 @@ set(headers_to_install
   include/simgrid/s4u/Storage.hpp  
   include/simgrid/s4u/VirtualMachine.hpp  
   include/simgrid/s4u.hpp
+
+  include/simgrid/kernel/resource/Action.hpp
+  include/simgrid/kernel/resource/Model.hpp
+  include/simgrid/kernel/resource/Resource.hpp
+
+  include/simgrid/kernel/routing/ClusterZone.hpp
+  include/simgrid/kernel/routing/DijkstraZone.hpp
+  include/simgrid/kernel/routing/DragonflyZone.hpp
+  include/simgrid/kernel/routing/EmptyZone.hpp
+  include/simgrid/kernel/routing/FatTreeZone.hpp
+  include/simgrid/kernel/routing/FloydZone.hpp
+  include/simgrid/kernel/routing/FullZone.hpp
+  include/simgrid/kernel/routing/NetPoint.hpp
+  include/simgrid/kernel/routing/RoutedZone.hpp
+  include/simgrid/kernel/routing/TorusZone.hpp
+  include/simgrid/kernel/routing/VivaldiZone.hpp  
+
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_main.h

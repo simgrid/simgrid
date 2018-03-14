@@ -59,7 +59,7 @@ public:
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    */
-  Action(simgrid::kernel::resource::Model * model, double cost, bool failed);
+  Action(simgrid::kernel::resource::Model* model, double cost, bool failed);
 
   /**
    * @brief Action constructor
@@ -69,7 +69,7 @@ public:
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  Action(simgrid::kernel::resource::Model * model, double cost, bool failed, kernel::lmm::Variable* var);
+  Action(simgrid::kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var);
 
   virtual ~Action();
 
@@ -189,12 +189,12 @@ private:
 
 public:
   virtual void updateRemainingLazy(double now) { THROW_IMPOSSIBLE; };
-  void heapInsert(heap_type & heap, double key, Action::Type hat);
-  void heapRemove(heap_type & heap);
-  void heapUpdate(heap_type & heap, double key, Action::Type hat);
+  void heapInsert(heap_type& heap, double key, Action::Type hat);
+  void heapRemove(heap_type& heap);
+  void heapUpdate(heap_type& heap, double key, Action::Type hat);
   void clearHeapHandle() { heapHandle_ = boost::none; }
   kernel::lmm::Variable* getVariable() const { return variable_; }
-  void setVariable(kernel::lmm::Variable * var) { variable_ = var; }
+  void setVariable(kernel::lmm::Variable* var) { variable_ = var; }
   double getLastUpdate() const { return lastUpdate_; }
   void refreshLastUpdate() { lastUpdate_ = surf_get_clock(); }
   double getLastValue() const { return lastValue_; }
@@ -208,7 +208,7 @@ protected:
 typedef Action::ActionList ActionList;
 typedef Action::ActionLmmList ActionLmmList;
 typedef Action::ActionLmmList* ActionLmmListPtr;
-} // namespace surf
-} // namespace simgrid
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid
 #endif

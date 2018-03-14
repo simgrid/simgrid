@@ -10,7 +10,7 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
-#include "src/kernel/routing/NetZoneImpl.hpp"
+#include <src/kernel/routing/NetZoneImpl.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -50,9 +50,9 @@ private:
   NetPoint::Type componentType_;
   NetZoneImpl* netzone_;
 };
-}
-}
-}
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 XBT_PUBLIC sg_netpoint_t sg_netpoint_by_name_or_null(const char* name);
 

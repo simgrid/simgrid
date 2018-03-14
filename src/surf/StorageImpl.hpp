@@ -7,12 +7,13 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
+#include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/kernel/resource/Model.hpp"
+#include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "src/kernel/resource/Action.hpp"
-#include "src/kernel/resource/Model.hpp"
-#include "src/kernel/resource/Resource.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include "surf_interface.hpp"
+
 #include <map>
 
 #ifndef STORAGE_INTERFACE_HPP_

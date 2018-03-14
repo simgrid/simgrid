@@ -6,9 +6,9 @@
 #ifndef SIMGRID_ROUTING_CLUSTER_HPP_
 #define SIMGRID_ROUTING_CLUSTER_HPP_
 
-#include <unordered_map>
+#include <src/kernel/routing/NetZoneImpl.hpp>
 
-#include "src/kernel/routing/NetZoneImpl.hpp"
+#include <unordered_map>
 
 namespace simgrid {
 namespace kernel {
@@ -94,8 +94,8 @@ public:
   bool hasLoopback_              = false;
   unsigned int linkCountPerNode_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 };
-}
-}
-} // namespace
+} // namespace routing
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* SIMGRID_ROUTING_CLUSTER_HPP_ */

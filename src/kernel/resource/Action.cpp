@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/resource/Action.hpp"
+#include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/kernel/resource/Model.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/kernel/resource/Model.hpp"
 
 XBT_LOG_NEW_CATEGORY(kernel, "Logging specific to the internals of SimGrid");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(resource, kernel, "Logging specific to the resources");
