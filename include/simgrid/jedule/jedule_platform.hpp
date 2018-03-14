@@ -20,7 +20,7 @@ namespace simgrid {
 namespace jedule{
 class XBT_PUBLIC Container {
 public:
-  Container(std::string name);
+  explicit Container(std::string name);
   virtual ~Container();
 private:
   int last_id;
