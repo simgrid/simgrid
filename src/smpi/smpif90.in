@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 
-# Copyright (c) 2012-2017. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -35,6 +34,8 @@ filter_and_compile() {
     list_add CMDLINE "${SRCFILE}"
 }
 
+NEEDS_OUTPUT=1
+
 list_set CMDLINE "${F90}"
 list_add_not_empty CMDLINE "${FFLAGS}"
 while [ $# -gt 0 ]; do
@@ -47,10 +48,12 @@ while [ $# -gt 0 ]; do
             list_add CMDLINE "-c"
             ;;
         *.f90)
+            ORIGFILE="${ARG%.f90}"
             TMPFILE=$(mymktemp "${ARG}" ".f90")
             filter_and_compile
             ;;
         *.F90)
+            ORIGFILE="${ARG%.F90}"
             TMPFILE=$(mymktemp "${ARG}" ".F90")
             filter_and_compile
             ;;
@@ -67,6 +70,7 @@ while [ $# -gt 0 ]; do
             ;;
         -o)
             list_add CMDLINE "-o$1"
+            NEEDS_OUTPUT=0
             shift
             ;;
         *)
@@ -74,6 +78,11 @@ while [ $# -gt 0 ]; do
             ;;
     esac
 done
+
+
+if [ $NEEDS_OUTPUT -ne 0 ]; then
+   list_add CMDLINE "-o${ORIGFILE}.o"
+fi
 
 list_add_not_empty CMDLINE ${INCLUDEARGS}
 list_add_not_empty CMDLINE ${CMAKE_LINKARGS}
