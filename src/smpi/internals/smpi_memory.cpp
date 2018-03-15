@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -117,9 +117,9 @@ void smpi_really_switch_data_segment(int dest)
 
 #if HAVE_PRIVATIZATION
   // FIXME, cross-process support (mmap across process when necessary)
+  XBT_DEBUG("Switching data frame to the one of process %d", dest);
   simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::byPid(dest));
   int current                     = process->privatized_region()->file_descriptor;
-  XBT_DEBUG("Switching data frame to the one of process %d", dest);
   void* tmp =
       mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_data_exe_start))
