@@ -34,8 +34,7 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/c
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/privatization/privatization_dlopen.tesh                             PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh                                       PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
@@ -120,9 +119,8 @@ if(enable_smpi)
 
   # Simple privatization tests
   if(HAVE_PRIVATIZATION)
-    ADD_TESH_FACTORIES(tesh-smpi-privatization-mmap  "thread;ucontext;raw;boost"   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization privatization.tesh)
+    foreach(PRIVATIZATION dlopen mmap)
+      ADD_TESH_FACTORIES(tesh-smpi-privatization-${PRIVATIZATION}  "thread;ucontext;raw;boost" --setenv privatization=${PRIVATIZATION} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization privatization.tesh)
+    endforeach()
   endif()
-
-    ADD_TESH_FACTORIES(tesh-smpi-privatization-dlopen  "thread;ucontext;raw;boost"   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/privatization --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/privatization privatization_dlopen.tesh)
-
 endif()
