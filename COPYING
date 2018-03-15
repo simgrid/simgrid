@@ -82,36 +82,36 @@ License: GPL-2+ and LGPL-2.1
 Comment: Generated with the FleXML XML processor generator (which is GPL-2+) using SimGrid configuration files (that are LGPL-2.1)
 
 Files:
- src/smpi/colls/allgather-2dmesh.c
- src/smpi/colls/allgather-3dmesh.c
- src/smpi/colls/allgather-bruck.c
- src/smpi/colls/allgather-pair.c
- src/smpi/colls/allgather-ring.c
- src/smpi/colls/allgather-spreading-simple.c
- src/smpi/colls/allgatherv-pair.c
- src/smpi/colls/allgatherv-ring.c
- src/smpi/colls/alltoall-2dmesh.c
- src/smpi/colls/alltoall-3dmesh.c
- src/smpi/colls/alltoall-pair.c
- src/smpi/colls/alltoall-pair-light-barrier.c
- src/smpi/colls/alltoall-pair-mpi-barrier.c
- src/smpi/colls/alltoall-pair-one-barrier.c
- src/smpi/colls/alltoall-rdb.c
- src/smpi/colls/alltoall-ring.c
- src/smpi/colls/alltoall-ring-light-barrier.c
- src/smpi/colls/alltoall-ring-mpi-barrier.c
- src/smpi/colls/alltoall-ring-one-barrier.c
- src/smpi/colls/alltoallv-pair.c
- src/smpi/colls/alltoallv-pair-light-barrier.c
- src/smpi/colls/alltoallv-pair-mpi-barrier.c
- src/smpi/colls/alltoallv-pair-one-barrier.c
- src/smpi/colls/alltoallv-ring.c
- src/smpi/colls/alltoallv-ring-light-barrier.c
- src/smpi/colls/alltoallv-ring-mpi-barrier.c
- src/smpi/colls/alltoallv-ring-one-barrier.c
- src/smpi/colls/bcast-binomial-tree.c
- src/smpi/colls/bcast-scatter-LR-allgather.c
- src/smpi/colls/bcast-scatter-rdb-allgather.c
+ src/smpi/colls/allgather/allgather-2dmesh.c
+ src/smpi/colls/allgather/allgather-3dmesh.c
+ src/smpi/colls/allgather/allgather-bruck.c
+ src/smpi/colls/allgather/allgather-pair.c
+ src/smpi/colls/allgather/allgather-ring.c
+ src/smpi/colls/allgather/allgather-spreading-simple.c
+ src/smpi/colls/allgatherv/allgatherv-pair.c
+ src/smpi/colls/allgatherv/allgatherv-ring.c
+ src/smpi/colls/alltoall/alltoall-2dmesh.c
+ src/smpi/colls/alltoall/alltoall-3dmesh.c
+ src/smpi/colls/alltoall/alltoall-pair.c
+ src/smpi/colls/alltoall/alltoall-pair-light-barrier.c
+ src/smpi/colls/alltoall/alltoall-pair-mpi-barrier.c
+ src/smpi/colls/alltoall/alltoall-pair-one-barrier.c
+ src/smpi/colls/alltoall/alltoall-rdb.c
+ src/smpi/colls/alltoall/alltoall-ring.c
+ src/smpi/colls/alltoall/alltoall-ring-light-barrier.c
+ src/smpi/colls/alltoall/alltoall-ring-mpi-barrier.c
+ src/smpi/colls/alltoall/alltoall-ring-one-barrier.c
+ src/smpi/colls/alltoallv/alltoallv-pair.c
+ src/smpi/colls/alltoallv/alltoallv-pair-light-barrier.c
+ src/smpi/colls/alltoallv/alltoallv-pair-mpi-barrier.c
+ src/smpi/colls/alltoallv/alltoallv-pair-one-barrier.c
+ src/smpi/colls/alltoallv/alltoallv-ring.c
+ src/smpi/colls/alltoallv/alltoallv-ring-light-barrier.c
+ src/smpi/colls/alltoallv/alltoallv-ring-mpi-barrier.c
+ src/smpi/colls/alltoallv/alltoallv-ring-one-barrier.c
+ src/smpi/colls/bcast/bcast-binomial-tree.c
+ src/smpi/colls/bcast/bcast-scatter-LR-allgather.c
+ src/smpi/colls/bcast/bcast-scatter-rdb-allgather.c
 Copyright: Copyright (c) 2006, Ahmad Faraj & Xin Yuan
 License: BSD-3-clause
  Redistribution and use in source and binary forms, with or without
@@ -142,27 +142,18 @@ License: BSD-3-clause
 Comment: Borrowed from StarMPI.
 
 Files:
- src/smpi/colls/allgather-mvapich-smp.c
- src/smpi/colls/allgatherv-ompi-bruck.c
- src/smpi/colls/allgatherv-mpich-ring.c
- src/smpi/colls/allreduce-mvapich-two-level.c
- src/smpi/colls/allreduce-ompi-ring-segmented.c
- src/smpi/colls/alltoall-mvapich-scatter-dest.c
- src/smpi/colls/allreduce-mvapich-rs.c
- src/smpi/colls/barrier-mvapich2-pair.c
- src/smpi/colls/barrier-ompi.c
- src/smpi/colls/bcast-mvapich-smp.c
- src/smpi/colls/bcast-ompi-split-bintree.c
+ src/smpi/colls/allgather/allgather-mvapich-smp.c
+ src/smpi/colls/allreduce/allreduce-mvapich-two-level.c
+ src/smpi/colls/alltoall/alltoall-mvapich-scatter-dest.c
+ src/smpi/colls/allreduce/allreduce-mvapich-rs.c
+ src/smpi/colls/barrier/barrier-mvapich2-pair.c
+ src/smpi/colls/bcast/bcast-mvapich-smp.c
  src/smpi/colls/coll_tuned_topo.c
  src/smpi/colls/coll_tuned_topo.h
- src/smpi/colls/gather-mvapich.c
- src/smpi/colls/gather-ompi.c
- src/smpi/colls/reduce-mvapich-knomial.c
- src/smpi/colls/reduce-mvapich-two-level.c
- src/smpi/colls/reduce-ompi.c
- src/smpi/colls/reduce_scatter-ompi.c
- src/smpi/colls/scatter-mvapich-two-level.c
- src/smpi/colls/scatter-ompi.c
+ src/smpi/colls/gather/gather-mvapich.c
+ src/smpi/colls/reduce/reduce-mvapich-knomial.c
+ src/smpi/colls/reduce/reduce-mvapich-two-level.c
+ src/smpi/colls/scatter/scatter-mvapich-two-level.c
 Copyright:
  Copyright (c) 2001 by Argonne National Laboratory.
  Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana University Research and Technology Corporation.  All rights reserved.
@@ -173,7 +164,55 @@ Copyright:
 License: BSD-3-clause
 Comment: Borrowed from MVAPICH2.
 
-Files: src/smpi/colls/reduce-rab.c
+ src/smpi/colls/allgatherv/allgatherv-ompi-bruck.c
+ src/smpi/colls/allreduce/allreduce-ompi-ring-segmented.c
+ src/smpi/colls/barrier/barrier-ompi.c
+ src/smpi/colls/gather/gather-ompi.c
+ src/smpi/colls/reduce/reduce-ompi.c
+ src/smpi/colls/bcast/bcast-ompi-split-bintree.c
+ src/smpi/colls/scatter/scatter-ompi.c
+ src/smpi/colls/reduce_scatter/reduce_scatter-ompi.c
+ src/smpi/colls/reduce_scatter/reduce_scatter-ompi.c
+Copyright:
+ Copyright (c) 2004-2010 The Trustees of Indiana University and Indiana University Research and Technology Corporation.  All rights reserved.
+ Copyright (c) 2004-2010 The University of Tennessee and The University of Tennessee Research Foundation.  All rights reserved.
+ Copyright (c) 2004-2010 High Performance Computing Center Stuttgart, University of Stuttgart.  All rights reserved.
+ Copyright (c) 2004-2008 The Regents of the University of California. All rights reserved.
+ Copyright (c) 2006-2010 Los Alamos National Security, LLC.  All rights reserved.
+ Copyright (c) 2006-2010 Cisco Systems, Inc.  All rights reserved.
+ Copyright (c) 2006-2010 Voltaire, Inc. All rights reserved.
+ Copyright (c) 2006-2011 Sandia National Laboratories. All rights reserved.
+ Copyright (c) 2006-2010 Sun Microsystems, Inc.  All rights reserved. Use is subject to license terms.
+ Copyright (c) 2006-2010 The University of Houston. All rights reserved.
+ Copyright (c) 2006-2009 Myricom, Inc.  All rights reserved.
+ Copyright (c) 2007-2008 UT-Battelle, LLC. All rights reserved.
+ Copyright (c) 2007-2010 IBM Corporation.  All rights reserved.
+ Copyright (c) 1998-2005 Forschungszentrum Juelich, Juelich Supercomputing Centre, Federal Republic of Germany
+ Copyright (c) 2005-2008 ZIH, TU Dresden, Federal Republic of Germany
+ Copyright (c) 2007      Evergrid, Inc. All rights reserved.
+ Copyright (c) 2008      Chelsio, Inc.  All rights reserved.
+ Copyright (c) 2008-2009 Institut National de Recherche en Informatique.  All rights reserved.
+ Copyright (c) 2007      Lawrence Livermore National Security, LLC. All rights reserved.
+ Copyright (c) 2007-2009 Mellanox Technologies.  All rights reserved.
+ Copyright (c) 2006-2010 QLogic Corporation.  All rights reserved.
+ Copyright (c) 2008-2010 Oak Ridge National Labs.  All rights reserved.
+ Copyright (c) 2006-2010 Oracle and/or its affiliates.  All rights reserved.
+ Copyright (c) 2009      Bull SAS.  All rights reserved.
+ Copyright (c) 2010      ARM ltd.  All rights reserved.
+ Copyright (c) 2010-2011 Alex Brick <bricka@ccs.neu.edu>.  All rights reserved.
+ Copyright (c) 2012      The University of Wisconsin-La Crosse. All rights reserved.
+Comment: Borrowed from OpenMPI.
+
+Files:
+ src/smpi/colls/allgatherv/allgatherv-mpich-ring.cpp
+ src/smpi/colls/allgatherv/allgatherv-mpich-rdb.cpp
+ src/smpi/colls/reduce_scatter/reduce_scatter-mpich.cpp
+ teshsuite/smpi/mpich3/*
+Copyright:
+ 2002 University of Chicago 
+Comment: Borrowed from MPICH2.
+
+Files: src/smpi/colls/reduce/reduce-rab.c
 Copyright: 1997, Rolf Rabenseifner. Computing Center University of Stuttgart
 License: other
  The usage of this software is free, but this header must not be removed.
