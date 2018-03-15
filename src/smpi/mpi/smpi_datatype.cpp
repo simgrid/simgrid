@@ -97,8 +97,8 @@ CREATE_MPI_DATATYPE(MPI_PTR, void*);
 namespace simgrid{
 namespace smpi{
 
-std::unordered_map<int, smpi_key_elem> Datatype::keyvals_;
-int Datatype::keyval_id_=0;
+std::unordered_map<int, smpi_key_elem> Datatype::keyvals_; // required by the Keyval class implementation
+int Datatype::keyval_id_=0; // required by the Keyval class implementation
 
 Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
 #if SIMGRID_HAVE_MC
