@@ -214,11 +214,11 @@ public:
   s4u::Host* getHost();
   /** Retrieves the PID of that actor
    *
-   * actor_id_t is an alias for unsigned long */
+   * aid_t is an alias for long */
   aid_t getPid();
   /** Retrieves the PPID of that actor
    *
-   * actor_id_t is an alias for unsigned long */
+   * aid_t is an alias for long */
   aid_t getPpid();
 
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
