@@ -117,7 +117,7 @@ void smpi_really_switch_data_segment(int dest)
 
 #if HAVE_PRIVATIZATION
   // FIXME, cross-process support (mmap across process when necessary)
-  simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::byPid(dest+1));
+  simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::byPid(dest));
   int current                     = process->privatized_region()->file_descriptor;
   XBT_DEBUG("Switching data frame to the one of process %d", dest);
   void* tmp =
