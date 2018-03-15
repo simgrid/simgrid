@@ -148,7 +148,7 @@ XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
 
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
 
-extern void (*SMPI_switch_data_segment)(int dest);
+extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 }
 
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);

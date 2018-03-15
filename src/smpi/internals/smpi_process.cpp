@@ -262,12 +262,11 @@ void Process::init(int *argc, char ***argv){
     // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
     // this up here so that I can set the privatized region before the switch.
     Process* process = smpi_process_remote(proc);
-    int my_proc_id   = proc->getPid();
     if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
       /* Now using the segment index of this process  */
       process->set_privatized_region(smpi_init_global_memory_segment_process());
       /* Done at the process's creation */
-      SMPI_switch_data_segment(my_proc_id);
+      SMPI_switch_data_segment(proc);
     }
 
     process->set_data(argc, argv);

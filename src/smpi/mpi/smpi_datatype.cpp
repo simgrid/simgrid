@@ -1,5 +1,5 @@
 /* smpi_datatype.cpp -- MPI primitives to handle datatypes                  */
-/* Copyright (c) 2009-2017. The SimGrid Team.  All rights reserved.         */
+/* Copyright (c) 2009-2018. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -277,7 +277,7 @@ int Datatype::copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 // FIXME Handle the case of a partial shared malloc.
 
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){
-    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
   /* First check if we really have something to do */
   if (recvcount > 0 && recvbuf != sendbuf) {

@@ -749,7 +749,7 @@ void SIMIX_process_yield(smx_actor_t self)
   }
 
   if (SMPI_switch_data_segment && not self->finished) {
-    SMPI_switch_data_segment(self->pid);
+    SMPI_switch_data_segment(self->iface());
   }
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -114,7 +114,7 @@ void Client::handleSimcall(s_mc_message_simcall_handle_t* message)
 void Client::handleRestore(s_mc_message_restore_t* message)
 {
 #if HAVE_SMPI
-  smpi_really_switch_data_segment(message->index);
+  smpi_really_switch_data_segment(simgrid::s4u::Actor::byPid(message->index));
 #endif
 }
 void Client::handleActorEnabled(s_mc_message_actor_enabled_t* msg)

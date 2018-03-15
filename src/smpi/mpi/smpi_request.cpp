@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -413,7 +413,7 @@ void Request::start()
           if ((smpi_privatize_global_variables != 0) && (static_cast<char*>(buf_) >= smpi_data_exe_start) &&
               (static_cast<char*>(buf_) < smpi_data_exe_start + smpi_data_exe_size)) {
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
-            smpi_switch_data_segment(src_);
+            smpi_switch_data_segment(simgrid::s4u::Actor::byPid(src_));
           }
           buf = xbt_malloc(size_);
           memcpy(buf,oldbuf,size_);
@@ -708,7 +708,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
           static_cast<char*>(req->old_buf_) >= smpi_data_exe_start &&
           static_cast<char*>(req->old_buf_) < smpi_data_exe_start + smpi_data_exe_size) {
         XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
-        smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
+        smpi_switch_data_segment(simgrid::s4u::Actor::self());
       }
 
       if(datatype->flags() & DT_FLAG_DERIVED){

@@ -89,8 +89,8 @@ extern XBT_PRIVATE int smpi_data_exe_size;    // size of the data+bss segment of
 enum shared_malloc_type { shmalloc_none, shmalloc_local, shmalloc_global };
 extern XBT_PRIVATE shared_malloc_type smpi_cfg_shared_malloc; // Whether to activate shared malloc
 
-XBT_PRIVATE void smpi_switch_data_segment(int dest);
-XBT_PRIVATE void smpi_really_switch_data_segment(int dest);
+XBT_PRIVATE void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor);
+XBT_PRIVATE void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_is_privatization_file(char* file);
 
 XBT_PRIVATE void smpi_get_executable_global_size();

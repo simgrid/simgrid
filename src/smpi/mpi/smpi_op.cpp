@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -242,7 +242,7 @@ void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
 {
   if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP){//we need to switch as the called function may silently touch global variables
     XBT_DEBUG("Applying operation, switch to the right data frame ");
-    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
 
   if (not smpi_process()->replaying() && *len > 0) {

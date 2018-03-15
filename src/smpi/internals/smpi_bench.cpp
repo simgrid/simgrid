@@ -47,7 +47,7 @@ void smpi_execute_flops(double flops) {
   smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->process()->getHost());
   simcall_set_category (action, TRACE_internal_smpi_get_category());
   simcall_execution_wait(action);
-  smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
+  smpi_switch_data_segment(simgrid::s4u::Actor::self());
 }
 
 void smpi_execute(double duration)
@@ -79,7 +79,7 @@ void smpi_execute_benched(double duration)
 void smpi_bench_begin()
 {
   if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
-    smpi_switch_data_segment(simgrid::s4u::Actor::self()->getPid());
+    smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
 
   if (MC_is_active() || MC_record_replay_is_active())

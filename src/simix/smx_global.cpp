@@ -68,7 +68,7 @@ public:
   s_smx_timer_t(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
 };
 
-void (*SMPI_switch_data_segment)(int) = nullptr;
+void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
 int _sg_do_verbose_exit = 1;
 static void inthandler(int)
