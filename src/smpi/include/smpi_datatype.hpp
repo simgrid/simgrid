@@ -130,6 +130,8 @@ public:
   static int create_subarray(int ndims, int* array_of_sizes,
                              int* array_of_subsizes, int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype);
+  static int create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent,
+                             MPI_Datatype *newtype);
   static Datatype* f2c(int id);
 };
 

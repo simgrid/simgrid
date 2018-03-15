@@ -263,14 +263,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
   if (oldtype == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   }
-  int blocks[3]         = {1, 1, 1};
-  MPI_Aint disps[3]     = {lb, 0, lb + extent};
-  MPI_Datatype types[3] = {MPI_LB, oldtype, MPI_UB};
-
-  *newtype = new simgrid::smpi::Type_Struct(oldtype->size(), lb, lb + extent, DT_FLAG_DERIVED, 3, blocks, disps, types);
-
-  (*newtype)->addflag(~DT_FLAG_COMMITED);
-  return MPI_SUCCESS;
+  return simgrid::smpi::Datatype::create_resized(oldtype, lb, extent, newtype);
 }
 
 

@@ -526,15 +526,15 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
       step = 1;
       end = ndims;
   }
+  
+  MPI_Aint size = (MPI_Aint)array_of_sizes[i] * (MPI_Aint)array_of_sizes[i+step];
+  MPI_Aint lb = (MPI_Aint)array_of_starts[i] + (MPI_Aint)array_of_starts[i+step] *(MPI_Aint)array_of_sizes[i];
 
   create_vector( array_of_subsizes[i+step], array_of_subsizes[i], array_of_sizes[i],
                                oldtype, newtype );
 
   tmp = *newtype;
-  MPI_Aint size = (MPI_Aint)array_of_sizes[i] * (MPI_Aint)array_of_sizes[i+step];
-  MPI_Aint lb = (MPI_Aint)array_of_starts[i] + (MPI_Aint)array_of_starts[i+step] *(MPI_Aint)array_of_sizes[i];
-  
-  
+
   for( i += 2 * step; i != end; i += step ) {
       create_hvector( array_of_subsizes[i], 1, size * extent,
                                     tmp, newtype );
@@ -546,7 +546,7 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
 
   MPI_Aint lbs[1] = {lb * extent};
   int sizes [1]={1};
-  
+  //handle LB and UB with a resized call
   create_hindexed( 1, sizes, lbs, tmp, newtype);
   unref(tmp);
   
@@ -556,6 +556,18 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
   unref(tmp);
   return MPI_SUCCESS;
 }
+
+int Datatype::create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
+  int blocks[3]         = {1, 1, 1};
+  MPI_Aint disps[3]     = {lb, 0, lb + extent};
+  MPI_Datatype types[3] = {MPI_LB, oldtype, MPI_UB};
+
+  *newtype = new simgrid::smpi::Type_Struct(oldtype->size(), lb, lb + extent, DT_FLAG_DERIVED, 3, blocks, disps, types);
+
+  (*newtype)->addflag(~DT_FLAG_COMMITED);
+  return MPI_SUCCESS;
+}
+
 Datatype* Datatype::f2c(int id){
   return static_cast<Datatype*>(F2C::f2c(id));
 }
