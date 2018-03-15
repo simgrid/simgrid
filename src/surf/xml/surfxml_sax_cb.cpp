@@ -383,7 +383,7 @@ void STag_surfxml_platform() {
   if (version < 4.1) {
     XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
              "That's fine, the new version is backward compatible. \n\n"
-             "Use simgrid_update_xml to update your file automatically to get ride of this warning. "
+             "Use simgrid_update_xml to update your file automatically to get rid of this warning. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
              version, surf_parsed_filename);
