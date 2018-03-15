@@ -21,7 +21,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 #  add_executable(typename3f typename3f.f)
 #  add_executable(typenamef typenamef.f)
 #  add_executable(typesnamef typesnamef.f)
-#  add_executable(typesubf typesubf.f)
+  add_executable(typesubf typesubf.f)
 
 #  target_link_libraries(allctypesf simgrid mtest_f77)
   target_link_libraries(gaddressf simgrid mtest_f77)
@@ -33,7 +33,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 #  target_link_libraries(typename3f simgrid mtest_f77)
 #  target_link_libraries(typenamef simgrid mtest_f77)
 #  target_link_libraries(typesnamef simgrid mtest_f77)
-#  target_link_libraries(typesubf simgrid mtest_f77)
+  target_link_libraries(typesubf simgrid mtest_f77)
 endif()
 
 set(examples_src

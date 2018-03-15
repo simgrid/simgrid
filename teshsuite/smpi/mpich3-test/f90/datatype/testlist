@@ -4,7 +4,7 @@
 #typesnamef90 1
 #typecntsf90 1
 #typem2f90 1
-#typesubf90 1
+typesubf90 1
 #packef90 1
 gaddressf90 1
 #allctypesf90 1

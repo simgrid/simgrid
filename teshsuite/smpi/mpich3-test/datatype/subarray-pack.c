@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int verbose = 0;
+static int verbose = 1;
 
 /* tests */
 int subarray_1d_c_test1(void);
