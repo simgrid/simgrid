@@ -497,6 +497,65 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
   return MPI_SUCCESS;
 }
 
+int Datatype::create_subarray(int ndims, int* array_of_sizes,
+                             int* array_of_subsizes, int* array_of_starts,
+                             int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
+
+  int i, step, end;
+  MPI_Datatype tmp;
+  
+  for (i=0; i < ndims; i++) {
+    if (array_of_subsizes[i] > array_of_sizes[i]){
+      XBT_WARN("subarray : array_of_subsizes > array_of_sizes for dim %d\n",i);
+      return MPI_ERR_ARG;
+    }
+    if (array_of_starts[i] + array_of_subsizes[i] > array_of_sizes[i]){
+      XBT_WARN("subarray : array_of_starts + array_of_subsizes > array_of_sizes for dim %d\n",i);
+      return MPI_ERR_ARG;
+    }
+  }
+  
+  MPI_Aint extent = oldtype->get_extent();
+  
+  if( order==MPI_ORDER_C ) {
+      i = ndims - 1;
+      step = -1;
+      end = -1;
+  } else {
+      i = 0;
+      step = 1;
+      end = ndims;
+  }
+
+  create_vector( array_of_subsizes[i+step], array_of_subsizes[i], array_of_sizes[i],
+                               oldtype, newtype );
+
+  tmp = *newtype;
+  MPI_Aint size = (MPI_Aint)array_of_sizes[i] * (MPI_Aint)array_of_sizes[i+step];
+  MPI_Aint lb = (MPI_Aint)array_of_starts[i] + (MPI_Aint)array_of_starts[i+step] *(MPI_Aint)array_of_sizes[i];
+  
+  
+  for( i += 2 * step; i != end; i += step ) {
+      create_hvector( array_of_subsizes[i], 1, size * extent,
+                                    tmp, newtype );
+      unref(tmp);
+      lb += size * array_of_starts[i];
+      size *= array_of_sizes[i];
+      tmp = *newtype;
+  }
+
+  MPI_Aint lbs[1] = {lb * extent};
+  int sizes [1]={1};
+  
+  create_hindexed( 1, sizes, lbs, tmp, newtype);
+  unref(tmp);
+  
+  tmp = *newtype;
+  create_resized(tmp, 0, extent, newtype);
+
+  unref(tmp);
+  return MPI_SUCCESS;
+}
 Datatype* Datatype::f2c(int id){
   return static_cast<Datatype*>(F2C::f2c(id));
 }

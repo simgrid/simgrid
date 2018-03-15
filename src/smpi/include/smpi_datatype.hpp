@@ -127,7 +127,9 @@ public:
                              MPI_Datatype* new_type);
   static int create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
                            MPI_Datatype* new_type);
-
+  static int create_subarray(int ndims, int* array_of_sizes,
+                             int* array_of_subsizes, int* array_of_starts,
+                             int order, MPI_Datatype oldtype, MPI_Datatype *newtype);
   static Datatype* f2c(int id);
 };
 

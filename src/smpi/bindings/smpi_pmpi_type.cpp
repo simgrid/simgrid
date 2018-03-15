@@ -238,6 +238,27 @@ int PMPI_Type_create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Da
   return PMPI_Type_struct(count, blocklens, indices, old_types, new_type);
 }
 
+
+int PMPI_Type_create_subarray(int ndims, int* array_of_sizes,
+                             int* array_of_subsizes, int* array_of_starts,
+                             int order, MPI_Datatype oldtype, MPI_Datatype *newtype) {
+  if (ndims<0){
+    return MPI_ERR_COUNT;
+  } else if (ndims==0){
+    *newtype = MPI_DATATYPE_NULL;
+    return MPI_SUCCESS;
+  } else if (ndims==1){
+    simgrid::smpi::Datatype::create_contiguous( array_of_subsizes[0], oldtype, array_of_starts[0]*oldtype->get_extent(), newtype);
+    return MPI_SUCCESS;
+  } else if (oldtype == MPI_DATATYPE_NULL || not oldtype->is_valid() ) {
+    return MPI_ERR_TYPE;
+  } else if (order != MPI_ORDER_FORTRAN && order != MPI_ORDER_C){
+    return MPI_ERR_ARG;
+  } else {
+    return simgrid::smpi::Datatype::create_subarray(ndims, array_of_sizes, array_of_subsizes, array_of_starts, order, oldtype, newtype);
+  }
+}
+
 int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
   if (oldtype == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
