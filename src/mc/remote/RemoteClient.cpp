@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -85,6 +85,9 @@ static const std::vector<std::string> filtered_libraries = {
     "libelf",
     "libevent",
     "libgcc_s",
+    "libimf",
+    "libintlc",
+    "libirng",
     "liblua5.1",
     "liblua5.3",
     "liblzma",
@@ -92,6 +95,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libpthread",
     "librt",
     "libstdc++",
+    "libsvml",
     "libunwind",
     "libunwind-x86_64",
     "libunwind-x86",
