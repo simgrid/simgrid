@@ -10,7 +10,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
 
 #define NOT_YET_IMPLEMENTED                                                                                            \
   {                                                                                                                    \
-    XBT_WARN("Not yet implemented : %s. Please contact the SimGrid team if support is needed", __FUNCTION__);          \
+    xbt_die("Not yet implemented : %s. Please contact the SimGrid team if support is needed", __FUNCTION__);          \
+    return MPI_SUCCESS;                                                                                                \
+  }
+  
+#define NOT_YET_IMPLEMENTED_NOFAIL                                                                                            \
+  {                                                                                                                    \
+    XBT_WARN("Not yet implemented : %s. Please contact the SimGrid team if support is needed" "Continuing, because this call is not critical." "Hide this message by setting --log=smpi_mpi.thresh:info", __FUNCTION__);          \
     return MPI_SUCCESS;                                                                                                \
   }
 
@@ -25,6 +31,14 @@ type name args { \
 #define UNIMPLEMENTED_WRAPPED_PMPI_CALL(type,name,args,args2) \
 type P##name args { \
 NOT_YET_IMPLEMENTED \
+}\
+type name args { \
+return P##name args2 ; \
+}\
+
+#define UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(type,name,args,args2) \
+type P##name args { \
+NOT_YET_IMPLEMENTED_NOFAIL \
 }\
 type name args { \
 return P##name args2 ; \
@@ -257,35 +271,35 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Cancel,(MPI_Request* request) ,(request)
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Cart_map,(MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank) ,(comm_old, ndims, dims, periods, newrank))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Close_port,( char *port_name),( port_name))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_accept,( char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm),( port_name, info, root, comm, newcomm))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_call_errhandler,(MPI_Comm comm,int errorcode),(comm, errorcode))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Comm_call_errhandler,(MPI_Comm comm,int errorcode),(comm, errorcode))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_connect,( char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm),( port_name, info, root, comm, newcomm))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_create_errhandler,( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler),( function, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Comm_create_errhandler,( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler),( function, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_dup_with_info,(MPI_Comm comm, MPI_Info info, MPI_Comm * newcomm),(comm,info,newcomm))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_get_errhandler,(MPI_Comm comm, MPI_Errhandler* errhandler) ,(comm, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Comm_get_errhandler,(MPI_Comm comm, MPI_Errhandler* errhandler) ,(comm, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_get_info ,(MPI_Comm comm, MPI_Info* info),(comm, info))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_get_parent,( MPI_Comm *parent),( parent))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_join,( int fd, MPI_Comm *intercomm),( fd, intercomm))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_remote_group,(MPI_Comm comm, MPI_Group* group) ,(comm, group))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_remote_size,(MPI_Comm comm, int* size) ,(comm, size))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_set_errhandler,(MPI_Comm comm, MPI_Errhandler errhandler) ,(comm, errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_set_info ,(MPI_Comm comm, MPI_Info info),(comm, info))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_set_name ,(MPI_Comm comm, char* name),(comm, name))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Comm_set_errhandler,(MPI_Comm comm, MPI_Errhandler errhandler) ,(comm, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Comm_set_info ,(MPI_Comm comm, MPI_Info info),(comm, info))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Comm_set_name ,(MPI_Comm comm, char* name),(comm, name))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_spawn,( char *command, char **argv, int maxprocs, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes),( command, argv, maxprocs, info, root, comm, intercomm, array_of_errcodes))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_spawn_multiple,(int count, char **array_of_commands, char*** array_of_argv, int* array_of_maxprocs, MPI_Info* array_of_info, int root, MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes), (count, array_of_commands, array_of_argv, array_of_maxprocs, array_of_info, root, comm, intercomm, array_of_errcodes))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_split_type,(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm),(comm, split_type, key, info, newcomm))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_test_inter,(MPI_Comm comm, int* flag) ,(comm, flag))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Errhandler_create,(MPI_Handler_function* function, MPI_Errhandler* errhandler) ,(function, errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Errhandler_free,(MPI_Errhandler* errhandler) ,(errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Errhandler_get,(MPI_Comm comm, MPI_Errhandler* errhandler) ,(comm, errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Errhandler_set,(MPI_Comm comm, MPI_Errhandler errhandler) ,(comm, errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Error_string,(int errorcode, char* string, int* resultlen) ,(errorcode, string, resultlen))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_create,(MPI_Handler_function* function, MPI_Errhandler* errhandler) ,(function, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_free,(MPI_Errhandler* errhandler) ,(errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_get,(MPI_Comm comm, MPI_Errhandler* errhandler) ,(comm, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Errhandler_set,(MPI_Comm comm, MPI_Errhandler errhandler) ,(comm, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Error_string,(int errorcode, char* string, int* resultlen) ,(errorcode, string, resultlen))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Register_datarep, (char *datarep, MPI_Datarep_conversion_function *read_conversion_fn, MPI_Datarep_conversion_function *write_conversion_fn, MPI_Datarep_extent_function *dtype_file_extent_fn, void *extra_state) ,(datarep, read_conversion_fn, write_conversion_fn, dtype_file_extent_fn, extra_state))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_File_c2f,(MPI_File file), (file))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_File, MPI_File_f2c,(MPI_Fint file), (file))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_call_errhandler,(MPI_File fh, int errorcode), (fh, errorcode))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_create_errhandler,(MPI_File_errhandler_function *function, MPI_Errhandler *errhandler),(function, errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_errhandler,( MPI_File file, MPI_Errhandler errhandler), (file, errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_errhandler,( MPI_File file, MPI_Errhandler *errhandler), (file, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int, MPI_File_set_errhandler,( MPI_File file, MPI_Errhandler errhandler), (file, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int, MPI_File_get_errhandler,( MPI_File file, MPI_Errhandler *errhandler), (file, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_open,(MPI_Comm comm, char *filename, int amode, MPI_Info info, MPI_File *fh),(comm, filename, amode, info, fh))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_close,(MPI_File *fh), (fh))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_delete,(char *filename, MPI_Info info), (filename, info))
@@ -373,9 +387,9 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Type_get_envelope,( MPI_Datatype datatyp
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Type_match_size,(int typeclass,int size,MPI_Datatype *datatype),(typeclass,size,datatype))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Unpack_external,(char *datarep, void *inbuf, MPI_Aint insize, MPI_Aint *position, void *outbuf, int outcount, MPI_Datatype datatype),( datarep, inbuf, insize, position, outbuf, outcount, datatype))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Unpublish_name,( char *service_name, MPI_Info info, char *port_name),( service_name, info, port_name))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Win_set_errhandler,(MPI_Win win, MPI_Errhandler errhandler) ,(win, errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Win_set_errhandler,(MPI_Win win, MPI_Errhandler errhandler) ,(win, errhandler))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Win_test,(MPI_Win win, int *flag),(win, flag))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Errhandler, MPI_Errhandler_f2c,(MPI_Fint errhandler),(errhandler))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(MPI_Fint, MPI_Errhandler_c2f,(MPI_Errhandler errhandler),(errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(MPI_Errhandler, MPI_Errhandler_f2c,(MPI_Fint errhandler),(errhandler))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(MPI_Fint, MPI_Errhandler_c2f,(MPI_Errhandler errhandler),(errhandler))
 
 } // extern "C"
