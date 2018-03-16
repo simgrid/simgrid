@@ -28,7 +28,8 @@ if(enable_compile_warnings)
     # ignore remark  #1418: external function definition with no prior declaration
     # 3179: deprecated conversion of string literal to char* (should be const char*)
     # 191: type qualifier is meaningless on cast type
-    set(warnCFLAGS "${warnCFLAGS} -wd1418 -wd191 -wd3179")
+    # 597: entity-kind "entity" will not be called for implicit or explicit conversions
+    set(warnCFLAGS "${warnCFLAGS} -wd1418 -wd191 -wd3179 -ww597")
   endif()
 
   set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
