@@ -403,12 +403,11 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
     // This is not really 0, but the code expects this (we do not know):
     return 0;
 
-  uint64_t upper_bound =
-      MC_dwarf_attr_integrate_uint(die, DW_AT_upper_bound, -1);
+  uint64_t upper_bound = MC_dwarf_attr_integrate_uint(die, DW_AT_upper_bound, static_cast<uint64_t>(-1));
 
   uint64_t lower_bound = 0;
   if (dwarf_hasattr_integrate(die, DW_AT_lower_bound))
-    lower_bound = MC_dwarf_attr_integrate_uint(die, DW_AT_lower_bound, -1);
+    lower_bound = MC_dwarf_attr_integrate_uint(die, DW_AT_lower_bound, static_cast<uint64_t>(-1));
   else
     lower_bound = MC_dwarf_default_lower_bound(dwarf_srclang(unit));
   return upper_bound - lower_bound + 1;
