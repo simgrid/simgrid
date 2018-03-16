@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
   
 #define NOT_YET_IMPLEMENTED_NOFAIL                                                                                            \
   {                                                                                                                    \
-    XBT_WARN("Not yet implemented : %s. Please contact the SimGrid team if support is needed" "Continuing, because this call is not critical." "Hide this message by setting --log=smpi_mpi.thresh:info", __FUNCTION__);          \
+    XBT_WARN("Not yet implemented : %s. Please contact the SimGrid team if support is needed. Run with --log=smpi_mpi.thresh:error to hide", __FUNCTION__);          \
     return MPI_SUCCESS;                                                                                                \
   }
 
