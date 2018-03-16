@@ -506,11 +506,11 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
   
   for (i=0; i < ndims; i++) {
     if (array_of_subsizes[i] > array_of_sizes[i]){
-      XBT_WARN("subarray : array_of_subsizes > array_of_sizes for dim %d\n",i);
+      XBT_WARN("subarray : array_of_subsizes > array_of_sizes for dim %d",i);
       return MPI_ERR_ARG;
     }
     if (array_of_starts[i] + array_of_subsizes[i] > array_of_sizes[i]){
-      XBT_WARN("subarray : array_of_starts + array_of_subsizes > array_of_sizes for dim %d\n",i);
+      XBT_WARN("subarray : array_of_starts + array_of_subsizes > array_of_sizes for dim %d",i);
       return MPI_ERR_ARG;
     }
   }
