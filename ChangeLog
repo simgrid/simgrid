@@ -44,11 +44,6 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  Build System:
  - SimGrid now works with intel compilers (MC still buggy)
 
- Fixed bugs:
- - #245: migrating an actor does not migrate its execution
- - #256: Modernize FindSimGrid.cmake
- - #257: Fix (ab)use of CMake install
-
  PLATFORM:
  - Rename FULLDUPLEX into SPLITDUPLEX (old name still accepted)
 
@@ -56,7 +51,10 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
  - Remove unused run-time parameter "tracing/onelink-only".
 
  Fixed bugs:
+ - #245: migrating an actor does not migrate its execution
  - #254: Something seems wrong with s4u::Actor::kill(aid_t)
+ - #256: Modernize FindSimGrid.cmake
+ - #257: Fix (ab)use of CMake install
 
 SimGrid (3.18) Released December 24 2017
 
