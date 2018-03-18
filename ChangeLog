@@ -36,6 +36,13 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
    ranks, because tracing several communicators right now is not supported.
  - Because of this, smpi_process_index() has now been deprecated and will
    be removed in 3.21
+ - Support of MPI_Type_create_subarray
+ - SMPI will now crash and not just warn when encountering an unimplemented
+   call. Some exceptions are set (mainly for errhandler calls).
+ - MPI_Sendrecv was behaving badly when MPI_PROC_NULL was sender or receiver.
+
+ Build System:
+ - SimGrid now works with intel compilers (MC still buggy)
 
  Fixed bugs:
  - #245: migrating an actor does not migrate its execution
