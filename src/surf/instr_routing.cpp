@@ -6,9 +6,9 @@
 #include "src/instr/instr_private.hpp"
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"

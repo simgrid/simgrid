@@ -8,6 +8,7 @@
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
@@ -15,7 +16,6 @@
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.h"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/routing/NetZoneImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 

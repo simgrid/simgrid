@@ -10,7 +10,7 @@
 #include <xbt/base.h>
 #include <xbt/signal.hpp>
 
-#include <src/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
 
 namespace simgrid {
 namespace kernel {

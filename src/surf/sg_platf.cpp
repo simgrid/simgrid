@@ -23,9 +23,9 @@
 #include "simgrid/kernel/routing/FloydZone.hpp"
 #include "simgrid/kernel/routing/FullZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/kernel/routing/TorusZone.hpp"
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
-#include "src/kernel/routing/NetZoneImpl.hpp"
 #include <string>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 

@@ -6,7 +6,7 @@
 #ifndef SIMGRID_ROUTING_CLUSTER_HPP_
 #define SIMGRID_ROUTING_CLUSTER_HPP_
 
-#include <src/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
 
 #include <unordered_map>
 

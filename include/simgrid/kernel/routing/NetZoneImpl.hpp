@@ -52,7 +52,7 @@ class XBT_PUBLIC NetZoneImpl : public s4u::NetZone {
   friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:
-  explicit NetZoneImpl(NetZone * father, std::string name);
+  explicit NetZoneImpl(NetZone* father, std::string name);
   virtual ~NetZoneImpl();
 
 public:
@@ -60,8 +60,8 @@ public:
   simgrid::s4u::Host* createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
                                  std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
-  void addBypassRoute(NetPoint * src, NetPoint * dst, NetPoint * gw_src, NetPoint * gw_dst,
-                      std::vector<simgrid::surf::LinkImpl*> & link_list, bool symmetrical) override;
+  void addBypassRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                      std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) override;
 
 protected:
   /**
@@ -72,10 +72,10 @@ protected:
    * @param into Container into which the traversed links and gateway informations should be pushed
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void getLocalRoute(NetPoint * src, NetPoint * dst, RouteCreationArgs * into, double* latency) = 0;
+  virtual void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) = 0;
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
-  bool getBypassRoute(routing::NetPoint * src, routing::NetPoint * dst,
+  bool getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
                       /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency);
 
 public:
@@ -86,11 +86,11 @@ public:
    * @param links Accumulator in which all traversed links should be pushed (caller must empty it)
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  static void getGlobalRoute(routing::NetPoint * src, routing::NetPoint * dst,
+  static void getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
                              /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency);
 
-  virtual void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t> * nodes,
-                        std::map<std::string, xbt_edge_t> * edges) = 0;
+  virtual void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                        std::map<std::string, xbt_edge_t>* edges) = 0;
   enum class RoutingMode {
     unset = 0, /**< Undefined type                                   */
     base,      /**< Base case: use simple link lists for routing     */
@@ -103,8 +103,8 @@ private:
   std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypassRoutes_; // src x dst -> route
   routing::NetPoint* netpoint_ = nullptr;                                // Our representative in the father NetZone
 };
-}
-}
-}; // Namespace simgrid::kernel::routing
+} // namespace routing
+} // namespace kernel
+}; // namespace simgrid
 
 #endif /* SIMGRID_ROUTING_NETZONEIMPL_HPP */
