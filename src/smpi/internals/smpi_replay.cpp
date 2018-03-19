@@ -96,53 +96,15 @@ static double parse_double(const char *string)
 //TODO: this logic should be moved inside the datatype class, to support all predefined types and get rid of is_replayable.
 static MPI_Datatype decode_datatype(const char *const action)
 {
-  switch(atoi(action)) {
-    case 0:
-      return MPI_DOUBLE;
-      break;
-    case 1:
-      return MPI_INT;
-      break;
-    case 2:
-      return MPI_CHAR;
-      break;
-    case 3:
-      return MPI_SHORT;
-      break;
-    case 4:
-      return MPI_LONG;
-      break;
-    case 5:
-      return MPI_FLOAT;
-      break;
-    case 6:
-      return MPI_BYTE;
-      break;
-    default:
-      return MPI_DEFAULT_TYPE;
-      break;
-  }
+  return simgrid::smpi::Datatype::decode(action);
 }
 
 const char* encode_datatype(MPI_Datatype datatype)
 {
-  if (datatype==MPI_BYTE)
-      return "";
-  if(datatype==MPI_DOUBLE)
-      return "0";
-  if(datatype==MPI_INT)
-      return "1";
-  if(datatype==MPI_CHAR)
-      return "2";
-  if(datatype==MPI_SHORT)
-      return "3";
-  if(datatype==MPI_LONG)
-    return "4";
-  if(datatype==MPI_FLOAT)
-      return "5";
-  // default - not implemented.
-  // do not warn here as we pass in this function even for other trace formats
-  return "-1";
+  if (datatype == nullptr) /* this actually does seem to be possible, had this in the scatter2 test */
+    return "-1";
+
+  return datatype->encode();
 }
 
 #define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
