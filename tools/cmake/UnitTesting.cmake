@@ -46,4 +46,9 @@ ADD_CUSTOM_COMMAND(
 
 add_executable       (testall ${EXTRACTED_TEST_SOURCE_FILES})
 target_link_libraries(testall simgrid)
+set_property(
+    TARGET testall
+    APPEND PROPERTY
+           INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
+	   )  
 

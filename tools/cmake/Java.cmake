@@ -28,6 +28,8 @@ endif()
 add_library(simgrid-java SHARED ${JMSG_C_SRC})
 set_target_properties(simgrid-java PROPERTIES VERSION          ${libsimgrid-java_version})
 set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
+set_property(TARGET simgrid-java
+             APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
 
 target_link_libraries(simgrid-java simgrid)
 

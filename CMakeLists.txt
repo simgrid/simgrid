@@ -159,20 +159,26 @@ endif()
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 ### Compute the include paths
-set(INCLUDES
+
+# Only include public headers by default
+include_directories(
+   ${CMAKE_BINARY_DIR}/include
+   ${CMAKE_HOME_DIRECTORY}/include
+)
+
+# Compute the ones that should be added when compiling the library
+set(INTERNAL_INCLUDES
   ${CMAKE_BINARY_DIR}
-  ${CMAKE_BINARY_DIR}/include
   ${CMAKE_HOME_DIRECTORY}
-  ${CMAKE_HOME_DIRECTORY}/include
   ${CMAKE_HOME_DIRECTORY}/src/include
   )
 
 if(enable_smpi)
-  set (INCLUDES ${INCLUDES} ${CMAKE_HOME_DIRECTORY}/src/smpi/include)
+  set (INTERNAL_INCLUDES ${INTERNAL_INCLUDES} ${CMAKE_HOME_DIRECTORY}/src/smpi/include)
 endif()
 
 if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
-  set(INCLUDES ${INCLUDES} /usr/include/)
+  set(INTERNAL_INCLUDES ${INTERNAL_INCLUDES} /usr/include/)
 endif()
 
 if(WIN32)
@@ -180,11 +186,9 @@ if(WIN32)
   set(CMAKE_LIB_WIN "${CMAKE_C_COMPILER}")
   string(REGEX REPLACE "/bin/gcc.*" "/include"  CMAKE_INCLUDE_WIN "${CMAKE_INCLUDE_WIN}")
   string(REGEX REPLACE "/bin/gcc.*" "/lib"  CMAKE_LIB_WIN "${CMAKE_LIB_WIN}")
-  set(INCLUDES ${INCLUDES} ${CMAKE_INCLUDE_WIN})
+  set(INTERNAL_INCLUDES ${INTERNAL_INCLUDES} ${CMAKE_INCLUDE_WIN})
   unset(CMAKE_INCLUDE_WIN)
 endif()
-
-include_directories(${INCLUDES})
 
 # library dependency cannot start with a space (CMP0004), so initialize it with something that is never desactivated.
 set(SIMGRID_DEP "-lm") 

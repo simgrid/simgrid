@@ -20,6 +20,9 @@ endif()
 # Actually declare our libraries
 add_library(simgrid SHARED ${simgrid_sources})
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
+# The library can obviously use the internal headers
+set_property(TARGET simgrid
+             APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
 
 add_dependencies(simgrid maintainer_files)
 
@@ -27,9 +30,12 @@ if(enable_model-checking)
   add_executable(simgrid-mc ${MC_SIMGRID_MC_SRC})
   target_link_libraries(simgrid-mc simgrid)
   set_target_properties(simgrid-mc
-    PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+                        PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+  set_property(TARGET simgrid-mc
+               APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+
 endif()
+
 
 # Compute the dependencies of SimGrid
 #####################################
