@@ -192,8 +192,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   if ((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && (static_cast<char*>(buff) >= smpi_data_exe_start) &&
       (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-
-    smpi_switch_data_segment(Actor::self()->getPid());
+    smpi_switch_data_segment(comm->src_proc->pid);
     tmpbuff = static_cast<void*>(xbt_malloc(buff_size));
     memcpy_private(tmpbuff, buff, private_blocks);
   }
@@ -201,7 +200,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   if ((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && ((char*)comm->dst_buff >= smpi_data_exe_start) &&
       ((char*)comm->dst_buff < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-    smpi_switch_data_segment(Actor::self()->getPid());
+    smpi_switch_data_segment(comm->dst_proc->pid);
   }
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff,comm->dst_buff);
   memcpy_private(comm->dst_buff, tmpbuff, private_blocks);
