@@ -6,6 +6,7 @@
 #include "simgrid/kernel/routing/DijkstraZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
 
 #include <cfloat>
 #include <queue>
@@ -22,7 +23,7 @@ static void graph_node_data_free(void* n)
 
 static void graph_edge_data_free(void* e)
 {
-  delete static_cast<RouteCreationArgs*>(e);
+  delete static_cast<simgrid::kernel::routing::RouteCreationArgs*>(e);
 }
 
 /* Utility functions */
@@ -54,7 +55,7 @@ void DijkstraZone::seal()
       }
 
       if (not found) {
-        RouteCreationArgs* e_route = new RouteCreationArgs();
+        RouteCreationArgs* e_route = new simgrid::kernel::routing::RouteCreationArgs();
         e_route->link_list.push_back(surf_network_model->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
       }
@@ -90,7 +91,7 @@ xbt_node_t DijkstraZone::nodeMapSearch(int id)
 
 /* Parsing */
 
-void DijkstraZone::newRoute(int src_id, int dst_id, RouteCreationArgs* e_route)
+void DijkstraZone::newRoute(int src_id, int dst_id, simgrid::kernel::routing::RouteCreationArgs* e_route)
 {
   XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = nullptr;

@@ -6,6 +6,7 @@
 #include "simgrid/kernel/routing/FullZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 

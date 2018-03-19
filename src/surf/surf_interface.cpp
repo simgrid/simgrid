@@ -12,6 +12,7 @@
 #include "src/kernel/lmm/maxmin.hpp"   // Constraint
 #include "src/surf/HostImpl.hpp"
 #include "xbt/utility.hpp"
+#include "src/surf/xml/platf.hpp"
 
 #include <fstream>
 #include <set>

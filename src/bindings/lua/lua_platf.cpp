@@ -63,7 +63,7 @@ int console_close(lua_State *L) {
 }
 
 int console_add_backbone(lua_State *L) {
-  LinkCreationArgs link;
+  simgrid::kernel::routing::LinkCreationArgs link;
 
   link.properties = nullptr;
 
@@ -111,7 +111,7 @@ int console_add_backbone(lua_State *L) {
 }
 
 int console_add_host___link(lua_State *L) {
-  HostLinkCreationArgs hostlink;
+  simgrid::kernel::routing::HostLinkCreationArgs hostlink;
   int type;
 
   lua_ensure(lua_istable(L, -1), "Bad Arguments to create host_link in Lua. Should be a table with named arguments.");
@@ -143,7 +143,7 @@ int console_add_host___link(lua_State *L) {
 }
 
 int console_add_host(lua_State *L) {
-  s_sg_platf_host_cbarg_t host;
+  simgrid::kernel::routing::HostCreationArgs host;
   int type;
 
   // we get values from the table passed as argument
@@ -202,7 +202,7 @@ int console_add_host(lua_State *L) {
 }
 
 int  console_add_link(lua_State *L) {
-  LinkCreationArgs link;
+  simgrid::kernel::routing::LinkCreationArgs link;
 
   const char* policy;
 
@@ -308,7 +308,7 @@ int console_add_router(lua_State* L) {
 
 int console_add_route(lua_State *L) {
   XBT_DEBUG("Adding route");
-  RouteCreationArgs route;
+  simgrid::kernel::routing::RouteCreationArgs route;
   int type;
 
   lua_ensure(lua_istable(L, -1), "Bad Arguments to add a route. Should be a table with named arguments");
@@ -379,7 +379,7 @@ int console_add_route(lua_State *L) {
 }
 
 int console_add_ASroute(lua_State *L) {
-  RouteCreationArgs ASroute;
+  simgrid::kernel::routing::RouteCreationArgs ASroute;
 
   lua_pushstring(L, "src");
   lua_gettable(L, -2);
@@ -480,7 +480,7 @@ int console_AS_open(lua_State *L) {
    mode_int = A_surfxml_AS_routing_None;
  else xbt_die("Don't have the model name '%s'",mode);
 
- ZoneCreationArgs AS;
+ simgrid::kernel::routing::ZoneCreationArgs AS;
  AS.id = id;
  AS.routing = mode_int;
  simgrid::s4u::NetZone* new_as = sg_platf_new_Zone_begin(&AS);

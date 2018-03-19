@@ -117,7 +117,7 @@ simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name)
 void SIMIX_process_set_function(const char* process_host, const char* process_function, xbt_dynar_t arguments,
                                 double process_start_time, double process_kill_time)
 {
-  ActorCreationArgs actor;
+  simgrid::kernel::routing::ActorCreationArgs actor;
 
   sg_host_t host = sg_host_by_name(process_host);
   if (not host)
@@ -139,7 +139,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
   actor.host       = process_host;
   actor.kill_time  = process_kill_time;
   actor.start_time = process_start_time;
-  actor.on_failure = ActorOnFailure::DIE;
+  actor.on_failure = simgrid::kernel::routing::ActorOnFailure::DIE;
   sg_platf_new_actor(&actor);
 }
 

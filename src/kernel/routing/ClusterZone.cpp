@@ -7,6 +7,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/xml/platf_private.hpp" // FIXME: RouteCreationArgs and friends
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 

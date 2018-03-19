@@ -25,6 +25,7 @@
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
+#include "src/surf/xml/platf_private.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
@@ -61,7 +62,7 @@ NetPointNs3::NetPointNs3()
  * Callbacks *
  *************/
 
-static void clusterCreation_cb(ClusterCreationArgs* cluster)
+static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs* cluster)
 {
   for (int const& i : *cluster->radicals) {
     // Routers don't create a router on the other end of the private link by themselves.

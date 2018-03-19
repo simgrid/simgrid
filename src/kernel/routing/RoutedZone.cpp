@@ -7,10 +7,10 @@
 #include "xbt/graph.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
-
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 

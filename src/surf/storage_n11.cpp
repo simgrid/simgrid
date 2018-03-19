@@ -7,6 +7,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/surf/xml/platf.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "xbt/utility.hpp"
 #include <cmath> /*ceil*/

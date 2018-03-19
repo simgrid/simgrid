@@ -54,8 +54,11 @@ class Model;
 class Resource;
 }
 namespace routing {
-  class NetPoint;
-  class NetZoneImpl;
+class ClusterCreationArgs;
+class LinkCreationArgs;
+class NetPoint;
+class NetZoneImpl;
+class RouteCreationArgs;
 }
 }
 namespace simix {

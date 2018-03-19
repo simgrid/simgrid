@@ -15,14 +15,9 @@
 #include <string>
 #include <vector>
 
-extern "C" {
-#include "src/surf/xml/simgrid_dtd.h"
-
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
-
+namespace simgrid {
+namespace kernel {
+namespace routing {
 /* ***************************************** */
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
@@ -34,7 +29,7 @@ typedef size_t yy_size_t;
  * used, instead of malloced structures.
  */
 
-struct s_sg_platf_host_cbarg_t {
+struct HostCreationArgs {
   const char* id = nullptr;
   std::vector<double> speed_per_pstate;
   int pstate               = 0;
@@ -44,7 +39,7 @@ struct s_sg_platf_host_cbarg_t {
   const char* coord        = nullptr;
   std::map<std::string, std::string>* properties = nullptr;
 };
-typedef s_sg_platf_host_cbarg_t* sg_platf_host_cbarg_t;
+typedef HostCreationArgs* sg_platf_host_cbarg_t; // FIXME: killme
 
 class HostLinkCreationArgs {
 public:
@@ -164,7 +159,7 @@ public:
   std::string element;
 };
 
-enum class ActorOnFailure { DIE, RESTART };
+enum class ActorOnFailure { DIE, RESTART }; // FIXME: move to a better namespace
 
 class ActorCreationArgs {
 public:
@@ -182,6 +177,15 @@ public:
   std::string id;
   int routing;
 };
+}}}
+
+extern "C" {
+#include "src/surf/xml/simgrid_dtd.h"
+
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
 
 /********** Routing **********/
 void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
@@ -190,29 +194,29 @@ void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
 XBT_PUBLIC void sg_platf_begin(); // Start a new platform
 XBT_PUBLIC void sg_platf_end();   // Finish the creation of the platform
 
-XBT_PUBLIC simgrid::s4u::NetZone* sg_platf_new_Zone_begin(ZoneCreationArgs* zone); // Begin description of new Zone
+XBT_PUBLIC simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone); // Begin description of new Zone
 XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
 
-XBT_PUBLIC void sg_platf_new_host(sg_platf_host_cbarg_t host);      // Add a host      to the current Zone
-XBT_PUBLIC void sg_platf_new_hostlink(HostLinkCreationArgs* h);     // Add a host_link to the current Zone
-XBT_PUBLIC void sg_platf_new_link(LinkCreationArgs* link);          // Add a link      to the current Zone
-XBT_PUBLIC void sg_platf_new_peer(PeerCreationArgs* peer);          // Add a peer      to the current Zone
-XBT_PUBLIC void sg_platf_new_cluster(ClusterCreationArgs* clust);   // Add a cluster   to the current Zone
-XBT_PUBLIC void sg_platf_new_cabinet(CabinetCreationArgs* cabinet); // Add a cabinet   to the current Zone
+XBT_PUBLIC void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* host);      // Add a host      to the current Zone
+XBT_PUBLIC void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* h);     // Add a host_link to the current Zone
+XBT_PUBLIC void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link);          // Add a link      to the current Zone
+XBT_PUBLIC void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer);          // Add a peer      to the current Zone
+XBT_PUBLIC void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* clust);   // Add a cluster   to the current Zone
+XBT_PUBLIC void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet); // Add a cabinet   to the current Zone
 XBT_PUBLIC simgrid::kernel::routing::NetPoint*                      // Add a router    to the current Zone
     sg_platf_new_router(std::string, const char* coords);
 
-XBT_PUBLIC void sg_platf_new_route(RouteCreationArgs* route);             // Add a route
-XBT_PUBLIC void sg_platf_new_bypassRoute(RouteCreationArgs* bypassroute); // Add a bypassRoute
+XBT_PUBLIC void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route);             // Add a route
+XBT_PUBLIC void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassroute); // Add a bypassRoute
 
-XBT_PUBLIC void sg_platf_new_trace(TraceCreationArgs* trace);
+XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::TraceCreationArgs* trace);
 
-XBT_PUBLIC void sg_platf_new_storage(StorageCreationArgs* storage); // Add a storage to the current Zone
-XBT_PUBLIC void sg_platf_new_storage_type(StorageTypeCreationArgs* storage_type);
-XBT_PUBLIC void sg_platf_new_mount(MountCreationArgs* mount);
+XBT_PUBLIC void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage); // Add a storage to the current Zone
+XBT_PUBLIC void sg_platf_new_storage_type(simgrid::kernel::routing::StorageTypeCreationArgs* storage_type);
+XBT_PUBLIC void sg_platf_new_mount(simgrid::kernel::routing::MountCreationArgs* mount);
 
-XBT_PUBLIC void sg_platf_new_actor(ActorCreationArgs* actor);
-XBT_PRIVATE void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect);
+XBT_PUBLIC void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor);
+XBT_PRIVATE void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC int surf_parse_lex();
@@ -232,7 +236,7 @@ XBT_PUBLIC int surf_parse_lex_destroy();
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::xbt::signal<void(ClusterCreationArgs*)> on_cluster;
+extern XBT_PRIVATE simgrid::xbt::signal<void(kernel::routing::ClusterCreationArgs*)> on_cluster;
 }
 }
 

@@ -34,26 +34,26 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
 extern "C" {
-void sg_platf_trace_connect(TraceConnectCreationArgs* trace_connect)
+void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect)
 {
   xbt_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
              "Cannot connect trace %s to %s: trace unknown", trace_connect->trace.c_str(),
              trace_connect->element.c_str());
 
   switch (trace_connect->kind) {
-    case TraceConnectKind::HOST_AVAIL:
+    case simgrid::kernel::routing::TraceConnectKind::HOST_AVAIL:
       trace_connect_list_host_avail.insert({trace_connect->trace, trace_connect->element});
       break;
-    case TraceConnectKind::SPEED:
+    case simgrid::kernel::routing::TraceConnectKind::SPEED:
       trace_connect_list_host_speed.insert({trace_connect->trace, trace_connect->element});
       break;
-    case TraceConnectKind::LINK_AVAIL:
+    case simgrid::kernel::routing::TraceConnectKind::LINK_AVAIL:
       trace_connect_list_link_avail.insert({trace_connect->trace, trace_connect->element});
       break;
-    case TraceConnectKind::BANDWIDTH:
+    case simgrid::kernel::routing::TraceConnectKind::BANDWIDTH:
       trace_connect_list_link_bw.insert({trace_connect->trace, trace_connect->element});
       break;
-    case TraceConnectKind::LATENCY:
+    case simgrid::kernel::routing::TraceConnectKind::LATENCY:
       trace_connect_list_link_lat.insert({trace_connect->trace, trace_connect->element});
       break;
     default:

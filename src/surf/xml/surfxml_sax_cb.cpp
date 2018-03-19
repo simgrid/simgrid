@@ -284,7 +284,7 @@ void STag_surfxml_storage()
 
 void ETag_surfxml_storage()
 {
-  StorageCreationArgs storage;
+  simgrid::kernel::routing::StorageCreationArgs storage;
 
   storage.properties   = current_property_set;
   current_property_set = nullptr;
@@ -305,7 +305,7 @@ void STag_surfxml_storage___type()
 }
 void ETag_surfxml_storage___type()
 {
-  StorageTypeCreationArgs storage_type;
+  simgrid::kernel::routing::StorageTypeCreationArgs storage_type;
 
   storage_type.properties = current_property_set;
   current_property_set    = nullptr;
@@ -328,7 +328,7 @@ void STag_surfxml_mount()
 
 void ETag_surfxml_mount()
 {
-  MountCreationArgs mount;
+  simgrid::kernel::routing::MountCreationArgs mount;
 
   mount.name      = A_surfxml_mount_name;
   mount.storageId = A_surfxml_mount_storageId;
@@ -421,7 +421,7 @@ void STag_surfxml_prop()
 }
 
 void ETag_surfxml_host()    {
-  s_sg_platf_host_cbarg_t host;
+  simgrid::kernel::routing::HostCreationArgs host;
 
   host.properties = current_property_set;
   current_property_set = nullptr;
@@ -442,7 +442,7 @@ void ETag_surfxml_host()    {
 
 void STag_surfxml_host___link(){
   XBT_DEBUG("Create a Host_link for %s",A_surfxml_host___link_id);
-  HostLinkCreationArgs host_link;
+  simgrid::kernel::routing::HostLinkCreationArgs host_link;
 
   host_link.id        = A_surfxml_host___link_id;
   host_link.link_up   = A_surfxml_host___link_up;
@@ -455,7 +455,7 @@ void STag_surfxml_router(){
 }
 
 void ETag_surfxml_cluster(){
-  ClusterCreationArgs cluster;
+  simgrid::kernel::routing::ClusterCreationArgs cluster;
   cluster.properties   = current_property_set;
   current_property_set = nullptr;
 
@@ -480,16 +480,16 @@ void ETag_surfxml_cluster(){
 
   switch(AX_surfxml_cluster_topology){
   case A_surfxml_cluster_topology_FLAT:
-    cluster.topology = ClusterTopology::FLAT;
+    cluster.topology = simgrid::kernel::routing::ClusterTopology::FLAT;
     break;
   case A_surfxml_cluster_topology_TORUS:
-    cluster.topology = ClusterTopology::TORUS;
+    cluster.topology = simgrid::kernel::routing::ClusterTopology::TORUS;
     break;
   case A_surfxml_cluster_topology_FAT___TREE:
-    cluster.topology = ClusterTopology::FAT_TREE;
+    cluster.topology = simgrid::kernel::routing::ClusterTopology::FAT_TREE;
     break;
   case A_surfxml_cluster_topology_DRAGONFLY:
-    cluster.topology = ClusterTopology::DRAGONFLY;
+    cluster.topology = simgrid::kernel::routing::ClusterTopology::DRAGONFLY;
     break;
   default:
     surf_parse_error(std::string("Invalid cluster topology for cluster ") + cluster.id);
@@ -539,7 +539,7 @@ void STag_surfxml_cluster(){
 
 void STag_surfxml_cabinet(){
   parse_after_config();
-  CabinetCreationArgs cabinet;
+  simgrid::kernel::routing::CabinetCreationArgs cabinet;
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
   cabinet.suffix  = A_surfxml_cabinet_suffix;
@@ -553,7 +553,7 @@ void STag_surfxml_cabinet(){
 
 void STag_surfxml_peer(){
   parse_after_config();
-  PeerCreationArgs peer;
+  simgrid::kernel::routing::PeerCreationArgs peer;
 
   peer.id          = std::string(A_surfxml_peer_id);
   peer.speed       = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id.c_str());
@@ -576,7 +576,7 @@ void STag_surfxml_link(){
 }
 
 void ETag_surfxml_link(){
-  LinkCreationArgs link;
+  simgrid::kernel::routing::LinkCreationArgs link;
 
   link.properties          = current_property_set;
   current_property_set     = nullptr;
@@ -645,7 +645,7 @@ void STag_surfxml_link___ctn()
 }
 
 void ETag_surfxml_backbone(){
-  LinkCreationArgs link;
+  simgrid::kernel::routing::LinkCreationArgs link;
 
   link.properties = nullptr;
   link.id = std::string(A_surfxml_backbone_id);
@@ -695,7 +695,7 @@ void STag_surfxml_bypassZoneRoute(){
 }
 
 void ETag_surfxml_route(){
-  RouteCreationArgs route;
+  simgrid::kernel::routing::RouteCreationArgs route;
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_route_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_route_dst); // tested to not be nullptr in start tag
@@ -719,7 +719,7 @@ void ETag_surfxml_ASroute()
 }
 void ETag_surfxml_zoneRoute()
 {
-  RouteCreationArgs ASroute;
+  simgrid::kernel::routing::RouteCreationArgs ASroute;
 
   ASroute.src = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_src); // tested to not be nullptr in start tag
   ASroute.dst = sg_netpoint_by_name_or_null(A_surfxml_zoneRoute_dst); // tested to not be nullptr in start tag
@@ -745,7 +745,7 @@ void ETag_surfxml_zoneRoute()
 }
 
 void ETag_surfxml_bypassRoute(){
-  RouteCreationArgs route;
+  simgrid::kernel::routing::RouteCreationArgs route;
 
   route.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be nullptr in start tag
   route.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be nullptr in start tag
@@ -768,7 +768,7 @@ void ETag_surfxml_bypassASroute()
 }
 void ETag_surfxml_bypassZoneRoute()
 {
-  RouteCreationArgs ASroute;
+  simgrid::kernel::routing::RouteCreationArgs ASroute;
 
   ASroute.src         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_src);
   ASroute.dst         = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_dst);
@@ -783,7 +783,7 @@ void ETag_surfxml_bypassZoneRoute()
 }
 
 void ETag_surfxml_trace(){
-  TraceCreationArgs trace;
+  simgrid::kernel::routing::TraceCreationArgs trace;
 
   trace.id = A_surfxml_trace_id;
   trace.file = A_surfxml_trace_file;
@@ -796,7 +796,7 @@ void ETag_surfxml_trace(){
 void STag_surfxml_trace___connect()
 {
   parse_after_config();
-  TraceConnectCreationArgs trace_connect;
+  simgrid::kernel::routing::TraceConnectCreationArgs trace_connect;
 
   trace_connect.element = A_surfxml_trace___connect_element;
   trace_connect.trace = A_surfxml_trace___connect_trace;
@@ -804,19 +804,19 @@ void STag_surfxml_trace___connect()
   switch (A_surfxml_trace___connect_kind) {
   case AU_surfxml_trace___connect_kind:
   case A_surfxml_trace___connect_kind_SPEED:
-    trace_connect.kind = TraceConnectKind::SPEED;
+    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::SPEED;
     break;
   case A_surfxml_trace___connect_kind_BANDWIDTH:
-    trace_connect.kind = TraceConnectKind::BANDWIDTH;
+    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::BANDWIDTH;
     break;
   case A_surfxml_trace___connect_kind_HOST___AVAIL:
-    trace_connect.kind = TraceConnectKind::HOST_AVAIL;
+    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::HOST_AVAIL;
     break;
   case A_surfxml_trace___connect_kind_LATENCY:
-    trace_connect.kind = TraceConnectKind::LATENCY;
+    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::LATENCY;
     break;
   case A_surfxml_trace___connect_kind_LINK___AVAIL:
-    trace_connect.kind = TraceConnectKind::LINK_AVAIL;
+    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::LINK_AVAIL;
     break;
   default:
     surf_parse_error("Invalid trace kind");
@@ -841,7 +841,7 @@ void STag_surfxml_zone()
 {
   parse_after_config();
   ZONE_TAG                 = 1;
-  ZoneCreationArgs zone;
+  simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
   zone.routing = static_cast<int>(A_surfxml_zone_routing);
 
@@ -907,7 +907,7 @@ void ETag_surfxml_process()
 
 void ETag_surfxml_actor()
 {
-  ActorCreationArgs actor;
+  simgrid::kernel::routing::ActorCreationArgs actor;
 
   actor.properties     = current_property_set;
   current_property_set = nullptr;
@@ -921,10 +921,10 @@ void ETag_surfxml_actor()
   switch (A_surfxml_actor_on___failure) {
   case AU_surfxml_actor_on___failure:
   case A_surfxml_actor_on___failure_DIE:
-    actor.on_failure = ActorOnFailure::DIE;
+    actor.on_failure = simgrid::kernel::routing::ActorOnFailure::DIE;
     break;
   case A_surfxml_actor_on___failure_RESTART:
-    actor.on_failure = ActorOnFailure::RESTART;
+    actor.on_failure = simgrid::kernel::routing::ActorOnFailure::RESTART;
     break;
   default:
     surf_parse_error("Invalid on failure behavior");
