@@ -144,21 +144,19 @@ int replay_runner(int argc, char* argv[])
       action_queues.erase(std::string(argv[0]));
     }
   } else { // Should have got my trace file in argument
-    simgrid::xbt::ReplayAction* evt = new simgrid::xbt::ReplayAction();
+    simgrid::xbt::ReplayAction evt;
     xbt_assert(argc >= 2, "No '%s' agent function provided, no simulation-wide trace file provided, "
                           "and no process-wide trace file provided in deployment file. Aborting.",
                argv[0]);
-    simgrid::xbt::ReplayReader* reader = new simgrid::xbt::ReplayReader(argv[1]);
-    while (reader->get(evt)) {
-      if (evt->front().compare(argv[0]) == 0) {
-        simgrid::xbt::handle_action(evt);
+    simgrid::xbt::ReplayReader reader(argv[1]);
+    while (reader.get(&evt)) {
+      if (evt.front().compare(argv[0]) == 0) {
+        simgrid::xbt::handle_action(&evt);
       } else {
         XBT_WARN("Ignore trace element not for me");
       }
-      evt->clear();
+      evt.clear();
     }
-    delete evt;
-    delete reader;
   }
   return 0;
 }
