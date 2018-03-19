@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,8 +6,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u.hpp"
-#include "src/plugins/file_system/FileSystem.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 

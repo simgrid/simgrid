@@ -1,15 +1,15 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
 
+#include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
-#include "src/plugins/file_system/FileSystem.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <algorithm>

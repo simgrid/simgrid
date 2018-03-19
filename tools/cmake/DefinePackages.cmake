@@ -354,7 +354,6 @@ set(SURF_SRC
   )
 
 set(PLUGINS_SRC
-  src/plugins/file_system/FileSystem.hpp
   src/plugins/file_system/s4u_FileSystem.cpp
   src/plugins/vm/VirtualMachineImpl.hpp
   src/plugins/vm/s4u_VirtualMachine.cpp

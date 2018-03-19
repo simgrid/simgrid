@@ -5,11 +5,11 @@
 
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/msg.h"
+#include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.hpp"
-#include "src/plugins/file_system/FileSystem.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include <unordered_map>
 

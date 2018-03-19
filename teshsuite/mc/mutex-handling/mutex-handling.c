@@ -1,5 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +18,7 @@
  * and the MC does not find the counter-example.
  */
 
-#include "mc/mc.h"
+#include "simgrid/modelchecker.h"
 #include "simgrid/msg.h"
 #include <xbt/synchro.h>
 
