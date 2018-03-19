@@ -720,10 +720,23 @@ static void action_allgatherv(const char *const *action) {
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
   std::vector<int> disps(comm_size, 0);
 
-  MPI_Datatype MPI_CURRENT_TYPE =
-      (action[3 + comm_size] && action[4 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{
-      (action[3 + comm_size] && action[4 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE};
+  int datatype_index = 0, disp_index = 0;
+  if (action[3 + 2 * comm_size]) { /* datatype + disp are specified */
+    datatype_index = 3 + comm_size;
+    disp_index     = datatype_index + 1;
+  } else if (action[3 + 2 * comm_size]) { /* disps specified; datatype is not specified; use the default one */
+    datatype_index = -1;
+    disp_index     = 3 + comm_size;
+  } else if (action[3 + comm_size]) { /* only datatype, no disp specified */
+    datatype_index = 3 + comm_size;
+  }
+
+  if (disp_index != 0) {
+    std::copy(action[disp_index], action[disp_index + comm_size], disps.begin());
+  }
+
+  MPI_Datatype MPI_CURRENT_TYPE{(datatype_index > 0) ? decode_datatype(action[datatype_index]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(datatype_index > 0) ? decode_datatype(action[datatype_index]) : MPI_DEFAULT_TYPE};
 
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
 
