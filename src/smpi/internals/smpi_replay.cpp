@@ -176,7 +176,7 @@ static void action_compute(const char *const *action)
 static void action_send(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
-  int to = atoi(action[2]);
+  int to       = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
@@ -200,7 +200,7 @@ static void action_send(const char *const *action)
 static void action_Isend(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
-  int to = atoi(action[2]);
+  int to       = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
@@ -224,7 +224,7 @@ static void action_Isend(const char *const *action)
 
 static void action_recv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 2, 1)
-  int from = atoi(action[2]);
+  int from     = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
   MPI_Status status;
@@ -256,7 +256,7 @@ static void action_recv(const char *const *action) {
 static void action_Irecv(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
-  int from = atoi(action[2]);
+  int from     = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
@@ -385,7 +385,7 @@ static void action_bcast(const char *const *action)
   CHECK_ACTION_PARAMS(action, 1, 2)
   double size = parse_double(action[2]);
   double clock = smpi_process()->simulated_elapsed();
-  int root     = (action[3]) ? atoi(action[3]) : 0;
+  int root     = (action[3]) ? std::stoi(action[3]) : 0;
   /* Initialize MPI_CURRENT_TYPE in order to decrease the number of the checks */
   MPI_Datatype MPI_CURRENT_TYPE = (action[3] && action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
@@ -408,7 +408,7 @@ static void action_reduce(const char *const *action)
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
-  int root         = (action[4]) ? atoi(action[4]) : 0;
+  int root         = (action[4]) ? std::stoi(action[4]) : 0;
 
   MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
 
@@ -490,7 +490,7 @@ static void action_gather(const char *const *action) {
 
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
   void *recv = nullptr;
-  int root   = (action[4]) ? atoi(action[4]) : 0;
+  int root   = (action[4]) ? std::stoi(action[4]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if(rank==root)
@@ -527,7 +527,7 @@ static void action_scatter(const char* const* action)
 
   void* send = smpi_get_tmp_sendbuffer(send_size * MPI_CURRENT_TYPE->size());
   void* recv = nullptr;
-  int root   = (action[4]) ? atoi(action[4]) : 0;
+  int root   = (action[4]) ? std::stoi(action[4]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if (rank == root)
@@ -568,11 +568,11 @@ static void action_gatherv(const char *const *action) {
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
   void *recv = nullptr;
   for(int i=0;i<comm_size;i++) {
-    (*recvcounts)[i] = atoi(action[i + 3]);
+    (*recvcounts)[i] = std::stoi(action[i + 3]);
   }
   int recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
 
-  int root = (action[3 + comm_size]) ? atoi(action[3 + comm_size]) : 0;
+  int root = (action[3 + comm_size]) ? std::stoi(action[3 + comm_size]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if(rank==root)
@@ -615,11 +615,11 @@ static void action_scatterv(const char* const* action)
   void* send = nullptr;
   void* recv = smpi_get_tmp_recvbuffer(recv_size * MPI_CURRENT_TYPE->size());
   for (int i = 0; i < comm_size; i++) {
-    (*sendcounts)[i] = atoi(action[i + 2]);
+    (*sendcounts)[i] = std::stoi(action[i + 2]);
   }
   int send_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
 
-  int root = (action[3 + comm_size]) ? atoi(action[3 + comm_size]) : 0;
+  int root = (action[3 + comm_size]) ? std::stoi(action[3 + comm_size]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if (rank == root)
@@ -653,7 +653,7 @@ static void action_reducescatter(const char *const *action) {
   MPI_Datatype MPI_CURRENT_TYPE = (action[3 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
 
   for(int i=0;i<comm_size;i++) {
-    recvcounts->push_back(atoi(action[i + 2]));
+    recvcounts->push_back(std::stoi(action[i + 2]));
   }
   int size{std::accumulate(recvcounts->begin(), recvcounts->end(), 0)};
 
@@ -683,8 +683,8 @@ static void action_allgather(const char *const *action) {
   double clock = smpi_process()->simulated_elapsed();
 
   CHECK_ACTION_PARAMS(action, 2, 2)
-  int sendcount=atoi(action[2]);
-  int recvcount=atoi(action[3]);
+  int sendcount = std::stoi(action[2]);
+  int recvcount = std::stoi(action[3]);
 
   MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
   MPI_Datatype MPI_CURRENT_TYPE2{(action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
@@ -716,7 +716,7 @@ static void action_allgatherv(const char *const *action) {
 
   int comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
-  int sendcount=atoi(action[2]);
+  int sendcount = std::stoi(action[2]);
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
   std::vector<int> disps(comm_size, 0);
 
@@ -741,7 +741,7 @@ static void action_allgatherv(const char *const *action) {
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
 
   for(int i=0;i<comm_size;i++) {
-    (*recvcounts)[i] = atoi(action[i + 3]);
+    (*recvcounts)[i] = std::stoi(action[i + 3]);
   }
   int recv_sum  = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
   void *recvbuf = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
@@ -791,8 +791,8 @@ static void action_allToAllv(const char *const *action) {
   void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* MPI_CURRENT_TYPE2->size());
 
   for(int i=0;i<comm_size;i++) {
-    (*sendcounts)[i] = atoi(action[3 + i]);
-    (*recvcounts)[i] = atoi(action[4 + comm_size + i]);
+    (*sendcounts)[i] = std::stoi(action[3 + i]);
+    (*recvcounts)[i] = std::stoi(action[4 + comm_size + i]);
   }
   int send_size = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
   int recv_size = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
