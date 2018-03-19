@@ -230,3 +230,40 @@ void smpi_destroy_global_memory_segments(){
 #endif
 }
 
+static int sendbuffer_size = 0;
+static char* sendbuffer    = nullptr;
+static int recvbuffer_size = 0;
+static char* recvbuffer    = nullptr;
+
+//allocate a single buffer for all sends, growing it if needed
+void* smpi_get_tmp_sendbuffer(int size)
+{
+  if (not smpi_process()->replaying())
+    return xbt_malloc(size);
+  if (sendbuffer_size<size){
+    sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
+    sendbuffer_size=size;
+  }
+  return sendbuffer;
+}
+
+//allocate a single buffer for all recv
+void* smpi_get_tmp_recvbuffer(int size){
+  if (not smpi_process()->replaying())
+    return xbt_malloc(size);
+  if (recvbuffer_size<size){
+    recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
+    recvbuffer_size=size;
+  }
+  return recvbuffer;
+}
+
+void smpi_free_tmp_buffer(void* buf){
+  if (not smpi_process()->replaying())
+    xbt_free(buf);
+}
+
+void smpi_free_replay_tmp_buffers(){
+  xbt_free(sendbuffer);
+  xbt_free(recvbuffer);
+}

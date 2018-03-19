@@ -27,10 +27,6 @@ static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 
 static MPI_Datatype MPI_DEFAULT_TYPE;
 
-static int sendbuffer_size = 0;
-static char* sendbuffer    = nullptr;
-static int recvbuffer_size = 0;
-static char* recvbuffer    = nullptr;
 
 class ReplayActionArg {
   ReplayActionArg() {}
@@ -52,34 +48,6 @@ static std::vector<MPI_Request>* get_reqq_self()
 static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
 {
    reqq.insert({Actor::self()->getPid(), mpi_request});
-}
-
-//allocate a single buffer for all sends, growing it if needed
-void* smpi_get_tmp_sendbuffer(int size)
-{
-  if (not smpi_process()->replaying())
-    return xbt_malloc(size);
-  if (sendbuffer_size<size){
-    sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
-    sendbuffer_size=size;
-  }
-  return sendbuffer;
-}
-
-//allocate a single buffer for all recv
-void* smpi_get_tmp_recvbuffer(int size){
-  if (not smpi_process()->replaying())
-    return xbt_malloc(size);
-  if (recvbuffer_size<size){
-    recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
-    recvbuffer_size=size;
-  }
-  return recvbuffer;
-}
-
-void smpi_free_tmp_buffer(void* buf){
-  if (not smpi_process()->replaying())
-    xbt_free(buf);
 }
 
 /* Helper function */
@@ -887,8 +855,7 @@ void smpi_replay_main(int* argc, char*** argv)
   if(active_processes==0){
     /* Last process alive speaking: end the simulated timer */
     XBT_INFO("Simulation time %f", smpi_process()->simulated_elapsed());
-    xbt_free(sendbuffer);
-    xbt_free(recvbuffer);
+    smpi_free_replay_tmp_buffers();
   }
 
   TRACE_smpi_comm_in(Actor::self()->getPid(), "smpi_replay_run_finalize", new simgrid::instr::NoOpTIData("finalize"));
