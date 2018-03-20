@@ -10,7 +10,9 @@
 #include <simgrid/host.h>
 #include <simgrid/instr.h>
 #include <simgrid/plugins/live_migration.h>
+#include <simgrid/storage.h>
 #include <simgrid/vm.h>
+#include <simgrid/zone.h>
 #include <xbt/base.h>
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
@@ -34,8 +36,15 @@ SG_BEGIN_DECL()
 #define msg_as_t msg_netzone_t /* portability macro */
 typedef sg_netzone_t msg_netzone_t;
 
-/* ******************************** Host ************************************ */
+#define MSG_zone_get_root() sg_zone_get_root()
+#define MSG_zone_get_name(zone) sg_zone_get_name(zone)
+#define MSG_zone_get_by_name(name) sg_zone_get_by_name(name)
+#define MSG_zone_get_sons(zone, whereto) sg_zone_get_sons(zone, whereto)
+#define MSG_zone_get_property_value(zone, name) sg_zone_get_property_value(zone, name)
+#define MSG_zone_set_property_value(zone, name, value) sg_zone_set_property_value(zone, name, value)
+#define MSG_zone_get_hosts(zone, whereto) sg_zone_get_hosts(zone, whereto)
 
+/* ******************************** Hosts ************************************ */
 typedef sg_host_t msg_host_t;
 
 #define MSG_get_host_number() sg_host_count()
@@ -65,29 +74,13 @@ typedef sg_host_t msg_host_t;
 #define MSG_host_set_property_value(host, name, value) sg_host_set_property_value(host, name, value)
 #define MSG_host_get_process_list(host, whereto) sg_host_get_actor_list(host, whereto)
 
-XBT_PUBLIC_DATA int sg_storage_max_file_descriptors;
-/* ******************************** Task ************************************ */
+XBT_ATTRIB_DEPRECATED_v320("Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() "
+                           "completely.") static inline double MSG_host_get_current_power_peak(msg_host_t host)
+{
+  return sg_host_speed(host);
+}
 
-typedef struct s_simdata_task_t* simdata_task_t;
-
-typedef struct msg_task {
-  char *name;                   /**< @brief task name if any */
-  simdata_task_t simdata;       /**< @brief simulator data */
-  void *data;                   /**< @brief user data */
-  long long int counter;        /* task unique identifier for instrumentation */
-  char *category;               /* task category for instrumentation */
-} s_msg_task_t;
-
-/** @brief Task datatype.
-    @ingroup m_task_management
-
-    A <em>task</em> may then be defined by a <em>computing
-    amount</em>, a <em>message size</em> and some <em>private
-    data</em>.
- */
-typedef struct msg_task *msg_task_t;
-
-/* ******************************** VM ************************************* */
+/* ******************************** VMs ************************************* */
 typedef sg_vm_t msg_vm_t;
 
 #define MSG_vm_create_core(vm, name) sg_vm_create_core(vm, name)
@@ -112,17 +105,24 @@ XBT_ATTRIB_DEPRECATED_v322("Use sg_vm_create_migratable() from the live migratio
 #define MSG_vm_shutdown(vm) sg_vm_shutdown(vm)
 #define MSG_vm_destroy(vm) sg_vm_destroy(vm)
 
+/* ******************************** Storage ************************************ */
+typedef sg_storage_t msg_storage_t;
+
+#define MSG_storage_get_name(storage) sg_storage_get_name(storage)
+#define MSG_storage_get_by_name(name) sg_storage_get_by_name(name)
+#define MSG_storage_get_properties(storage) sg_storage_get_properties(storage)
+#define MSG_storage_set_property_value(storage, name, value) sg_storage_set_property_value(storage, name, value)
+#define MSG_storage_get_property_value(storage, name) sg_storage_get_property_value(storage, name)
+#define MSG_storages_as_dynar() sg_storages_as_dynar()
+#define MSG_storage_set_data(storage, data) sg_storage_set_data(storage, data)
+#define MSG_storage_get_data(storage) sg_storage_get_data(storage)
+#define MSG_storage_get_host(storage) sg_storage_get_host(storage)
+#define MSG_storage_read(storage, size) sg_storage_read(storage, size)
+#define MSG_storage_write(storage, size) sg_storage_write(storage, size)
+
 /* ******************************** File ************************************ */
 typedef sg_file_t msg_file_t;
-
-/* ******************************** Storage ************************************ */
-
-/** @brief Storage datatype.
- *  @ingroup msg_storage_management
- *
- *  You should consider this as an opaque object.
- */
-typedef sg_storage_t msg_storage_t;
+XBT_PUBLIC_DATA int sg_storage_max_file_descriptors;
 
 /**
  * \brief @brief Communication action.
@@ -131,6 +131,28 @@ typedef sg_storage_t msg_storage_t;
  * Object representing an ongoing communication between processes. Such beast is usually obtained by using #MSG_task_isend, #MSG_task_irecv or friends.
  */
 typedef sg_msg_Comm* msg_comm_t;
+
+/* ******************************** Task ************************************ */
+
+typedef struct s_simdata_task_t* simdata_task_t;
+
+typedef struct msg_task {
+  char* name;             /**< @brief task name if any */
+  simdata_task_t simdata; /**< @brief simulator data */
+  void* data;             /**< @brief user data */
+  long long int counter;  /* task unique identifier for instrumentation */
+  char* category;         /* task category for instrumentation */
+} s_msg_task_t;
+
+/** @brief Task datatype.
+    @ingroup m_task_management
+
+    A <em>task</em> may then be defined by a <em>computing
+    amount</em>, a <em>message size</em> and some <em>private
+    data</em>.
+ */
+
+typedef struct msg_task* msg_task_t;
 
 /** \brief Default value for an uninitialized #msg_task_t.
     \ingroup m_task_management
@@ -189,61 +211,13 @@ XBT_PUBLIC void MSG_init_nocheck(int* argc, char** argv);
 XBT_PUBLIC msg_error_t MSG_main();
 XBT_PUBLIC void MSG_function_register(const char* name, xbt_main_func_t code);
 XBT_PUBLIC void MSG_function_register_default(xbt_main_func_t code);
+XBT_PUBLIC void MSG_create_environment(const char* file);
 XBT_PUBLIC void MSG_launch_application(const char* file);
 /*Bypass the parser */
 XBT_PUBLIC void MSG_set_function(const char* host_id, const char* function_name, xbt_dynar_t arguments);
 
 XBT_PUBLIC double MSG_get_clock();
 XBT_PUBLIC unsigned long int MSG_get_sent_msg();
-
-/************************** Net Zones ***********************************/
-XBT_PUBLIC sg_netzone_t sg_zone_get_root();
-#define MSG_zone_get_root() sg_zone_get_root()
-XBT_PUBLIC const char* sg_zone_get_name(sg_netzone_t zone);
-#define MSG_zone_get_name(zone) sg_zone_get_name(zone)
-XBT_PUBLIC sg_netzone_t sg_zone_get_by_name(const char* name);
-#define MSG_zone_get_by_name(name) sg_zone_get_by_name(name)
-XBT_PUBLIC void sg_zone_get_sons(sg_netzone_t zone, xbt_dict_t whereto);
-#define MSG_zone_get_sons(zone, whereto) sg_zone_get_sons(zone, whereto)
-XBT_PUBLIC const char* sg_zone_get_property_value(sg_netzone_t as, const char* name);
-#define MSG_zone_get_property_value(zone, name) sg_zone_get_property_value(zone, name)
-XBT_PUBLIC void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, char* value);
-#define MSG_zone_set_property_value(zone, name, value) sg_zone_set_property_value(zone, name, value)
-XBT_PUBLIC void sg_zone_get_hosts(sg_netzone_t zone, xbt_dynar_t whereto);
-#define MSG_zone_get_hosts(zone, whereto) sg_zone_get_hosts(zone, whereto)
-
-/************************** Storage handling ***********************************/
-XBT_PUBLIC const char* sg_storage_get_name(sg_storage_t storage);
-#define MSG_storage_get_name(storage) sg_storage_get_name(storage)
-XBT_PUBLIC sg_storage_t sg_storage_get_by_name(const char* name);
-#define MSG_storage_get_by_name(name) sg_storage_get_by_name(name)
-XBT_PUBLIC xbt_dict_t sg_storage_get_properties(sg_storage_t storage);
-#define MSG_storage_get_properties(storage) sg_storage_get_properties(storage)
-XBT_PUBLIC void sg_storage_set_property_value(sg_storage_t storage, const char* name, char* value);
-#define MSG_storage_set_property_value(storage, name, value) sg_storage_set_property_value(storage, name, value)
-XBT_PUBLIC const char* sg_storage_get_property_value(sg_storage_t storage, const char* name);
-#define MSG_storage_get_property_value(storage, name) sg_storage_get_property_value(storage, name)
-XBT_PUBLIC xbt_dynar_t sg_storages_as_dynar();
-#define MSG_storages_as_dynar() sg_storages_as_dynar()
-XBT_PUBLIC void sg_storage_set_data(sg_storage_t host, void* data);
-#define MSG_storage_set_data(storage, data) sg_storage_set_data(storage, data)
-XBT_PUBLIC void* sg_storage_get_data(sg_storage_t storage);
-#define MSG_storage_get_data(storage) sg_storage_get_data(storage)
-XBT_PUBLIC const char* sg_storage_get_host(sg_storage_t storage);
-#define MSG_storage_get_host(storage) sg_storage_get_host(storage)
-XBT_PUBLIC sg_size_t sg_storage_read(sg_storage_t storage, sg_size_t size);
-#define MSG_storage_read(storage, size) sg_storage_read(storage, size)
-XBT_PUBLIC sg_size_t sg_storage_write(sg_storage_t storage, sg_size_t size);
-#define MSG_storage_write(storage, size) sg_storage_write(storage, size)
-
-/************************** Host handling ***********************************/
-XBT_ATTRIB_DEPRECATED_v320("Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() "
-                           "completely.") static inline double MSG_host_get_current_power_peak(msg_host_t host)
-{
-  return MSG_host_get_speed(host);
-}
-
-XBT_PUBLIC void MSG_create_environment(const char* file);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC msg_process_t MSG_process_create(const char* name, xbt_main_func_t code, void* data, msg_host_t host);

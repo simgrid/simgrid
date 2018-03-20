@@ -676,7 +676,9 @@ set(headers_to_install
   include/simgrid/kernel/future.hpp
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/storage.h
   include/simgrid/vm.h
+  include/simgrid/zone.h
   include/simgrid/s4u/forward.hpp
   include/simgrid/s4u/Activity.hpp
   include/simgrid/s4u/Actor.hpp
