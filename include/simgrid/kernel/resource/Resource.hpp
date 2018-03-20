@@ -11,6 +11,8 @@
 #include <xbt/str.h>
 #include <xbt/utility.hpp>
 
+#include <string>
+
 namespace simgrid {
 namespace kernel {
 namespace resource {
