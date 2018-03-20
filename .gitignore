@@ -221,8 +221,6 @@ teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/mutex-handling/mutex-handling
 teshsuite/mc/mutex-handling/without-mutex-handling
 teshsuite/mc/random-bug/random-bug
-teshsuite/msg/actions-comm/actions-comm
-teshsuite/msg/actions-storage/actions-storage
 teshsuite/msg/app-bittorrent/bittorrent
 teshsuite/msg/app-chainsend/chainsend
 teshsuite/msg/app-pingpong/app-pingpong
