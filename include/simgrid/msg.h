@@ -197,15 +197,11 @@ XBT_PUBLIC sg_size_t sg_storage_write(sg_storage_t storage, sg_size_t size);
 #define MSG_storage_write(storage, size) sg_storage_write(storage, size)
 
 /************************** Host handling ***********************************/
-XBT_PUBLIC void MSG_host_get_process_list(msg_host_t h, xbt_dynar_t whereto);
-
 XBT_ATTRIB_DEPRECATED_v320("Use MSG_host_get_speed(): v3.20 will drop MSG_host_get_current_power_peak() "
                            "completely.") static inline double MSG_host_get_current_power_peak(msg_host_t host)
 {
   return MSG_host_get_speed(host);
 }
-
-XBT_PUBLIC double MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 
 XBT_PUBLIC void MSG_create_environment(const char* file);
 

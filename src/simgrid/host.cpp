@@ -129,6 +129,17 @@ double sg_host_speed(sg_host_t host)
   return host->getSpeed();
 }
 
+/** \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
+ *
+ * \param  host host to test
+ * \param pstate_index pstate to test
+ * \return Returns the processor speed associated with pstate_index
+ */
+double sg_host_get_pstate_speed(sg_host_t host, int pstate_index)
+{
+  return host->getPstateSpeed(pstate_index);
+}
+
 /** \ingroup m_host_management
  * \brief Return the number of cores.
  *
@@ -306,6 +317,19 @@ void sg_host_dump(sg_host_t host)
     for (auto const& elm : *props) {
       XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
     }
+  }
+}
+
+/** \brief Return the list of actors attached to an host.
+ *
+ * \param host a host
+ * \param whereto a dynar in which we should push actors living on that host
+ */
+void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
+{
+  for (auto& actor : host->extension<simgrid::simix::Host>()->process_list) {
+    s4u_Actor* p = actor.ciface();
+    xbt_dynar_push(whereto, &p);
   }
 }
 

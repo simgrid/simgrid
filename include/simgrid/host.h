@@ -93,6 +93,9 @@ XBT_PUBLIC xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host);
  */
 XBT_PUBLIC double sg_host_speed(sg_host_t host);
 #define MSG_host_get_speed(host) sg_host_speed(host)
+XBT_PUBLIC double sg_host_get_pstate_speed(sg_host_t host, int pstate_index);
+#define MSG_host_get_power_peak_at(host, pstate_index) sg_host_get_pstate_speed(host, pstate_index)
+
 XBT_PUBLIC double sg_host_get_available_speed(sg_host_t host);
 
 XBT_PUBLIC int sg_host_core_count(sg_host_t host);
@@ -163,6 +166,9 @@ XBT_PUBLIC void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links);
 XBT_PUBLIC double sg_host_route_latency(sg_host_t from, sg_host_t to);
 XBT_PUBLIC double sg_host_route_bandwidth(sg_host_t from, sg_host_t to);
 XBT_PUBLIC void sg_host_dump(sg_host_t ws);
+
+XBT_PUBLIC void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto);
+#define MSG_host_get_process_list(host, whereto) sg_host_get_actor_list(host, whereto)
 SG_END_DECL()
 
 #endif /* SIMGRID_HOST_H_ */
