@@ -11,6 +11,8 @@
 #include "simgrid/simix.hpp"
 #include "simgrid/storage.h"
 #include "src/surf/StorageImpl.hpp"
+
+#include <string>
 #include <unordered_map>
 
 namespace simgrid {
