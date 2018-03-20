@@ -339,6 +339,10 @@ std::list<LinkImpl*> NetworkNS3Action::links()
 {
   THROW_UNIMPLEMENTED;
 }
+void NetworkNS3Action::updateRemainingLazy(double /*now*/)
+{
+  THROW_IMPOSSIBLE;
+}
 
 /* Test whether a flow is suspended */
 bool NetworkNS3Action::isSuspended()

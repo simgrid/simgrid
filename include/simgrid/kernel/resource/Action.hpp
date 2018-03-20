@@ -6,7 +6,14 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_ACTION_HPP
 #define SIMGRID_KERNEL_RESOURCE_ACTION_HPP
 
-#include "src/surf/surf_interface.hpp"
+#include <simgrid/forward.h>
+#include <xbt/signal.hpp>
+#include <xbt/utility.hpp>
+
+#include <boost/heap/pairing_heap.hpp>
+#include <boost/optional.hpp>
+
+const int NO_MAX_DURATION = -1.0;
 
 namespace simgrid {
 namespace kernel {
@@ -107,11 +114,11 @@ public:
 
   /** @brief Update the maximum duration of the current action
    *  @param delta Amount to remove from the MaxDuration */
-  void updateMaxDuration(double delta) { double_update(&maxDuration_, delta, sg_surf_precision); }
+  void updateMaxDuration(double delta);
 
   /** @brief Update the remaining time of the current action
    *  @param delta Amount to remove from the remaining time */
-  void updateRemains(double delta) { double_update(&remains_, delta, sg_maxmin_precision * sg_surf_precision); }
+  void updateRemains(double delta);
 
   /** @brief Set the remaining time of the current action */
   void setRemains(double value) { remains_ = value; }
@@ -188,7 +195,7 @@ private:
   boost::optional<heap_type::handle_type> heapHandle_ = boost::none;
 
 public:
-  virtual void updateRemainingLazy(double now) { THROW_IMPOSSIBLE; };
+  virtual void updateRemainingLazy(double now) = 0;
   void heapInsert(heap_type& heap, double key, Action::Type hat);
   void heapRemove(heap_type& heap);
   void heapUpdate(heap_type& heap, double key, Action::Type hat);
@@ -196,7 +203,7 @@ public:
   kernel::lmm::Variable* getVariable() const { return variable_; }
   void setVariable(kernel::lmm::Variable* var) { variable_ = var; }
   double getLastUpdate() const { return lastUpdate_; }
-  void refreshLastUpdate() { lastUpdate_ = surf_get_clock(); }
+  void refreshLastUpdate();
   double getLastValue() const { return lastValue_; }
   void setLastValue(double val) { lastValue_ = val; }
   Action::Type getType() const { return type_; }

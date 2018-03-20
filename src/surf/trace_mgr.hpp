@@ -11,16 +11,24 @@
 #include <queue>
 #include <vector>
 
-extern "C" {
 
 /* Iterator within a trace */
-struct s_tmgr_trace_event_t {
+namespace simgrid {
+namespace kernel {
+namespace resource {
+class TraceEvent {
+public:
   tmgr_trace_t trace;
   unsigned int idx;
   sg_resource_t resource;
   bool free_me;
 };
-typedef s_tmgr_trace_event_t* tmgr_trace_event_t;
+
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid
+typedef simgrid::kernel::resource::TraceEvent* tmgr_trace_event_t;
+extern "C" {
 
 /**
  * \brief Free a trace event structure

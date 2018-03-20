@@ -54,13 +54,14 @@ class StorageN11Action : public StorageAction {
 public:
   StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
                    e_surf_action_storage_type_t type);
-  void suspend();
-  int unref();
-  void cancel();
-  void resume();
-  bool isSuspended();
-  void setMaxDuration(double duration);
-  void setSharingWeight(double priority);
+  void suspend() override;
+  int unref() override;
+  void cancel() override;
+  void resume() override;
+  bool isSuspended() override;
+  void setMaxDuration(double duration) override;
+  void setSharingWeight(double priority) override;
+  void updateRemainingLazy(double now) override;
 };
 
 }

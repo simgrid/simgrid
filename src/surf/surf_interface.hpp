@@ -21,8 +21,6 @@
 #include <string>
 #include <unordered_map>
 
-#define NO_MAX_DURATION -1.0
-
 /*********
  * Utils *
  *********/

@@ -188,6 +188,9 @@ void StorageN11Action::setSharingWeight(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }
-
+void StorageN11Action::updateRemainingLazy(double /*now*/)
+{
+  THROW_IMPOSSIBLE;
+}
 }
 }

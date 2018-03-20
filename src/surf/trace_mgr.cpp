@@ -126,7 +126,7 @@ tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t tr
 {
   tmgr_trace_event_t trace_iterator = nullptr;
 
-  trace_iterator           = new s_tmgr_trace_event_t;
+  trace_iterator           = new simgrid::kernel::resource::TraceEvent();
   trace_iterator->trace    = trace;
   trace_iterator->idx      = 0;
   trace_iterator->resource = resource;

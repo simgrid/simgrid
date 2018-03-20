@@ -6,12 +6,11 @@
 #ifndef SIMGRID_ROUTING_NETZONEIMPL_HPP
 #define SIMGRID_ROUTING_NETZONEIMPL_HPP
 
+#include <simgrid/forward.h>
+#include <simgrid/s4u/NetZone.hpp>
+#include <xbt/graph.h>
+
 #include <map>
-
-#include "xbt/graph.h"
-
-#include "simgrid/forward.h"
-#include "simgrid/s4u/NetZone.hpp"
 
 namespace simgrid {
 namespace kernel {
