@@ -9,6 +9,7 @@
 #include "src/plugins/vm/VmHostExt.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/surf/cpu_cas01.hpp"
+#include <simgrid/vm.h>
 #include <src/plugins/vm/VmLiveMigration.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
@@ -206,14 +207,14 @@ SG_BEGIN_DECL()
 /** @brief Create a new VM object with the default parameters
  * A VM is treated as a host. The name of the VM must be unique among all hosts.
  */
-msg_vm_t sg_vm_create_core(sg_host_t pm, const char* name)
+sg_vm_t sg_vm_create_core(sg_host_t pm, const char* name)
 {
   return sg_vm_create_multicore(pm, name, 1);
 }
 /** @brief Create a new VM object with the default parameters, but with a specified amount of cores
  * A VM is treated as a host. The name of the VM must be unique among all hosts.
  */
-msg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
+sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
 {
   xbt_assert(sg_host_by_name(name) == nullptr,
              "Cannot create a VM named %s: this name is already used by an host or a VM", name);

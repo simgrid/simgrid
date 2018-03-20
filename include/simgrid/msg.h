@@ -10,6 +10,7 @@
 #include <simgrid/host.h>
 #include <simgrid/instr.h>
 #include <simgrid/plugins/live_migration.h>
+#include <simgrid/vm.h>
 #include <xbt/base.h>
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
@@ -71,6 +72,28 @@ typedef struct msg_task *msg_task_t;
 
 /* ******************************** VM ************************************* */
 typedef sg_vm_t msg_vm_t;
+
+#define MSG_vm_create_core(vm, name) sg_vm_create_core(vm, name)
+#define MSG_vm_create_multicore(vm, name, coreAmount) sg_vm_create_multicore(vm, name, coreAmount)
+XBT_ATTRIB_DEPRECATED_v322("Use sg_vm_create_migratable() from the live migration plugin: "
+                           "v3.22 will drop MSG_vm_create() completely.") XBT_PUBLIC sg_vm_t
+    MSG_vm_create(sg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
+
+#define MSG_vm_is_created(vm) sg_vm_is_created(vm)
+#define MSG_vm_is_running(vm) sg_vm_is_running(vm)
+#define MSG_vm_is_suspended(vm) sg_vm_is_suspended(vm)
+
+#define MSG_vm_get_name(vm) sg_vm_get_name(vm)
+#define MSG_vm_set_ramsize(vm, size) sg_vm_set_ramsize(vm, size)
+#define MSG_vm_get_ramsize(vm) sg_vm_get_ramsize(vm)
+#define MSG_vm_set_bound(vm, bound) sg_vm_set_bound(vm, bound)
+#define MSG_vm_get_pm(vm) sg_vm_get_pm(vm)
+
+#define MSG_vm_start(vm) sg_vm_start(vm)
+#define MSG_vm_suspend(vm) sg_vm_suspend(vm)
+#define MSG_vm_resume(vm) sg_vm_resume(vm)
+#define MSG_vm_shutdown(vm) sg_vm_shutdown(vm)
+#define MSG_vm_destroy(vm) sg_vm_destroy(vm)
 
 /* ******************************** File ************************************ */
 typedef sg_file_t msg_file_t;
@@ -368,53 +391,6 @@ typedef struct s_msg_bar_t* msg_bar_t;
 XBT_PUBLIC msg_bar_t MSG_barrier_init(unsigned int count);
 XBT_PUBLIC void MSG_barrier_destroy(msg_bar_t bar);
 XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
-
-/** @brief Opaque type describing a Virtual Machine.
- *  @ingroup msg_VMs
- *
- * All this is highly experimental and the interface will probably change in the future.
- * Please don't depend on this yet (although testing is welcomed if you feel so).
- * Usual lack of guaranty of any kind applies here, and is even increased.
- *
- */
-
-XBT_PUBLIC int sg_vm_is_created(sg_vm_t vm);
-#define MSG_vm_is_created(vm) sg_vm_is_created(vm)
-XBT_PUBLIC int sg_vm_is_running(sg_vm_t vm);
-#define MSG_vm_is_running(vm) sg_vm_is_running(vm)
-XBT_PUBLIC int sg_vm_is_suspended(sg_vm_t vm);
-#define MSG_vm_is_suspended(vm) sg_vm_is_suspended(vm)
-
-XBT_PUBLIC const char* sg_vm_get_name(sg_vm_t vm);
-#define MSG_vm_get_name(vm) sg_vm_get_name(vm)
-XBT_PUBLIC void sg_vm_set_ramsize(sg_vm_t vm, size_t size);
-#define MSG_vm_set_ramsize(vm, size) sg_vm_set_ramsize(vm, size)
-XBT_PUBLIC size_t sg_vm_get_ramsize(sg_vm_t vm);
-#define MSG_vm_get_ramsize(vm) sg_vm_get_ramsize(vm)
-
-XBT_PUBLIC sg_vm_t sg_vm_create_core(sg_host_t pm, const char* name);
-#define MSG_vm_create_core(vm, name) sg_vm_create_core(vm, name)
-XBT_PUBLIC sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount);
-#define MSG_vm_create_multicore(vm, name, coreAmount) sg_vm_create_multicore(vm, name, coreAmount)
-
-XBT_ATTRIB_DEPRECATED_v322("Use sg_vm_create_migratable() from the live migration plugin: "
-                           "v3.22 will drop MSG_vm_create() completely.") XBT_PUBLIC msg_vm_t
-    MSG_vm_create(msg_host_t ind_pm, const char* name, int coreAmount, int ramsize, int mig_netspeed, int dp_intensity);
-
-XBT_PUBLIC void sg_vm_start(msg_vm_t vm);
-#define MSG_vm_start(vm) sg_vm_start(vm)
-XBT_PUBLIC void sg_vm_suspend(msg_vm_t vm);
-#define MSG_vm_suspend(vm) sg_vm_suspend(vm)
-XBT_PUBLIC void sg_vm_resume(msg_vm_t vm);
-#define MSG_vm_resume(vm) sg_vm_resume(vm)
-XBT_PUBLIC void sg_vm_shutdown(msg_vm_t vm);
-#define MSG_vm_shutdown(vm) sg_vm_shutdown(vm)
-XBT_PUBLIC void sg_vm_destroy(msg_vm_t vm);
-#define MSG_vm_destroy(vm) sg_vm_destroy(vm)
-XBT_PUBLIC sg_host_t sg_vm_get_pm(sg_vm_t vm);
-#define MSG_vm_get_pm(vm) sg_vm_get_pm(vm)
-XBT_PUBLIC void sg_vm_set_bound(sg_vm_t vm, double bound);
-#define MSG_vm_set_bound(vm, bound) sg_vm_set_bound(vm, bound)
 
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */

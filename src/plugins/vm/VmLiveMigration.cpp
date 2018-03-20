@@ -6,6 +6,7 @@
 #include <simgrid/plugins/live_migration.h>
 #include <simgrid/s4u.hpp>
 #include <simgrid/s4u/VirtualMachine.hpp>
+#include <simgrid/vm.h>
 #include <src/instr/instr_private.hpp>
 #include <src/plugins/vm/VirtualMachineImpl.hpp>
 #include <src/plugins/vm/VmHostExt.hpp>
@@ -321,7 +322,7 @@ simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, co
 
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
 
-  msg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
+  sg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
   sg_vm_set_dirty_page_intensity(vm, dp_intensity / 100.0);
   sg_vm_set_working_set_memory(vm, vm->getRamsize() * 0.9); // assume working set memory is 90% of ramsize
   sg_vm_set_migration_speed(vm, mig_netspeed * 1024 * 1024.0);
