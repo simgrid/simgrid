@@ -9,7 +9,8 @@ Please apply the following checklist before releasing.
 
 - Sources
   - The external patches (Debian, etc) are integrated.
-    The COPYING file is aligned with Debian's copyright file.
+    The COPYING file is aligned with Debian's copyright file, and the
+    dates of SimGrid chunks are accurate.
   - The version number is correctly marked in CMakeLists.txt, in macros
     SIMGRID_VERSION_MAJOR and friends. 
   - The "make distcheck" target works (testing that every files needed

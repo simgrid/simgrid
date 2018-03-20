@@ -14,7 +14,7 @@ Comment: Heavily adapted by the SimGrid team but remains under the original lice
 Files: src/xbt/mmalloc/* include/xbt/mmalloc.h
 Copyright: 
   Copyright (C) 1991, 1992 Free Software Foundation, Inc.
-  Copyright (C) 2003-2016. The SimGrid Team.
+  Copyright (C) 2003-2018. The SimGrid Team.
 License: LGPL-2.1
 Comment: these files used to be part of gdb, but were removed there
 
@@ -220,7 +220,7 @@ License: other
 Files: src/xbt/automaton/parserPromela.tab.cacc
 Copyright:
  Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
- Copyright (C) 2003-2016. The SimGrid team.
+ Copyright (C) 2003-2018. The SimGrid team.
 License: GPL-3+ and LGPL-2.1
 Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1) 
 
