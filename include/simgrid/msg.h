@@ -31,7 +31,7 @@ SG_BEGIN_DECL()
 
 /* *************************** Network Zones ******************************** */
 #define msg_as_t msg_netzone_t /* portability macro */
-typedef s4u_NetZone* msg_netzone_t;
+typedef sg_netzone_t msg_netzone_t;
 
 /* ******************************** Host ************************************ */
 
@@ -157,13 +157,20 @@ XBT_PUBLIC double MSG_get_clock();
 XBT_PUBLIC unsigned long int MSG_get_sent_msg();
 
 /************************** Net Zones ***********************************/
-XBT_PUBLIC msg_netzone_t MSG_zone_get_root();
-XBT_PUBLIC const char* MSG_zone_get_name(msg_netzone_t zone);
-XBT_PUBLIC msg_netzone_t MSG_zone_get_by_name(const char* name);
-XBT_PUBLIC void MSG_zone_get_sons(msg_netzone_t zone, xbt_dict_t whereto);
-XBT_PUBLIC const char* MSG_zone_get_property_value(msg_netzone_t as, const char* name);
-XBT_PUBLIC void MSG_zone_set_property_value(msg_netzone_t netzone, const char* name, char* value);
-XBT_PUBLIC void MSG_zone_get_hosts(msg_netzone_t zone, xbt_dynar_t whereto);
+XBT_PUBLIC sg_netzone_t sg_zone_get_root();
+#define MSG_zone_get_root() sg_zone_get_root()
+XBT_PUBLIC const char* sg_zone_get_name(sg_netzone_t zone);
+#define MSG_zone_get_name(zone) sg_zone_get_name(zone)
+XBT_PUBLIC sg_netzone_t sg_zone_get_by_name(const char* name);
+#define MSG_zone_get_by_name(name) sg_zone_get_by_name(name)
+XBT_PUBLIC void sg_zone_get_sons(sg_netzone_t zone, xbt_dict_t whereto);
+#define MSG_zone_get_sons(zone, whereto) sg_zone_get_sons(zone, whereto)
+XBT_PUBLIC const char* sg_zone_get_property_value(sg_netzone_t as, const char* name);
+#define MSG_zone_get_property_value(zone, name) sg_zone_get_property_value(zone, name)
+XBT_PUBLIC void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, char* value);
+#define MSG_zone_set_property_value(zone, name, value) sg_zone_set_property_value(zone, name, value)
+XBT_PUBLIC void sg_zone_get_hosts(sg_netzone_t zone, xbt_dynar_t whereto);
+#define MSG_zone_get_hosts(zone, whereto) sg_zone_get_hosts(zone, whereto)
 
 /************************** Storage handling ***********************************/
 XBT_PUBLIC const char* sg_storage_get_name(sg_storage_t storage);

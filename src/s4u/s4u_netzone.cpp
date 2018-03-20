@@ -3,13 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
-
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/msg.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/simix.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");
 
@@ -108,5 +109,51 @@ void NetZone::addRoute(sg_netpoint_t /*src*/, sg_netpoint_t /*dst*/, sg_netpoint
 {
   xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
 }
+
+} // namespace s4u
+} // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+SG_BEGIN_DECL()
+sg_netzone_t sg_zone_get_root()
+{
+  return simgrid::s4u::Engine::getInstance()->getNetRoot();
 }
-}; // namespace simgrid::s4u
+
+const char* sg_zone_get_name(sg_netzone_t netzone)
+{
+  return netzone->getCname();
+}
+
+sg_netzone_t sg_zone_get_by_name(const char* name)
+{
+  return simgrid::s4u::Engine::getInstance()->getNetzoneByNameOrNull(name);
+}
+
+void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)
+{
+  for (auto const& elem : *netzone->getChildren()) {
+    xbt_dict_set(whereto, elem->getCname(), static_cast<void*>(elem), nullptr);
+  }
+}
+
+const char* sg_zone_get_property_value(sg_netzone_t netzone, const char* name)
+{
+  return netzone->getProperty(name);
+}
+
+void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, char* value)
+{
+  netzone->setProperty(name, value);
+}
+
+void sg_zone_get_hosts(sg_netzone_t netzone, xbt_dynar_t whereto)
+{
+  /* converts vector to dynar */
+  std::vector<simgrid::s4u::Host*> hosts;
+  netzone->getHosts(&hosts);
+  for (auto const& host : hosts)
+    xbt_dynar_push(whereto, &host);
+}
+
+SG_END_DECL()
