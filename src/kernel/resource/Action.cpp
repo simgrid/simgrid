@@ -6,6 +6,7 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_CATEGORY(kernel, "Logging specific to the internals of SimGrid");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(resource, kernel, "Logging specific to the resources");
@@ -225,6 +226,20 @@ double Action::getRemains()
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
   return remains_;
+}
+
+void Action::updateMaxDuration(double delta)
+{
+  double_update(&maxDuration_, delta, sg_surf_precision);
+}
+void Action::updateRemains(double delta)
+{
+  double_update(&remains_, delta, sg_maxmin_precision * sg_surf_precision);
+}
+
+void Action::refreshLastUpdate()
+{
+  lastUpdate_ = surf_get_clock();
 }
 
 } // namespace surf
