@@ -52,6 +52,7 @@ namespace resource {
 class Action;
 class Model;
 class Resource;
+class TraceEvent;
 }
 namespace routing {
 class ClusterCreationArgs;
