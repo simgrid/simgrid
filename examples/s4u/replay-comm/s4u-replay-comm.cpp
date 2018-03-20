@@ -6,24 +6,23 @@
 #include "simgrid/s4u.hpp"
 #include "xbt/replay.hpp"
 #include "xbt/str.h"
+#include <boost/algorithm/string/join.hpp>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_comm, "Messages specific for this msg example");
 
 #define ACT_DEBUG(...)                                                                                                 \
-  if (XBT_LOG_ISENABLED(replay_comm, xbt_log_priority_verbose)) {                                                      \
-    char* NAME = xbt_str_join_array(action, " ");                                                                      \
+  if (XBT_LOG_ISENABLED(replay_comm, xbt_log_priority_verbose)) {                                                   \
+    std::string NAME = boost::algorithm::join(action, " ");                                                            \
     XBT_DEBUG(__VA_ARGS__);                                                                                            \
-    xbt_free(NAME);                                                                                                    \
   } else                                                                                                               \
   ((void)0)
 
-static void log_action(const char* const* action, double date)
+static void log_action(simgrid::xbt::ReplayAction& action, double date)
 {
   if (XBT_LOG_ISENABLED(replay_comm, xbt_log_priority_verbose)) {
-    char* name = xbt_str_join_array(action, " ");
-    XBT_VERB("%s %f", name, date);
-    xbt_free(name);
+    std::string s = boost::algorithm::join(action, " ");
+    XBT_VERB("%s %f", s.c_str(), date);
   }
 }
 
@@ -49,36 +48,37 @@ public:
   }
 
   /* My actions */
-  static void compute(const char* const* action)
+  static void compute(simgrid::xbt::ReplayAction& action)
   {
     double amount = std::stod(action[2]);
     double clock  = simgrid::s4u::Engine::getClock();
-    ACT_DEBUG("Entering %s", NAME);
+    ACT_DEBUG("Entering %s", NAME.c_str());
     simgrid::s4u::this_actor::execute(amount);
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 
-  static void send(const char* const* action)
+  static void send(simgrid::xbt::ReplayAction& action)
   {
     double size                 = std::stod(action[3]);
     std::string* payload        = new std::string(action[3]);
     double clock                = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getName() + "_" + action[2]);
-    ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME, size,
-              simgrid::s4u::this_actor::getCname(), to->getCname());
+    ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME.c_str(), size,
+    simgrid::s4u::this_actor::getCname(), to->getCname());
     to->put(payload, size);
     delete payload;
 
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 
-  static void recv(const char* const* action)
+  static void recv(simgrid::xbt::ReplayAction& action)
   {
     double clock = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr from =
         simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::getName());
 
-    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME, simgrid::s4u::this_actor::getCname(), from->getCname());
+    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::getCname(),
+    from->getCname());
     from->get();
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }

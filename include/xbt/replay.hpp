@@ -10,7 +10,6 @@
 
 #include <xbt/misc.h> /* SG_BEGIN_DECL */
 
-#ifdef __cplusplus
 #include <fstream>
 #include <queue>
 #include <unordered_map>
@@ -25,14 +24,9 @@ XBT_PUBLIC_DATA std::ifstream* action_fs;
 XBT_PUBLIC int replay_runner(int argc, char* argv[]);
 }
 }
-#endif
 
-SG_BEGIN_DECL()
-
-typedef void (*action_fun)(const char* const* args);
+typedef void (*action_fun)(simgrid::xbt::ReplayAction&);
 XBT_PUBLIC void xbt_replay_action_register(const char* action_name, action_fun function);
 XBT_PUBLIC action_fun xbt_replay_action_get(const char* action_name);
-
-SG_END_DECL()
 
 #endif

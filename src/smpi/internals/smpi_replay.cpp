@@ -12,6 +12,7 @@
 #include "smpi_request.hpp"
 #include "xbt/replay.hpp"
 
+#include <boost/algorithm/string/join.hpp>
 #include <memory>
 #include <numeric>
 #include <unordered_map>
@@ -28,25 +29,21 @@ static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 static MPI_Datatype MPI_DEFAULT_TYPE;
 
 #define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
-    int i=0;\
-    while(action[i]!=nullptr)\
-     i++;\
-    if(i<mandatory+2)                                           \
+    if(action.size()<static_cast<unsigned long>(mandatory+2))                                           \
     THROWF(arg_error, 0, "%s replay failed.\n" \
-          "%d items were given on the line. First two should be process_id and action.  " \
-          "This action needs after them %d mandatory arguments, and accepts %d optional ones. \n" \
-          "Please contact the Simgrid team if support is needed", __FUNCTION__, i, mandatory, optional);\
+          "%lu items were given on the line. First two should be process_id and action.  " \
+          "This action needs after them %lu mandatory arguments, and accepts %lu optional ones. \n" \
+          "Please contact the Simgrid team if support is needed", __FUNCTION__, action.size(), static_cast<unsigned long>(mandatory), static_cast<unsigned long>(optional));\
   }
 
 class ReplayActionArg {
   ReplayActionArg() {}
 };
 
-static void log_timed_action (const char *const *action, double clock){
+static void log_timed_action (simgrid::xbt::ReplayAction& action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
-    char *name = xbt_str_join_array(action, " ");
-    XBT_VERB("%s %f", name, smpi_process()->simulated_elapsed()-clock);
-    xbt_free(name);
+    std::string s = boost::algorithm::join(action, " ");
+    XBT_VERB("%s %f", s.c_str(), smpi_process()->simulated_elapsed()-clock);
   }
 }
 
@@ -61,20 +58,16 @@ static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
 }
 
 /* Helper function */
-static double parse_double(const char *string)
+static double parse_double(std::string string)
 {
-  char *endptr;
-  double value = strtod(string, &endptr);
-  if (*endptr != '\0')
-    THROWF(unknown_error, 0, "%s is not a double", string);
-  return value;
+  return xbt_str_parse_double(string.c_str(), "%s is not a double");
 }
 
 
 //TODO: this logic should be moved inside the datatype class, to support all predefined types and get rid of is_replayable.
-static MPI_Datatype decode_datatype(const char *const action)
+static MPI_Datatype decode_datatype(std::string action)
 {
-  return simgrid::smpi::Datatype::decode(action);
+  return simgrid::smpi::Datatype::decode(const_cast<const char* const>(action.c_str()));
 }
 
 const char* encode_datatype(MPI_Datatype datatype)
@@ -88,11 +81,11 @@ const char* encode_datatype(MPI_Datatype datatype)
 namespace simgrid {
 namespace smpi {
 
-static void action_init(const char *const *action)
+static void action_init(simgrid::xbt::ReplayAction& action)
 {
   XBT_DEBUG("Initialize the counters");
   CHECK_ACTION_PARAMS(action, 0, 1)
-  if(action[2])
+  if (action.size() > 2)
     MPI_DEFAULT_TYPE = MPI_DOUBLE; // default MPE datatype
   else
     MPI_DEFAULT_TYPE = MPI_BYTE; // default TAU datatype
@@ -105,28 +98,28 @@ static void action_init(const char *const *action)
   set_reqq_self(new std::vector<MPI_Request>);
 }
 
-static void action_finalize(const char *const *action)
+static void action_finalize(simgrid::xbt::ReplayAction& action)
 {
   /* Nothing to do */
 }
 
-static void action_comm_size(const char *const *action)
+static void action_comm_size(simgrid::xbt::ReplayAction& action)
 {
   communicator_size = parse_double(action[2]);
   log_timed_action (action, smpi_process()->simulated_elapsed());
 }
 
-static void action_comm_split(const char *const *action)
+static void action_comm_split(simgrid::xbt::ReplayAction& action)
 {
   log_timed_action (action, smpi_process()->simulated_elapsed());
 }
 
-static void action_comm_dup(const char *const *action)
+static void action_comm_dup(simgrid::xbt::ReplayAction& action)
 {
   log_timed_action (action, smpi_process()->simulated_elapsed());
 }
 
-static void action_compute(const char *const *action)
+static void action_compute(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 1, 0)
   double clock = smpi_process()->simulated_elapsed();
@@ -140,14 +133,14 @@ static void action_compute(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_send(const char *const *action)
+static void action_send(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
   int to       = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
@@ -164,14 +157,14 @@ static void action_send(const char *const *action)
   log_timed_action(action, clock);
 }
 
-static void action_Isend(const char *const *action)
+static void action_Isend(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
   int to       = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
@@ -189,14 +182,15 @@ static void action_Isend(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_recv(const char *const *action) {
+static void action_recv(simgrid::xbt::ReplayAction& action)
+{
   CHECK_ACTION_PARAMS(action, 2, 1)
   int from     = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
   MPI_Status status;
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int src_traced = MPI_COMM_WORLD->group()->actor(from)->getPid();
@@ -220,14 +214,14 @@ static void action_recv(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_Irecv(const char *const *action)
+static void action_Irecv(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 2, 1)
   int from     = std::stoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -247,7 +241,7 @@ static void action_Irecv(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_test(const char* const* action)
+static void action_test(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process()->simulated_elapsed();
@@ -273,13 +267,14 @@ static void action_test(const char* const* action)
   log_timed_action (action, clock);
 }
 
-static void action_wait(const char *const *action){
+static void action_wait(simgrid::xbt::ReplayAction& action)
+{
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process()->simulated_elapsed();
   MPI_Status status;
 
-  xbt_assert(get_reqq_self()->size(), "action wait not preceded by any irecv or isend: %s",
-      xbt_str_join_array(action," "));
+  std::string s = boost::algorithm::join(action, " ");
+  xbt_assert(get_reqq_self()->size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
   MPI_Request request = get_reqq_self()->back();
   get_reqq_self()->pop_back();
 
@@ -304,7 +299,8 @@ static void action_wait(const char *const *action){
   log_timed_action (action, clock);
 }
 
-static void action_waitall(const char *const *action){
+static void action_waitall(simgrid::xbt::ReplayAction& action)
+{
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process()->simulated_elapsed();
   const unsigned int count_requests = get_reqq_self()->size();
@@ -336,7 +332,8 @@ static void action_waitall(const char *const *action){
   log_timed_action (action, clock);
 }
 
-static void action_barrier(const char *const *action){
+static void action_barrier(simgrid::xbt::ReplayAction& action)
+{
   double clock = smpi_process()->simulated_elapsed();
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::NoOpTIData("barrier"));
@@ -347,14 +344,14 @@ static void action_barrier(const char *const *action){
   log_timed_action (action, clock);
 }
 
-static void action_bcast(const char *const *action)
+static void action_bcast(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 1, 2)
   double size = parse_double(action[2]);
   double clock = smpi_process()->simulated_elapsed();
-  int root     = (action[3]) ? std::stoi(action[3]) : 0;
+  int root     = (action.size() > 3) ? std::stoi(action[3]) : 0;
   /* Initialize MPI_CURRENT_TYPE in order to decrease the number of the checks */
-  MPI_Datatype MPI_CURRENT_TYPE = (action[3] && action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -369,15 +366,15 @@ static void action_bcast(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_reduce(const char *const *action)
+static void action_reduce(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 2, 2)
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
-  int root         = (action[4]) ? std::stoi(action[4]) : 0;
+  int root         = (action.size() > 4) ? std::stoi(action[4]) : 0;
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 5) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -393,12 +390,13 @@ static void action_reduce(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_allReduce(const char *const *action) {
+static void action_allReduce(simgrid::xbt::ReplayAction& action)
+{
   CHECK_ACTION_PARAMS(action, 2, 1)
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
 
   double clock = smpi_process()->simulated_elapsed();
   int my_proc_id = Actor::self()->getPid();
@@ -414,14 +412,15 @@ static void action_allReduce(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_allToAll(const char *const *action) {
+static void action_allToAll(simgrid::xbt::ReplayAction& action)
+{
   CHECK_ACTION_PARAMS(action, 2, 2) //two mandatory (send and recv volumes) and two optional (corresponding datatypes)
   double clock = smpi_process()->simulated_elapsed();
-  int comm_size = MPI_COMM_WORLD->size();
+  unsigned long comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 5) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* MPI_CURRENT_TYPE->size());
   void *recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* MPI_CURRENT_TYPE2->size());
@@ -437,7 +436,8 @@ static void action_allToAll(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_gather(const char *const *action) {
+static void action_gather(simgrid::xbt::ReplayAction& action)
+{
   /* The structure of the gather action for the rank 0 (total 4 processes) is the following:
         0 gather 68 68 0 0 0
       where:
@@ -449,15 +449,15 @@ static void action_gather(const char *const *action) {
   */
   CHECK_ACTION_PARAMS(action, 2, 3)
   double clock = smpi_process()->simulated_elapsed();
-  int comm_size = MPI_COMM_WORLD->size();
+  unsigned long comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE = (action[5] && action[6]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action[5] && action[6]) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 6) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 6) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
   void *recv = nullptr;
-  int root   = (action[4]) ? std::stoi(action[4]) : 0;
+  int root   = (action.size() > 4) ? std::stoi(action[4]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if(rank==root)
@@ -473,7 +473,7 @@ static void action_gather(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_scatter(const char* const* action)
+static void action_scatter(simgrid::xbt::ReplayAction& action)
 {
   /* The structure of the scatter action for the rank 0 (total 4 processes) is the following:
         0 gather 68 68 0 0 0
@@ -486,15 +486,15 @@ static void action_scatter(const char* const* action)
   */
   CHECK_ACTION_PARAMS(action, 2, 3)
   double clock                   = smpi_process()->simulated_elapsed();
-  int comm_size                  = MPI_COMM_WORLD->size();
+  unsigned long comm_size        = MPI_COMM_WORLD->size();
   int send_size                  = parse_double(action[2]);
   int recv_size                  = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE  = (action[5] && action[6]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action[5] && action[6]) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 6) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 6) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
 
   void* send = smpi_get_tmp_sendbuffer(send_size * MPI_CURRENT_TYPE->size());
   void* recv = nullptr;
-  int root   = (action[4]) ? std::stoi(action[4]) : 0;
+  int root   = (action.size() > 4) ? std::stoi(action[4]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if (rank == root)
@@ -510,7 +510,8 @@ static void action_scatter(const char* const* action)
   log_timed_action(action, clock);
 }
 
-static void action_gatherv(const char *const *action) {
+static void action_gatherv(simgrid::xbt::ReplayAction& action)
+{
   /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
        0 gather 68 68 10 10 10 0 0 0
      where:
@@ -521,25 +522,25 @@ static void action_gatherv(const char *const *action) {
        5) 0 is the recv datatype id, see decode_datatype()
   */
   double clock = smpi_process()->simulated_elapsed();
-  int comm_size = MPI_COMM_WORLD->size();
+  unsigned long comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int send_size = parse_double(action[2]);
   std::vector<int> disps(comm_size, 0);
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
 
   MPI_Datatype MPI_CURRENT_TYPE =
-      (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{
-      (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[5 + comm_size]) : MPI_DEFAULT_TYPE};
+      (action.size() > 5 + comm_size) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5 + comm_size) ? decode_datatype(action[5 + comm_size])
+                                                                 : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
   void *recv = nullptr;
-  for(int i=0;i<comm_size;i++) {
+  for (unsigned int i = 0; i < comm_size; i++) {
     (*recvcounts)[i] = std::stoi(action[i + 3]);
   }
   int recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
 
-  int root = (action[3 + comm_size]) ? std::stoi(action[3 + comm_size]) : 0;
+  int root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if(rank==root)
@@ -556,7 +557,7 @@ static void action_gatherv(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_scatterv(const char* const* action)
+static void action_scatterv(simgrid::xbt::ReplayAction& action)
 {
   /* The structure of the scatterv action for the rank 0 (total 4 processes) is the following:
        0 gather 68 10 10 10 68 0 0 0
@@ -568,25 +569,25 @@ static void action_scatterv(const char* const* action)
        5) 0 is the recv datatype id, see decode_datatype()
   */
   double clock  = smpi_process()->simulated_elapsed();
-  int comm_size = MPI_COMM_WORLD->size();
+  unsigned long comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
   int recv_size = parse_double(action[2 + comm_size]);
   std::vector<int> disps(comm_size, 0);
   std::shared_ptr<std::vector<int>> sendcounts(new std::vector<int>(comm_size));
 
   MPI_Datatype MPI_CURRENT_TYPE =
-      (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{
-      (action[4 + comm_size] && action[5 + comm_size]) ? decode_datatype(action[5 + comm_size]) : MPI_DEFAULT_TYPE};
+      (action.size() > 5 + comm_size) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5 + comm_size) ? decode_datatype(action[5 + comm_size])
+                                                                 : MPI_DEFAULT_TYPE};
 
   void* send = nullptr;
   void* recv = smpi_get_tmp_recvbuffer(recv_size * MPI_CURRENT_TYPE->size());
-  for (int i = 0; i < comm_size; i++) {
+  for (unsigned int i = 0; i < comm_size; i++) {
     (*sendcounts)[i] = std::stoi(action[i + 2]);
   }
   int send_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
 
-  int root = (action[3 + comm_size]) ? std::stoi(action[3 + comm_size]) : 0;
+  int root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
   int rank = MPI_COMM_WORLD->rank();
 
   if (rank == root)
@@ -603,23 +604,25 @@ static void action_scatterv(const char* const* action)
   log_timed_action(action, clock);
 }
 
-static void action_reducescatter(const char *const *action) {
- /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
-      0 reduceScatter 275427 275427 275427 204020 11346849 0
-    where:
-      1) The first four values after the name of the action declare the recvcounts array
-      2) The value 11346849 is the amount of instructions
-      3) The last value corresponds to the datatype, see decode_datatype().
-*/
+static void action_reducescatter(simgrid::xbt::ReplayAction& action)
+{
+  /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
+       0 reduceScatter 275427 275427 275427 204020 11346849 0
+     where:
+       1) The first four values after the name of the action declare the recvcounts array
+       2) The value 11346849 is the amount of instructions
+       3) The last value corresponds to the datatype, see decode_datatype().
+ */
   double clock = smpi_process()->simulated_elapsed();
-  int comm_size = MPI_COMM_WORLD->size();
+  unsigned long comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 1)
   int comp_size = parse_double(action[2+comm_size]);
   int my_proc_id                     = Actor::self()->getPid();
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>);
-  MPI_Datatype MPI_CURRENT_TYPE = (action[3 + comm_size]) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE =
+      (action.size() > 3 + comm_size) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
 
-  for(int i=0;i<comm_size;i++) {
+  for (unsigned int i = 0; i < comm_size; i++) {
     recvcounts->push_back(std::stoi(action[i + 2]));
   }
   int size{std::accumulate(recvcounts->begin(), recvcounts->end(), 0)};
@@ -639,7 +642,8 @@ static void action_reducescatter(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_allgather(const char *const *action) {
+static void action_allgather(simgrid::xbt::ReplayAction& action)
+{
   /* The structure of the allgather action for the rank 0 (total 4 processes) is the following:
         0 allGather 275427 275427
     where:
@@ -653,8 +657,8 @@ static void action_allgather(const char *const *action) {
   int sendcount = std::stoi(action[2]);
   int recvcount = std::stoi(action[3]);
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4] && action[5]) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action[4] && action[5]) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 5) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
 
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
   void *recvbuf = smpi_get_tmp_recvbuffer(recvcount* MPI_CURRENT_TYPE2->size());
@@ -671,7 +675,8 @@ static void action_allgather(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_allgatherv(const char *const *action) {
+static void action_allgatherv(simgrid::xbt::ReplayAction& action)
+{
   /* The structure of the allgatherv action for the rank 0 (total 4 processes) is the following:
         0 allGatherV 275427 275427 275427 275427 204020
      where:
@@ -681,25 +686,26 @@ static void action_allgatherv(const char *const *action) {
   */
   double clock = smpi_process()->simulated_elapsed();
 
-  int comm_size = MPI_COMM_WORLD->size();
+  unsigned long comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size+1, 2)
   int sendcount = std::stoi(action[2]);
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
   std::vector<int> disps(comm_size, 0);
 
   int datatype_index = 0, disp_index = 0;
-  if (action[3 + 2 * comm_size]) { /* datatype + disp are specified */
+  if (action.size() > 3 + 2 * comm_size) { /* datatype + disp are specified */
     datatype_index = 3 + comm_size;
     disp_index     = datatype_index + 1;
-  } else if (action[3 + 2 * comm_size]) { /* disps specified; datatype is not specified; use the default one */
+  } else if (action.size() > 3 + 2 * comm_size) { /* disps specified; datatype is not specified; use the default one */
     datatype_index = -1;
     disp_index     = 3 + comm_size;
-  } else if (action[3 + comm_size]) { /* only datatype, no disp specified */
+  } else if (action.size() > 3 + comm_size) { /* only datatype, no disp specified */
     datatype_index = 3 + comm_size;
   }
 
   if (disp_index != 0) {
-    std::copy(action[disp_index], action[disp_index + comm_size], disps.begin());
+    for (unsigned int i = 0; i < comm_size; i++)
+      disps[i]          = std::stoi(action[disp_index + i]);
   }
 
   MPI_Datatype MPI_CURRENT_TYPE{(datatype_index > 0) ? decode_datatype(action[datatype_index]) : MPI_DEFAULT_TYPE};
@@ -707,7 +713,7 @@ static void action_allgatherv(const char *const *action) {
 
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
 
-  for(int i=0;i<comm_size;i++) {
+  for (unsigned int i = 0; i < comm_size; i++) {
     (*recvcounts)[i] = std::stoi(action[i + 3]);
   }
   int recv_sum  = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
@@ -726,7 +732,8 @@ static void action_allgatherv(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_allToAllv(const char *const *action) {
+static void action_allToAllv(simgrid::xbt::ReplayAction& action)
+{
   /* The structure of the allToAllV action for the rank 0 (total 4 processes) is the following:
         0 allToAllV 100 1 7 10 12 100 1 70 10 5
      where:
@@ -737,19 +744,17 @@ static void action_allToAllv(const char *const *action) {
   */
   double clock = smpi_process()->simulated_elapsed();
 
-  int comm_size = MPI_COMM_WORLD->size();
+  unsigned long comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
   std::shared_ptr<std::vector<int>> sendcounts(new std::vector<int>(comm_size));
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
   std::vector<int> senddisps(comm_size, 0);
   std::vector<int> recvdisps(comm_size, 0);
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action[4 + 2 * comm_size] && action[5 + 2 * comm_size])
-                                      ? decode_datatype(action[4 + 2 * comm_size])
-                                      : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action[4 + 2 * comm_size] && action[5 + 2 * comm_size])
-                                     ? decode_datatype(action[5 + 2 * comm_size])
-                                     : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE =
+      (action.size() > 5 + 2 * comm_size) ? decode_datatype(action[4 + 2 * comm_size]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5 + 2 * comm_size) ? decode_datatype(action[5 + 2 * comm_size])
+                                                                     : MPI_DEFAULT_TYPE};
 
   int send_buf_size=parse_double(action[2]);
   int recv_buf_size=parse_double(action[3+comm_size]);
@@ -757,7 +762,7 @@ static void action_allToAllv(const char *const *action) {
   void *sendbuf = smpi_get_tmp_sendbuffer(send_buf_size* MPI_CURRENT_TYPE->size());
   void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* MPI_CURRENT_TYPE2->size());
 
-  for(int i=0;i<comm_size;i++) {
+  for (unsigned int i = 0; i < comm_size; i++) {
     (*sendcounts)[i] = std::stoi(action[3 + i]);
     (*recvcounts)[i] = std::stoi(action[4 + comm_size + i]);
   }
