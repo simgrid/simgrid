@@ -8,6 +8,7 @@ set(EXTRA_DIST
   src/include/simgrid/sg_config.h
   src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
+  src/include/xbt/mmalloc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/mc/PageStore.hpp
@@ -741,7 +742,6 @@ set(headers_to_install
   include/xbt/log.hpp
   include/xbt/mallocator.h
   include/xbt/misc.h
-  include/xbt/mmalloc.h
   include/xbt/module.h
   include/xbt/parmap.h
   include/xbt/range.hpp

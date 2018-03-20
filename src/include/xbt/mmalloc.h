@@ -12,11 +12,11 @@
 #include "src/internal_config.h"
 #if HAVE_MMALLOC
 
-# include <sys/types.h>        /* for size_t */
-# include <stdio.h>            /* for NULL */
+#include <stdio.h>     /* for NULL */
+#include <sys/types.h> /* for size_t */
 
-#include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "xbt/dynar.h"
 
 SG_BEGIN_DECL()
 
@@ -27,13 +27,13 @@ SG_BEGIN_DECL()
  * The heap structure itself is an opaque object that shouldnt be messed with.
  */
 typedef struct mdesc s_xbt_mheap_t;
-typedef struct mdesc *xbt_mheap_t;
+typedef struct mdesc* xbt_mheap_t;
 
 /* Allocate SIZE bytes of memory (and memset it to 0).  */
 XBT_PUBLIC void* mmalloc(xbt_mheap_t md, size_t size);
 
 /* Allocate SIZE bytes of memory (and don't mess with it) */
-void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size);
+void* mmalloc_no_memset(xbt_mheap_t mdp, size_t size);
 
 /* Re-allocate the previously allocated block in void*, making the new block SIZE bytes long.  */
 XBT_PUBLIC void* mrealloc(xbt_mheap_t md, void* ptr, size_t size);
@@ -59,11 +59,11 @@ xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
-ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
+ssize_t mmalloc_get_busy_size(xbt_mheap_t, void* ptr);
 
 void* malloc_no_memset(size_t n);
 
 SG_END_DECL()
 
 #endif
-#endif                          /* SIMGRID_MMALLOC_H */
+#endif /* SIMGRID_MMALLOC_H */
