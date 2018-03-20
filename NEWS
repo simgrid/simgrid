@@ -3,8 +3,14 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | (_) |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) || |\__, |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|  /_/
-               (not released yet)
+               March 20 2018
 
+The Moscovitly-cold Spring release.
+
+ * SMPI: Allow to start new actors and ranks after simulation start.
+ * SMPI: Support ICC, better testing on classical proxy apps.
+ * Some kernel headers are now installed, allowing external plugins.
+ * (+ the classical bug fixes and doc improvement)
                     _               _____  _  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / / |( _ )
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | |/ _ \

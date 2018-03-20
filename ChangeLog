@@ -1,17 +1,35 @@
-SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
+SimGrid (3.19) Released March 20 2018
 
- MSG
- - Fix MSG_task_get_remaining_work_ratio() to return 1.0 for tasks that have
-   not started.
- - Remove parameter of MSG_process_killall().
-   Resetting the PID was bogus anyway (several actors could have the same PID).
+ The Moscovitly-cold Spring release.
+
+ SMPI user-visible improvements:
+ - Support of MPI_Type_create_subarray
+ - Unimplemented MPI calls now abort (instead of issuing a warning)
+   Some harmless calls around errhandlers still only issue a warning.
+ - MPI_Sendrecv was behaving badly when MPI_PROC_NULL was sender or receiver.
+ - Starting MPI ranks (or even MSG/S4U actors) once the simulation started
+   is now possible (mmap privatization was refactored to this end).
+   Adding new SMPI instances should also be technically doable now.
+
+ SMPI internal cleanups:
+ - Removed index notion from SMPI -- no more "getPid() - 1"!
+   In tracing files, actors are called rank-<PROCESS-ID> but these are
+   NOT the real ranks (tracing several communicators is not supported yet).
+ - Deprecate smpi_process_index() (will be removed in 3.22)
+ - Better testing on classical proxy apps, through an external project:
+   https://github.com/simgrid/SMPI-proxy-apps/
 
  Documentation
  - Use a graphical TOC to make it easier to find the documentation you need
  - Revamp the MSG tutorial
 
+ MSG
+ - Fix MSG_task_get_remaining_work_ratio(): return 1.0 for unstarted tasks.
+ - Remove parameter of MSG_process_killall().
+   Resetting the PID was bogus anyway (several actors could have the same PID).
+
  S4U
- - Execution->setHost() can be called after start() to migrate it.
+ - Execution->setHost() can be called after start(), to migrate it.
  - Comm::test_any() is now implemented.
  - s4u::Actor now has onCreation() and onDestruction() signals.
  - Install some kernel header files for the users' plugins and more.
@@ -19,42 +37,25 @@ SimGrid (3.19) NOT RELEASED YET (target: March 20 2018, 16:15:27 UTC)
     include/simgrid/kernel/resource/{Action,Resource,Model}.hpp
     include/simgrid/kernel/routing/*Zone.hpp
 
- XBT
- - Remove XBT_LOG_CONNECT, it should be useless nowadays.
-
  SimDag
  - SD_task_dependency_add(): remove unused parameters 'name' and 'data'.
 
- SMPI
- - The privatization of global variables via mmap() is now significantly more
-   flexible and allows the use of daemons with SMPI and to add new processes
-   while the simulation is running. (Adding new SMPI instances after the
-   simulation has already started should also be technically doable now.)
- - Removed index notion from SMPI -- no more "getPid() - 1"!
-   This also means that the trace files
-   now contain actors called rank-<PROCESS-ID>. These are NOT the real
-   ranks, because tracing several communicators right now is not supported.
- - Because of this, smpi_process_index() has now been deprecated and will
-   be removed in 3.21
- - Support of MPI_Type_create_subarray
- - SMPI will now crash and not just warn when encountering an unimplemented
-   call. Some exceptions are set (mainly for errhandler calls).
- - MPI_Sendrecv was behaving badly when MPI_PROC_NULL was sender or receiver.
-
- Build System:
+ Build System and other cleanups:
+ - Remove unused run-time parameter "tracing/onelink-only".
  - SimGrid now works with intel compilers (MC still buggy)
+ - Remove XBT_LOG_CONNECT, it should be useless nowadays.
 
  PLATFORM:
  - Rename FULLDUPLEX into SPLITDUPLEX (old name still accepted)
 
- TRACING
- - Remove unused run-time parameter "tracing/onelink-only".
-
  Fixed bugs:
+ - #194: Feature request: simgrid::s4u::Comm::test_any()
  - #245: migrating an actor does not migrate its execution
  - #254: Something seems wrong with s4u::Actor::kill(aid_t)
  - #256: Modernize FindSimGrid.cmake
  - #257: Fix (ab)use of CMake install
+
+----------------------------------------------------------------------------
 
 SimGrid (3.18) Released December 24 2017
 
@@ -147,6 +148,8 @@ SimGrid (3.18) Released December 24 2017
  - #222: Actor::kill() doesn't really kill and segfaults
  - #221: odd LMM warning when killing an actor
  - #120: Memory leak when the processes are forcefully killed
+
+----------------------------------------------------------------------------
 
 SimGrid (3.17) Released October 8 2017
 
