@@ -26,3 +26,6 @@ endif()
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
 
+# The library can obviously use the internal headers
+set_property(TARGET simgrid
+             APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
