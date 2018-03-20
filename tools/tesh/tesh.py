@@ -45,6 +45,8 @@ else:
 #
 #
 
+def isWindows():
+    return sys.platform.startswith('win')
 
 # Singleton metaclass that works in Python 2 & 3
 # http://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
@@ -106,6 +108,9 @@ except NameError:
 pgtokill = None
 
 def kill_process_group(pgid):
+    if pgid is None: # Nobody to kill. We don't know who to kill on windows, or we don't have anyone to kill on signal handler
+        return
+    
     # print("Kill process group {}".format(pgid))
     try:
         os.killpg(pgid, signal.SIGTERM)
@@ -316,7 +321,8 @@ class Cmd(object):
         try:
             proc = subprocess.Popen(args, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, start_new_session=True)
             try:
-                pgtokill = os.getpgid(proc.pid)
+                if not isWindows():
+                    pgtokill = os.getpgid(proc.pid)
             except OSError:
                 # os.getpgid failed. OK. No cleanup.
                 pass
