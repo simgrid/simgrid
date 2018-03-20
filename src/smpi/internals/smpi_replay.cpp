@@ -27,6 +27,16 @@ static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 
 static MPI_Datatype MPI_DEFAULT_TYPE;
 
+#define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
+    int i=0;\
+    while(action[i]!=nullptr)\
+     i++;\
+    if(i<mandatory+2)                                           \
+    THROWF(arg_error, 0, "%s replay failed.\n" \
+          "%d items were given on the line. First two should be process_id and action.  " \
+          "This action needs after them %d mandatory arguments, and accepts %d optional ones. \n" \
+          "Please contact the Simgrid team if support is needed", __FUNCTION__, i, mandatory, optional);\
+  }
 
 class ReplayActionArg {
   ReplayActionArg() {}
@@ -74,17 +84,6 @@ const char* encode_datatype(MPI_Datatype datatype)
 
   return datatype->encode();
 }
-
-#define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
-    int i=0;\
-    while(action[i]!=nullptr)\
-     i++;\
-    if(i<mandatory+2)                                           \
-    THROWF(arg_error, 0, "%s replay failed.\n" \
-          "%d items were given on the line. First two should be process_id and action.  " \
-          "This action needs after them %d mandatory arguments, and accepts %d optional ones. \n" \
-          "Please contact the Simgrid team if support is needed", __FUNCTION__, i, mandatory, optional);\
-  }
 
 namespace simgrid {
 namespace smpi {
