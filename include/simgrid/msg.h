@@ -36,17 +36,34 @@ typedef sg_netzone_t msg_netzone_t;
 
 /* ******************************** Host ************************************ */
 
-/** @brief Host datatype.
-    @ingroup m_host_management
-
-    A <em>location</em> (or <em>host</em>) is any possible place where
-    a process may run. Thus it is represented as a <em>physical
-    resource with computing capabilities</em>, some <em>mailboxes</em>
-    to enable running process to communicate with remote ones, and
-    some <em>private data</em> that can be only accessed by local
-    process.
- */
 typedef sg_host_t msg_host_t;
+
+#define MSG_get_host_number() sg_host_count()
+#define MSG_get_host_by_name(n) sg_host_by_name(n) /* Rewrite the old name into the new one transparently */
+
+#define MSG_hosts_as_dynar() sg_hosts_as_dynar()
+
+#define MSG_host_by_name(name) sg_host_by_name(name)
+#define MSG_host_get_name(host) sg_host_get_name(host)
+#define MSG_host_get_data(host) sg_host_user(host)
+#define MSG_host_set_data(host, data) sg_host_user_set(host, data)
+#define MSG_host_get_mounted_storage_list(host) sg_host_get_mounted_storage_list(host)
+#define MSG_host_get_attached_storage_list(host) host_get_attached_storage_list(host)
+#define MSG_host_get_speed(host) sg_host_speed(host)
+#define MSG_host_get_power_peak_at(host, pstate_index) sg_host_get_pstate_speed(host, pstate_index)
+#define MSG_host_get_core_number(host) sg_host_core_count(host)
+#define MSG_host_self() sg_host_self()
+#define MSG_host_get_nb_pstates(host) sg_host_get_nb_pstates(host)
+#define MSG_host_get_pstate(h) sg_host_get_pstate(h)
+#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
+#define MSG_host_on(h) sg_host_turn_on(h)
+#define MSG_host_off(h) sg_host_turn_off(h)
+#define MSG_host_is_on(h) sg_host_is_on(h)
+#define MSG_host_is_off(h) sg_host_is_off(h)
+#define MSG_host_get_properties(host) sg_host_get_properties(host)
+#define MSG_host_get_property_value(host, name) sg_host_get_property_value(host, name)
+#define MSG_host_set_property_value(host, name, value) sg_host_set_property_value(host, name, value)
+#define MSG_host_get_process_list(host, whereto) sg_host_get_actor_list(host, whereto)
 
 XBT_PUBLIC_DATA int sg_storage_max_file_descriptors;
 /* ******************************** Task ************************************ */
