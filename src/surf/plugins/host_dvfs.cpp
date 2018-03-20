@@ -12,7 +12,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <simgrid/msg.h>
 #include <simgrid/s4u/Engine.hpp>
 #include <string>
 #include <utility>
