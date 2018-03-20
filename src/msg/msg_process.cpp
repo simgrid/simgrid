@@ -40,7 +40,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
     simcall_process_set_data(smx_actor, nullptr);
   }
 
-  TRACE_msg_process_destroy(smx_actor->name, smx_actor->pid);
+  TRACE_msg_process_destroy(smx_actor->ciface());
   // free the data if a function was provided
   if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_actor->data);

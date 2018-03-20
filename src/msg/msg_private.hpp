@@ -84,8 +84,8 @@ struct s_MSG_Global_t {
 };
 typedef s_MSG_Global_t* MSG_Global_t;
 
-XBT_PRIVATE void TRACE_msg_process_create(std::string process_name, int process_pid, msg_host_t host);
-XBT_PRIVATE void TRACE_msg_process_destroy(std::string process_name, int process_pid);
+XBT_PRIVATE void TRACE_msg_process_create(msg_process_t process, msg_host_t host);
+XBT_PRIVATE void TRACE_msg_process_destroy(msg_process_t process);
 
 extern "C" {
 

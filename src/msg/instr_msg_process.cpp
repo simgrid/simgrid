@@ -29,10 +29,10 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
     link->startEvent(msg, "M", key);
 
     //destroy existing container of this process
-    TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process));
+    TRACE_msg_process_destroy(process);
 
     //create new container on the new_host location
-    TRACE_msg_process_create (MSG_process_get_name (process), MSG_process_get_PID (process), new_host);
+    TRACE_msg_process_create(process, new_host);
 
     //end link
     msg = simgrid::instr::Container::byName(instr_pid(process));
@@ -40,21 +40,21 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host)
   }
 }
 
-void TRACE_msg_process_create(std::string process_name, int process_pid, msg_host_t host)
+void TRACE_msg_process_create(msg_process_t process, msg_host_t host)
 {
   if (TRACE_actor_is_enabled()) {
     container_t host_container = simgrid::instr::Container::byName(host->getName());
-    new simgrid::instr::Container(process_name + "-" + std::to_string(process_pid), "MSG_PROCESS", host_container);
+    new simgrid::instr::Container(instr_pid(process), "MSG_PROCESS", host_container);
   }
 }
 
-void TRACE_msg_process_destroy(std::string process_name, int process_pid)
+void TRACE_msg_process_destroy(msg_process_t process)
 {
   if (TRACE_actor_is_enabled()) {
-    container_t process = simgrid::instr::Container::byNameOrNull(process_name + "-" + std::to_string(process_pid));
-    if (process) {
-      process->removeFromParent();
-      delete process;
+    container_t container = simgrid::instr::Container::byNameOrNull(instr_pid(process));
+    if (container) {
+      container->removeFromParent();
+      delete container;
     }
   }
 }
@@ -63,6 +63,6 @@ void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t proc
 {
   if (TRACE_actor_is_enabled() && status == SMX_EXIT_FAILURE) {
     //kill means that this process no longer exists, let's destroy it
-    TRACE_msg_process_destroy(process->getCname(), process->getPid());
+    TRACE_msg_process_destroy(process);
   }
 }
