@@ -28,12 +28,15 @@ static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 
 static MPI_Datatype MPI_DEFAULT_TYPE;
 
-#define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
-    if(action.size()<static_cast<unsigned long>(mandatory+2))                                           \
-    THROWF(arg_error, 0, "%s replay failed.\n" \
-          "%lu items were given on the line. First two should be process_id and action.  " \
-          "This action needs after them %lu mandatory arguments, and accepts %lu optional ones. \n" \
-          "Please contact the Simgrid team if support is needed", __FUNCTION__, action.size(), static_cast<unsigned long>(mandatory), static_cast<unsigned long>(optional));\
+#define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                               \
+  {                                                                                                                    \
+    if (action.size() < static_cast<unsigned long>(mandatory + 2))                                                     \
+      THROWF(arg_error, 0, "%s replay failed.\n"                                                                       \
+                           "%lu items were given on the line. First two should be process_id and action.  "            \
+                           "This action needs after them %lu mandatory arguments, and accepts %lu optional ones. \n"   \
+                           "Please contact the Simgrid team if support is needed",                                     \
+             __FUNCTION__, action.size(), static_cast<unsigned long>(mandatory),                                       \
+             static_cast<unsigned long>(optional));                                                                    \
   }
 
 class ReplayActionArg {
