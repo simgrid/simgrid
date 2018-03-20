@@ -44,6 +44,7 @@ SimGrid (3.19) Released March 20 2018
  - Remove unused run-time parameter "tracing/onelink-only".
  - SimGrid now works with intel compilers (MC still buggy)
  - Remove XBT_LOG_CONNECT, it should be useless nowadays.
+ - tesh kills subprocesses on timeout (but not on windows)
 
  PLATFORM:
  - Rename FULLDUPLEX into SPLITDUPLEX (old name still accepted)

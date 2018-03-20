@@ -11,8 +11,8 @@ Please apply the following checklist before releasing.
   - The external patches (Debian, etc) are integrated.
     The COPYING file is aligned with Debian's copyright file, and the
     dates of SimGrid chunks are accurate.
-  - The version number is correctly marked in CMakeLists.txt, in macros
-    SIMGRID_VERSION_MAJOR and friends. 
+  - The version number is correctly marked in CMakeLists.txt (in macros
+    SIMGRID_VERSION_*), and also in sonar-project.properties
   - The "make distcheck" target works (testing that every files needed
     to build and install are included in the archive)
 - Tests
@@ -113,7 +113,7 @@ the settings icon of the release you want to change.
     - libsimgrid3.XY conflicts with libsimgrid3.XX because of smpimain
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Create the template for the next release in ChangeLog and NEWS files
-- Change the release number in CMakeLists.txt and sonar-project.properties
+- Change the release number to 3.X.90 in CMakeLists.txt and sonar-project.properties
 - Deal with deprecations:
   - Introduce the XBT_ATTRIB_DEPRECATED_v??? macro for the next release.
   - Kill the one for the current release and remove all code that were
