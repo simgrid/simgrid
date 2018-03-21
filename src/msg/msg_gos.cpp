@@ -307,9 +307,8 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   return ret;
 }
 
-/* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
+/* Internal function used to factorize code between MSG_task_isend(), MSG_task_isend_bounded(), and MSG_task_dsend(). */
 static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* alias,
-                                                 int (*match_fun)(void*, void*, void*), void* match_data,
                                                  void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = nullptr;
@@ -328,7 +327,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
   /* Send it by calling SIMIX network layer */
   smx_activity_t act =
       simcall_comm_isend(myself->getImpl(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate, task,
-                         sizeof(void*), (simix_match_func_t)match_fun, cleanup, nullptr, match_data, detached);
+                         sizeof(void*), nullptr, cleanup, nullptr, nullptr, detached);
   t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(act);
 
   msg_comm_t comm = nullptr;
@@ -355,7 +354,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
  */
 msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 {
-  return MSG_task_isend_internal(task, alias, nullptr, nullptr, nullptr, 0);
+  return MSG_task_isend_internal(task, alias, nullptr, 0);
 }
 
 /** \ingroup msg_task_usage
@@ -372,7 +371,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
 {
   task->simdata->rate = maxrate;
-  return MSG_task_isend_internal(task, alias, nullptr, nullptr, nullptr, 0);
+  return MSG_task_isend_internal(task, alias, nullptr, 0);
 }
 
 /** \ingroup msg_task_usage
@@ -392,7 +391,7 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
  */
 void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
-  MSG_task_isend_internal(task, alias, nullptr, nullptr, cleanup, 1);
+  MSG_task_isend_internal(task, alias, cleanup, 1);
 }
 
 /** \ingroup msg_task_usage
