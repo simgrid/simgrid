@@ -209,60 +209,37 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   # But at the same time, we'd like to check if they work for all factories and all privatization algorithm
   # Thus the current matrix
 
-  # Test default selector: THREAD if available; RAW if not (with mmap privatization or none)
-  if(HAVE_THREAD_CONTEXTS)
-    ADD_TEST(test-smpi-mpich3-coll-thread      ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
-    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-thread    PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-  else()
-    if(HAVE_RAW_CONTEXTS)
-    ADD_TEST(test-smpi-mpich3-coll-raw      ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
-    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+  MACRO(ADD_MPICH3_COLL SELECTOR FACTORY PRIVATIZATION)
+    set(NAME "test-smpi-mpich3-coll-${SELECTOR}")
+    set(ARGS "-execarg=--cfg=smpi/coll-selector:${SELECTOR}" ${ARGN})
+    string(TOUPPER "HAVE_${FACTORY}_CONTEXTS" HAVE_FACTORY)
+    if(NOT "${FACTORY}" STREQUAL "" AND ${HAVE_FACTORY})
+      set(NAME "${NAME}-${FACTORY}")
+      set(ARGS ${ARGS} "-execarg=--cfg=contexts/factory:${FACTORY}")
     endif()
-  endif()
-  
-  # Test OMPI selector: CONTEXT if available; RAW if not (with mmap privatization or none)
-  if(HAVE_UCONTEXT_CONTEXTS)
-    ADD_TEST(test-smpi-mpich3-coll-ompi-ucontext ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:ucontext -execarg=--cfg=smpi/coll-selector:ompi -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/bcast:binomial_tree)
-    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-ompi-ucontext PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-  else()
-    if(HAVE_RAW_CONTEXTS)
-      ADD_TEST(test-smpi-mpich3-coll-ompi-raw ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll-selector:ompi -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/bcast:binomial_tree)
-    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-ompi-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+    if(NOT "${PRIVATIZATION}" STREQUAL "" AND HAVE_PRIVATIZATION)
+      set(NAME "${NAME}-${PRIVATIZATION}")
+      set(ARGS ${ARGS} "-execarg=--cfg=smpi/privatization:${PRIVATIZATION}")
     endif()
-  endif()
+    ADD_TEST(${NAME} ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist ${ARGS})
+    SET_TESTS_PROPERTIES(${NAME} PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+  ENDMACRO()
 
-  # Test MPICH selector: dlopen privatization and PTHREAD if exists (without priv and with raw if not)
-  if(HAVE_PRIVATIZATION AND HAVE_BOOST_CONTEXTS)
-    ADD_TEST(test-smpi-mpich3-coll-mpich-boost-dlopen ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:boost -execarg=--cfg=smpi/coll-selector:mpich -execarg=--cfg=smpi/privatization:dlopen)
-    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-mpich-boost-dlopen PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-  else()
-    if(HAVE_RAW_CONTEXTS)
-      ADD_TEST(test-smpi-mpich3-coll-mpich-raw ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll-selector:mpich -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
-      SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-mpich-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-    endif()
-  endif()
+  # Test default selector; default factory; default privatization
+  ADD_MPICH3_COLL(default "" "")
 
-  # Test MVAPICH2 selector: dlopen privatization and UCONTEXT if exists (without priv and with raw if not)
-  if(HAVE_PRIVATIZATION AND HAVE_UCONTEXT_CONTEXTS)
-    ADD_TEST(test-smpi-mpich3-coll-mvapich2-ucontext-dlopen ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:ucontext -execarg=--cfg=smpi/coll-selector:mvapich2 -execarg=--cfg=smpi/privatization:dlopen)
-    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-mvapich2-ucontext-dlopen PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-  else()
-    if(HAVE_RAW_CONTEXTS)
-      ADD_TEST(test-smpi-mpich3-coll-mvapich2-raw ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll-selector:mvapich2 -execarg=--cfg=smpi/privatization:${HAVE_PRIVATIZATION})
-      SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-mvapich2-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-    endif()
-  endif()
+  # Test OMPI selector: thread factory, dlopen privatization
+  ADD_MPICH3_COLL(ompi "thread" "dlopen" -execarg=--cfg=smpi/bcast:binomial_tree)
 
-  # Test IMPI selector: always raw, with dlopen if priv exists
-  if(HAVE_RAW_CONTEXTS)
-    if(HAVE_PRIVATIZATION)
-      ADD_TEST(test-smpi-mpich3-coll-impi-raw-dlopen ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll-selector:impi -execarg=--cfg=smpi/privatization:dlopen)
-      SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-impi-raw-dlopen  PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-    else()
-      ADD_TEST(test-smpi-mpich3-coll-impi-raw-nopriv ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll-selector:impi -execarg=--cfg=smpi/privatization:no)
-      SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-impi-raw-nopriv  PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
-    endif()
-  endif()
+  # Test MPICH selector: boost factory, dlopen privatization
+  ADD_MPICH3_COLL(mpich "boost" "dlopen")
+
+  # Test MVAPICH2 selector: ucontext factory, mmap privatization
+  ADD_MPICH3_COLL(mvapich2 "ucontext" "mmap")
+
+  # Test IMPI selector: raw factory, mmap privatization
+  ADD_MPICH3_COLL(impi "raw" "mmap")
+
 endif()
 
 set(examples_src  ${examples_src}
