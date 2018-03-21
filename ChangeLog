@@ -1,4 +1,42 @@
-SimGrid (3.20) NOT RELEASED YET (Release target: June 21. 2018 10:07 UTC)
+SimGrid (3.19.1) NOT RELEASED YET
+
+ The Fixed ABI Release.
+
+ As you may know, we are currently refactoring SimGrid in deep.
+ Upcoming SimGrid4 will be really different from SimGrid3: modular,
+ standard and extensible vs. layered, homegrown and rigid. C++ vs. C.
+
+ Our goal is to smooth this transition, with backward compatibility
+ and automatic update paths, while still progressing toward SimGrid4.
+
+ SimGrid remains open during works: The last pure SimGrid3 release was
+ v3.12 while all subsequent versions are usable alpha versions of
+ SimGrid4: Existing interfaces remain unchanged, but the new S4U
+ interface is budding and the internals are deeply reorganized.
+
+ Since 2015, we work hard to reduce the changes to public APIs. When
+ we need to rename a public library symbol in S4U, we let your
+ compiler issue an explicative warning when you use the deprecated
+ function. These messages remain for four releases, i.e. for one full
+ year, before turning into an error. Starting with v3.15, your can
+ also adapt to API changes with the SIMGRID_VERSION macro, that is
+ defined to 31500 for v3.15, to 31901 for v3.19.1 and so on.
+
+ Starting with this v3.19.1, our commitment to reduce the changes to
+ the public interfaces is extended from the API to the ABI: a program
+ using only MSG or SimDag and compiled against a given version of
+ simgrid can probably be used with a later version of SimGrid without
+ recompilation. We will do our best... but don't expect too much of
+ it, that's a really difficult goal during such profund refactoring.
+
+ The difference between v3.19 and v3.19.1 is that the former was
+ accidentally breaking the ABI of MSG, while the later is restoring
+ the previous ABI.
+
+ S4U and kernel APIs will still evolve until SimGrid4, with one-year
+ deprecation warnings as currently. In fact, cleaning up these
+ interfaces and converting them to snake_case() is one release goal of
+ v3.20. But don't worry, we are working to smooth this upgrade path.
 
 ----------------------------------------------------------------------------
 
