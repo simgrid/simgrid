@@ -78,7 +78,7 @@ MPI_Errhandler *MPI_ERRORS_ARE_FATAL = nullptr;
 MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
-static const char* smpi_default_instance_name = "smpirun";
+static const std::string smpi_default_instance_name("smpirun");
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
 static simgrid::config::Flag<double> smpi_init_sleep(
@@ -565,7 +565,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
   SMPI_init();
   SIMIX_launch_application(argv[2]);
-  SMPI_app_instance_register(smpi_default_instance_name, nullptr,
+  SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr,
                              process_data.size()); // This call has a side effect on process_count...
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
   smpi_universe_size = process_count;

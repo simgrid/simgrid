@@ -63,8 +63,8 @@ Process::~Process()
 void Process::set_data(int* argc, char*** argv)
 {
   instance_id_      = std::string((*argv)[1]);
-  comm_world_       = smpi_deployment_comm_world(instance_id_.c_str());
-  msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id_.c_str());
+  comm_world_       = smpi_deployment_comm_world(instance_id_);
+  msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id_);
   if (barrier != nullptr) // don't overwrite the current one if the instance has none
     finalization_barrier_ = barrier;
 
