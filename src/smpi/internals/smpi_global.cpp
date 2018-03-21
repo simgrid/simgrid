@@ -541,10 +541,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
         smpi_run_entry_point(entry_point, args);
       });
     };
-
   }
   else {
-
     // Load the dynamic library and resolve the entry point:
     void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
     if (handle == nullptr)
@@ -560,7 +558,6 @@ int smpi_main(const char* executable, int argc, char *argv[])
         smpi_run_entry_point(entry_point, args);
       });
     };
-
   }
 
   SMPI_init();
