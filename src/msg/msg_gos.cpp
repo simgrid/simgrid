@@ -795,8 +795,8 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Try to send it by calling SIMIX network layer */
   try {
     smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
-    comm = simcall_comm_isend(SIMIX_process_self(), mailbox->getImpl(),t_simdata->bytes_amount,
-                              t_simdata->rate, task, sizeof(void *), nullptr, nullptr, nullptr, task, 0);
+    comm = simcall_comm_isend(SIMIX_process_self(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate, task,
+                              sizeof(void*), nullptr, nullptr, nullptr, nullptr, 0);
     if (TRACE_is_enabled())
       simcall_set_category(comm, task->category);
     t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm);
