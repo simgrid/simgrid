@@ -68,13 +68,6 @@ static MPI_Datatype decode_datatype(std::string action)
   return simgrid::smpi::Datatype::decode(const_cast<const char* const>(action.c_str()));
 }
 
-const char* encode_datatype(MPI_Datatype datatype)
-{
-  if (datatype == MPI_DATATYPE_NULL)
-    return "-1";
-  return simgrid::smpi::Datatype::encode(datatype);
-}
-
 namespace simgrid {
 namespace smpi {
 
