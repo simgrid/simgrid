@@ -110,7 +110,7 @@ public:
   void commit();
   bool is_valid();
   bool is_basic();
-  const char* encode();
+  static const char* encode(MPI_Datatype dt);
   static MPI_Datatype decode(const char* const datatype_id);
   bool is_replayable();
   void addflag(int flag);

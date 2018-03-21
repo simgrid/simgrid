@@ -62,7 +62,6 @@ static double parse_double(std::string string)
   return xbt_str_parse_double(string.c_str(), "%s is not a double");
 }
 
-
 //TODO: this logic should be moved inside the datatype class, to support all predefined types and get rid of is_replayable.
 static MPI_Datatype decode_datatype(std::string action)
 {
@@ -71,10 +70,9 @@ static MPI_Datatype decode_datatype(std::string action)
 
 const char* encode_datatype(MPI_Datatype datatype)
 {
-  if (datatype == nullptr) /* this actually does seem to be possible, had this in the scatter2 test */
+  if (datatype == MPI_DATATYPE_NULL)
     return "-1";
-
-  return datatype->encode();
+  return simgrid::smpi::Datatype::encode(datatype);
 }
 
 namespace simgrid {
@@ -145,7 +143,7 @@ static void action_send(simgrid::xbt::ReplayAction& action)
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("send", to, size, MPI_CURRENT_TYPE->encode()));
+                     new simgrid::instr::Pt2PtTIData("send", to, size, Datatype::encode(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
 
@@ -168,7 +166,7 @@ static void action_Isend(simgrid::xbt::ReplayAction& action)
   int my_proc_id = Actor::self()->getPid();
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Isend", to, size, MPI_CURRENT_TYPE->encode()));
+                     new simgrid::instr::Pt2PtTIData("Isend", to, size, Datatype::encode(MPI_CURRENT_TYPE)));
   if (not TRACE_smpi_view_internals())
     TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
 
@@ -195,7 +193,7 @@ static void action_recv(simgrid::xbt::ReplayAction& action)
   int src_traced = MPI_COMM_WORLD->group()->actor(from)->getPid();
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("recv", from, size, MPI_CURRENT_TYPE->encode()));
+                     new simgrid::instr::Pt2PtTIData("recv", from, size, Datatype::encode(MPI_CURRENT_TYPE)));
 
   //unknown size from the receiver point of view
   if (size <= 0.0) {
@@ -224,7 +222,7 @@ static void action_Irecv(simgrid::xbt::ReplayAction& action)
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Irecv", from, size, MPI_CURRENT_TYPE->encode()));
+                     new simgrid::instr::Pt2PtTIData("Irecv", from, size, Datatype::encode(MPI_CURRENT_TYPE)));
   MPI_Status status;
   //unknow size from the receiver pov
   if (size <= 0.0) {
@@ -355,7 +353,7 @@ static void action_bcast(simgrid::xbt::ReplayAction& action)
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(root)->getPid(), -1.0, size,
-                                                    -1, MPI_CURRENT_TYPE->encode(), ""));
+                                                    -1, Datatype::encode(MPI_CURRENT_TYPE), ""));
 
   void *sendbuf = smpi_get_tmp_sendbuffer(size* MPI_CURRENT_TYPE->size());
 
@@ -378,7 +376,7 @@ static void action_reduce(simgrid::xbt::ReplayAction& action)
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(root)->getPid(), comp_size,
-                                                    comm_size, -1, MPI_CURRENT_TYPE->encode(), ""));
+                                                    comm_size, -1, Datatype::encode(MPI_CURRENT_TYPE), ""));
 
   void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
   void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
@@ -400,7 +398,7 @@ static void action_allReduce(simgrid::xbt::ReplayAction& action)
   double clock = smpi_process()->simulated_elapsed();
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::CollTIData("allReduce", -1, comp_size, comm_size, -1,
-                                                                              MPI_CURRENT_TYPE->encode(), ""));
+                                                                              Datatype::encode(MPI_CURRENT_TYPE), ""));
 
   void *recvbuf = smpi_get_tmp_recvbuffer(comm_size* MPI_CURRENT_TYPE->size());
   void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
@@ -427,7 +425,8 @@ static void action_allToAll(simgrid::xbt::ReplayAction& action)
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::CollTIData("allToAll", -1, -1.0, send_size, recv_size,
-                                                    MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+                                                    Datatype::encode(MPI_CURRENT_TYPE),
+                                                    Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::alltoall(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
@@ -462,9 +461,9 @@ static void action_gather(simgrid::xbt::ReplayAction& action)
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* MPI_CURRENT_TYPE2->size());
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::CollTIData("gather", root, -1.0, send_size, recv_size,
-                                                    MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::CollTIData("gather", root, -1.0, send_size, recv_size,
+                                                                        Datatype::encode(MPI_CURRENT_TYPE),
+                                                                        Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::gather(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
@@ -499,9 +498,9 @@ static void action_scatter(simgrid::xbt::ReplayAction& action)
   if (rank == root)
     recv = smpi_get_tmp_recvbuffer(recv_size * comm_size * MPI_CURRENT_TYPE2->size());
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::CollTIData("gather", root, -1.0, send_size, recv_size,
-                                                    MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::CollTIData("gather", root, -1.0, send_size, recv_size,
+                                                                        Datatype::encode(MPI_CURRENT_TYPE),
+                                                                        Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::scatter(send, send_size, MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root, MPI_COMM_WORLD);
 
@@ -545,9 +544,9 @@ static void action_gatherv(simgrid::xbt::ReplayAction& action)
   if(rank==root)
     recv = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::VarCollTIData("gatherV", root, send_size, nullptr, -1, recvcounts,
-                                                       MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
+                                             "gatherV", root, send_size, nullptr, -1, recvcounts,
+                                             Datatype::encode(MPI_CURRENT_TYPE), Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts->data(), disps.data(), MPI_CURRENT_TYPE2, root,
                  MPI_COMM_WORLD);
@@ -592,9 +591,9 @@ static void action_scatterv(simgrid::xbt::ReplayAction& action)
   if (rank == root)
     send = smpi_get_tmp_sendbuffer(send_sum * MPI_CURRENT_TYPE2->size());
 
-  TRACE_smpi_comm_in(rank, __FUNCTION__,
-                     new simgrid::instr::VarCollTIData("gatherV", root, -1, sendcounts, recv_size, nullptr,
-                                                       MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData("gatherV", root, -1, sendcounts, recv_size,
+                                                                           nullptr, Datatype::encode(MPI_CURRENT_TYPE),
+                                                                           Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::scatterv(send, sendcounts->data(), disps.data(), MPI_CURRENT_TYPE, recv, recv_size, MPI_CURRENT_TYPE2, root,
                   MPI_COMM_WORLD);
@@ -629,7 +628,7 @@ static void action_reducescatter(simgrid::xbt::ReplayAction& action)
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, recvcounts,
                                                        std::to_string(comp_size), /* ugly hack to print comp_size */
-                                                       MPI_CURRENT_TYPE->encode()));
+                                                       Datatype::encode(MPI_CURRENT_TYPE)));
 
   void *sendbuf = smpi_get_tmp_sendbuffer(size* MPI_CURRENT_TYPE->size());
   void *recvbuf = smpi_get_tmp_recvbuffer(size* MPI_CURRENT_TYPE->size());
@@ -666,7 +665,8 @@ static void action_allgather(simgrid::xbt::ReplayAction& action)
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::CollTIData("allGather", -1, -1.0, sendcount, recvcount,
-                                                    MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+                                                    Datatype::encode(MPI_CURRENT_TYPE),
+                                                    Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::allgather(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcount, MPI_CURRENT_TYPE2, MPI_COMM_WORLD);
 
@@ -722,7 +722,8 @@ static void action_allgatherv(simgrid::xbt::ReplayAction& action)
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::VarCollTIData("allGatherV", -1, sendcount, nullptr, -1, recvcounts,
-                                                       MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+                                                       Datatype::encode(MPI_CURRENT_TYPE),
+                                                       Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts->data(), disps.data(), MPI_CURRENT_TYPE2,
                     MPI_COMM_WORLD);
@@ -770,7 +771,8 @@ static void action_allToAllv(simgrid::xbt::ReplayAction& action)
 
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
                      new simgrid::instr::VarCollTIData("allToAllV", -1, send_size, sendcounts, recv_size, recvcounts,
-                                                       MPI_CURRENT_TYPE->encode(), MPI_CURRENT_TYPE2->encode()));
+                                                       Datatype::encode(MPI_CURRENT_TYPE),
+                                                       Datatype::encode(MPI_CURRENT_TYPE2)));
 
   Colls::alltoallv(sendbuf, sendcounts->data(), senddisps.data(), MPI_CURRENT_TYPE, recvbuf, recvcounts->data(),
                    recvdisps.data(), MPI_CURRENT_TYPE, MPI_COMM_WORLD);

@@ -202,9 +202,12 @@ bool Datatype::is_basic()
   return (flags_ & DT_FLAG_BASIC);
 }
 
-const char* Datatype::encode()
+const char* Datatype::encode(MPI_Datatype dt)
 {
-  return std::to_string(id).c_str();
+  if (dt == MPI_DATATYPE_NULL)
+    return "-1";
+
+  return std::to_string(dt->id).c_str();
 }
 
 MPI_Datatype Datatype::decode(const char* const datatype_id)
