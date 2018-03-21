@@ -53,8 +53,24 @@ cmake . && make dist
 Get the jarfiles for several OSes on the CI slaves. Use Save under to
 give a separate name to each of them.
 
-- On Jenkins: Mac OSX, Linux 64 and Linux 32 (without boost-context), FreeBSD, NetBSD
+- On Jenkins: Mac OSX, Linux 64 and Linux 32 (without boost-context), FreeBSD
 - On AppVeyor: Windows 
+
+For Linux, it is safer to rebuild them in a chroot (to avoid
+boost-context and all other optional dependencies):
+\verbatim
+mkdir /tmp/build-amd64
+cp SimGrid-3.*.tar.gz /tmp/build-amd64
+sudo debootstrap --arch amd64 --variant=buildd testing /tmp/build-amd64 http://deb.debian.org/debian/
+sudo chroot /tmp/build-amd64
+echo "proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0" >> /tmp/fstab
+mount proc /proc -t proc
+apt-get install -y cmake default-jdk libboost-dev python3 
+cd tmp
+tar xfz ../SimGrid*tar.gz && cd SimGrid-*
+cmake . -Denable_documentation=off -Denable_java=ON
+make -j4 && ctest -R java
+\endverbatim
 
 Once all jarfiles are in a separate directory, run the following to
 merge them:
