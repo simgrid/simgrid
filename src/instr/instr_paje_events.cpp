@@ -61,6 +61,9 @@ StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type
     filename                        = loc->filename;
     linenumber                      = loc->linenumber;
   }
+#else
+  filename   = "(null)";
+  linenumber = -1;
 #endif
 
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
