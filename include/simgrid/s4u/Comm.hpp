@@ -6,13 +6,16 @@
 #ifndef SIMGRID_S4U_COMM_HPP
 #define SIMGRID_S4U_COMM_HPP
 
+#include <xbt/asserts.h>
 #include <xbt/base.h>
+#include <xbt/dynar.h>
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
-#include <simgrid/s4u/Mailbox.hpp> // DEPRECATED 3.20
 #include <simgrid/s4u/forward.hpp>
+#include <simgrid/simix.h>
 
+#include <atomic>
 #include <vector>
 
 namespace simgrid {
@@ -65,37 +68,6 @@ public:
   }
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
   static int test_any(std::vector<CommPtr> * comms);
-
-  /** Creates (but don't start) an async send to the mailbox @p dest */
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.") static CommPtr
-  send_init(MailboxPtr dest)
-  {
-    return dest->put_init();
-  }
-  /** Creates (but don't start) an async send to the mailbox @p dest */
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_init(): v3.20 will turn this warning into an error.") static CommPtr
-  send_init(MailboxPtr dest, void* data, int simulatedByteAmount)
-  {
-    return dest->put_init(data, simulatedByteAmount);
-  }
-  /** Creates and start an async send to the mailbox @p dest */
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.") static CommPtr
-  send_async(MailboxPtr dest, void* data, int simulatedByteAmount)
-  {
-    return dest->put_async(data, simulatedByteAmount);
-  }
-  /** Creates (but don't start) an async recv onto the mailbox @p from */
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_init(): v3.20 will turn this warning into an error.") static CommPtr
-  recv_init(MailboxPtr from)
-  {
-    return from->get_init();
-  }
-  /** Creates and start an async recv to the mailbox @p from */
-  XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get_async(): v3.20 will turn this warning into an error.") static CommPtr
-  recv_async(MailboxPtr from, void** data)
-  {
-    return from->get_async(data);
-  }
 
   Activity* start() override;
   Activity* wait() override;

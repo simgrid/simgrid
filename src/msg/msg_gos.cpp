@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -373,26 +373,6 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
 {
   task->simdata->rate = maxrate;
   return MSG_task_isend_internal(task, alias, nullptr, nullptr, nullptr, 0);
-}
-
-/** \ingroup msg_task_usage
- * \brief Sends a task on a mailbox, with support for matching requests
- *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
- *
- * \param task a #msg_task_t to send on another location.
- * \param alias name of the mailbox to sent the task to
- * \param match_fun boolean function which parameters are:
- *        - match_data_provided_here
- *        - match_data_provided_by_other_side_if_any
- *        - the_smx_synchro_describing_the_other_side
- * \param match_data user provided data passed to match_fun
- * \return the msg_comm_t communication created
- */
-msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char* alias, int (*match_fun)(void*, void*, void*),
-                                        void* match_data)
-{
-  return MSG_task_isend_internal(task, alias, match_fun, match_data, nullptr, 0);
 }
 
 /** \ingroup msg_task_usage

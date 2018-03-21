@@ -307,12 +307,6 @@ template <class Duration> inline void sleep_until(const SimulationTimePoint<Dura
   this_actor::sleep_until(timeout_native.time_since_epoch().count());
 }
 
-XBT_ATTRIB_DEPRECATED_v320("Use sleep_for(): v3.20 will turn this warning into an error.") inline void sleep(
-    double duration)
-{
-  return sleep_for(duration);
-}
-
 /** Block the actor, computing the given amount of flops */
 XBT_PUBLIC void execute(double flop);
 
@@ -326,29 +320,6 @@ XBT_PUBLIC void parallel_execute(int host_nb, sg_host_t* host_list, double* flop
 
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
-
-/** Block the actor until it gets a message from the given mailbox.
- *
- * See \ref Comm for the full communication API (including non blocking communications).
- */
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC
-    void* recv(MailboxPtr chan);
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::get(): v3.20 will turn this warning into an error.") XBT_PUBLIC
-    void* recv(MailboxPtr chan, double timeout);
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::recv_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC CommPtr
-    irecv(MailboxPtr chan, void** data);
-
-/** Block the actor until it delivers a message of the given simulated size to the given mailbox
- *
- * See \ref Comm for the full communication API (including non blocking communications).
-*/
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC
-    void send(MailboxPtr chan, void* payload, double simulatedSize);
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put(): v3.20 will turn this warning into an error.") XBT_PUBLIC
-    void send(MailboxPtr chan, void* payload, double simulatedSize, double timeout);
-
-XBT_ATTRIB_DEPRECATED_v320("Use Mailbox::put_async(): v3.20 will turn this warning into an error.") XBT_PUBLIC CommPtr
-    isend(MailboxPtr chan, void* payload, double simulatedSize);
 
 /** @brief Returns the actor ID of the current actor). */
 XBT_PUBLIC aid_t getPid();
