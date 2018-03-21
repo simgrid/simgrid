@@ -103,7 +103,7 @@ void SIMIX_context_mod_init()
   xbt_os_thread_key_create(&smx_current_context_key);
 #endif
 
-#if defined(__APPLE__) || defined(__NetBSD__)
+#if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
   std::string priv = xbt_cfg_get_string("smpi/privatization");
   if (context_factory_name == "thread" && (priv == "dlopen" || priv == "yes" || priv == "default" || priv == "1")) {
     XBT_WARN("dlopen+thread broken on Apple and BSD. Switching to raw contexts.");
@@ -111,7 +111,7 @@ void SIMIX_context_mod_init()
   }
 #endif
 
-#if defined(__FreeBSD__)
+#if HAVE_SMPI && defined(__FreeBSD__)
   if (context_factory_name == "thread" && xbt_cfg_get_string("smpi/privatization") != "no"){
     XBT_WARN("mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts.");
     context_factory_name = "raw";
