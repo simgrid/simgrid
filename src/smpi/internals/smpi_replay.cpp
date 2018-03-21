@@ -62,12 +62,6 @@ static double parse_double(std::string string)
   return xbt_str_parse_double(string.c_str(), "%s is not a double");
 }
 
-//TODO: this logic should be moved inside the datatype class, to support all predefined types and get rid of is_replayable.
-static MPI_Datatype decode_datatype(std::string action)
-{
-  return simgrid::smpi::Datatype::decode(const_cast<const char* const>(action.c_str()));
-}
-
 namespace simgrid {
 namespace smpi {
 
@@ -130,7 +124,7 @@ static void action_send(simgrid::xbt::ReplayAction& action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
@@ -154,7 +148,7 @@ static void action_Isend(simgrid::xbt::ReplayAction& action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
@@ -180,7 +174,7 @@ static void action_recv(simgrid::xbt::ReplayAction& action)
   double clock = smpi_process()->simulated_elapsed();
   MPI_Status status;
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   int src_traced = MPI_COMM_WORLD->group()->actor(from)->getPid();
@@ -211,7 +205,7 @@ static void action_Irecv(simgrid::xbt::ReplayAction& action)
   double size=parse_double(action[3]);
   double clock = smpi_process()->simulated_elapsed();
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -341,7 +335,7 @@ static void action_bcast(simgrid::xbt::ReplayAction& action)
   double clock = smpi_process()->simulated_elapsed();
   int root     = (action.size() > 3) ? std::stoi(action[3]) : 0;
   /* Initialize MPI_CURRENT_TYPE in order to decrease the number of the checks */
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -364,7 +358,7 @@ static void action_reduce(simgrid::xbt::ReplayAction& action)
   double clock = smpi_process()->simulated_elapsed();
   int root         = (action.size() > 4) ? std::stoi(action[4]) : 0;
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 5) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 5) ? simgrid::smpi::Datatype::decode(action[5]) : MPI_DEFAULT_TYPE;
 
   int my_proc_id = Actor::self()->getPid();
   TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
@@ -386,7 +380,7 @@ static void action_allReduce(simgrid::xbt::ReplayAction& action)
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
 
   double clock = smpi_process()->simulated_elapsed();
   int my_proc_id = Actor::self()->getPid();
@@ -409,8 +403,8 @@ static void action_allToAll(simgrid::xbt::ReplayAction& action)
   unsigned long comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 5) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE};
-  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 5) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5) ? simgrid::smpi::Datatype::decode(action[5]) : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* MPI_CURRENT_TYPE->size());
   void *recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* MPI_CURRENT_TYPE2->size());
@@ -435,16 +429,16 @@ static void action_gather(simgrid::xbt::ReplayAction& action)
         1) 68 is the sendcounts
         2) 68 is the recvcounts
         3) 0 is the root node
-        4) 0 is the send datatype id, see decode_datatype()
-        5) 0 is the recv datatype id, see decode_datatype()
+        4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+        5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
   CHECK_ACTION_PARAMS(action, 2, 3)
   double clock = smpi_process()->simulated_elapsed();
   unsigned long comm_size = MPI_COMM_WORLD->size();
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 6) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
-  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 6) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 6) ? simgrid::smpi::Datatype::decode(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 6) ? simgrid::smpi::Datatype::decode(action[6]) : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
   void *recv = nullptr;
@@ -472,16 +466,16 @@ static void action_scatter(simgrid::xbt::ReplayAction& action)
         1) 68 is the sendcounts
         2) 68 is the recvcounts
         3) 0 is the root node
-        4) 0 is the send datatype id, see decode_datatype()
-        5) 0 is the recv datatype id, see decode_datatype()
+        4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+        5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
   CHECK_ACTION_PARAMS(action, 2, 3)
   double clock                   = smpi_process()->simulated_elapsed();
   unsigned long comm_size        = MPI_COMM_WORLD->size();
   int send_size                  = parse_double(action[2]);
   int recv_size                  = parse_double(action[3]);
-  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 6) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
-  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 6) ? decode_datatype(action[6]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 6) ? simgrid::smpi::Datatype::decode(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 6) ? simgrid::smpi::Datatype::decode(action[6]) : MPI_DEFAULT_TYPE};
 
   void* send = smpi_get_tmp_sendbuffer(send_size * MPI_CURRENT_TYPE->size());
   void* recv = nullptr;
@@ -509,8 +503,8 @@ static void action_gatherv(simgrid::xbt::ReplayAction& action)
        1) 68 is the sendcount
        2) 68 10 10 10 is the recvcounts
        3) 0 is the root node
-       4) 0 is the send datatype id, see decode_datatype()
-       5) 0 is the recv datatype id, see decode_datatype()
+       4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+       5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
   double clock = smpi_process()->simulated_elapsed();
   unsigned long comm_size = MPI_COMM_WORLD->size();
@@ -520,9 +514,9 @@ static void action_gatherv(simgrid::xbt::ReplayAction& action)
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
 
   MPI_Datatype MPI_CURRENT_TYPE =
-      (action.size() > 5 + comm_size) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5 + comm_size) ? decode_datatype(action[5 + comm_size])
-                                                                 : MPI_DEFAULT_TYPE};
+      (action.size() > 5 + comm_size) ? simgrid::smpi::Datatype::decode(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE2{
+      (action.size() > 5 + comm_size) ? simgrid::smpi::Datatype::decode(action[5 + comm_size]) : MPI_DEFAULT_TYPE};
 
   void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
   void *recv = nullptr;
@@ -556,8 +550,8 @@ static void action_scatterv(simgrid::xbt::ReplayAction& action)
        1) 68 10 10 10 is the sendcounts
        2) 68 is the recvcount
        3) 0 is the root node
-       4) 0 is the send datatype id, see decode_datatype()
-       5) 0 is the recv datatype id, see decode_datatype()
+       4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+       5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
   double clock  = smpi_process()->simulated_elapsed();
   unsigned long comm_size = MPI_COMM_WORLD->size();
@@ -567,9 +561,9 @@ static void action_scatterv(simgrid::xbt::ReplayAction& action)
   std::shared_ptr<std::vector<int>> sendcounts(new std::vector<int>(comm_size));
 
   MPI_Datatype MPI_CURRENT_TYPE =
-      (action.size() > 5 + comm_size) ? decode_datatype(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5 + comm_size) ? decode_datatype(action[5 + comm_size])
-                                                                 : MPI_DEFAULT_TYPE};
+      (action.size() > 5 + comm_size) ? simgrid::smpi::Datatype::decode(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE2{
+      (action.size() > 5 + comm_size) ? simgrid::smpi::Datatype::decode(action[5 + comm_size]) : MPI_DEFAULT_TYPE};
 
   void* send = nullptr;
   void* recv = smpi_get_tmp_recvbuffer(recv_size * MPI_CURRENT_TYPE->size());
@@ -602,7 +596,7 @@ static void action_reducescatter(simgrid::xbt::ReplayAction& action)
      where:
        1) The first four values after the name of the action declare the recvcounts array
        2) The value 11346849 is the amount of instructions
-       3) The last value corresponds to the datatype, see decode_datatype().
+       3) The last value corresponds to the datatype, see simgrid::smpi::Datatype::decode().
  */
   double clock = smpi_process()->simulated_elapsed();
   unsigned long comm_size = MPI_COMM_WORLD->size();
@@ -611,7 +605,7 @@ static void action_reducescatter(simgrid::xbt::ReplayAction& action)
   int my_proc_id                     = Actor::self()->getPid();
   std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>);
   MPI_Datatype MPI_CURRENT_TYPE =
-      (action.size() > 3 + comm_size) ? decode_datatype(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
+      (action.size() > 3 + comm_size) ? simgrid::smpi::Datatype::decode(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
 
   for (unsigned int i = 0; i < comm_size; i++) {
     recvcounts->push_back(std::stoi(action[i + 2]));
@@ -640,7 +634,8 @@ static void action_allgather(simgrid::xbt::ReplayAction& action)
     where:
         1) 275427 is the sendcount
         2) 275427 is the recvcount
-        3) No more values mean that the datatype for sent and receive buffer is the default one, see decode_datatype().
+        3) No more values mean that the datatype for sent and receive buffer is the default one, see
+    simgrid::smpi::Datatype::decode().
   */
   double clock = smpi_process()->simulated_elapsed();
 
@@ -648,8 +643,8 @@ static void action_allgather(simgrid::xbt::ReplayAction& action)
   int sendcount = std::stoi(action[2]);
   int recvcount = std::stoi(action[3]);
 
-  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 5) ? decode_datatype(action[4]) : MPI_DEFAULT_TYPE};
-  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5) ? decode_datatype(action[5]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(action.size() > 5) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5) ? simgrid::smpi::Datatype::decode(action[5]) : MPI_DEFAULT_TYPE};
 
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
   void *recvbuf = smpi_get_tmp_recvbuffer(recvcount* MPI_CURRENT_TYPE2->size());
@@ -674,7 +669,8 @@ static void action_allgatherv(simgrid::xbt::ReplayAction& action)
      where:
         1) 275427 is the sendcount
         2) The next four elements declare the recvcounts array
-        3) No more values mean that the datatype for sent and receive buffer is the default one, see decode_datatype().
+        3) No more values mean that the datatype for sent and receive buffer is the default one, see
+     simgrid::smpi::Datatype::decode().
   */
   double clock = smpi_process()->simulated_elapsed();
 
@@ -700,8 +696,10 @@ static void action_allgatherv(simgrid::xbt::ReplayAction& action)
       disps[i]          = std::stoi(action[disp_index + i]);
   }
 
-  MPI_Datatype MPI_CURRENT_TYPE{(datatype_index > 0) ? decode_datatype(action[datatype_index]) : MPI_DEFAULT_TYPE};
-  MPI_Datatype MPI_CURRENT_TYPE2{(datatype_index > 0) ? decode_datatype(action[datatype_index]) : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE{(datatype_index > 0) ? simgrid::smpi::Datatype::decode(action[datatype_index])
+                                                     : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE2{(datatype_index > 0) ? simgrid::smpi::Datatype::decode(action[datatype_index])
+                                                      : MPI_DEFAULT_TYPE};
 
   void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
 
@@ -744,10 +742,12 @@ static void action_allToAllv(simgrid::xbt::ReplayAction& action)
   std::vector<int> senddisps(comm_size, 0);
   std::vector<int> recvdisps(comm_size, 0);
 
-  MPI_Datatype MPI_CURRENT_TYPE =
-      (action.size() > 5 + 2 * comm_size) ? decode_datatype(action[4 + 2 * comm_size]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5 + 2 * comm_size) ? decode_datatype(action[5 + 2 * comm_size])
-                                                                     : MPI_DEFAULT_TYPE};
+  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 5 + 2 * comm_size)
+                                      ? simgrid::smpi::Datatype::decode(action[4 + 2 * comm_size])
+                                      : MPI_DEFAULT_TYPE;
+  MPI_Datatype MPI_CURRENT_TYPE2{(action.size() > 5 + 2 * comm_size)
+                                     ? simgrid::smpi::Datatype::decode(action[5 + 2 * comm_size])
+                                     : MPI_DEFAULT_TYPE};
 
   int send_buf_size=parse_double(action[2]);
   int recv_buf_size=parse_double(action[3+comm_size]);
