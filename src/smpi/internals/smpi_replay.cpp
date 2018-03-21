@@ -39,10 +39,6 @@ static MPI_Datatype MPI_DEFAULT_TYPE;
              static_cast<unsigned long>(optional));                                                                    \
   }
 
-class ReplayActionArg {
-  ReplayActionArg() {}
-};
-
 static void log_timed_action (simgrid::xbt::ReplayAction& action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     std::string s = boost::algorithm::join(action, " ");
