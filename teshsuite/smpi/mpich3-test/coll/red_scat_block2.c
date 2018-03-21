@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include "mpitest.h"
 
-int err = 0;
+int errs = 0;
 
 /* left(x,y) ==> x */
 void left(void *a, void *b, int *count, MPI_Datatype * type);
@@ -29,7 +29,7 @@ void left(void *a, void *b, int *count, MPI_Datatype * type)
 
     for (i = 0; i < *count; ++i) {
         if (in[i] > inout[i])
-            ++err;
+            ++errs;
         inout[i] = in[i];
     }
 }
@@ -44,7 +44,7 @@ void right(void *a, void *b, int *count, MPI_Datatype * type)
 
     for (i = 0; i < *count; ++i) {
         if (in[i] > inout[i])
-            ++err;
+            ++errs;
         inout[i] = inout[i];
     }
 }
@@ -99,18 +99,18 @@ int main(int argc, char **argv)
         MPI_Reduce_scatter_block(sendbuf, recvbuf, block_size, MPI_INT, left_op, comm);
         for (i = 0; i < block_size; ++i)
             if (recvbuf[i] != (rank * block_size + i))
-                ++err;
+                ++errs;
 
         MPI_Reduce_scatter_block(sendbuf, recvbuf, block_size, MPI_INT, right_op, comm);
         for (i = 0; i < block_size; ++i)
             if (recvbuf[i] != ((size - 1) + (rank * block_size) + i))
-                ++err;
+                ++errs;
 
         MPI_Reduce_scatter_block(sendbuf, recvbuf, block_size, MPI_INT, nc_sum_op, comm);
         for (i = 0; i < block_size; ++i) {
             int x = rank * block_size + i;
             if (recvbuf[i] != (size * x + (size - 1) * size / 2))
-                ++err;
+                ++errs;
         }
 
         free(recvbuf);
@@ -122,8 +122,8 @@ int main(int argc, char **argv)
     MPI_Op_free(&nc_sum_op);
 #endif
 
-    MTest_Finalize(err);
+    MTest_Finalize(errs);
     MPI_Finalize();
 
-    return err;
+    return errs;
 }
