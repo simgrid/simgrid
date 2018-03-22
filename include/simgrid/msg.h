@@ -58,7 +58,7 @@ XBT_PUBLIC const char* MSG_host_get_name(sg_host_t host);
 XBT_PUBLIC void* MSG_host_get_data(sg_host_t host);
 XBT_PUBLIC void MSG_host_set_data(sg_host_t host, void* data);
 XBT_PUBLIC xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host);
-XBT_PUBLIC xbt_dynar_t MSG_host_get_attached_storage_listsg_host_t(sg_host_t host);
+XBT_PUBLIC xbt_dynar_t MSG_host_get_attached_storage_lists(sg_host_t host);
 XBT_PUBLIC double MSG_host_get_speed(sg_host_t host);
 XBT_PUBLIC double MSG_host_get_power_peak_at(sg_host_t host, int pstate_index);
 XBT_PUBLIC int MSG_host_get_core_number(sg_host_t host);
