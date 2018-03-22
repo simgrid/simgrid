@@ -526,17 +526,4 @@ void sg_actor_daemonize(sg_actor_t actor)
   actor->daemonize();
 }
 
-/* ************************** Backward ABI compatibility *************************** */
-int MSG_process_get_PID(sg_actor_t actor) __attribute__((alias("sg_actor_get_PID")));
-int MSG_process_get_PPID(sg_actor_t actor) __attribute__((alias("sg_actor_get_PPID")));
-const char* MSG_process_get_name(sg_actor_t actor) __attribute__((alias("sg_actor_get_name")));
-sg_host_t MSG_process_get_host(sg_actor_t actor) __attribute__((alias("sg_actor_get_host")));
-xbt_dict_t MSG_process_get_properties(sg_actor_t actor) __attribute__((alias("sg_actor_get_properties")));
-const char* MSG_process_get_property_value(sg_actor_t actor, const char* name)
-    __attribute__((alias("sg_actor_get_property_value")));
-void MSG_process_suspend(sg_actor_t actor) __attribute__((alias("sg_actor_suspend")));
-void MSG_process_resume(sg_actor_t actor) __attribute__((alias("sg_actor_resume")));
-int MSG_process_is_suspended(sg_actor_t actor) __attribute__((alias("sg_actor_is_suspended")));
-void MSG_process_restart(sg_actor_t actor) __attribute__((alias("sg_actor_restart")));
-void MSG_process_daemonize(sg_actor_t actor) __attribute__((alias("sg_actor_daemonize")));
 SG_END_DECL()

@@ -339,35 +339,4 @@ sg_host_t sg_host_self()
   return (process == nullptr) ? nullptr : process->host;
 }
 
-/* ************************** Backward ABI compatibility *************************** */
-xbt_dynar_t MSG_hosts_as_dynar() __attribute__((alias("sg_hosts_as_dynar")));
-
-size_t MSG_get_host_number() __attribute__((alias("sg_host_count")));
-sg_host_t MSG_get_host_by_name(const char* name) __attribute__((alias("sg_host_by_name")));
-sg_host_t MSG_host_by_name(const char* name) __attribute__((alias("sg_host_by_name")));
-
-const char* MSG_host_get_name(sg_host_t host) __attribute__((alias("sg_host_get_name")));
-void* MSG_host_get_data(sg_host_t host) __attribute__((alias("sg_host_user")));
-void MSG_host_set_data(sg_host_t host, void* data) __attribute__((alias("sg_host_user_set")));
-xbt_dict_t MSG_host_get_mounted_storage_list(sg_host_t host) __attribute__((alias("sg_host_get_mounted_storage_list")));
-xbt_dynar_t MSG_host_get_attached_storage_lists(sg_host_t host)
-    __attribute__((alias("sg_host_get_attached_storage_list")));
-double MSG_host_get_speed(sg_host_t host) __attribute__((alias("sg_host_speed")));
-double MSG_host_get_power_peak_at(sg_host_t host, int pstate_index) __attribute__((alias("sg_host_get_pstate_speed")));
-int MSG_host_get_core_number(sg_host_t host) __attribute__((alias("sg_host_core_count")));
-int MSG_host_get_nb_pstates(sg_host_t host) __attribute__((alias("sg_host_get_nb_pstates")));
-int MSG_host_get_pstate(sg_host_t host) __attribute__((alias("sg_host_get_pstate")));
-void MSG_host_set_pstate(sg_host_t host, int pstate) __attribute__((alias("sg_host_set_pstate")));
-void MSG_host_on(sg_host_t h) __attribute__((alias("sg_host_turn_on")));
-void MSG_host_off(sg_host_t h) __attribute__((alias("sg_host_turn_off")));
-int MSG_host_is_on(sg_host_t h) __attribute__((alias("sg_host_is_on")));
-int MSG_host_is_off(sg_host_t h) __attribute__((alias("sg_host_is_off")));
-xbt_dict_t MSG_host_get_properties(sg_host_t host) __attribute__((alias("sg_host_get_properties")));
-const char* MSG_host_get_property_value(sg_host_t host, const char* name)
-    __attribute__((alias("sg_host_get_property_value")));
-void MSG_host_set_property_value(sg_host_t host, const char* name, const char* value)
-    __attribute__((alias("sg_host_set_property_value")));
-void MSG_host_get_process_list(sg_host_t host, xbt_dynar_t whereto) __attribute__((alias("sg_host_get_actor_list")));
-sg_host_t MSG_host_self() __attribute__((alias("sg_host_self")));
-
 } // extern "C"

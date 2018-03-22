@@ -143,7 +143,7 @@ xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
  * \param name a property name
  * \param value what to change the property to
  */
-void sg_storage_set_property_value(sg_storage_t storage, const char* name, char* value)
+void sg_storage_set_property_value(sg_storage_t storage, const char* name, const char* value)
 {
   storage->setProperty(name, value);
 }
@@ -202,20 +202,5 @@ sg_size_t sg_storage_write(sg_storage_t storage, sg_size_t size)
 {
   return storage->write(size);
 }
-
-/* ************************** Backward ABI compatibility *************************** */
-const char* MSG_storage_get_name(sg_storage_t storage) __attribute__((alias("sg_storage_get_name")));
-sg_storage_t MSG_storage_get_by_name(const char* name) __attribute__((alias("sg_storage_get_by_name")));
-xbt_dict_t MSG_storage_get_properties(sg_storage_t storage) __attribute__((alias("sg_storage_get_properties")));
-void MSG_storage_set_property_value(sg_storage_t storage, const char* name, const char* value)
-    __attribute__((alias("sg_storage_set_property_value")));
-const char* MSG_storage_get_property_value(sg_storage_t storage, const char* name)
-    __attribute__((alias("sg_storage_get_property_value")));
-xbt_dynar_t MSG_storages_as_dynar() __attribute__((alias("sg_storages_as_dynar")));
-void MSG_storage_set_data(sg_storage_t storage, void* data) __attribute__((alias("sg_storage_set_data")));
-void* MSG_storage_get_data(sg_storage_t storage) __attribute__((alias("sg_storage_get_data")));
-const char* MSG_storage_get_host(sg_storage_t storage) __attribute__((alias("sg_storage_get_host")));
-sg_size_t MSG_storage_read(sg_storage_t storage, sg_size_t size) __attribute__((alias("sg_storage_read")));
-sg_size_t MSG_storage_write(sg_storage_t storage, sg_size_t size) __attribute__((alias("sg_storage_write")));
 
 SG_END_DECL()

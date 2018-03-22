@@ -156,22 +156,4 @@ void sg_zone_get_hosts(sg_netzone_t netzone, xbt_dynar_t whereto)
     xbt_dynar_push(whereto, &host);
 }
 
-/* ************************** Backward ABI compatibility *************************** */
-sg_netzone_t MSG_zone_get_root() __attribute__((alias("sg_zone_get_root")));
-;
-const char* MSG_zone_get_name(sg_netzone_t zone) __attribute__((alias("sg_zone_get_name")));
-;
-sg_netzone_t MSG_zone_get_by_name(const char* name) __attribute__((alias("sg_zone_get_by_name")));
-;
-void MSG_zone_get_sons(sg_netzone_t zone, xbt_dict_t whereto) __attribute__((alias("sg_zone_get_sons")));
-;
-const char* MSG_zone_get_property_value(sg_netzone_t zone, const char* name)
-    __attribute__((alias("sg_zone_get_property_value")));
-;
-void MSG_zone_set_property_value(sg_netzone_t zone, const char* name, char* value)
-    __attribute__((alias("sg_zone_set_property_value")));
-;
-void MSG_zone_get_hosts(sg_netzone_t zone, xbt_dynar_t whereto) __attribute__((alias("sg_zone_get_hosts")));
-;
-
 SG_END_DECL()
