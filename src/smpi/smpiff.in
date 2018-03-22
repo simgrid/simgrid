@@ -53,13 +53,15 @@ while [ $# -gt 0 ]; do
             list_add CMDLINE "-c"
             ;;
         *.f)
+            FILENAME=`basename ${ARG}`
             TMPFILE=$(mymktemp "${ARG}" ".f")
-            ORIGFILE="${ARG%.f}"
+            ORIGFILE="${FILENAME%.f}"
             filter_and_compile
             ;;
-        *.F)
+        *.F)$
+            FILENAME=`basename ${ARG}`
             TMPFILE=$(mymktemp "${ARG}" ".F")
-            ORIGFILE="${ARG%.F}"
+            ORIGFILE="${FILENAME%.F}"
             filter_and_compile
             ;;
         '-version' | '--version')

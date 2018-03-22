@@ -48,13 +48,15 @@ while [ $# -gt 0 ]; do
             list_add CMDLINE "-c"
             ;;
         *.f90)
-            ORIGFILE="${ARG%.f90}"
+            FILENAME=`basename ${ARG}`
             TMPFILE=$(mymktemp "${ARG}" ".f90")
+            ORIGFILE="${FILENAME%.f90}"
             filter_and_compile
             ;;
         *.F90)
-            ORIGFILE="${ARG%.F90}"
+            FILENAME=`basename ${ARG}`
             TMPFILE=$(mymktemp "${ARG}" ".F90")
+            ORIGFILE="${FILENAME%.F90}"
             filter_and_compile
             ;;
         '-version' | '--version')
