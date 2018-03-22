@@ -42,6 +42,9 @@ SimGrid (3.19.1) Released March 22 2018
  interfaces and converting them to snake_case() is one release goal of
  v3.20. But don't worry, we are working to smooth this upgrade path.
 
+ In summary, new projects should start with S4U to benefit of the
+ future, but old MSG projects should still be usable with no change.
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.19) Released March 20 2018

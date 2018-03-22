@@ -3,31 +3,6 @@
 **
 ******************************************************
 
-There is at least 5 sub-projects in the tree:
-
- - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
- - SURF: a SimUlation aRtiFact. This is the simulation kernel.
- - MSG:  originally MetaSimGrid, MSG is a simple distributed application
-         simulator.
- - SMPI: Simulated MPI, to run MPI application using emulation technics;
- - MC: model-checker;
- - SIMIX: basix interface for simulated processes. This layer defines simcalls
-   (simulation calls) exposed to the simulated processes by the SIMIX "kernel".
-   This interface is used to implement the MSG, SMPI layers.
- - SIMDAG;
-
-They are all in the same tree because they are complementary tools and
-having all of them in the same package makes the installation easier
-for end-users. Moreover, it enables to share the compilation chain and
-eases the development.
-
-The tree is not split on projects, but on file finality:
- include/            -> all *public* headers
- include/xbt/*.h     -> one file per module
-
- src/include -> another location for protected headers. Used by SURF, and
-                other should be converted, since this is the Right Thing.
-
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
                 avoid any kind of trick. In particular, do only include the
                 public headers here.
@@ -37,20 +12,6 @@ The tree is not split on projects, but on file finality:
                just to see if our framework is robust to incorrect and
                unusual behaviors. All tests written in this section
                should leverage our tesh(1) utility.
-
-**
-** Indentation standard
-**
-*****************************************************
-
-Most files use the Kernighan & Ritchie coding style with 2 spaces of
-indentation. The indent program can help you to stick to it:
-
-indent -kr -l120 -nut -i2 -lps -npcs -br -brs -ce -cdw -bbo -npsl <myfile>
-
-The script ./tools/internal/indent runs indent with the appropriate options.
-
-If you use Eclipse, please import the settings in ./tools/internal/eclipse-formating.xml
 
 **
 ** Type naming standard
@@ -84,30 +45,6 @@ If you see any part of the code not following this convention, this is a
 bug. Please report it (or fix it yourself if you can).
 
 **
-** Random bits about coding standards and portability
-**
-*****************************************************
-
-MALLOC
- Don't use it, or you'll have to check the result (and do some dirty stuff
- on AIX). Use xbt_malloc (or even better, xbt_new) instead.
-
-SIZE_T (FIXME: obsolete?)
- If possible, avoid size_t and use unsigned long instead. If not,
- #include <sys/types.h> in all files manipulating size_t
- do cast it to unsigned long before printing (and use %lu),
- or use %zu.
-
-INTEGERS
- Please avoid to use long ints.  This is the source of many compatibility
- problems between 32 bits and 64 bits archs.  Either use plain ints (generally
- 32 bits wide) or long long ints (64 bits wide, at least).  At last resort
- consider using integer types defined in C99 by <stdint.h>.
-
-PRINTF pointer difference (FIXME: advertise %td instead?)
- printf ("diff = %ld\n", (long) (pointer2 - pointer1));
-
-**
 ** Commenting the source: doxygen
 **
 ****************************************************
@@ -129,78 +66,10 @@ The documentation of each function must be in the C file were it lives.
 
 Any public element (function, type and macro) must have a @brief part.
 
-**
-** XBT virtualization mechanism (FIXME: this section is deprecated)
-**
-****************************************************
-
-There is some functionalities that we want to virtualize in XBT. We
-want xbt_time to give the simulated clock when running on top of the
-simulator, and the host clock when running on a real system. This
-could be placed in GRAS (and was, historically), but there is some
-reason to lower it down to XBT.
-
-Here is the used naming scheme:
-
-  - xbt_<module>_<func>(): functions working both in SG and RL
-  - xbt_os_<module>_<func>(): RL functions usable even in simulator
-
-    That way, in libsimgrid, we still can use native functions if we
-    want to. It may for example be useful to get the real time when
-    implementing the simulator. Think of the SIGINT handler, which
-    wants to see if the user pressed the key twice in a 5 seconds
-    interval. This is of little use to check the simulated time here.
-
-Here is the file layout:
-
-  - xbt_rl_<module>.c: native implementation (xbt_<module>_<func>()).
-    Simply call the corresponding xbt_os_<module>_<func>.
-    Part only of libgras.so
-
-  - xbt_sg_<module>.c: SIMIX implementation xbt_<module>_<func>()).
-    Simply call the corresponding SIMIX implementation.
-    Part only of libsimgrid.so
-
-  - xbt_os_<module>.c: body of the functions implementing natively the
-    stuff (xbt_os_<module>_<func>()).
-    Part of both libgras.so and libsimgrid.so
-
-Since there is almost nothing in xbt_rl_module.c and xbt_sg_module.c,
-it'd be better to use symbol aliasing here (to declare in the object
-code that the same function have two names), but I'm still
-investigating the portability of the thing to windows.
-
 
 *
 * SimGrid Hacker Survival Guide (FIXME: should be betterly placed)
 ********************************
-
-* Before pushing any change, don't forget to check if the compilation
-  passes with compiler optimizations and warnings turned on:
-      cmake -Denable_compile_optimizations=ON \
-            -Denable_compile_warnings=ON
-
-* Your commit message should follow the git habits, explained eg here:
-  http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
-
 * When you add/remove files, and/or make changes in the lists of files to build,
   please check that "make distcheck" still succeeds.  This is needed to ensure
   that the generated archive is consistent.
-
-* If you want to debug memory allocation problems, here are a few hints:
-  - disable compiler optimizations, to have better backtraces;
-  - disable the mallocators, or it will be hard to match malloc's with
-    free's;
-  - disable model checking, unless your problem lies in the model
-    checker part of SimGrid (MC brings its own malloc implementation,
-    which valgrind doesn't understand).
-  All this is configured with:
-      cmake -Denable_model-checking=OFF \
-            -Denable_mallocators=OFF \
-            -Denable_compile_optimizations=OFF
-
-* If you break the logs (for example while hacking in the dynars), you
-  want to define XBT_LOG_MAYDAY at the beginning of log.h. It will
-  deactivate the whole logging mechanism, switching to printfs
-  instead. SimGrid becomes incredibly verbose when doing so, but it
-  you let you fixing the dynars.

@@ -3,11 +3,9 @@
 
 \tableofcontents
 
-We use doxygen for our documentation. This tool is sometimes annoying
-but that's the best we've found so far. Remember, we all bitch about
-doxygen, but at the end of the day, it kinda delivers what we need. So
-stop bitching about the doc or the tools, and start improving the
-documentation text itself.
+We use doxygen for our documentation. It's annoying but that's the
+best we've found so far. Stop bitching about the doc or the tools, and
+start improving the documentation text itself.
 
 Good documentation is rare and there is not much project of which we
 can get inspiration. The best exception I know is TikZ and
@@ -216,8 +214,8 @@ make pdf # the result is in doc/latex/simgrid_documentation.pdf
 Once you're satisfyied with the result, refreshing the documentation
 on the web pages is very easy, as shown below. A few permission errors
 are ok, unfortunately. We should improve things here, but I'm not sure
-of how. A funny thing is that this make target is also provided in the
-archives we distribute to the users, but I guess that it's harmless :)
+of how. This @c make target is also provided in the archives we
+distribute to the users, but I guess that it's harmless :)
 
 @verbatim
 make sync-gforge-doc
