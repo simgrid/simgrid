@@ -309,25 +309,5 @@ void sg_vm_destroy(sg_vm_t vm)
 {
   vm->destroy();
 }
-/* ************************** Backward ABI compatibility *************************** */
-sg_vm_t MSG_vm_create_core(sg_host_t pm, const char* name) __attribute__((alias("sg_vm_create_core")));
-sg_vm_t MSG_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
-    __attribute__((alias("sg_vm_create_multicore")));
-
-int MSG_vm_is_created(sg_vm_t vm) __attribute__((alias("sg_vm_is_created")));
-int MSG_vm_is_running(sg_vm_t vm) __attribute__((alias("sg_vm_is_running")));
-int MSG_vm_is_suspended(sg_vm_t vm) __attribute__((alias("sg_vm_is_suspended")));
-
-const char* MSG_vm_get_name(sg_vm_t vm) __attribute__((alias("sg_vm_get_name")));
-void MSG_vm_set_ramsize(sg_vm_t vm, size_t size) __attribute__((alias("sg_vm_set_ramsize")));
-size_t MSG_vm_get_ramsize(sg_vm_t vm) __attribute__((alias("sg_vm_get_ramsize")));
-sg_host_t MSG_vm_get_pm(sg_vm_t vm) __attribute__((alias("sg_vm_get_pm")));
-void MSG_vm_set_bound(sg_vm_t vm, double bound) __attribute__((alias("sg_vm_set_bound")));
-
-void MSG_vm_start(sg_vm_t vm) __attribute__((alias("sg_vm_start")));
-void MSG_vm_suspend(sg_vm_t vm) __attribute__((alias("sg_vm_suspend")));
-void MSG_vm_resume(sg_vm_t vm) __attribute__((alias("sg_vm_resume")));
-void MSG_vm_shutdown(sg_vm_t vm) __attribute__((alias("sg_vm_shutdown")));
-void MSG_vm_destroy(sg_vm_t vm) __attribute__((alias("sg_vm_destroy")));
 
 SG_END_DECL()
