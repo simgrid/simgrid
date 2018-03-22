@@ -3,10 +3,11 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \ / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | (_) || |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) || |\__, || |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|  /_(_)_|
+               March 22 2018
 
 The Fixed ABI release.
 
- * Reduce the changes to the binary interface of MSG
+ * Reduce the changes to the binary interface of MSG,
    accidentally introduced by v3.19.
                     _               _____  _  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \
