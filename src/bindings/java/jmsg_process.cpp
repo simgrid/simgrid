@@ -100,7 +100,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_daemonize(JNIEnv* env, jobje
     return;
   }
 
-  MSG_process_daemonize(process);
+  process->daemonize();
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll(JNIEnv* env, jclass cls)
@@ -171,10 +171,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_suspend(JNIEnv * env, jobjec
     return;
   }
 
-  /* try to suspend the process */
-  msg_error_t rv = MSG_process_suspend(process);
-
-  jxbt_check_res("MSG_process_suspend()", rv, MSG_OK, "unexpected error , please report this bug");
+  /* suspend the process */
+  process->suspend();
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject jprocess)
@@ -186,9 +184,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume(JNIEnv * env, jobject
     return;
   }
 
-  /* try to resume the process */
-  msg_error_t res = MSG_process_resume(process);
-  jxbt_check_res("MSG_process_resume()", res, MSG_OK, "unexpected error , please report this bug");
+  /* resume the process */
+  process->resume();
 }
 
 JNIEXPORT void
@@ -211,7 +208,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart (JNIEnv *env, jobjec
     return;
   }
 
-  MSG_process_restart(process);
+  process->restart();
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env, jobject jprocess)
@@ -224,7 +221,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env
   }
 
   /* true is the process is suspended, false otherwise */
-  return (jboolean) MSG_process_is_suspended(process);
+  return (jboolean)process->isSuspended();
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos)

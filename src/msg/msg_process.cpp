@@ -277,15 +277,6 @@ XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup)
   msg_global->process_data_cleanup = data_cleanup;
 }
 
-msg_host_t MSG_process_get_host(msg_process_t process)
-{
-  if (process == nullptr) {
-    return SIMIX_process_self()->host;
-  } else {
-    return process->getHost();
-  }
-}
-
 /** \ingroup m_process_management
  *
  * \brief Return a #msg_process_t given its PID.
@@ -327,70 +318,6 @@ msg_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time)
   return MSG_OK;
 }
 
-/** \ingroup m_process_management
- * \brief Returns the process ID of \a process.
- *
- * This function checks whether \a process is a valid pointer and return its PID (or 0 in case of problem).
- */
-int MSG_process_get_PID(msg_process_t process)
-{
-  /* Do not raise an exception here: this function is called by the logs
-   * and the exceptions, so it would be called back again and again */
-  if (process == nullptr || process->getImpl() == nullptr)
-    return 0;
-  return process->getPid();
-}
-
-/** \ingroup m_process_management
- * \brief Returns the process ID of the parent of \a process.
- *
- * This function checks whether \a process is a valid pointer and return its PID.
- * Returns -1 if the process has not been created by any other process.
- */
-int MSG_process_get_PPID(msg_process_t process)
-{
-  return process->getPpid();
-}
-
-/** \ingroup m_process_management
- * \brief Return the name of a process.
- *
- * This function checks whether \a process is a valid pointer and return its name.
- */
-const char *MSG_process_get_name(msg_process_t process)
-{
-  return process->getCname();
-}
-
-/** \ingroup m_process_management
- * \brief Returns the value of a given process property
- *
- * \param process a process
- * \param name a property name
- * \return value of a property (or nullptr if the property is not set)
- */
-const char *MSG_process_get_property_value(msg_process_t process, const char *name)
-{
-  return process->getProperty(name);
-}
-
-/** \ingroup m_process_management
- * \brief Return the list of properties
- *
- * This function returns all the parameters associated with a process
- */
-xbt_dict_t MSG_process_get_properties(msg_process_t process)
-{
-  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::map<std::string, std::string>* props = process->getProperties();
-  if (props == nullptr)
-    return nullptr;
-  for (auto const& elm : *props) {
-    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
-  }
-  return as_dict;
-}
 
 /** \ingroup m_process_management
  * \brief Return the PID of the current process.
@@ -431,40 +358,6 @@ msg_process_t MSG_process_self()
   return SIMIX_process_self()->ciface();
 }
 
-/** \ingroup m_process_management
- * \brief Suspend the process.
- *
- * This function suspends the process by suspending the task on which it was waiting for the completion.
- */
-msg_error_t MSG_process_suspend(msg_process_t process)
-{
-  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  process->suspend();
-  return MSG_OK;
-}
-
-/** \ingroup m_process_management
- * \brief Resume a suspended process.
- *
- * This function resumes a suspended process by resuming the task on which it was waiting for the completion.
- */
-msg_error_t MSG_process_resume(msg_process_t process)
-{
-  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  process->resume();
-  return MSG_OK;
-}
-
-/** \ingroup m_process_management
- * \brief Returns true if the process is suspended .
- *
- * This checks whether a process is suspended or not by inspecting the task on which it was waiting for the completion.
- */
-int MSG_process_is_suspended(msg_process_t process)
-{
-  return process->isSuspended();
-}
-
 smx_context_t MSG_process_get_smx_ctx(msg_process_t process) {
   return process->getImpl()->context;
 }
@@ -485,22 +378,6 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
 XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_restart)
 {
   process->setAutoRestart(auto_restart);
-}
-/**
- * \ingroup m_process_management
- * \brief Restarts a process from the beginning.
- */
-XBT_PUBLIC msg_process_t MSG_process_restart(msg_process_t process)
-{
-  return process->restart();
-}
-
-/** @ingroup m_process_management
- * @brief This process will be terminated automatically when the last non-daemon process finishes
- */
-XBT_PUBLIC void MSG_process_daemonize(msg_process_t process)
-{
-  process->daemonize();
 }
 
 /** @ingroup m_process_management

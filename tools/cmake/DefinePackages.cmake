@@ -659,6 +659,7 @@ set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
 
+  include/simgrid/actor.h
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h

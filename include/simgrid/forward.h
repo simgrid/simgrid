@@ -132,6 +132,7 @@ typedef s4u_Link* sg_link_t;
 typedef s4u_Storage* sg_storage_t;
 typedef s4u_File* sg_file_t;
 typedef s4u_VM* sg_vm_t;
+typedef s4u_Actor* sg_actor_t;
 
 typedef routing_NetPoint* sg_netpoint_t;
 typedef surf_Resource *sg_resource_t;

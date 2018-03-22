@@ -403,6 +403,140 @@ void migrate(Host* new_host)
 {
   SIMIX_process_self()->iface()->migrate(new_host);
 }
+} // namespace this_actor
+} // namespace s4u
+} // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+SG_BEGIN_DECL()
+/** \ingroup m_actor_management
+ * \brief Returns the process ID of \a actor.
+ *
+ * This function checks whether \a actor is a valid pointer and return its PID (or 0 in case of problem).
+ */
+int sg_actor_get_PID(sg_actor_t actor)
+{
+  /* Do not raise an exception here: this function is called by the logs
+   * and the exceptions, so it would be called back again and again */
+  if (actor == nullptr || actor->getImpl() == nullptr)
+    return 0;
+  return actor->getPid();
 }
+
+/** \ingroup m_actor_management
+ * \brief Returns the process ID of the parent of \a actor.
+ *
+ * This function checks whether \a actor is a valid pointer and return its parent's PID.
+ * Returns -1 if the actor has not been created by any other actor.
+ */
+int sg_actor_get_PPID(sg_actor_t actor)
+{
+  return actor->getPpid();
 }
+
+/** \ingroup m_actor_management
+ * \brief Return the name of an actor.
+ */
+const char* sg_actor_get_name(sg_actor_t actor)
+{
+  return actor->getCname();
 }
+
+sg_host_t sg_actor_get_host(sg_actor_t actor)
+{
+  return actor->getHost();
+}
+
+/** \ingroup m_actor_management
+ * \brief Returns the value of a given actor property
+ *
+ * \param actor an actor
+ * \param name a property name
+ * \return value of a property (or nullptr if the property is not set)
+ */
+const char* sg_actor_get_property_value(sg_actor_t actor, const char* name)
+{
+  return actor->getProperty(name);
+}
+
+/** \ingroup m_actor_management
+ * \brief Return the list of properties
+ *
+ * This function returns all the parameters associated with an actor
+ */
+xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
+{
+  xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
+  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  std::map<std::string, std::string>* props = actor->getProperties();
+  if (props == nullptr)
+    return nullptr;
+  for (auto const& elm : *props) {
+    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  }
+  return as_dict;
+}
+
+/** \ingroup m_actor_management
+ * \brief Suspend the actor.
+ *
+ * This function suspends the actor by suspending the task on which it was waiting for the completion.
+ */
+void sg_actor_suspend(sg_actor_t actor)
+{
+  xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
+  actor->suspend();
+}
+
+/** \ingroup m_actor_management
+ * \brief Resume a suspended actor.
+ *
+ * This function resumes a suspended actor by resuming the task on which it was waiting for the completion.
+ */
+void sg_actor_resume(sg_actor_t actor)
+{
+  xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
+  actor->resume();
+}
+
+/** \ingroup m_actor_management
+ * \brief Returns true if the actor is suspended .
+ *
+ * This checks whether an actor is suspended or not by inspecting the task on which it was waiting for the completion.
+ */
+int sg_actor_is_suspended(sg_actor_t actor)
+{
+  return actor->isSuspended();
+}
+
+/**
+ * \ingroup m_actor_management
+ * \brief Restarts an actor from the beginning.
+ */
+sg_actor_t sg_actor_restart(sg_actor_t actor)
+{
+  return actor->restart();
+}
+
+/** @ingroup m_actor_management
+ * @brief This actor will be terminated automatically when the last non-daemon actor finishes
+ */
+void sg_actor_daemonize(sg_actor_t actor)
+{
+  actor->daemonize();
+}
+
+/* ************************** Backward ABI compatibility *************************** */
+int MSG_process_get_PID(sg_actor_t actor) __attribute__((alias("sg_actor_get_PID")));
+int MSG_process_get_PPID(sg_actor_t actor) __attribute__((alias("sg_actor_get_PPID")));
+const char* MSG_process_get_name(sg_actor_t actor) __attribute__((alias("sg_actor_get_name")));
+sg_host_t MSG_process_get_host(sg_actor_t actor) __attribute__((alias("sg_actor_get_host")));
+xbt_dict_t MSG_process_get_properties(sg_actor_t actor) __attribute__((alias("sg_actor_get_properties")));
+const char* MSG_process_get_property_value(sg_actor_t actor, const char* name)
+    __attribute__((alias("sg_actor_get_property_value")));
+void MSG_process_suspend(sg_actor_t actor) __attribute__((alias("sg_actor_suspend")));
+void MSG_process_resume(sg_actor_t actor) __attribute__((alias("sg_actor_resume")));
+int MSG_process_is_suspended(sg_actor_t actor) __attribute__((alias("sg_actor_is_suspended")));
+void MSG_process_restart(sg_actor_t actor) __attribute__((alias("sg_actor_restart")));
+void MSG_process_daemonize(sg_actor_t actor) __attribute__((alias("sg_actor_daemonize")));
+SG_END_DECL()

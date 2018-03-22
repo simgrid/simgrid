@@ -7,6 +7,7 @@
 #include "src/instr/instr_private.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include <simgrid/actor.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
