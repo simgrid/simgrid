@@ -53,7 +53,7 @@
 #define XBT_ATTRIB_UNUSED [[maybe_unused]]
 #endif
 #if __cplusplus >= 201402L
-#define XBT_ATTRIB_DEPRECATED(msg) [[deprecated(msg)]]
+#define XBT_ATTRIB_DEPRECATED(mesg) [[deprecated(mesg)]]
 #endif
 #elif defined(__STDC_VERSION__)
 #if __STDC_VERSION__ >= 201112L
@@ -68,12 +68,12 @@
 #define XBT_ATTRIB_UNUSED  __attribute__((unused))
 #endif
 #ifndef XBT_ATTRIB_DEPRECATED
-#define XBT_ATTRIB_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#define XBT_ATTRIB_DEPRECATED(mesg) __attribute__((deprecated(mesg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v320(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.20 */
-#define XBT_ATTRIB_DEPRECATED_v321(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.21 */
-#define XBT_ATTRIB_DEPRECATED_v322(msg) XBT_ATTRIB_DEPRECATED(msg) /* Will be dropped in v3.22 */
+#define XBT_ATTRIB_DEPRECATED_v320(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.20 */
+#define XBT_ATTRIB_DEPRECATED_v321(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.21 */
+#define XBT_ATTRIB_DEPRECATED_v322(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.22 */
 
 #define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
 #define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__(prio)))

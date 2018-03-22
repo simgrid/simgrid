@@ -30,8 +30,8 @@ XBT_PUBLIC xbt_dynar_t xbt_str_split_quoted_in_place(char* s);
 
 XBT_PUBLIC char* xbt_str_join_array(const char* const* strs, const char* sep);
 
-XBT_PUBLIC long int xbt_str_parse_int(const char* str, const char* error_msg);
-XBT_PUBLIC double xbt_str_parse_double(const char* str, const char* error_msg);
+XBT_PUBLIC long int xbt_str_parse_int(const char* str, const char* error_mesg);
+XBT_PUBLIC double xbt_str_parse_double(const char* str, const char* error_mesg);
 
 #define XBT_DJB2_HASH_FUNCTION
 //#define XBT_FNV_HASH_FUNCTION

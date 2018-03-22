@@ -46,7 +46,7 @@ public:
   /** Registers a function as the default main function of actors
    *
    * It will be used as fallback when the function requested from the deployment file was not registered.
-   * It is used for trace-based simulations (see examples/msg/actions).
+   * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
    */
   void registerDefault(int (*code)(int, char**));
 
@@ -139,7 +139,7 @@ private:
  * right before the actual simulation starts. */
 extern XBT_PUBLIC xbt::signal<void()> onPlatformCreated;
 
-/** Callback fired when the main simulation loop ends, just before MSG_run (or similar) ends */
+/** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
 extern XBT_PUBLIC xbt::signal<void()> onSimulationEnd;
 
 /** Callback fired when the time jumps into the future */

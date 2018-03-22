@@ -25,7 +25,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC sg_host_t* sg_host_list();
 
 /** \ingroup m_host_management
- * \brief Return the current number MSG hosts.
+ * \brief Return the current number of hosts.
  */
 XBT_PUBLIC size_t sg_host_count();
 
@@ -40,7 +40,7 @@ XBT_PUBLIC size_t sg_host_extension_create(void (*deleter)(void*));
 XBT_PUBLIC void* sg_host_extension_get(sg_host_t host, size_t rank);
 
 /** \ingroup m_host_management
- * \brief Finds a msg_host_t using its name.
+ * \brief Finds a sg_host_t using its name.
  *
  * This is a name directory service
  * \param name the name of an host.
@@ -50,20 +50,20 @@ XBT_PUBLIC sg_host_t sg_host_by_name(const char* name);
 
 /** \ingroup m_host_management
  *
- * \brief Return the name of the #msg_host_t. */
+ * \brief Return the name of the #sg_host_t. */
 XBT_PUBLIC const char* sg_host_get_name(sg_host_t host);
 
 // ========== User Data ==============
 /** \ingroup m_host_management
  *
- * \brief Return the user data of a #msg_host_t.
+ * \brief Return the user data of a #sg_host_t.
  *
  * This functions returns the user data associated to \a host if it is possible.
  */
 XBT_PUBLIC void* sg_host_user(sg_host_t host);
 /** \ingroup m_host_management
  *
- * \brief Set the user data of a #msg_host_t.
+ * \brief Set the user data of a #sg_host_t.
  *
  * This functions attach \a data to \a host if it is possible.
  */
@@ -74,7 +74,7 @@ XBT_PUBLIC void sg_host_user_destroy(sg_host_t host);
 /** \ingroup m_host_management
  * \brief Return the list of mount point names on an host.
  * \param host a host
- * \return a dict containing all mount point on the host (mount_name => msg_storage_t)
+ * \return a dict containing all mount point on the host (mount_name => sg_storage_t)
  */
 XBT_PUBLIC xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host);
 
@@ -99,7 +99,7 @@ XBT_PUBLIC int sg_host_core_count(sg_host_t host);
 /** \ingroup m_process_management
  * \brief Return the location on which a process is running.
  * \param process a process (nullptr means the current one)
- * \return the msg_host_t corresponding to the location on which \a process is running.
+ * \return the sg_host_t corresponding to the location on which \a process is running.
  */
 XBT_PUBLIC sg_host_t sg_host_self();
 
