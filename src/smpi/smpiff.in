@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 
-# Copyright (c) 2012-2017. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -9,7 +8,7 @@
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
 SIMGRID_GITHASH="@SIMGRID_GITHASH@"
 
-F77=@SMPI_Fortran_COMPILER@
+REAL_FORTRAN_COMPILER=@SMPI_Fortran_COMPILER@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
@@ -41,7 +40,7 @@ filter_and_compile() {
 TRACE_CALL_LOCATION=0
 NEEDS_OUTPUT=1
 
-list_set CMDLINE "${F77}"
+list_set CMDLINE "${REAL_FORTRAN_COMPILER}"
 list_add_not_empty CMDLINE "${FFLAGS}"
 while [ $# -gt 0 ]; do
     ARG="$1"
@@ -73,7 +72,7 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         '-compiler-version' | '--compiler-version')
-            ${F77} --version
+            ${REAL_FORTRAN_COMPILER} --version
             ;;
         '-trace-call-location')
             TRACE_CALL_LOCATION=1
@@ -82,10 +81,10 @@ while [ $# -gt 0 ]; do
             list_add_not_empty CMDLINE "-ffixed-line-length-none" "-cpp"
             ;;
         -o)
-            NEEDS_OUTPUT=0
             list_add CMDLINE "-o$1"
+            NEEDS_OUTPUT=0
             shift
-            ;;        
+            ;;
         *)
             list_add CMDLINE "${ARG}"
             ;;
@@ -93,7 +92,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ $NEEDS_OUTPUT -ne 0 ]; then
-   list_add CMDLINE "-o${ORIGFILE}.o"     
+   list_add CMDLINE "-o${ORIGFILE}.o"
 fi
 
 list_add_not_empty CMDLINE ${INCLUDEARGS}
