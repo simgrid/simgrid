@@ -326,13 +326,14 @@ manager there, and it works like a charm.
 AppVeyor aims at becoming the Travis of Windows. It is maybe less
 mature than Travis, or maybe it is just that I'm less trained in
 Windows. Our configuration is in the file appveyor.yml as it should
-be, and the result is here: https://ci.appveyor.com/project/simgrid/simgrid
+be, and the result is here: https://ci.appveyor.com/project/mquinson/simgrid
 
 We use \c Choco as a package manager on AppVeyor, and it is sufficient
 for us. In the future, we will probably move to the ubuntu subsystem
-of Windows 10: SimGrid performs very well under these settings, but
-unfortunately we have no continuous integration service providing it
-yet, so we cannot drop AppVeyor yet.
+of Windows 10: SimGrid performs very well under these settings, as
+tested on Inria's CI servers. For the time being having a native
+library is still useful for the Java users that don't want to install
+anything beyond Java on their windows.
 
 \subsection inside_tests_debian Debian builders
 
