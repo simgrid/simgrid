@@ -129,12 +129,6 @@ double surf_get_clock()
   return NOW;
 }
 
-#ifdef _WIN32
-# define FILE_DELIM "\\"
-#else
-# define FILE_DELIM "/"         /* FIXME: move to better location */
-#endif
-
 std::ifstream* surf_ifsopen(std::string name)
 {
   std::ifstream* fs = new std::ifstream();
@@ -145,7 +139,7 @@ std::ifstream* surf_ifsopen(std::string name)
 
   /* search relative files in the path */
   for (auto const& path_elm : surf_path) {
-    std::string buff = path_elm + FILE_DELIM + name;
+    std::string buff = path_elm + "/" + name;
     fs->open(buff.c_str(), std::ifstream::in);
 
     if (not fs->fail()) {
@@ -168,7 +162,7 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   /* search relative files in the path */
   for (auto const& path_elm : surf_path) {
-    std::string buff = path_elm + FILE_DELIM + name;
+    std::string buff = path_elm + "/" + name;
     file             = fopen(buff.c_str(), mode);
 
     if (file)
