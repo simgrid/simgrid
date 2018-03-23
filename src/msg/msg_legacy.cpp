@@ -67,6 +67,11 @@ void MSG_process_kill(sg_actor_t actor)
   sg_actor_kill(actor);
 }
 
+void MSG_process_set_kill_time(sg_actor_t actor, double kill_time)
+{
+  sg_actor_set_kill_time(actor, kill_time);
+}
+
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()
 {
