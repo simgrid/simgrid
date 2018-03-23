@@ -43,8 +43,8 @@ cmake . && make dist
 
 If you prefer, you can clean your repository the hard way:
 \verbatim
-git reset --hard master # warning, it will kill your uncommited changes
-git clean -dfx          # warning, it will kill your uncommited changes
+git reset --hard master # remove all uncommited changes to the files tracked by git
+git clean -dfx          # delete all files and directories that are not tracked by git
 cmake . && make dist
 \endverbatim
 
