@@ -500,11 +500,9 @@ int Datatype::create_struct(int count, int* block_lengths, MPI_Aint* indices, MP
 int Datatype::create_subarray(int ndims, int* array_of_sizes,
                              int* array_of_subsizes, int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
-
-  int i, step, end;
   MPI_Datatype tmp;
-  
-  for (i=0; i < ndims; i++) {
+
+  for (int i = 0; i < ndims; i++) {
     if (array_of_subsizes[i] > array_of_sizes[i]){
       XBT_WARN("subarray : array_of_subsizes > array_of_sizes for dim %d",i);
       return MPI_ERR_ARG;
@@ -516,7 +514,10 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
   }
   
   MPI_Aint extent = oldtype->get_extent();
-  
+
+  int i;
+  int step;
+  int end;
   if( order==MPI_ORDER_C ) {
       i = ndims - 1;
       step = -1;
