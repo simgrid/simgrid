@@ -110,7 +110,7 @@ pgtokill = None
 def kill_process_group(pgid):
     if pgid is None: # Nobody to kill. We don't know who to kill on windows, or we don't have anyone to kill on signal handler
         return
-    
+
     # print("Kill process group {}".format(pgid))
     try:
         os.killpg(pgid, signal.SIGTERM)
