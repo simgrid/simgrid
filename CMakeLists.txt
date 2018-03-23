@@ -704,7 +704,7 @@ set(SMPIMAIN smpimain)
 
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
 #configure mpif.f90 to build mpi.mod
-if(enable_fortran)
+if(SMPI_FORTRAN)
   set(MODULE_MPIF_IN "module mpi")
   set(MODULE_MPIF_OUT "end module mpi")
   configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/src/smpi/mpif.f90.generated @ONLY)
