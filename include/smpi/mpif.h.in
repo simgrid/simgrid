@@ -6,7 +6,7 @@
 ! under the terms of the license (GNU LGPL) which comes with this package.
 
 ! SMPI's Fortran 77 include file
-
+@MODULE_MPIF_IN@
       integer MPI_THREAD_SINGLE, MPI_THREAD_FUNNELED
       integer MPI_THREAD_SERIALIZED, MPI_THREAD_MULTIPLE
       parameter(MPI_THREAD_SINGLE=0)
@@ -289,3 +289,4 @@
       double precision smpi_get_host_current_power_peak
       integer smpi_get_host_nb_pstates
       double precision smpi_get_host_consumed_energy
+@MODULE_MPIF_OUT@

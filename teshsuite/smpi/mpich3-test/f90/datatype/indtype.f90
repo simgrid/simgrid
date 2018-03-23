@@ -6,8 +6,8 @@
 ! This test contributed by Kim McMahon, Cray
 !
       program main
-      implicit none
       use mpi
+      implicit none
 
       integer ierr, i, j, type, count,errs
       parameter (count = 4)

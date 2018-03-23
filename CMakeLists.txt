@@ -79,9 +79,9 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
   endif()
   
   if(CMAKE_Fortran_COMPILER)
+
     # Fortran compiler detected: save it, then replace by smpiff
     set(SMPI_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}" CACHE FILEPATH "The real Fortran compiler")
-    set(CMAKE_Fortran_COMPILER smpiff)
 
 	# Set flags/libs to be used in smpiff
     if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
@@ -703,6 +703,16 @@ set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_P
 set(SMPIMAIN smpimain)
 
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
+#configure mpif.f90 to build mpi.mod
+if(enable_fortran)
+  set(MODULE_MPIF_IN "module mpi")
+  set(MODULE_MPIF_OUT "end module mpi")
+  configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/src/smpi/mpif.f90.generated @ONLY)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/smpi/mpif.f90.generated ${CMAKE_BINARY_DIR}/src/smpi/mpif.f90)
+  set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/include/smpi)
+  add_library(mpi SHARED ${CMAKE_BINARY_DIR}/src/smpi/mpif.f90)
+endif()
+
 foreach(script cc cxx ff f90 run)
   configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpi${script}.in ${CMAKE_BINARY_DIR}/bin/smpi${script} @ONLY)
 endforeach()
