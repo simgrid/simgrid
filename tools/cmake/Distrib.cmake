@@ -21,7 +21,7 @@ if(enable_smpi)
       ${CMAKE_BINARY_DIR}/bin/smpiff
       DESTINATION bin/)
     install(PROGRAMS
-      ${CMAKE_BINARY_DIR}/src/mpi.mod
+      ${CMAKE_BINARY_DIR}/include/smpi/mpi.mod
       DESTINATION include/smpi/)
   endif()
 endif()
