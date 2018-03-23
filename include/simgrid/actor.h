@@ -34,6 +34,7 @@ XBT_PUBLIC void sg_actor_resume(sg_actor_t actor);
 XBT_PUBLIC int sg_actor_is_suspended(sg_actor_t actor);
 XBT_PUBLIC sg_actor_t sg_actor_restart(sg_actor_t actor);
 XBT_PUBLIC void sg_actor_daemonize(sg_actor_t actor);
+XBT_PUBLIC void sg_actor_migrate(sg_actor_t process, sg_host_t host);
 
 SG_END_DECL()
 

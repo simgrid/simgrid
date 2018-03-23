@@ -180,9 +180,7 @@ void TRACE_smpi_finalize(int rank)
   if (not TRACE_smpi_is_enabled())
     return;
 
-  container_t container = smpi_container(rank);
-  container->removeFromParent();
-  delete container;
+  smpi_container(rank)->removeFromParent();
 }
 
 void TRACE_smpi_computing_init(int rank)

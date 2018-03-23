@@ -135,6 +135,7 @@ void Container::removeFromParent()
     XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", getCname(), father_->getCname());
     father_->children_.erase(name_);
   }
+  delete this;
 }
 
 void Container::logCreation()

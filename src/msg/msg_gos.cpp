@@ -114,7 +114,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
   msg_error_t status = MSG_OK;
 
   if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->pushEvent("sleep");
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("ACTOR_STATE")->pushEvent("sleep");
 
   try {
     simcall_process_sleep(nb_sec);
@@ -134,7 +134,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
   }
 
   if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("MSG_PROCESS_STATE")->popEvent();
+    simgrid::instr::Container::byName(instr_pid(MSG_process_self()))->getState("ACTOR_STATE")->popEvent();
 
   return status;
 }

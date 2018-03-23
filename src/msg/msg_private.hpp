@@ -84,9 +84,6 @@ struct s_MSG_Global_t {
 };
 typedef s_MSG_Global_t* MSG_Global_t;
 
-XBT_PRIVATE void TRACE_msg_process_create(msg_process_t process, msg_host_t host);
-XBT_PRIVATE void TRACE_msg_process_destroy(msg_process_t process);
-
 extern "C" {
 
 XBT_PUBLIC_DATA MSG_Global_t msg_global;
@@ -111,7 +108,6 @@ XBT_PRIVATE int TRACE_msg_task_put_start(msg_task_t task); // returns TRUE if th
 XBT_PRIVATE void TRACE_msg_task_put_end();
 
 /* declaration of instrumentation functions from msg_process_instr.c */
-XBT_PRIVATE void TRACE_msg_process_change_host(msg_process_t process, msg_host_t new_host);
 XBT_PRIVATE void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
 }
 

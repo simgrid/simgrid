@@ -57,7 +57,7 @@ void MigrationRx::operator()()
   vm_->getImpl()->isMigrating = false;
   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm_->getCname(), src_pm_->getCname(), dst_pm_->getCname());
 
-  if (TRACE_msg_vm_is_enabled()) {
+  if (TRACE_vm_is_enabled()) {
     static long long int counter = 0;
     std::string key              = std::to_string(counter);
     counter++;
@@ -67,9 +67,7 @@ void MigrationRx::operator()()
     simgrid::instr::Container::getRoot()->getLink("MSG_VM_LINK")->startEvent(msg, "M", key);
 
     // destroy existing container of this vm
-    container_t existing_container = simgrid::instr::Container::byName(vm_->getName());
-    existing_container->removeFromParent();
-    delete existing_container;
+    simgrid::instr::Container::byName(vm_->getName())->removeFromParent();
 
     // create new container on the new_host location
     new simgrid::instr::Container(vm_->getCname(), "MSG_VM", simgrid::instr::Container::byName(dst_pm_->getName()));

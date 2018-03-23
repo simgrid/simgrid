@@ -40,7 +40,9 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
     simcall_process_set_data(smx_actor, nullptr);
   }
 
-  TRACE_msg_process_destroy(smx_actor->ciface());
+  if (TRACE_actor_is_enabled())
+    simgrid::instr::Container::byName(instr_pid(smx_actor->ciface()))->removeFromParent();
+
   // free the data if a function was provided
   if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_actor->data);
@@ -215,19 +217,6 @@ void MSG_process_kill(msg_process_t process)
 */
 msg_error_t MSG_process_join(msg_process_t process, double timeout){
   process->join(timeout);
-  return MSG_OK;
-}
-
-/** \ingroup m_process_management
- * \brief Migrates a process to another location.
- *
- * This function checks whether \a process and \a host are valid pointers and change the value of the #msg_host_t on
- * which \a process is running.
- */
-msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
-{
-  TRACE_msg_process_change_host(process, host);
-  process->migrate(host);
   return MSG_OK;
 }
 

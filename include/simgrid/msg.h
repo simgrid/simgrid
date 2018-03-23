@@ -134,6 +134,7 @@ XBT_PUBLIC void MSG_process_resume(msg_process_t process);
 XBT_PUBLIC int MSG_process_is_suspended(msg_process_t process);
 XBT_PUBLIC void MSG_process_restart(msg_process_t process);
 XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
+XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
 
 /* ******************************** File ************************************ */
 typedef sg_file_t msg_file_t;
@@ -233,7 +234,6 @@ XBT_PUBLIC void MSG_process_detach();
 
 XBT_PUBLIC void MSG_process_kill(msg_process_t process);
 XBT_PUBLIC int MSG_process_killall();
-XBT_PUBLIC msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host);
 XBT_PUBLIC void MSG_process_yield();
 
 XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);

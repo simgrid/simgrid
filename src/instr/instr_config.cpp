@@ -24,8 +24,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_FILENAME             "tracing/filename"
 #define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti-one-file"
 #define OPT_TRACING_FORMAT               "tracing/smpi/format"
-#define OPT_TRACING_MSG_PROCESS          "tracing/msg/process"
-#define OPT_TRACING_MSG_VM               "tracing/msg/vm"
+#define OPT_TRACING_ACTOR "tracing/msg/process"
+#define OPT_TRACING_VM "tracing/vm"
 #define OPT_TRACING_PLATFORM             "tracing/platform"
 #define OPT_TRACING_PRECISION            "tracing/precision"
 #define OPT_TRACING_SMPI_COMPUTING       "tracing/smpi/computing"
@@ -48,7 +48,7 @@ static bool trace_view_internals;
 static bool trace_categorized;
 static bool trace_uncategorized;
 static bool trace_actor_enabled;
-static bool trace_msg_vm_enabled;
+static bool trace_vm_enabled;
 static bool trace_buffer;
 static bool trace_disable_destroy;
 static bool trace_basic;
@@ -73,8 +73,8 @@ static void TRACE_getopts()
   trace_view_internals      = xbt_cfg_get_boolean(OPT_TRACING_SMPI_INTERNALS);
   trace_categorized         = xbt_cfg_get_boolean(OPT_TRACING_CATEGORIZED);
   trace_uncategorized       = xbt_cfg_get_boolean(OPT_TRACING_UNCATEGORIZED);
-  trace_actor_enabled       = trace_enabled && xbt_cfg_get_boolean(OPT_TRACING_MSG_PROCESS);
-  trace_msg_vm_enabled      = xbt_cfg_get_boolean(OPT_TRACING_MSG_VM);
+  trace_actor_enabled       = trace_enabled && xbt_cfg_get_boolean(OPT_TRACING_ACTOR);
+  trace_vm_enabled          = xbt_cfg_get_boolean(OPT_TRACING_VM);
   trace_buffer              = xbt_cfg_get_boolean(OPT_TRACING_BUFFER);
   trace_disable_destroy     = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_DESTROY);
   trace_basic               = xbt_cfg_get_boolean(OPT_TRACING_BASIC);
@@ -156,7 +156,7 @@ int TRACE_end()
 
 bool TRACE_needs_platform ()
 {
-  return TRACE_actor_is_enabled() || TRACE_msg_vm_is_enabled() || TRACE_categorized() || TRACE_uncategorized() ||
+  return TRACE_actor_is_enabled() || TRACE_vm_is_enabled() || TRACE_categorized() || TRACE_uncategorized() ||
          TRACE_platform() || (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
 
@@ -220,9 +220,9 @@ bool TRACE_actor_is_enabled()
   return trace_actor_enabled;
 }
 
-bool TRACE_msg_vm_is_enabled()
+bool TRACE_vm_is_enabled()
 {
-  return trace_msg_vm_enabled && TRACE_is_enabled();
+  return trace_vm_enabled && TRACE_is_enabled();
 }
 
 bool TRACE_disable_link()
@@ -295,8 +295,8 @@ void TRACE_global_init()
   xbt_cfg_register_boolean(OPT_TRACING_CATEGORIZED, "no", nullptr, "Tracing categorized resource utilization of hosts and links.");
   xbt_cfg_register_boolean(OPT_TRACING_UNCATEGORIZED, "no", nullptr, "Tracing uncategorized resource utilization of hosts and links.");
 
-  xbt_cfg_register_boolean(OPT_TRACING_MSG_PROCESS, "no", nullptr, "Tracing of MSG process behavior.");
-  xbt_cfg_register_boolean(OPT_TRACING_MSG_VM, "no", nullptr, "Tracing of MSG process behavior.");
+  xbt_cfg_register_boolean(OPT_TRACING_ACTOR, "no", nullptr, "Tracing of actor behavior.");
+  xbt_cfg_register_boolean(OPT_TRACING_VM, "no", nullptr, "Tracing of virtual machine behavior.");
   xbt_cfg_register_boolean(OPT_TRACING_DISABLE_LINK, "no", nullptr, "Do not trace link bandwidth and latency.");
   xbt_cfg_register_boolean(OPT_TRACING_DISABLE_POWER, "no", nullptr, "Do not trace host power.");
   xbt_cfg_register_boolean(OPT_TRACING_BUFFER, "yes", nullptr, "Buffer trace events to put them in temporal order.");
@@ -370,10 +370,11 @@ void TRACE_help (int detailed)
       "  to allow further study of simulated or real sleep time", detailed);
   print_line (OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
       "  to point-to-point messages sent by collective communications", detailed);
-  print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
-      "  This option only has effect if this simulator is MSG-based. It traces the\n"
-      "  behavior of all categorized MSG processes, grouping them by hosts. This option\n"
-      "  can be used to track process location if this simulator has process migration.", detailed);
+  print_line(OPT_TRACING_ACTOR, "Trace actor behavior",
+             "  This option traces the behavior of all categorized actors, grouping them\n"
+             "  by hosts. This option can be used to track actor location if the simulator\n"
+             "  does actor migration.",
+             detailed);
   print_line (OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
       "  This option put some events in a time-ordered buffer using the insertion\n"
       "  sort algorithm. The process of acquiring and releasing locks to access this\n"

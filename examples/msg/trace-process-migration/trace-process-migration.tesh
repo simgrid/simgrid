@@ -118,15 +118,15 @@ $ tail -n +3 procmig.trace
 > %EndEventDef
 > 0 1 0 HOST
 > 6 0 1 1 0 "Tremblay"
-> 0 2 1 MSG_PROCESS
-> 2 3 2 MSG_PROCESS_STATE
+> 0 2 1 ACTOR
+> 2 3 2 ACTOR_STATE
 > 5 4 3 suspend "1 0 1"
 > 5 5 3 sleep "1 1 0"
 > 5 6 3 receive "1 0 0"
 > 5 7 3 send "0 0 1"
 > 5 8 3 task_execute "0 1 1"
-> 4 9 0 2 2 MSG_PROCESS_LINK
-> 4 10 0 2 2 MSG_PROCESS_TASK_LINK
+> 4 9 0 2 2 ACTOR_LINK
+> 4 10 0 2 2 ACTOR_TASK_LINK
 > 6 0 2 1 0 "Jupiter"
 > 6 0 3 1 0 "Fafard"
 > 6 0 4 1 0 "Ginette"
@@ -514,15 +514,15 @@ $ tail -n +3 procmig.trace
 > 6 0 1 1 0 "Tremblay"
 > 1 2 1 power "1 1 1"
 > 1 3 1 power_used "0.5 0.5 0.5"
-> 0 4 1 MSG_PROCESS
-> 2 5 4 MSG_PROCESS_STATE
+> 0 4 1 ACTOR
+> 2 5 4 ACTOR_STATE
 > 5 6 5 suspend "1 0 1"
 > 5 7 5 sleep "1 1 0"
 > 5 8 5 receive "1 0 0"
 > 5 9 5 send "0 0 1"
 > 5 10 5 task_execute "0 1 1"
-> 4 11 0 4 4 MSG_PROCESS_LINK
-> 4 12 0 4 4 MSG_PROCESS_TASK_LINK
+> 4 11 0 4 4 ACTOR_LINK
+> 4 12 0 4 4 ACTOR_TASK_LINK
 > 6 0 2 1 0 "Jupiter"
 > 6 0 3 1 0 "Fafard"
 > 6 0 4 1 0 "Ginette"
@@ -1116,15 +1116,15 @@ $ tail -n +3 procmig.trace
 > 6 0 1 1 0 "Tremblay"
 > 1 2 1 power "1 1 1"
 > 1 3 1 power_used "0.5 0.5 0.5"
-> 0 4 1 MSG_PROCESS
-> 2 5 4 MSG_PROCESS_STATE
+> 0 4 1 ACTOR
+> 2 5 4 ACTOR_STATE
 > 5 6 5 suspend "1 0 1"
 > 5 7 5 sleep "1 1 0"
 > 5 8 5 receive "1 0 0"
 > 5 9 5 send "0 0 1"
 > 5 10 5 task_execute "0 1 1"
-> 4 11 0 4 4 MSG_PROCESS_LINK
-> 4 12 0 4 4 MSG_PROCESS_TASK_LINK
+> 4 11 0 4 4 ACTOR_LINK
+> 4 12 0 4 4 ACTOR_TASK_LINK
 > 6 0 2 1 0 "Jupiter"
 > 6 0 3 1 0 "Fafard"
 > 6 0 4 1 0 "Ginette"
@@ -2529,15 +2529,15 @@ $ tail -n +3 simgrid.trace
 > %EndEventDef
 > 0 1 0 HOST
 > 6 0 1 1 0 "Tremblay"
-> 0 2 1 MSG_PROCESS
-> 2 3 2 MSG_PROCESS_STATE
+> 0 2 1 ACTOR
+> 2 3 2 ACTOR_STATE
 > 5 4 3 suspend "1 0 1"
 > 5 5 3 sleep "1 1 0"
 > 5 6 3 receive "1 0 0"
 > 5 7 3 send "0 0 1"
 > 5 8 3 task_execute "0 1 1"
-> 4 9 0 2 2 MSG_PROCESS_LINK
-> 4 10 0 2 2 MSG_PROCESS_TASK_LINK
+> 4 9 0 2 2 ACTOR_LINK
+> 4 10 0 2 2 ACTOR_TASK_LINK
 > 6 0 2 1 0 "Jupiter"
 > 6 0 3 1 0 "Fafard"
 > 6 0 4 1 0 "Ginette"

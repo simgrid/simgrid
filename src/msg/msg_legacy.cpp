@@ -54,6 +54,10 @@ void MSG_process_daemonize(sg_actor_t actor)
 {
   sg_actor_daemonize(actor);
 }
+void MSG_process_migrate(sg_actor_t actor, sg_host_t host)
+{
+  sg_actor_migrate(actor, host);
+}
 
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()

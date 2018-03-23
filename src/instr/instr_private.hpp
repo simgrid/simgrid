@@ -203,7 +203,7 @@ XBT_PRIVATE bool TRACE_is_configured();
 XBT_PRIVATE bool TRACE_categorized();
 XBT_PRIVATE bool TRACE_uncategorized();
 XBT_PRIVATE bool TRACE_actor_is_enabled();
-XBT_PRIVATE bool TRACE_msg_vm_is_enabled();
+XBT_PRIVATE bool TRACE_vm_is_enabled();
 XBT_PRIVATE bool TRACE_buffer();
 XBT_PRIVATE bool TRACE_disable_link();
 XBT_PRIVATE bool TRACE_disable_speed();

@@ -88,6 +88,23 @@ void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
  */
 void Actor::migrate(Host* new_host)
 {
+  std::string key;
+  simgrid::instr::LinkType* link = nullptr;
+  if (TRACE_actor_is_enabled()) {
+    static long long int counter = 0;
+
+    key = std::to_string(counter);
+    counter++;
+
+    // start link
+    container_t actor_container = simgrid::instr::Container::byName(instr_pid(this));
+    link                        = simgrid::instr::Container::getRoot()->getLink("ACTOR_LINK");
+    link->startEvent(actor_container, "M", key);
+
+    // destroy existing container of this process
+    actor_container->removeFromParent();
+  }
+
   simgrid::simix::kernelImmediate([this, new_host]() {
     if (pimpl_->waiting_synchro != nullptr) {
       // The actor is blocked on an activity. If it's an exec, migrate it too.
@@ -99,6 +116,14 @@ void Actor::migrate(Host* new_host)
     }
     SIMIX_process_change_host(this->pimpl_, new_host);
   });
+
+  if (TRACE_actor_is_enabled()) {
+    // create new container on the new_host location
+    new simgrid::instr::Container(instr_pid(this), "ACTOR", simgrid::instr::Container::byName(new_host->getName()));
+
+    // end link
+    link->endEvent(simgrid::instr::Container::byName(instr_pid(this)), "M", key);
+  }
 }
 
 s4u::Host* Actor::getHost()
@@ -139,7 +164,7 @@ aid_t Actor::getPpid()
 void Actor::suspend()
 {
   if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(this))->getState("MSG_PROCESS_STATE")->pushEvent("suspend");
+    simgrid::instr::Container::byName(instr_pid(this))->getState("ACTOR_STATE")->pushEvent("suspend");
 
   simcall_process_suspend(pimpl_);
 }
@@ -148,7 +173,7 @@ void Actor::resume()
 {
   simgrid::simix::kernelImmediate([this] { pimpl_->resume(); });
   if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(this))->getState("MSG_PROCESS_STATE")->popEvent();
+    simgrid::instr::Container::byName(instr_pid(this))->getState("ACTOR_STATE")->popEvent();
 }
 
 int Actor::isSuspended()
@@ -333,9 +358,7 @@ Host* getHost()
 void suspend()
 {
   if (TRACE_actor_is_enabled())
-    instr::Container::byName(getName() + "-" + std::to_string(getPid()))
-        ->getState("MSG_PROCESS_STATE")
-        ->pushEvent("suspend");
+    instr::Container::byName(getName() + "-" + std::to_string(getPid()))->getState("ACTOR_STATE")->pushEvent("suspend");
   simcall_process_suspend(SIMIX_process_self());
 }
 
@@ -345,7 +368,7 @@ void resume()
   simgrid::simix::kernelImmediate([process] { process->resume(); });
 
   if (TRACE_actor_is_enabled())
-    instr::Container::byName(getName() + "-" + std::to_string(getPid()))->getState("MSG_PROCESS_STATE")->popEvent();
+    instr::Container::byName(getName() + "-" + std::to_string(getPid()))->getState("ACTOR_STATE")->popEvent();
 }
 
 bool isSuspended()
@@ -494,6 +517,16 @@ sg_actor_t sg_actor_restart(sg_actor_t actor)
 void sg_actor_daemonize(sg_actor_t actor)
 {
   actor->daemonize();
+}
+
+/** \ingroup m_process_management
+ * \brief Migrates an actor to another location.
+ *
+ * This function changes the value of the #sg_host_t on  which \a actor is running.
+ */
+void sg_actor_migrate(sg_actor_t process, sg_host_t host)
+{
+  process->migrate(host);
 }
 
 SG_END_DECL()

@@ -41,7 +41,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
   /* Make a process container */
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
-  if (TRACE_msg_vm_is_enabled()) {
+  if (TRACE_vm_is_enabled()) {
     container_t host_container = instr::Container::byName(pm->getName());
     new instr::Container(name, "MSG_VM", host_container);
     instr::Container::byName(getName())->getState("MSG_VM_STATE")->addEntityValue("start", "0 0 1");   // start is blue
@@ -66,16 +66,13 @@ VirtualMachine::~VirtualMachine()
   /* Don't free these things twice: they are the ones of my physical host */
   pimpl_netpoint = nullptr;
 
-  if (TRACE_msg_vm_is_enabled()) {
-    container_t container = simgrid::instr::Container::byName(getName());
-    container->removeFromParent();
-    delete container;
-  }
+  if (TRACE_vm_is_enabled())
+    simgrid::instr::Container::byName(getName())->removeFromParent();
 }
 
 void VirtualMachine::start()
 {
-  if (TRACE_msg_vm_is_enabled())
+  if (TRACE_vm_is_enabled())
     simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->pushEvent("start");
 
   simgrid::simix::kernelImmediate([this]() {
@@ -107,7 +104,7 @@ void VirtualMachine::start()
     this->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
   });
 
-  if (TRACE_msg_vm_is_enabled())
+  if (TRACE_vm_is_enabled())
     simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->popEvent();
 }
 
@@ -115,7 +112,7 @@ void VirtualMachine::suspend()
 {
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->suspend(issuer); });
-  if (TRACE_msg_vm_is_enabled())
+  if (TRACE_vm_is_enabled())
     simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->pushEvent("suspend");
   XBT_DEBUG("vm_suspend done");
 }
@@ -123,7 +120,7 @@ void VirtualMachine::suspend()
 void VirtualMachine::resume()
 {
   pimpl_vm_->resume();
-  if (TRACE_msg_vm_is_enabled())
+  if (TRACE_vm_is_enabled())
     simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->popEvent();
 }
 

@@ -223,18 +223,18 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     container->type_->getOrCreateContainerType("MPI")->getOrCreateStateType("MPI_STATE");
 
   if (TRACE_actor_is_enabled()) {
-    simgrid::instr::ContainerType* msg_process = container->type_->getOrCreateContainerType("MSG_PROCESS");
-    simgrid::instr::StateType* state           = msg_process->getOrCreateStateType("MSG_PROCESS_STATE");
+    simgrid::instr::ContainerType* actor = container->type_->getOrCreateContainerType("ACTOR");
+    simgrid::instr::StateType* state     = actor->getOrCreateStateType("ACTOR_STATE");
     state->addEntityValue("suspend", "1 0 1");
     state->addEntityValue("sleep", "1 1 0");
     state->addEntityValue("receive", "1 0 0");
     state->addEntityValue("send", "0 0 1");
     state->addEntityValue("task_execute", "0 1 1");
-    root->type_->getOrCreateLinkType("MSG_PROCESS_LINK", msg_process, msg_process);
-    root->type_->getOrCreateLinkType("MSG_PROCESS_TASK_LINK", msg_process, msg_process);
+    root->type_->getOrCreateLinkType("ACTOR_LINK", actor, actor);
+    root->type_->getOrCreateLinkType("ACTOR_TASK_LINK", actor, actor);
   }
 
-  if (TRACE_msg_vm_is_enabled()) {
+  if (TRACE_vm_is_enabled()) {
     simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
     simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("MSG_VM_STATE");
     state->addEntityValue("suspend", "1 0 1");
@@ -243,7 +243,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
     state->addEntityValue("send", "0 0 1");
     state->addEntityValue("task_execute", "0 1 1");
     root->type_->getOrCreateLinkType("MSG_VM_LINK", msg_vm, msg_vm);
-    root->type_->getOrCreateLinkType("MSG_VM_PROCESS_LINK", msg_vm, msg_vm);
+    root->type_->getOrCreateLinkType("MSG_VM_ACTOR_LINK", msg_vm, msg_vm);
   }
 }
 
