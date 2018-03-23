@@ -20,6 +20,9 @@ if(enable_smpi)
       ${CMAKE_BINARY_DIR}/bin/smpif90
       ${CMAKE_BINARY_DIR}/bin/smpiff
       DESTINATION bin/)
+    install(PROGRAMS
+      ${CMAKE_BINARY_DIR}/include/smpi/mpi.mod
+      DESTINATION include/smpi/)
   endif()
 endif()
 
@@ -345,6 +348,7 @@ add_custom_target(maintainer-clean
   COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid_units_main.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_str_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c
+  COMMAND ${CMAKE_COMMAND} -E remove -f src/mpif.f90
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
 
 include(CPack)
