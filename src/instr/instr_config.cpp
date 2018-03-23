@@ -411,19 +411,3 @@ void TRACE_help (int detailed)
         "  time consuming, since it must get the route from each host to other hosts\n"
         "  within the same Autonomous System (AS).", detailed);
 }
-
-static void output_types (const char *name, xbt_dynar_t types, FILE *file)
-{
-  unsigned int i;
-  fprintf (file, "  %s = (", name);
-  for (i = xbt_dynar_length(types); i > 0; i--) {
-    char *type = *(static_cast<char**>(xbt_dynar_get_ptr(types, i - 1)));
-    fprintf (file, "\"%s\"", type);
-    if (i - 1 > 0){
-      fprintf (file, ",");
-    }else{
-      fprintf (file, ");\n");
-    }
-  }
-  xbt_dynar_free (&types);
-}
