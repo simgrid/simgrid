@@ -119,8 +119,7 @@ void Actor::migrate(Host* new_host)
 
   if (TRACE_actor_is_enabled()) {
     // create new container on the new_host location
-    new simgrid::instr::Container(instr_pid(this), "ACTOR", simgrid::instr::Container::byName(new_host->getName()));
-
+    simgrid::instr::Container::byName(new_host->getName())->createChild(instr_pid(this), "ACTOR");
     // end link
     link->endEvent(simgrid::instr::Container::byName(instr_pid(this)), "M", key);
   }

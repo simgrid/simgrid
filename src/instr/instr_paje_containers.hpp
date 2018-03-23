@@ -40,7 +40,7 @@ public:
   StateType* getState(std::string name);
   LinkType* getLink(std::string name);
   VariableType* getVariable(std::string name);
-
+  void createChild(std::string name, std::string type_name);
   static Container* getRoot();
 };
 

@@ -156,11 +156,9 @@ void TRACE_smpi_init(int rank)
     father = simgrid::instr::Container::getRoot();
   }
   xbt_assert(father != nullptr, "Could not find a parent for mpi rank %s at function %s", str.c_str(), __FUNCTION__);
+  father->createChild(str, "MPI");
 #if HAVE_PAPI
-  container_t container =
-#endif
-      new simgrid::instr::Container(str, "MPI", father);
-#if HAVE_PAPI
+  container_t container   = simgrid::instr::Container::byName(str);
   papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto const& it : counters) {

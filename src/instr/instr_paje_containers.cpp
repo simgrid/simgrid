@@ -114,6 +114,11 @@ Container::~Container()
   allContainers.erase(name_);
 }
 
+void Container::createChild(std::string name, std::string type_name)
+{
+  new Container(name, type_name, this);
+}
+
 Container* Container::byNameOrNull(std::string name)
 {
   auto cont = allContainers.find(name);
