@@ -35,19 +35,19 @@ public:
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  virtual ActionList* getReadyActionSet() const { return readyActionSet_; }
+  ActionList* getReadyActionSet() const { return readyActionSet_; }
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
-  virtual ActionList* getRunningActionSet() const { return runningActionSet_; }
+  ActionList* getRunningActionSet() const { return runningActionSet_; }
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  virtual ActionList* getFailedActionSet() const { return failedActionSet_; }
+  ActionList* getFailedActionSet() const { return failedActionSet_; }
 
   /** @brief Get the set of [actions](@ref Action) in *done* state */
-  virtual ActionList* getDoneActionSet() const { return doneActionSet_; }
+  ActionList* getDoneActionSet() const { return doneActionSet_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
-  virtual ActionLmmListPtr getModifiedSet() const { return modifiedSet_; }
+  ActionLmmListPtr getModifiedSet() const { return modifiedSet_; }
 
   /** @brief Get the maxmin system of the current Model */
   lmm_system_t getMaxminSystem() const { return maxminSystem_; }
