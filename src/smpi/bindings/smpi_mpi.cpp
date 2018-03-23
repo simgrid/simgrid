@@ -10,13 +10,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
 
 #define NOT_YET_IMPLEMENTED                                                                                            \
   {                                                                                                                    \
-    xbt_die("Not yet implemented : %s. Please contact the SimGrid team if support is needed", __FUNCTION__);          \
+    xbt_die("Not yet implemented: %s. Please contact the SimGrid team if support is needed", __FUNCTION__);            \
     return MPI_SUCCESS;                                                                                                \
   }
-  
-#define NOT_YET_IMPLEMENTED_NOFAIL                                                                                            \
+
+#define NOT_YET_IMPLEMENTED_NOFAIL                                                                                     \
   {                                                                                                                    \
-    XBT_WARN("Not yet implemented : %s. Please contact the SimGrid team if support is needed. Run with --log=smpi_mpi.thresh:error to hide", __FUNCTION__);          \
+    static bool warning_todo = true;                                                                                   \
+    if (warning_todo)                                                                                                  \
+      XBT_WARN("Not yet implemented: %s. "                                                                             \
+               "Please contact the SimGrid team if support is needed. "                                                \
+               "Run with --log=smpi_mpi.thresh:error to hide",                                                         \
+               __FUNCTION__);                                                                                          \
+    warning_todo = false;                                                                                              \
     return MPI_SUCCESS;                                                                                                \
   }
 
