@@ -135,6 +135,9 @@ XBT_PUBLIC int MSG_process_is_suspended(msg_process_t process);
 XBT_PUBLIC void MSG_process_restart(msg_process_t process);
 XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
 XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
+XBT_PUBLIC void MSG_process_join(msg_process_t process, double timeout);
+XBT_PUBLIC void MSG_process_kill(msg_process_t process);
+XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
 
 /* ******************************** File ************************************ */
 typedef sg_file_t msg_file_t;
@@ -232,7 +235,6 @@ XBT_PUBLIC msg_process_t MSG_process_create_with_environment(const char* name, x
 XBT_PUBLIC msg_process_t MSG_process_attach(const char* name, void* data, msg_host_t host, xbt_dict_t properties);
 XBT_PUBLIC void MSG_process_detach();
 
-XBT_PUBLIC void MSG_process_kill(msg_process_t process);
 XBT_PUBLIC int MSG_process_killall();
 XBT_PUBLIC void MSG_process_yield();
 
@@ -244,8 +246,6 @@ XBT_PUBLIC const char* MSG_process_self_name();
 XBT_PUBLIC msg_process_t MSG_process_self();
 XBT_PUBLIC xbt_dynar_t MSG_processes_as_dynar();
 XBT_PUBLIC int MSG_process_get_number();
-
-XBT_PUBLIC msg_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time);
 
 XBT_PUBLIC void* MSG_process_get_data(msg_process_t process);
 XBT_PUBLIC msg_error_t MSG_process_set_data(msg_process_t process, void* data);
@@ -276,7 +276,6 @@ XBT_PUBLIC msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, d
 XBT_PUBLIC void MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC void MSG_task_set_bound(msg_task_t task, double bound);
 
-XBT_PUBLIC msg_error_t MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC msg_error_t MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC void MSG_task_set_flops_amount(msg_task_t task, double flops_amount);

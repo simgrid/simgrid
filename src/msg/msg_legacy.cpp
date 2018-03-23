@@ -58,6 +58,14 @@ void MSG_process_migrate(sg_actor_t actor, sg_host_t host)
 {
   sg_actor_migrate(actor, host);
 }
+void MSG_process_join(sg_actor_t actor, double timeout)
+{
+  sg_actor_join(actor, timeout);
+}
+void MSG_process_kill(sg_actor_t actor)
+{
+  sg_actor_kill(actor);
+}
 
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()

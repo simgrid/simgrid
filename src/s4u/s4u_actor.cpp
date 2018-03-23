@@ -396,6 +396,7 @@ void migrate(Host* new_host)
 {
   SIMIX_process_self()->iface()->migrate(new_host);
 }
+
 } // namespace this_actor
 } // namespace s4u
 } // namespace simgrid
@@ -519,7 +520,7 @@ void sg_actor_daemonize(sg_actor_t actor)
   actor->daemonize();
 }
 
-/** \ingroup m_process_management
+/** \ingroup m_actor_management
  * \brief Migrates an actor to another location.
  *
  * This function changes the value of the #sg_host_t on  which \a actor is running.
@@ -527,6 +528,33 @@ void sg_actor_daemonize(sg_actor_t actor)
 void sg_actor_migrate(sg_actor_t process, sg_host_t host)
 {
   process->migrate(host);
+}
+
+/** \ingroup m_actor_management
+* \brief Wait for the completion of a #sg_actor_t.
+*
+* \param actor the actor to wait for
+* \param timeout wait until the actor is over, or the timeout expires
+*/
+void sg_actor_join(sg_actor_t actor, double timeout)
+{
+  actor->join(timeout);
+}
+
+void sg_actor_kill(sg_actor_t actor)
+{
+  actor->kill();
+}
+
+/** \ingroup m_actor_management
+ * \brief Set the kill time of an actor.
+ *
+ * \param actor an actor
+ * \param kill_time the time when the actor is killed.
+ */
+void sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
+{
+  actor->setKillTime(kill_time);
 }
 
 SG_END_DECL()

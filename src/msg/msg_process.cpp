@@ -199,27 +199,6 @@ void MSG_process_detach()
   SIMIX_process_detach();
 }
 
-/** \ingroup m_process_management
- * \param process poor victim
- *
- * This function simply kills a \a process... scary isn't it ? :)
- */
-void MSG_process_kill(msg_process_t process)
-{
-  process->kill();
-}
-
-/**
-* \brief Wait for the completion of a #msg_process_t.
-*
-* \param process the process to wait for
-* \param timeout wait until the process is over, or the timeout occurs
-*/
-msg_error_t MSG_process_join(msg_process_t process, double timeout){
-  process->join(timeout);
-  return MSG_OK;
-}
-
 /** Yield the current actor; let the other actors execute first */
 void MSG_process_yield()
 {
@@ -294,19 +273,6 @@ int MSG_process_get_number()
 {
   return SIMIX_process_count();
 }
-
-/** \ingroup m_process_management
- * \brief Set the kill time of a process.
- *
- * \param process a process
- * \param kill_time the time when the process is killed.
- */
-msg_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time)
-{
-  process->setKillTime(kill_time);
-  return MSG_OK;
-}
-
 
 /** \ingroup m_process_management
  * \brief Return the PID of the current process.
