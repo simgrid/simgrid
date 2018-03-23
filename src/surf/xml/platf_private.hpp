@@ -39,7 +39,6 @@ struct HostCreationArgs {
   const char* coord        = nullptr;
   std::map<std::string, std::string>* properties = nullptr;
 };
-typedef HostCreationArgs* sg_platf_host_cbarg_t; // FIXME: killme
 
 class HostLinkCreationArgs {
 public:
