@@ -96,8 +96,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModel* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
-                       std::string type_id, std::string content_name, sg_size_t size, std::string attach)
+StorageN11::StorageN11(StorageModel* model, std::string name, kernel::lmm::System* maxminSystem, double bread,
+                       double bwrite, std::string type_id, std::string content_name, sg_size_t size, std::string attach)
     : StorageImpl(model, name, maxminSystem, bread, bwrite, type_id, content_name, size, attach)
 {
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);

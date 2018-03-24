@@ -44,8 +44,8 @@ StorageModel::~StorageModel()
  * Resource *
  ************/
 
-StorageImpl::StorageImpl(kernel::resource::Model* model, std::string name, lmm_system_t maxminSystem, double bread,
-                         double bwrite, std::string type_id, std::string content_name, sg_size_t size,
+StorageImpl::StorageImpl(kernel::resource::Model* model, std::string name, kernel::lmm::System* maxminSystem,
+                         double bread, double bwrite, std::string type_id, std::string content_name, sg_size_t size,
                          std::string attach)
     : Resource(model, name.c_str(), maxminSystem->constraint_new(this, std::max(bread, bwrite)))
     , piface_(name, this)

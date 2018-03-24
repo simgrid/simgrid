@@ -139,10 +139,10 @@ namespace lmm {
  * @brief Solve the lmm system
  * @param sys The lmm system to solve
  */
-XBT_PUBLIC void lmm_solve(lmm_system_t sys);
+XBT_PUBLIC void lmm_solve(lmm::System* sys);
 
-XBT_PUBLIC void lagrange_solve(lmm_system_t sys);
-XBT_PUBLIC void bottleneck_solve(lmm_system_t sys);
+XBT_PUBLIC void lagrange_solve(lmm::System* sys);
+XBT_PUBLIC void bottleneck_solve(lmm::System* sys);
 
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
@@ -603,7 +603,7 @@ public:
 
   simgrid::kernel::resource::ActionLmmListPtr modified_set_ = nullptr;
 
-  void (*solve_fun)(lmm_system_t self);
+  void (*solve_fun)(lmm::System* self);
 
 private:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */

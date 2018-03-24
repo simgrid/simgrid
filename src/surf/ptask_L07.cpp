@@ -46,7 +46,7 @@ HostL07Model::~HostL07Model()
   delete surf_cpu_model_pm;
 }
 
-CpuL07Model::CpuL07Model(HostL07Model* hmodel, lmm_system_t sys) : CpuModel(), hostModel_(hmodel)
+CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : CpuModel(), hostModel_(hmodel)
 {
   maxmin_system_ = sys;
 }
@@ -56,7 +56,7 @@ CpuL07Model::~CpuL07Model()
   maxmin_system_ = nullptr;
 }
 
-NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, lmm_system_t sys) : NetworkModel(), hostModel_(hmodel)
+NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : NetworkModel(), hostModel_(hmodel)
 {
   maxmin_system_ = sys;
   loopback_     = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);

@@ -1,7 +1,6 @@
 /* A few tests for the maxmin library                                       */
 
-/* Copyright (c) 2007-2018s. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -98,7 +97,7 @@ static void test1(method_t method)
     set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fpi,
                                   simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys    = new simgrid::kernel::lmm::System(true);
+  simgrid::kernel::lmm::System* Sys    = new simgrid::kernel::lmm::System(true);
   simgrid::kernel::lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
   simgrid::kernel::lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
   simgrid::kernel::lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
@@ -186,7 +185,7 @@ static void test2(method_t method)
     set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
                                   simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys      = new simgrid::kernel::lmm::System(true);
+  simgrid::kernel::lmm::System* Sys      = new simgrid::kernel::lmm::System(true);
   simgrid::kernel::lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
   simgrid::kernel::lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
 
@@ -259,7 +258,7 @@ static void test3(method_t method)
     set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
                                   simgrid::kernel::lmm::func_reno_fpi);
 
-  lmm_system_t Sys = new simgrid::kernel::lmm::System(true);
+  simgrid::kernel::lmm::System* Sys = new simgrid::kernel::lmm::System(true);
 
   /* Creates the constraints */
   simgrid::kernel::lmm::Constraint** tmp_cnst = new simgrid::kernel::lmm::Constraint*[15];

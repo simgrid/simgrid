@@ -68,7 +68,7 @@ public:
    *
    * @param system The lmm_system_t to solve
    */
-  void (*f_networkSolve)(lmm_system_t) = simgrid::kernel::lmm::lmm_solve;
+  void (*f_networkSolve)(kernel::lmm::System*) = kernel::lmm::lmm_solve;
 
   /**
    * @brief Get the right multiplicative factor for the latency.

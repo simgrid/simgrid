@@ -39,7 +39,7 @@ public:
 
 class StorageN11 : public StorageImpl {
 public:
-  StorageN11(StorageModel* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
+  StorageN11(StorageModel* model, std::string name, kernel::lmm::System* maxminSystem, double bread, double bwrite,
              std::string type_id, std::string content_name, sg_size_t size, std::string attach);
   virtual ~StorageN11() = default;
   StorageAction* read(sg_size_t size);

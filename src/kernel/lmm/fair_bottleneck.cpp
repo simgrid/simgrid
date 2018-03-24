@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2011, 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d", expr);
 #define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p", expr);
 
-void simgrid::kernel::lmm::bottleneck_solve(lmm_system_t sys)
+void simgrid::kernel::lmm::bottleneck_solve(lmm::System* sys)
 {
   if (not sys->modified)
     return;

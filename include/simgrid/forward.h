@@ -102,7 +102,6 @@ typedef simgrid::surf::StorageImpl* surf_storage_t;
 typedef simgrid::kernel::lmm::Element* lmm_element_t;
 typedef const simgrid::kernel::lmm::Element* const_lmm_element_t;
 typedef simgrid::kernel::lmm::ConstraintLight* lmm_constraint_light_t;
-typedef simgrid::kernel::lmm::System* lmm_system_t;
 
 #else
 

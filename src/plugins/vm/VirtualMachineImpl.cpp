@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -98,7 +97,7 @@ double VMModel::nextOccuringEvent(double now)
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->getPm()->getCname());
 
     xbt_assert(cpu->model() == surf_cpu_model_vm);
-    lmm_system_t vcpu_system = cpu->model()->getMaxminSystem();
+    kernel::lmm::System* vcpu_system = cpu->model()->getMaxminSystem();
     vcpu_system->update_constraint_bound(cpu->constraint(), virt_overhead * solved_value);
   }
 

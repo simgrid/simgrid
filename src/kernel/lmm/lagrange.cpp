@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -37,7 +37,7 @@ double (*func_fpi_def)(const Variable&, double);
  * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
  */
 // solves the proportional fairness using a Lagrangian optimization with dichotomy step
-void lagrange_solve(lmm_system_t sys);
+void lagrange_solve(kernel::lmm::System* sys);
 // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
 static double dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst, double min_error);
 // computes the value of the differential of constraint cnst applied to lambda
@@ -137,7 +137,7 @@ static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
   return obj;
 }
 
-void lagrange_solve(lmm_system_t sys)
+void lagrange_solve(kernel::lmm::System* sys)
 {
   /* Lagrange Variables. */
   int max_iterations       = 100;

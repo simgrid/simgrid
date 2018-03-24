@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -412,7 +412,7 @@ static inline void saturated_constraints_update(double usage, int cnst_light_num
 }
 
 static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab,
-                                                 const dyn_light_t& saturated_constraints, lmm_system_t sys)
+                                                 const dyn_light_t& saturated_constraints, System* sys)
 {
   /* Add active variables (i.e. variables that need to be set) from the set of constraints to saturate
    * (cnst_light_tab)*/
@@ -690,7 +690,7 @@ template <class CnstList> void System::solve(CnstList& cnst_list)
   delete[] cnst_light_tab;
 }
 
-void lmm_solve(lmm_system_t sys)
+void lmm_solve(System* sys)
 {
   sys->solve();
 }

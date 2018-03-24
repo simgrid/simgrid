@@ -158,7 +158,7 @@ NetworkCm02Model::NetworkCm02Model()
     maxmin_system_->modified_set_ = new kernel::resource::ActionLmmList();
 }
 
-NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self)) : NetworkCm02Model()
+NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(kernel::lmm::System* self)) : NetworkCm02Model()
 {
   maxmin_system_->solve_fun = specificSolveFun;
 }
@@ -349,7 +349,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
  * Resource *
  ************/
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
-                                 e_surf_link_sharing_policy_t policy, lmm_system_t system)
+                                 e_surf_link_sharing_policy_t policy, kernel::lmm::System* system)
     : LinkImpl(model, name, system->constraint_new(this, sg_bandwidth_factor * bandwidth))
 {
   bandwidth_.scale = 1.0;

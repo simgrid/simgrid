@@ -50,7 +50,7 @@ public:
   ActionLmmListPtr getModifiedSet() const;
 
   /** @brief Get the maxmin system of the current Model */
-  lmm_system_t getMaxminSystem() const { return maxmin_system_; }
+  lmm::System* getMaxminSystem() const { return maxmin_system_; }
 
   /**
    * @brief Get the update mechanism of the current Model
@@ -94,7 +94,7 @@ public:
   virtual bool nextOccuringEventIsIdempotent() { return true; }
 
 protected:
-  lmm_system_t maxmin_system_ = nullptr;
+  lmm::System* maxmin_system_ = nullptr;
 
 private:
   e_UM_t update_mechanism_        = UM_UNDEFINED;

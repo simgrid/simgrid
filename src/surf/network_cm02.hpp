@@ -36,7 +36,7 @@ namespace surf {
 class NetworkCm02Model : public NetworkModel {
 public:
   NetworkCm02Model();
-  explicit NetworkCm02Model(void (*solve_fun)(lmm_system_t self));
+  explicit NetworkCm02Model(void (*solve_fun)(kernel::lmm::System* self));
   virtual ~NetworkCm02Model() = default;
   LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
@@ -52,7 +52,7 @@ public:
 class NetworkCm02Link : public LinkImpl {
 public:
   NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
-                  e_surf_link_sharing_policy_t policy, lmm_system_t system);
+                  e_surf_link_sharing_policy_t policy, kernel::lmm::System* system);
   virtual ~NetworkCm02Link() = default;
   void apply_event(tmgr_trace_event_t event, double value) override;
   void setBandwidth(double value) override;

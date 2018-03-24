@@ -44,7 +44,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   simgrid::kernel::lmm::Variable* var[nb_var];
   int used[nb_cnst];
 
-  lmm_system_t Sys = new simgrid::kernel::lmm::System(true);
+  simgrid::kernel::lmm::System* Sys = new simgrid::kernel::lmm::System(true);
 
   for (int i = 0; i < nb_cnst; i++) {
     cnst[i] = Sys->constraint_new(NULL, float_random(10.0));

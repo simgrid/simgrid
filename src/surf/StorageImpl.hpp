@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -86,8 +85,8 @@ public:
 class StorageImpl : public kernel::resource::Resource, public PropertyHolder {
 public:
   /** @brief Storage constructor */
-  StorageImpl(kernel::resource::Model* model, std::string name, lmm_system_t maxminSystem, double bread, double bwrite,
-              std::string type_id, std::string content_name, sg_size_t size, std::string attach);
+  StorageImpl(kernel::resource::Model* model, std::string name, kernel::lmm::System* maxminSystem, double bread,
+              double bwrite, std::string type_id, std::string content_name, sg_size_t size, std::string attach);
 
   ~StorageImpl() override;
 
