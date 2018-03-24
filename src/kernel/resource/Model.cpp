@@ -12,16 +12,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-Model::Model() : maxminSystem_(nullptr)
-{
-  readyActionSet_   = new ActionList();
-  runningActionSet_ = new ActionList();
-  failedActionSet_  = new ActionList();
-  doneActionSet_    = new ActionList();
-
-  modifiedSet_     = nullptr;
-  updateMechanism_ = UM_UNDEFINED;
-}
+Model::Model() = default;
 
 Model::~Model()
 {

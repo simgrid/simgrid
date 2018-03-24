@@ -94,15 +94,15 @@ public:
   virtual bool nextOccuringEventIsIdempotent() { return true; }
 
 protected:
-  ActionLmmListPtr modifiedSet_;
+  ActionLmmListPtr modifiedSet_ = nullptr;
   lmm_system_t maxminSystem_ = nullptr;
 
 private:
   e_UM_t updateMechanism_ = UM_UNDEFINED;
-  ActionList* readyActionSet_;   /**< Actions in state SURF_ACTION_READY */
-  ActionList* runningActionSet_; /**< Actions in state SURF_ACTION_RUNNING */
-  ActionList* failedActionSet_;  /**< Actions in state SURF_ACTION_FAILED */
-  ActionList* doneActionSet_;    /**< Actions in state SURF_ACTION_DONE */
+  ActionList* readyActionSet_   = new ActionList(); /**< Actions in state SURF_ACTION_READY */
+  ActionList* runningActionSet_ = new ActionList(); /**< Actions in state SURF_ACTION_RUNNING */
+  ActionList* failedActionSet_  = new ActionList(); /**< Actions in state SURF_ACTION_FAILED */
+  ActionList* doneActionSet_    = new ActionList(); /**< Actions in state SURF_ACTION_DONE */
   heap_type actionHeap_;
 };
 
