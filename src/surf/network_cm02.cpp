@@ -142,17 +142,16 @@ NetworkCm02Model::NetworkCm02Model()
 
   if (optim == "Full") {
     setUpdateMechanism(UM_FULL);
-    selectiveUpdate_ = select;
   } else if (optim == "Lazy") {
+    select = true;
     setUpdateMechanism(UM_LAZY);
-    selectiveUpdate_ = true;
     xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
                "You cannot disable selective update when using the lazy update mechanism");
   } else {
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
 
-  maxminSystem_ = new simgrid::kernel::lmm::System(selectiveUpdate_);
+  maxminSystem_ = new simgrid::kernel::lmm::System(select);
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY) {

@@ -21,7 +21,6 @@ Model::Model() : maxminSystem_(nullptr)
 
   modifiedSet_     = nullptr;
   updateMechanism_ = UM_UNDEFINED;
-  selectiveUpdate_ = 0;
 }
 
 Model::~Model()

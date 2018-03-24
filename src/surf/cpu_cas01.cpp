@@ -42,17 +42,16 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 
   if (optim == "Full") {
     setUpdateMechanism(UM_FULL);
-    selectiveUpdate_ = select;
   } else if (optim == "Lazy") {
     setUpdateMechanism(UM_LAZY);
-    selectiveUpdate_ = true;
+    select = true;
     xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim.c_str());
   }
 
-  maxminSystem_ = new simgrid::kernel::lmm::System(selectiveUpdate_);
+  maxminSystem_ = new simgrid::kernel::lmm::System(select);
 
   if (getUpdateMechanism() == UM_LAZY) {
     modifiedSet_              = new kernel::resource::ActionLmmList();

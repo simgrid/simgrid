@@ -96,7 +96,6 @@ public:
 protected:
   ActionLmmListPtr modifiedSet_;
   lmm_system_t maxminSystem_ = nullptr;
-  bool selectiveUpdate_;
 
 private:
   e_UM_t updateMechanism_ = UM_UNDEFINED;
