@@ -32,7 +32,7 @@ simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kerne
 
 StorageModel::StorageModel() : Model()
 {
-  maxminSystem_ = new simgrid::kernel::lmm::System(true /* lazy update */);
+  maxminSystem_ = new simgrid::kernel::lmm::System(true /* selective update */);
 }
 
 StorageModel::~StorageModel()
