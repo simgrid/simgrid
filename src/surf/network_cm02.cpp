@@ -154,10 +154,8 @@ NetworkCm02Model::NetworkCm02Model()
   maxminSystem_ = new simgrid::kernel::lmm::System(select);
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
-  if (getUpdateMechanism() == UM_LAZY) {
-    modifiedSet_              = new kernel::resource::ActionLmmList();
-    maxminSystem_->keep_track = modifiedSet_;
-  }
+  if (getUpdateMechanism() == UM_LAZY)
+    maxminSystem_->modified_set_ = new kernel::resource::ActionLmmList();
 }
 
 NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self)) : NetworkCm02Model()

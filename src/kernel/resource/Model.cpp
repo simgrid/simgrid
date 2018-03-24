@@ -20,7 +20,6 @@ Model::~Model()
   delete runningActionSet_;
   delete failedActionSet_;
   delete doneActionSet_;
-  delete modifiedSet_;
   delete maxminSystem_;
 }
 
@@ -30,6 +29,11 @@ Action* Model::actionHeapPop()
   actionHeap_.pop();
   action->clearHeapHandle();
   return action;
+}
+
+ActionLmmListPtr Model::getModifiedSet() const
+{
+  return maxminSystem_->modified_set_;
 }
 
 double Model::nextOccuringEvent(double now)
@@ -45,13 +49,13 @@ double Model::nextOccuringEvent(double now)
 
 double Model::nextOccuringEventLazy(double now)
 {
-  XBT_DEBUG("Before share resources, the size of modified actions set is %zu", modifiedSet_->size());
+  XBT_DEBUG("Before share resources, the size of modified actions set is %zu", maxminSystem_->modified_set_->size());
   lmm_solve(maxminSystem_);
-  XBT_DEBUG("After share resources, The size of modified actions set is %zu", modifiedSet_->size());
+  XBT_DEBUG("After share resources, The size of modified actions set is %zu", maxminSystem_->modified_set_->size());
 
-  while (not modifiedSet_->empty()) {
-    Action* action = &(modifiedSet_->front());
-    modifiedSet_->pop_front();
+  while (not maxminSystem_->modified_set_->empty()) {
+    Action* action = &(maxminSystem_->modified_set_->front());
+    maxminSystem_->modified_set_->pop_front();
     bool max_dur_flag = false;
 
     if (action->getStateSet() != runningActionSet_)

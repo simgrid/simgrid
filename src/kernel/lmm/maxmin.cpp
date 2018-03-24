@@ -150,7 +150,6 @@ System::System(bool selective_update) : selective_update_active(selective_update
 
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
 
-  keep_track          = nullptr;
   variable_mallocator =
       xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
   solve_fun = &lmm_solve;
@@ -171,6 +170,7 @@ System::~System()
     cnst_free(cnst);
 
   xbt_mallocator_free(variable_mallocator);
+  delete modified_set_;
 }
 
 void System::cnst_free(Constraint* cnst)
@@ -536,8 +536,8 @@ template <class CnstList> void System::solve(CnstList& cnst_list)
 
         elem.make_active();
         simgrid::kernel::resource::Action* action = static_cast<simgrid::kernel::resource::Action*>(elem.variable->id);
-        if (keep_track && not action->isLinkedModifiedSet())
-          keep_track->push_back(*action);
+        if (modified_set_ && not action->isLinkedModifiedSet())
+          modified_set_->push_back(*action);
       }
     }
     XBT_DEBUG("Constraint '%d' usage: %f remaining: %f concurrency: %i<=%i<=%i", cnst.id_int, cnst.usage,

@@ -53,10 +53,8 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 
   maxminSystem_ = new simgrid::kernel::lmm::System(select);
 
-  if (getUpdateMechanism() == UM_LAZY) {
-    modifiedSet_              = new kernel::resource::ActionLmmList();
-    maxminSystem_->keep_track = modifiedSet_;
-  }
+  if (getUpdateMechanism() == UM_LAZY)
+    maxminSystem_->modified_set_ = new kernel::resource::ActionLmmList();
 }
 
 CpuCas01Model::~CpuCas01Model()

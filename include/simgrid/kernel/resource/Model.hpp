@@ -47,7 +47,7 @@ public:
   ActionList* getDoneActionSet() const { return doneActionSet_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
-  ActionLmmListPtr getModifiedSet() const { return modifiedSet_; }
+  ActionLmmListPtr getModifiedSet() const;
 
   /** @brief Get the maxmin system of the current Model */
   lmm_system_t getMaxminSystem() const { return maxminSystem_; }
@@ -94,7 +94,6 @@ public:
   virtual bool nextOccuringEventIsIdempotent() { return true; }
 
 protected:
-  ActionLmmListPtr modifiedSet_ = nullptr;
   lmm_system_t maxminSystem_ = nullptr;
 
 private:

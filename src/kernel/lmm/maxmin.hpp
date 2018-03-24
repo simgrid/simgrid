@@ -601,7 +601,7 @@ public:
                                                                    &Constraint::saturated_constraint_set_hook>>
       saturated_constraint_set;
 
-  simgrid::kernel::resource::ActionLmmListPtr keep_track;
+  simgrid::kernel::resource::ActionLmmListPtr modified_set_ = nullptr;
 
   void (*solve_fun)(lmm_system_t self);
 
