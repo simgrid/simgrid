@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
-#define TO_ROUTE_FULL(i, j) routingTable_[(i) + (j)*table_size]
+#define TO_ROUTE_FULL(i, j) routing_table_[(i) + (j)*table_size]
 
 namespace simgrid {
 namespace kernel {
@@ -24,8 +24,8 @@ void FullZone::seal()
   unsigned int table_size = getTableSize();
 
   /* Create table if needed */
-  if (not routingTable_)
-    routingTable_ = new RouteCreationArgs*[table_size * table_size]();
+  if (not routing_table_)
+    routing_table_ = new RouteCreationArgs*[table_size * table_size]();
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
@@ -42,13 +42,13 @@ void FullZone::seal()
 
 FullZone::~FullZone()
 {
-  if (routingTable_) {
+  if (routing_table_) {
     unsigned int table_size = getTableSize();
     /* Delete routing table */
     for (unsigned int i = 0; i < table_size; i++)
       for (unsigned int j = 0; j < table_size; j++)
         delete TO_ROUTE_FULL(i, j);
-    delete[] routingTable_;
+    delete[] routing_table_;
   }
 }
 
@@ -78,8 +78,8 @@ void FullZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoin
 
   unsigned int table_size = getTableSize();
 
-  if (not routingTable_)
-    routingTable_ = new RouteCreationArgs*[table_size * table_size]();
+  if (not routing_table_)
+    routing_table_ = new RouteCreationArgs*[table_size * table_size]();
 
   /* Check that the route does not already exist */
   if (gw_dst) // inter-zone route (to adapt the error message, if any)

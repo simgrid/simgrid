@@ -98,7 +98,7 @@ public:
   RoutingMode hierarchy_ = RoutingMode::unset;
 
 private:
-  std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypassRoutes_; // src x dst -> route
+  std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
   routing::NetPoint* netpoint_ = nullptr;                                // Our representative in the father NetZone
 };
 } // namespace routing

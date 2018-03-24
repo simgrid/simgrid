@@ -114,24 +114,24 @@ public:
    * It will also store the cluster for future use.
    */
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
-  void addProcessingNode(int id);
-  void generateDotFile(const std::string& filename = "fatTree.dot") const;
+  void add_processing_node(int id);
+  void generate_dot_file(const std::string& filename = "fatTree.dot") const;
 
 private:
   // description of a PGFT (TODO : better doc)
   unsigned long levels_ = 0;
-  std::vector<unsigned int> lowerLevelNodesNumber_; // number of children by node
-  std::vector<unsigned int> upperLevelNodesNumber_; // number of parents by node
-  std::vector<unsigned int> lowerLevelPortsNumber_; // ports between each level l and l-1
+  std::vector<unsigned int> num_children_per_node_; // number of children by node
+  std::vector<unsigned int> num_parents_per_node_;  // number of parents by node
+  std::vector<unsigned int> num_port_lower_level_;  // ports between each level l and l-1
 
   std::map<int, FatTreeNode*> compute_nodes_;
   std::vector<FatTreeNode*> nodes_;
   std::vector<FatTreeLink*> links_;
-  std::vector<unsigned int> nodesByLevel_;
+  std::vector<unsigned int> nodes_by_level_;
 
   ClusterCreationArgs* cluster_ = nullptr;
 
-  void addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort);
+  void addLink(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
   int getLevelPosition(const unsigned int level);
   void generateLabels();
   void generateSwitches();

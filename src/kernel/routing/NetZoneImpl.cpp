@@ -37,7 +37,7 @@ NetZoneImpl::NetZoneImpl(NetZone* father, std::string name) : NetZone(father, na
 
 NetZoneImpl::~NetZoneImpl()
 {
-  for (auto const& kv : bypassRoutes_)
+  for (auto const& kv : bypass_routes_)
     delete kv.second;
 
   simgrid::s4u::Engine::getInstance()->netpointUnregister(netpoint_);
@@ -73,14 +73,14 @@ void NetZoneImpl::addBypassRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src,
               gw_dst->getCname());
     xbt_assert(not link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.", src->getCname(),
                gw_src->getCname(), dst->getCname(), gw_dst->getCname());
-    xbt_assert(bypassRoutes_.find({src, dst}) == bypassRoutes_.end(),
+    xbt_assert(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
                "The bypass route between %s@%s and %s@%s already exists.", src->getCname(), gw_src->getCname(),
                dst->getCname(), gw_dst->getCname());
   } else {
     XBT_DEBUG("Load bypassRoute from %s to %s", src->getCname(), dst->getCname());
     xbt_assert(not link_list.empty(), "Bypass route between %s and %s cannot be empty.", src->getCname(),
                dst->getCname());
-    xbt_assert(bypassRoutes_.find({src, dst}) == bypassRoutes_.end(),
+    xbt_assert(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
                "The bypass route between %s and %s already exists.", src->getCname(), dst->getCname());
   }
 
@@ -90,7 +90,7 @@ void NetZoneImpl::addBypassRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src,
     newRoute->links.push_back(link);
 
   /* Store it */
-  bypassRoutes_.insert({{src, dst}, newRoute});
+  bypass_routes_.insert({{src, dst}, newRoute});
 }
 
 /** @brief Get the common ancestor and its first children in each line leading to src and dst
@@ -207,13 +207,13 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
                                  /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
 {
   // If never set a bypass route return nullptr without any further computations
-  if (bypassRoutes_.empty())
+  if (bypass_routes_.empty())
     return false;
 
   /* Base case, no recursion is needed */
   if (dst->netzone() == this && src->netzone() == this) {
-    if (bypassRoutes_.find({src, dst}) != bypassRoutes_.end()) {
-      BypassRoute* bypassedRoute = bypassRoutes_.at({src, dst});
+    if (bypass_routes_.find({src, dst}) != bypass_routes_.end()) {
+      BypassRoute* bypassedRoute = bypass_routes_.at({src, dst});
       for (surf::LinkImpl* const& link : bypassedRoute->links) {
         links.push_back(link);
         if (latency)
@@ -262,16 +262,16 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
     for (int i = 0; i < max; i++) {
       if (i <= max_index_src && max <= max_index_dst) {
         key = {path_src.at(i)->netpoint_, path_dst.at(max)->netpoint_};
-        auto bpr = bypassRoutes_.find(key);
-        if (bpr != bypassRoutes_.end()) {
+        auto bpr = bypass_routes_.find(key);
+        if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
           break;
         }
       }
       if (max <= max_index_src && i <= max_index_dst) {
         key = {path_src.at(max)->netpoint_, path_dst.at(i)->netpoint_};
-        auto bpr = bypassRoutes_.find(key);
-        if (bpr != bypassRoutes_.end()) {
+        auto bpr = bypass_routes_.find(key);
+        if (bpr != bypass_routes_.end()) {
           bypassedRoute = bpr->second;
           break;
         }
@@ -283,8 +283,8 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
     if (max <= max_index_src && max <= max_index_dst) {
       key = {path_src.at(max)->netpoint_, path_dst.at(max)->netpoint_};
-      auto bpr = bypassRoutes_.find(key);
-      if (bpr != bypassRoutes_.end()) {
+      auto bpr = bypass_routes_.find(key);
+      if (bpr != bypass_routes_.end()) {
         bypassedRoute = bpr->second;
         break;
       }

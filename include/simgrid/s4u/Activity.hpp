@@ -61,17 +61,17 @@ public:
   /** Put some user data onto the Activity */
   Activity* setUserData(void* data)
   {
-    userData_ = data;
+    user_data_ = data;
     return this;
   }
   /** Retrieve the user data of the Activity */
-  void *getUserData() { return userData_; }
+  void* getUserData() { return user_data_; }
 
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   e_s4u_activity_state_t state_ = inited;
   double remains_ = 0;
-  void *userData_ = nullptr;
+  void* user_data_                                  = nullptr;
 }; // class
 
 }}; // Namespace simgrid::s4u

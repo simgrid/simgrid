@@ -29,7 +29,8 @@ public:
                 kernel::routing::NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
                 bool symmetrical) override;
 
-  RouteCreationArgs** routingTable_ = nullptr;
+private:
+  RouteCreationArgs** routing_table_ = nullptr;
 };
 } // namespace routing
 } // namespace kernel

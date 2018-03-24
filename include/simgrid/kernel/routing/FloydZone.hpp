@@ -34,9 +34,9 @@ public:
 
 private:
   /* vars to compute the Floyd algorithm. */
-  int* predecessorTable_;
-  double* costTable_;
-  RouteCreationArgs** linkTable_;
+  int* predecessor_table_;
+  double* cost_table_;
+  RouteCreationArgs** link_table_;
 };
 } // namespace routing
 } // namespace kernel

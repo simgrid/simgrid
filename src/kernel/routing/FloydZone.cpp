@@ -14,9 +14,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
-#define TO_FLOYD_COST(i, j) (costTable_)[(i) + (j)*table_size]
-#define TO_FLOYD_PRED(i, j) (predecessorTable_)[(i) + (j)*table_size]
-#define TO_FLOYD_LINK(i, j) (linkTable_)[(i) + (j)*table_size]
+#define TO_FLOYD_COST(i, j) (cost_table_)[(i) + (j)*table_size]
+#define TO_FLOYD_PRED(i, j) (predecessor_table_)[(i) + (j)*table_size]
+#define TO_FLOYD_LINK(i, j) (link_table_)[(i) + (j)*table_size]
 
 namespace simgrid {
 namespace kernel {
@@ -24,24 +24,24 @@ namespace routing {
 
 FloydZone::FloydZone(NetZone* father, std::string name) : RoutedZone(father, name)
 {
-  predecessorTable_ = nullptr;
-  costTable_        = nullptr;
-  linkTable_        = nullptr;
+  predecessor_table_ = nullptr;
+  cost_table_        = nullptr;
+  link_table_        = nullptr;
 }
 
 FloydZone::~FloydZone()
 {
-  if (linkTable_ == nullptr) // Dealing with a parse error in the file?
+  if (link_table_ == nullptr) // Dealing with a parse error in the file?
     return;
   unsigned int table_size = getTableSize();
   /* Delete link_table */
   for (unsigned int i = 0; i < table_size; i++)
     for (unsigned int j = 0; j < table_size; j++)
       delete TO_FLOYD_LINK(i, j);
-  delete[] linkTable_;
+  delete[] link_table_;
 
-  delete[] predecessorTable_;
-  delete[] costTable_;
+  delete[] predecessor_table_;
+  delete[] cost_table_;
 }
 
 void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
@@ -94,11 +94,11 @@ void FloydZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoi
 
   addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
-  if (not linkTable_) {
+  if (not link_table_) {
     /* Create Cost, Predecessor and Link tables */
-    costTable_        = new double[table_size * table_size];                 /* link cost from host to host */
-    predecessorTable_ = new int[table_size * table_size];                    /* predecessor host numbers */
-    linkTable_        = new RouteCreationArgs*[table_size * table_size];     /* actual link between src and dst */
+    cost_table_        = new double[table_size * table_size];             /* link cost from host to host */
+    predecessor_table_ = new int[table_size * table_size];                /* predecessor host numbers */
+    link_table_        = new RouteCreationArgs*[table_size * table_size]; /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
     for (unsigned int i = 0; i < table_size; i++)
@@ -160,11 +160,11 @@ void FloydZone::seal()
   /* set the size of table routing */
   unsigned int table_size = getTableSize();
 
-  if (not linkTable_) {
+  if (not link_table_) {
     /* Create Cost, Predecessor and Link tables */
-    costTable_        = new double[table_size * table_size];                 /* link cost from host to host */
-    predecessorTable_ = new int[table_size * table_size];                    /* predecessor host numbers */
-    linkTable_        = new RouteCreationArgs*[table_size * table_size];     /* actual link between src and dst */
+    cost_table_        = new double[table_size * table_size];             /* link cost from host to host */
+    predecessor_table_ = new int[table_size * table_size];                /* predecessor host numbers */
+    link_table_        = new RouteCreationArgs*[table_size * table_size]; /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
     for (unsigned int i = 0; i < table_size; i++)

@@ -93,9 +93,9 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     int d = destination->position; // as in d-mod-k
 
     for (unsigned int i = 0; i < currentNode->level; i++)
-      d /= this->upperLevelNodesNumber_[i];
+      d /= this->num_parents_per_node_[i];
 
-    int k = this->upperLevelNodesNumber_[currentNode->level];
+    int k = this->num_parents_per_node_[currentNode->level];
     d     = d % k;
     into->link_list.push_back(currentNode->parents[d]->up_link_);
 
@@ -113,7 +113,7 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   // Down part
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
-      if (i % this->lowerLevelNodesNumber_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
+      if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
         into->link_list.push_back(currentNode->children[i]->down_link_);
         if (latency)
           *latency += currentNode->children[i]->down_link_->latency();
@@ -141,9 +141,9 @@ void FatTreeZone::seal()
     std::stringstream msgBuffer;
 
     msgBuffer << "We are creating a fat tree of " << this->levels_ << " levels "
-              << "with " << this->nodesByLevel_[0] << " processing nodes";
+              << "with " << this->nodes_by_level_[0] << " processing nodes";
     for (unsigned int i = 1; i <= this->levels_; i++) {
-      msgBuffer << ", " << this->nodesByLevel_[i] << " switches at level " << i;
+      msgBuffer << ", " << this->nodes_by_level_[i] << " switches at level " << i;
     }
     XBT_DEBUG("%s", msgBuffer.str().c_str());
     msgBuffer.str("");
@@ -160,7 +160,7 @@ void FatTreeZone::seal()
   unsigned int k = 0;
   // Nodes are totally ordered, by level and then by position, in this->nodes
   for (unsigned int i = 0; i < this->levels_; i++) {
-    for (unsigned int j = 0; j < this->nodesByLevel_[i]; j++) {
+    for (unsigned int j = 0; j < this->nodes_by_level_[i]; j++) {
       this->connectNodeToParents(this->nodes_[k]);
       k++;
     }
@@ -183,15 +183,15 @@ int FatTreeZone::connectNodeToParents(FatTreeNode* node)
   const int level                                       = node->level;
   XBT_DEBUG("We are connecting node %d(%u,%u) to his parents.", node->id, node->level, node->position);
   currentParentNode += this->getLevelPosition(level + 1);
-  for (unsigned int i = 0; i < this->nodesByLevel_[level + 1]; i++) {
+  for (unsigned int i = 0; i < this->nodes_by_level_[level + 1]; i++) {
     if (this->areRelated(*currentParentNode, node)) {
       XBT_DEBUG("%d(%u,%u) and %d(%u,%u) are related,"
                 " with %u links between them.",
                 node->id, node->level, node->position, (*currentParentNode)->id, (*currentParentNode)->level,
-                (*currentParentNode)->position, this->lowerLevelPortsNumber_[level]);
-      for (unsigned int j = 0; j < this->lowerLevelPortsNumber_[level]; j++) {
-        this->addLink(*currentParentNode, node->label[level] + j * this->lowerLevelNodesNumber_[level], node,
-                      (*currentParentNode)->label[level] + j * this->upperLevelNodesNumber_[level]);
+                (*currentParentNode)->position, this->num_port_lower_level_[level]);
+      for (unsigned int j = 0; j < this->num_port_lower_level_[level]; j++) {
+        this->addLink(*currentParentNode, node->label[level] + j * this->num_children_per_node_[level], node,
+                      (*currentParentNode)->label[level] + j * this->num_parents_per_node_[level]);
       }
       connectionsNumber++;
     }
@@ -235,16 +235,16 @@ bool FatTreeZone::areRelated(FatTreeNode* parent, FatTreeNode* child)
 void FatTreeZone::generateSwitches()
 {
   XBT_DEBUG("Generating switches.");
-  this->nodesByLevel_.resize(this->levels_ + 1, 0);
+  this->nodes_by_level_.resize(this->levels_ + 1, 0);
 
   // Take care of the number of nodes by level
-  this->nodesByLevel_[0] = 1;
+  this->nodes_by_level_[0] = 1;
   for (unsigned int i = 0; i < this->levels_; i++)
-    this->nodesByLevel_[0] *= this->lowerLevelNodesNumber_[i];
+    this->nodes_by_level_[0] *= this->num_children_per_node_[i];
 
-  if (this->nodesByLevel_[0] != this->nodes_.size()) {
+  if (this->nodes_by_level_[0] != this->nodes_.size()) {
     surf_parse_error(std::string("The number of provided nodes does not fit with the wanted topology.") +
-                     " Please check your platform description (We need " + std::to_string(this->nodesByLevel_[0]) +
+                     " Please check your platform description (We need " + std::to_string(this->nodes_by_level_[0]) +
                      "nodes, we got " + std::to_string(this->nodes_.size()));
     return;
   }
@@ -253,23 +253,23 @@ void FatTreeZone::generateSwitches()
     int nodesInThisLevel = 1;
 
     for (unsigned int j = 0; j <= i; j++)
-      nodesInThisLevel *= this->upperLevelNodesNumber_[j];
+      nodesInThisLevel *= this->num_parents_per_node_[j];
 
     for (unsigned int j = i + 1; j < this->levels_; j++)
-      nodesInThisLevel *= this->lowerLevelNodesNumber_[j];
+      nodesInThisLevel *= this->num_children_per_node_[j];
 
-    this->nodesByLevel_[i + 1] = nodesInThisLevel;
+    this->nodes_by_level_[i + 1] = nodesInThisLevel;
   }
 
   // Create the switches
   int k = 0;
   for (unsigned int i = 0; i < this->levels_; i++) {
-    for (unsigned int j = 0; j < this->nodesByLevel_[i + 1]; j++) {
+    for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
       FatTreeNode* newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
-      newNode->children.resize(this->lowerLevelNodesNumber_[i] * this->lowerLevelPortsNumber_[i]);
+      newNode->children.resize(this->num_children_per_node_[i] * this->num_port_lower_level_[i]);
       if (i != this->levels_ - 1) {
-        newNode->parents.resize(this->upperLevelNodesNumber_[i + 1] * this->lowerLevelPortsNumber_[i + 1]);
+        newNode->parents.resize(this->num_parents_per_node_[i + 1] * this->num_port_lower_level_[i + 1]);
       }
       newNode->label.resize(this->levels_);
       this->nodes_.push_back(newNode);
@@ -287,10 +287,10 @@ void FatTreeZone::generateLabels()
   for (unsigned int i = 0; i <= this->levels_; i++) {
     currentLabel.assign(this->levels_, 0);
     for (unsigned int j = 0; j < this->levels_; j++) {
-      maxLabel[j] = j + 1 > i ? this->lowerLevelNodesNumber_[j] : this->upperLevelNodesNumber_[j];
+      maxLabel[j] = j + 1 > i ? this->num_children_per_node_[j] : this->num_parents_per_node_[j];
     }
 
-    for (unsigned int j = 0; j < this->nodesByLevel_[i]; j++) {
+    for (unsigned int j = 0; j < this->nodes_by_level_[i]; j++) {
 
       if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
         std::stringstream msgBuffer;
@@ -329,18 +329,18 @@ int FatTreeZone::getLevelPosition(const unsigned int level)
   int tempPosition = 0;
 
   for (unsigned int i = 0; i < level; i++)
-    tempPosition += this->nodesByLevel_[i];
+    tempPosition += this->nodes_by_level_[i];
 
   return tempPosition;
 }
 
-void FatTreeZone::addProcessingNode(int id)
+void FatTreeZone::add_processing_node(int id)
 {
   using std::make_pair;
   static int position = 0;
   FatTreeNode* newNode;
   newNode = new FatTreeNode(this->cluster_, id, 0, position++);
-  newNode->parents.resize(this->upperLevelNodesNumber_[0] * this->lowerLevelPortsNumber_[0]);
+  newNode->parents.resize(this->num_parents_per_node_[0] * this->num_port_lower_level_[0]);
   newNode->label.resize(this->levels_);
   this->compute_nodes_.insert(make_pair(id, newNode));
   this->nodes_.push_back(newNode);
@@ -384,7 +384,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
-      this->lowerLevelNodesNumber_.push_back(std::stoi(tmp[i]));
+      this->num_children_per_node_.push_back(std::stoi(tmp[i]));
     } catch (std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Invalid lower level node number:") + tmp[i]);
     }
@@ -397,7 +397,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
-      this->upperLevelNodesNumber_.push_back(std::stoi(tmp[i]));
+      this->num_parents_per_node_.push_back(std::stoi(tmp[i]));
     } catch (std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Invalid upper level node number:") + tmp[i]);
     }
@@ -410,7 +410,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   }
   for (size_t i = 0; i < tmp.size(); i++) {
     try {
-      this->lowerLevelPortsNumber_.push_back(std::stoi(tmp[i]));
+      this->num_port_lower_level_.push_back(std::stoi(tmp[i]));
     } catch (std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Invalid lower level port number:") + tmp[i]);
     }
@@ -418,7 +418,7 @@ void FatTreeZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   this->cluster_ = cluster;
 }
 
-void FatTreeZone::generateDotFile(const std::string& filename) const
+void FatTreeZone::generate_dot_file(const std::string& filename) const
 {
   std::ofstream file;
   file.open(filename, std::ios::out | std::ios::trunc);

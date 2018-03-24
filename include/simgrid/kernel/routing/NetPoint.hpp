@@ -36,9 +36,9 @@ public:
   /** @brief the NetZone in which this NetPoint is included */
   NetZoneImpl* netzone() { return netzone_; }
 
-  bool isNetZone() { return componentType_ == Type::NetZone; }
-  bool isHost() { return componentType_ == Type::Host; }
-  bool isRouter() { return componentType_ == Type::Router; }
+  bool isNetZone() { return component_type_ == Type::NetZone; }
+  bool isHost() { return component_type_ == Type::Host; }
+  bool isRouter() { return component_type_ == Type::Router; }
 
   static simgrid::xbt::signal<void(NetPoint*)> onCreation;
 
@@ -47,7 +47,7 @@ public:
 private:
   unsigned int id_;
   std::string name_;
-  NetPoint::Type componentType_;
+  NetPoint::Type component_type_;
   NetZoneImpl* netzone_;
 };
 } // namespace routing

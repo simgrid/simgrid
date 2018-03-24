@@ -250,7 +250,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
 
     //call the cluster function that adds the others links
     if (cluster->topology == simgrid::kernel::routing::ClusterTopology::FAT_TREE) {
-      static_cast<FatTreeZone*>(current_as)->addProcessingNode(i);
+      static_cast<FatTreeZone*>(current_as)->add_processing_node(i);
     } else {
       current_as->create_links_for_node(cluster, i, rankId, current_as->nodePositionWithLimiter(rankId));
     }
