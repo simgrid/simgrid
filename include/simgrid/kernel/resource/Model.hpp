@@ -35,36 +35,36 @@ public:
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  ActionList* getReadyActionSet() const { return readyActionSet_; }
+  ActionList* getReadyActionSet() const { return ready_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
-  ActionList* getRunningActionSet() const { return runningActionSet_; }
+  ActionList* getRunningActionSet() const { return running_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  ActionList* getFailedActionSet() const { return failedActionSet_; }
+  ActionList* getFailedActionSet() const { return failed_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *done* state */
-  ActionList* getDoneActionSet() const { return doneActionSet_; }
+  ActionList* getDoneActionSet() const { return done_action_set_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
   ActionLmmListPtr getModifiedSet() const;
 
   /** @brief Get the maxmin system of the current Model */
-  lmm_system_t getMaxminSystem() const { return maxminSystem_; }
+  lmm_system_t getMaxminSystem() const { return maxmin_system_; }
 
   /**
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
    */
-  e_UM_t getUpdateMechanism() const { return updateMechanism_; }
-  void setUpdateMechanism(e_UM_t mechanism) { updateMechanism_ = mechanism; }
+  e_UM_t getUpdateMechanism() const { return update_mechanism_; }
+  void setUpdateMechanism(e_UM_t mechanism) { update_mechanism_ = mechanism; }
 
   /** @brief Get Action heap */
-  heap_type& getActionHeap() { return actionHeap_; }
+  heap_type& getActionHeap() { return action_heap_; }
 
-  double actionHeapTopDate() const { return actionHeap_.top().first; }
+  double actionHeapTopDate() const { return action_heap_.top().first; }
   Action* actionHeapPop();
-  bool actionHeapIsEmpty() const { return actionHeap_.empty(); }
+  bool actionHeapIsEmpty() const { return action_heap_.empty(); }
 
   /**
    * @brief Share the resources between the actions
@@ -94,15 +94,15 @@ public:
   virtual bool nextOccuringEventIsIdempotent() { return true; }
 
 protected:
-  lmm_system_t maxminSystem_ = nullptr;
+  lmm_system_t maxmin_system_ = nullptr;
 
 private:
-  e_UM_t updateMechanism_ = UM_UNDEFINED;
-  ActionList* readyActionSet_   = new ActionList(); /**< Actions in state SURF_ACTION_READY */
-  ActionList* runningActionSet_ = new ActionList(); /**< Actions in state SURF_ACTION_RUNNING */
-  ActionList* failedActionSet_  = new ActionList(); /**< Actions in state SURF_ACTION_FAILED */
-  ActionList* doneActionSet_    = new ActionList(); /**< Actions in state SURF_ACTION_DONE */
-  heap_type actionHeap_;
+  e_UM_t update_mechanism_        = UM_UNDEFINED;
+  ActionList* ready_action_set_   = new ActionList(); /**< Actions in state SURF_ACTION_READY */
+  ActionList* running_action_set_ = new ActionList(); /**< Actions in state SURF_ACTION_RUNNING */
+  ActionList* failed_action_set_  = new ActionList(); /**< Actions in state SURF_ACTION_FAILED */
+  ActionList* done_action_set_    = new ActionList(); /**< Actions in state SURF_ACTION_DONE */
+  heap_type action_heap_;
 };
 
 } // namespace resource

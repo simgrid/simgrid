@@ -65,13 +65,13 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     return;
 
   /* Let's find the source and the destination in our internal structure */
-  auto searchedNode = this->computeNodes_.find(src->id());
-  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the source %s [%u] in the fat tree",
+  auto searchedNode = this->compute_nodes_.find(src->id());
+  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the source %s [%u] in the fat tree",
              src->getCname(), src->id());
   FatTreeNode* source = searchedNode->second;
 
-  searchedNode = this->computeNodes_.find(dst->id());
-  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the destination %s [%u] in the fat tree",
+  searchedNode = this->compute_nodes_.find(dst->id());
+  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the destination %s [%u] in the fat tree",
              dst->getCname(), dst->id());
   FatTreeNode* destination = searchedNode->second;
 
@@ -79,7 +79,7 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
            dst->getCname(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
-  if (source->id == destination->id && this->hasLoopback_) {
+  if (source->id == destination->id && this->has_loopback_) {
     into->link_list.push_back(source->loopback);
     if (latency)
       *latency += source->loopback->latency();
@@ -97,14 +97,14 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
     int k = this->upperLevelNodesNumber_[currentNode->level];
     d     = d % k;
-    into->link_list.push_back(currentNode->parents[d]->upLink);
+    into->link_list.push_back(currentNode->parents[d]->up_link_);
 
     if (latency)
-      *latency += currentNode->parents[d]->upLink->latency();
+      *latency += currentNode->parents[d]->up_link_->latency();
 
-    if (this->hasLimiter_)
-      into->link_list.push_back(currentNode->limiterLink);
-    currentNode = currentNode->parents[d]->upNode;
+    if (this->has_limiter_)
+      into->link_list.push_back(currentNode->limiter_link_);
+    currentNode = currentNode->parents[d]->up_node_;
   }
 
   XBT_DEBUG("%d(%u,%u) is in the sub tree of %d(%u,%u).", destination->id, destination->level, destination->position,
@@ -114,12 +114,12 @@ void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->lowerLevelNodesNumber_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-        into->link_list.push_back(currentNode->children[i]->downLink);
+        into->link_list.push_back(currentNode->children[i]->down_link_);
         if (latency)
-          *latency += currentNode->children[i]->downLink->latency();
-        currentNode = currentNode->children[i]->downNode;
-        if (this->hasLimiter_)
-          into->link_list.push_back(currentNode->limiterLink);
+          *latency += currentNode->children[i]->down_link_->latency();
+        currentNode = currentNode->children[i]->down_node_;
+        if (this->has_limiter_)
+          into->link_list.push_back(currentNode->limiter_link_);
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
       }
@@ -170,7 +170,7 @@ void FatTreeZone::seal()
     std::stringstream msgBuffer;
     msgBuffer << "Links are : ";
     for (unsigned int i = 0; i < this->links_.size(); i++) {
-      msgBuffer << "(" << this->links_[i]->upNode->id << "," << this->links_[i]->downNode->id << ") ";
+      msgBuffer << "(" << this->links_[i]->up_node_->id << "," << this->links_[i]->down_node_->id << ") ";
     }
     XBT_DEBUG("%s", msgBuffer.str().c_str());
   }
@@ -342,7 +342,7 @@ void FatTreeZone::addProcessingNode(int id)
   newNode = new FatTreeNode(this->cluster_, id, 0, position++);
   newNode->parents.resize(this->upperLevelNodesNumber_[0] * this->lowerLevelPortsNumber_[0]);
   newNode->label.resize(this->levels_);
-  this->computeNodes_.insert(make_pair(id, newNode));
+  this->compute_nodes_.insert(make_pair(id, newNode));
   this->nodes_.push_back(newNode);
 }
 
@@ -434,7 +434,7 @@ void FatTreeZone::generateDotFile(const std::string& filename) const
   }
 
   for (unsigned int i = 0; i < this->links_.size(); i++) {
-    file << this->links_[i]->downNode->id << " -- " << this->links_[i]->upNode->id << ";\n";
+    file << this->links_[i]->down_node_->id << " -- " << this->links_[i]->up_node_->id << ";\n";
   }
   file << "}";
   file.close();
@@ -450,7 +450,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
     linkTemplate.policy    = SURF_LINK_SHARED;
     linkTemplate.id        = "limiter_"+std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = surf::LinkImpl::byName(linkTemplate.id);
+    this->limiter_link_ = surf::LinkImpl::byName(linkTemplate.id);
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
     linkTemplate.bandwidth = cluster->loopback_bw;
@@ -463,7 +463,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
 }
 
 FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, FatTreeNode* upNode)
-    : upNode(upNode), downNode(downNode)
+    : up_node_(upNode), down_node_(downNode)
 {
   static int uniqueId = 0;
   LinkCreationArgs linkTemplate;
@@ -476,12 +476,12 @@ FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, Fa
 
   if (cluster->sharing_policy == SURF_LINK_SPLITDUPLEX) {
     std::string tmpID = std::string(linkTemplate.id) + "_UP";
-    this->upLink      = surf::LinkImpl::byName(tmpID); // check link?
+    this->up_link_    = surf::LinkImpl::byName(tmpID); // check link?
     tmpID          = std::string(linkTemplate.id) + "_DOWN";
-    this->downLink    = surf::LinkImpl::byName(tmpID); // check link ?
+    this->down_link_  = surf::LinkImpl::byName(tmpID); // check link ?
   } else {
-    this->upLink   = surf::LinkImpl::byName(linkTemplate.id);
-    this->downLink = this->upLink;
+    this->up_link_   = surf::LinkImpl::byName(linkTemplate.id);
+    this->down_link_ = this->up_link_;
   }
   uniqueId++;
 }

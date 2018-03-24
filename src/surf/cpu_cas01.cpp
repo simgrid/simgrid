@@ -51,10 +51,10 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
     xbt_die("Unsupported optimization (%s) for this model", optim.c_str());
   }
 
-  maxminSystem_ = new simgrid::kernel::lmm::System(select);
+  maxmin_system_ = new simgrid::kernel::lmm::System(select);
 
   if (getUpdateMechanism() == UM_LAZY)
-    maxminSystem_->modified_set_ = new kernel::resource::ActionLmmList();
+    maxmin_system_->modified_set_ = new kernel::resource::ActionLmmList();
 }
 
 CpuCas01Model::~CpuCas01Model()
@@ -176,7 +176,7 @@ CpuAction *CpuCas01::sleep(double duration)
   if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
-    action->stateSet_ = &static_cast<CpuCas01Model*>(model())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+    action->state_set_ = &static_cast<CpuCas01Model*>(model())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
 

@@ -593,7 +593,7 @@ CpuAction *CpuTi::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
-    action->stateSet_ = &static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
+    action->state_set_ = &static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
     action->getStateSet()->push_back(*action);
   }
 

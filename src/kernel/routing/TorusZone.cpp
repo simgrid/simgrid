@@ -70,7 +70,7 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
      * Note that position rankId*(xbt_dynar_length(dimensions)+has_loopback?+has_limiter?)
      * holds the link "rankId->rankId"
      */
-    privateLinks_.insert({position + j, {linkUp, linkDown}});
+    private_links_.insert({position + j, {linkUp, linkDown}});
     dim_product *= current_dimension;
   }
   rank++;
@@ -89,7 +89,7 @@ void TorusZone::parse_specific_arguments(ClusterCreationArgs* cluster)
     for (auto const& group : dimensions)
       dimensions_.push_back(surf_parse_get_int(group));
 
-    linkCountPerNode_ = dimensions_.size();
+    num_links_per_node_ = dimensions_.size();
   }
 }
 
@@ -101,8 +101,8 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* r
   if (dst->isRouter() || src->isRouter())
     return;
 
-  if (src->id() == dst->id() && hasLoopback_) {
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id() * linkCountPerNode_);
+  if (src->id() == dst->id() && has_loopback_) {
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(src->id() * num_links_per_node_);
 
     route->link_list.push_back(info.first);
     if (lat)
@@ -151,8 +151,8 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* r
             next_node = (current_node + dim_product);
 
           // HERE: We use *CURRENT* node for calculation (as opposed to next_node)
-          nodeOffset = current_node * (linkCountPerNode_);
-          linkOffset = nodeOffset + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0) + j;
+          nodeOffset = current_node * (num_links_per_node_);
+          linkOffset = nodeOffset + (has_loopback_ ? 1 : 0) + (has_limiter_ ? 1 : 0) + j;
           use_lnk_up = true;
           assert(linkOffset >= 0);
         } else { // Route to the left
@@ -162,8 +162,8 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* r
             next_node = (current_node - dim_product);
 
           // HERE: We use *next* node for calculation (as opposed to current_node!)
-          nodeOffset = next_node * (linkCountPerNode_);
-          linkOffset = nodeOffset + j + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0);
+          nodeOffset = next_node * (num_links_per_node_);
+          linkOffset = nodeOffset + j + (has_loopback_ ? 1 : 0) + (has_limiter_ ? 1 : 0);
           use_lnk_up = false;
 
           assert(linkOffset >= 0);
@@ -179,12 +179,12 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* r
 
     std::pair<surf::LinkImpl*, surf::LinkImpl*> info;
 
-    if (hasLimiter_) { // limiter for sender
-      info = privateLinks_.at(nodeOffset + (hasLoopback_ ? 1 : 0));
+    if (has_limiter_) { // limiter for sender
+      info = private_links_.at(nodeOffset + (has_loopback_ ? 1 : 0));
       route->link_list.push_back(info.first);
     }
 
-    info = privateLinks_.at(linkOffset);
+    info = private_links_.at(linkOffset);
 
     if (use_lnk_up == false) {
       route->link_list.push_back(info.second);

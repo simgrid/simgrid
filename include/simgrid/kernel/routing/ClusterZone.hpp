@@ -81,18 +81,18 @@ public:
 
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {linkUp, linkDown} */
-  std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> privateLinks_;
+  std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> private_links_;
 
-  unsigned int nodePosition(int id) { return id * linkCountPerNode_; }
-  unsigned int nodePositionWithLoopback(int id) { return nodePosition(id) + (hasLoopback_ ? 1 : 0); }
-  unsigned int nodePositionWithLimiter(int id) { return nodePositionWithLoopback(id) + (hasLimiter_ ? 1 : 0); }
+  unsigned int nodePosition(int id) { return id * num_links_per_node_; }
+  unsigned int nodePositionWithLoopback(int id) { return nodePosition(id) + (has_loopback_ ? 1 : 0); }
+  unsigned int nodePositionWithLimiter(int id) { return nodePositionWithLoopback(id) + (has_limiter_ ? 1 : 0); }
 
   surf::LinkImpl* backbone_      = nullptr;
   void* loopback_                = nullptr;
   NetPoint* router_              = nullptr;
-  bool hasLimiter_               = false;
-  bool hasLoopback_              = false;
-  unsigned int linkCountPerNode_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
+  bool has_limiter_                = false;
+  bool has_loopback_               = false;
+  unsigned int num_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 };
 } // namespace routing
 } // namespace kernel

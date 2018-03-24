@@ -46,7 +46,7 @@ public:
 
   /** Virtual link standing for the node global capacity.
    */
-  surf::LinkImpl* limiterLink;
+  surf::LinkImpl* limiter_link_;
   /** If present, communications from this node to this node will pass through it
    * instead of passing by an upper level switch.
    */
@@ -63,13 +63,13 @@ class FatTreeLink {
 public:
   FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* source, FatTreeNode* destination);
   /** Link going up in the tree */
-  surf::LinkImpl* upLink;
+  surf::LinkImpl* up_link_;
   /** Link going down in the tree */
-  surf::LinkImpl* downLink;
+  surf::LinkImpl* down_link_;
   /** Upper end of the link */
-  FatTreeNode* upNode;
+  FatTreeNode* up_node_;
   /** Lower end of the link */
-  FatTreeNode* downNode;
+  FatTreeNode* down_node_;
 };
 
 /** @ingroup ROUTING_API
@@ -124,7 +124,7 @@ private:
   std::vector<unsigned int> upperLevelNodesNumber_; // number of parents by node
   std::vector<unsigned int> lowerLevelPortsNumber_; // ports between each level l and l-1
 
-  std::map<int, FatTreeNode*> computeNodes_;
+  std::map<int, FatTreeNode*> compute_nodes_;
   std::vector<FatTreeNode*> nodes_;
   std::vector<FatTreeLink*> links_;
   std::vector<unsigned int> nodesByLevel_;

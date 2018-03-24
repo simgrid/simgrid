@@ -55,10 +55,10 @@ public:
   void addRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                 std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) override;
 
-  xbt_graph_t routeGraph_ = nullptr;           /* xbt_graph */
-  std::map<int, xbt_node_t> graphNodeMap_;     /* map */
+  xbt_graph_t route_graph_ = nullptr;          /* xbt_graph */
+  std::map<int, xbt_node_t> graph_node_map_;   /* map */
   bool cached_;                                /* cache mode */
-  std::map<int, std::vector<int>> routeCache_; /* use in cache mode */
+  std::map<int, std::vector<int>> route_cache_; /* use in cache mode */
 };
 } // namespace routing
 } // namespace kernel

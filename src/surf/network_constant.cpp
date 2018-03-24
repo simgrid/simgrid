@@ -79,8 +79,8 @@ NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, doubl
 {
   latency_ = latency;
   if (latency_ <= 0.0) {
-    stateSet_ = model_->getDoneActionSet();
-    stateSet_->push_back(*this);
+    state_set_ = model_->getDoneActionSet();
+    state_set_->push_back(*this);
   }
 };
 

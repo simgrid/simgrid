@@ -171,13 +171,13 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
   current_as->parse_specific_arguments(cluster);
 
   if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
-    current_as->linkCountPerNode_++;
-    current_as->hasLoopback_ = true;
+    current_as->num_links_per_node_++;
+    current_as->has_loopback_ = true;
   }
 
   if(cluster->limiter_link > 0){
-    current_as->linkCountPerNode_++;
-    current_as->hasLimiter_ = true;
+    current_as->num_links_per_node_++;
+    current_as->has_limiter_ = true;
   }
 
   for (int const& i : *cluster->radicals) {
@@ -227,7 +227,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
 
       auto* as_cluster = static_cast<ClusterZone*>(current_as);
-      as_cluster->privateLinks_.insert({as_cluster->nodePosition(rankId), {linkUp, linkDown}});
+      as_cluster->private_links_.insert({as_cluster->nodePosition(rankId), {linkUp, linkDown}});
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -245,7 +245,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       sg_platf_new_link(&link);
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
       linkUp   = linkDown;
-      current_as->privateLinks_.insert({current_as->nodePositionWithLoopback(rankId), {linkUp, linkDown}});
+      current_as->private_links_.insert({current_as->nodePositionWithLoopback(rankId), {linkUp, linkDown}});
     }
 
     //call the cluster function that adds the others links
@@ -654,11 +654,11 @@ void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostl
 
   auto* as_cluster = static_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
-  if (as_cluster->privateLinks_.find(netpoint->id()) != as_cluster->privateLinks_.end())
+  if (as_cluster->private_links_.find(netpoint->id()) != as_cluster->private_links_.end())
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->getCname(), netpoint->id());
-  as_cluster->privateLinks_.insert({netpoint->id(), {linkUp, linkDown}});
+  as_cluster->private_links_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 
 void sg_platf_new_trace(simgrid::kernel::routing::TraceCreationArgs* trace)

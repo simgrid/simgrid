@@ -16,32 +16,32 @@ Model::Model() = default;
 
 Model::~Model()
 {
-  delete readyActionSet_;
-  delete runningActionSet_;
-  delete failedActionSet_;
-  delete doneActionSet_;
-  delete maxminSystem_;
+  delete ready_action_set_;
+  delete running_action_set_;
+  delete failed_action_set_;
+  delete done_action_set_;
+  delete maxmin_system_;
 }
 
 Action* Model::actionHeapPop()
 {
-  Action* action = actionHeap_.top().second;
-  actionHeap_.pop();
+  Action* action = action_heap_.top().second;
+  action_heap_.pop();
   action->clearHeapHandle();
   return action;
 }
 
 ActionLmmListPtr Model::getModifiedSet() const
 {
-  return maxminSystem_->modified_set_;
+  return maxmin_system_->modified_set_;
 }
 
 double Model::nextOccuringEvent(double now)
 {
   // FIXME: set the good function once and for all
-  if (updateMechanism_ == UM_LAZY)
+  if (update_mechanism_ == UM_LAZY)
     return nextOccuringEventLazy(now);
-  else if (updateMechanism_ == UM_FULL)
+  else if (update_mechanism_ == UM_FULL)
     return nextOccuringEventFull(now);
   else
     xbt_die("Invalid cpu update mechanism!");
@@ -49,16 +49,16 @@ double Model::nextOccuringEvent(double now)
 
 double Model::nextOccuringEventLazy(double now)
 {
-  XBT_DEBUG("Before share resources, the size of modified actions set is %zu", maxminSystem_->modified_set_->size());
-  lmm_solve(maxminSystem_);
-  XBT_DEBUG("After share resources, The size of modified actions set is %zu", maxminSystem_->modified_set_->size());
+  XBT_DEBUG("Before share resources, the size of modified actions set is %zu", maxmin_system_->modified_set_->size());
+  lmm_solve(maxmin_system_);
+  XBT_DEBUG("After share resources, The size of modified actions set is %zu", maxmin_system_->modified_set_->size());
 
-  while (not maxminSystem_->modified_set_->empty()) {
-    Action* action = &(maxminSystem_->modified_set_->front());
-    maxminSystem_->modified_set_->pop_front();
+  while (not maxmin_system_->modified_set_->empty()) {
+    Action* action = &(maxmin_system_->modified_set_->front());
+    maxmin_system_->modified_set_->pop_front();
     bool max_dur_flag = false;
 
-    if (action->getStateSet() != runningActionSet_)
+    if (action->getStateSet() != running_action_set_)
       continue;
 
     /* bogus priority, skip it */
@@ -93,7 +93,7 @@ double Model::nextOccuringEventLazy(double now)
               action->getStartTime(), min, share, action->getMaxDuration());
 
     if (min > -1) {
-      action->heapUpdate(actionHeap_, min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
+      action->heapUpdate(action_heap_, min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
       DIE_IMPOSSIBLE;
@@ -112,7 +112,7 @@ double Model::nextOccuringEventLazy(double now)
 
 double Model::nextOccuringEventFull(double /*now*/)
 {
-  maxminSystem_->solve_fun(maxminSystem_);
+  maxmin_system_->solve_fun(maxmin_system_);
 
   double min = -1;
 
@@ -140,9 +140,9 @@ double Model::nextOccuringEventFull(double /*now*/)
 
 void Model::updateActionsState(double now, double delta)
 {
-  if (updateMechanism_ == UM_FULL)
+  if (update_mechanism_ == UM_FULL)
     updateActionsStateFull(now, delta);
-  else if (updateMechanism_ == UM_LAZY)
+  else if (update_mechanism_ == UM_LAZY)
     updateActionsStateLazy(now, delta);
   else
     xbt_die("Invalid cpu update mechanism!");

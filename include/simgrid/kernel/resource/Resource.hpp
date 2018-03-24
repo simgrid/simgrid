@@ -70,7 +70,7 @@ public:
 private:
   std::string name_;
   Model* model_;
-  bool isOn_ = true;
+  bool is_on_ = true;
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */

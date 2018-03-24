@@ -23,11 +23,11 @@ Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed
     : remains_(cost), start_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
 {
   if (failed)
-    stateSet_ = getModel()->getFailedActionSet();
+    state_set_ = getModel()->getFailedActionSet();
   else
-    stateSet_ = getModel()->getRunningActionSet();
+    state_set_ = getModel()->getRunningActionSet();
 
-  stateSet_->push_back(*this);
+  state_set_->push_back(*this);
 }
 
 Action::~Action()
@@ -37,45 +37,45 @@ Action::~Action()
 
 void Action::finish(Action::State state)
 {
-  finishTime_ = surf_get_clock();
+  finish_time_ = surf_get_clock();
   setState(state);
 }
 
 Action::State Action::getState() const
 {
-  if (stateSet_ == model_->getReadyActionSet())
+  if (state_set_ == model_->getReadyActionSet())
     return Action::State::ready;
-  if (stateSet_ == model_->getRunningActionSet())
+  if (state_set_ == model_->getRunningActionSet())
     return Action::State::running;
-  if (stateSet_ == model_->getFailedActionSet())
+  if (state_set_ == model_->getFailedActionSet())
     return Action::State::failed;
-  if (stateSet_ == model_->getDoneActionSet())
+  if (state_set_ == model_->getDoneActionSet())
     return Action::State::done;
   return Action::State::not_in_the_system;
 }
 
 void Action::setState(Action::State state)
 {
-  simgrid::xbt::intrusive_erase(*stateSet_, *this);
+  simgrid::xbt::intrusive_erase(*state_set_, *this);
   switch (state) {
     case Action::State::ready:
-      stateSet_ = model_->getReadyActionSet();
+      state_set_ = model_->getReadyActionSet();
       break;
     case Action::State::running:
-      stateSet_ = model_->getRunningActionSet();
+      state_set_ = model_->getRunningActionSet();
       break;
     case Action::State::failed:
-      stateSet_ = model_->getFailedActionSet();
+      state_set_ = model_->getFailedActionSet();
       break;
     case Action::State::done:
-      stateSet_ = model_->getDoneActionSet();
+      state_set_ = model_->getDoneActionSet();
       break;
     default:
-      stateSet_ = nullptr;
+      state_set_ = nullptr;
       break;
   }
-  if (stateSet_)
-    stateSet_->push_back(*this);
+  if (state_set_)
+    state_set_->push_back(*this);
 }
 
 double Action::getBound() const
@@ -106,7 +106,7 @@ void Action::ref()
 
 void Action::setMaxDuration(double duration)
 {
-  maxDuration_ = duration;
+  max_duration_ = duration;
   if (getModel()->getUpdateMechanism() == UM_LAZY) // remove action from the heap
     heapRemove(getModel()->getActionHeap());
 }
@@ -114,7 +114,7 @@ void Action::setMaxDuration(double duration)
 void Action::setSharingWeight(double weight)
 {
   XBT_IN("(%p,%g)", this, weight);
-  sharingWeight_ = weight;
+  sharing_weight_ = weight;
   getModel()->getMaxminSystem()->update_variable_weight(getVariable(), weight);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY)
@@ -137,7 +137,7 @@ int Action::unref()
   refcount_--;
   if (not refcount_) {
     if (stateSetHook_.is_linked())
-      simgrid::xbt::intrusive_erase(*stateSet_, *this);
+      simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
@@ -159,8 +159,8 @@ void Action::suspend()
     getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
       heapRemove(getModel()->getActionHeap());
-      if (getModel()->getUpdateMechanism() == UM_LAZY && stateSet_ == getModel()->getRunningActionSet() &&
-          sharingWeight_ > 0) {
+      if (getModel()->getUpdateMechanism() == UM_LAZY && state_set_ == getModel()->getRunningActionSet() &&
+          sharing_weight_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
         updateRemainingLazy(surf_get_clock());
       }
@@ -196,14 +196,14 @@ bool Action::isSuspended()
 void Action::heapInsert(heap_type& heap, double key, Action::Type hat)
 {
   type_       = hat;
-  heapHandle_ = heap.emplace(std::make_pair(key, this));
+  heap_handle_ = heap.emplace(std::make_pair(key, this));
 }
 
 void Action::heapRemove(heap_type& heap)
 {
   type_ = Action::Type::NOTSET;
-  if (heapHandle_) {
-    heap.erase(*heapHandle_);
+  if (heap_handle_) {
+    heap.erase(*heap_handle_);
     clearHeapHandle();
   }
 }
@@ -211,10 +211,10 @@ void Action::heapRemove(heap_type& heap)
 void Action::heapUpdate(heap_type& heap, double key, Action::Type hat)
 {
   type_ = hat;
-  if (heapHandle_) {
-    heap.update(*heapHandle_, std::make_pair(key, this));
+  if (heap_handle_) {
+    heap.update(*heap_handle_, std::make_pair(key, this));
   } else {
-    heapHandle_ = heap.emplace(std::make_pair(key, this));
+    heap_handle_ = heap.emplace(std::make_pair(key, this));
   }
 }
 
@@ -230,7 +230,7 @@ double Action::getRemains()
 
 void Action::updateMaxDuration(double delta)
 {
-  double_update(&maxDuration_, delta, sg_surf_precision);
+  double_update(&max_duration_, delta, sg_surf_precision);
 }
 void Action::updateRemains(double delta)
 {
@@ -239,7 +239,7 @@ void Action::updateRemains(double delta)
 
 void Action::refreshLastUpdate()
 {
-  lastUpdate_ = surf_get_clock();
+  last_update_ = surf_get_clock();
 }
 
 } // namespace surf

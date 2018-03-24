@@ -34,10 +34,10 @@ namespace simgrid {
 namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
-  maxminSystem_            = new simgrid::kernel::lmm::System(true /* selective update */);
-  maxminSystem_->solve_fun = &simgrid::kernel::lmm::bottleneck_solve;
-  surf_network_model = new NetworkL07Model(this,maxminSystem_);
-  surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
+  maxmin_system_            = new simgrid::kernel::lmm::System(true /* selective update */);
+  maxmin_system_->solve_fun = &simgrid::kernel::lmm::bottleneck_solve;
+  surf_network_model        = new NetworkL07Model(this, maxmin_system_);
+  surf_cpu_model_pm         = new CpuL07Model(this, maxmin_system_);
 }
 
 HostL07Model::~HostL07Model()
@@ -48,23 +48,23 @@ HostL07Model::~HostL07Model()
 
 CpuL07Model::CpuL07Model(HostL07Model* hmodel, lmm_system_t sys) : CpuModel(), hostModel_(hmodel)
 {
-  maxminSystem_ = sys;
+  maxmin_system_ = sys;
 }
 
 CpuL07Model::~CpuL07Model()
 {
-  maxminSystem_ = nullptr;
+  maxmin_system_ = nullptr;
 }
 
 NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, lmm_system_t sys) : NetworkModel(), hostModel_(hmodel)
 {
-  maxminSystem_ = sys;
+  maxmin_system_ = sys;
   loopback_     = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
 {
-  maxminSystem_ = nullptr;
+  maxmin_system_ = nullptr;
 }
 
 double HostL07Model::nextOccuringEvent(double now)
@@ -95,7 +95,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
       }
       if ((action.latency_ <= 0.0) && (action.isSuspended() == 0)) {
         action.updateBound();
-        maxminSystem_->update_variable_weight(action.getVariable(), 1.0);
+        maxmin_system_->update_variable_weight(action.getVariable(), 1.0);
       }
     }
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.getRemains(),
@@ -412,7 +412,7 @@ int L07Action::unref()
   refcount_--;
   if (not refcount_) {
     if (stateSetHook_.is_linked())
-      simgrid::xbt::intrusive_erase(*stateSet_, *this);
+      simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
     delete this;

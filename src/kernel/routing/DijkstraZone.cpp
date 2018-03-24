@@ -37,12 +37,12 @@ void DijkstraZone::seal()
   xbt_node_t node = nullptr;
 
   /* Create the topology graph */
-  if (not routeGraph_)
-    routeGraph_ = xbt_graph_new_graph(1, nullptr);
+  if (not route_graph_)
+    route_graph_ = xbt_graph_new_graph(1, nullptr);
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
-    xbt_dynar_foreach (xbt_graph_get_nodes(routeGraph_), cursor, node) {
+    xbt_dynar_foreach (xbt_graph_get_nodes(route_graph_), cursor, node) {
 
       bool found = false;
       xbt_edge_t edge = nullptr;
@@ -57,13 +57,13 @@ void DijkstraZone::seal()
       if (not found) {
         RouteCreationArgs* e_route = new simgrid::kernel::routing::RouteCreationArgs();
         e_route->link_list.push_back(surf_network_model->loopback_);
-        xbt_graph_new_edge(routeGraph_, node, node, e_route);
+        xbt_graph_new_edge(route_graph_, node, node, e_route);
       }
     }
   }
 
   /* initialize graph indexes in nodes after graph has been built */
-  xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
+  xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
 
   xbt_dynar_foreach (nodes, cursor, node) {
     graph_node_data_t data = static_cast<graph_node_data_t>(xbt_graph_node_get_data(node));
@@ -77,16 +77,16 @@ xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
   data->id       = id;
   data->graph_id = graph_id;
 
-  xbt_node_t node                = xbt_graph_new_node(routeGraph_, data);
-  graphNodeMap_.emplace(id, node);
+  xbt_node_t node = xbt_graph_new_node(route_graph_, data);
+  graph_node_map_.emplace(id, node);
 
   return node;
 }
 
 xbt_node_t DijkstraZone::nodeMapSearch(int id)
 {
-  auto ret = graphNodeMap_.find(id);
-  return ret == graphNodeMap_.end() ? nullptr : ret->second;
+  auto ret = graph_node_map_.find(id);
+  return ret == graph_node_map_.end() ? nullptr : ret->second;
 }
 
 /* Parsing */
@@ -120,7 +120,7 @@ void DijkstraZone::newRoute(int src_id, int dst_id, simgrid::kernel::routing::Ro
   }
 
   /* add link as edge to graph */
-  xbt_graph_new_edge(routeGraph_, src, dst, e_route);
+  xbt_graph_new_edge(route_graph_, src, dst, e_route);
 }
 
 void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
@@ -129,7 +129,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
   int src_id = src->id();
   int dst_id = dst->id();
 
-  xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
+  xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
   xbt_node_t src_elm = nodeMapSearch(src_id);
@@ -143,7 +143,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
 
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_node_id, xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_node_id, xbt_node_t);
-    xbt_edge_t edge     = xbt_graph_get_edge(routeGraph_, node_s_v, node_e_v);
+    xbt_edge_t edge     = xbt_graph_get_edge(route_graph_, node_s_v, node_e_v);
 
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
@@ -157,7 +157,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
     }
   }
 
-  auto elm                   = routeCache_.emplace(src_id, std::vector<int>());
+  auto elm                   = route_cache_.emplace(src_id, std::vector<int>());
   std::vector<int>& pred_arr = elm.first->second;
 
   if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
@@ -213,7 +213,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     xbt_node_t node_v      = xbt_dynar_get_as(nodes, v, xbt_node_t);
-    xbt_edge_t edge        = xbt_graph_get_edge(routeGraph_, node_pred_v, node_v);
+    xbt_edge_t edge        = xbt_graph_get_edge(route_graph_, node_pred_v, node_v);
 
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
@@ -255,12 +255,12 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
   }
 
   if (not cached_)
-    routeCache_.clear();
+    route_cache_.clear();
 }
 
 DijkstraZone::~DijkstraZone()
 {
-  xbt_graph_free_graph(routeGraph_, &graph_node_data_free, &graph_edge_data_free, nullptr);
+  xbt_graph_free_graph(route_graph_, &graph_node_data_free, &graph_edge_data_free, nullptr);
 }
 
 /* Creation routing model functions */
@@ -279,8 +279,8 @@ void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::Net
   addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   /* Create the topology graph */
-  if (not routeGraph_)
-    routeGraph_ = xbt_graph_new_graph(1, nullptr);
+  if (not route_graph_)
+    route_graph_ = xbt_graph_new_graph(1, nullptr);
 
   /* we don't check whether the route already exist, because the algorithm may find another path through some other
    * nodes */
@@ -292,10 +292,10 @@ void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::Net
   // Symmetrical YES
   if (symmetrical == true) {
 
-    xbt_dynar_t nodes   = xbt_graph_get_nodes(routeGraph_);
+    xbt_dynar_t nodes   = xbt_graph_get_nodes(route_graph_);
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src->id(), xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst->id(), xbt_node_t);
-    xbt_edge_t edge     = xbt_graph_get_edge(routeGraph_, node_e_v, node_s_v);
+    xbt_edge_t edge     = xbt_graph_get_edge(route_graph_, node_e_v, node_s_v);
 
     if (not gw_dst || not gw_src) {
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);

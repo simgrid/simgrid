@@ -20,21 +20,21 @@ Resource::~Resource() = default;
 
 bool Resource::isOn() const
 {
-  return isOn_;
+  return is_on_;
 }
 bool Resource::isOff() const
 {
-  return not isOn_;
+  return not is_on_;
 }
 
 void Resource::turnOn()
 {
-  isOn_ = true;
+  is_on_ = true;
 }
 
 void Resource::turnOff()
 {
-  isOn_ = false;
+  is_on_ = false;
 }
 
 double Resource::getLoad()

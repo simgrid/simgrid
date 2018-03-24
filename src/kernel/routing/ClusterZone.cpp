@@ -24,13 +24,13 @@ ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father
 void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
-  xbt_assert(not privateLinks_.empty(),
+  xbt_assert(not private_links_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
-  if ((src->id() == dst->id()) && hasLoopback_) {
+  if ((src->id() == dst->id()) && has_loopback_) {
     xbt_assert(not src->isRouter(), "Routing from a cluster private router to itself is meaningless");
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePosition(src->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePosition(src->id()));
     route->link_list.push_back(info.first);
     if (lat)
       *lat += info.first->latency();
@@ -38,12 +38,12 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   }
 
   if (not src->isRouter()) { // No private link for the private router
-    if (hasLimiter_) { // limiter for sender
-      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLoopback(src->id()));
+    if (has_limiter_) {      // limiter for sender
+      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLoopback(src->id()));
       route->link_list.push_back(info.first);
     }
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLimiter(src->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLimiter(src->id()));
     if (info.first) { // link up
       route->link_list.push_back(info.first);
       if (lat)
@@ -59,14 +59,14 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
   if (not dst->isRouter()) { // No specific link for router
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(nodePositionWithLimiter(dst->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLimiter(dst->id()));
     if (info.second) { // link down
       route->link_list.push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }
-    if (hasLimiter_) { // limiter for receiver
-      info = privateLinks_.at(nodePositionWithLoopback(dst->id()));
+    if (has_limiter_) { // limiter for receiver
+      info = private_links_.at(nodePositionWithLoopback(dst->id()));
       route->link_list.push_back(info.first);
     }
   }
@@ -91,7 +91,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
     if (not src->isRouter()) {
       xbt_node_t previous = new_xbt_graph_node(graph, src->getCname(), nodes);
 
-      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = privateLinks_.at(src->id());
+      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(src->id());
 
       if (info.first) { // link up
         xbt_node_t current = new_xbt_graph_node(graph, info.first->getCname(), nodes);
@@ -138,7 +138,7 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
     linkUp   = surf::LinkImpl::byName(link_id);
     linkDown = linkUp;
   }
-  privateLinks_.insert({position, {linkUp, linkDown}});
+  private_links_.insert({position, {linkUp, linkDown}});
 }
 }
 }

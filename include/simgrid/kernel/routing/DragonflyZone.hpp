@@ -17,10 +17,10 @@ public:
   unsigned int group_;
   unsigned int chassis_;
   unsigned int blade_;
-  surf::LinkImpl** blueLinks_  = nullptr;
-  surf::LinkImpl** blackLinks_ = nullptr;
-  surf::LinkImpl** greenLinks_ = nullptr;
-  surf::LinkImpl** myNodes_    = nullptr;
+  surf::LinkImpl** blue_links_  = nullptr;
+  surf::LinkImpl** black_links_ = nullptr;
+  surf::LinkImpl** green_links_ = nullptr;
+  surf::LinkImpl** my_nodes_    = nullptr;
   DragonflyRouter(int i, int j, int k);
   ~DragonflyRouter();
 };
@@ -74,14 +74,14 @@ public:
 
 private:
   ClusterCreationArgs* cluster_     = nullptr;
-  unsigned int numNodesPerBlade_    = 0;
-  unsigned int numBladesPerChassis_ = 0;
-  unsigned int numChassisPerGroup_  = 0;
-  unsigned int numGroups_           = 0;
-  unsigned int numLinksGreen_       = 0;
-  unsigned int numLinksBlack_       = 0;
-  unsigned int numLinksBlue_        = 0;
-  unsigned int numLinksperLink_     = 1; // splitduplex -> 2, only for local link
+  unsigned int num_nodes_per_blade_    = 0;
+  unsigned int num_blades_per_chassis_ = 0;
+  unsigned int num_chassis_per_group_  = 0;
+  unsigned int num_groups_             = 0;
+  unsigned int num_links_green_        = 0;
+  unsigned int num_links_black_        = 0;
+  unsigned int num_links_blue_         = 0;
+  unsigned int num_links_per_link_     = 1; // splitduplex -> 2, only for local link
   DragonflyRouter** routers_        = nullptr;
 };
 } // namespace routing

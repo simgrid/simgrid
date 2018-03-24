@@ -100,7 +100,7 @@ public:
   /** @brief Get the start time of the current action */
   double getStartTime() const { return start_; }
   /** @brief Get the finish time of the current action */
-  double getFinishTime() const { return finishTime_; }
+  double getFinishTime() const { return finish_time_; }
 
   /** @brief Get the user data associated to the current action */
   void* getData() const { return data_; }
@@ -128,7 +128,7 @@ public:
   double getRemainsNoUpdate() const { return remains_; }
 
   /** @brief Set the finish time of the current action */
-  void setFinishTime(double value) { finishTime_ = value; }
+  void setFinishTime(double value) { finish_time_ = value; }
 
   /**@brief Add a reference to the current action (refcounting) */
   void ref();
@@ -150,7 +150,7 @@ public:
   virtual bool isSuspended();
 
   /** @brief Get the maximum duration of the current action */
-  double getMaxDuration() const { return maxDuration_; }
+  double getMaxDuration() const { return max_duration_; }
   /** @brief Set the maximum duration of the current Action */
   virtual void setMaxDuration(double duration);
 
@@ -160,27 +160,27 @@ public:
   void setCategory(const char* category);
 
   /** @brief Get the priority of the current Action */
-  double getPriority() const { return sharingWeight_; };
+  double getPriority() const { return sharing_weight_; };
   /** @brief Set the priority of the current Action */
   virtual void setSharingWeight(double priority);
-  void setSharingWeightNoUpdate(double weight) { sharingWeight_ = weight; }
+  void setSharingWeightNoUpdate(double weight) { sharing_weight_ = weight; }
 
   /** @brief Get the state set in which the action is */
-  ActionList* getStateSet() const { return stateSet_; };
+  ActionList* getStateSet() const { return state_set_; };
 
   simgrid::kernel::resource::Model* getModel() const { return model_; }
 
 protected:
-  ActionList* stateSet_;
+  ActionList* state_set_;
   int refcount_ = 1;
 
 private:
-  double sharingWeight_ = 1.0;             /**< priority (1.0 by default) */
-  double maxDuration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
+  double sharing_weight_ = 1.0;             /**< priority (1.0 by default) */
+  double max_duration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
   double remains_;           /**< How much of that cost remains to be done in the currently running task */
   double start_;             /**< start time  */
   char* category_ = nullptr; /**< tracing category for categorized resource utilization monitoring */
-  double finishTime_ =
+  double finish_time_ =
       -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
   double cost_;
@@ -188,24 +188,24 @@ private:
   void* data_ = nullptr; /**< for your convenience */
 
   /* LMM */
-  double lastUpdate_                                  = 0;
-  double lastValue_                                   = 0;
+  double last_update_                                  = 0;
+  double last_value_                                   = 0;
   kernel::lmm::Variable* variable_                    = nullptr;
   Action::Type type_                                  = Action::Type::NOTSET;
-  boost::optional<heap_type::handle_type> heapHandle_ = boost::none;
+  boost::optional<heap_type::handle_type> heap_handle_ = boost::none;
 
 public:
   virtual void updateRemainingLazy(double now) = 0;
   void heapInsert(heap_type& heap, double key, Action::Type hat);
   void heapRemove(heap_type& heap);
   void heapUpdate(heap_type& heap, double key, Action::Type hat);
-  void clearHeapHandle() { heapHandle_ = boost::none; }
+  void clearHeapHandle() { heap_handle_ = boost::none; }
   kernel::lmm::Variable* getVariable() const { return variable_; }
   void setVariable(kernel::lmm::Variable* var) { variable_ = var; }
-  double getLastUpdate() const { return lastUpdate_; }
+  double getLastUpdate() const { return last_update_; }
   void refreshLastUpdate();
-  double getLastValue() const { return lastValue_; }
-  void setLastValue(double val) { lastValue_ = val; }
+  double getLastValue() const { return last_value_; }
+  void setLastValue(double val) { last_value_ = val; }
   Action::Type getType() const { return type_; }
 
 protected:
