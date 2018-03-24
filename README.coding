@@ -14,14 +14,33 @@
                should leverage our tesh(1) utility.
 
 **
-** Type naming standard
+** NEW type naming standard in SimGrid4
 **
 *****************************************************
 
-It may sound strange, but the type naming convention was source of intense
-discussion between da SimGrid posse members. The convention we came to may not
-be the best solution, but it has the merit to exist and leave everyone work.
-So please stick to it.
+SimGrid4 will follow the these rules:
+
+  - filenames are unique in the whole project 
+    (because of a bug in Sonar coverage computation)
+  C++
+  - fields, methods and variables are in snake_case()
+  - Classes and Enum are in CamelCase
+  - filenames: Class.cpp and Class.hpp
+  C
+  - variables and functions are in snake_case()
+  - typedefs do not hide the pointers, ie * must be explicit
+    char * sg_host_get_name(sg_host_t * host);
+  
+
+This is different from the old convention (described below), that
+should not be used in S4U and its bindings, nor in the kernel.
+
+**
+** OLD Type naming standard in SimGrid3
+**
+*****************************************************
+
+SimGrid3 legacy interfaces (ie, MSG and SimDag) are following these rules:
 
   - ???_t is a valid type (built with typedef)
   - s_toto_t is a structure (access to fields with .)
