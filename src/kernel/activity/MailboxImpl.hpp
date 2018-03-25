@@ -37,7 +37,7 @@ public:
   simgrid::s4u::Mailbox piface_; // Our interface
   simgrid::xbt::string name_;
 
-  simgrid::simix::ActorImplPtr permanent_receiver; // process to which the mailbox is attached
+  simgrid::kernel::actor::ActorImplPtr permanent_receiver; // actor to which the mailbox is attached
   boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
   boost::circular_buffer_space_optimized<smx_activity_t> done_comm_queue; // messages already received in the permanent receive mode
 };

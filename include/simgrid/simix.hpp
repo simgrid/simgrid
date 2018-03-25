@@ -71,9 +71,6 @@ typename std::result_of<F()>::type kernelImmediate(F&& code)
 
 XBT_PUBLIC const std::vector<smx_actor_t>& process_get_runnable();
 
-XBT_PUBLIC void set_maestro(std::function<void()> code);
-XBT_PUBLIC void create_maestro(std::function<void()> code);
-
 // What's executed as SIMIX actor code:
 typedef std::function<void()> ActorCode;
 

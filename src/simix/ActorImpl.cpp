@@ -146,7 +146,8 @@ void SIMIX_process_empty_trash()
 
 namespace simgrid {
 
-namespace simix {
+namespace kernel {
+namespace actor {
 
 ActorImpl::~ActorImpl()
 {
@@ -182,7 +183,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
 
   // retrieve the arguments of the old process
   // FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
-  simgrid::simix::ProcessArg arg;
+  simgrid::kernel::actor::ProcessArg arg;
   arg.name         = name;
   arg.code         = code;
   arg.host         = host;
@@ -264,7 +265,7 @@ void create_maestro(std::function<void()> code)
 {
   smx_actor_t maestro = nullptr;
   /* Create maestro process and initialize it */
-  maestro = new simgrid::simix::ActorImpl();
+  maestro           = new simgrid::kernel::actor::ActorImpl();
   maestro->pid = simix_process_maxpid++;
   maestro->name = "";
   maestro->userdata = nullptr;
@@ -281,13 +282,14 @@ void create_maestro(std::function<void()> code)
   simix_global->maestro_process = maestro;
 }
 
+} // namespace actor
 }
 }
 
 /** @brief Creates and runs the maestro process */
 void SIMIX_maestro_create(void (*code)(void*), void* data)
 {
-  simgrid::simix::create_maestro(std::bind(code, data));
+  simgrid::kernel::actor::create_maestro(std::bind(code, data));
 }
 
 /**
@@ -310,7 +312,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
     return nullptr;
   }
 
-  smx_actor_t process = new simgrid::simix::ActorImpl();
+  smx_actor_t process = new simgrid::kernel::actor::ActorImpl();
 
   xbt_assert(code && host != nullptr, "Invalid parameters");
   /* Process data */
@@ -372,7 +374,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
     return nullptr;
   }
 
-  smx_actor_t process = new simgrid::simix::ActorImpl();
+  smx_actor_t process = new simgrid::kernel::actor::ActorImpl();
   /* Process data */
   process->pid = simix_process_maxpid++;
   process->name = std::string(name);

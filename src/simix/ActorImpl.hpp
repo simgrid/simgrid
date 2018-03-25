@@ -19,7 +19,8 @@ struct s_smx_process_exit_fun_t {
 };
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace actor {
 
 class ProcessArg {
 public:
@@ -127,10 +128,14 @@ public:
 typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
                                                                         &ActorImpl::smx_synchro_hook>>
     SynchroList;
-}
-}
 
-typedef simgrid::simix::ActorImpl* smx_actor_t;
+XBT_PUBLIC void set_maestro(std::function<void()> code);
+XBT_PUBLIC void create_maestro(std::function<void()> code);
+}
+} // namespace kernel
+} // namespace simgrid
+
+typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
 extern "C" {
 

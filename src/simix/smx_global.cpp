@@ -220,7 +220,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
     // Either create a new context with maestro or create
     // a context object with the current context mestro):
-    simgrid::simix::create_maestro(maestro_code);
+    simgrid::kernel::actor::create_maestro(maestro_code);
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);

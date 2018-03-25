@@ -20,6 +20,10 @@ namespace context {
 class Context;
 class ContextFactory;
 }
+namespace actor {
+class ActorImpl;
+using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
+} // namespace actor
 namespace activity {
   class ActivityImpl;
   using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
@@ -63,8 +67,6 @@ class RouteCreationArgs;
 }
 }
 namespace simix {
-  class ActorImpl;
-  using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
   class Host;
 }
 
@@ -94,7 +96,7 @@ typedef simgrid::kernel::resource::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 typedef simgrid::kernel::context::Context* smx_context_t;
-typedef simgrid::simix::ActorImpl* smx_actor_t;
+typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 typedef simgrid::surf::StorageImpl* surf_storage_t;

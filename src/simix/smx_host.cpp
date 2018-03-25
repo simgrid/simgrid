@@ -106,8 +106,8 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::
                                          double kill_time, std::map<std::string, std::string>* properties,
                                          int auto_restart)
 {
-  simgrid::simix::ProcessArg* arg =
-      new simgrid::simix::ProcessArg(name, code, data, host, kill_time, nullptr, auto_restart);
+  simgrid::kernel::actor::ProcessArg* arg =
+      new simgrid::kernel::actor::ProcessArg(name, code, data, host, kill_time, nullptr, auto_restart);
   arg->properties.reset(properties, [](decltype(properties)) {});
 
   if (host->isOff() && watched_hosts.find(host->getCname()) == watched_hosts.end()) {
@@ -121,7 +121,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::
 /** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
-  std::vector<simgrid::simix::ProcessArg*> process_list =
+  std::vector<simgrid::kernel::actor::ProcessArg*> process_list =
       host->extension<simgrid::simix::Host>()->auto_restart_processes;
 
   for (auto const& arg : process_list) {

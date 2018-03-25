@@ -132,9 +132,9 @@ namespace s4u {
 class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
   friend Exec;
   friend Mailbox;
-  friend simgrid::simix::ActorImpl;
+  friend simgrid::kernel::actor::ActorImpl;
   friend simgrid::kernel::activity::MailboxImpl;
-  simix::ActorImpl* pimpl_ = nullptr;
+  kernel::actor::ActorImpl* pimpl_ = nullptr;
 
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
   template<class F, class... Args>
@@ -276,7 +276,7 @@ public:
   static void killAll(int resetPid);
 
   /** Returns the internal implementation of this actor */
-  simix::ActorImpl* getImpl();
+  kernel::actor::ActorImpl* getImpl();
 
   /** Retrieve the property value (or nullptr if not set) */
   std::map<std::string, std::string>* getProperties();

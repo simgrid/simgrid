@@ -28,7 +28,7 @@ public:
   bool locked       = false;
   smx_actor_t owner = nullptr;
   // List of sleeping processes:
-  simgrid::simix::SynchroList sleeping;
+  simgrid::kernel::actor::SynchroList sleeping;
 
   // boost::intrusive_ptr<Mutex> support:
   friend void intrusive_ptr_add_ref(MutexImpl* mutex)

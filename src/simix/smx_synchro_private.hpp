@@ -17,13 +17,13 @@ struct s_smx_cond_t {
 
   std::atomic_int_fast32_t refcount_{1};
   smx_mutex_t mutex   = nullptr;
-  simgrid::simix::SynchroList sleeping; /* list of sleeping processes */
+  simgrid::kernel::actor::SynchroList sleeping; /* list of sleeping processes */
   simgrid::s4u::ConditionVariable cond_;
 };
 
 struct s_smx_sem_t {
   unsigned int value;
-  simgrid::simix::SynchroList sleeping; /* list of sleeping processes */
+  simgrid::kernel::actor::SynchroList sleeping; /* list of sleeping processes */
 };
 
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall);

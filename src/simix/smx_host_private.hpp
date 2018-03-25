@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,11 +31,12 @@ public:
   explicit Host();
   virtual ~Host();
 
-  boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
-                                                                  &ActorImpl::host_process_list_hook>>
+  boost::intrusive::list<kernel::actor::ActorImpl,
+                         boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
+                                                       &kernel::actor::ActorImpl::host_process_list_hook>>
       process_list;
-  std::vector<ProcessArg*> auto_restart_processes;
-  std::vector<ProcessArg*> boot_processes;
+  std::vector<kernel::actor::ProcessArg*> auto_restart_processes;
+  std::vector<kernel::actor::ProcessArg*> boot_processes;
 
   void turnOn();
 };

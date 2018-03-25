@@ -27,8 +27,9 @@ public:
   std::vector<smx_actor_t> process_to_run;
   std::vector<smx_actor_t> process_that_ran;
   std::map<aid_t, smx_actor_t> process_list;
-  boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImpl, boost::intrusive::list_member_hook<>,
-                                                                  &ActorImpl::smx_destroy_list_hook>>
+  boost::intrusive::list<kernel::actor::ActorImpl,
+                         boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
+                                                       &kernel::actor::ActorImpl::smx_destroy_list_hook>>
       process_to_destroy;
 #if SIMGRID_HAVE_MC
   /* MCer cannot read members process_list and process_to_destroy above in the remote process, so we copy the info it
@@ -59,7 +60,7 @@ public:
   std::vector<simgrid::xbt::Task<void()>> tasks;
   std::vector<simgrid::xbt::Task<void()>> tasksTemp;
 
-  std::vector<simgrid::simix::ActorImpl*> daemons;
+  std::vector<simgrid::kernel::actor::ActorImpl*> daemons;
 };
 }
 }
@@ -74,13 +75,13 @@ XBT_PUBLIC void SIMIX_clean();
 /** @brief Ask to the provided ActorImpl to raise the provided exception */
 #define SMX_EXCEPTION(issuer, cat, val, msg)                                                                           \
   if (1) {                                                                                                             \
-    simgrid::simix::ActorImpl* _smx_throw_issuer = (issuer); /* evaluate only once */                                  \
+    simgrid::kernel::actor::ActorImpl* _smx_throw_issuer = (issuer); /* evaluate only once */                          \
     xbt_ex e(XBT_THROW_POINT, msg);                                                                                    \
     e.category                   = cat;                                                                                \
     e.value                      = val;                                                                                \
     _smx_throw_issuer->exception = std::make_exception_ptr(e);                                                         \
   } else                                                                                                               \
-  ((void)0)
+    ((void)0)
 }
 
 #endif
