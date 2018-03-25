@@ -407,19 +407,5 @@ void L07Action::updateBound()
   }
 }
 
-int L07Action::unref()
-{
-  refcount_--;
-  if (not refcount_) {
-    if (state_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*state_set_, *this);
-    if (getVariable())
-      get_model()->getMaxminSystem()->variable_free(getVariable());
-    delete this;
-    return 1;
-  }
-  return 0;
-}
-
 }
 }

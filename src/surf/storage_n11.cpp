@@ -139,21 +139,6 @@ StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, 
   XBT_OUT();
 }
 
-int StorageN11Action::unref()
-{
-  refcount_--;
-  if (not refcount_) {
-    if (state_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*state_set_, *this);
-    if (getVariable())
-      get_model()->getMaxminSystem()->variable_free(getVariable());
-    xbt_free(get_category());
-    delete this;
-    return 1;
-  }
-  return 0;
-}
-
 void StorageN11Action::cancel()
 {
   set_state(Action::State::failed);

@@ -83,9 +83,9 @@ class CpuTiAction: public CpuAction {
   friend class CpuTi;
 public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
+  ~CpuTiAction();
 
   void set_state(simgrid::kernel::resource::Action::State state) override;
-  int unref() override;
   void cancel() override;
   void suspend() override;
   void resume() override;

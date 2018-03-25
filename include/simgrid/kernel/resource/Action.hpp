@@ -133,7 +133,7 @@ public:
   /** @brief Unref that action (and destroy it if refcount reaches 0)
    *  @return true if the action was destroyed and false if someone still has references on it
    */
-  virtual int unref();
+  int unref();
 
   /** @brief Cancel the current Action if running */
   virtual void cancel();
@@ -170,9 +170,9 @@ public:
 
 protected:
   StateSet* state_set_;
-  int refcount_ = 1;
 
 private:
+  int refcount_            = 1;
   double sharing_priority_ = 1.0;             /**< priority (1.0 by default) */
   double max_duration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
   double remains_;           /**< How much of that cost remains to be done in the currently running task */

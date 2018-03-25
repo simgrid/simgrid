@@ -48,7 +48,6 @@ public:
   NetworkNS3Action(kernel::resource::Model* model, double cost, s4u::Host* src, s4u::Host* dst);
 
   bool isSuspended() override;
-  int unref() override;
   void suspend() override;
   void resume() override;
   std::list<LinkImpl*> links() override;

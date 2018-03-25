@@ -113,8 +113,6 @@ public:
 
   void updateBound();
 
-  int unref() override;
-
   std::vector<s4u::Host*>* hostList_ = new std::vector<s4u::Host*>();
   double *computationAmount_;
   double *communicationAmount_;

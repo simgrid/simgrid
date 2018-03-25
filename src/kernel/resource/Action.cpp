@@ -32,6 +32,17 @@ Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed
 
 Action::~Action()
 {
+  if (state_set_hook_.is_linked())
+    simgrid::xbt::intrusive_erase(*state_set_, *this);
+  if (getVariable())
+    get_model()->getMaxminSystem()->variable_free(getVariable());
+  if (get_model()->getUpdateMechanism() == UM_LAZY) {
+    /* remove from heap */
+    heapRemove(get_model()->getActionHeap());
+    if (modified_set_hook_.is_linked())
+      simgrid::xbt::intrusive_erase(*get_model()->getModifiedSet(), *this);
+  }
+
   xbt_free(category_);
 }
 
@@ -137,16 +148,6 @@ int Action::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (state_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*state_set_, *this);
-    if (getVariable())
-      get_model()->getMaxminSystem()->variable_free(getVariable());
-    if (get_model()->getUpdateMechanism() == UM_LAZY) {
-      /* remove from heap */
-      heapRemove(get_model()->getActionHeap());
-      if (modified_set_hook_.is_linked())
-        simgrid::xbt::intrusive_erase(*get_model()->getModifiedSet(), *this);
-    }
     delete this;
     return 1;
   }

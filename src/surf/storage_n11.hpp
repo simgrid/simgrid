@@ -55,7 +55,6 @@ public:
   StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
                    e_surf_action_storage_type_t type);
   void suspend() override;
-  int unref() override;
   void cancel() override;
   void resume() override;
   bool isSuspended() override;

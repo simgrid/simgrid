@@ -625,29 +625,20 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
 {
   cpu_->modified(true);
 }
+CpuTiAction::~CpuTiAction()
+{
+  /* remove from action_set */
+  if (action_ti_hook.is_linked())
+    simgrid::xbt::intrusive_erase(cpu_->actionSet_, *this);
+  /* remove from heap */
+  heapRemove(get_model()->getActionHeap());
+  cpu_->modified(true);
+}
 
 void CpuTiAction::set_state(Action::State state)
 {
   CpuAction::set_state(state);
   cpu_->modified(true);
-}
-
-int CpuTiAction::unref()
-{
-  refcount_--;
-  if (not refcount_) {
-    if (state_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*get_state_set(), *this);
-    /* remove from action_set */
-    if (action_ti_hook.is_linked())
-      simgrid::xbt::intrusive_erase(cpu_->actionSet_, *this);
-    /* remove from heap */
-    heapRemove(get_model()->getActionHeap());
-    cpu_->modified(true);
-    delete this;
-    return 1;
-  }
-  return 0;
 }
 
 void CpuTiAction::cancel()

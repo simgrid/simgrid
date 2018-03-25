@@ -350,19 +350,6 @@ bool NetworkNS3Action::isSuspended()
   return false;
 }
 
-int NetworkNS3Action::unref()
-{
-  refcount_--;
-  if (not refcount_) {
-    if (state_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*state_set_, *this);
-    XBT_DEBUG ("Removing action %p", this);
-    delete this;
-    return 1;
-  }
-  return 0;
-}
-
 }
 }
 
