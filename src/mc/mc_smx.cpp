@@ -47,7 +47,7 @@ static void MC_process_refresh_simix_actor_dynar(simgrid::mc::RemoteClient* proc
   for (unsigned int i = 0; i < dynar.used; ++i) {
 
     simgrid::mc::ActorInformation info;
-    info.address  = simgrid::mc::RemotePtr<simgrid::simix::ActorImpl>(data[i]);
+    info.address  = simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl>(data[i]);
     info.hostname = nullptr;
     process->read_bytes(&info.copy, sizeof(info.copy), remote(data[i]));
     target.push_back(std::move(info));

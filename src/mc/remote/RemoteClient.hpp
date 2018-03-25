@@ -44,8 +44,8 @@ namespace mc {
 class ActorInformation {
 public:
   /** MCed address of the process */
-  RemotePtr<simgrid::simix::ActorImpl> address{nullptr};
-  Remote<simgrid::simix::ActorImpl> copy;
+  RemotePtr<simgrid::kernel::actor::ActorImpl> address{nullptr};
+  Remote<simgrid::kernel::actor::ActorImpl> copy;
 
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
   const char* hostname = nullptr;
@@ -190,7 +190,7 @@ public:
   std::vector<simgrid::mc::ActorInformation>& dead_actors();
 
   /** Get a local description of a remote SIMIX actor */
-  simgrid::mc::ActorInformation* resolveActorInfo(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> actor)
+  simgrid::mc::ActorInformation* resolveActorInfo(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> actor)
   {
     xbt_assert(mc_model_checker != nullptr);
     if (not actor)
@@ -206,7 +206,7 @@ public:
   }
 
   /** Get a local copy of the SIMIX actor structure */
-  simgrid::simix::ActorImpl* resolveActor(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
+  simgrid::kernel::actor::ActorImpl* resolveActor(simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl> process)
   {
     simgrid::mc::ActorInformation* actor_info = this->resolveActorInfo(process);
     if (actor_info)
