@@ -817,12 +817,12 @@ void System::on_disabled_var(Constraint* cnstr)
   if (not numelem)
     return;
 
-  lmm_element_t elem = &cnstr->disabled_element_set.front();
+  Element* elem = &cnstr->disabled_element_set.front();
 
   // Cannot use foreach loop, because System::enable_var() will modify disabled_element_set.. within the loop
   while (numelem-- && elem) {
 
-    lmm_element_t nextelem;
+    Element* nextelem;
     if (elem->disabled_element_set_hook.is_linked()) {
       auto iter = std::next(cnstr->disabled_element_set.iterator_to(*elem));
       nextelem  = iter != std::end(cnstr->disabled_element_set) ? &*iter : nullptr;
