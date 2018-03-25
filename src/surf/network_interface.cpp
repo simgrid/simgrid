@@ -186,9 +186,9 @@ namespace simgrid {
      * Action *
      **********/
 
-    void NetworkAction::setState(Action::State state)
+    void NetworkAction::set_state(Action::State state)
     {
-      Action::setState(state);
+      Action::set_state(state);
       s4u::Link::onCommunicationStateChange(this);
     }
 

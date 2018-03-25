@@ -255,7 +255,7 @@ smx_activity_t ActorImpl::sleep(double duration)
   simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
   synchro->host                                 = host;
   synchro->surf_sleep                           = host->pimpl_cpu->sleep(duration);
-  synchro->surf_sleep->setData(synchro);
+  synchro->surf_sleep->set_data(synchro);
   XBT_DEBUG("Create sleep synchronization %p", synchro);
 
   return synchro;

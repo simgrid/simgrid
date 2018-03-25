@@ -143,7 +143,7 @@ int StorageN11Action::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (stateSetHook_.is_linked())
+    if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
@@ -156,7 +156,7 @@ int StorageN11Action::unref()
 
 void StorageN11Action::cancel()
 {
-  setState(Action::State::failed);
+  set_state(Action::State::failed);
 }
 
 void StorageN11Action::suspend()

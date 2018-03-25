@@ -323,7 +323,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   } else { /* we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host
               fails */
     simgrid::kernel::resource::Action* sleep = simcall->issuer->host->pimpl_cpu->sleep(timeout);
-    sleep->setData(synchro.get());
+    sleep->set_data(synchro.get());
 
     simgrid::kernel::activity::CommImplPtr comm =
         boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
@@ -461,14 +461,14 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
     simgrid::s4u::Host* receiver = comm->dst_proc->host;
 
     comm->surfAction_ = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
-    comm->surfAction_->setData(comm.get());
+    comm->surfAction_->set_data(comm.get());
     comm->state = SIMIX_RUNNING;
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", comm.get(), sender->getCname(),
               receiver->getCname(), comm->surfAction_);
 
     /* If a link is failed, detect it immediately */
-    if (comm->surfAction_->getState() == simgrid::kernel::resource::Action::State::failed) {
+    if (comm->surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->getCname(),
                 receiver->getCname());
       comm->state = SIMIX_LINK_FAILURE;

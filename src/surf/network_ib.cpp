@@ -34,7 +34,7 @@ static void IB_action_state_changed_callback(simgrid::surf::NetworkAction* actio
   using simgrid::surf::NetworkIBModel;
   using simgrid::surf::IBNode;
 
-  if (action->getState() != simgrid::kernel::resource::Action::State::done)
+  if (action->get_state() != simgrid::kernel::resource::Action::State::done)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
   XBT_DEBUG("IB callback - action %p finished", action);
@@ -164,7 +164,7 @@ void NetworkIBModel::computeIBfactors(IBNode* root)
 
     double penalty = std::max(my_penalty_in, max_penalty_out);
 
-    double rate_before_update = (*it)->action->getBound();
+    double rate_before_update = (*it)->action->get_bound();
     // save initial rate of the action
     if ((*it)->init_rate == -1)
       (*it)->init_rate = rate_before_update;
@@ -173,7 +173,7 @@ void NetworkIBModel::computeIBfactors(IBNode* root)
 
     if (not double_equals(penalized_bw, rate_before_update, sg_surf_precision)) {
       XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,
-                (*it)->destination->id, (*it)->action, penalized_bw, (*it)->action->getBound(), (*it)->init_rate);
+                (*it)->destination->id, (*it)->action, penalized_bw, (*it)->action->get_bound(), (*it)->init_rate);
       maxmin_system_->update_variable_bound((*it)->action->getVariable(), penalized_bw);
     } else {
       XBT_DEBUG("%d->%d action %p penalty not updated : bw %f, initial rate %f", root->id, (*it)->destination->id,

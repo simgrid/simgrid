@@ -175,7 +175,7 @@ public:
                 StorageImpl* storage, e_surf_action_storage_type_t type)
       : Action(model, cost, failed, var), type_(type), storage_(storage){};
 
-  void setState(simgrid::kernel::resource::Action::State state) override;
+  void set_state(simgrid::kernel::resource::Action::State state) override;
 
   e_surf_action_storage_type_t type_;
   StorageImpl* storage_;

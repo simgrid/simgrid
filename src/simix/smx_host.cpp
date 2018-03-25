@@ -147,11 +147,11 @@ SIMIX_execution_start(const char* name, double flops_amount, double priority, do
   if (not MC_is_active() && not MC_record_replay_is_active()) {
 
     exec->surfAction_ = host->pimpl_cpu->execution_start(flops_amount);
-    exec->surfAction_->setData(exec.get());
+    exec->surfAction_->set_data(exec.get());
     exec->surfAction_->setSharingWeight(priority);
 
     if (bound > 0)
-      static_cast<simgrid::surf::CpuAction*>(exec->surfAction_)->setBound(bound);
+      static_cast<simgrid::surf::CpuAction*>(exec->surfAction_)->set_bound(bound);
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name.c_str());
@@ -182,10 +182,10 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
     sg_host_t* host_list_cpy = new sg_host_t[host_nb];
     std::copy_n(host_list, host_nb, host_list_cpy);
     exec->surfAction_ = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
-    exec->surfAction_->setData(exec.get());
+    exec->surfAction_->set_data(exec.get());
     if (timeout > 0) {
       exec->timeoutDetector = host_list[0]->pimpl_cpu->sleep(timeout);
-      exec->timeoutDetector->setData(exec.get());
+      exec->timeoutDetector->set_data(exec.get());
     }
   }
   XBT_DEBUG("Create parallel execute synchro %p", exec.get());

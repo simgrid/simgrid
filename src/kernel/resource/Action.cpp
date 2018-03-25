@@ -20,7 +20,7 @@ Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed
 }
 
 Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
-    : remains_(cost), start_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
+    : remains_(cost), start_time_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
 {
   if (failed)
     state_set_ = getModel()->getFailedActionSet();
@@ -38,10 +38,10 @@ Action::~Action()
 void Action::finish(Action::State state)
 {
   finish_time_ = surf_get_clock();
-  setState(state);
+  set_state(state);
 }
 
-Action::State Action::getState() const
+Action::State Action::get_state() const
 {
   if (state_set_ == model_->getReadyActionSet())
     return Action::State::ready;
@@ -54,7 +54,7 @@ Action::State Action::getState() const
   return Action::State::not_in_the_system;
 }
 
-void Action::setState(Action::State state)
+void Action::set_state(Action::State state)
 {
   simgrid::xbt::intrusive_erase(*state_set_, *this);
   switch (state) {
@@ -78,12 +78,12 @@ void Action::setState(Action::State state)
     state_set_->push_back(*this);
 }
 
-double Action::getBound() const
+double Action::get_bound() const
 {
   return variable_ ? variable_->get_bound() : 0;
 }
 
-void Action::setBound(double bound)
+void Action::set_bound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
   if (variable_)
@@ -124,9 +124,9 @@ void Action::setSharingWeight(double weight)
 
 void Action::cancel()
 {
-  setState(Action::State::failed);
+  set_state(Action::State::failed);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
-    if (modifiedSetHook_.is_linked())
+    if (modified_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
     heapRemove(getModel()->getActionHeap());
   }
@@ -136,14 +136,14 @@ int Action::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (stateSetHook_.is_linked())
+    if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
       /* remove from heap */
       heapRemove(getModel()->getActionHeap());
-      if (modifiedSetHook_.is_linked())
+      if (modified_set_hook_.is_linked())
         simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
     }
     delete this;

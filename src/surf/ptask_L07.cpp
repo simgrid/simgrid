@@ -74,7 +74,7 @@ double HostL07Model::nextOccuringEvent(double now)
     const L07Action& net_action = static_cast<const L07Action&>(action);
     if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min)) {
       min = net_action.latency_;
-      XBT_DEBUG("Updating min with %p (start %f): %f", &net_action, net_action.getStartTime(), min);
+      XBT_DEBUG("Updating min with %p (start %f): %f", &net_action, net_action.get_start_time(), min);
     }
   }
   XBT_DEBUG("min value: %f", min);
@@ -411,7 +411,7 @@ int L07Action::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (stateSetHook_.is_linked())
+    if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
       getModel()->getMaxminSystem()->variable_free(getVariable());

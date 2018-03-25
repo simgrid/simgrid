@@ -94,10 +94,10 @@ void StorageImpl::turnOff()
 /**********
  * Action *
  **********/
-void StorageAction::setState(Action::State state)
+void StorageAction::set_state(Action::State state)
 {
-  Action::State old = getState();
-  Action::setState(state);
+  Action::State old = get_state();
+  Action::set_state(state);
   storageActionStateChangedCallbacks(this, old, state);
 }
 }

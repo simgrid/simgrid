@@ -31,7 +31,7 @@ Action* Model::actionHeapPop()
   return action;
 }
 
-ActionLmmListPtr Model::getModifiedSet() const
+Action::ModifiedSet* Model::getModifiedSet() const
 {
   return maxmin_system_->modified_set_;
 }
@@ -81,16 +81,16 @@ double Model::nextOccuringEventLazy(double now)
     }
 
     if ((action->getMaxDuration() > NO_MAX_DURATION) &&
-        (min <= -1 || action->getStartTime() + action->getMaxDuration() < min)) {
+        (min <= -1 || action->get_start_time() + action->getMaxDuration() < min)) {
       // when the task will complete anyway because of the deadline if any
-      min          = action->getStartTime() + action->getMaxDuration();
+      min          = action->get_start_time() + action->getMaxDuration();
       max_dur_flag = true;
     }
 
     XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->getVariable()->id_int);
 
     XBT_DEBUG("Action(%p) Start %f. May finish at %f (got a share of %f). Max_duration %f", action,
-              action->getStartTime(), min, share, action->getMaxDuration());
+              action->get_start_time(), min, share, action->getMaxDuration());
 
     if (min > -1) {
       action->heapUpdate(action_heap_, min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);

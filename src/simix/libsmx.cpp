@@ -156,7 +156,7 @@ void simcall_execution_set_bound(smx_activity_t execution, double bound)
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
     if (exec->surfAction_)
-      exec->surfAction_->setBound(bound);
+      exec->surfAction_->set_bound(bound);
   });
 }
 

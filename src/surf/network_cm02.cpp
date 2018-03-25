@@ -155,7 +155,7 @@ NetworkCm02Model::NetworkCm02Model()
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY)
-    maxmin_system_->modified_set_ = new kernel::resource::ActionLmmList();
+    maxmin_system_->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
 NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(kernel::lmm::System* self)) : NetworkCm02Model()
@@ -387,10 +387,10 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
       while ((var = constraint()->get_variable(&elem))) {
         kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
-        if (action->getState() == kernel::resource::Action::State::running ||
-            action->getState() == kernel::resource::Action::State::ready) {
+        if (action->get_state() == kernel::resource::Action::State::running ||
+            action->get_state() == kernel::resource::Action::State::ready) {
           action->setFinishTime(now);
-          action->setState(kernel::resource::Action::State::failed);
+          action->set_state(kernel::resource::Action::State::failed);
         }
       }
     }

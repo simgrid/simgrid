@@ -287,7 +287,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 
   if (new_state == SD_DONE || new_state == SD_FAILED){
     sd_global->completed_tasks->insert(task);
-    task->start_time = task->surf_action->getStartTime();
+    task->start_time = task->surf_action->get_start_time();
     if (new_state == SD_DONE){
       task->finish_time = task->surf_action->getFinishTime();
 #if SIMGRID_HAVE_JEDULE
@@ -810,7 +810,7 @@ void SD_task_run(SD_task_t task)
 
   task->surf_action = surf_host_model->executeParallelTask(host_nb, hosts, flops_amount, bytes_amount, task->rate);
 
-  task->surf_action->setData(task);
+  task->surf_action->set_data(task);
 
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
@@ -830,7 +830,7 @@ void SD_task_run(SD_task_t task)
 double SD_task_get_start_time(SD_task_t task)
 {
   if (task->surf_action)
-    return task->surf_action->getStartTime();
+    return task->surf_action->get_start_time();
   else
     return task->start_time;
 }

@@ -35,19 +35,19 @@ public:
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  ActionList* getReadyActionSet() const { return ready_action_set_; }
+  Action::StateSet* getReadyActionSet() const { return ready_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
-  ActionList* getRunningActionSet() const { return running_action_set_; }
+  Action::StateSet* getRunningActionSet() const { return running_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  ActionList* getFailedActionSet() const { return failed_action_set_; }
+  Action::StateSet* getFailedActionSet() const { return failed_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *done* state */
-  ActionList* getDoneActionSet() const { return done_action_set_; }
+  Action::StateSet* getDoneActionSet() const { return done_action_set_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
-  ActionLmmListPtr getModifiedSet() const;
+  Action::ModifiedSet* getModifiedSet() const;
 
   /** @brief Get the maxmin system of the current Model */
   lmm::System* getMaxminSystem() const { return maxmin_system_; }
@@ -98,10 +98,10 @@ protected:
 
 private:
   e_UM_t update_mechanism_        = UM_UNDEFINED;
-  ActionList* ready_action_set_   = new ActionList(); /**< Actions in state SURF_ACTION_READY */
-  ActionList* running_action_set_ = new ActionList(); /**< Actions in state SURF_ACTION_RUNNING */
-  ActionList* failed_action_set_  = new ActionList(); /**< Actions in state SURF_ACTION_FAILED */
-  ActionList* done_action_set_    = new ActionList(); /**< Actions in state SURF_ACTION_DONE */
+  Action::StateSet* ready_action_set_   = new Action::StateSet(); /**< Actions in state SURF_ACTION_READY */
+  Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Actions in state SURF_ACTION_RUNNING */
+  Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Actions in state SURF_ACTION_FAILED */
+  Action::StateSet* done_action_set_    = new Action::StateSet(); /**< Actions in state SURF_ACTION_DONE */
   heap_type action_heap_;
 };
 

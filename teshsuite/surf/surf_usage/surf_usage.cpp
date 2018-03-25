@@ -48,9 +48,9 @@ int main(int argc, char **argv)
   simgrid::kernel::resource::Action* actionB = hostB->pimpl_cpu->execution_start(1000.0);
   simgrid::kernel::resource::Action* actionC = hostB->pimpl_cpu->sleep(7.32);
 
-  simgrid::kernel::resource::Action::State stateActionA = actionA->getState();
-  simgrid::kernel::resource::Action::State stateActionB = actionB->getState();
-  simgrid::kernel::resource::Action::State stateActionC = actionC->getState();
+  simgrid::kernel::resource::Action::State stateActionA = actionA->get_state();
+  simgrid::kernel::resource::Action::State stateActionB = actionB->get_state();
+  simgrid::kernel::resource::Action::State stateActionC = actionC->get_state();
 
   /* And just look at the state of these tasks */
   XBT_INFO("actionA state: %s", string_action(stateActionA));
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     XBT_INFO("Next Event : %g", surf_get_clock());
     XBT_DEBUG("\t CPU actions");
 
-    simgrid::kernel::resource::ActionList* action_list = surf_cpu_model_pm->getFailedActionSet();
+    simgrid::kernel::resource::Action::StateSet* action_list = surf_cpu_model_pm->getFailedActionSet();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Failed action");

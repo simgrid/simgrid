@@ -223,7 +223,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
     action->setRemains(action->getCost() - sgFlow->sentBytes_);
 
-    if (TRACE_is_enabled() && action->getState() == kernel::resource::Action::State::running) {
+    if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::running) {
       double data_delta_sent = sgFlow->sentBytes_ - action->lastSent_;
 
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
@@ -354,7 +354,7 @@ int NetworkNS3Action::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (stateSetHook_.is_linked())
+    if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*state_set_, *this);
     XBT_DEBUG ("Removing action %p", this);
     delete this;

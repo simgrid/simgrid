@@ -263,10 +263,10 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());
 
   /* keep the bound value of the cpu action of the VM. */
-  double old_bound = action_->getBound();
+  double old_bound = action_->get_bound();
   if (old_bound > 0) {
     XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
-    new_cpu_action->setBound(old_bound);
+    new_cpu_action->set_bound(old_bound);
   }
 
   XBT_ATTRIB_UNUSED int ret = action_->unref();
@@ -279,7 +279,7 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
 
 void VirtualMachineImpl::setBound(double bound)
 {
-  action_->setBound(bound);
+  action_->set_bound(bound);
 }
 
 }

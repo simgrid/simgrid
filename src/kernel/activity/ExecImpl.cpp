@@ -66,7 +66,7 @@ double simgrid::kernel::activity::ExecImpl::remainingRatio()
 void simgrid::kernel::activity::ExecImpl::setBound(double bound)
 {
   if (surfAction_)
-    surfAction_->setBound(bound);
+    surfAction_->set_bound(bound);
 }
 
 void simgrid::kernel::activity::ExecImpl::post()
@@ -75,10 +75,10 @@ void simgrid::kernel::activity::ExecImpl::post()
                                  /* If the host running the synchro failed, notice it. This way, the asking
                                   * process can be killed if it runs on that host itself */
     state = SIMIX_FAILED;
-  } else if (surfAction_->getState() == simgrid::kernel::resource::Action::State::failed) {
+  } else if (surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state = SIMIX_CANCELED;
-  } else if (timeoutDetector && timeoutDetector->getState() == simgrid::kernel::resource::Action::State::done) {
+  } else if (timeoutDetector && timeoutDetector->get_state() == simgrid::kernel::resource::Action::State::done) {
     state = SIMIX_TIMEOUT;
   } else {
     state = SIMIX_DONE;
@@ -107,13 +107,13 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
     simgrid::kernel::resource::Action* oldAction = this->surfAction_;
     simgrid::kernel::resource::Action* newAction = to->pimpl_cpu->execution_start(oldAction->getCost());
     newAction->setRemains(oldAction->getRemains());
-    newAction->setData(this);
+    newAction->set_data(this);
     newAction->setSharingWeight(oldAction->getPriority());
 
     // FIXME: the user-defined bound seem to not be kept by LMM, that seem to overwrite it for the multi-core modeling.
     // I hope that the user did not provide any.
 
-    oldAction->setData(nullptr);
+    oldAction->set_data(nullptr);
     oldAction->cancel();
     oldAction->unref();
     this->surfAction_ = newAction;

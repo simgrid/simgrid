@@ -439,11 +439,11 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
       /* put all action running on cpu to failed */
       for (CpuTiAction& action : actionSet_) {
-        if (action.getState() == kernel::resource::Action::State::running ||
-            action.getState() == kernel::resource::Action::State::ready ||
-            action.getState() == kernel::resource::Action::State::not_in_the_system) {
+        if (action.get_state() == kernel::resource::Action::State::running ||
+            action.get_state() == kernel::resource::Action::State::ready ||
+            action.get_state() == kernel::resource::Action::State::not_in_the_system) {
           action.setFinishTime(date);
-          action.setState(kernel::resource::Action::State::failed);
+          action.set_state(kernel::resource::Action::State::failed);
           action.heapRemove(model()->getActionHeap());
         }
       }
@@ -496,14 +496,14 @@ void CpuTi::updateActionsFinishTime(double now)
       action.setFinishTime(speedIntegratedTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
       if (action.getMaxDuration() > NO_MAX_DURATION &&
-          action.getStartTime() + action.getMaxDuration() < action.getFinishTime())
-        min_finish = action.getStartTime() + action.getMaxDuration();
+          action.get_start_time() + action.getMaxDuration() < action.getFinishTime())
+        min_finish = action.get_start_time() + action.getMaxDuration();
       else
         min_finish = action.getFinishTime();
     } else {
       /* put the max duration time on heap */
       if (action.getMaxDuration() > NO_MAX_DURATION)
-        min_finish = action.getStartTime() + action.getMaxDuration();
+        min_finish = action.get_start_time() + action.getMaxDuration();
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
@@ -512,7 +512,7 @@ void CpuTi::updateActionsFinishTime(double now)
       action.heapRemove(model()->getActionHeap());
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
-              &action, action.getStartTime(), action.getFinishTime(), action.getMaxDuration());
+              &action, action.get_start_time(), action.getFinishTime(), action.getMaxDuration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -554,7 +554,7 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* action don't need update */
-    if (action.getStartTime() >= now)
+    if (action.get_start_time() >= now)
       continue;
 
     /* skip action that are finishing now */
@@ -626,9 +626,9 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
   cpu_->modified(true);
 }
 
-void CpuTiAction::setState(Action::State state)
+void CpuTiAction::set_state(Action::State state)
 {
-  CpuAction::setState(state);
+  CpuAction::set_state(state);
   cpu_->modified(true);
 }
 
@@ -636,7 +636,7 @@ int CpuTiAction::unref()
 {
   refcount_--;
   if (not refcount_) {
-    if (stateSetHook_.is_linked())
+    if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*getStateSet(), *this);
     /* remove from action_set */
     if (action_ti_hook.is_linked())
@@ -652,7 +652,7 @@ int CpuTiAction::unref()
 
 void CpuTiAction::cancel()
 {
-  this->setState(Action::State::failed);
+  this->set_state(Action::State::failed);
   heapRemove(getModel()->getActionHeap());
   cpu_->modified(true);
 }
@@ -687,8 +687,8 @@ void CpuTiAction::setMaxDuration(double duration)
   Action::setMaxDuration(duration);
 
   if (duration >= 0)
-    min_finish = (getStartTime() + getMaxDuration()) < getFinishTime() ?
-                 (getStartTime() + getMaxDuration()) : getFinishTime();
+    min_finish = (get_start_time() + getMaxDuration()) < getFinishTime() ? (get_start_time() + getMaxDuration())
+                                                                         : getFinishTime();
   else
     min_finish = getFinishTime();
 

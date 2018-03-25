@@ -32,7 +32,7 @@ smx_activity_t SIMIX_storage_read(surf_storage_t st, sg_size_t size)
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->surf_io                           = st->read(size);
 
-  synchro->surf_io->setData(synchro);
+  synchro->surf_io->set_data(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -49,7 +49,7 @@ smx_activity_t SIMIX_storage_write(surf_storage_t st, sg_size_t size)
 {
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
   synchro->surf_io                           = st->write(size);
-  synchro->surf_io->setData(synchro);
+  synchro->surf_io->set_data(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;

@@ -213,7 +213,7 @@ public:
   NetworkAction(simgrid::kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
       : simgrid::kernel::resource::Action(model, cost, failed, var){};
 
-  void setState(simgrid::kernel::resource::Action::State state) override;
+  void set_state(simgrid::kernel::resource::Action::State state) override;
   virtual std::list<LinkImpl*> links();
 
   double latency_    = {};

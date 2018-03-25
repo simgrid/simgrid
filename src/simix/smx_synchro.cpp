@@ -30,7 +30,7 @@ smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   simgrid::kernel::activity::RawImplPtr sync =
       simgrid::kernel::activity::RawImplPtr(new simgrid::kernel::activity::RawImpl());
   sync->sleep                          = smx_host->pimpl_cpu->sleep(timeout);
-  sync->sleep->setData(sync.get());
+  sync->sleep->set_data(sync.get());
   XBT_OUT();
   return sync;
 }

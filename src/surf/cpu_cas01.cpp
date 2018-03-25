@@ -54,7 +54,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   maxmin_system_ = new simgrid::kernel::lmm::System(select);
 
   if (getUpdateMechanism() == UM_LAZY)
-    maxmin_system_->modified_set_ = new kernel::resource::ActionLmmList();
+    maxmin_system_->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
 CpuCas01Model::~CpuCas01Model()
@@ -136,11 +136,11 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
       while ((var = cnst->get_variable(&elem))) {
         kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
-        if (action->getState() == kernel::resource::Action::State::running ||
-            action->getState() == kernel::resource::Action::State::ready ||
-            action->getState() == kernel::resource::Action::State::not_in_the_system) {
+        if (action->get_state() == kernel::resource::Action::State::running ||
+            action->get_state() == kernel::resource::Action::State::ready ||
+            action->get_state() == kernel::resource::Action::State::not_in_the_system) {
           action->setFinishTime(date);
-          action->setState(kernel::resource::Action::State::failed);
+          action->set_state(kernel::resource::Action::State::failed);
         }
       }
     }
@@ -176,7 +176,7 @@ CpuAction *CpuCas01::sleep(double duration)
   if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
-    action->state_set_ = &static_cast<CpuCas01Model*>(model())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+    action->state_set_ = &static_cast<CpuCas01Model*>(model())->cpuRunningActionSetThatDoesNotNeedBeingChecked_;
     action->getStateSet()->push_back(*action);
   }
 

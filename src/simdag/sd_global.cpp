@@ -58,8 +58,8 @@ std::set<SD_task_t>* simulate(double how_long){
     /* let's see which tasks are done */
     for (auto const& model : *all_existing_models) {
       simgrid::kernel::resource::Action* action = surf_model_extract_done_action_set(model);
-      while (action != nullptr && action->getData() != nullptr) {
-        SD_task_t task = static_cast<SD_task_t>(action->getData());
+      while (action != nullptr && action->get_data() != nullptr) {
+        SD_task_t task = static_cast<SD_task_t>(action->get_data());
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
         SD_task_set_state(task, SD_DONE);
 
@@ -109,7 +109,7 @@ std::set<SD_task_t>* simulate(double how_long){
       /* let's see which tasks have just failed */
       action = surf_model_extract_failed_action_set(model);
       while (action != nullptr) {
-        SD_task_t task = static_cast<SD_task_t>(action->getData());
+        SD_task_t task = static_cast<SD_task_t>(action->get_data());
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         SD_task_set_state(task, SD_FAILED);
         sd_global->return_set->insert(task);

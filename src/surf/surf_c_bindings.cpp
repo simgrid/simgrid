@@ -150,7 +150,7 @@ double surf_solve(double max_date)
 /*********
  * MODEL *
  *********/
-static simgrid::kernel::resource::Action* ActionListExtract(simgrid::kernel::resource::ActionList* list)
+static simgrid::kernel::resource::Action* ActionListExtract(simgrid::kernel::resource::Action::StateSet* list)
 {
   if (list->empty())
     return nullptr;
@@ -176,5 +176,5 @@ int surf_model_running_action_set_size(simgrid::kernel::resource::Model* model)
 
 void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* action, double bound)
 {
-  static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
+  static_cast<simgrid::surf::CpuAction*>(action)->set_bound(bound);
 }

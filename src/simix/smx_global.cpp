@@ -337,15 +337,15 @@ static void SIMIX_wake_processes()
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
-      SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->getData()));
+      SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->get_data()));
     }
     XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
     while ((action = surf_model_extract_done_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
-      if (action->getData() == nullptr)
+      if (action->get_data() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);
       else
-        SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->getData()));
+        SIMIX_simcall_exit(static_cast<simgrid::kernel::activity::ActivityImpl*>(action->get_data()));
     }
   }
 }

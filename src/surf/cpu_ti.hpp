@@ -84,7 +84,7 @@ class CpuTiAction: public CpuAction {
 public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
 
-  void setState(simgrid::kernel::resource::Action::State state) override;
+  void set_state(simgrid::kernel::resource::Action::State state) override;
   int unref() override;
   void cancel() override;
   void suspend() override;
@@ -151,7 +151,7 @@ public:
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 
-  kernel::resource::ActionList runningActionSetThatDoesNotNeedBeingChecked_;
+  kernel::resource::Action::StateSet runningActionSetThatDoesNotNeedBeingChecked_;
   CpuTiList modifiedCpu_;
 };
 
