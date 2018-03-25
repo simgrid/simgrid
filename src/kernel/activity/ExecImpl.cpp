@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,14 +34,14 @@ simgrid::kernel::activity::ExecImpl::~ExecImpl()
 
 void simgrid::kernel::activity::ExecImpl::suspend()
 {
-  XBT_VERB("This exec is suspended (remain: %f)", surfAction_->getRemains());
+  XBT_VERB("This exec is suspended (remain: %f)", surfAction_->get_remains());
   if (surfAction_)
     surfAction_->suspend();
 }
 
 void simgrid::kernel::activity::ExecImpl::resume()
 {
-  XBT_VERB("This exec is resumed (remain: %f)", surfAction_->getRemains());
+  XBT_VERB("This exec is resumed (remain: %f)", surfAction_->get_remains());
   if (surfAction_)
     surfAction_->resume();
 }
@@ -52,15 +52,15 @@ double simgrid::kernel::activity::ExecImpl::remains()
                                "We would need to return a vector instead of a scalar. "
                                "Did you mean remainingRatio() instead?");
 
-  return surfAction_ ? surfAction_->getRemains() : 0;
+  return surfAction_ ? surfAction_->get_remains() : 0;
 }
 
 double simgrid::kernel::activity::ExecImpl::remainingRatio()
 {
   if (host_ == nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::remains())
-    return surfAction_->getRemains();
+    return surfAction_->get_remains();
   else // Actually compute the ratio for sequential tasks
-    return surfAction_->getRemains() / surfAction_->getCost();
+    return surfAction_->get_remains() / surfAction_->get_cost();
 }
 
 void simgrid::kernel::activity::ExecImpl::setBound(double bound)
@@ -105,10 +105,10 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
 
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     simgrid::kernel::resource::Action* oldAction = this->surfAction_;
-    simgrid::kernel::resource::Action* newAction = to->pimpl_cpu->execution_start(oldAction->getCost());
-    newAction->setRemains(oldAction->getRemains());
+    simgrid::kernel::resource::Action* newAction = to->pimpl_cpu->execution_start(oldAction->get_cost());
+    newAction->set_remains(oldAction->get_remains());
     newAction->set_data(this);
-    newAction->setSharingWeight(oldAction->getPriority());
+    newAction->set_priority(oldAction->get_priority());
 
     // FIXME: the user-defined bound seem to not be kept by LMM, that seem to overwrite it for the multi-core modeling.
     // I hope that the user did not provide any.

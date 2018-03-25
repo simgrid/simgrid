@@ -89,9 +89,9 @@ public:
   void cancel() override;
   void suspend() override;
   void resume() override;
-  void setMaxDuration(double duration) override;
-  void setSharingWeight(double priority) override;
-  double getRemains() override;
+  void set_max_duration(double duration) override;
+  void set_priority(double priority) override;
+  double get_remains() override;
 
   CpuTi *cpu_;
 

@@ -182,7 +182,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
         kernel::lmm::Constraint* constraint = action->getVariable()->get_constraint(i);
         NetworkCm02Link* link       = static_cast<NetworkCm02Link*>(constraint->get_id());
         double value = action->getVariable()->get_value() * action->getVariable()->get_constraint_weight(i);
-        TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), value, action->getLastUpdate(),
+        TRACE_surf_link_set_utilization(link->getCname(), action->get_category(), value, action->getLastUpdate(),
                                         now - action->getLastUpdate());
       }
     }
@@ -200,7 +200,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
-      action->setRemains(0);
+      action->set_remains(0);
       action->finish(kernel::resource::Action::State::done);
       action->heapRemove(getActionHeap());
     }
@@ -232,7 +232,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
         kernel::lmm::Constraint* constraint = action.getVariable()->get_constraint(i);
         NetworkCm02Link* link = static_cast<NetworkCm02Link*>(constraint->get_id());
         TRACE_surf_link_set_utilization(
-            link->getCname(), action.getCategory(),
+            link->getCname(), action.get_category(),
             (action.getVariable()->get_value() * action.getVariable()->get_constraint_weight(i)),
             action.getLastUpdate(), now - action.getLastUpdate());
       }
@@ -241,15 +241,15 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
       /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
        * vivaldi. In such case, just make sure that the action completes immediately.
        */
-      action.updateRemains(action.getRemains());
+      action.update_remains(action.get_remains());
     }
-    action.updateRemains(action.getVariable()->get_value() * delta);
+    action.update_remains(action.getVariable()->get_value() * delta);
 
-    if (action.getMaxDuration() > NO_MAX_DURATION)
-      action.updateMaxDuration(delta);
+    if (action.get_max_duration() > NO_MAX_DURATION)
+      action.update_max_duration(delta);
 
-    if (((action.getRemains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
-        ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+    if (((action.get_remains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+        ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     }
   }
@@ -389,7 +389,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
 
         if (action->get_state() == kernel::resource::Action::State::running ||
             action->get_state() == kernel::resource::Action::State::ready) {
-          action->setFinishTime(now);
+          action->set_finish_time(now);
           action->set_state(kernel::resource::Action::State::failed);
         }
       }
@@ -468,24 +468,25 @@ void NetworkCm02Action::updateRemainingLazy(double now)
     return;
 
   double delta        = now - getLastUpdate();
-  double max_duration = getMaxDuration();
+  double max_duration = get_max_duration();
 
-  if (getRemainsNoUpdate() > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, getRemainsNoUpdate(), getLastUpdate());
-    updateRemains(getLastValue() * delta);
+  if (get_remains_no_update() > 0) {
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, get_remains_no_update(),
+              getLastUpdate());
+    update_remains(getLastValue() * delta);
 
-    XBT_DEBUG("Updating action(%p): remains is now %f", this, getRemainsNoUpdate());
+    XBT_DEBUG("Updating action(%p): remains is now %f", this, get_remains_no_update());
   }
 
   if (max_duration > NO_MAX_DURATION) {
     double_update(&max_duration, delta, sg_surf_precision);
-    setMaxDuration(max_duration);
+    set_max_duration(max_duration);
   }
 
-  if ((getRemainsNoUpdate() <= 0 && (getVariable()->get_weight() > 0)) ||
+  if ((get_remains_no_update() <= 0 && (getVariable()->get_weight() > 0)) ||
       ((max_duration > NO_MAX_DURATION) && (max_duration <= 0))) {
     finish(Action::State::done);
-    heapRemove(getModel()->getActionHeap());
+    heapRemove(get_model()->getActionHeap());
   }
 
   refreshLastUpdate();

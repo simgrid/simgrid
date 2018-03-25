@@ -36,9 +36,9 @@ void HostModel::ignoreEmptyVmInPmLMM()
 
     XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", ws_vm, impact, active_tasks);
     if (impact > 0)
-      ws_vm->getImpl()->action_->setSharingWeight(1. / impact);
+      ws_vm->getImpl()->action_->set_priority(1. / impact);
     else
-      ws_vm->getImpl()->action_->setSharingWeight(0.);
+      ws_vm->getImpl()->action_->set_priority(0.);
   }
 }
 

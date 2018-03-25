@@ -59,8 +59,8 @@ public:
   void cancel() override;
   void resume() override;
   bool isSuspended() override;
-  void setMaxDuration(double duration) override;
-  void setSharingWeight(double priority) override;
+  void set_max_duration(double duration) override;
+  void set_priority(double priority) override;
   void updateRemainingLazy(double now) override;
 };
 

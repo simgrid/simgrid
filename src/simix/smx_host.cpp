@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -148,7 +148,7 @@ SIMIX_execution_start(const char* name, double flops_amount, double priority, do
 
     exec->surfAction_ = host->pimpl_cpu->execution_start(flops_amount);
     exec->surfAction_->set_data(exec.get());
-    exec->surfAction_->setSharingWeight(priority);
+    exec->surfAction_->set_priority(priority);
 
     if (bound > 0)
       static_cast<simgrid::surf::CpuAction*>(exec->surfAction_)->set_bound(bound);
@@ -280,13 +280,13 @@ void SIMIX_set_category(smx_activity_t synchro, const char *category)
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   if (exec != nullptr) {
-    exec->surfAction_->setCategory(category);
+    exec->surfAction_->set_category(category);
     return;
   }
 
   simgrid::kernel::activity::CommImplPtr comm =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
   if (comm != nullptr) {
-    comm->surfAction_->setCategory(category);
+    comm->surfAction_->set_category(category);
   }
 }

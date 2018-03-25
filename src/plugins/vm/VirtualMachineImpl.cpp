@@ -259,8 +259,8 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
   surf::CpuAction* new_cpu_action =
       static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->coreAmount_));
 
-  if (action_->getRemainsNoUpdate() > 0)
-    XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());
+  if (action_->get_remains_no_update() > 0)
+    XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());
 
   /* keep the bound value of the cpu action of the VM. */
   double old_bound = action_->get_bound();

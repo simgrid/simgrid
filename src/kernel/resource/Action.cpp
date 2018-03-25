@@ -23,9 +23,9 @@ Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed
     : remains_(cost), start_time_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
 {
   if (failed)
-    state_set_ = getModel()->getFailedActionSet();
+    state_set_ = get_model()->getFailedActionSet();
   else
-    state_set_ = getModel()->getRunningActionSet();
+    state_set_ = get_model()->getRunningActionSet();
 
   state_set_->push_back(*this);
 }
@@ -39,6 +39,7 @@ void Action::finish(Action::State state)
 {
   finish_time_ = surf_get_clock();
   set_state(state);
+  set_remains(0);
 }
 
 Action::State Action::get_state() const
@@ -87,14 +88,14 @@ void Action::set_bound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
   if (variable_)
-    getModel()->getMaxminSystem()->update_variable_bound(variable_, bound);
+    get_model()->getMaxminSystem()->update_variable_bound(variable_, bound);
 
-  if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
-    heapRemove(getModel()->getActionHeap());
+  if (get_model()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
+    heapRemove(get_model()->getActionHeap());
   XBT_OUT();
 }
 
-void Action::setCategory(const char* category)
+void Action::set_category(const char* category)
 {
   category_ = xbt_strdup(category);
 }
@@ -104,31 +105,31 @@ void Action::ref()
   refcount_++;
 }
 
-void Action::setMaxDuration(double duration)
+void Action::set_max_duration(double duration)
 {
   max_duration_ = duration;
-  if (getModel()->getUpdateMechanism() == UM_LAZY) // remove action from the heap
-    heapRemove(getModel()->getActionHeap());
+  if (get_model()->getUpdateMechanism() == UM_LAZY) // remove action from the heap
+    heapRemove(get_model()->getActionHeap());
 }
 
-void Action::setSharingWeight(double weight)
+void Action::set_priority(double weight)
 {
   XBT_IN("(%p,%g)", this, weight);
-  sharing_weight_ = weight;
-  getModel()->getMaxminSystem()->update_variable_weight(getVariable(), weight);
+  sharing_priority_ = weight;
+  get_model()->getMaxminSystem()->update_variable_weight(getVariable(), weight);
 
-  if (getModel()->getUpdateMechanism() == UM_LAZY)
-    heapRemove(getModel()->getActionHeap());
+  if (get_model()->getUpdateMechanism() == UM_LAZY)
+    heapRemove(get_model()->getActionHeap());
   XBT_OUT();
 }
 
 void Action::cancel()
 {
   set_state(Action::State::failed);
-  if (getModel()->getUpdateMechanism() == UM_LAZY) {
+  if (get_model()->getUpdateMechanism() == UM_LAZY) {
     if (modified_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
-    heapRemove(getModel()->getActionHeap());
+      simgrid::xbt::intrusive_erase(*get_model()->getModifiedSet(), *this);
+    heapRemove(get_model()->getActionHeap());
   }
 }
 
@@ -139,12 +140,12 @@ int Action::unref()
     if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
-      getModel()->getMaxminSystem()->variable_free(getVariable());
-    if (getModel()->getUpdateMechanism() == UM_LAZY) {
+      get_model()->getMaxminSystem()->variable_free(getVariable());
+    if (get_model()->getUpdateMechanism() == UM_LAZY) {
       /* remove from heap */
-      heapRemove(getModel()->getActionHeap());
+      heapRemove(get_model()->getActionHeap());
       if (modified_set_hook_.is_linked())
-        simgrid::xbt::intrusive_erase(*getModel()->getModifiedSet(), *this);
+        simgrid::xbt::intrusive_erase(*get_model()->getModifiedSet(), *this);
     }
     delete this;
     return 1;
@@ -156,11 +157,11 @@ void Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::sleeping) {
-    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
-    if (getModel()->getUpdateMechanism() == UM_LAZY) {
-      heapRemove(getModel()->getActionHeap());
-      if (getModel()->getUpdateMechanism() == UM_LAZY && state_set_ == getModel()->getRunningActionSet() &&
-          sharing_weight_ > 0) {
+    get_model()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
+    if (get_model()->getUpdateMechanism() == UM_LAZY) {
+      heapRemove(get_model()->getActionHeap());
+      if (get_model()->getUpdateMechanism() == UM_LAZY && state_set_ == get_model()->getRunningActionSet() &&
+          sharing_priority_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
         updateRemainingLazy(surf_get_clock());
       }
@@ -174,10 +175,10 @@ void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::sleeping) {
-    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), getPriority());
+    get_model()->getMaxminSystem()->update_variable_weight(getVariable(), get_priority());
     suspended_ = SuspendStates::not_suspended;
-    if (getModel()->getUpdateMechanism() == UM_LAZY)
-      heapRemove(getModel()->getActionHeap());
+    if (get_model()->getUpdateMechanism() == UM_LAZY)
+      heapRemove(get_model()->getActionHeap());
   }
   XBT_OUT();
 }
@@ -218,21 +219,21 @@ void Action::heapUpdate(heap_type& heap, double key, Action::Type hat)
   }
 }
 
-double Action::getRemains()
+double Action::get_remains()
 {
   XBT_IN("(%p)", this);
   /* update remains before return it */
-  if (getModel()->getUpdateMechanism() == UM_LAZY) /* update remains before return it */
+  if (get_model()->getUpdateMechanism() == UM_LAZY) /* update remains before return it */
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
   return remains_;
 }
 
-void Action::updateMaxDuration(double delta)
+void Action::update_max_duration(double delta)
 {
   double_update(&max_duration_, delta, sg_surf_precision);
 }
-void Action::updateRemains(double delta)
+void Action::update_remains(double delta)
 {
   double_update(&remains_, delta, sg_maxmin_precision * sg_surf_precision);
 }

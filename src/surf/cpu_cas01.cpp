@@ -139,7 +139,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
         if (action->get_state() == kernel::resource::Action::State::running ||
             action->get_state() == kernel::resource::Action::State::ready ||
             action->get_state() == kernel::resource::Action::State::not_in_the_system) {
-          action->setFinishTime(date);
+          action->set_finish_time(date);
           action->set_state(kernel::resource::Action::State::failed);
         }
       }
@@ -171,13 +171,13 @@ CpuAction *CpuCas01::sleep(double duration)
   CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
-  action->setMaxDuration(duration);
+  action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
   if (duration < 0) { // NO_MAX_DURATION
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
-    simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
+    simgrid::xbt::intrusive_erase(*action->get_state_set(), *action);
     action->state_set_ = &static_cast<CpuCas01Model*>(model())->cpuRunningActionSetThatDoesNotNeedBeingChecked_;
-    action->getStateSet()->push_back(*action);
+    action->get_state_set()->push_back(*action);
   }
 
   model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);

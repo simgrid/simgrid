@@ -138,7 +138,7 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
     if (exec->surfAction_)
-      exec->surfAction_->setSharingWeight(priority);
+      exec->surfAction_->set_priority(priority);
   });
 }
 

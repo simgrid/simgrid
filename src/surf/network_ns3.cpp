@@ -221,7 +221,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
-    action->setRemains(action->getCost() - sgFlow->sentBytes_);
+    action->set_remains(action->get_cost() - sgFlow->sentBytes_);
 
     if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::running) {
       double data_delta_sent = sgFlow->sentBytes_ - action->lastSent_;
@@ -230,8 +230,8 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       action->src_->routeTo(action->dst_, route, nullptr);
       for (auto const& link : route)
-        TRACE_surf_link_set_utilization(link->getCname(), action->getCategory(), (data_delta_sent) / delta, now - delta,
-                                        delta);
+        TRACE_surf_link_set_utilization(link->getCname(), action->get_category(), (data_delta_sent) / delta,
+                                        now - delta, delta);
 
       action->lastSent_ = sgFlow->sentBytes_;
     }

@@ -52,12 +52,12 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
         action.latency_ = 0.0;
       }
     }
-    action.updateRemains(action.getCost() * delta / action.initialLatency_);
-    if (action.getMaxDuration() != NO_MAX_DURATION)
-      action.updateMaxDuration(delta);
+    action.update_remains(action.get_cost() * delta / action.initialLatency_);
+    if (action.get_max_duration() != NO_MAX_DURATION)
+      action.update_max_duration(delta);
 
-    if ((action.getRemainsNoUpdate() <= 0) ||
-        ((action.getMaxDuration() != NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+    if ((action.get_remains_no_update() <= 0) ||
+        ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     }
   }

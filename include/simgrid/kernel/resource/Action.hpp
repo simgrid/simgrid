@@ -105,27 +105,28 @@ public:
   void set_data(void* data) { data_ = data; }
 
   /** @brief Get the cost of the current action */
-  double getCost() const { return cost_; }
+  double get_cost() const { return cost_; }
   /** @brief Set the cost of the current action */
-  void setCost(double cost) { cost_ = cost; }
+  void set_cost(double cost) { cost_ = cost; }
 
   /** @brief Update the maximum duration of the current action
    *  @param delta Amount to remove from the MaxDuration */
-  void updateMaxDuration(double delta);
+  void update_max_duration(double delta);
 
   /** @brief Update the remaining time of the current action
    *  @param delta Amount to remove from the remaining time */
-  void updateRemains(double delta);
+  void update_remains(double delta);
 
   /** @brief Set the remaining time of the current action */
-  void setRemains(double value) { remains_ = value; }
+  void set_remains(double value) { remains_ = value; }
+
   /** @brief Get the remaining time of the current action after updating the resource */
-  virtual double getRemains();
+  virtual double get_remains();
   /** @brief Get the remaining time of the current action without updating the resource */
-  double getRemainsNoUpdate() const { return remains_; }
+  double get_remains_no_update() const { return remains_; }
 
   /** @brief Set the finish time of the current action */
-  void setFinishTime(double value) { finish_time_ = value; }
+  void set_finish_time(double value) { finish_time_ = value; }
 
   /**@brief Add a reference to the current action (refcounting) */
   void ref();
@@ -147,32 +148,32 @@ public:
   virtual bool isSuspended();
 
   /** @brief Get the maximum duration of the current action */
-  double getMaxDuration() const { return max_duration_; }
+  double get_max_duration() const { return max_duration_; }
   /** @brief Set the maximum duration of the current Action */
-  virtual void setMaxDuration(double duration);
+  virtual void set_max_duration(double duration);
 
   /** @brief Get the tracing category associated to the current action */
-  char* getCategory() const { return category_; }
+  char* get_category() const { return category_; }
   /** @brief Set the tracing category of the current Action */
-  void setCategory(const char* category);
+  void set_category(const char* category);
 
   /** @brief Get the priority of the current Action */
-  double getPriority() const { return sharing_weight_; };
+  double get_priority() const { return sharing_priority_; };
   /** @brief Set the priority of the current Action */
-  virtual void setSharingWeight(double priority);
-  void setSharingWeightNoUpdate(double weight) { sharing_weight_ = weight; }
+  virtual void set_priority(double priority);
+  void set_priority_no_update(double priority) { sharing_priority_ = priority; }
 
   /** @brief Get the state set in which the action is */
-  StateSet* getStateSet() const { return state_set_; };
+  StateSet* get_state_set() const { return state_set_; };
 
-  simgrid::kernel::resource::Model* getModel() const { return model_; }
+  simgrid::kernel::resource::Model* get_model() const { return model_; }
 
 protected:
   StateSet* state_set_;
   int refcount_ = 1;
 
 private:
-  double sharing_weight_ = 1.0;             /**< priority (1.0 by default) */
+  double sharing_priority_ = 1.0;             /**< priority (1.0 by default) */
   double max_duration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
   double remains_;           /**< How much of that cost remains to be done in the currently running task */
   double start_time_;        /**< start time  */

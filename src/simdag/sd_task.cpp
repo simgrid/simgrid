@@ -435,7 +435,7 @@ double SD_task_get_alpha(SD_task_t task)
 double SD_task_get_remaining_amount(SD_task_t task)
 {
   if (task->surf_action)
-    return task->surf_action->getRemains();
+    return task->surf_action->get_remains();
   else
     return (task->state == SD_DONE) ? 0 : task->amount;
 }

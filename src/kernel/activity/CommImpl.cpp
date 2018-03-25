@@ -72,7 +72,7 @@ void simgrid::kernel::activity::CommImpl::cancel()
 /**  @brief get the amount remaining from the communication */
 double simgrid::kernel::activity::CommImpl::remains()
 {
-  return surfAction_->getRemains();
+  return surfAction_->get_remains();
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */

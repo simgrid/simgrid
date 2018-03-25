@@ -98,14 +98,14 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
         maxmin_system_->update_variable_weight(action.getVariable(), 1.0);
       }
     }
-    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.getRemains(),
+    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.get_remains(),
               action.getVariable()->get_value() * delta);
-    action.updateRemains(action.getVariable()->get_value() * delta);
+    action.update_remains(action.getVariable()->get_value() * delta);
 
-    if (action.getMaxDuration() > NO_MAX_DURATION)
-      action.updateMaxDuration(delta);
+    if (action.get_max_duration() > NO_MAX_DURATION)
+      action.update_max_duration(delta);
 
-    XBT_DEBUG("Action (%p) : remains (%g).", &action, action.getRemains());
+    XBT_DEBUG("Action (%p) : remains (%g).", &action, action.get_remains());
 
     /* In the next if cascade, the action can be finished either because:
      *  - The amount of remaining work reached 0
@@ -113,8 +113,8 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
      * If it's not done, it may have failed.
      */
 
-    if (((action.getRemains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
-        ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+    if (((action.get_remains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+        ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
@@ -205,8 +205,8 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
   }
 
   if (nb_link + nb_used_host == 0) {
-    this->setCost(1.0);
-    this->setRemains(0.0);
+    this->set_cost(1.0);
+    this->set_remains(0.0);
   }
   delete[] host_list;
 }
@@ -273,7 +273,7 @@ kernel::resource::Action* CpuL07::execution_start(double size)
 kernel::resource::Action* CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
-  action->setMaxDuration(duration);
+  action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
   model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);
 
@@ -401,9 +401,9 @@ void L07Action::updateBound()
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
   if ((latency_ <= 0.0) && (suspended_ == Action::SuspendStates::not_suspended)) {
     if (rate_ < 0)
-      getModel()->getMaxminSystem()->update_variable_bound(getVariable(), lat_bound);
+      get_model()->getMaxminSystem()->update_variable_bound(getVariable(), lat_bound);
     else
-      getModel()->getMaxminSystem()->update_variable_bound(getVariable(), std::min(rate_, lat_bound));
+      get_model()->getMaxminSystem()->update_variable_bound(getVariable(), std::min(rate_, lat_bound));
   }
 }
 
@@ -414,7 +414,7 @@ int L07Action::unref()
     if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
-      getModel()->getMaxminSystem()->variable_free(getVariable());
+      get_model()->getMaxminSystem()->variable_free(getVariable());
     delete this;
     return 1;
   }

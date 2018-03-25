@@ -80,13 +80,13 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
   for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
     StorageAction& action = static_cast<StorageAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    action.updateRemains(lrint(action.getVariable()->get_value() * delta));
+    action.update_remains(lrint(action.getVariable()->get_value() * delta));
 
-    if (action.getMaxDuration() > NO_MAX_DURATION)
-      action.updateMaxDuration(delta);
+    if (action.get_max_duration() > NO_MAX_DURATION)
+      action.update_max_duration(delta);
 
-    if (((action.getRemainsNoUpdate() <= 0) && (action.getVariable()->get_weight() > 0)) ||
-        ((action.getMaxDuration() > NO_MAX_DURATION) && (action.getMaxDuration() <= 0))) {
+    if (((action.get_remains_no_update() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+        ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     }
   }
@@ -146,8 +146,8 @@ int StorageN11Action::unref()
     if (state_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*state_set_, *this);
     if (getVariable())
-      getModel()->getMaxminSystem()->variable_free(getVariable());
-    xbt_free(getCategory());
+      get_model()->getMaxminSystem()->variable_free(getVariable());
+    xbt_free(get_category());
     delete this;
     return 1;
   }
@@ -163,7 +163,7 @@ void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != Action::SuspendStates::sleeping) {
-    getModel()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
+    get_model()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
     suspended_ = Action::SuspendStates::suspended;
   }
   XBT_OUT();
@@ -179,12 +179,12 @@ bool StorageN11Action::isSuspended()
   return suspended_ == Action::SuspendStates::suspended;
 }
 
-void StorageN11Action::setMaxDuration(double /*duration*/)
+void StorageN11Action::set_max_duration(double /*duration*/)
 {
   THROW_UNIMPLEMENTED;
 }
 
-void StorageN11Action::setSharingWeight(double /*priority*/)
+void StorageN11Action::set_priority(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }

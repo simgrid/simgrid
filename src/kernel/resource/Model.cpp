@@ -58,11 +58,11 @@ double Model::nextOccuringEventLazy(double now)
     maxmin_system_->modified_set_->pop_front();
     bool max_dur_flag = false;
 
-    if (action->getStateSet() != running_action_set_)
+    if (action->get_state_set() != running_action_set_)
       continue;
 
     /* bogus priority, skip it */
-    if (action->getPriority() <= 0 || action->getType() == Action::Type::LATENCY)
+    if (action->get_priority() <= 0 || action->getType() == Action::Type::LATENCY)
       continue;
 
     action->updateRemainingLazy(now);
@@ -72,25 +72,25 @@ double Model::nextOccuringEventLazy(double now)
 
     if (share > 0) {
       double time_to_completion;
-      if (action->getRemains() > 0) {
-        time_to_completion = action->getRemainsNoUpdate() / share;
+      if (action->get_remains() > 0) {
+        time_to_completion = action->get_remains_no_update() / share;
       } else {
         time_to_completion = 0.0;
       }
       min = now + time_to_completion; // when the task will complete if nothing changes
     }
 
-    if ((action->getMaxDuration() > NO_MAX_DURATION) &&
-        (min <= -1 || action->get_start_time() + action->getMaxDuration() < min)) {
+    if ((action->get_max_duration() > NO_MAX_DURATION) &&
+        (min <= -1 || action->get_start_time() + action->get_max_duration() < min)) {
       // when the task will complete anyway because of the deadline if any
-      min          = action->get_start_time() + action->getMaxDuration();
+      min          = action->get_start_time() + action->get_max_duration();
       max_dur_flag = true;
     }
 
     XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->getVariable()->id_int);
 
     XBT_DEBUG("Action(%p) Start %f. May finish at %f (got a share of %f). Max_duration %f", action,
-              action->get_start_time(), min, share, action->getMaxDuration());
+              action->get_start_time(), min, share, action->get_max_duration());
 
     if (min > -1) {
       action->heapUpdate(action_heap_, min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
@@ -119,8 +119,8 @@ double Model::nextOccuringEventFull(double /*now*/)
   for (Action& action : *getRunningActionSet()) {
     double value = action.getVariable()->get_value();
     if (value > 0) {
-      if (action.getRemains() > 0)
-        value = action.getRemainsNoUpdate() / value;
+      if (action.get_remains() > 0)
+        value = action.get_remains_no_update() / value;
       else
         value = 0.0;
       if (min < 0 || value < min) {
@@ -128,8 +128,8 @@ double Model::nextOccuringEventFull(double /*now*/)
         XBT_DEBUG("Updating min (value) with %p: %f", &action, min);
       }
     }
-    if ((action.getMaxDuration() >= 0) && (min < 0 || action.getMaxDuration() < min)) {
-      min = action.getMaxDuration();
+    if ((action.get_max_duration() >= 0) && (min < 0 || action.get_max_duration() < min)) {
+      min = action.get_max_duration();
       XBT_DEBUG("Updating min (duration) with %p: %f", &action, min);
     }
   }

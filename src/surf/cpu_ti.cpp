@@ -363,7 +363,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
     XBT_DEBUG("Action %p: finish", action);
     action->finish(kernel::resource::Action::State::done);
     /* set the remains to 0 due to precision problems when updating the remaining amount */
-    action->setRemains(0);
+    action->set_remains(0);
     /* update remaining amount of all actions */
     action->cpu_->updateRemainingAmount(surf_get_clock());
   }
@@ -442,7 +442,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
         if (action.get_state() == kernel::resource::Action::State::running ||
             action.get_state() == kernel::resource::Action::State::ready ||
             action.get_state() == kernel::resource::Action::State::not_in_the_system) {
-          action.setFinishTime(date);
+          action.set_finish_time(date);
           action.set_state(kernel::resource::Action::State::failed);
           action.heapRemove(model()->getActionHeap());
         }
@@ -465,45 +465,45 @@ void CpuTi::updateActionsFinishTime(double now)
 
   for (CpuTiAction const& action : actionSet_) {
     /* action not running, skip it */
-    if (action.getStateSet() != surf_cpu_model_pm->getRunningActionSet())
+    if (action.get_state_set() != surf_cpu_model_pm->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
-    if (action.getPriority() <= 0)
+    if (action.get_priority() <= 0)
       continue;
 
     /* action suspended, skip it */
     if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
       continue;
 
-    sum_priority += 1.0 / action.getPriority();
+    sum_priority += 1.0 / action.get_priority();
   }
   sumPriority_ = sum_priority;
 
   for (CpuTiAction& action : actionSet_) {
     double min_finish = -1;
     /* action not running, skip it */
-    if (action.getStateSet() != surf_cpu_model_pm->getRunningActionSet())
+    if (action.get_state_set() != surf_cpu_model_pm->getRunningActionSet())
       continue;
 
     /* verify if the action is really running on cpu */
-    if (action.suspended_ == kernel::resource::Action::SuspendStates::not_suspended && action.getPriority() > 0) {
+    if (action.suspended_ == kernel::resource::Action::SuspendStates::not_suspended && action.get_priority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
-      total_area = (action.getRemains()) * sum_priority * action.getPriority();
+      total_area = (action.get_remains()) * sum_priority * action.get_priority();
 
       total_area /= speed_.peak;
 
-      action.setFinishTime(speedIntegratedTrace_->solve(now, total_area));
+      action.set_finish_time(speedIntegratedTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
-      if (action.getMaxDuration() > NO_MAX_DURATION &&
-          action.get_start_time() + action.getMaxDuration() < action.getFinishTime())
-        min_finish = action.get_start_time() + action.getMaxDuration();
+      if (action.get_max_duration() > NO_MAX_DURATION &&
+          action.get_start_time() + action.get_max_duration() < action.getFinishTime())
+        min_finish = action.get_start_time() + action.get_max_duration();
       else
         min_finish = action.getFinishTime();
     } else {
       /* put the max duration time on heap */
-      if (action.getMaxDuration() > NO_MAX_DURATION)
-        min_finish = action.get_start_time() + action.getMaxDuration();
+      if (action.get_max_duration() > NO_MAX_DURATION)
+        min_finish = action.get_start_time() + action.get_max_duration();
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
@@ -512,7 +512,7 @@ void CpuTi::updateActionsFinishTime(double now)
       action.heapRemove(model()->getActionHeap());
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
-              &action, action.get_start_time(), action.getFinishTime(), action.getMaxDuration());
+              &action, action.get_start_time(), action.getFinishTime(), action.get_max_duration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -542,11 +542,11 @@ void CpuTi::updateRemainingAmount(double now)
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
   for (CpuTiAction& action : actionSet_) {
     /* action not running, skip it */
-    if (action.getStateSet() != model()->getRunningActionSet())
+    if (action.get_state_set() != model()->getRunningActionSet())
       continue;
 
     /* bogus priority, skip it */
-    if (action.getPriority() <= 0)
+    if (action.get_priority() <= 0)
       continue;
 
     /* action suspended, skip it */
@@ -562,8 +562,8 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* update remaining */
-    action.updateRemains(area_total / (sumPriority_ * action.getPriority()));
-    XBT_DEBUG("Update remaining action(%p) remaining %f", &action, action.getRemainsNoUpdate());
+    action.update_remains(area_total / (sumPriority_ * action.get_priority()));
+    XBT_DEBUG("Update remaining action(%p) remaining %f", &action, action.get_remains_no_update());
   }
   lastUpdate_ = now;
 }
@@ -588,13 +588,13 @@ CpuAction *CpuTi::sleep(double duration)
   XBT_IN("(%s,%g)", getCname(), duration);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
 
-  action->setMaxDuration(duration);
+  action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
-    simgrid::xbt::intrusive_erase(*action->getStateSet(), *action);
+    simgrid::xbt::intrusive_erase(*action->get_state_set(), *action);
     action->state_set_ = &static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
-    action->getStateSet()->push_back(*action);
+    action->get_state_set()->push_back(*action);
   }
 
   actionSet_.push_back(*action);
@@ -637,12 +637,12 @@ int CpuTiAction::unref()
   refcount_--;
   if (not refcount_) {
     if (state_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*getStateSet(), *this);
+      simgrid::xbt::intrusive_erase(*get_state_set(), *this);
     /* remove from action_set */
     if (action_ti_hook.is_linked())
       simgrid::xbt::intrusive_erase(cpu_->actionSet_, *this);
     /* remove from heap */
-    heapRemove(getModel()->getActionHeap());
+    heapRemove(get_model()->getActionHeap());
     cpu_->modified(true);
     delete this;
     return 1;
@@ -653,7 +653,7 @@ int CpuTiAction::unref()
 void CpuTiAction::cancel()
 {
   this->set_state(Action::State::failed);
-  heapRemove(getModel()->getActionHeap());
+  heapRemove(get_model()->getActionHeap());
   cpu_->modified(true);
 }
 
@@ -662,7 +662,7 @@ void CpuTiAction::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != Action::SuspendStates::sleeping) {
     suspended_ = Action::SuspendStates::suspended;
-    heapRemove(getModel()->getActionHeap());
+    heapRemove(get_model()->getActionHeap());
     cpu_->modified(true);
   }
   XBT_OUT();
@@ -678,40 +678,40 @@ void CpuTiAction::resume()
   XBT_OUT();
 }
 
-void CpuTiAction::setMaxDuration(double duration)
+void CpuTiAction::set_max_duration(double duration)
 {
   double min_finish;
 
   XBT_IN("(%p,%g)", this, duration);
 
-  Action::setMaxDuration(duration);
+  Action::set_max_duration(duration);
 
   if (duration >= 0)
-    min_finish = (get_start_time() + getMaxDuration()) < getFinishTime() ? (get_start_time() + getMaxDuration())
-                                                                         : getFinishTime();
+    min_finish = (get_start_time() + get_max_duration()) < getFinishTime() ? (get_start_time() + get_max_duration())
+                                                                           : getFinishTime();
   else
     min_finish = getFinishTime();
 
   /* add in action heap */
-  heapUpdate(getModel()->getActionHeap(), min_finish, Action::Type::NOTSET);
+  heapUpdate(get_model()->getActionHeap(), min_finish, Action::Type::NOTSET);
 
   XBT_OUT();
 }
 
-void CpuTiAction::setSharingWeight(double priority)
+void CpuTiAction::set_priority(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
-  setSharingWeightNoUpdate(priority);
+  set_priority_no_update(priority);
   cpu_->modified(true);
   XBT_OUT();
 }
 
-double CpuTiAction::getRemains()
+double CpuTiAction::get_remains()
 {
   XBT_IN("(%p)", this);
   cpu_->updateRemainingAmount(surf_get_clock());
   XBT_OUT();
-  return getRemainsNoUpdate();
+  return get_remains_no_update();
 }
 
 }
