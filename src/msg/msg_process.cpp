@@ -313,7 +313,7 @@ msg_process_t MSG_process_self()
   return SIMIX_process_self()->ciface();
 }
 
-smx_context_t MSG_process_get_smx_ctx(msg_process_t process) {
+smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- smx_context_t should die afterward
   return process->getImpl()->context;
 }
 /**
