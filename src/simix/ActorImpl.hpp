@@ -129,7 +129,6 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
                                                                         &ActorImpl::smx_synchro_hook>>
     SynchroList;
 
-XBT_PUBLIC void set_maestro(std::function<void()> code);
 XBT_PUBLIC void create_maestro(std::function<void()> code);
 }
 } // namespace kernel

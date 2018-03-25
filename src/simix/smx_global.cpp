@@ -169,21 +169,16 @@ static void kill_process(smx_actor_t process)
   SIMIX_process_kill(process, nullptr);
 }
 
-static std::function<void()> maestro_code;
 
 namespace simgrid {
 namespace simix {
 
 simgrid::xbt::signal<void()> onDeadlock;
 
-XBT_PUBLIC void set_maestro(std::function<void()> code)
-{
-  maestro_code = std::move(code);
-}
-
 }
 }
 
+static std::function<void()> maestro_code;
 void SIMIX_set_maestro(void (*code)(void*), void* data)
 {
 #ifdef _WIN32
@@ -195,9 +190,6 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
 /**
  * \ingroup SIMIX_API
  * \brief Initialize SIMIX internal data.
- *
- * \param argc Argc
- * \param argv Argv
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
