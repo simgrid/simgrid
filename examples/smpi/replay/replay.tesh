@@ -263,6 +263,7 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [Fafard:2:(3) 29.490406] [smpi_replay/VERBOSE] 2 compute 2.5e8 3.276712
 > [Fafard:2:(3) 29.490606] [smpi_replay/VERBOSE] 2 test 0.000200
 > [Fafard:2:(3) 32.767318] [smpi_replay/VERBOSE] 2 compute 2.5e8 3.276712
+> [Fafard:2:(3) 32.767318] [smpi_replay/VERBOSE] 2 wait 0.000000
 > [Fafard:2:(3) 32.767318] [smpi_replay/VERBOSE] 2 Isend 0 1e6 0.000000
 > [Tremblay:0:(1) 32.923014] [smpi_replay/VERBOSE] 0 recv 2 1e6 12.367458
 > [Fafard:2:(3) 39.320741] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
