@@ -74,6 +74,7 @@ public:
 
 class SendRecvParser : public ActionArgParser {
 public:
+  /* communication partner; if we send, this is the receiver and vice versa */
   int partner;
   double size;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
@@ -85,6 +86,18 @@ public:
     size    = parse_double(action[3]);
     if (action.size() > 4)
       datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+  }
+};
+
+class ComputeParser : public ActionArgParser {
+public:
+  /* communication partner; if we send, this is the receiver and vice versa */
+  double flops;
+
+  void parse(simgrid::xbt::ReplayAction& action) override
+  {
+    CHECK_ACTION_PARAMS(action, 1, 0)
+    flops = parse_double(action[2]);
   }
 };
 
@@ -212,6 +225,17 @@ public:
   }
 };
 
+class ComputeAction : public ReplayAction<ComputeParser> {
+public:
+  ComputeAction() : ReplayAction("compute") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    TRACE_smpi_computing_in(my_proc_id, args.flops);
+    smpi_execute_flops(args.flops);
+    TRACE_smpi_computing_out(my_proc_id);
+  }
+};
+
 } // Replay Namespace
 
 static void action_init(simgrid::xbt::ReplayAction& action)
@@ -254,16 +278,7 @@ static void action_comm_dup(simgrid::xbt::ReplayAction& action)
 
 static void action_compute(simgrid::xbt::ReplayAction& action)
 {
-  CHECK_ACTION_PARAMS(action, 1, 0)
-  double clock = smpi_process()->simulated_elapsed();
-  double flops= parse_double(action[2]);
-  int my_proc_id = Actor::self()->getPid();
-
-  TRACE_smpi_computing_in(my_proc_id, flops);
-  smpi_execute_flops(flops);
-  TRACE_smpi_computing_out(my_proc_id);
-
-  log_timed_action (action, clock);
+  Replay::ComputeAction().execute(action);
 }
 
 static void action_test(simgrid::xbt::ReplayAction& action)
@@ -834,7 +849,7 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("allGather",  simgrid::smpi::action_allgather);
   xbt_replay_action_register("allGatherV", simgrid::smpi::action_allgatherv);
   xbt_replay_action_register("reduceScatter",  simgrid::smpi::action_reducescatter);
-  xbt_replay_action_register("compute",    simgrid::smpi::action_compute);
+  xbt_replay_action_register("compute", simgrid::smpi::action_compute);
 
   //if we have a delayed start, sleep here.
   if(*argc>2){
