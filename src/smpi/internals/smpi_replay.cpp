@@ -69,7 +69,7 @@ namespace smpi {
 namespace Replay {
 class ActionArgParser {
 public:
-  virtual void parse(simgrid::xbt::ReplayAction& action){};
+  virtual void parse(simgrid::xbt::ReplayAction& action) { CHECK_ACTION_PARAMS(action, 0, 0) }
 };
 
 class SendRecvParser : public ActionArgParser {
@@ -109,9 +109,7 @@ protected:
   int my_proc_id;
 
 public:
-  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::Actor::self()->getPid())
-  {
-  }
+  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::Actor::self()->getPid()) {}
 
   virtual void execute(simgrid::xbt::ReplayAction& action)
   {
