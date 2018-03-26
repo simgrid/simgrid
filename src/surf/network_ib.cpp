@@ -174,7 +174,7 @@ void NetworkIBModel::computeIBfactors(IBNode* root)
     if (not double_equals(penalized_bw, rate_before_update, sg_surf_precision)) {
       XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,
                 (*it)->destination->id, (*it)->action, penalized_bw, (*it)->action->get_bound(), (*it)->init_rate);
-      maxmin_system_->update_variable_bound((*it)->action->getVariable(), penalized_bw);
+      maxmin_system_->update_variable_bound((*it)->action->get_variable(), penalized_bw);
     } else {
       XBT_DEBUG("%d->%d action %p penalty not updated : bw %f, initial rate %f", root->id, (*it)->destination->id,
                 (*it)->action, penalized_bw, (*it)->init_rate);

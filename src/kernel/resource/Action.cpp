@@ -34,8 +34,8 @@ Action::~Action()
 {
   if (state_set_hook_.is_linked())
     simgrid::xbt::intrusive_erase(*state_set_, *this);
-  if (getVariable())
-    get_model()->getMaxminSystem()->variable_free(getVariable());
+  if (get_variable())
+    get_model()->getMaxminSystem()->variable_free(get_variable());
   if (get_model()->getUpdateMechanism() == UM_LAZY) {
     /* remove from heap */
     heapRemove(get_model()->getActionHeap());
@@ -101,7 +101,7 @@ void Action::set_bound(double bound)
   if (variable_)
     get_model()->getMaxminSystem()->update_variable_bound(variable_, bound);
 
-  if (get_model()->getUpdateMechanism() == UM_LAZY && getLastUpdate() != surf_get_clock())
+  if (get_model()->getUpdateMechanism() == UM_LAZY && get_last_update() != surf_get_clock())
     heapRemove(get_model()->getActionHeap());
   XBT_OUT();
 }
@@ -127,7 +127,7 @@ void Action::set_priority(double weight)
 {
   XBT_IN("(%p,%g)", this, weight);
   sharing_priority_ = weight;
-  get_model()->getMaxminSystem()->update_variable_weight(getVariable(), weight);
+  get_model()->getMaxminSystem()->update_variable_weight(get_variable(), weight);
 
   if (get_model()->getUpdateMechanism() == UM_LAZY)
     heapRemove(get_model()->getActionHeap());
@@ -158,7 +158,7 @@ void Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::sleeping) {
-    get_model()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
+    get_model()->getMaxminSystem()->update_variable_weight(get_variable(), 0.0);
     if (get_model()->getUpdateMechanism() == UM_LAZY) {
       heapRemove(get_model()->getActionHeap());
       if (get_model()->getUpdateMechanism() == UM_LAZY && state_set_ == get_model()->getRunningActionSet() &&
@@ -176,7 +176,7 @@ void Action::resume()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::sleeping) {
-    get_model()->getMaxminSystem()->update_variable_weight(getVariable(), get_priority());
+    get_model()->getMaxminSystem()->update_variable_weight(get_variable(), get_priority());
     suspended_ = SuspendStates::not_suspended;
     if (get_model()->getUpdateMechanism() == UM_LAZY)
       heapRemove(get_model()->getActionHeap());
@@ -198,14 +198,14 @@ bool Action::is_suspended()
 void Action::heapInsert(heap_type& heap, double key, Action::Type hat)
 {
   type_       = hat;
-  heap_handle_ = heap.emplace(std::make_pair(key, this));
+  heap_hook_  = heap.emplace(std::make_pair(key, this));
 }
 
 void Action::heapRemove(heap_type& heap)
 {
   type_ = Action::Type::NOTSET;
-  if (heap_handle_) {
-    heap.erase(*heap_handle_);
+  if (heap_hook_) {
+    heap.erase(*heap_hook_);
     clearHeapHandle();
   }
 }
@@ -213,10 +213,10 @@ void Action::heapRemove(heap_type& heap)
 void Action::heapUpdate(heap_type& heap, double key, Action::Type hat)
 {
   type_ = hat;
-  if (heap_handle_) {
-    heap.update(*heap_handle_, std::make_pair(key, this));
+  if (heap_hook_) {
+    heap.update(*heap_hook_, std::make_pair(key, this));
   } else {
-    heap_handle_ = heap.emplace(std::make_pair(key, this));
+    heap_hook_ = heap.emplace(std::make_pair(key, this));
   }
 }
 
@@ -239,7 +239,7 @@ void Action::update_remains(double delta)
   double_update(&remains_, delta, sg_maxmin_precision * sg_surf_precision);
 }
 
-void Action::refreshLastUpdate()
+void Action::set_last_update()
 {
   last_update_ = surf_get_clock();
 }

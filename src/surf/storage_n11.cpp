@@ -80,12 +80,12 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
   for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
     StorageAction& action = static_cast<StorageAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    action.update_remains(lrint(action.getVariable()->get_value() * delta));
+    action.update_remains(lrint(action.get_variable()->get_value() * delta));
 
     if (action.get_max_duration() > NO_MAX_DURATION)
       action.update_max_duration(delta);
 
-    if (((action.get_remains_no_update() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     }
@@ -125,13 +125,13 @@ StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, 
   XBT_IN("(%s,%g", storage->getCname(), cost);
 
   // Must be less than the max bandwidth for all actions
-  model->getMaxminSystem()->expand(storage->constraint(), getVariable(), 1.0);
+  model->getMaxminSystem()->expand(storage->constraint(), get_variable(), 1.0);
   switch(type) {
   case READ:
-    model->getMaxminSystem()->expand(storage->constraintRead_, getVariable(), 1.0);
+    model->getMaxminSystem()->expand(storage->constraintRead_, get_variable(), 1.0);
     break;
   case WRITE:
-    model->getMaxminSystem()->expand(storage->constraintWrite_, getVariable(), 1.0);
+    model->getMaxminSystem()->expand(storage->constraintWrite_, get_variable(), 1.0);
     break;
   default:
     THROW_UNIMPLEMENTED;
@@ -148,7 +148,7 @@ void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != Action::SuspendStates::sleeping) {
-    get_model()->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
+    get_model()->getMaxminSystem()->update_variable_weight(get_variable(), 0.0);
     suspended_ = Action::SuspendStates::suspended;
   }
   XBT_OUT();

@@ -100,7 +100,7 @@ void CpuCas01::onSpeedChange() {
   while ((var = constraint()->get_variable(&elem))) {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(var->get_id());
 
-    model()->getMaxminSystem()->update_variable_bound(action->getVariable(),
+    model()->getMaxminSystem()->update_variable_bound(action->get_variable(),
                                                       action->requestedCore() * speed_.scale * speed_.peak);
   }
 
@@ -180,7 +180,7 @@ CpuAction *CpuCas01::sleep(double duration)
     action->get_state_set()->push_back(*action);
   }
 
-  model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);
+  model()->getMaxminSystem()->update_variable_weight(action->get_variable(), 0.0);
   if (model()->getUpdateMechanism() == UM_LAZY) { // remove action from the heap
     action->heapRemove(model()->getActionHeap());
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
@@ -202,10 +202,10 @@ CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool
     , requestedCore_(requestedCore)
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
-    refreshLastUpdate();
-    setLastValue(0.0);
+    set_last_update();
+    set_last_value(0.0);
   }
-  model->getMaxminSystem()->expand(constraint, getVariable(), 1.0);
+  model->getMaxminSystem()->expand(constraint, get_variable(), 1.0);
 }
 
 CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,

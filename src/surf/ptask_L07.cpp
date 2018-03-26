@@ -95,12 +95,12 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
       }
       if ((action.latency_ <= 0.0) && (action.is_suspended() == 0)) {
         action.updateBound();
-        maxmin_system_->update_variable_weight(action.getVariable(), 1.0);
+        maxmin_system_->update_variable_weight(action.get_variable(), 1.0);
       }
     }
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.get_remains(),
-              action.getVariable()->get_value() * delta);
-    action.update_remains(action.getVariable()->get_value() * delta);
+              action.get_variable()->get_value() * delta);
+    action.update_remains(action.get_variable()->get_value() * delta);
 
     if (action.get_max_duration() > NO_MAX_DURATION)
       action.update_max_duration(delta);
@@ -113,13 +113,13 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
      * If it's not done, it may have failed.
      */
 
-    if (((action.get_remains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+    if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
-      kernel::lmm::Constraint* cnst = action.getVariable()->get_constraint(i);
+      kernel::lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
       while (cnst != nullptr) {
         i++;
         void* constraint_id = cnst->get_id();
@@ -128,7 +128,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
           action.finish(kernel::resource::Action::State::failed);
           break;
         }
-        cnst = action.getVariable()->get_constraint(i);
+        cnst = action.get_variable()->get_constraint(i);
       }
     }
   }
@@ -181,13 +181,13 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
   XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
   latency_ = latency;
 
-  setVariable(model->getMaxminSystem()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + nb_link));
+  set_variable(model->getMaxminSystem()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + nb_link));
 
   if (latency_ > 0)
-    model->getMaxminSystem()->update_variable_weight(getVariable(), 0.0);
+    model->getMaxminSystem()->update_variable_weight(get_variable(), 0.0);
 
   for (int i = 0; i < host_nb; i++)
-    model->getMaxminSystem()->expand(host_list[i]->pimpl_cpu->constraint(), getVariable(), flops_amount[i]);
+    model->getMaxminSystem()->expand(host_list[i]->pimpl_cpu->constraint(), get_variable(), flops_amount[i]);
 
   if(bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
@@ -197,7 +197,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
           hostList_->at(i)->routeTo(hostList_->at(j), route, nullptr);
 
           for (auto const& link : route)
-            model->getMaxminSystem()->expand_add(link->constraint(), this->getVariable(),
+            model->getMaxminSystem()->expand_add(link->constraint(), this->get_variable(),
                                                  bytes_amount[i * host_nb + j]);
         }
       }
@@ -275,7 +275,7 @@ kernel::resource::Action* CpuL07::sleep(double duration)
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
-  model()->getMaxminSystem()->update_variable_weight(action->getVariable(), 0.0);
+  model()->getMaxminSystem()->update_variable_weight(action->get_variable(), 0.0);
 
   return action;
 }
@@ -293,7 +293,7 @@ void CpuL07::onSpeedChange() {
   while ((var = constraint()->get_variable(&elem))) {
     kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
-    model()->getMaxminSystem()->update_variable_bound(action->getVariable(), speed_.scale * speed_.peak);
+    model()->getMaxminSystem()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
   }
 
   Cpu::onSpeedChange();
@@ -401,9 +401,9 @@ void L07Action::updateBound()
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
   if ((latency_ <= 0.0) && (suspended_ == Action::SuspendStates::not_suspended)) {
     if (rate_ < 0)
-      get_model()->getMaxminSystem()->update_variable_bound(getVariable(), lat_bound);
+      get_model()->getMaxminSystem()->update_variable_bound(get_variable(), lat_bound);
     else
-      get_model()->getMaxminSystem()->update_variable_bound(getVariable(), std::min(rate_, lat_bound));
+      get_model()->getMaxminSystem()->update_variable_bound(get_variable(), std::min(rate_, lat_bound));
   }
 }
 

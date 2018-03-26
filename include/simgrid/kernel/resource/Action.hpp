@@ -178,33 +178,36 @@ private:
   double max_duration_   = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
   double remains_;           /**< How much of that cost remains to be done in the currently running task */
   double start_time_;        /**< start time  */
-  char* category_ = nullptr; /**< tracing category for categorized resource utilization monitoring */
-  double finish_time_ =
-      -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
+  double finish_time_ = -1;  /**< finish time (may fluctuate until the task is completed) */
+  char* category_     = nullptr; /**< tracing category for categorized resource utilization monitoring */
 
   double cost_;
   simgrid::kernel::resource::Model* model_;
   void* data_ = nullptr; /**< for your convenience */
 
   /* LMM */
-  double last_update_                                  = 0;
-  double last_value_                                   = 0;
-  kernel::lmm::Variable* variable_                    = nullptr;
-  Action::Type type_                                  = Action::Type::NOTSET;
-  boost::optional<heap_type::handle_type> heap_handle_ = boost::none;
+  double last_update_                                = 0;
+  double last_value_                                 = 0;
+  kernel::lmm::Variable* variable_                   = nullptr;
+  Action::Type type_                                 = Action::Type::NOTSET;
+  boost::optional<heap_type::handle_type> heap_hook_ = boost::none;
 
 public:
   void heapInsert(heap_type& heap, double key, Action::Type hat);
   void heapRemove(heap_type& heap);
   void heapUpdate(heap_type& heap, double key, Action::Type hat);
-  void clearHeapHandle() { heap_handle_ = boost::none; }
-  kernel::lmm::Variable* getVariable() const { return variable_; }
-  void setVariable(kernel::lmm::Variable* var) { variable_ = var; }
-  double getLastUpdate() const { return last_update_; }
-  void refreshLastUpdate();
-  double getLastValue() const { return last_value_; }
-  void setLastValue(double val) { last_value_ = val; }
-  Action::Type getType() const { return type_; }
+  void clearHeapHandle() { heap_hook_ = boost::none; }
+
+  lmm::Variable* get_variable() const { return variable_; }
+  void set_variable(lmm::Variable* var) { variable_ = var; }
+
+  double get_last_update() const { return last_update_; }
+  void set_last_update();
+
+  double get_last_value() const { return last_value_; }
+  void set_last_value(double val) { last_value_ = val; }
+
+  Action::Type get_type() const { return type_; }
 
 protected:
   Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;
