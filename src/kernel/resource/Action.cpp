@@ -161,8 +161,7 @@ void Action::suspend()
     get_model()->getMaxminSystem()->update_variable_weight(get_variable(), 0.0);
     if (get_model()->getUpdateMechanism() == UM_LAZY) {
       heapRemove(get_model()->getActionHeap());
-      if (get_model()->getUpdateMechanism() == UM_LAZY && state_set_ == get_model()->getRunningActionSet() &&
-          sharing_priority_ > 0) {
+      if (state_set_ == get_model()->getRunningActionSet() && sharing_priority_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
         update_remains_lazy(surf_get_clock());
       }
