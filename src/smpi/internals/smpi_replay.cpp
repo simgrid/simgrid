@@ -106,22 +106,17 @@ protected:
   const std::string name;
   T args;
 
-  /*
-   * Used to compute the duration of this action.
-   */
-  double start_time;
-
   int my_proc_id;
 
 public:
-  explicit ReplayAction(std::string name) : name(name), start_time(0), my_proc_id(simgrid::s4u::Actor::self()->getPid())
+  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::Actor::self()->getPid())
   {
   }
 
   virtual void execute(simgrid::xbt::ReplayAction& action)
   {
     // Needs to be re-initialized for every action, hence here
-    start_time = smpi_process()->simulated_elapsed();
+    double start_time = smpi_process()->simulated_elapsed();
     args.parse(action);
     kernel(action);
     log_timed_action(action, start_time);
