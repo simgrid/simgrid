@@ -101,13 +101,14 @@ protected:
   int my_proc_id;
 
 public:
-  explicit ReplayAction(std::string name)
-      : name(name), start_time(smpi_process()->simulated_elapsed()), my_proc_id(simgrid::s4u::Actor::self()->getPid())
+  explicit ReplayAction(std::string name) : name(name), start_time(0), my_proc_id(simgrid::s4u::Actor::self()->getPid())
   {
   }
 
   virtual void execute(simgrid::xbt::ReplayAction& action)
   {
+    // Needs to be re-initialized for every action, hence here
+    start_time = smpi_process()->simulated_elapsed();
     args.parse(action);
     kernel(action);
     log_timed_action(action, start_time);
@@ -309,11 +310,6 @@ static void action_test(simgrid::xbt::ReplayAction& action)
     TRACE_smpi_testing_out(my_proc_id);
   }
   log_timed_action (action, clock);
-}
-
-static void action_wait(simgrid::xbt::ReplayAction& action)
-{
-  Replay::WaitAction().execute(action);
 }
 
 static void action_waitall(simgrid::xbt::ReplayAction& action)
@@ -831,7 +827,9 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("recv",       simgrid::smpi::action_recv);
   xbt_replay_action_register("Irecv",      simgrid::smpi::action_Irecv);
   xbt_replay_action_register("test",       simgrid::smpi::action_test);
-  xbt_replay_action_register("wait",       simgrid::smpi::action_wait);
+  std::shared_ptr<simgrid::smpi::Replay::WaitAction> wait(new simgrid::smpi::Replay::WaitAction());
+  xbt_replay_action_register("wait",
+                             std::bind(&simgrid::smpi::Replay::WaitAction::execute, wait, std::placeholders::_1));
   xbt_replay_action_register("waitAll",    simgrid::smpi::action_waitall);
   xbt_replay_action_register("barrier",    simgrid::smpi::action_barrier);
   xbt_replay_action_register("bcast",      simgrid::smpi::action_bcast);
