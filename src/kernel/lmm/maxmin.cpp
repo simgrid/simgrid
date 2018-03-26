@@ -536,7 +536,7 @@ template <class CnstList> void System::solve(CnstList& cnst_list)
 
         elem.make_active();
         simgrid::kernel::resource::Action* action = static_cast<simgrid::kernel::resource::Action*>(elem.variable->id);
-        if (modified_set_ && not action->isLinkedModifiedSet())
+        if (modified_set_ && not action->is_within_modified_set())
           modified_set_->push_back(*action);
       }
     }

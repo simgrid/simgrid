@@ -29,7 +29,7 @@ class XBT_PUBLIC Action {
 public:
   /* Lazy update needs this Set hook to maintain a list of the tracked actions */
   boost::intrusive::list_member_hook<> modified_set_hook_;
-  bool isLinkedModifiedSet() const { return modified_set_hook_.is_linked(); }
+  bool is_within_modified_set() const { return modified_set_hook_.is_linked(); }
   typedef boost::intrusive::list<
       Action, boost::intrusive::member_hook<Action, boost::intrusive::list_member_hook<>, &Action::modified_set_hook_>>
       ModifiedSet;
@@ -97,7 +97,7 @@ public:
   /** @brief Get the start time of the current action */
   double get_start_time() const { return start_time_; }
   /** @brief Get the finish time of the current action */
-  double getFinishTime() const { return finish_time_; }
+  double get_finish_time() const { return finish_time_; }
 
   /** @brief Get the user data associated to the current action */
   void* get_data() const { return data_; }
@@ -133,8 +133,7 @@ public:
   /**@brief Add a reference to the current action (refcounting) */
   void ref();
   /** @brief Unref that action (and destroy it if refcount reaches 0)
-   *  @return true if the action was destroyed and false if someone still has references on it
-   */
+   *  @return true if the action was destroyed and false if someone still has references on it */
   int unref();
 
   /** @brief Cancel the current Action if running */
@@ -147,7 +146,7 @@ public:
   virtual void resume();
 
   /** @brief Returns true if the current action is running */
-  virtual bool isSuspended();
+  bool is_suspended();
 
   /** @brief Get the maximum duration of the current action */
   double get_max_duration() const { return max_duration_; }

@@ -344,12 +344,6 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
   THROW_IMPOSSIBLE;
 }
 
-/* Test whether a flow is suspended */
-bool NetworkNS3Action::isSuspended()
-{
-  return false;
-}
-
 }
 }
 

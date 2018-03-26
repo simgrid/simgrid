@@ -222,7 +222,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
         double_update(&deltap, action.latency_, sg_surf_precision);
         action.latency_ = 0.0;
       }
-      if (action.latency_ <= 0.0 && not action.isSuspended())
+      if (action.latency_ <= 0.0 && not action.is_suspended())
         maxmin_system_->update_variable_weight(action.getVariable(), action.weight_);
     }
     if (TRACE_is_enabled()) {
@@ -419,7 +419,7 @@ void NetworkCm02Link::setBandwidth(double value)
     while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->weight_ += delta;
-      if (not action->isSuspended())
+      if (not action->is_suspended())
         model()->getMaxminSystem()->update_variable_weight(action->getVariable(), action->weight_);
     }
   }
@@ -452,7 +452,7 @@ void NetworkCm02Link::setLatency(double value)
         XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->latCurrent_);
       }
     }
-    if (not action->isSuspended())
+    if (not action->is_suspended())
       model()->getMaxminSystem()->update_variable_weight(action->getVariable(), action->weight_);
   }
 }

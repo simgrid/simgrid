@@ -184,7 +184,7 @@ void Action::resume()
   XBT_OUT();
 }
 
-bool Action::isSuspended()
+bool Action::is_suspended()
 {
   return suspended_ == SuspendStates::suspended;
 }

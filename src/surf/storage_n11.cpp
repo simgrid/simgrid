@@ -159,11 +159,6 @@ void StorageN11Action::resume()
   THROW_UNIMPLEMENTED;
 }
 
-bool StorageN11Action::isSuspended()
-{
-  return suspended_ == Action::SuspendStates::suspended;
-}
-
 void StorageN11Action::set_max_duration(double /*duration*/)
 {
   THROW_UNIMPLEMENTED;

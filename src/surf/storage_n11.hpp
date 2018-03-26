@@ -57,7 +57,6 @@ public:
   void suspend() override;
   void cancel() override;
   void resume() override;
-  bool isSuspended() override;
   void set_max_duration(double duration) override;
   void set_priority(double priority) override;
   void update_remains_lazy(double now) override;

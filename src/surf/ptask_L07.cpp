@@ -93,7 +93,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
       } else {
         action.latency_ = 0.0;
       }
-      if ((action.latency_ <= 0.0) && (action.isSuspended() == 0)) {
+      if ((action.latency_ <= 0.0) && (action.is_suspended() == 0)) {
         action.updateBound();
         maxmin_system_->update_variable_weight(action.getVariable(), 1.0);
       }

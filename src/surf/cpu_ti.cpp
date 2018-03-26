@@ -494,10 +494,10 @@ void CpuTi::updateActionsFinishTime(double now)
       action.set_finish_time(speedIntegratedTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
       if (action.get_max_duration() > NO_MAX_DURATION &&
-          action.get_start_time() + action.get_max_duration() < action.getFinishTime())
+          action.get_start_time() + action.get_max_duration() < action.get_finish_time())
         min_finish = action.get_start_time() + action.get_max_duration();
       else
-        min_finish = action.getFinishTime();
+        min_finish = action.get_finish_time();
     } else {
       /* put the max duration time on heap */
       if (action.get_max_duration() > NO_MAX_DURATION)
@@ -510,7 +510,7 @@ void CpuTi::updateActionsFinishTime(double now)
       action.heapRemove(model()->getActionHeap());
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
-              &action, action.get_start_time(), action.getFinishTime(), action.get_max_duration());
+              &action, action.get_start_time(), action.get_finish_time(), action.get_max_duration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -556,7 +556,7 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* skip action that are finishing now */
-    if (action.getFinishTime() >= 0 && action.getFinishTime() <= now)
+    if (action.get_finish_time() >= 0 && action.get_finish_time() <= now)
       continue;
 
     /* update remaining */
@@ -676,10 +676,10 @@ void CpuTiAction::set_max_duration(double duration)
   Action::set_max_duration(duration);
 
   if (duration >= 0)
-    min_finish = (get_start_time() + get_max_duration()) < getFinishTime() ? (get_start_time() + get_max_duration())
-                                                                           : getFinishTime();
+    min_finish = (get_start_time() + get_max_duration()) < get_finish_time() ? (get_start_time() + get_max_duration())
+                                                                             : get_finish_time();
   else
-    min_finish = getFinishTime();
+    min_finish = get_finish_time();
 
   /* add in action heap */
   heapUpdate(get_model()->getActionHeap(), min_finish, Action::Type::NOTSET);
