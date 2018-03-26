@@ -39,10 +39,11 @@ static MPI_Datatype MPI_DEFAULT_TYPE;
              static_cast<unsigned long>(optional));                                                                    \
   }
 
-static void log_timed_action (simgrid::xbt::ReplayAction& action, double clock){
+static void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
+{
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     std::string s = boost::algorithm::join(action, " ");
-    XBT_VERB("%s %f", s.c_str(), smpi_process()->simulated_elapsed()-clock);
+    XBT_VERB("%s %f", s.c_str(), smpi_process()->simulated_elapsed() - clock);
   }
 }
 
@@ -71,8 +72,24 @@ public:
   virtual void parse(simgrid::xbt::ReplayAction& action){};
 };
 
-template<class T> class ReplayAction {
-  protected:
+class SendRecvParser : public ActionArgParser {
+public:
+  int partner;
+  double size;
+  MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
+
+  void parse(simgrid::xbt::ReplayAction& action) override
+  {
+    CHECK_ACTION_PARAMS(action, 2, 1)
+    partner = std::stoi(action[2]);
+    size    = parse_double(action[3]);
+    if (action.size() > 4)
+      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+  }
+};
+
+template <class T> class ReplayAction {
+protected:
   const std::string name;
   T args;
 
@@ -135,6 +152,67 @@ public:
   }
 };
 
+class SendAction : public ReplayAction<SendRecvParser> {
+public:
+  SendAction() = delete;
+  SendAction(std::string name) : ReplayAction(name) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->getPid();
+
+    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
+                                                                                 Datatype::encode(args.datatype1)));
+    if (not TRACE_smpi_view_internals())
+      TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, args.size * args.datatype1->size());
+
+    if (name == "send") {
+      Request::send(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD);
+    } else if (name == "Isend") {
+      MPI_Request request = Request::isend(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD);
+      get_reqq_self()->push_back(request);
+    } else {
+      xbt_die("Don't know this action, %s", name.c_str());
+    }
+
+    TRACE_smpi_comm_out(my_proc_id);
+  }
+};
+
+class RecvAction : public ReplayAction<SendRecvParser> {
+public:
+  RecvAction() = delete;
+  explicit RecvAction(std::string name) : ReplayAction(name) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->getPid();
+
+    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
+                                                                                 Datatype::encode(args.datatype1)));
+
+    MPI_Status status;
+    // unknown size from the receiver point of view
+    if (args.size <= 0.0) {
+      Request::probe(args.partner, 0, MPI_COMM_WORLD, &status);
+      args.size = status.count;
+    }
+
+    if (name == "recv") {
+      Request::recv(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD, &status);
+    } else if (name == "Irecv") {
+      MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD);
+      get_reqq_self()->push_back(request);
+    }
+
+    TRACE_smpi_comm_out(my_proc_id);
+    // TODO: Check why this was only activated in the "recv" case and not in the "Irecv" case
+    if (name == "recv" && not TRACE_smpi_view_internals()) {
+      TRACE_smpi_recv(src_traced, my_proc_id, 0);
+    }
+  }
+};
+
+} // Replay Namespace
+
 static void action_init(simgrid::xbt::ReplayAction& action)
 {
   XBT_DEBUG("Initialize the counters");
@@ -189,110 +267,22 @@ static void action_compute(simgrid::xbt::ReplayAction& action)
 
 static void action_send(simgrid::xbt::ReplayAction& action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1)
-  int to       = std::stoi(action[2]);
-  double size=parse_double(action[3]);
-  double clock = smpi_process()->simulated_elapsed();
-
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
-
-  int my_proc_id = Actor::self()->getPid();
-  int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
-
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("send", to, size, Datatype::encode(MPI_CURRENT_TYPE)));
-  if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
-
-  Request::send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
-
-  TRACE_smpi_comm_out(my_proc_id);
-
-  log_timed_action(action, clock);
+  Replay::SendAction("send").execute(action);
 }
 
 static void action_Isend(simgrid::xbt::ReplayAction& action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1)
-  int to       = std::stoi(action[2]);
-  double size=parse_double(action[3]);
-  double clock = smpi_process()->simulated_elapsed();
-
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
-
-  int my_proc_id = Actor::self()->getPid();
-  int dst_traced = MPI_COMM_WORLD->group()->actor(to)->getPid();
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Isend", to, size, Datatype::encode(MPI_CURRENT_TYPE)));
-  if (not TRACE_smpi_view_internals())
-    TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, size * MPI_CURRENT_TYPE->size());
-
-  MPI_Request request = Request::isend(nullptr, size, MPI_CURRENT_TYPE, to, 0, MPI_COMM_WORLD);
-
-  TRACE_smpi_comm_out(my_proc_id);
-
-  get_reqq_self()->push_back(request);
-
-  log_timed_action (action, clock);
+  Replay::SendAction("Isend").execute(action);
 }
 
 static void action_recv(simgrid::xbt::ReplayAction& action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1)
-  int from     = std::stoi(action[2]);
-  double size=parse_double(action[3]);
-  double clock = smpi_process()->simulated_elapsed();
-  MPI_Status status;
-
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
-
-  int my_proc_id = Actor::self()->getPid();
-  int src_traced = MPI_COMM_WORLD->group()->actor(from)->getPid();
-
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("recv", from, size, Datatype::encode(MPI_CURRENT_TYPE)));
-
-  //unknown size from the receiver point of view
-  if (size <= 0.0) {
-    Request::probe(from, 0, MPI_COMM_WORLD, &status);
-    size=status.count;
-  }
-
-  Request::recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
-
-  TRACE_smpi_comm_out(my_proc_id);
-  if (not TRACE_smpi_view_internals()) {
-    TRACE_smpi_recv(src_traced, my_proc_id, 0);
-  }
-
-  log_timed_action (action, clock);
+  Replay::RecvAction("recv").execute(action);
 }
 
 static void action_Irecv(simgrid::xbt::ReplayAction& action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1)
-  int from     = std::stoi(action[2]);
-  double size=parse_double(action[3]);
-  double clock = smpi_process()->simulated_elapsed();
-
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
-
-  int my_proc_id = Actor::self()->getPid();
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::Pt2PtTIData("Irecv", from, size, Datatype::encode(MPI_CURRENT_TYPE)));
-  MPI_Status status;
-  //unknow size from the receiver pov
-  if (size <= 0.0) {
-    Request::probe(from, 0, MPI_COMM_WORLD, &status);
-    size = status.count;
-  }
-
-  MPI_Request request = Request::irecv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD);
-
-  TRACE_smpi_comm_out(my_proc_id);
-  get_reqq_self()->push_back(request);
-
-  log_timed_action (action, clock);
+  Replay::RecvAction("Irecv").execute(action);
 }
 
 static void action_test(simgrid::xbt::ReplayAction& action)
