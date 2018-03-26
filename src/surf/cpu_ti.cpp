@@ -362,8 +362,6 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
     CpuTiAction* action = static_cast<CpuTiAction*>(actionHeapPop());
     XBT_DEBUG("Action %p: finish", action);
     action->finish(kernel::resource::Action::State::done);
-    /* set the remains to 0 due to precision problems when updating the remaining amount */
-    action->set_remains(0);
     /* update remaining amount of all actions */
     action->cpu_->updateRemainingAmount(surf_get_clock());
   }

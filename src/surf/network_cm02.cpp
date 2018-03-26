@@ -200,7 +200,6 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
-      action->set_remains(0);
       action->finish(kernel::resource::Action::State::done);
       action->heapRemove(getActionHeap());
     }

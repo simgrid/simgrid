@@ -34,9 +34,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
     action->finish(kernel::resource::Action::State::done);
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
-
-    /* set the remains to 0 due to precision problems when updating the remaining amount */
-    action->set_remains(0);
   }
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
