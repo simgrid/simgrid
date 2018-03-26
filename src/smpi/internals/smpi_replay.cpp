@@ -266,26 +266,6 @@ static void action_compute(simgrid::xbt::ReplayAction& action)
   log_timed_action (action, clock);
 }
 
-static void action_send(simgrid::xbt::ReplayAction& action)
-{
-  Replay::SendAction("send").execute(action);
-}
-
-static void action_Isend(simgrid::xbt::ReplayAction& action)
-{
-  Replay::SendAction("Isend").execute(action);
-}
-
-static void action_recv(simgrid::xbt::ReplayAction& action)
-{
-  Replay::RecvAction("recv").execute(action);
-}
-
-static void action_Irecv(simgrid::xbt::ReplayAction& action)
-{
-  Replay::RecvAction("Irecv").execute(action);
-}
-
 static void action_test(simgrid::xbt::ReplayAction& action)
 {
   CHECK_ACTION_PARAMS(action, 0, 0)
@@ -822,12 +802,22 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("comm_size",  simgrid::smpi::action_comm_size);
   xbt_replay_action_register("comm_split", simgrid::smpi::action_comm_split);
   xbt_replay_action_register("comm_dup",   simgrid::smpi::action_comm_dup);
-  xbt_replay_action_register("send",       simgrid::smpi::action_send);
-  xbt_replay_action_register("Isend",      simgrid::smpi::action_Isend);
-  xbt_replay_action_register("recv",       simgrid::smpi::action_recv);
-  xbt_replay_action_register("Irecv",      simgrid::smpi::action_Irecv);
-  xbt_replay_action_register("test",       simgrid::smpi::action_test);
+
+  std::shared_ptr<simgrid::smpi::Replay::SendAction> isend(new simgrid::smpi::Replay::SendAction("Isend"));
+  std::shared_ptr<simgrid::smpi::Replay::SendAction> send(new simgrid::smpi::Replay::SendAction("send"));
+  std::shared_ptr<simgrid::smpi::Replay::RecvAction> irecv(new simgrid::smpi::Replay::RecvAction("Irecv"));
+  std::shared_ptr<simgrid::smpi::Replay::RecvAction> recv(new simgrid::smpi::Replay::RecvAction("recv"));
   std::shared_ptr<simgrid::smpi::Replay::WaitAction> wait(new simgrid::smpi::Replay::WaitAction());
+
+  xbt_replay_action_register("send",
+                             std::bind(&simgrid::smpi::Replay::SendAction::execute, send, std::placeholders::_1));
+  xbt_replay_action_register("Isend",
+                             std::bind(&simgrid::smpi::Replay::SendAction::execute, isend, std::placeholders::_1));
+  xbt_replay_action_register("recv",
+                             std::bind(&simgrid::smpi::Replay::RecvAction::execute, recv, std::placeholders::_1));
+  xbt_replay_action_register("Irecv",
+                             std::bind(&simgrid::smpi::Replay::RecvAction::execute, irecv, std::placeholders::_1));
+  xbt_replay_action_register("test", simgrid::smpi::action_test);
   xbt_replay_action_register("wait",
                              std::bind(&simgrid::smpi::Replay::WaitAction::execute, wait, std::placeholders::_1));
   xbt_replay_action_register("waitAll",    simgrid::smpi::action_waitall);
