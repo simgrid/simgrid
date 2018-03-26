@@ -339,7 +339,7 @@ std::list<LinkImpl*> NetworkNS3Action::links()
 {
   THROW_UNIMPLEMENTED;
 }
-void NetworkNS3Action::updateRemainingLazy(double /*now*/)
+void NetworkNS3Action::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;
 }

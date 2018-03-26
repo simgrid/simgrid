@@ -173,7 +173,7 @@ void StorageN11Action::set_priority(double /*priority*/)
 {
   THROW_UNIMPLEMENTED;
 }
-void StorageN11Action::updateRemainingLazy(double /*now*/)
+void StorageN11Action::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;
 }

@@ -42,7 +42,7 @@ namespace simgrid {
       NetworkConstantAction(NetworkConstantModel *model_, double size, double latency);
       ~NetworkConstantAction();
       double initialLatency_;
-      void updateRemainingLazy(double now) override;
+      void update_remains_lazy(double now) override;
     };
 
   }

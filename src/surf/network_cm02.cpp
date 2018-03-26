@@ -462,7 +462,7 @@ void NetworkCm02Link::setLatency(double value)
  * Action *
  **********/
 
-void NetworkCm02Action::updateRemainingLazy(double now)
+void NetworkCm02Action::update_remains_lazy(double now)
 {
   if (suspended_ != Action::SuspendStates::not_suspended)
     return;

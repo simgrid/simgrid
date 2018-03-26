@@ -51,7 +51,7 @@ public:
   void suspend() override;
   void resume() override;
   std::list<LinkImpl*> links() override;
-  void updateRemainingLazy(double now) override;
+  void update_remains_lazy(double now) override;
 
   // private:
   double lastSent_ = 0;

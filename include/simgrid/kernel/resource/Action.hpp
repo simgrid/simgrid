@@ -117,6 +117,8 @@ public:
    *  @param delta Amount to remove from the remaining time */
   void update_remains(double delta);
 
+  virtual void update_remains_lazy(double now) = 0;
+
   /** @brief Set the remaining time of the current action */
   void set_remains(double value) { remains_ = value; }
 
@@ -193,7 +195,6 @@ private:
   boost::optional<heap_type::handle_type> heap_handle_ = boost::none;
 
 public:
-  virtual void updateRemainingLazy(double now) = 0;
   void heapInsert(heap_type& heap, double key, Action::Type hat);
   void heapRemove(heap_type& heap);
   void heapUpdate(heap_type& heap, double key, Action::Type hat);

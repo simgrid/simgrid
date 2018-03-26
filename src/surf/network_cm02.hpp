@@ -69,7 +69,7 @@ class NetworkCm02Action : public NetworkAction {
 public:
   NetworkCm02Action(kernel::resource::Model* model, double cost, bool failed) : NetworkAction(model, cost, failed){};
   virtual ~NetworkCm02Action() = default;
-  void updateRemainingLazy(double now) override;
+  void update_remains_lazy(double now) override;
 };
 }
 }

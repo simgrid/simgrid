@@ -173,7 +173,7 @@ void Cpu::setSpeedTrace(tmgr_trace_t trace)
  * Action *
  **********/
 
-void CpuAction::updateRemainingLazy(double now)
+void CpuAction::update_remains_lazy(double now)
 {
   xbt_assert(get_state_set() == get_model()->getRunningActionSet(), "You're updating an action that is not running.");
   xbt_assert(get_priority() > 0, "You're updating an action that seems suspended.");

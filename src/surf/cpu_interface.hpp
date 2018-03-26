@@ -163,7 +163,7 @@ public:
 
   void set_state(simgrid::kernel::resource::Action::State state) override;
 
-  void updateRemainingLazy(double now) override;
+  void update_remains_lazy(double now) override;
   std::list<Cpu*> cpus();
   
   void suspend() override;

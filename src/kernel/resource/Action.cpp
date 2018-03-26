@@ -164,7 +164,7 @@ void Action::suspend()
       if (get_model()->getUpdateMechanism() == UM_LAZY && state_set_ == get_model()->getRunningActionSet() &&
           sharing_priority_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
-        updateRemainingLazy(surf_get_clock());
+        update_remains_lazy(surf_get_clock());
       }
     }
     suspended_ = SuspendStates::suspended;
@@ -225,7 +225,7 @@ double Action::get_remains()
   XBT_IN("(%p)", this);
   /* update remains before return it */
   if (get_model()->getUpdateMechanism() == UM_LAZY) /* update remains before return it */
-    updateRemainingLazy(surf_get_clock());
+    update_remains_lazy(surf_get_clock());
   XBT_OUT();
   return remains_;
 }

@@ -65,7 +65,7 @@ double Model::nextOccuringEventLazy(double now)
     if (action->get_priority() <= 0 || action->getType() == Action::Type::LATENCY)
       continue;
 
-    action->updateRemainingLazy(now);
+    action->update_remains_lazy(now);
 
     double min   = -1;
     double share = action->getVariable()->get_value();
