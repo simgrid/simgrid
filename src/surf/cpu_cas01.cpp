@@ -182,7 +182,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
   model()->getMaxminSystem()->update_variable_weight(action->get_variable(), 0.0);
   if (model()->getUpdateMechanism() == UM_LAZY) { // remove action from the heap
-    action->heapRemove(model()->getActionHeap());
+    action->heapRemove();
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
     // max_duration correctly at the next call to share_resources
     model()->getModifiedSet()->push_front(*action);

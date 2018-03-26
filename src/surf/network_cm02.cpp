@@ -191,7 +191,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     if (action->get_type() == kernel::resource::Action::Type::LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       maxmin_system_->update_variable_weight(action->get_variable(), action->weight_);
-      action->heapRemove(getActionHeap());
+      action->heapRemove();
       action->set_last_update();
 
       // if I am wearing a max_duration or normal hat
@@ -201,7 +201,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
       action->finish(kernel::resource::Action::State::done);
-      action->heapRemove(getActionHeap());
+      action->heapRemove();
     }
   }
 }
@@ -309,9 +309,9 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
     if (getUpdateMechanism() == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->get_last_update());
-      action->heapInsert(getActionHeap(), action->latency_ + action->get_last_update(),
-                         route.empty() ? kernel::resource::Action::Type::NORMAL
-                                       : kernel::resource::Action::Type::LATENCY);
+      action->heapInsert(action->latency_ + action->get_last_update(), route.empty()
+                                                                           ? kernel::resource::Action::Type::NORMAL
+                                                                           : kernel::resource::Action::Type::LATENCY);
     }
   } else
     action->set_variable(maxmin_system_->variable_new(action, 1.0, -1.0, constraints_per_variable));
@@ -485,7 +485,7 @@ void NetworkCm02Action::update_remains_lazy(double now)
   if ((get_remains_no_update() <= 0 && (get_variable()->get_weight() > 0)) ||
       ((max_duration > NO_MAX_DURATION) && (max_duration <= 0))) {
     finish(Action::State::done);
-    heapRemove(get_model()->getActionHeap());
+    heapRemove();
   }
 
   set_last_update();

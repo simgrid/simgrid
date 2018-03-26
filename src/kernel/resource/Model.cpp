@@ -93,7 +93,7 @@ double Model::nextOccuringEventLazy(double now)
               action->get_start_time(), min, share, action->get_max_duration());
 
     if (min > -1) {
-      action->heapUpdate(action_heap_, min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
+      action->heapUpdate(min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
       DIE_IMPOSSIBLE;

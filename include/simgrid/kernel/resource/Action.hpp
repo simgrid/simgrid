@@ -193,9 +193,9 @@ private:
   boost::optional<heap_type::handle_type> heap_hook_ = boost::none;
 
 public:
-  void heapInsert(heap_type& heap, double key, Action::Type hat);
-  void heapRemove(heap_type& heap);
-  void heapUpdate(heap_type& heap, double key, Action::Type hat);
+  void heapInsert(double key, Action::Type hat);
+  void heapRemove();
+  void heapUpdate(double key, Action::Type hat);
   void clearHeapHandle() { heap_hook_ = boost::none; }
 
   lmm::Variable* get_variable() const { return variable_; }
