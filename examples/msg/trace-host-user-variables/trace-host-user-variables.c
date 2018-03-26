@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
   }
   xbt_dynar_t edges_type = TRACE_get_edge_types ();
   if (edges_type){
-    XBT_INFO ("Node types in the trace:");
+    XBT_INFO("Edge types in the trace:");
     char *edge_type;
     xbt_dynar_foreach (edges_type, cursor, edge_type){
       XBT_INFO ("%s", edge_type);
