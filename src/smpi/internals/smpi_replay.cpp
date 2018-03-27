@@ -100,18 +100,38 @@ public:
   }
 };
 
-class BcastArgParser : public ActionArgParser {
+class CollCommParser : public ActionArgParser {
 public:
   double size;
-  int root;
-  MPI_Datatype datatype = MPI_DEFAULT_TYPE;
+  double comm_size;
+  double comp_size;
+  int root = 0;
+  MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
+  MPI_Datatype datatype2 = MPI_DEFAULT_TYPE;
+};
+
+class BcastArgParser : public CollCommParser {
+public:
   void parse(simgrid::xbt::ReplayAction& action) override
   {
     CHECK_ACTION_PARAMS(action, 1, 2)
     size = parse_double(action[2]);
     root = (action.size() > 3) ? std::stoi(action[3]) : 0;
     if (action.size() > 4)
-      datatype = simgrid::smpi::Datatype::decode(action[4]);
+      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+  }
+};
+
+class ReduceArgParser : public CollCommParser {
+public:
+  void parse(simgrid::xbt::ReplayAction& action) override
+  {
+    CHECK_ACTION_PARAMS(action, 2, 2)
+    comm_size = parse_double(action[2]);
+    comp_size = parse_double(action[3]);
+    root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
+    if (action.size() > 5)
+      datatype1 = simgrid::smpi::Datatype::decode(action[5]);
   }
 };
 
@@ -136,6 +156,16 @@ public:
   }
 
   virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
+
+  void* send_buffer(int size)
+  {
+    return smpi_get_tmp_sendbuffer(size);
+  }
+
+  void* recv_buffer(int size)
+  {
+    return smpi_get_tmp_recvbuffer(size);
+  }
 };
 
 class WaitAction : public ReplayAction<ActionArgParser> {
@@ -338,62 +368,47 @@ public:
   {
     TRACE_smpi_comm_in(my_proc_id, "action_bcast",
                        new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->getPid(), 
-                                                      -1.0, args.size, -1, Datatype::encode(args.datatype), ""));
+                                                      -1.0, args.size, -1, Datatype::encode(args.datatype1), ""));
 
-    void* sendbuf = smpi_get_tmp_sendbuffer(args.size * args.datatype->size());
-
-    Colls::bcast(sendbuf, args.size, args.datatype, args.root, MPI_COMM_WORLD);
+    Colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
 
     TRACE_smpi_comm_out(my_proc_id);
   }
 };
 
+class ReduceAction : public ReplayAction<ReduceArgParser> {
+public:
+  ReduceAction() : ReplayAction("reduce") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    TRACE_smpi_comm_in(my_proc_id, "action_reduce",
+                       new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root)->getPid(), args.comp_size,
+                                                      args.comm_size, -1, Datatype::encode(args.datatype1), ""));
 
-static void action_reduce(simgrid::xbt::ReplayAction& action)
-{
-  CHECK_ACTION_PARAMS(action, 2, 2)
-  double comm_size = parse_double(action[2]);
-  double comp_size = parse_double(action[3]);
-  double clock = smpi_process()->simulated_elapsed();
-  int root         = (action.size() > 4) ? std::stoi(action[4]) : 0;
+    Colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
+        recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL, args.root, MPI_COMM_WORLD);
+    smpi_execute_flops(args.comp_size);
 
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 5) ? simgrid::smpi::Datatype::decode(action[5]) : MPI_DEFAULT_TYPE;
+    TRACE_smpi_comm_out(my_proc_id);
+  }
+};
 
-  int my_proc_id = Actor::self()->getPid();
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(root)->getPid(), comp_size,
-                                                    comm_size, -1, Datatype::encode(MPI_CURRENT_TYPE), ""));
+class AllReduceAction : public ReplayAction<ActionArgParser> {
+public:
+  AllReduceAction() : ReplayAction("barrier") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::CollTIData("allReduce", -1, comp_size, comm_size, -1,
+                                                                                Datatype::encode(MPI_CURRENT_TYPE), ""));
 
-  void* recvbuf = smpi_get_tmp_recvbuffer(comm_size * MPI_CURRENT_TYPE->size());
-  void* sendbuf = smpi_get_tmp_sendbuffer(comm_size * MPI_CURRENT_TYPE->size());
-  Colls::reduce(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
-  smpi_execute_flops(comp_size);
+    Colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()), 
+        recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+    smpi_execute_flops(args.comp_size);
 
-  TRACE_smpi_comm_out(my_proc_id);
-  log_timed_action (action, clock);
-}
-
-static void action_allReduce(simgrid::xbt::ReplayAction& action)
-{
-  CHECK_ACTION_PARAMS(action, 2, 1)
-  double comm_size = parse_double(action[2]);
-  double comp_size = parse_double(action[3]);
-
-  MPI_Datatype MPI_CURRENT_TYPE = (action.size() > 4) ? simgrid::smpi::Datatype::decode(action[4]) : MPI_DEFAULT_TYPE;
-
-  double clock = smpi_process()->simulated_elapsed();
-  int my_proc_id = Actor::self()->getPid();
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::CollTIData("allReduce", -1, comp_size, comm_size, -1,
-                                                                              Datatype::encode(MPI_CURRENT_TYPE), ""));
-
-  void *recvbuf = smpi_get_tmp_recvbuffer(comm_size* MPI_CURRENT_TYPE->size());
-  void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
-  Colls::allreduce(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
-  smpi_execute_flops(comp_size);
-
-  TRACE_smpi_comm_out(my_proc_id);
-  log_timed_action (action, clock);
-}
+    TRACE_smpi_comm_out(my_proc_id);
+  }
+};
+} // Replay Namespace
 
 static void action_allToAll(simgrid::xbt::ReplayAction& action)
 {
@@ -802,7 +817,7 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("waitAll", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::WaitAllAction().execute(action); });
   xbt_replay_action_register("barrier", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::BarrierAction().execute(action); });
   xbt_replay_action_register("bcast",   [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::BcastAction().execute(action); });
-  xbt_replay_action_register("reduce",     simgrid::smpi::action_reduce);
+  xbt_replay_action_register("reduce",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::ReduceAction().execute(action); });
   xbt_replay_action_register("allReduce",  simgrid::smpi::action_allReduce);
   xbt_replay_action_register("allToAll",   simgrid::smpi::action_allToAll);
   xbt_replay_action_register("allToAllV",  simgrid::smpi::action_allToAllv);
