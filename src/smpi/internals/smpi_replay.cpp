@@ -143,9 +143,10 @@ public:
 
     int rank = request->comm() != MPI_COMM_NULL ? request->comm()->rank() : -1;
 
-    MPI_Group group          = request->comm()->group();
-    int src_traced           = group->rank(request->src());
-    int dst_traced           = group->rank(request->dst());
+    // Must be taken before Request::wait() since the request may be set to
+    // MPI_REQUEST_NULL by Request::wait!
+    int src                  = request->comm()->group()->rank(request->src());
+    int dst                  = request->comm()->group()->rank(request->dst());
     bool is_wait_for_receive = (request->flags() & RECV);
     // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("wait"));
