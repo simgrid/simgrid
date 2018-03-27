@@ -169,7 +169,7 @@ LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth
   return new NetworkCm02Link(this, name, bandwidth, latency, policy, maxmin_system_);
 }
 
-void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
+void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
 {
   while (not actionHeapIsEmpty() && double_equals(actionHeapTopDate(), now, sg_surf_precision)) {
 
@@ -206,10 +206,9 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
   }
 }
 
-
-void NetworkCm02Model::updateActionsStateFull(double now, double delta)
+void NetworkCm02Model::update_actions_state_full(double now, double delta)
 {
-  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+  for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
     NetworkCm02Action& action = static_cast<NetworkCm02Action&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     XBT_DEBUG("Something happened to action %p", &action);
@@ -405,8 +404,8 @@ void NetworkCm02Link::setBandwidth(double value)
 {
   bandwidth_.peak = value;
 
-  model()->getMaxminSystem()->update_constraint_bound(constraint(),
-                                                      sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
+  model()->get_maxmin_system()->update_constraint_bound(constraint(),
+                                                        sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
   TRACE_surf_link_set_bandwidth(surf_get_clock(), getCname(), sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
 
   if (sg_weight_S_parameter > 0) {
@@ -420,7 +419,7 @@ void NetworkCm02Link::setBandwidth(double value)
       NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->weight_ += delta;
       if (not action->is_suspended())
-        model()->getMaxminSystem()->update_variable_weight(action->get_variable(), action->weight_);
+        model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
     }
   }
 }
@@ -440,10 +439,10 @@ void NetworkCm02Link::setLatency(double value)
     action->latCurrent_ += delta;
     action->weight_ += delta;
     if (action->rate_ < 0)
-      model()->getMaxminSystem()->update_variable_bound(action->get_variable(),
-                                                        sg_tcp_gamma / (2.0 * action->latCurrent_));
+      model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
+                                                          sg_tcp_gamma / (2.0 * action->latCurrent_));
     else {
-      model()->getMaxminSystem()->update_variable_bound(
+      model()->get_maxmin_system()->update_variable_bound(
           action->get_variable(), std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)));
 
       if (action->rate_ < sg_tcp_gamma / (2.0 * action->latCurrent_)) {
@@ -453,7 +452,7 @@ void NetworkCm02Link::setLatency(double value)
       }
     }
     if (not action->is_suspended())
-      model()->getMaxminSystem()->update_variable_weight(action->get_variable(), action->weight_);
+      model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
   }
 }
 

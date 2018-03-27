@@ -29,8 +29,8 @@ class StorageN11Model : public StorageModel {
 public:
   StorageImpl* createStorage(std::string id, std::string type_id, std::string content_name,
                              std::string attach) override;
-  double nextOccuringEvent(double now) override;
-  void updateActionsState(double now, double delta) override;
+  double next_occuring_event(double now) override;
+  void update_actions_state(double now, double delta) override;
 };
 
 /************

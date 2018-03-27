@@ -66,7 +66,7 @@ int main(int argc, char **argv)
     XBT_INFO("Next Event : %g", surf_get_clock());
     XBT_DEBUG("\t CPU actions");
 
-    simgrid::kernel::resource::Action::StateSet* action_list = surf_cpu_model_pm->getFailedActionSet();
+    simgrid::kernel::resource::Action::StateSet* action_list = surf_cpu_model_pm->get_failed_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Failed action");
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
       action.unref();
     }
 
-    action_list = surf_cpu_model_pm->getDoneActionSet();
+    action_list = surf_cpu_model_pm->get_done_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Done action");
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
       action.unref();
     }
 
-    action_list = surf_network_model->getFailedActionSet();
+    action_list = surf_network_model->get_failed_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   Network Failed action");
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
       action.unref();
     }
 
-    action_list = surf_network_model->getDoneActionSet();
+    action_list = surf_network_model->get_done_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   Network Done action");
@@ -98,8 +98,9 @@ int main(int argc, char **argv)
       action.unref();
     }
 
-  } while ((surf_network_model->getRunningActionSet()->size() ||
-           surf_cpu_model_pm->getRunningActionSet()->size()) && surf_solve(-1.0) >= 0.0);
+  } while (
+      (surf_network_model->get_running_action_set()->size() || surf_cpu_model_pm->get_running_action_set()->size()) &&
+      surf_solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");
 

@@ -20,9 +20,9 @@ public:
   LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
-  double nextOccuringEvent(double now) override;
+  double next_occuring_event(double now) override;
   bool nextOccuringEventIsIdempotent() override { return false; }
-  void updateActionsState(double now, double delta) override;
+  void update_actions_state(double now, double delta) override;
 };
 
 /************

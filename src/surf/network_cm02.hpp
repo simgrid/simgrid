@@ -40,8 +40,8 @@ public:
   virtual ~NetworkCm02Model() = default;
   LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;
-  void updateActionsStateLazy(double now, double delta) override;
-  void updateActionsStateFull(double now, double delta) override;
+  void update_actions_state_lazy(double now, double delta) override;
+  void update_actions_state_full(double now, double delta) override;
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 };
 

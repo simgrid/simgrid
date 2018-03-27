@@ -35,8 +35,8 @@ public:
    */
   virtual Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)=0;
 
-  void updateActionsStateLazy(double now, double delta) override;
-  void updateActionsStateFull(double now, double delta) override;
+  void update_actions_state_lazy(double now, double delta) override;
+  void update_actions_state_full(double now, double delta) override;
 };
 
 /************

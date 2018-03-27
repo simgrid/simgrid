@@ -61,7 +61,7 @@ VMModel::VMModel()
   s4u::Host::onStateChange.connect(hostStateChange);
 }
 
-double VMModel::nextOccuringEvent(double now)
+double VMModel::next_occuring_event(double now)
 {
   /* TODO: update action's cost with the total cost of processes on the VM. */
 
@@ -98,7 +98,7 @@ double VMModel::nextOccuringEvent(double now)
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->getPm()->getCname());
 
     xbt_assert(cpu->model() == surf_cpu_model_vm);
-    kernel::lmm::System* vcpu_system = cpu->model()->getMaxminSystem();
+    kernel::lmm::System* vcpu_system = cpu->model()->get_maxmin_system();
     vcpu_system->update_constraint_bound(cpu->constraint(), virt_overhead * solved_value);
   }
 
@@ -106,7 +106,7 @@ double VMModel::nextOccuringEvent(double now)
   ignoreEmptyVmInPmLMM();
 
   /* 3. Ready. Get the next occurring event */
-  return surf_cpu_model_vm->nextOccuringEvent(now);
+  return surf_cpu_model_vm->next_occuring_event(now);
 }
 
 /************

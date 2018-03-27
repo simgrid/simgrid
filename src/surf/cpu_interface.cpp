@@ -20,7 +20,7 @@ namespace surf {
  * Model *
  *********/
 
-void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
+void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 {
   while (not actionHeapIsEmpty() && double_equals(actionHeapTopDate(), now, sg_surf_precision)) {
 
@@ -39,7 +39,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    for (kernel::resource::Action const& action : *getRunningActionSet()) {
+    for (kernel::resource::Action const& action : *get_running_action_set()) {
       if (smaller < 0 || action.get_last_update() < smaller)
         smaller = action.get_last_update();
     }
@@ -49,9 +49,9 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
   }
 }
 
-void CpuModel::updateActionsStateFull(double now, double delta)
+void CpuModel::update_actions_state_full(double now, double delta)
 {
-  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+  for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
     CpuAction& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (TRACE_is_enabled()) {
@@ -172,7 +172,8 @@ void Cpu::setSpeedTrace(tmgr_trace_t trace)
 
 void CpuAction::update_remains_lazy(double now)
 {
-  xbt_assert(get_state_set() == get_model()->getRunningActionSet(), "You're updating an action that is not running.");
+  xbt_assert(get_state_set() == get_model()->get_running_action_set(),
+             "You're updating an action that is not running.");
   xbt_assert(get_priority() > 0, "You're updating an action that seems suspended.");
 
   double delta = now - get_last_update();
