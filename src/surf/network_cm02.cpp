@@ -94,7 +94,7 @@ void surf_network_model_init_Reno()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -111,7 +111,7 @@ void surf_network_model_init_Reno2()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -127,15 +127,14 @@ void surf_network_model_init_Vegas()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
 namespace simgrid {
 namespace surf {
 
-NetworkCm02Model::NetworkCm02Model()
-  :NetworkModel()
+NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool)) : NetworkModel()
 {
   std::string optim = xbt_cfg_get_string("network/optim");
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
@@ -143,30 +142,25 @@ NetworkCm02Model::NetworkCm02Model()
   if (optim == "Full") {
     setUpdateMechanism(kernel::resource::Model::UpdateAlgo::Full);
   } else if (optim == "Lazy") {
+    xbt_assert(select || xbt_cfg_is_default_value("network/maxmin-selective-update"),
+               "You cannot disable network selective update when using the lazy update mechanism");
     select = true;
     setUpdateMechanism(kernel::resource::Model::UpdateAlgo::Lazy);
-    xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
-               "You cannot disable selective update when using the lazy update mechanism");
   } else {
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
 
-  maxmin_system_ = new simgrid::kernel::lmm::System(select);
+  set_maxmin_system(make_new_lmm_system(select));
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy)
-    maxmin_system_->modified_set_ = new kernel::resource::Action::ModifiedSet();
-}
-
-NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(kernel::lmm::System* self)) : NetworkCm02Model()
-{
-  maxmin_system_->solve_fun = specificSolveFun;
+    get_maxmin_system()->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
 LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth, double latency,
                                        e_surf_link_sharing_policy_t policy)
 {
-  return new NetworkCm02Link(this, name, bandwidth, latency, policy, maxmin_system_);
+  return new NetworkCm02Link(this, name, bandwidth, latency, policy, get_maxmin_system());
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
@@ -190,7 +184,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
     // if I am wearing a latency hat
     if (action->get_type() == kernel::resource::Action::Type::LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
-      maxmin_system_->update_variable_weight(action->get_variable(), action->weight_);
+      get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
       action->heapRemove();
       action->set_last_update();
 
@@ -222,7 +216,7 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
         action.latency_ = 0.0;
       }
       if (action.latency_ <= 0.0 && not action.is_suspended())
-        maxmin_system_->update_variable_weight(action.get_variable(), action.weight_);
+        get_maxmin_system()->update_variable_weight(action.get_variable(), action.weight_);
     }
     if (TRACE_is_enabled()) {
       int n = action.get_variable()->get_number_of_constraint();
@@ -304,7 +298,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   constraints_per_variable += back_route.size();
 
   if (action->latency_ > 0) {
-    action->set_variable(maxmin_system_->variable_new(action, 0.0, -1.0, constraints_per_variable));
+    action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
     if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->get_last_update());
@@ -313,25 +307,25 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
                                                                            : kernel::resource::Action::Type::LATENCY);
     }
   } else
-    action->set_variable(maxmin_system_->variable_new(action, 1.0, -1.0, constraints_per_variable));
+    action->set_variable(get_maxmin_system()->variable_new(action, 1.0, -1.0, constraints_per_variable));
 
   if (action->rate_ < 0) {
-    maxmin_system_->update_variable_bound(
+    get_maxmin_system()->update_variable_bound(
         action->get_variable(), (action->latCurrent_ > 0) ? sg_tcp_gamma / (2.0 * action->latCurrent_) : -1.0);
   } else {
-    maxmin_system_->update_variable_bound(action->get_variable(),
-                                          (action->latCurrent_ > 0)
-                                              ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_))
-                                              : action->rate_);
+    get_maxmin_system()->update_variable_bound(action->get_variable(),
+                                               (action->latCurrent_ > 0)
+                                                   ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_))
+                                                   : action->rate_);
   }
 
   for (auto const& link : route)
-    maxmin_system_->expand(link->constraint(), action->get_variable(), 1.0);
+    get_maxmin_system()->expand(link->constraint(), action->get_variable(), 1.0);
 
   if (not back_route.empty()) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Crosstraffic active adding backward flow using 5%%");
     for (auto const& link : back_route)
-      maxmin_system_->expand(link->constraint(), action->get_variable(), .05);
+      get_maxmin_system()->expand(link->constraint(), action->get_variable(), .05);
 
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())

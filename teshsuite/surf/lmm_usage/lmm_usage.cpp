@@ -27,6 +27,19 @@ using namespace simgrid::surf;
 
 enum method_t { MAXMIN, LAGRANGE_RENO, LAGRANGE_VEGAS };
 
+static simgrid::kernel::lmm::System* new_system(method_t method, bool update)
+{
+  switch (method) {
+    case MAXMIN:
+      return simgrid::kernel::lmm::make_new_maxmin_system(update);
+    case LAGRANGE_VEGAS:
+    case LAGRANGE_RENO:
+      return simgrid::kernel::lmm::make_new_lagrange_system(update);
+    default:
+      xbt_die("Invalid method");
+  }
+}
+
 static double dichotomy(double func(double), double min, double max, double min_error)
 {
   double overall_error = 2 * min_error;
@@ -97,7 +110,7 @@ static void test1(method_t method)
     set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fpi,
                                   simgrid::kernel::lmm::func_reno_fpi);
 
-  simgrid::kernel::lmm::System* Sys    = new simgrid::kernel::lmm::System(true);
+  simgrid::kernel::lmm::System* Sys    = new_system(method, true);
   simgrid::kernel::lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
   simgrid::kernel::lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
   simgrid::kernel::lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
@@ -121,7 +134,7 @@ static void test1(method_t method)
   Sys->expand(L3, R_3, 1.0);
 
   if (method == MAXMIN) {
-    lmm_solve(Sys);
+    Sys->solve();
   } else {
     double x;
     if (method == LAGRANGE_VEGAS) {
@@ -146,7 +159,7 @@ static void test1(method_t method)
       xbt_die( "Invalid method");
     }
 
-    lagrange_solve(Sys);
+    Sys->solve();
 
     double max_deviation = 0.0;
     max_deviation        = std::max(max_deviation, fabs(R_1->get_value() - x));
@@ -185,7 +198,8 @@ static void test2(method_t method)
     set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
                                   simgrid::kernel::lmm::func_reno_fpi);
 
-  simgrid::kernel::lmm::System* Sys      = new simgrid::kernel::lmm::System(true);
+  simgrid::kernel::lmm::System* Sys = new_system(method, true);
+
   simgrid::kernel::lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
   simgrid::kernel::lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
 
@@ -198,13 +212,7 @@ static void test2(method_t method)
   Sys->expand(CPU1, T1, 1.0);
   Sys->expand(CPU2, T2, 1.0);
 
-  if (method == MAXMIN) {
-    lmm_solve(Sys);
-  } else if (method == LAGRANGE_VEGAS || method == LAGRANGE_RENO) {
-    lagrange_solve(Sys);
-  } else {
-    xbt_die("Invalid method");
-  }
+  Sys->solve();
 
   PRINT_VAR(T1);
   PRINT_VAR(T2);
@@ -258,7 +266,7 @@ static void test3(method_t method)
     set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
                                   simgrid::kernel::lmm::func_reno_fpi);
 
-  simgrid::kernel::lmm::System* Sys = new simgrid::kernel::lmm::System(true);
+  simgrid::kernel::lmm::System* Sys = new_system(method, true);
 
   /* Creates the constraints */
   simgrid::kernel::lmm::Constraint** tmp_cnst = new simgrid::kernel::lmm::Constraint*[15];
@@ -278,15 +286,7 @@ static void test3(method_t method)
       if (A[i][j])
         Sys->expand(tmp_cnst[i], tmp_var[j], 1.0);
 
-  if (method == MAXMIN) {
-    lmm_solve(Sys);
-  } else if (method == LAGRANGE_VEGAS) {
-    lagrange_solve(Sys);
-  } else if (method == LAGRANGE_RENO) {
-    lagrange_solve(Sys);
-  } else {
-    xbt_die("Invalid method");
-  }
+  Sys->solve();
 
   for (int j = 0; j < 16; j++)
     PRINT_VAR(tmp_var[j]);

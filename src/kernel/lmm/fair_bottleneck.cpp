@@ -17,19 +17,24 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 #define SHOW_EXPR_D(expr) XBT_DEBUG(#expr " = %d", expr);
 #define SHOW_EXPR_P(expr) XBT_DEBUG(#expr " = %p", expr);
 
-void simgrid::kernel::lmm::bottleneck_solve(lmm::System* sys)
+simgrid::kernel::lmm::System* simgrid::kernel::lmm::make_new_fair_bottleneck_system(bool selective_update)
 {
-  if (not sys->modified)
+  return new simgrid::kernel::lmm::FairBottleneck(selective_update);
+}
+
+void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
+{
+  if (not modified)
     return;
 
-  XBT_DEBUG("Variable set : %zu", sys->variable_set.size());
-  for (Variable& var : sys->variable_set) {
+  XBT_DEBUG("Variable set : %zu", variable_set.size());
+  for (Variable& var : variable_set) {
     var.value = 0.0;
     XBT_DEBUG("Handling variable %p", &var);
     if (var.sharing_weight > 0.0 && std::find_if(begin(var.cnsts), end(var.cnsts), [](Element const& x) {
                                       return x.consumption_weight != 0.0;
                                     }) != end(var.cnsts)) {
-      sys->saturated_variable_set.push_back(var);
+      saturated_variable_set.push_back(var);
     } else {
       XBT_DEBUG("Err, finally, there is no need to take care of variable %p", &var);
       if (var.sharing_weight > 0.0)
@@ -37,11 +42,11 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm::System* sys)
     }
   }
 
-  XBT_DEBUG("Active constraints : %zu", sys->active_constraint_set.size());
-  for (Constraint& cnst : sys->active_constraint_set) {
-    sys->saturated_constraint_set.push_back(cnst);
+  XBT_DEBUG("Active constraints : %zu", active_constraint_set.size());
+  for (Constraint& cnst : active_constraint_set) {
+    saturated_constraint_set.push_back(cnst);
   }
-  for (Constraint& cnst : sys->saturated_constraint_set) {
+  for (Constraint& cnst : saturated_constraint_set) {
     cnst.remaining = cnst.bound;
     cnst.usage     = 0.0;
   }
@@ -51,12 +56,12 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm::System* sys)
   /*
    * Compute Usage and store the variables that reach the maximum.
    */
-  auto& var_list  = sys->saturated_variable_set;
-  auto& cnst_list = sys->saturated_constraint_set;
+  auto& var_list  = saturated_variable_set;
+  auto& cnst_list = saturated_constraint_set;
   do {
     if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
       XBT_DEBUG("Fair bottleneck done");
-      sys->print();
+      print();
     }
     XBT_DEBUG("******* Constraints to process: %zu *******", cnst_list.size());
     for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
@@ -142,9 +147,9 @@ void simgrid::kernel::lmm::bottleneck_solve(lmm::System* sys)
   } while (not var_list.empty());
 
   cnst_list.clear();
-  sys->modified = true;
+  modified = true;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     XBT_DEBUG("Fair bottleneck done");
-    sys->print();
+    print();
   }
 }

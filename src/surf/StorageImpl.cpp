@@ -32,7 +32,7 @@ simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kerne
 
 StorageModel::StorageModel() : Model()
 {
-  maxmin_system_ = new simgrid::kernel::lmm::System(true /* selective update */);
+  set_maxmin_system(new simgrid::kernel::lmm::System(true /* selective update */));
 }
 
 StorageModel::~StorageModel()

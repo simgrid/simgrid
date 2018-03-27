@@ -35,8 +35,7 @@ namespace surf {
 
 class NetworkCm02Model : public NetworkModel {
 public:
-  NetworkCm02Model();
-  explicit NetworkCm02Model(void (*solve_fun)(kernel::lmm::System* self));
+  explicit NetworkCm02Model(kernel::lmm::System* (*make_new_sys)(bool) = &simgrid::kernel::lmm::make_new_maxmin_system);
   virtual ~NetworkCm02Model() = default;
   LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
                        e_surf_link_sharing_policy_t policy) override;

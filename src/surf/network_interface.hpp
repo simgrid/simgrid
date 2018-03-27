@@ -64,12 +64,6 @@ public:
    */
   virtual kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) = 0;
 
-  /** @brief Function pointer to the function to use to solve the lmm_system_t
-   *
-   * @param system The lmm_system_t to solve
-   */
-  void (*f_networkSolve)(kernel::lmm::System*) = kernel::lmm::lmm_solve;
-
   /**
    * @brief Get the right multiplicative factor for the latency.
    * @details Depending on the model, the effective latency when sending

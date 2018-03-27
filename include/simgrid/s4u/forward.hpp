@@ -33,6 +33,8 @@ class Host;
 class Link;
 class Mailbox;
 using MailboxPtr = boost::intrusive_ptr<Mailbox>;
+XBT_PUBLIC void intrusive_ptr_release(Mailbox* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(Mailbox* m);
 class Mutex;
 class NetZone;
 class VirtualMachine;
