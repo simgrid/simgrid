@@ -81,7 +81,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
 
   fprintf(stderr,"Starting to solve(%i)\n",myrand()%1000);
   date = xbt_os_time() * 1000000;
-  lmm_solve(Sys);
+  Sys->solve();
   date = xbt_os_time() * 1000000 - date;
 
   if(mode==2){

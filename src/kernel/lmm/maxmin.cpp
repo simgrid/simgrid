@@ -33,6 +33,11 @@ typedef std::vector<int> dyn_light_t;
 int Variable::Global_debug_id   = 1;
 int Constraint::Global_debug_id = 1;
 
+System* make_new_maxmin_system(bool selective_update)
+{
+  return new System(selective_update);
+}
+
 int Element::get_concurrency() const
 {
   // Ignore element with weight less than one (e.g. cross-traffic)
@@ -152,7 +157,6 @@ System::System(bool selective_update) : selective_update_active(selective_update
 
   variable_mallocator =
       xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
-  solve_fun = &lmm_solve;
 }
 
 System::~System()
@@ -486,7 +490,7 @@ void System::print() const
   }
 }
 
-void System::solve()
+void System::lmm_solve()
 {
   if (modified) {
     XBT_IN("(sys=%p)", this);
@@ -494,14 +498,14 @@ void System::solve()
      * constraints that changed are considered. Otherwise all constraints with active actions are considered.
      */
     if (selective_update_active)
-      solve(modified_constraint_set);
+      lmm_solve(modified_constraint_set);
     else
-      solve(active_constraint_set);
+      lmm_solve(active_constraint_set);
     XBT_OUT();
   }
 }
 
-template <class CnstList> void System::solve(CnstList& cnst_list)
+template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
 {
   double min_usage = -1;
   double min_bound = -1;
@@ -688,11 +692,6 @@ template <class CnstList> void System::solve(CnstList& cnst_list)
   check_concurrency();
 
   delete[] cnst_light_tab;
-}
-
-void lmm_solve(System* sys)
-{
-  sys->solve();
 }
 
 /** \brief Attribute the value bound to var->bound.

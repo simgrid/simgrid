@@ -94,7 +94,7 @@ void surf_network_model_init_Reno()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -111,7 +111,7 @@ void surf_network_model_init_Reno2()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -127,15 +127,14 @@ void surf_network_model_init_Vegas()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::lagrange_solve);
+  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
 namespace simgrid {
 namespace surf {
 
-NetworkCm02Model::NetworkCm02Model()
-  :NetworkModel()
+NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool)) : NetworkModel()
 {
   std::string optim = xbt_cfg_get_string("network/optim");
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
@@ -151,16 +150,11 @@ NetworkCm02Model::NetworkCm02Model()
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
 
-  set_maxmin_system(new simgrid::kernel::lmm::System(select));
+  set_maxmin_system(make_new_lmm_system(select));
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
   if (getUpdateMechanism() == UM_LAZY)
     get_maxmin_system()->modified_set_ = new kernel::resource::Action::ModifiedSet();
-}
-
-NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(kernel::lmm::System* self)) : NetworkCm02Model()
-{
-  get_maxmin_system()->solve_fun = specificSolveFun;
 }
 
 LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth, double latency,

@@ -34,10 +34,10 @@ namespace simgrid {
 namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
-  set_maxmin_system(new simgrid::kernel::lmm::System(true /* selective update */));
-  get_maxmin_system()->solve_fun = &simgrid::kernel::lmm::bottleneck_solve;
-  surf_network_model = new NetworkL07Model(this, get_maxmin_system());
-  surf_cpu_model_pm  = new CpuL07Model(this, get_maxmin_system());
+  auto* maxmin_system = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
+  set_maxmin_system(maxmin_system);
+  surf_network_model = new NetworkL07Model(this, maxmin_system);
+  surf_cpu_model_pm  = new CpuL07Model(this, maxmin_system);
 }
 
 HostL07Model::~HostL07Model()

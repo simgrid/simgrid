@@ -33,11 +33,14 @@ double (*func_f_def)(const Variable&, double);
 double (*func_fp_def)(const Variable&, double);
 double (*func_fpi_def)(const Variable&, double);
 
+System* make_new_lagrange_system(bool selective_update)
+{
+  return new Lagrange(selective_update);
+}
+
 /*
  * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
  */
-// solves the proportional fairness using a Lagrangian optimization with dichotomy step
-void lagrange_solve(kernel::lmm::System* sys);
 // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
 static double dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst, double min_error);
 // computes the value of the differential of constraint cnst applied to lambda
@@ -137,7 +140,8 @@ static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
   return obj;
 }
 
-void lagrange_solve(kernel::lmm::System* sys)
+// solves the proportional fairness using a Lagrangian optimization with dichotomy step
+void Lagrange::lagrange_solve()
 {
   /* Lagrange Variables. */
   int max_iterations       = 100;
@@ -152,14 +156,14 @@ void lagrange_solve(kernel::lmm::System* sys)
   XBT_DEBUG("#### Minimum error tolerated (dichotomy) : %e", dichotomy_min_error);
 
   if (XBT_LOG_ISENABLED(surf_lagrange, xbt_log_priority_debug)) {
-    sys->print();
+    print();
   }
 
-  if (not sys->modified)
+  if (not modified)
     return;
 
   /* Initialize lambda. */
-  auto& cnst_list = sys->active_constraint_set;
+  auto& cnst_list = active_constraint_set;
   for (Constraint& cnst : cnst_list) {
     cnst.lambda     = 1.0;
     cnst.new_lambda = 2.0;
@@ -169,7 +173,7 @@ void lagrange_solve(kernel::lmm::System* sys)
   /*
    * Initialize the var_list variable with only the active variables. Initialize mu.
    */
-  auto& var_list = sys->variable_set;
+  auto& var_list = variable_set;
   for (Variable& var : var_list) {
     if (not var.sharing_weight)
       var.value = 0.0;
@@ -263,7 +267,7 @@ void lagrange_solve(kernel::lmm::System* sys)
   }
 
   if (XBT_LOG_ISENABLED(surf_lagrange, xbt_log_priority_debug)) {
-    sys->print();
+    print();
   }
 }
 

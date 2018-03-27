@@ -135,15 +135,6 @@ namespace lmm {
 
 /** @{ @ingroup SURF_lmm */
 
-/**
- * @brief Solve the lmm system
- * @param sys The lmm system to solve
- */
-XBT_PUBLIC void lmm_solve(lmm::System* sys);
-
-XBT_PUBLIC void lagrange_solve(lmm::System* sys);
-XBT_PUBLIC void bottleneck_solve(lmm::System* sys);
-
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
 XBT_PUBLIC void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
@@ -448,7 +439,7 @@ public:
    */
   explicit System(bool selective_update);
   /** @brief Free an existing Linear MaxMin system */
-  ~System();
+  virtual ~System();
 
   /**
    * @brief Create a new Linear MaxMin constraint
@@ -521,7 +512,10 @@ public:
   void print() const;
 
   /** @brief Solve the lmm system */
-  void solve();
+  void lmm_solve();
+
+  /** @brief Solve the lmm system. May be specialized in subclasses. */
+  virtual void solve() { lmm_solve(); }
 
 private:
   static void* variable_mallocator_new_f();
@@ -585,7 +579,8 @@ private:
   void remove_all_modified_set();
   void check_concurrency() const;
 
-  template <class CnstList> void solve(CnstList& cnst_list);
+  template <class CnstList> void lmm_solve(CnstList& cnst_list);
+
 public:
   bool modified;
   boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
@@ -603,8 +598,6 @@ public:
 
   simgrid::kernel::resource::Action::ModifiedSet* modified_set_ = nullptr;
 
-  void (*solve_fun)(lmm::System* self);
-
 private:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
   unsigned visited_counter;     /* used by System::update_modified_set() and System::remove_all_modified_set() to
@@ -617,6 +610,28 @@ private:
       modified_constraint_set;
   xbt_mallocator_t variable_mallocator;
 };
+
+class XBT_PUBLIC FairBottleneck : public System {
+public:
+  explicit FairBottleneck(bool selective_update) : System(selective_update) {}
+  void solve() final { bottleneck_solve(); }
+
+private:
+  void bottleneck_solve();
+};
+
+class XBT_PUBLIC Lagrange : public System {
+public:
+  explicit Lagrange(bool selective_update) : System(selective_update) {}
+  void solve() final { lagrange_solve(); }
+
+private:
+  void lagrange_solve();
+};
+
+XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
+XBT_PUBLIC System* make_new_fair_bottleneck_system(bool selective_update);
+XBT_PUBLIC System* make_new_lagrange_system(bool selective_update);
 
 extern XBT_PRIVATE double (*func_f_def)(const Variable&, double);
 extern XBT_PRIVATE double (*func_fp_def)(const Variable&, double);
