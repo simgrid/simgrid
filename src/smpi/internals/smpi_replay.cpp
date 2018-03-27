@@ -116,7 +116,8 @@ public:
     double start_time = smpi_process()->simulated_elapsed();
     args.parse(action);
     kernel(action);
-    log_timed_action(action, start_time);
+    if (name != "Init")
+      log_timed_action(action, start_time);
   }
 
   virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
@@ -155,7 +156,7 @@ public:
 
     TRACE_smpi_comm_out(rank);
     if (is_wait_for_receive)
-      TRACE_smpi_recv(src_traced, dst_traced, 0);
+      TRACE_smpi_recv(src, dst, 0);
   }
 };
 
@@ -255,24 +256,25 @@ public:
   }
 };
 
+class InitAction : public ReplayAction<ActionArgParser> {
+public:
+  InitAction() : ReplayAction("Init") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    CHECK_ACTION_PARAMS(action, 0, 1)
+    MPI_DEFAULT_TYPE = (action.size() > 2) ? MPI_DOUBLE // default MPE datatype
+                                           : MPI_BYTE;  // default TAU datatype
+
+    /* start a simulated timer */
+    smpi_process()->simulated_start();
+    /*initialize the number of active processes */
+    active_processes = smpi_process_count();
+
+    set_reqq_self(new std::vector<MPI_Request>);
+  }
+};
+
 } // Replay Namespace
-
-static void action_init(simgrid::xbt::ReplayAction& action)
-{
-  XBT_DEBUG("Initialize the counters");
-  CHECK_ACTION_PARAMS(action, 0, 1)
-  if (action.size() > 2)
-    MPI_DEFAULT_TYPE = MPI_DOUBLE; // default MPE datatype
-  else
-    MPI_DEFAULT_TYPE = MPI_BYTE; // default TAU datatype
-
-  /* start a simulated timer */
-  smpi_process()->simulated_start();
-  /*initialize the number of active processes */
-  active_processes = smpi_process_count();
-
-  set_reqq_self(new std::vector<MPI_Request>);
-}
 
 static void action_finalize(simgrid::xbt::ReplayAction& action)
 {
@@ -799,7 +801,7 @@ void smpi_replay_init(int* argc, char*** argv)
   TRACE_smpi_computing_init(my_proc_id);
   TRACE_smpi_comm_in(my_proc_id, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
   TRACE_smpi_comm_out(my_proc_id);
-  xbt_replay_action_register("init",       simgrid::smpi::action_init);
+  xbt_replay_action_register("init", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::InitAction().execute(action); });
   xbt_replay_action_register("finalize",   simgrid::smpi::action_finalize);
   xbt_replay_action_register("comm_size",  simgrid::smpi::action_comm_size);
   xbt_replay_action_register("comm_split", simgrid::smpi::action_comm_split);
