@@ -360,11 +360,11 @@ void sg_config_init(int *argc, char **argv)
 
   xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", nullptr, "Update the constraint set propagating "
                                                                          "recursively to others constraints (off by "
-                                                                         "default when optim is set to lazy)");
+                                                                         "default unless optim is set to lazy)");
   xbt_cfg_register_alias("cpu/maxmin-selective-update", "cpu/maxmin_selective_update");
   xbt_cfg_register_boolean("network/maxmin-selective-update", "no", nullptr, "Update the constraint set propagating "
                                                                              "recursively to others constraints (off "
-                                                                             "by default when optim is set to lazy)");
+                                                                             "by default unless optim is set to lazy)");
   xbt_cfg_register_alias("network/maxmin-selective-update", "network/maxmin_selective_update");
   /* Replay (this part is enabled even if MC it disabled) */
   xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
