@@ -22,7 +22,6 @@ using simgrid::s4u::Actor;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
-static int communicator_size = 0;
 static int active_processes  = 0;
 static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 
@@ -255,7 +254,6 @@ static void action_finalize(simgrid::xbt::ReplayAction& action)
 
 static void action_comm_size(simgrid::xbt::ReplayAction& action)
 {
-  communicator_size = parse_double(action[2]);
   log_timed_action (action, smpi_process()->simulated_elapsed());
 }
 
