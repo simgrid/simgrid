@@ -34,10 +34,10 @@ namespace simgrid {
 namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
-  maxmin_system_            = new simgrid::kernel::lmm::System(true /* selective update */);
-  maxmin_system_->solve_fun = &simgrid::kernel::lmm::bottleneck_solve;
-  surf_network_model        = new NetworkL07Model(this, maxmin_system_);
-  surf_cpu_model_pm         = new CpuL07Model(this, maxmin_system_);
+  set_maxmin_system(new simgrid::kernel::lmm::System(true /* selective update */));
+  get_maxmin_system()->solve_fun = &simgrid::kernel::lmm::bottleneck_solve;
+  surf_network_model = new NetworkL07Model(this, get_maxmin_system());
+  surf_cpu_model_pm  = new CpuL07Model(this, get_maxmin_system());
 }
 
 HostL07Model::~HostL07Model()
@@ -48,23 +48,23 @@ HostL07Model::~HostL07Model()
 
 CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : CpuModel(), hostModel_(hmodel)
 {
-  maxmin_system_ = sys;
+  set_maxmin_system(sys);
 }
 
 CpuL07Model::~CpuL07Model()
 {
-  maxmin_system_ = nullptr;
+  set_maxmin_system(nullptr);
 }
 
 NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys) : NetworkModel(), hostModel_(hmodel)
 {
-  maxmin_system_ = sys;
+  set_maxmin_system(sys);
   loopback_     = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
 {
-  maxmin_system_ = nullptr;
+  set_maxmin_system(nullptr);
 }
 
 double HostL07Model::next_occuring_event(double now)
@@ -95,7 +95,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
       }
       if ((action.latency_ <= 0.0) && (action.is_suspended() == 0)) {
         action.updateBound();
-        maxmin_system_->update_variable_weight(action.get_variable(), 1.0);
+        get_maxmin_system()->update_variable_weight(action.get_variable(), 1.0);
       }
     }
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.get_remains(),

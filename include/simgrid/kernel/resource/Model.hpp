@@ -52,6 +52,9 @@ public:
   /** @brief Get the maxmin system of the current Model */
   lmm::System* get_maxmin_system() const { return maxmin_system_; }
 
+  /** @brief Set the maxmin system of the current Model */
+  void set_maxmin_system(lmm::System* system) { maxmin_system_ = system; }
+
   /**
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
@@ -93,10 +96,8 @@ public:
    */
   virtual bool nextOccuringEventIsIdempotent() { return true; }
 
-protected:
-  lmm::System* maxmin_system_ = nullptr;
-
 private:
+  lmm::System* maxmin_system_           = nullptr;
   e_UM_t update_mechanism_        = UM_UNDEFINED;
   Action::StateSet* ready_action_set_   = new Action::StateSet(); /**< Actions in state SURF_ACTION_READY */
   Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Actions in state SURF_ACTION_RUNNING */

@@ -61,7 +61,7 @@ StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id,
                                            "property Bwrite, storage", type_id.c_str());
 
   StorageImpl* storage =
-      new StorageN11(this, id, maxmin_system_, Bread, Bwrite, type_id, content_name, storage_type->size, attach);
+      new StorageN11(this, id, get_maxmin_system(), Bread, Bwrite, type_id, content_name, storage_type->size, attach);
   storageCreatedCallbacks(storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id.c_str(), type_id.c_str(),
