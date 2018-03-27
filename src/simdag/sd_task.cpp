@@ -289,7 +289,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     sd_global->completed_tasks->insert(task);
     task->start_time = task->surf_action->get_start_time();
     if (new_state == SD_DONE){
-      task->finish_time = task->surf_action->getFinishTime();
+      task->finish_time = task->surf_action->get_finish_time();
 #if SIMGRID_HAVE_JEDULE
       jedule_log_sd_event(task);
 #endif
@@ -848,7 +848,7 @@ double SD_task_get_start_time(SD_task_t task)
 double SD_task_get_finish_time(SD_task_t task)
 {
   if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
-    return task->surf_action->getFinishTime();
+    return task->surf_action->get_finish_time();
   else
     return task->finish_time;
 }

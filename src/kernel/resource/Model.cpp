@@ -62,13 +62,13 @@ double Model::nextOccuringEventLazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action->get_priority() <= 0 || action->getType() == Action::Type::LATENCY)
+    if (action->get_priority() <= 0 || action->get_type() == Action::Type::LATENCY)
       continue;
 
-    action->updateRemainingLazy(now);
+    action->update_remains_lazy(now);
 
     double min   = -1;
-    double share = action->getVariable()->get_value();
+    double share = action->get_variable()->get_value();
 
     if (share > 0) {
       double time_to_completion;
@@ -87,13 +87,13 @@ double Model::nextOccuringEventLazy(double now)
       max_dur_flag = true;
     }
 
-    XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->getVariable()->id_int);
+    XBT_DEBUG("Action(%p) corresponds to variable %d", action, action->get_variable()->id_int);
 
     XBT_DEBUG("Action(%p) Start %f. May finish at %f (got a share of %f). Max_duration %f", action,
               action->get_start_time(), min, share, action->get_max_duration());
 
     if (min > -1) {
-      action->heapUpdate(action_heap_, min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
+      action->heapUpdate(min, max_dur_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
       DIE_IMPOSSIBLE;
@@ -117,7 +117,7 @@ double Model::nextOccuringEventFull(double /*now*/)
   double min = -1;
 
   for (Action& action : *getRunningActionSet()) {
-    double value = action.getVariable()->get_value();
+    double value = action.get_variable()->get_value();
     if (value > 0) {
       if (action.get_remains() > 0)
         value = action.get_remains_no_update() / value;

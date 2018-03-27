@@ -27,24 +27,21 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     CpuAction* action = static_cast<CpuAction*>(actionHeapPop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(action->getVariable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), action->get_category(), action->getVariable()->get_value(),
-                                      action->getLastUpdate(), now - action->getLastUpdate());
+      Cpu* cpu = static_cast<Cpu*>(action->get_variable()->get_constraint(0)->get_id());
+      TRACE_surf_host_set_utilization(cpu->getCname(), action->get_category(), action->get_variable()->get_value(),
+                                      action->get_last_update(), now - action->get_last_update());
     }
 
     action->finish(kernel::resource::Action::State::done);
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
-
-    /* set the remains to 0 due to precision problems when updating the remaining amount */
-    action->set_remains(0);
   }
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
     for (kernel::resource::Action const& action : *getRunningActionSet()) {
-      if (smaller < 0 || action.getLastUpdate() < smaller)
-        smaller = action.getLastUpdate();
+      if (smaller < 0 || action.get_last_update() < smaller)
+        smaller = action.get_last_update();
     }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
@@ -58,18 +55,18 @@ void CpuModel::updateActionsStateFull(double now, double delta)
     CpuAction& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(action.getVariable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), action.get_category(), action.getVariable()->get_value(),
+      Cpu* cpu = static_cast<Cpu*>(action.get_variable()->get_constraint(0)->get_id());
+      TRACE_surf_host_set_utilization(cpu->getCname(), action.get_category(), action.get_variable()->get_value(),
                                       now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 
-    action.update_remains(action.getVariable()->get_value() * delta);
+    action.update_remains(action.get_variable()->get_value() * delta);
 
     if (action.get_max_duration() != NO_MAX_DURATION)
       action.update_max_duration(delta);
 
-    if (((action.get_remains_no_update() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+    if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     }
@@ -173,28 +170,28 @@ void Cpu::setSpeedTrace(tmgr_trace_t trace)
  * Action *
  **********/
 
-void CpuAction::updateRemainingLazy(double now)
+void CpuAction::update_remains_lazy(double now)
 {
   xbt_assert(get_state_set() == get_model()->getRunningActionSet(), "You're updating an action that is not running.");
   xbt_assert(get_priority() > 0, "You're updating an action that seems suspended.");
 
-  double delta = now - getLastUpdate();
+  double delta = now - get_last_update();
 
   if (get_remains_no_update() > 0) {
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, get_remains_no_update(),
-               getLastUpdate());
-    update_remains(getLastValue() * delta);
+               get_last_update());
+    update_remains(get_last_value() * delta);
 
     if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(getVariable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), get_category(), getLastValue(), getLastUpdate(),
-                                      now - getLastUpdate());
+      Cpu* cpu = static_cast<Cpu*>(get_variable()->get_constraint(0)->get_id());
+      TRACE_surf_host_set_utilization(cpu->getCname(), get_category(), get_last_value(), get_last_update(),
+                                      now - get_last_update());
     }
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, get_remains_no_update());
   }
 
-  refreshLastUpdate();
-  setLastValue(getVariable()->get_value());
+  set_last_update();
+  set_last_value(get_variable()->get_value());
 }
 
 simgrid::xbt::signal<void(simgrid::surf::CpuAction*, kernel::resource::Action::State)> CpuAction::onStateChange;
@@ -220,13 +217,13 @@ void CpuAction::set_state(Action::State state)
 /** @brief returns a list of all CPUs that this action is using */
 std::list<Cpu*> CpuAction::cpus() {
   std::list<Cpu*> retlist;
-  int llen = getVariable()->get_number_of_constraint();
+  int llen = get_variable()->get_number_of_constraint();
 
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
     // extra pb: we cannot dynamic_cast from void*...
     kernel::resource::Resource* resource =
-        static_cast<kernel::resource::Resource*>(getVariable()->get_constraint(i)->get_id());
+        static_cast<kernel::resource::Resource*>(get_variable()->get_constraint(i)->get_id());
     Cpu* cpu           = dynamic_cast<Cpu*>(resource);
     if (cpu != nullptr)
       retlist.push_back(cpu);

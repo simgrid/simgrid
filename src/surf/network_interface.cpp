@@ -196,13 +196,13 @@ namespace simgrid {
     std::list<LinkImpl*> NetworkAction::links()
     {
       std::list<LinkImpl*> retlist;
-      int llen = getVariable()->get_number_of_constraint();
+      int llen = get_variable()->get_number_of_constraint();
 
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */
         // extra pb: we cannot dynamic_cast from void*...
         kernel::resource::Resource* resource =
-            static_cast<kernel::resource::Resource*>(getVariable()->get_constraint(i)->get_id());
+            static_cast<kernel::resource::Resource*>(get_variable()->get_constraint(i)->get_id());
         LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
         if (link != nullptr)
           retlist.push_back(link);

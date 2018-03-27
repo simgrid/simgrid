@@ -47,11 +47,10 @@ class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
   NetworkNS3Action(kernel::resource::Model* model, double cost, s4u::Host* src, s4u::Host* dst);
 
-  bool isSuspended() override;
   void suspend() override;
   void resume() override;
   std::list<LinkImpl*> links() override;
-  void updateRemainingLazy(double now) override;
+  void update_remains_lazy(double now) override;
 
   // private:
   double lastSent_ = 0;

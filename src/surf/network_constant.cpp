@@ -84,7 +84,7 @@ NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, doubl
 
 NetworkConstantAction::~NetworkConstantAction() = default;
 
-void NetworkConstantAction::updateRemainingLazy(double /*now*/)
+void NetworkConstantAction::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;
 }

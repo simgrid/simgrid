@@ -176,33 +176,32 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     NetworkCm02Action* action = static_cast<NetworkCm02Action*>(actionHeapPop());
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      int n = action->getVariable()->get_number_of_constraint();
+      int n = action->get_variable()->get_number_of_constraint();
 
       for (int i = 0; i < n; i++){
-        kernel::lmm::Constraint* constraint = action->getVariable()->get_constraint(i);
+        kernel::lmm::Constraint* constraint = action->get_variable()->get_constraint(i);
         NetworkCm02Link* link       = static_cast<NetworkCm02Link*>(constraint->get_id());
-        double value = action->getVariable()->get_value() * action->getVariable()->get_constraint_weight(i);
-        TRACE_surf_link_set_utilization(link->getCname(), action->get_category(), value, action->getLastUpdate(),
-                                        now - action->getLastUpdate());
+        double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
+        TRACE_surf_link_set_utilization(link->getCname(), action->get_category(), value, action->get_last_update(),
+                                        now - action->get_last_update());
       }
     }
 
     // if I am wearing a latency hat
-    if (action->getType() == kernel::resource::Action::Type::LATENCY) {
+    if (action->get_type() == kernel::resource::Action::Type::LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
-      maxmin_system_->update_variable_weight(action->getVariable(), action->weight_);
-      action->heapRemove(getActionHeap());
-      action->refreshLastUpdate();
+      maxmin_system_->update_variable_weight(action->get_variable(), action->weight_);
+      action->heapRemove();
+      action->set_last_update();
 
-        // if I am wearing a max_duration or normal hat
-    } else if (action->getType() == kernel::resource::Action::Type::MAX_DURATION ||
-               action->getType() == kernel::resource::Action::Type::NORMAL) {
+      // if I am wearing a max_duration or normal hat
+    } else if (action->get_type() == kernel::resource::Action::Type::MAX_DURATION ||
+               action->get_type() == kernel::resource::Action::Type::NORMAL) {
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
-      action->set_remains(0);
       action->finish(kernel::resource::Action::State::done);
-      action->heapRemove(getActionHeap());
+      action->heapRemove();
     }
   }
 }
@@ -223,32 +222,32 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
         double_update(&deltap, action.latency_, sg_surf_precision);
         action.latency_ = 0.0;
       }
-      if (action.latency_ <= 0.0 && not action.isSuspended())
-        maxmin_system_->update_variable_weight(action.getVariable(), action.weight_);
+      if (action.latency_ <= 0.0 && not action.is_suspended())
+        maxmin_system_->update_variable_weight(action.get_variable(), action.weight_);
     }
     if (TRACE_is_enabled()) {
-      int n = action.getVariable()->get_number_of_constraint();
+      int n = action.get_variable()->get_number_of_constraint();
       for (int i = 0; i < n; i++) {
-        kernel::lmm::Constraint* constraint = action.getVariable()->get_constraint(i);
+        kernel::lmm::Constraint* constraint = action.get_variable()->get_constraint(i);
         NetworkCm02Link* link = static_cast<NetworkCm02Link*>(constraint->get_id());
         TRACE_surf_link_set_utilization(
             link->getCname(), action.get_category(),
-            (action.getVariable()->get_value() * action.getVariable()->get_constraint_weight(i)),
-            action.getLastUpdate(), now - action.getLastUpdate());
+            (action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i)),
+            action.get_last_update(), now - action.get_last_update());
       }
     }
-    if (not action.getVariable()->get_number_of_constraint()) {
+    if (not action.get_variable()->get_number_of_constraint()) {
       /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
        * vivaldi. In such case, just make sure that the action completes immediately.
        */
       action.update_remains(action.get_remains());
     }
-    action.update_remains(action.getVariable()->get_value() * delta);
+    action.update_remains(action.get_variable()->get_value() * delta);
 
     if (action.get_max_duration() > NO_MAX_DURATION)
       action.update_max_duration(delta);
 
-    if (((action.get_remains() <= 0) && (action.getVariable()->get_weight() > 0)) ||
+    if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(kernel::resource::Action::State::done);
     }
@@ -285,7 +284,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   action->latency_ = latency;
   action->rate_ = rate;
   if (getUpdateMechanism() == UM_LAZY) {
-    action->refreshLastUpdate();
+    action->set_last_update();
   }
 
   double bandwidth_bound = -1.0;
@@ -306,34 +305,34 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   constraints_per_variable += back_route.size();
 
   if (action->latency_ > 0) {
-    action->setVariable(maxmin_system_->variable_new(action, 0.0, -1.0, constraints_per_variable));
+    action->set_variable(maxmin_system_->variable_new(action, 0.0, -1.0, constraints_per_variable));
     if (getUpdateMechanism() == UM_LAZY) {
       // add to the heap the event when the latency is payed
-      XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->getLastUpdate());
-      action->heapInsert(getActionHeap(), action->latency_ + action->getLastUpdate(),
-                         route.empty() ? kernel::resource::Action::Type::NORMAL
-                                       : kernel::resource::Action::Type::LATENCY);
+      XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->get_last_update());
+      action->heapInsert(action->latency_ + action->get_last_update(), route.empty()
+                                                                           ? kernel::resource::Action::Type::NORMAL
+                                                                           : kernel::resource::Action::Type::LATENCY);
     }
   } else
-    action->setVariable(maxmin_system_->variable_new(action, 1.0, -1.0, constraints_per_variable));
+    action->set_variable(maxmin_system_->variable_new(action, 1.0, -1.0, constraints_per_variable));
 
   if (action->rate_ < 0) {
     maxmin_system_->update_variable_bound(
-        action->getVariable(), (action->latCurrent_ > 0) ? sg_tcp_gamma / (2.0 * action->latCurrent_) : -1.0);
+        action->get_variable(), (action->latCurrent_ > 0) ? sg_tcp_gamma / (2.0 * action->latCurrent_) : -1.0);
   } else {
-    maxmin_system_->update_variable_bound(action->getVariable(),
+    maxmin_system_->update_variable_bound(action->get_variable(),
                                           (action->latCurrent_ > 0)
                                               ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_))
                                               : action->rate_);
   }
 
   for (auto const& link : route)
-    maxmin_system_->expand(link->constraint(), action->getVariable(), 1.0);
+    maxmin_system_->expand(link->constraint(), action->get_variable(), 1.0);
 
   if (not back_route.empty()) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Crosstraffic active adding backward flow using 5%%");
     for (auto const& link : back_route)
-      maxmin_system_->expand(link->constraint(), action->getVariable(), .05);
+      maxmin_system_->expand(link->constraint(), action->get_variable(), .05);
 
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())
@@ -420,8 +419,8 @@ void NetworkCm02Link::setBandwidth(double value)
     while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->weight_ += delta;
-      if (not action->isSuspended())
-        model()->getMaxminSystem()->update_variable_weight(action->getVariable(), action->weight_);
+      if (not action->is_suspended())
+        model()->getMaxminSystem()->update_variable_weight(action->get_variable(), action->weight_);
     }
   }
 }
@@ -441,11 +440,11 @@ void NetworkCm02Link::setLatency(double value)
     action->latCurrent_ += delta;
     action->weight_ += delta;
     if (action->rate_ < 0)
-      model()->getMaxminSystem()->update_variable_bound(action->getVariable(),
+      model()->getMaxminSystem()->update_variable_bound(action->get_variable(),
                                                         sg_tcp_gamma / (2.0 * action->latCurrent_));
     else {
       model()->getMaxminSystem()->update_variable_bound(
-          action->getVariable(), std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)));
+          action->get_variable(), std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)));
 
       if (action->rate_ < sg_tcp_gamma / (2.0 * action->latCurrent_)) {
         XBT_INFO("Flow is limited BYBANDWIDTH");
@@ -453,8 +452,8 @@ void NetworkCm02Link::setLatency(double value)
         XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->latCurrent_);
       }
     }
-    if (not action->isSuspended())
-      model()->getMaxminSystem()->update_variable_weight(action->getVariable(), action->weight_);
+    if (not action->is_suspended())
+      model()->getMaxminSystem()->update_variable_weight(action->get_variable(), action->weight_);
   }
 }
 
@@ -462,18 +461,18 @@ void NetworkCm02Link::setLatency(double value)
  * Action *
  **********/
 
-void NetworkCm02Action::updateRemainingLazy(double now)
+void NetworkCm02Action::update_remains_lazy(double now)
 {
   if (suspended_ != Action::SuspendStates::not_suspended)
     return;
 
-  double delta        = now - getLastUpdate();
+  double delta        = now - get_last_update();
   double max_duration = get_max_duration();
 
   if (get_remains_no_update() > 0) {
     XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, get_remains_no_update(),
-              getLastUpdate());
-    update_remains(getLastValue() * delta);
+              get_last_update());
+    update_remains(get_last_value() * delta);
 
     XBT_DEBUG("Updating action(%p): remains is now %f", this, get_remains_no_update());
   }
@@ -483,14 +482,14 @@ void NetworkCm02Action::updateRemainingLazy(double now)
     set_max_duration(max_duration);
   }
 
-  if ((get_remains_no_update() <= 0 && (getVariable()->get_weight() > 0)) ||
+  if ((get_remains_no_update() <= 0 && (get_variable()->get_weight() > 0)) ||
       ((max_duration > NO_MAX_DURATION) && (max_duration <= 0))) {
     finish(Action::State::done);
-    heapRemove(get_model()->getActionHeap());
+    heapRemove();
   }
 
-  refreshLastUpdate();
-  setLastValue(getVariable()->get_value());
+  set_last_update();
+  set_last_value(get_variable()->get_value());
 }
 
 }
