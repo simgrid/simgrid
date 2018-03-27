@@ -165,9 +165,9 @@ public:
   }
 };
 
-class GatherParser : public CollCommParser {
+class GatherArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action) override
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
     /* The structure of the gather action for the rank 0 (total 4 processes) is the following:
           0 gather 68 68 0 0 0
@@ -182,12 +182,77 @@ public:
     comm_size = MPI_COMM_WORLD->size();
     send_size = parse_double(action[2]);
     recv_size = parse_double(action[3]);
-    root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
 
-    if (action.size() > 5)
-      datatype1 = simgrid::smpi::Datatype::decode(action[5]);
-    if (action.size() > 6)
-      datatype2 = simgrid::smpi::Datatype::decode(action[6]);
+    if (name == "gather") {
+      root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
+      if (action.size() > 5)
+        datatype1 = simgrid::smpi::Datatype::decode(action[5]);
+      if (action.size() > 6)
+        datatype2 = simgrid::smpi::Datatype::decode(action[6]);
+    }
+    else {
+      if (action.size() > 4)
+        datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+      if (action.size() > 5)
+        datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+    }
+  }
+};
+
+class GatherVArgParser : public CollCommParser {
+public:
+  int recv_sum;
+  std::shared_ptr<std::vector<int>> recvcounts;
+  std::vector<int> disps;
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
+  {
+    /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
+         0 gather 68 68 10 10 10 0 0 0
+       where:
+         1) 68 is the sendcount
+         2) 68 10 10 10 is the recvcounts
+         3) 0 is the root node
+         4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+         5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
+    */
+    comm_size = MPI_COMM_WORLD->size();
+    CHECK_ACTION_PARAMS(action, comm_size+1, 2)
+    send_size = parse_double(action[2]);
+    disps     = std::vector<int>(comm_size, 0);
+    recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+
+    if (name == "gatherV") {
+      root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
+      if (action.size() > 4 + comm_size)
+        datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
+      if (action.size() > 5 + comm_size)
+        datatype2 = simgrid::smpi::Datatype::decode(action[5 + comm_size]);
+    }
+    else {
+      int datatype_index = 0, disp_index = 0;
+      if (action.size() > 3 + 2 * comm_size) { /* datatype + disp are specified */
+        datatype_index = 3 + comm_size;
+        disp_index     = datatype_index + 1;
+      } else if (action.size() > 3 + 2 * comm_size) { /* disps specified; datatype is not specified; use the default one */
+        datatype_index = -1;
+        disp_index     = 3 + comm_size;
+      } else if (action.size() > 3 + comm_size) { /* only datatype, no disp specified */
+        datatype_index = 3 + comm_size;
+      }
+
+      if (disp_index != 0) {
+        for (unsigned int i = 0; i < comm_size; i++)
+          disps[i]          = std::stoi(action[disp_index + i]);
+      }
+
+      datatype1 = simgrid::smpi::Datatype::decode(action[datatype_index]);
+      datatype2 = simgrid::smpi::Datatype::decode(action[datatype_index]);
+    }
+
+    for (unsigned int i = 0; i < comm_size; i++) {
+      (*recvcounts)[i] = std::stoi(action[i + 3]);
+    }
+    recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
   }
 };
 
@@ -488,15 +553,43 @@ public:
   GatherAction(std::string name) : ReplayAction(name) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    TRACE_smpi_comm_in(my_proc_id, name, new simgrid::instr::CollTIData(name, (name == "gather") ? args.root : -1, -1.0, args.send_size, args.recv_size,
+    TRACE_smpi_comm_in(my_proc_id, name.c_str(), new simgrid::instr::CollTIData(name, (name == "gather") ? args.root : -1, -1.0, args.send_size, args.recv_size,
                                                                           Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
-    if (name == "gather")
+    if (name == "gather") {
+      int rank = MPI_COMM_WORLD->rank();
       Colls::gather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
                  (rank == args.root) ? recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()) : nullptr, args.recv_size, args.datatype2, args.root, MPI_COMM_WORLD);
+    }
     else
       Colls::allgather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
                        recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, MPI_COMM_WORLD);
+
+    TRACE_smpi_comm_out(my_proc_id);
+  }
+};
+
+class GatherVAction : public ReplayAction<GatherVArgParser> {
+public:
+  GatherVAction(std::string name) : ReplayAction(name) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    int rank = MPI_COMM_WORLD->rank();
+
+    TRACE_smpi_comm_in(my_proc_id, name.c_str(), new simgrid::instr::VarCollTIData(
+                                               name, (name == "gatherV") ? args.root : -1, args.send_size, nullptr, -1, args.recvcounts,
+                                               Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
+
+    if (name == "gatherV") {
+      Colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1, 
+                     (rank == args.root) ? recv_buffer(args.recv_sum  * args.datatype2->size()) : nullptr, args.recvcounts->data(), args.disps.data(), args.datatype2, args.root,
+                     MPI_COMM_WORLD);
+    }
+    else {
+      Colls::allgatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1, 
+                        recv_buffer(args.recv_sum * args.datatype2->size()), args.recvcounts->data(), args.disps.data(), args.datatype2,
+                    MPI_COMM_WORLD);
+    }
 
     TRACE_smpi_comm_out(my_proc_id);
   }
@@ -538,53 +631,6 @@ static void action_scatter(simgrid::xbt::ReplayAction& action)
 
   TRACE_smpi_comm_out(Actor::self()->getPid());
   log_timed_action(action, clock);
-}
-
-static void action_gatherv(simgrid::xbt::ReplayAction& action)
-{
-  /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
-       0 gather 68 68 10 10 10 0 0 0
-     where:
-       1) 68 is the sendcount
-       2) 68 10 10 10 is the recvcounts
-       3) 0 is the root node
-       4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
-       5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
-  */
-  double clock = smpi_process()->simulated_elapsed();
-  unsigned long comm_size = MPI_COMM_WORLD->size();
-  CHECK_ACTION_PARAMS(action, comm_size+1, 2)
-  int send_size = parse_double(action[2]);
-  std::vector<int> disps(comm_size, 0);
-  std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
-
-  MPI_Datatype MPI_CURRENT_TYPE =
-      (action.size() > 5 + comm_size) ? simgrid::smpi::Datatype::decode(action[4 + comm_size]) : MPI_DEFAULT_TYPE;
-  MPI_Datatype MPI_CURRENT_TYPE2{
-      (action.size() > 5 + comm_size) ? simgrid::smpi::Datatype::decode(action[5 + comm_size]) : MPI_DEFAULT_TYPE};
-
-  void *send = smpi_get_tmp_sendbuffer(send_size* MPI_CURRENT_TYPE->size());
-  void *recv = nullptr;
-  for (unsigned int i = 0; i < comm_size; i++) {
-    (*recvcounts)[i] = std::stoi(action[i + 3]);
-  }
-  int recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
-
-  int root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
-  int rank = MPI_COMM_WORLD->rank();
-
-  if(rank==root)
-    recv = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
-
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::VarCollTIData(
-                                             "gatherV", root, send_size, nullptr, -1, recvcounts,
-                                             Datatype::encode(MPI_CURRENT_TYPE), Datatype::encode(MPI_CURRENT_TYPE2)));
-
-  Colls::gatherv(send, send_size, MPI_CURRENT_TYPE, recv, recvcounts->data(), disps.data(), MPI_CURRENT_TYPE2, root,
-                 MPI_COMM_WORLD);
-
-  TRACE_smpi_comm_out(Actor::self()->getPid());
-  log_timed_action (action, clock);
 }
 
 static void action_scatterv(simgrid::xbt::ReplayAction& action)
@@ -667,67 +713,6 @@ static void action_reducescatter(simgrid::xbt::ReplayAction& action)
 
   Colls::reduce_scatter(sendbuf, recvbuf, recvcounts->data(), MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
-
-  TRACE_smpi_comm_out(my_proc_id);
-  log_timed_action (action, clock);
-}
-
-static void action_allgatherv(simgrid::xbt::ReplayAction& action)
-{
-  /* The structure of the allgatherv action for the rank 0 (total 4 processes) is the following:
-        0 allGatherV 275427 275427 275427 275427 204020
-     where:
-        1) 275427 is the sendcount
-        2) The next four elements declare the recvcounts array
-        3) No more values mean that the datatype for sent and receive buffer is the default one, see
-     simgrid::smpi::Datatype::decode().
-  */
-  double clock = smpi_process()->simulated_elapsed();
-
-  unsigned long comm_size = MPI_COMM_WORLD->size();
-  CHECK_ACTION_PARAMS(action, comm_size+1, 2)
-  int sendcount = std::stoi(action[2]);
-  std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>(comm_size));
-  std::vector<int> disps(comm_size, 0);
-
-  int datatype_index = 0, disp_index = 0;
-  if (action.size() > 3 + 2 * comm_size) { /* datatype + disp are specified */
-    datatype_index = 3 + comm_size;
-    disp_index     = datatype_index + 1;
-  } else if (action.size() > 3 + 2 * comm_size) { /* disps specified; datatype is not specified; use the default one */
-    datatype_index = -1;
-    disp_index     = 3 + comm_size;
-  } else if (action.size() > 3 + comm_size) { /* only datatype, no disp specified */
-    datatype_index = 3 + comm_size;
-  }
-
-  if (disp_index != 0) {
-    for (unsigned int i = 0; i < comm_size; i++)
-      disps[i]          = std::stoi(action[disp_index + i]);
-  }
-
-  MPI_Datatype MPI_CURRENT_TYPE{(datatype_index > 0) ? simgrid::smpi::Datatype::decode(action[datatype_index])
-                                                     : MPI_DEFAULT_TYPE};
-  MPI_Datatype MPI_CURRENT_TYPE2{(datatype_index > 0) ? simgrid::smpi::Datatype::decode(action[datatype_index])
-                                                      : MPI_DEFAULT_TYPE};
-
-  void *sendbuf = smpi_get_tmp_sendbuffer(sendcount* MPI_CURRENT_TYPE->size());
-
-  for (unsigned int i = 0; i < comm_size; i++) {
-    (*recvcounts)[i] = std::stoi(action[i + 3]);
-  }
-  int recv_sum  = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
-  void *recvbuf = smpi_get_tmp_recvbuffer(recv_sum* MPI_CURRENT_TYPE2->size());
-
-  int my_proc_id = Actor::self()->getPid();
-
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::VarCollTIData("allGatherV", -1, sendcount, nullptr, -1, recvcounts,
-                                                       Datatype::encode(MPI_CURRENT_TYPE),
-                                                       Datatype::encode(MPI_CURRENT_TYPE2)));
-
-  Colls::allgatherv(sendbuf, sendcount, MPI_CURRENT_TYPE, recvbuf, recvcounts->data(), disps.data(), MPI_CURRENT_TYPE2,
-                    MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(my_proc_id);
   log_timed_action (action, clock);
@@ -819,10 +804,10 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("allToAllV",  simgrid::smpi::action_allToAllv);
   xbt_replay_action_register("gather",   [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::GatherAction("gather").execute(action); });
   xbt_replay_action_register("scatter", simgrid::smpi::action_scatter);
-  xbt_replay_action_register("gatherV",    simgrid::smpi::action_gatherv);
+  xbt_replay_action_register("gatherV",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::GatherVAction("gatherV").execute(action); });
   xbt_replay_action_register("scatterV", simgrid::smpi::action_scatterv);
   xbt_replay_action_register("allGather", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::GatherAction("allGather").execute(action); });
-  xbt_replay_action_register("allGatherV", simgrid::smpi::action_allgatherv);
+  xbt_replay_action_register("allGatherV", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::GatherVAction("allGatherV").execute(action); });
   xbt_replay_action_register("reduceScatter",  simgrid::smpi::action_reducescatter);
   xbt_replay_action_register("compute", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::ComputeAction().execute(action); });
 
