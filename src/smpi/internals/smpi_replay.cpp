@@ -316,6 +316,34 @@ public:
   }
 };
 
+class ReduceScatterArgParser : public CollCommParser {
+public:
+  int recv_sum;
+  std::shared_ptr<std::vector<int>> recvcounts;
+  std::vector<int> disps;
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
+  {
+    /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
+         0 reduceScatter 275427 275427 275427 204020 11346849 0
+       where:
+         1) The first four values after the name of the action declare the recvcounts array
+         2) The value 11346849 is the amount of instructions
+         3) The last value corresponds to the datatype, see simgrid::smpi::Datatype::decode().
+    */
+    comm_size = MPI_COMM_WORLD->size();
+    CHECK_ACTION_PARAMS(action, comm_size+1, 1)
+    comp_size = parse_double(action[2+comm_size]);
+    recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+    if (action.size() > 3 + comm_size)
+      datatype1 = simgrid::smpi::Datatype::decode(action[3 + comm_size]);
+
+    for (unsigned int i = 0; i < comm_size; i++) {
+      recvcounts->push_back(std::stoi(action[i + 2]));
+    }
+    recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+  }
+};
+
 template <class T> class ReplayAction {
 protected:
   const std::string name;
@@ -690,45 +718,25 @@ public:
     TRACE_smpi_comm_out(my_proc_id);
   }
 };
-} // Replay Namespace
 
-static void action_reducescatter(simgrid::xbt::ReplayAction& action)
-{
-  /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
-       0 reduceScatter 275427 275427 275427 204020 11346849 0
-     where:
-       1) The first four values after the name of the action declare the recvcounts array
-       2) The value 11346849 is the amount of instructions
-       3) The last value corresponds to the datatype, see simgrid::smpi::Datatype::decode().
- */
-  double clock = smpi_process()->simulated_elapsed();
-  unsigned long comm_size = MPI_COMM_WORLD->size();
-  CHECK_ACTION_PARAMS(action, comm_size+1, 1)
-  int comp_size = parse_double(action[2+comm_size]);
-  int my_proc_id                     = Actor::self()->getPid();
-  std::shared_ptr<std::vector<int>> recvcounts(new std::vector<int>);
-  MPI_Datatype MPI_CURRENT_TYPE =
-      (action.size() > 3 + comm_size) ? simgrid::smpi::Datatype::decode(action[3 + comm_size]) : MPI_DEFAULT_TYPE;
+class ReduceScatterAction : public ReplayAction<ReduceScatterArgParser> {
+public:
+  ReduceScatterAction() : ReplayAction("reduceScatter") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    TRACE_smpi_comm_in(my_proc_id, "action_reducescatter",
+                       new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, args.recvcounts,
+                                                         std::to_string(args.comp_size), /* ugly hack to print comp_size */
+                                                         Datatype::encode(args.datatype1)));
 
-  for (unsigned int i = 0; i < comm_size; i++) {
-    recvcounts->push_back(std::stoi(action[i + 2]));
+    Colls::reduce_scatter(send_buffer(args.recv_sum * args.datatype1->size()), recv_buffer(args.recv_sum * args.datatype1->size()), 
+                          args.recvcounts->data(), args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+
+    smpi_execute_flops(args.comp_size);
+    TRACE_smpi_comm_out(my_proc_id);
   }
-  int size{std::accumulate(recvcounts->begin(), recvcounts->end(), 0)};
-
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                     new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, recvcounts,
-                                                       std::to_string(comp_size), /* ugly hack to print comp_size */
-                                                       Datatype::encode(MPI_CURRENT_TYPE)));
-
-  void *sendbuf = smpi_get_tmp_sendbuffer(size* MPI_CURRENT_TYPE->size());
-  void *recvbuf = smpi_get_tmp_recvbuffer(size* MPI_CURRENT_TYPE->size());
-
-  Colls::reduce_scatter(sendbuf, recvbuf, recvcounts->data(), MPI_CURRENT_TYPE, MPI_OP_NULL, MPI_COMM_WORLD);
-  smpi_execute_flops(comp_size);
-
-  TRACE_smpi_comm_out(my_proc_id);
-  log_timed_action (action, clock);
-}
+};
+} // Replay Namespace
 
 static void action_allToAllv(simgrid::xbt::ReplayAction& action)
 {
@@ -820,7 +828,7 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("scatterV", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::ScatterVAction().execute(action); });
   xbt_replay_action_register("allGather", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::GatherAction("allGather").execute(action); });
   xbt_replay_action_register("allGatherV", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::GatherVAction("allGatherV").execute(action); });
-  xbt_replay_action_register("reduceScatter",  simgrid::smpi::action_reducescatter);
+  xbt_replay_action_register("reduceScatter", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::ReduceScatterAction().execute(action); });
   xbt_replay_action_register("compute", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::ComputeAction().execute(action); });
 
   //if we have a delayed start, sleep here.
