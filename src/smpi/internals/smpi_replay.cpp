@@ -128,9 +128,6 @@ public:
   WaitAction() : ReplayAction("Wait") {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    CHECK_ACTION_PARAMS(action, 0, 0)
-    MPI_Status status;
-
     std::string s = boost::algorithm::join(action, " ");
     xbt_assert(get_reqq_self()->size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
     MPI_Request request = get_reqq_self()->back();
@@ -152,6 +149,7 @@ public:
     // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
     TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("wait"));
 
+    MPI_Status status;
     Request::wait(&request, &status);
 
     TRACE_smpi_comm_out(rank);
