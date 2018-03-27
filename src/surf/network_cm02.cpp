@@ -141,10 +141,10 @@ NetworkCm02Model::NetworkCm02Model()
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
 
   if (optim == "Full") {
-    setUpdateMechanism(UM_FULL);
+    setUpdateMechanism(kernel::resource::Model::UpdateAlgo::Full);
   } else if (optim == "Lazy") {
     select = true;
-    setUpdateMechanism(UM_LAZY);
+    setUpdateMechanism(kernel::resource::Model::UpdateAlgo::Lazy);
     xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
                "You cannot disable selective update when using the lazy update mechanism");
   } else {
@@ -154,7 +154,7 @@ NetworkCm02Model::NetworkCm02Model()
   maxmin_system_ = new simgrid::kernel::lmm::System(select);
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
-  if (getUpdateMechanism() == UM_LAZY)
+  if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy)
     maxmin_system_->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
@@ -282,7 +282,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   action->weight_ = latency;
   action->latency_ = latency;
   action->rate_ = rate;
-  if (getUpdateMechanism() == UM_LAZY) {
+  if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy) {
     action->set_last_update();
   }
 
@@ -305,7 +305,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
 
   if (action->latency_ > 0) {
     action->set_variable(maxmin_system_->variable_new(action, 0.0, -1.0, constraints_per_variable));
-    if (getUpdateMechanism() == UM_LAZY) {
+    if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->get_last_update());
       action->heapInsert(action->latency_ + action->get_last_update(), route.empty()

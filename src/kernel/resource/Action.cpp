@@ -36,7 +36,7 @@ Action::~Action()
     simgrid::xbt::intrusive_erase(*state_set_, *this);
   if (get_variable())
     get_model()->get_maxmin_system()->variable_free(get_variable());
-  if (get_model()->getUpdateMechanism() == UM_LAZY) {
+  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) {
     /* remove from heap */
     heapRemove();
     if (modified_set_hook_.is_linked())
@@ -101,7 +101,7 @@ void Action::set_bound(double bound)
   if (variable_)
     get_model()->get_maxmin_system()->update_variable_bound(variable_, bound);
 
-  if (get_model()->getUpdateMechanism() == UM_LAZY && get_last_update() != surf_get_clock())
+  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy && get_last_update() != surf_get_clock())
     heapRemove();
   XBT_OUT();
 }
@@ -119,7 +119,7 @@ void Action::ref()
 void Action::set_max_duration(double duration)
 {
   max_duration_ = duration;
-  if (get_model()->getUpdateMechanism() == UM_LAZY) // remove action from the heap
+  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) // remove action from the heap
     heapRemove();
 }
 
@@ -129,7 +129,7 @@ void Action::set_priority(double weight)
   sharing_priority_ = weight;
   get_model()->get_maxmin_system()->update_variable_weight(get_variable(), weight);
 
-  if (get_model()->getUpdateMechanism() == UM_LAZY)
+  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy)
     heapRemove();
   XBT_OUT();
 }
@@ -137,7 +137,7 @@ void Action::set_priority(double weight)
 void Action::cancel()
 {
   set_state(Action::State::failed);
-  if (get_model()->getUpdateMechanism() == UM_LAZY) {
+  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) {
     if (modified_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
     heapRemove();
@@ -159,7 +159,7 @@ void Action::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::sleeping) {
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
-    if (get_model()->getUpdateMechanism() == UM_LAZY) {
+    if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) {
       heapRemove();
       if (state_set_ == get_model()->get_running_action_set() && sharing_priority_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
@@ -177,7 +177,7 @@ void Action::resume()
   if (suspended_ != SuspendStates::sleeping) {
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), get_priority());
     suspended_ = SuspendStates::not_suspended;
-    if (get_model()->getUpdateMechanism() == UM_LAZY)
+    if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy)
       heapRemove();
   }
   XBT_OUT();
@@ -223,7 +223,7 @@ double Action::get_remains()
 {
   XBT_IN("(%p)", this);
   /* update remains before return it */
-  if (get_model()->getUpdateMechanism() == UM_LAZY) /* update remains before return it */
+  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) /* update remains before return it */
     update_remains_lazy(surf_get_clock());
   XBT_OUT();
   return remains_;

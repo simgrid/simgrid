@@ -41,9 +41,9 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
   if (optim == "Full") {
-    setUpdateMechanism(UM_FULL);
+    setUpdateMechanism(Model::UpdateAlgo::Full);
   } else if (optim == "Lazy") {
-    setUpdateMechanism(UM_LAZY);
+    setUpdateMechanism(Model::UpdateAlgo::Lazy);
     select = true;
     xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
@@ -53,7 +53,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 
   maxmin_system_ = new simgrid::kernel::lmm::System(select);
 
-  if (getUpdateMechanism() == UM_LAZY)
+  if (getUpdateMechanism() == Model::UpdateAlgo::Lazy)
     maxmin_system_->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
@@ -181,7 +181,7 @@ CpuAction *CpuCas01::sleep(double duration)
   }
 
   model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
-  if (model()->getUpdateMechanism() == UM_LAZY) { // remove action from the heap
+  if (model()->getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy) { // remove action from the heap
     action->heapRemove();
     // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
     // max_duration correctly at the next call to share_resources
@@ -201,7 +201,7 @@ CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool
                 model->get_maxmin_system()->variable_new(this, 1.0 / requestedCore, requestedCore * speed, 1))
     , requestedCore_(requestedCore)
 {
-  if (model->getUpdateMechanism() == UM_LAZY) {
+  if (model->getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy) {
     set_last_update();
     set_last_value(0.0);
   }

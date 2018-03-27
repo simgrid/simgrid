@@ -39,9 +39,9 @@ Action::ModifiedSet* Model::get_modified_set() const
 double Model::next_occuring_event(double now)
 {
   // FIXME: set the good function once and for all
-  if (update_mechanism_ == UM_LAZY)
+  if (update_mechanism_ == Model::UpdateAlgo::Lazy)
     return next_occuring_event_lazy(now);
-  else if (update_mechanism_ == UM_FULL)
+  else if (update_mechanism_ == Model::UpdateAlgo::Full)
     return next_occuring_event_full(now);
   else
     xbt_die("Invalid cpu update mechanism!");
@@ -140,9 +140,9 @@ double Model::next_occuring_event_full(double /*now*/)
 
 void Model::update_actions_state(double now, double delta)
 {
-  if (update_mechanism_ == UM_FULL)
+  if (update_mechanism_ == Model::UpdateAlgo::Full)
     update_actions_state_full(now, delta);
-  else if (update_mechanism_ == UM_LAZY)
+  else if (update_mechanism_ == Model::UpdateAlgo::Lazy)
     update_actions_state_lazy(now, delta);
   else
     xbt_die("Invalid cpu update mechanism!");

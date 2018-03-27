@@ -8,19 +8,6 @@
 
 #include <simgrid/kernel/resource/Action.hpp>
 
-extern "C" {
-
-/** @brief Possible update mechanisms */
-enum e_UM_t {
-  UM_FULL,     /**< Full update mechanism: the remaining time of every action is recomputed at each step */
-  UM_LAZY,     /**< Lazy update mechanism: only the modified actions get recomputed.
-                    It may be slower than full if your system is tightly coupled to the point where every action
-                    gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
-                    a simple full update.  */
-  UM_UNDEFINED /**< Mechanism not defined */
-};
-}
-
 namespace simgrid {
 namespace kernel {
 namespace resource {
@@ -31,6 +18,16 @@ namespace resource {
  */
 class XBT_PUBLIC Model {
 public:
+  /** @brief Possible update mechanisms */
+  enum class UpdateAlgo {
+    Full,        /**< Full update mechanism: the remaining time of every action is recomputed at each step */
+    Lazy,        /**< Lazy update mechanism: only the modified actions get recomputed.
+                         It may be slower than full if your system is tightly coupled to the point where every action
+                         gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
+                         a simple full update.  */
+    UM_UNDEFINED /**< Mechanism not defined */
+  };
+
   Model();
   virtual ~Model();
 
@@ -56,8 +53,8 @@ public:
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
    */
-  e_UM_t getUpdateMechanism() const { return update_mechanism_; }
-  void setUpdateMechanism(e_UM_t mechanism) { update_mechanism_ = mechanism; }
+  UpdateAlgo getUpdateMechanism() const { return update_mechanism_; }
+  void setUpdateMechanism(UpdateAlgo mechanism) { update_mechanism_ = mechanism; }
 
   /** @brief Get Action heap */
   heap_type& getActionHeap() { return action_heap_; }
@@ -97,7 +94,7 @@ protected:
   lmm::System* maxmin_system_ = nullptr;
 
 private:
-  e_UM_t update_mechanism_        = UM_UNDEFINED;
+  UpdateAlgo update_mechanism_          = UpdateAlgo::UM_UNDEFINED;
   Action::StateSet* ready_action_set_   = new Action::StateSet(); /**< Actions in state SURF_ACTION_READY */
   Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Actions in state SURF_ACTION_RUNNING */
   Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Actions in state SURF_ACTION_FAILED */
