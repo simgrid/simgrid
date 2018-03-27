@@ -107,7 +107,7 @@ static void test1(method_t method)
     set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
                                   simgrid::kernel::lmm::func_vegas_fpi);
   else if (method == LAGRANGE_RENO)
-    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fpi,
+    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
                                   simgrid::kernel::lmm::func_reno_fpi);
 
   simgrid::kernel::lmm::System* Sys    = new_system(method, true);
