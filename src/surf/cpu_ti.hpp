@@ -148,8 +148,8 @@ public:
   CpuTiModel() = default;
   ~CpuTiModel() override;
   Cpu *createCpu(simgrid::s4u::Host *host,  std::vector<double>* speedPerPstate, int core) override;
-  double nextOccuringEvent(double now) override;
-  void updateActionsState(double now, double delta) override;
+  double next_occuring_event(double now) override;
+  void update_actions_state(double now, double delta) override;
 
   kernel::resource::Action::StateSet runningActionSetThatDoesNotNeedBeingChecked_;
   CpuTiList modifiedCpu_;

@@ -35,22 +35,22 @@ public:
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  Action::StateSet* getReadyActionSet() const { return ready_action_set_; }
+  Action::StateSet* get_ready_action_set() const { return ready_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
-  Action::StateSet* getRunningActionSet() const { return running_action_set_; }
+  Action::StateSet* get_running_action_set() const { return running_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  Action::StateSet* getFailedActionSet() const { return failed_action_set_; }
+  Action::StateSet* get_failed_action_set() const { return failed_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *done* state */
-  Action::StateSet* getDoneActionSet() const { return done_action_set_; }
+  Action::StateSet* get_done_action_set() const { return done_action_set_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
-  Action::ModifiedSet* getModifiedSet() const;
+  Action::ModifiedSet* get_modified_set() const;
 
   /** @brief Get the maxmin system of the current Model */
-  lmm::System* getMaxminSystem() const { return maxmin_system_; }
+  lmm::System* get_maxmin_system() const { return maxmin_system_; }
 
   /**
    * @brief Get the update mechanism of the current Model
@@ -72,9 +72,9 @@ public:
    * @param now The current time of the simulation
    * @return The delta of time till the next action will finish
    */
-  virtual double nextOccuringEvent(double now);
-  virtual double nextOccuringEventLazy(double now);
-  virtual double nextOccuringEventFull(double now);
+  virtual double next_occuring_event(double now);
+  virtual double next_occuring_event_lazy(double now);
+  virtual double next_occuring_event_full(double now);
 
   /**
    * @brief Update action to the current time
@@ -82,9 +82,9 @@ public:
    * @param now The current time of the simulation
    * @param delta The delta of time since the last update
    */
-  virtual void updateActionsState(double now, double delta);
-  virtual void updateActionsStateLazy(double now, double delta);
-  virtual void updateActionsStateFull(double now, double delta);
+  virtual void update_actions_state(double now, double delta);
+  virtual void update_actions_state_lazy(double now, double delta);
+  virtual void update_actions_state_full(double now, double delta);
 
   /** @brief Returns whether this model have an idempotent shareResource()
    *

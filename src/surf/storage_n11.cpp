@@ -70,14 +70,14 @@ StorageImpl* StorageN11Model::createStorage(std::string id, std::string type_id,
   return storage;
 }
 
-double StorageN11Model::nextOccuringEvent(double now)
+double StorageN11Model::next_occuring_event(double now)
 {
-  return StorageModel::nextOccuringEventFull(now);
+  return StorageModel::next_occuring_event_full(now);
 }
 
-void StorageN11Model::updateActionsState(double /*now*/, double delta)
+void StorageN11Model::update_actions_state(double /*now*/, double delta)
 {
-  for (auto it = std::begin(*getRunningActionSet()); it != std::end(*getRunningActionSet());) {
+  for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
     StorageAction& action = static_cast<StorageAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     action.update_remains(lrint(action.get_variable()->get_value() * delta));
@@ -120,18 +120,18 @@ StorageAction* StorageN11::write(sg_size_t size)
 
 StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, bool failed, StorageImpl* storage,
                                    e_surf_action_storage_type_t type)
-    : StorageAction(model, cost, failed, model->getMaxminSystem()->variable_new(this, 1.0, -1.0, 3), storage, type)
+    : StorageAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3), storage, type)
 {
   XBT_IN("(%s,%g", storage->getCname(), cost);
 
   // Must be less than the max bandwidth for all actions
-  model->getMaxminSystem()->expand(storage->constraint(), get_variable(), 1.0);
+  model->get_maxmin_system()->expand(storage->constraint(), get_variable(), 1.0);
   switch(type) {
   case READ:
-    model->getMaxminSystem()->expand(storage->constraintRead_, get_variable(), 1.0);
+    model->get_maxmin_system()->expand(storage->constraintRead_, get_variable(), 1.0);
     break;
   case WRITE:
-    model->getMaxminSystem()->expand(storage->constraintWrite_, get_variable(), 1.0);
+    model->get_maxmin_system()->expand(storage->constraintWrite_, get_variable(), 1.0);
     break;
   default:
     THROW_UNIMPLEMENTED;
@@ -148,7 +148,7 @@ void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (suspended_ != Action::SuspendStates::sleeping) {
-    get_model()->getMaxminSystem()->update_variable_weight(get_variable(), 0.0);
+    get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
     suspended_ = Action::SuspendStates::suspended;
   }
   XBT_OUT();

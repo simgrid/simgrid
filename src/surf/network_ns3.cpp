@@ -180,13 +180,13 @@ kernel::resource::Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host
   return new NetworkNS3Action(this, size, src, dst);
 }
 
-double NetworkNS3Model::nextOccuringEvent(double now)
+double NetworkNS3Model::next_occuring_event(double now)
 {
   double time_to_next_flow_completion;
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
-  if (not getRunningActionSet()->size() || now == 0.0)
+  if (not get_running_action_set()->size() || now == 0.0)
     return -1.0;
   else
     do {
@@ -202,12 +202,12 @@ double NetworkNS3Model::nextOccuringEvent(double now)
   return time_to_next_flow_completion;
 }
 
-void NetworkNS3Model::updateActionsState(double now, double delta)
+void NetworkNS3Model::update_actions_state(double now, double delta)
 {
   static std::vector<std::string> socket_to_destroy;
 
   /* If there are no running flows, advance the NS3 simulator and return */
-  if (getRunningActionSet()->empty()) {
+  if (get_running_action_set()->empty()) {
 
     while(double_positive(now - ns3::Simulator::Now().GetSeconds(), sg_surf_precision))
       ns3_simulator(now-ns3::Simulator::Now().GetSeconds());

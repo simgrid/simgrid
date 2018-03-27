@@ -336,7 +336,7 @@ Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedP
   return new CpuTi(this, host, speedPerPstate, core);
 }
 
-double CpuTiModel::nextOccuringEvent(double now)
+double CpuTiModel::next_occuring_event(double now)
 {
   double min_action_duration = -1;
 
@@ -356,7 +356,7 @@ double CpuTiModel::nextOccuringEvent(double now)
   return min_action_duration;
 }
 
-void CpuTiModel::updateActionsState(double now, double /*delta*/)
+void CpuTiModel::update_actions_state(double now, double /*delta*/)
 {
   while (not actionHeapIsEmpty() && actionHeapTopDate() <= now) {
     CpuTiAction* action = static_cast<CpuTiAction*>(actionHeapPop());
@@ -463,7 +463,7 @@ void CpuTi::updateActionsFinishTime(double now)
 
   for (CpuTiAction const& action : actionSet_) {
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->getRunningActionSet())
+    if (action.get_state_set() != surf_cpu_model_pm->get_running_action_set())
       continue;
 
     /* bogus priority, skip it */
@@ -481,7 +481,7 @@ void CpuTi::updateActionsFinishTime(double now)
   for (CpuTiAction& action : actionSet_) {
     double min_finish = -1;
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->getRunningActionSet())
+    if (action.get_state_set() != surf_cpu_model_pm->get_running_action_set())
       continue;
 
     /* verify if the action is really running on cpu */
@@ -540,7 +540,7 @@ void CpuTi::updateRemainingAmount(double now)
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
   for (CpuTiAction& action : actionSet_) {
     /* action not running, skip it */
-    if (action.get_state_set() != model()->getRunningActionSet())
+    if (action.get_state_set() != model()->get_running_action_set())
       continue;
 
     /* bogus priority, skip it */

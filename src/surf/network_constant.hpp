@@ -27,8 +27,8 @@ namespace simgrid {
     public:
       kernel::resource::Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size,
                                             double rate) override;
-      double nextOccuringEvent(double now) override;
-      void updateActionsState(double now, double delta) override;
+      double next_occuring_event(double now) override;
+      void update_actions_state(double now, double delta) override;
 
       LinkImpl* createLink(const std::string& name, double bw, double lat,
                            e_surf_link_sharing_policy_t policy) override;
