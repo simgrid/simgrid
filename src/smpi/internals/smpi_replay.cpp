@@ -364,8 +364,8 @@ static void action_reduce(simgrid::xbt::ReplayAction& action)
                      new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(root)->getPid(), comp_size,
                                                     comm_size, -1, Datatype::encode(MPI_CURRENT_TYPE), ""));
 
-  void *recvbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
-  void *sendbuf = smpi_get_tmp_sendbuffer(comm_size* MPI_CURRENT_TYPE->size());
+  void* recvbuf = smpi_get_tmp_recvbuffer(comm_size * MPI_CURRENT_TYPE->size());
+  void* sendbuf = smpi_get_tmp_sendbuffer(comm_size * MPI_CURRENT_TYPE->size());
   Colls::reduce(sendbuf, recvbuf, comm_size, MPI_CURRENT_TYPE, MPI_OP_NULL, root, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
 
