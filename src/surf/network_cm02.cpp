@@ -143,10 +143,10 @@ NetworkCm02Model::NetworkCm02Model()
   if (optim == "Full") {
     setUpdateMechanism(UM_FULL);
   } else if (optim == "Lazy") {
+    xbt_assert(select || xbt_cfg_is_default_value("network/maxmin-selective-update"),
+               "You cannot disable network selective update when using the lazy update mechanism");
     select = true;
     setUpdateMechanism(UM_LAZY);
-    xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
-               "You cannot disable selective update when using the lazy update mechanism");
   } else {
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
