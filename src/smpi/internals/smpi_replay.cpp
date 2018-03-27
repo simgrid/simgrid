@@ -68,7 +68,7 @@ namespace smpi {
 namespace Replay {
 class ActionArgParser {
 public:
-  virtual void parse(simgrid::xbt::ReplayAction& action) { CHECK_ACTION_PARAMS(action, 0, 0) }
+  virtual void parse(simgrid::xbt::ReplayAction& action, std::string name) { CHECK_ACTION_PARAMS(action, 0, 0) }
 };
 
 class SendRecvParser : public ActionArgParser {
@@ -78,7 +78,7 @@ public:
   double size;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
 
-  void parse(simgrid::xbt::ReplayAction& action) override
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
     CHECK_ACTION_PARAMS(action, 2, 1)
     partner = std::stoi(action[2]);
@@ -93,7 +93,7 @@ public:
   /* communication partner; if we send, this is the receiver and vice versa */
   double flops;
 
-  void parse(simgrid::xbt::ReplayAction& action) override
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
     CHECK_ACTION_PARAMS(action, 1, 0)
     flops = parse_double(action[2]);
@@ -114,7 +114,7 @@ public:
 
 class BcastArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action) override
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
     CHECK_ACTION_PARAMS(action, 1, 2)
     size = parse_double(action[2]);
@@ -126,7 +126,7 @@ public:
 
 class ReduceArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action) override
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
     CHECK_ACTION_PARAMS(action, 2, 2)
     comm_size = parse_double(action[2]);
@@ -139,7 +139,7 @@ public:
 
 class AllReduceArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action) override
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
     CHECK_ACTION_PARAMS(action, 2, 1)
     comm_size = parse_double(action[2]);
@@ -151,7 +151,7 @@ public:
 
 class AllToAllArgParser : public CollCommParser {
 public:
-  void parse(simgrid::xbt::ReplayAction& action) override
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
     CHECK_ACTION_PARAMS(action, 2, 1)
     comm_size = MPI_COMM_WORLD->size();
@@ -205,7 +205,7 @@ public:
   {
     // Needs to be re-initialized for every action, hence here
     double start_time = smpi_process()->simulated_elapsed();
-    args.parse(action);
+    args.parse(action, name);
     kernel(action);
     if (name != "Init")
       log_timed_action(action, start_time);
