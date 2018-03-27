@@ -280,40 +280,34 @@ public:
   void kernel(simgrid::xbt::ReplayAction& action) override { /* nothing to do */}
 };
 
-} // Replay Namespace
+class WaitAllAction : public ReplayAction<ActionArgParser> {
+public:
+  WaitAllAction() : ReplayAction("waitAll") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    const unsigned int count_requests = get_reqq_self()->size();
 
-static void action_waitall(simgrid::xbt::ReplayAction& action)
-{
-  CHECK_ACTION_PARAMS(action, 0, 0)
-  double clock = smpi_process()->simulated_elapsed();
-  const unsigned int count_requests = get_reqq_self()->size();
+    if (count_requests > 0) {
+      TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
+                         new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
+      std::vector<std::pair</*sender*/int,/*recv*/int>> sender_receiver;
+      for (const auto& req : (*get_reqq_self())) {
+        if (req && (req->flags() & RECV)) {
+          sender_receiver.push_back({req->src(), req->dst()});
+        }
+      }
+      MPI_Status status[count_requests];
+      Request::waitall(count_requests, &(*get_reqq_self())[0], status);
 
-  if (count_requests>0) {
-    MPI_Status status[count_requests];
-
-    int my_proc_id_traced = Actor::self()->getPid();
-    TRACE_smpi_comm_in(my_proc_id_traced, __FUNCTION__,
-                       new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
-    int recvs_snd[count_requests];
-    int recvs_rcv[count_requests];
-    for (unsigned int i = 0; i < count_requests; i++) {
-      const auto& req = (*get_reqq_self())[i];
-      if (req && (req->flags() & RECV)) {
-        recvs_snd[i] = req->src();
-        recvs_rcv[i] = req->dst();
-      } else
-        recvs_snd[i] = -100;
-   }
-   Request::waitall(count_requests, &(*get_reqq_self())[0], status);
-
-   for (unsigned i = 0; i < count_requests; i++) {
-     if (recvs_snd[i]!=-100)
-       TRACE_smpi_recv(recvs_snd[i], recvs_rcv[i],0);
-   }
-   TRACE_smpi_comm_out(my_proc_id_traced);
+      for (auto& pair : sender_receiver) {
+        TRACE_smpi_recv(pair.first, pair.second, 0);
+      }
+      TRACE_smpi_comm_out(my_proc_id);
+    }
   }
-  log_timed_action (action, clock);
-}
+};
+
+} // Replay Namespace
 
 static void action_barrier(simgrid::xbt::ReplayAction& action)
 {
@@ -799,7 +793,7 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("Irecv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::RecvAction("Irecv").execute(action); });
   xbt_replay_action_register("test",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::TestAction().execute(action); });
   xbt_replay_action_register("wait",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::WaitAction().execute(action); });
-  xbt_replay_action_register("waitAll",    simgrid::smpi::action_waitall);
+  xbt_replay_action_register("waitAll", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::WaitAllAction().execute(action); });
   xbt_replay_action_register("barrier",    simgrid::smpi::action_barrier);
   xbt_replay_action_register("bcast",      simgrid::smpi::action_bcast);
   xbt_replay_action_register("reduce",     simgrid::smpi::action_reduce);
