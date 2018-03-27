@@ -228,6 +228,32 @@ public:
   }
 };
 
+class TestAction : public ReplayAction<ActionArgParser> {
+public:
+  TestAction() : ReplayAction("Test") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    MPI_Request request = get_reqq_self()->back();
+    get_reqq_self()->pop_back();
+    // if request is null here, this may mean that a previous test has succeeded
+    // Different times in traced application and replayed version may lead to this
+    // In this case, ignore the extra calls.
+    if (request != nullptr) {
+      TRACE_smpi_testing_in(my_proc_id);
+
+      MPI_Status status;
+      int flag = Request::test(&request, &status);
+
+      XBT_DEBUG("MPI_Test result: %d", flag);
+      /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now
+       * nullptr.*/
+      get_reqq_self()->push_back(request);
+
+      TRACE_smpi_testing_out(my_proc_id);
+    }
+  }
+};
+
 } // Replay Namespace
 
 static void action_init(simgrid::xbt::ReplayAction& action)
