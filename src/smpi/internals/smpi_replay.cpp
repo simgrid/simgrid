@@ -307,19 +307,18 @@ public:
   }
 };
 
+class BarrierAction : public ReplayAction<ActionArgParser> {
+public:
+  BarrierAction() : ReplayAction("barrier") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override
+  {
+    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::NoOpTIData("barrier"));
+    Colls::barrier(MPI_COMM_WORLD);
+    TRACE_smpi_comm_out(my_proc_id);
+  }
+};
+
 } // Replay Namespace
-
-static void action_barrier(simgrid::xbt::ReplayAction& action)
-{
-  double clock = smpi_process()->simulated_elapsed();
-  int my_proc_id = Actor::self()->getPid();
-  TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::NoOpTIData("barrier"));
-
-  Colls::barrier(MPI_COMM_WORLD);
-
-  TRACE_smpi_comm_out(my_proc_id);
-  log_timed_action (action, clock);
-}
 
 static void action_bcast(simgrid::xbt::ReplayAction& action)
 {
