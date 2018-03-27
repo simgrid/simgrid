@@ -201,7 +201,7 @@ public:
 
 class GatherVArgParser : public CollCommParser {
 public:
-  int recv_sum;
+  int recv_size_sum;
   std::shared_ptr<std::vector<int>> recvcounts;
   std::vector<int> disps;
   void parse(simgrid::xbt::ReplayAction& action, std::string name) override
@@ -252,7 +252,7 @@ public:
     for (unsigned int i = 0; i < comm_size; i++) {
       (*recvcounts)[i] = std::stoi(action[i + 3]);
     }
-    recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+    recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
   }
 };
 
@@ -283,8 +283,8 @@ public:
 
 class ScatterVArgParser : public CollCommParser {
 public:
-  int recv_sum;
-  int send_sum;
+  int recv_size_sum;
+  int send_size_sum;
   std::shared_ptr<std::vector<int>> sendcounts;
   std::vector<int> disps;
   void parse(simgrid::xbt::ReplayAction& action, std::string name) override
@@ -311,14 +311,14 @@ public:
     for (unsigned int i = 0; i < comm_size; i++) {
       (*sendcounts)[i] = std::stoi(action[i + 2]);
     }
-    send_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
+    send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
     root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
   }
 };
 
 class ReduceScatterArgParser : public CollCommParser {
 public:
-  int recv_sum;
+  int recv_size_sum;
   std::shared_ptr<std::vector<int>> recvcounts;
   std::vector<int> disps;
   void parse(simgrid::xbt::ReplayAction& action, std::string name) override
@@ -340,14 +340,14 @@ public:
     for (unsigned int i = 0; i < comm_size; i++) {
       recvcounts->push_back(std::stoi(action[i + 2]));
     }
-    recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+    recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
   }
 };
 
 class AllToAllVArgParser : public CollCommParser {
 public:
-  int recv_sum;
-  int send_sum;
+  int recv_size_sum;
+  int send_size_sum;
   std::shared_ptr<std::vector<int>> recvcounts;
   std::shared_ptr<std::vector<int>> sendcounts;
   std::vector<int> senddisps;
@@ -382,8 +382,8 @@ public:
       (*sendcounts)[i] = std::stoi(action[3 + i]);
       (*recvcounts)[i] = std::stoi(action[4 + comm_size + i]);
     }
-    send_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
-    recv_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+    send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
+    recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
   }
 };
 
@@ -713,12 +713,12 @@ public:
 
     if (name == "gatherV") {
       Colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1, 
-                     (rank == args.root) ? recv_buffer(args.recv_sum  * args.datatype2->size()) : nullptr, args.recvcounts->data(), args.disps.data(), args.datatype2, args.root,
+                     (rank == args.root) ? recv_buffer(args.recv_size_sum  * args.datatype2->size()) : nullptr, args.recvcounts->data(), args.disps.data(), args.datatype2, args.root,
                      MPI_COMM_WORLD);
     }
     else {
       Colls::allgatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1, 
-                        recv_buffer(args.recv_sum * args.datatype2->size()), args.recvcounts->data(), args.disps.data(), args.datatype2,
+                        recv_buffer(args.recv_size_sum * args.datatype2->size()), args.recvcounts->data(), args.disps.data(), args.datatype2,
                     MPI_COMM_WORLD);
     }
 
@@ -754,7 +754,7 @@ public:
           nullptr, Datatype::encode(args.datatype1),
           Datatype::encode(args.datatype2)));
 
-    Colls::scatterv((rank == args.root) ? send_buffer(args.send_sum * args.datatype1->size()) : nullptr, args.sendcounts->data(), args.disps.data(), 
+    Colls::scatterv((rank == args.root) ? send_buffer(args.send_size_sum * args.datatype1->size()) : nullptr, args.sendcounts->data(), args.disps.data(), 
         args.datatype1, recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, args.root,
         MPI_COMM_WORLD);
 
@@ -772,7 +772,7 @@ public:
                                                          std::to_string(args.comp_size), /* ugly hack to print comp_size */
                                                          Datatype::encode(args.datatype1)));
 
-    Colls::reduce_scatter(send_buffer(args.recv_sum * args.datatype1->size()), recv_buffer(args.recv_sum * args.datatype1->size()), 
+    Colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()), recv_buffer(args.recv_size_sum * args.datatype1->size()), 
                           args.recvcounts->data(), args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
 
     smpi_execute_flops(args.comp_size);
@@ -786,7 +786,7 @@ public:
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-        new simgrid::instr::VarCollTIData("allToAllV", -1, args.send_sum, args.sendcounts, args.recv_sum, args.recvcounts,
+        new simgrid::instr::VarCollTIData("allToAllV", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
           Datatype::encode(args.datatype1),
           Datatype::encode(args.datatype2)));
 
