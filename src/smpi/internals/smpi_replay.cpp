@@ -274,27 +274,13 @@ public:
   }
 };
 
+class CommunicatorAction : public ReplayAction<ActionArgParser> {
+public:
+  CommunicatorAction() : ReplayAction("Comm") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override { /* nothing to do */}
+};
+
 } // Replay Namespace
-
-static void action_finalize(simgrid::xbt::ReplayAction& action)
-{
-  /* Nothing to do */
-}
-
-static void action_comm_size(simgrid::xbt::ReplayAction& action)
-{
-  log_timed_action (action, smpi_process()->simulated_elapsed());
-}
-
-static void action_comm_split(simgrid::xbt::ReplayAction& action)
-{
-  log_timed_action (action, smpi_process()->simulated_elapsed());
-}
-
-static void action_comm_dup(simgrid::xbt::ReplayAction& action)
-{
-  log_timed_action (action, smpi_process()->simulated_elapsed());
-}
 
 static void action_waitall(simgrid::xbt::ReplayAction& action)
 {
@@ -802,10 +788,10 @@ void smpi_replay_init(int* argc, char*** argv)
   TRACE_smpi_comm_in(my_proc_id, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
   TRACE_smpi_comm_out(my_proc_id);
   xbt_replay_action_register("init", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::InitAction().execute(action); });
-  xbt_replay_action_register("finalize",   simgrid::smpi::action_finalize);
-  xbt_replay_action_register("comm_size",  simgrid::smpi::action_comm_size);
-  xbt_replay_action_register("comm_split", simgrid::smpi::action_comm_split);
-  xbt_replay_action_register("comm_dup",   simgrid::smpi::action_comm_dup);
+  xbt_replay_action_register("finalize", [](simgrid::xbt::ReplayAction& action) { /* nothing to do */ });
+  xbt_replay_action_register("comm_size", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::CommunicatorAction().execute(action); });
+  xbt_replay_action_register("comm_split",[](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::CommunicatorAction().execute(action); });
+  xbt_replay_action_register("comm_dup",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::CommunicatorAction().execute(action); });
 
   xbt_replay_action_register("send",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::SendAction("send").execute(action); });
   xbt_replay_action_register("Isend", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::Replay::SendAction("Isend").execute(action); });
