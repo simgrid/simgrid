@@ -20,7 +20,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf, "Logging specific to SURF (lagrange)");
 XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf_lagrange, "Logging specific to SURF (lagrange dichotomy)");
 
-#define SHOW_EXPR(expr) XBT_CDEBUG(surf_lagrange, #expr " = %g", expr);
 #define VEGAS_SCALING 1000.0
 #define RENO_SCALING 1.0
 #define RENO2_SCALING 1.0
