@@ -10,7 +10,7 @@
 #include <cstdarg>
 #include <cwchar>
 #include <deque>
-#include <simgrid/sg_config.h>
+#include <simgrid/sg_config.hpp>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");

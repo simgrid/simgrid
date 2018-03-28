@@ -7,7 +7,7 @@
 
 #include "network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/lmm/maxmin.hpp"
 

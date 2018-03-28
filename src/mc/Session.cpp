@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team.
+/* Copyright (c) 2015-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,7 +13,7 @@
 #include "xbt/system_error.hpp"
 #include <mc/mc.h>
 #include <simgrid/modelchecker.h>
-#include <simgrid/sg_config.h>
+#include <simgrid/sg_config.hpp>
 
 #include "src/mc/Session.hpp"
 #include "src/mc/checker/Checker.hpp"

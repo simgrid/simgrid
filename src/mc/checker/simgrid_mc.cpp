@@ -16,7 +16,7 @@
 
 #include <xbt/log.h>
 
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/xbt_modinter.h"
 
 #include "src/mc/Session.hpp"

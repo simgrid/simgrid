@@ -23,7 +23,7 @@
 #include "xbt/ex.h" /* ex_backtrace_display */
 
 #include "mc/mc.h"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/StorageImpl.hpp"
 

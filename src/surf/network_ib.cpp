@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/network_ib.hpp"

@@ -6,7 +6,7 @@
 #include <algorithm>
 
 #include "network_interface.hpp"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_

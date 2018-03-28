@@ -5,7 +5,7 @@
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/surf/network_interface.hpp"
 #include "xbt/file.hpp"
 

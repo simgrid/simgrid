@@ -1,10 +1,10 @@
-/* Copyright (c) 2010-2017. The SimGrid Team.
+/* Copyright (c) 2010-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include "src/smpi/include/private.hpp"

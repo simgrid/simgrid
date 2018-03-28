@@ -7,12 +7,12 @@
 #include "mc/mc.h"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/lmm/maxmin.hpp"   // Constraint
 #include "src/surf/HostImpl.hpp"
-#include "xbt/utility.hpp"
 #include "src/surf/xml/platf.hpp"
+#include "xbt/utility.hpp"
 
 #include <fstream>
 #include <set>

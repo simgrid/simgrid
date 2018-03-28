@@ -5,7 +5,7 @@ set(EXTRA_DIST
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
-  src/include/simgrid/sg_config.h
+  src/include/simgrid/sg_config.hpp
   src/include/surf/surf.hpp
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h

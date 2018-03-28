@@ -20,7 +20,7 @@
 
 #include "src/xbt_modinter.h"       /* prototype of other module's init/exit in XBT */
 
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 
 #include "src/internal_config.h"
 #include <cstdio>

@@ -4,7 +4,7 @@
  * under the terms of the license ,(GNU LGPL) which comes with this package. */
 
 #include "private.hpp"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)");
 

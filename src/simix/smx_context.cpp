@@ -1,6 +1,6 @@
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +17,7 @@
 #include <xbt/sysdep.h>
 
 #include "simgrid/modelchecker.h"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "smx_private.hpp"
 #include "src/internal_config.h"
 #include "xbt/log.h"

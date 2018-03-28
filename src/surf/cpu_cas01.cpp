@@ -5,7 +5,7 @@
 
 #include "cpu_cas01.hpp"
 #include "cpu_ti.hpp"
-#include "simgrid/sg_config.h"
+#include "simgrid/sg_config.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "xbt/utility.hpp"
 #include <algorithm>

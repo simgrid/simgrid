@@ -19,18 +19,18 @@
 #include <typeinfo>
 #include <vector>
 
-#include <xbt/ex.hpp>
-#include <xbt/config.h>
-#include <xbt/config.hpp>
+#include "simgrid/sg_config.hpp"
+#include "xbt/dynar.h"
+#include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/dynar.h"
+#include <xbt/config.h>
+#include <xbt/config.hpp>
+#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 XBT_EXPORT_NO_IMPORT xbt_cfg_t simgrid_config = nullptr;
-extern "C" XBT_PUBLIC void sg_config_finalize();
 
 namespace simgrid {
 namespace config {

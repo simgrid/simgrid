@@ -18,7 +18,7 @@
 #include "xbt/backtrace.hpp"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
 
-#include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
+#include "simgrid/sg_config.hpp" /* Configuration mechanism of SimGrid */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 
