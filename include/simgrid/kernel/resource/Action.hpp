@@ -13,7 +13,7 @@
 #include <boost/heap/pairing_heap.hpp>
 #include <boost/optional.hpp>
 
-const int NO_MAX_DURATION = -1.0;
+static constexpr int NO_MAX_DURATION = -1.0;
 
 namespace simgrid {
 namespace kernel {
