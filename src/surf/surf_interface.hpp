@@ -61,9 +61,6 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-extern "C" {
-XBT_PUBLIC double surf_get_clock();
-}
 /** \ingroup SURF_simulation
  *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
  */
