@@ -108,7 +108,7 @@ initialization function.
 s_surf_model_description_t surf_plugin_description[] = {
                   {"Energy",
                    "Cpu energy consumption.",
-                   sg_energy_plugin_init},
+                   sg_host_energy_plugin_init},
                   {"MyNetworkPlugin",
                    "My network plugin.",
                    sg_my_network_plugin_init},

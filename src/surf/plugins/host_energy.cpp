@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -500,7 +500,7 @@ void sg_host_energy_update_all()
 double sg_host_get_consumed_energy(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getConsumedEnergy();
 }
 
@@ -510,7 +510,7 @@ double sg_host_get_consumed_energy(sg_host_t host)
 double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getWattMinAt(pstate);
 }
 /** @ingroup plugin_energy
@@ -519,7 +519,7 @@ double sg_host_get_wattmin_at(sg_host_t host, int pstate)
 double sg_host_get_wattmax_at(sg_host_t host, int pstate)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getWattMaxAt(pstate);
 }
 
@@ -529,7 +529,7 @@ double sg_host_get_wattmax_at(sg_host_t host, int pstate)
 double sg_host_get_current_consumption(sg_host_t host)
 {
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-             "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+             "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getCurrentWattsValue();
 }
 }
