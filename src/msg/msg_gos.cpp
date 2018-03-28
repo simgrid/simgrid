@@ -314,7 +314,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
   simdata_task_t t_simdata = nullptr;
   msg_process_t myself = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
-  int call_end = TRACE_msg_task_put_start(task);
+  TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -337,8 +337,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
 
   if (TRACE_is_enabled())
     simcall_set_category(act, task->category);
-  if (call_end)
-    TRACE_msg_task_put_end();
+  TRACE_msg_task_put_end();
 
   return comm;
 }
@@ -780,7 +779,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_process_t process = MSG_process_self();
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
 
-  int call_end = TRACE_msg_task_put_start(task);
+  TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -821,8 +820,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
     t_simdata->setNotUsed();
   }
 
-  if (call_end)
-    TRACE_msg_task_put_end();
+  TRACE_msg_task_put_end();
   return ret;
 }
 

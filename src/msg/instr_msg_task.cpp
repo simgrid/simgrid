@@ -95,7 +95,7 @@ void TRACE_msg_task_get_end(msg_task_t task)
 }
 
 /* MSG_task_put related functions */
-int TRACE_msg_task_put_start(msg_task_t task)
+void TRACE_msg_task_put_start(msg_task_t task)
 {
   XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 
@@ -106,8 +106,6 @@ int TRACE_msg_task_put_start(msg_task_t task)
     std::string key = std::string("p") + std::to_string(task->counter);
     simgrid::instr::Container::getRoot()->getLink("ACTOR_TASK_LINK")->startEvent(process_container, "SR", key);
   }
-
-  return 1;
 }
 
 void TRACE_msg_task_put_end()
