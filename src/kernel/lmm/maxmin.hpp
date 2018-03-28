@@ -630,6 +630,18 @@ private:
 
   bool check_feasible(bool warn);
   double dual_objective();
+
+  /*
+   * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
+   */
+  // computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
+  static double dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst,
+                          double min_error);
+  // computes the value of the differential of constraint cnst applied to lambda
+  static double partial_diff_lambda(double lambda, const Constraint& cnst);
+
+  static double new_value(const Variable& var);
+  static double new_mu(const Variable& var);
 };
 
 XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);

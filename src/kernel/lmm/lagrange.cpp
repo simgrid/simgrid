@@ -35,14 +35,6 @@ System* make_new_lagrange_system(bool selective_update)
   return new Lagrange(selective_update);
 }
 
-/*
- * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
- */
-// computes the value of the dichotomy using a initial values, init, with a specific variable or constraint
-static double dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst, double min_error);
-// computes the value of the differential of constraint cnst applied to lambda
-static double partial_diff_lambda(double lambda, const Constraint& cnst);
-
 bool Lagrange::check_feasible(bool warn)
 {
   for (Constraint const& cnst : active_constraint_set) {
@@ -77,7 +69,7 @@ bool Lagrange::check_feasible(bool warn)
   return true;
 }
 
-static double new_value(const Variable& var)
+double Lagrange::new_value(const Variable& var)
 {
   double tmp = 0;
 
@@ -91,7 +83,7 @@ static double new_value(const Variable& var)
   return var.func_fpi(var, tmp);
 }
 
-static double new_mu(const Variable& var)
+double Lagrange::new_mu(const Variable& var)
 {
   double mu_i    = 0.0;
   double sigma_i = 0.0;
@@ -277,7 +269,8 @@ void Lagrange::lagrange_solve()
  *
  * @return a double corresponding to the result of the dichotomy process
  */
-static double dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst, double min_error)
+double Lagrange::dichotomy(double init, double diff(double, const Constraint&), const Constraint& cnst,
+                           double min_error)
 {
   double min = init;
   double max = init;
@@ -377,7 +370,7 @@ static double dichotomy(double init, double diff(double, const Constraint&), con
   return ((min + max) / 2.0);
 }
 
-static double partial_diff_lambda(double lambda, const Constraint& cnst)
+double Lagrange::partial_diff_lambda(double lambda, const Constraint& cnst)
 {
   double diff           = 0.0;
 
