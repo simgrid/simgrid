@@ -235,20 +235,20 @@ public:
       if (action.size() > 3 + comm_size + comm_size) { /* datatype + disp are specified */
         datatype_index = 3 + comm_size;
         disp_index     = datatype_index + 1;
+        datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
+        datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
       } else if (action.size() > 3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
-        datatype_index = -1;
         disp_index     = 3 + comm_size;
       } else if (action.size() > 3 + comm_size)  { /* only datatype, no disp specified */
         datatype_index = 3 + comm_size;
+        datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
+        datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
       }
 
       if (disp_index != 0) {
         for (unsigned int i = 0; i < comm_size; i++)
           disps[i]          = std::stoi(action[disp_index + i]);
       }
-
-      datatype1 = simgrid::smpi::Datatype::decode(action[datatype_index]);
-      datatype2 = simgrid::smpi::Datatype::decode(action[datatype_index]);
     }
 
     for (unsigned int i = 0; i < comm_size; i++) {
