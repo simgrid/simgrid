@@ -186,8 +186,9 @@
 
 #endif
 
-#define TRUE  1
-#define FALSE 0
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 
 /* C++ users need love */
 #ifndef SG_BEGIN_DECL
