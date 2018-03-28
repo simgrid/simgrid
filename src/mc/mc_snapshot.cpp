@@ -20,8 +20,6 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_snapshot.hpp"
 
-extern "C" {
-
 /** @brief Find the snapshoted region from a pointer
  *
  *  @param addr     Pointer
@@ -140,8 +138,6 @@ int MC_snapshot_region_memcmp(
   }
   return res;
 }
-
-} // extern "C"
 
 namespace simgrid {
 namespace mc {

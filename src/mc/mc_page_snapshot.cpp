@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2017. The SimGrid Team.
+/* Copyright (c) 2014-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,8 +18,6 @@
 #include "src/mc/ChunkedData.hpp"
 
 using simgrid::mc::remote;
-
-extern "C" {
 
 /** @brief Restore a snapshot of a region
  *
@@ -50,6 +48,4 @@ void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, mc_mem_region_
   xbt_assert(simgrid::mc::mmu::chunkCount(reg->size()) == reg->page_data().page_count());
   mc_restore_page_snapshot_region(process,
     (void*) reg->permanent_address().address(), reg->page_data());
-}
-
 }

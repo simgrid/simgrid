@@ -20,10 +20,8 @@
 #include <xbt/log.h>
 #include <xbt/log.hpp>
 
-extern "C" {
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");
-}
 
 namespace simgrid {
 namespace xbt {

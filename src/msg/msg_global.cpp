@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,8 +12,6 @@
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
-
-extern "C" {
 
 MSG_Global_t msg_global = nullptr;
 static void MSG_exit();
@@ -121,5 +119,4 @@ double MSG_get_clock()
 unsigned long int MSG_get_sent_msg()
 {
   return msg_global->sent_msg;
-}
 }

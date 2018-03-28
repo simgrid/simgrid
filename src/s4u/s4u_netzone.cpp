@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -114,7 +114,7 @@ void NetZone::addRoute(sg_netpoint_t /*src*/, sg_netpoint_t /*dst*/, sg_netpoint
 } // namespace simgrid
 
 /* **************************** Public C interface *************************** */
-SG_BEGIN_DECL()
+
 sg_netzone_t sg_zone_get_root()
 {
   return simgrid::s4u::Engine::getInstance()->getNetRoot();
@@ -155,5 +155,3 @@ void sg_zone_get_hosts(sg_netzone_t netzone, xbt_dynar_t whereto)
   for (auto const& host : hosts)
     xbt_dynar_push(whereto, &host);
 }
-
-SG_END_DECL()

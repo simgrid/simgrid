@@ -1,6 +1,6 @@
 /* Mailboxes in MSG */
 
-/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,8 +9,6 @@
 #include "src/msg/msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");
-
-extern "C" {
 
 /** \ingroup msg_mailbox_management
  * \brief Set the mailbox to receive in asynchronous mode
@@ -24,5 +22,4 @@ extern "C" {
 void MSG_mailbox_set_async(const char *alias){
   simgrid::s4u::Mailbox::byName(alias)->setReceiver(simgrid::s4u::Actor::self());
   XBT_VERB("%s mailbox set to receive eagerly for myself\n",alias);
-}
 }

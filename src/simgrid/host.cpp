@@ -19,8 +19,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
-extern "C" {
-
 size_t sg_host_count()
 {
   return simgrid::s4u::Engine::getInstance()->getHostCount();
@@ -338,5 +336,3 @@ sg_host_t sg_host_self()
   smx_actor_t process = SIMIX_process_self();
   return (process == nullptr) ? nullptr : process->host;
 }
-
-} // extern "C"

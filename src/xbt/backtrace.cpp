@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2005-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,11 +22,7 @@
 
 #include "src/internal_config.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_backtrace, xbt, "Backtrace");
-
-}
 
 static bool startWith(std::string str, const char* prefix)
 {

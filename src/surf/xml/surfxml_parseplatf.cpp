@@ -13,13 +13,11 @@
 #include "src/surf/xml/platf_private.hpp"
 
 #if SIMGRID_HAVE_LUA
-extern "C" {
 #include "src/bindings/lua/simgrid_lua.hpp"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */
 #include <lualib.h>             /* Prototype for luaL_openlibs(), */
-}
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
@@ -32,7 +30,6 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_bw;
 XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
-extern "C" {
 void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect)
 {
   xbt_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
@@ -168,5 +165,4 @@ void parse_platform_file(const char *file)
 
   if (parse_status)
     surf_parse_error(std::string("Parse error in ") + file);
-}
 }

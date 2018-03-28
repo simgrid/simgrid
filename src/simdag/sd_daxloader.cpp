@@ -13,10 +13,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
-extern "C" {
 #include "dax_dtd.h"
 #include "dax_dtd.c"
-}
 
 /* Ensure that transfer tasks have unique names even though a file is used several times */
 void uniq_transfer_task_name(SD_task_t task)

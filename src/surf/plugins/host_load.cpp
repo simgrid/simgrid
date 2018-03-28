@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -173,7 +173,6 @@ static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::kerne
 }
 
 /* **************************** Public interface *************************** */
-extern "C" {
 
 /** \ingroup plugin_load
  * \brief Initializes the HostLoad plugin
@@ -249,5 +248,4 @@ void sg_host_load_reset(sg_host_t host)
              "The Load plugin is not active. Please call sg_host_load_plugin_init() during initialization.");
 
   host->extension<HostLoad>()->reset();
-}
 }

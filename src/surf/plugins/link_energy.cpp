@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2017, 2018. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -175,7 +175,7 @@ static void onSimulationEnd()
   XBT_INFO("Total energy over all links: %f", total_energy);
 }
 /* **************************** Public interface *************************** */
-SG_BEGIN_DECL()
+
 int sg_link_energy_is_inited()
 {
   return LinkEnergy::EXTENSION_ID.valid();
@@ -230,4 +230,3 @@ double sg_link_get_consumed_energy(sg_link_t link)
 {
   return link->extension<LinkEnergy>()->getConsumedEnergy();
 }
-SG_END_DECL()

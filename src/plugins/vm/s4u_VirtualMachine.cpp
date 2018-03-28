@@ -200,7 +200,6 @@ void VirtualMachine::setBound(double bound)
 
 /* **************************** Public C interface *************************** */
 
-SG_BEGIN_DECL()
 /** @brief Create a new VM object with the default parameters
  * A VM is treated as a host. The name of the VM must be unique among all hosts.
  */
@@ -306,5 +305,3 @@ void sg_vm_destroy(sg_vm_t vm)
 {
   vm->destroy();
 }
-
-SG_END_DECL()

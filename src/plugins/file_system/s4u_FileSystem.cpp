@@ -350,8 +350,6 @@ static void onHostCreation(simgrid::s4u::Host& host)
 }
 
 /* **************************** Public interface *************************** */
-SG_BEGIN_DECL()
-
 void sg_storage_file_system_init()
 {
   if (not FileSystemStorageExt::EXTENSION_ID.valid()) {
@@ -505,5 +503,3 @@ xbt_dict_t sg_host_get_storage_content(sg_host_t host)
 
   return contents;
 }
-
-SG_END_DECL()

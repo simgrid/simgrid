@@ -401,7 +401,7 @@ void migrate(Host* new_host)
 } // namespace simgrid
 
 /* **************************** Public C interface *************************** */
-SG_BEGIN_DECL()
+
 /** \ingroup m_actor_management
  * \brief Returns the process ID of \a actor.
  *
@@ -555,5 +555,3 @@ void sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
 {
   actor->setKillTime(kill_time);
 }
-
-SG_END_DECL()

@@ -7,8 +7,6 @@
 
 #define MSG_CALL(type, oldname, args)
 
-extern "C" {
-
 /* ************************** Actors *************************** */
 int MSG_process_get_PID(sg_actor_t actor)
 {
@@ -305,5 +303,4 @@ void MSG_vm_shutdown(sg_vm_t vm)
 void MSG_vm_destroy(sg_vm_t vm)
 {
   sg_vm_destroy(vm);
-}
 }

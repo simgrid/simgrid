@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -287,8 +287,6 @@ void MigrationTx::operator()()
 }
 }
 
-SG_BEGIN_DECL()
-
 static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine* vm)
 {
   if (vm->getImpl()->isMigrating) {
@@ -372,5 +370,3 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 
   vm->getImpl()->isMigrating = false;
 }
-
-SG_END_DECL()

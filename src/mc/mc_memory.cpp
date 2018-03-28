@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2017. The SimGrid Team.
+/* Copyright (c) 2008-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -16,14 +16,10 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
 
-extern "C" {
-
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and mc_heap */
 void MC_memory_init()
 {
   if (not malloc_use_mmalloc())
     xbt_die("Model-checking support is not enabled: run with simgrid-mc.");
-}
-
 }

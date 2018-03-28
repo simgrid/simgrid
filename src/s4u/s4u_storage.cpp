@@ -95,7 +95,7 @@ simgrid::xbt::signal<void(s4u::Storage&)> Storage::onDestruction;
 } /* namespace simgrid */
 
 /* **************************** Public C interface *************************** */
-SG_BEGIN_DECL()
+
 /** @addtogroup sg_storage_management
  * (#sg_storage_t) and the functions for managing it.
  */
@@ -202,5 +202,3 @@ sg_size_t sg_storage_write(sg_storage_t storage, sg_size_t size)
 {
   return storage->write(size);
 }
-
-SG_END_DECL()

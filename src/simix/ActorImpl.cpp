@@ -814,8 +814,8 @@ void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
  * \param properties the properties of the process
  * \param auto_restart either it is autorestarting or not.
  */
-extern "C" smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host,
-                                              int argc, char** argv, std::map<std::string, std::string>* properties)
+smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
+                                   char** argv, std::map<std::string, std::string>* properties)
 {
   if (name == nullptr)
     name = "";

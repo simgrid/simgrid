@@ -451,7 +451,6 @@ static void onSimulationEnd()
 }
 
 /* **************************** Public interface *************************** */
-extern "C" {
 
 /** \ingroup plugin_energy
  * \brief Enable host energy plugin
@@ -531,5 +530,4 @@ double sg_host_get_current_consumption(sg_host_t host)
   xbt_assert(HostEnergy::EXTENSION_ID.valid(),
              "The Energy plugin is not active. Please call sg_host_energy_plugin_init() during initialization.");
   return host->extension<HostEnergy>()->getCurrentWattsValue();
-}
 }

@@ -10,8 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
-extern "C" {
-
 /** @addtogroup m_process_management
  *
  *  Processes (#msg_process_t) are independent agents that can do stuff on their own. They are in charge of executing
@@ -141,7 +139,6 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   xbt_free(argv);
   return res;
 }
-}
 
 msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
                                               std::map<std::string, std::string>* properties)
@@ -159,8 +156,6 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
   simcall_process_on_exit(process, (int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
   return process->ciface();
 }
-
-extern "C" {
 
 /* Become a process in the simulation
  *
@@ -348,5 +343,4 @@ XBT_PUBLIC void MSG_process_ref(msg_process_t process)
 XBT_PUBLIC void MSG_process_unref(msg_process_t process)
 {
   intrusive_ptr_release(process);
-}
 }

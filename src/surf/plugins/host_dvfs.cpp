@@ -294,7 +294,6 @@ static void on_host_added(simgrid::s4u::Host& host)
 }
 
 /* **************************** Public interface *************************** */
-extern "C" {
 
 /** \ingroup SURF_plugin_load
  * \brief Initializes the HostDvfs plugin
@@ -314,5 +313,4 @@ void sg_host_dvfs_plugin_init()
                           "How often should the dvfs plugin check whether the frequency needs to be changed?");
   xbt_cfg_register_string(property_governor, "performance", nullptr,
                           "Which Governor should be used that adapts the CPU frequency?");
-}
 }

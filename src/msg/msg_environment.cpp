@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,8 +10,6 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #endif
-
-extern "C" {
 
 /********************************* MSG **************************************/
 
@@ -32,6 +30,4 @@ extern "C" {
 void MSG_create_environment(const char *file)
 {
   SIMIX_create_environment(file);
-}
-
 }

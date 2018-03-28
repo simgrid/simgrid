@@ -18,8 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U link
  * C API *
  *********/
 
-extern "C" {
-
 const char* sg_link_name(sg_link_t link)
 {
   return link->getCname();
@@ -67,7 +65,6 @@ sg_link_t* sg_link_list()
 void sg_link_exit()
 {
   simgrid::surf::LinkImpl::linksExit();
-}
 }
 
 /***********

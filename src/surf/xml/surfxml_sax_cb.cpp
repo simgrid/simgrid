@@ -21,8 +21,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 
-extern "C" {
-
 #include "simgrid_dtd.c"
 
 static const char* surf_parsed_filename; // Currently parsed file (for the error messages)
@@ -99,7 +97,6 @@ int surf_parse_get_int(std::string s)
     surf_parse_error(s + " is not a double");
     return -1;
   }
-}
 }
 
 namespace {
@@ -198,8 +195,6 @@ double surf_parse_get_value_with_unit(const char* string, const unit_scale& unit
   return res * u->second;
 }
 }
-
-extern "C" {
 
 double surf_parse_get_time(const char* string, const char* entity_kind, std::string name)
 {
@@ -993,5 +988,4 @@ void surf_parse_close()
 int surf_parse()
 {
   return surf_parse_lex();
-}
 }

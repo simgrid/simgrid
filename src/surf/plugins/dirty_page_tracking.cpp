@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017, 2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -102,8 +102,6 @@ static void onExecCompletion(simgrid::kernel::activity::ExecImplPtr exec)
   vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->untrack(exec);
 }
 
-SG_BEGIN_DECL()
-
 void sg_vm_dirty_page_tracking_init()
 {
   if (not simgrid::vm::VmDirtyPageTrackingExt::EXTENSION_ID.valid()) {
@@ -164,5 +162,3 @@ double sg_vm_get_max_downtime(sg_vm_t vm)
 {
   return vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->getMaxDowntime();
 }
-
-SG_END_DECL()
