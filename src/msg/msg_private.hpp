@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -84,8 +84,6 @@ struct s_MSG_Global_t {
 };
 typedef s_MSG_Global_t* MSG_Global_t;
 
-extern "C" {
-
 XBT_PUBLIC_DATA MSG_Global_t msg_global;
 
 /*************************************************************/
@@ -109,7 +107,6 @@ XBT_PRIVATE void TRACE_msg_task_put_end();
 
 /* declaration of instrumentation functions from msg_process_instr.c */
 XBT_PRIVATE void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
-}
 
 inline void s_simdata_task_t::setUsed()
 {
