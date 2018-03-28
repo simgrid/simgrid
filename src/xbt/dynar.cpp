@@ -1,6 +1,6 @@
 /* a generic DYNamic ARray implementation.                                  */
 
-/* Copyright (c) 2004-2017. The SimGrid Team.
+/* Copyright (c) 2004-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -898,7 +898,7 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
   xbt_test_add("==== Traverse the empty dynar");
   d = xbt_dynar_new(sizeof(int), nullptr);
   xbt_dynar_foreach(d, cursor, cpt) {
-    xbt_test_assert(FALSE, "Damnit, there is something in the empty dynar");
+    xbt_test_assert(false, "Damnit, there is something in the empty dynar");
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */
@@ -999,7 +999,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   xbt_test_add("==== Traverse the empty dynar");
   xbt_dynar_t d = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
   xbt_dynar_foreach(d, iter, s1) {
-    xbt_test_assert(FALSE, "Damnit, there is something in the empty dynar");
+    xbt_test_assert(false, "Damnit, there is something in the empty dynar");
   }
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */

@@ -472,14 +472,14 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
 /** \ingroup msg_task_usage
  * \brief Checks whether a communication is done, and if yes, finalizes it.
  * \param comm the communication to test
- * \return TRUE if the communication is finished
+ * \return 'true' if the communication is finished
  * (but it may have failed, use MSG_comm_get_status() to know its status)
- * or FALSE if the communication is not finished yet
- * If the status is FALSE, don't forget to use MSG_process_sleep() after the test.
+ * or 'false' if the communication is not finished yet
+ * If the status is 'false', don't forget to use MSG_process_sleep() after the test.
  */
 int MSG_comm_test(msg_comm_t comm)
 {
-  int finished = 0;
+  bool finished = false;
 
   try {
     finished = simcall_comm_test(comm->s_comm);
@@ -492,11 +492,11 @@ int MSG_comm_test(msg_comm_t comm)
     switch (e.category) {
       case network_error:
         comm->status = MSG_TRANSFER_FAILURE;
-        finished = 1;
+        finished     = true;
         break;
       case timeout_error:
         comm->status = MSG_TIMEOUT;
-        finished = 1;
+        finished     = true;
         break;
       default:
         throw;

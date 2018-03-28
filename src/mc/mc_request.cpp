@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -97,7 +97,7 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
 #if 0
   if((r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
      &&  r2->call == SIMCALL_COMM_TEST)
-     return FALSE;
+     return false;
 #endif
 
   if (r1->call == SIMCALL_COMM_WAIT
@@ -139,7 +139,7 @@ bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
   if ((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0)
       || (r2->call == SIMCALL_COMM_WAIT
           && simcall_comm_wait__get__timeout(r2) > 0))
-    return TRUE;
+    return true;
 
   if (r1->call != r2->call)
     return request_depend_asymmetric(r1, r2)
