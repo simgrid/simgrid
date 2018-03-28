@@ -725,9 +725,6 @@ void Variable::initialize(simgrid::kernel::resource::Action* id_value, double sh
   visited           = visited_value;
   mu                = 0.0;
   new_mu            = 0.0;
-  func_f            = func_f_def;
-  func_fp           = func_fp_def;
-  func_fpi          = func_fpi_def;
 
   xbt_assert(not variable_set_hook.is_linked());
   xbt_assert(not saturated_variable_set_hook.is_linked());

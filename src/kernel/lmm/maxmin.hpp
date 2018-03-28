@@ -137,10 +137,6 @@ namespace lmm {
 
 /** Default functions associated to the chosen protocol. When using the lagrangian approach. */
 
-XBT_PUBLIC void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                                              double (*func_fp)(const Variable& var, double x),
-                                              double (*func_fpi)(const Variable& var, double x));
-
 XBT_PUBLIC double func_reno_f(const Variable& var, double x);
 XBT_PUBLIC double func_reno_fp(const Variable& var, double x);
 XBT_PUBLIC double func_reno_fpi(const Variable& var, double x);
@@ -409,9 +405,6 @@ public:
   /* \begin{For Lagrange only} */
   double mu;
   double new_mu;
-  double (*func_f)(const Variable& var, double x);   /* (f)    */
-  double (*func_fp)(const Variable& var, double x);  /* (f')    */
-  double (*func_fpi)(const Variable& var, double x); /* (f')^{-1}    */
   /* \end{For Lagrange only} */
 
 private:
@@ -625,11 +618,19 @@ public:
   explicit Lagrange(bool selective_update) : System(selective_update) {}
   void solve() final { lagrange_solve(); }
 
+  static void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
+                                            double (*func_fp)(const Variable& var, double x),
+                                            double (*func_fpi)(const Variable& var, double x));
+
 private:
   void lagrange_solve();
 
   bool check_feasible(bool warn);
   double dual_objective();
+
+  static double (*func_f)(const Variable& var, double x);   /* (f)    */
+  static double (*func_fp)(const Variable& var, double x);  /* (f')    */
+  static double (*func_fpi)(const Variable& var, double x); /* (f')^{-1}    */
 
   /*
    * Local prototypes to implement the Lagrangian optimization with optimal step, also called dichotomy.
@@ -647,10 +648,6 @@ private:
 XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
 XBT_PUBLIC System* make_new_fair_bottleneck_system(bool selective_update);
 XBT_PUBLIC System* make_new_lagrange_system(bool selective_update);
-
-extern XBT_PRIVATE double (*func_f_def)(const Variable&, double);
-extern XBT_PRIVATE double (*func_fp_def)(const Variable&, double);
-extern XBT_PRIVATE double (*func_fpi_def)(const Variable&, double);
 
 /** @} */
 }

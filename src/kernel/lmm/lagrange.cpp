@@ -26,10 +26,6 @@ namespace simgrid {
 namespace kernel {
 namespace lmm {
 
-double (*func_f_def)(const Variable&, double);
-double (*func_fp_def)(const Variable&, double);
-double (*func_fpi_def)(const Variable&, double);
-
 System* make_new_lagrange_system(bool selective_update)
 {
   return new Lagrange(selective_update);
@@ -80,7 +76,7 @@ double Lagrange::new_value(const Variable& var)
     tmp += var.mu;
   XBT_DEBUG("\t Working on var (%p). cost = %e; Weight = %e", &var, tmp, var.sharing_weight);
   // uses the partial differential inverse function
-  return var.func_fpi(var, tmp);
+  return func_fpi(var, tmp);
 }
 
 double Lagrange::new_mu(const Variable& var)
@@ -91,7 +87,7 @@ double Lagrange::new_mu(const Variable& var)
   for (Element const& elem : var.cnsts) {
     sigma_i += elem.constraint->lambda;
   }
-  mu_i = var.func_fp(var, var.bound) - sigma_i;
+  mu_i = func_fp(var, var.bound) - sigma_i;
   if (mu_i < 0.0)
     return 0.0;
   return mu_i;
@@ -115,7 +111,7 @@ double Lagrange::dual_objective()
 
     XBT_DEBUG("var %p : sigma_i = %1.20f", &var, sigma_i);
 
-    obj += var.func_f(var, var.func_fpi(var, sigma_i)) - sigma_i * var.func_fpi(var, sigma_i);
+    obj += func_f(var, func_fpi(var, sigma_i)) - sigma_i * func_fpi(var, sigma_i);
 
     if (var.bound > 0)
       obj += var.mu * var.bound;
@@ -396,7 +392,7 @@ double Lagrange::partial_diff_lambda(double lambda, const Constraint& cnst)
     // replace value of cnst.lambda by the value of parameter lambda
     sigma_i = (sigma_i - cnst.lambda) + lambda;
 
-    diff += -var.func_fpi(var, sigma_i);
+    diff += -func_fpi(var, sigma_i);
   }
 
   diff += cnst.bound;
@@ -410,18 +406,20 @@ double Lagrange::partial_diff_lambda(double lambda, const Constraint& cnst)
  *
  *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
  *
- *  Set default functions to the ones passed as parameters. This is a polymorphism in C pure, enjoy the roots of
- *  programming.
- *
+ *  Set default functions to the ones passed as parameters.
  */
-void set_default_protocol_function(double (*func_f)(const Variable& var, double x),
-                                   double (*func_fp)(const Variable& var, double x),
-                                   double (*func_fpi)(const Variable& var, double x))
+void Lagrange::set_default_protocol_function(double (*func_f)(const Variable& var, double x),
+                                             double (*func_fp)(const Variable& var, double x),
+                                             double (*func_fpi)(const Variable& var, double x))
 {
-  func_f_def   = func_f;
-  func_fp_def  = func_fp;
-  func_fpi_def = func_fpi;
+  Lagrange::func_f   = func_f;
+  Lagrange::func_fp  = func_fp;
+  Lagrange::func_fpi = func_fpi;
 }
+
+double (*Lagrange::func_f)(const Variable&, double);
+double (*Lagrange::func_fp)(const Variable&, double);
+double (*Lagrange::func_fpi)(const Variable&, double);
 
 /**************** Vegas and Reno functions *************************/
 /* NOTE for Reno: all functions consider the network coefficient (alpha) equal to 1. */

@@ -104,9 +104,9 @@ static void test1(method_t method)
   double b = 10.0;
 
   if (method == LAGRANGE_VEGAS)
-    set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
+    lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
   else if (method == LAGRANGE_RENO)
-    set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
+    lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
   lmm::System* Sys    = new_system(method, true);
   lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
@@ -190,9 +190,9 @@ static void test1(method_t method)
 static void test2(method_t method)
 {
   if (method == LAGRANGE_VEGAS)
-    set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
+    lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
+    lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
   lmm::System* Sys = new_system(method, true);
 
@@ -256,9 +256,9 @@ static void test3(method_t method)
   A[14][15] =                                        1.0;
 
   if (method == LAGRANGE_VEGAS)
-    set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
+    lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
+    lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
   lmm::System* Sys = new_system(method, true);
 
