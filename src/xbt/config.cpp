@@ -399,10 +399,8 @@ void alias(const char* realname, const char* aliasname)
 template <class T>
 XBT_PUBLIC void declareFlag(const char* name, const char* description, T value, std::function<void(const T&)> callback)
 {
-  if (simgrid_config == nullptr) {
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-    atexit(sg_config_finalize);
-  }
   simgrid_config->registerOption<T>(
     name, description, std::move(value), std::move(callback));
 }
@@ -420,7 +418,11 @@ template XBT_PUBLIC void declareFlag(const char* name, const char* description, 
 
 // ***** C bindings *****
 
-xbt_cfg_t xbt_cfg_new()        { return new simgrid::config::Config(); }
+xbt_cfg_t xbt_cfg_new()
+{
+  atexit(&sg_config_finalize);
+  return new simgrid::config::Config();
+}
 void xbt_cfg_free(xbt_cfg_t * cfg) { delete *cfg; }
 
 void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
@@ -440,37 +442,29 @@ void xbt_cfg_register_double(const char *name, double default_value,
 
 void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == nullptr) {
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-    atexit(&sg_config_finalize);
-  }
   simgrid_config->registerOption<int>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == nullptr) {
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-    atexit(sg_config_finalize);
-  }
   simgrid_config->registerOption<std::string>(name, desc, default_value ? default_value : "", cb_set);
 }
 
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == nullptr) {
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-    atexit(sg_config_finalize);
-  }
   simgrid_config->registerOption<bool>(name, desc, simgrid::config::parseBool(default_value), cb_set);
 }
 
 void xbt_cfg_register_alias(const char *realname, const char *aliasname)
 {
-  if (simgrid_config == nullptr) {
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-    atexit(sg_config_finalize);
-  }
   simgrid_config->alias(realname, aliasname);
 }
 
