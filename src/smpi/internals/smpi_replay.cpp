@@ -229,13 +229,16 @@ public:
     }
     else {
       int datatype_index = 0, disp_index = 0;
-      if (action.size() > 3 + 2 * comm_size) { /* datatype + disp are specified */
+      /* The 3 comes from "0 gather <sendcount>", which must always be present.
+       * The + comm_size is the recvcounts array, which must also be present
+       */
+      if (action.size() > 3 + comm_size + comm_size) { /* datatype + disp are specified */
         datatype_index = 3 + comm_size;
         disp_index     = datatype_index + 1;
-      } else if (action.size() > 3 + 2 * comm_size) { /* disps specified; datatype is not specified; use the default one */
+      } else if (action.size() > 3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
         datatype_index = -1;
         disp_index     = 3 + comm_size;
-      } else if (action.size() > 3 + comm_size) { /* only datatype, no disp specified */
+      } else if (action.size() > 3 + comm_size)  { /* only datatype, no disp specified */
         datatype_index = 3 + comm_size;
       }
 
