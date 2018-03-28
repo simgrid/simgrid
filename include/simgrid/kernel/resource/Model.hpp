@@ -20,12 +20,12 @@ class XBT_PUBLIC Model {
 public:
   /** @brief Possible update mechanisms */
   enum class UpdateAlgo {
-    Full,        /**< Full update mechanism: the remaining time of every action is recomputed at each step */
-    Lazy,        /**< Lazy update mechanism: only the modified actions get recomputed.
-                         It may be slower than full if your system is tightly coupled to the point where every action
-                         gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
-                         a simple full update.  */
-    UM_UNDEFINED /**< Mechanism not defined */
+    Full,     /**< Full update mechanism: the remaining time of every action is recomputed at each step */
+    Lazy,     /**< Lazy update mechanism: only the modified actions get recomputed.
+                      It may be slower than full if your system is tightly coupled to the point where every action
+                      gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
+                      a simple full update.  */
+    Undefined /**< Mechanism not defined */
   };
 
   Model();
@@ -95,7 +95,7 @@ public:
 
 private:
   lmm::System* maxmin_system_           = nullptr;
-  UpdateAlgo update_mechanism_          = UpdateAlgo::UM_UNDEFINED;
+  UpdateAlgo update_mechanism_          = UpdateAlgo::Undefined;
   Action::StateSet* ready_action_set_   = new Action::StateSet(); /**< Actions in state SURF_ACTION_READY */
   Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Actions in state SURF_ACTION_RUNNING */
   Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Actions in state SURF_ACTION_FAILED */
