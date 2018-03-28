@@ -14,10 +14,6 @@
 #include "xbt/graph.h"
 #include "xbt/misc.h"
 
-#ifndef __cplusplus
-#error This is a C++ only file, now
-#endif
-
 namespace simgrid {
 namespace surf {
 class CpuModel;
