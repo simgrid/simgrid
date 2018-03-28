@@ -11,6 +11,7 @@
 
 #include "simgrid/host.h"
 #include "src/surf/xml/platf.hpp"
+#include "src/surf/xml/simgrid_dtd.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -179,12 +180,6 @@ public:
 }}}
 
 extern "C" {
-#include "src/surf/xml/simgrid_dtd.h"
-
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
 
 /********** Routing **********/
 void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
