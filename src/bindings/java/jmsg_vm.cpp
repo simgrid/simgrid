@@ -14,8 +14,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
-extern "C" {
-
 extern int JAVA_HOST_LEVEL;
 static jfieldID jvm_field_bind;
 
@@ -193,5 +191,4 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_VM_getVMByName(JNIEnv* env, jclas
   env->ReleaseStringUTFChars(jname, name);
 
   return static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
-}
 }

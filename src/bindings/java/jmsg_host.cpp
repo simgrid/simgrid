@@ -1,6 +1,6 @@
 /* Functions related to the java host instances.                            */
 
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,8 +15,6 @@
 #include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
-
-extern "C" {
 
 static jmethodID jhost_method_Host_constructor;
 static jfieldID jhost_field_Host_bind;
@@ -373,5 +371,4 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getPowerPeakAt(JNIEnv* env, 
 {
   msg_host_t host = jhost_get_native(env, jhost);
   return MSG_host_get_power_peak_at(host, pstate);
-}
 }

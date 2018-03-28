@@ -1,6 +1,6 @@
 /* Context switching within the JVM.                                        */
 
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +13,7 @@
 #include <functional>
 #include <utility>
 
-extern "C" JavaVM* __java_vm;
+extern JavaVM* __java_vm;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(java, "MSG for Java(TM)");
 

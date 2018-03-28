@@ -40,8 +40,6 @@
 #endif
 /* end of eclipse-mandated pimple */
 
-extern "C" {
-
 int JAVA_HOST_LEVEL = -1;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
@@ -239,7 +237,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_fileSystemInit()
 {
   sg_storage_file_system_init();
 }
-} // extern "C"
 
 /** Run a Java org.simgrid.msg.Process
  *

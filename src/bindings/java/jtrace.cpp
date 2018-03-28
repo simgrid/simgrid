@@ -1,6 +1,6 @@
 /* Java bindings of the Trace API.                                          */
 
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,8 +19,6 @@
 
 // Define a new category
 XBT_LOG_NEW_DEFAULT_CATEGORY (jtrace, "TRACE for Java(TM)");
-
-extern "C" {
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare(JNIEnv * env, jclass cls, jstring js)
 {
@@ -198,4 +196,3 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSet
    JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime(JNIEnv *env, jclass cls, jdouble,
                                                                                      jstring, jstring, jstring, jdouble)
 */
-}

@@ -1,6 +1,6 @@
 /* Java binding of the RngStream library                                    */
 
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,8 +9,6 @@
 
 #include "jmsg_rngstream.h"
 #include "jxbt_utilities.hpp"
-
-extern "C" {
 
 jfieldID jrngstream_bind;
 
@@ -144,5 +142,4 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobje
     return 0;
 
   return (jint)RngStream_RandInt(rngstream, (int)i, (int)j);
-}
 }

@@ -1,6 +1,6 @@
 /* Java bindings of the Storage API.                                        */
 
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,8 +15,6 @@
 #include "simgrid/s4u/Storage.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
-
-extern "C" {
 
 static jmethodID jstorage_method_Storage_constructor;
 static jfieldID jstorage_field_Storage_bind;
@@ -228,5 +226,4 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jc
   }
   xbt_dynar_free(&table);
   return jtable;
-}
 }

@@ -13,11 +13,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua, "Lua Bindings");
 
-extern "C" {
 #include <lauxlib.h>
 
-int luaopen_simgrid(lua_State *L);
-}
+extern "C" int luaopen_simgrid(lua_State* L);
 
 /* ********************************************************************************* */
 /*                                  simgrid API                                      */

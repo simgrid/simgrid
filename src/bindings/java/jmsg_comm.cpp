@@ -1,6 +1,6 @@
 /* Java bindings to the Comm API                                            */
 
-/* Copyright (c) 2012-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,8 +13,6 @@
 #include <string>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
-
-extern "C" {
 
 static jfieldID jcomm_field_Comm_bind;
 static jfieldID jcomm_field_Comm_finished;
@@ -165,5 +163,4 @@ JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls,
   delete[] comms;
   xbt_dynar_free(&dyn);
   return rank;
-}
 }

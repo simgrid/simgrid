@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,9 +7,7 @@
 
 #include "lua_private.hpp"
 #include "simgrid/s4u/Host.hpp"
-extern "C" {
 #include <lauxlib.h>
-}
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua Host module");
 

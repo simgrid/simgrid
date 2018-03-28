@@ -12,9 +12,7 @@
 #include <cctype>
 #include <cstring>
 
-extern "C" {
 #include <lauxlib.h>
-}
 
 #include "src/surf/surf_private.hpp"
 #include <boost/algorithm/string/classification.hpp>

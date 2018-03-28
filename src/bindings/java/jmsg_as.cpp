@@ -1,6 +1,6 @@
 /* Java bindings of the NetZones.                                           */
 
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,8 +15,6 @@
 #include "jxbt_utilities.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
-
-extern "C" {
 
 static jmethodID jas_method_As_constructor;
 static jfieldID jas_field_As_bind;
@@ -154,5 +152,4 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
     index++;
   }
   return jtable;
-}
 }
