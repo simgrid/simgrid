@@ -76,6 +76,11 @@ namespace smpi{
 
 class Datatype : public F2C, public Keyval{
   char* name_;
+  /* The id here is the (unique) datatype id used for this datastructure.
+   * It's default value is set to -1 since some code expects this return value
+   * when no other id has been assigned
+   */
+  std::string id = "-1";
   size_t size_;
   MPI_Aint lb_;
   MPI_Aint ub_;
@@ -86,6 +91,8 @@ public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
 
+  Datatype(int id, int size, MPI_Aint lb, MPI_Aint ub, int flags);
+  Datatype(char* name, int id, int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(char* name, int size, MPI_Aint lb, MPI_Aint ub, int flags);
   Datatype(Datatype* datatype, int* ret);
@@ -103,6 +110,8 @@ public:
   void commit();
   bool is_valid();
   bool is_basic();
+  static const char* encode(MPI_Datatype dt);
+  static MPI_Datatype decode(std::string datatype_id);
   bool is_replayable();
   void addflag(int flag);
   int extent(MPI_Aint* lb, MPI_Aint* extent);

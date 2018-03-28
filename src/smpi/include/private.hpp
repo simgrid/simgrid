@@ -65,9 +65,10 @@ XBT_PRIVATE SMPI_Process* smpi_process();
 XBT_PRIVATE SMPI_Process* smpi_process_remote(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_process_count();
 
-XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, simgrid::s4u::ActorPtr actor);
-XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const char* instance_id);
-XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id);
+XBT_PRIVATE void smpi_deployment_register_process(const std::string instance_id, int rank,
+                                                  simgrid::s4u::ActorPtr actor);
+XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string instance_id);
+XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const std::string instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
@@ -104,6 +105,7 @@ XBT_PRIVATE void smpi_shared_destroy();
 XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
 XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
 XBT_PRIVATE void smpi_free_tmp_buffer(void* buf);
+XBT_PRIVATE void smpi_free_replay_tmp_buffers();
 
 // f77 wrappers
 void mpi_init_(int* ierr);

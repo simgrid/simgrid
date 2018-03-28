@@ -54,7 +54,7 @@ bool ReplayReader::get(ReplayAction* action)
   return not fs->eof();
 }
 
-static ReplayAction* get_action(char* name)
+static ReplayAction get_action(char* name)
 {
   ReplayAction* action;
 
@@ -75,7 +75,7 @@ static ReplayAction* get_action(char* name)
       // if it's for me, I'm done
       std::string evtname = action->front();
       if (evtname.compare(name) == 0) {
-        return action;
+        return *action;
       } else {
         // Else, I have to store it for the relevant colleague
         std::queue<ReplayAction*>* otherqueue = nullptr;
@@ -94,34 +94,22 @@ static ReplayAction* get_action(char* name)
     // Get something from my queue and return it
     action = myqueue->front();
     myqueue->pop();
-    return action;
+    return *action;
   }
-  return nullptr;
+
+  return ReplayAction();
 }
 
-static void handle_action(ReplayAction* action)
+static void handle_action(ReplayAction& action)
 {
-  XBT_DEBUG("%s replays a %s action", action->at(0).c_str(), action->at(1).c_str());
-  char** c_action     = new char*[action->size() + 1];
-  action_fun function = action_funs.at(action->at(1));
-  int i               = 0;
-  for (auto const& arg : *action) {
-    c_action[i] = xbt_strdup(arg.c_str());
-    i++;
-  }
-  c_action[i] = nullptr;
+  XBT_DEBUG("%s replays a %s action", action.at(0).c_str(), action.at(1).c_str());
+  action_fun function = action_funs.at(action.at(1));
   try {
-    function(c_action);
+    function(action);
   } catch (xbt_ex& e) {
-    for (unsigned int j = 0; j < action->size(); j++)
-      xbt_free(c_action[j]);
-    delete[] c_action;
-    action->clear();
+    action.clear();
     xbt_die("Replay error:\n %s", e.what());
   }
-  for (unsigned int j = 0; j < action->size(); j++)
-    xbt_free(c_action[j]);
-  delete[] c_action;
 }
 
 /**
@@ -132,11 +120,10 @@ int replay_runner(int argc, char* argv[])
 {
   if (simgrid::xbt::action_fs) { // A unique trace file
     while (true) {
-      simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(argv[0]);
-      if (evt == nullptr)
+      simgrid::xbt::ReplayAction evt(std::move(simgrid::xbt::get_action(argv[0])));
+      if (evt.empty())
         break;
       simgrid::xbt::handle_action(evt);
-      delete evt;
     }
     if (action_queues.find(std::string(argv[0])) != action_queues.end()) {
       std::queue<ReplayAction*>* myqueue = action_queues.at(std::string(argv[0]));
@@ -144,21 +131,19 @@ int replay_runner(int argc, char* argv[])
       action_queues.erase(std::string(argv[0]));
     }
   } else { // Should have got my trace file in argument
-    simgrid::xbt::ReplayAction* evt = new simgrid::xbt::ReplayAction();
+    simgrid::xbt::ReplayAction evt;
     xbt_assert(argc >= 2, "No '%s' agent function provided, no simulation-wide trace file provided, "
                           "and no process-wide trace file provided in deployment file. Aborting.",
                argv[0]);
-    simgrid::xbt::ReplayReader* reader = new simgrid::xbt::ReplayReader(argv[1]);
-    while (reader->get(evt)) {
-      if (evt->front().compare(argv[0]) == 0) {
+    simgrid::xbt::ReplayReader reader(argv[1]);
+    while (reader.get(&evt)) {
+      if (evt.front().compare(argv[0]) == 0) {
         simgrid::xbt::handle_action(evt);
       } else {
         XBT_WARN("Ignore trace element not for me");
       }
-      evt->clear();
+      evt.clear();
     }
-    delete evt;
-    delete reader;
   }
   return 0;
 }

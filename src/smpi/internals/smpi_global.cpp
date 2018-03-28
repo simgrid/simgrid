@@ -78,7 +78,7 @@ MPI_Errhandler *MPI_ERRORS_ARE_FATAL = nullptr;
 MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
-static const char* smpi_default_instance_name = "smpirun";
+static const std::string smpi_default_instance_name("smpirun");
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
 static simgrid::config::Flag<double> smpi_init_sleep(
@@ -368,6 +368,7 @@ static void smpi_init_options(){
   simgrid::smpi::Colls::smpi_coll_cleanup_callback = nullptr;
   smpi_cpu_threshold                               = xbt_cfg_get_double("smpi/cpu-threshold");
   smpi_host_speed                                  = xbt_cfg_get_double("smpi/host-speed");
+  xbt_assert(smpi_host_speed >= 0, "You're trying to set the host_speed to a negative value (%f)", smpi_host_speed);
   std::string smpi_privatize_option                = xbt_cfg_get_string("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
     smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
@@ -541,10 +542,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
         smpi_run_entry_point(entry_point, args);
       });
     };
-
   }
   else {
-
     // Load the dynamic library and resolve the entry point:
     void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
     if (handle == nullptr)
@@ -560,12 +559,11 @@ int smpi_main(const char* executable, int argc, char *argv[])
         smpi_run_entry_point(entry_point, args);
       });
     };
-
   }
 
   SMPI_init();
   SIMIX_launch_application(argv[2]);
-  SMPI_app_instance_register(smpi_default_instance_name, nullptr,
+  SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr,
                              process_data.size()); // This call has a side effect on process_count...
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
   smpi_universe_size = process_count;

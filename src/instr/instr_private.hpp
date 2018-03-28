@@ -19,6 +19,7 @@
 #include "xbt/graph.h"
 #include <iomanip> /** std::setprecision **/
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <string>
@@ -42,9 +43,9 @@ class TIData {
 public:
   int endpoint                 = 0;
   int send_size                = 0;
-  std::vector<int>* sendcounts = nullptr;
+  std::shared_ptr<std::vector<int>> sendcounts = nullptr;
   int recv_size                = 0;
-  std::vector<int>* recvcounts = nullptr;
+  std::shared_ptr<std::vector<int>> recvcounts = nullptr;
   std::string send_type        = "";
   std::string recv_type        = "";
 
@@ -68,6 +69,12 @@ public:
   // VarCollTI: gatherV, scatterV, allGatherV, allToAllV (+ reduceScatter out of laziness)
   explicit TIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
                   std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
+      : TIData(name, root, send_size, std::shared_ptr<std::vector<int>>(sendcounts), recv_size,
+               std::shared_ptr<std::vector<int>>(recvcounts), send_type, recv_type){};
+
+  explicit TIData(std::string name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
+                  int recv_size, std::shared_ptr<std::vector<int>> recvcounts, std::string send_type,
+                  std::string recv_type)
       : name_(name)
       , endpoint(root)
       , send_size(send_size)
@@ -77,11 +84,7 @@ public:
       , send_type(send_type)
       , recv_type(recv_type){};
 
-  virtual ~TIData()
-  {
-    delete sendcounts;
-    delete recvcounts;
-  }
+  virtual ~TIData() {}
 
   std::string getName() { return name_; }
   double getAmount() { return amount_; }
@@ -151,6 +154,12 @@ public:
   explicit VarCollTIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
                          std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
       : TIData(name, root, send_size, sendcounts, recv_size, recvcounts, send_type, recv_type){};
+
+  explicit VarCollTIData(std::string name, int root, int send_size, std::shared_ptr<std::vector<int>> sendcounts,
+                         int recv_size, std::shared_ptr<std::vector<int>> recvcounts, std::string send_type,
+                         std::string recv_type)
+      : TIData(name, root, send_size, sendcounts, recv_size, recvcounts, send_type, recv_type){};
+
   std::string print() override
   {
     std::stringstream stream;

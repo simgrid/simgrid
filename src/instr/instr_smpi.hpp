@@ -32,8 +32,6 @@ XBT_PRIVATE void TRACE_smpi_recv(int src, int dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(int rank);
 XBT_PRIVATE void TRACE_smpi_finalize(int rank);
 
-XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype);
-
 class smpi_trace_call_location_t {
 public:
   std::string filename;

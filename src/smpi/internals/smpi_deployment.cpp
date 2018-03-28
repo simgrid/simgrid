@@ -17,7 +17,8 @@ namespace app {
 
 class Instance {
 public:
-  Instance(const char* name, int max_no_processes, int process_count, MPI_Comm comm, msg_bar_t finalization_barrier)
+  Instance(const std::string name, int max_no_processes, int process_count, MPI_Comm comm,
+           msg_bar_t finalization_barrier)
       : name(name)
       , size(max_no_processes)
       , present_processes(0)
@@ -25,7 +26,7 @@ public:
       , finalization_barrier(finalization_barrier)
   { }
 
-  const char* name;
+  const std::string name;
   int size;
   int present_processes;
   MPI_Comm comm_world;
@@ -63,7 +64,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
     }
   }
 
-  Instance instance(name, num_processes, process_count, MPI_COMM_NULL, MSG_barrier_init(num_processes));
+  Instance instance(std::string(name), num_processes, process_count, MPI_COMM_NULL, MSG_barrier_init(num_processes));
   MPI_Group group     = new simgrid::smpi::Group(instance.size);
   instance.comm_world = new simgrid::smpi::Comm(group, nullptr);
   MPI_Attr_put(instance.comm_world, MPI_UNIVERSE_SIZE, reinterpret_cast<void*>(instance.size));
@@ -73,7 +74,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
 }
 
-void smpi_deployment_register_process(const char* instance_id, int rank, simgrid::s4u::ActorPtr actor)
+void smpi_deployment_register_process(const std::string instance_id, int rank, simgrid::s4u::ActorPtr actor)
 {
   if (smpi_instances.empty()) // no instance registered, we probably used smpirun.
     return;
@@ -84,7 +85,7 @@ void smpi_deployment_register_process(const char* instance_id, int rank, simgrid
   instance.comm_world->group()->set_mapping(actor, rank);
 }
 
-MPI_Comm* smpi_deployment_comm_world(const char* instance_id)
+MPI_Comm* smpi_deployment_comm_world(const std::string instance_id)
 {
   if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
     return nullptr;
@@ -93,7 +94,7 @@ MPI_Comm* smpi_deployment_comm_world(const char* instance_id)
   return &instance.comm_world;
 }
 
-msg_bar_t smpi_deployment_finalization_barrier(const char* instance_id)
+msg_bar_t smpi_deployment_finalization_barrier(const std::string instance_id)
 {
   if (smpi_instances.empty()) { // no instance registered, we probably used smpirun.
     return nullptr;

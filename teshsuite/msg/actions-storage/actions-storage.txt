@@ -1,3 +1,0 @@
-p0 open /home/lib/libsimgrid.so.3.6.2  
-p0 read /home/lib/libsimgrid.so.3.6.2 12710497
-p0 close /home/lib/libsimgrid.so.3.6.2

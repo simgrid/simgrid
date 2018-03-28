@@ -8,19 +8,20 @@
 
 /* This shows how to extend the trace format by adding a new kind of events.
    This function is registered through xbt_replay_action_register() below. */
-static void action_blah(const char* const* args)
+static void action_blah(simgrid::xbt::ReplayAction& args)
 {
   /* Add your answer to the blah event here.
      args is a strings array containing the blank-separated parameters found in the trace for this event instance. */
 }
 
 action_fun previous_send;
-static void overriding_send(const char* const* args)
+static void overriding_send(simgrid::xbt::ReplayAction& args)
 {
-  (*previous_send)(args); // Just call the overriden symbol. That's a toy example.
+  previous_send(args); // Just call the overriden symbol. That's a toy example.
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[])
+{
   /* Setup things and register default actions */
   smpi_replay_init(&argc, &argv);
 

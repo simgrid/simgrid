@@ -1,6 +1,5 @@
 # C examples
-foreach(x actions-comm actions-storage
-          app-pingpong app-token-ring
+foreach(x app-pingpong app-token-ring
           async-wait async-waitall async-waitany
           cloud-capping cloud-migration cloud-sharing cloud-two-tasks cloud-simple
           get_sender host_on_off host_on_off_recv host_on_off_processes	  
@@ -48,14 +47,7 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/ap
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
                                    PARENT_SCOPE)
 set(bin_files    ${bin_files}      ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/generate.py                  PARENT_SCOPE)
-set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm.txt
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p0.txt
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p1.txt
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage.txt         PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
+set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/app-pingpong_d.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait_d.xml
@@ -86,7 +78,6 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/acti
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_integration/test-hbp2.5-hbp1.5.xml    PARENT_SCOPE)
 
 foreach(x 
-    actions-comm actions-storage
     async-wait async-waitall async-waitany
     app-bittorrent app-chainsend app-pingpong app-token-ring
     cloud-capping cloud-migration cloud-two-tasks cloud-simple

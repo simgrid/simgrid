@@ -16,18 +16,16 @@ static std::unordered_map<std::string, simgrid::s4u::File*> opened_files;
 
 #define ACT_DEBUG(...)                                                                                                 \
   if (XBT_LOG_ISENABLED(replay_storage, xbt_log_priority_verbose)) {                                                   \
-    char* NAME = xbt_str_join_array(action, " ");                                                                      \
+    std::string NAME = boost::algorithm::join(action, " ");                                                            \
     XBT_DEBUG(__VA_ARGS__);                                                                                            \
-    xbt_free(NAME);                                                                                                    \
   } else                                                                                                               \
   ((void)0)
 
-static void log_action(const char* const* action, double date)
+static void log_action(simgrid::xbt::ReplayAction& action, double date)
 {
   if (XBT_LOG_ISENABLED(replay_storage, xbt_log_priority_verbose)) {
-    char* name = xbt_str_join_array(action, " ");
-    XBT_VERB("%s %f", name, date);
-    xbt_free(name);
+    std::string s = boost::algorithm::join(action, " ");
+    XBT_VERB("%s %f", s.c_str(), date);
   }
 }
 
@@ -60,13 +58,13 @@ public:
   }
 
   /* My actions */
-  static void open(const char* const* action)
+  static void open(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
     double clock          = simgrid::s4u::Engine::getClock();
     std::string full_name = simgrid::s4u::this_actor::getName() + ":" + file_name;
 
-    ACT_DEBUG("Entering Open: %s (filename: %s)", NAME, file_name.c_str());
+    ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     simgrid::s4u::File* file = new simgrid::s4u::File(file_name, NULL);
 
     opened_files.insert({full_name, file});
@@ -74,7 +72,7 @@ public:
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 
-  static void read(const char* const* action)
+  static void read(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
     sg_size_t size        = std::stoul(action[3]);
@@ -82,20 +80,20 @@ public:
 
     simgrid::s4u::File* file = get_file_descriptor(file_name);
 
-    ACT_DEBUG("Entering Read: %s (size: %llu)", NAME, size);
+    ACT_DEBUG("Entering Read: %s (size: %llu)", NAME.c_str(), size);
     file->read(size);
 
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }
 
-  static void close(const char* const* action)
+  static void close(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
     double clock          = simgrid::s4u::Engine::getClock();
 
     simgrid::s4u::File* file = get_file_descriptor(file_name);
 
-    ACT_DEBUG("Entering Close: %s (filename: %s)", NAME, file_name.c_str());
+    ACT_DEBUG("Entering Close: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     delete file;
 
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
