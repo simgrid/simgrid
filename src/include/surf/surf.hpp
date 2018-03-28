@@ -39,7 +39,6 @@ typedef simgrid::surf::HostModel* surf_host_model_t;
 typedef simgrid::surf::NetworkModel* surf_network_model_t;
 typedef simgrid::surf::StorageModel* surf_storage_model_t;
 
-SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
 
 /* user-visible parameters */
@@ -383,7 +382,5 @@ XBT_PUBLIC void parse_platform_file(const char* file);
 void instr_routing_define_callbacks();
 xbt_graph_t instr_routing_platform_graph();
 void instr_routing_platform_graph_export_graphviz(xbt_graph_t g, const char* filename);
-
-SG_END_DECL()
 
 #endif
