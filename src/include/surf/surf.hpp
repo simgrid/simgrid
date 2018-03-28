@@ -41,13 +41,6 @@ typedef simgrid::surf::StorageModel* surf_storage_model_t;
 
 /* Actions and models are highly connected structures... */
 
-/* user-visible parameters */
-extern XBT_PRIVATE double sg_tcp_gamma;
-extern XBT_PRIVATE double sg_latency_factor;
-extern XBT_PRIVATE double sg_bandwidth_factor;
-extern XBT_PRIVATE double sg_weight_S_parameter;
-extern XBT_PRIVATE int sg_network_crosstraffic;
-
 /** \brief Resource model description
  */
 struct surf_model_description {
