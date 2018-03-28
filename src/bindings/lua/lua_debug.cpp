@@ -212,13 +212,12 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
  * @param size     number of bytes of data
  * @param userdata the memory buffer to write
  */
-int sglua_memory_writer(lua_State* L, const void* source, size_t size,
-    void* userdata) {
-
-  sglua_buffer_t buffer = (sglua_buffer_t) userdata;
+int sglua_memory_writer(lua_State* L, const void* source, size_t size, void* userdata)
+{
+  sglua_buffer_t buffer = static_cast<sglua_buffer_t>(userdata);
   while (buffer->capacity < buffer->size + size) {
     buffer->capacity *= 2;
-    buffer->data = (char*)xbt_realloc(buffer->data, buffer->capacity);
+    buffer->data = static_cast<char*>(xbt_realloc(buffer->data, buffer->capacity));
   }
   memcpy(buffer->data + buffer->size, source, size);
   buffer->size += size;
