@@ -120,7 +120,7 @@ int replay_runner(int argc, char* argv[])
 {
   if (simgrid::xbt::action_fs) { // A unique trace file
     while (true) {
-      simgrid::xbt::ReplayAction evt(std::move(simgrid::xbt::get_action(argv[0])));
+      simgrid::xbt::ReplayAction evt(simgrid::xbt::get_action(argv[0]));
       if (evt.empty())
         break;
       simgrid::xbt::handle_action(evt);
