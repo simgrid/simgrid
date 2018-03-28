@@ -43,10 +43,9 @@ static double dichotomy(double init, double diff(double, const Constraint&), con
 // computes the value of the differential of constraint cnst applied to lambda
 static double partial_diff_lambda(double lambda, const Constraint& cnst);
 
-template <class CnstList, class VarList>
-static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, int warn)
+bool Lagrange::check_feasible(bool warn)
 {
-  for (Constraint const& cnst : cnst_list) {
+  for (Constraint const& cnst : active_constraint_set) {
     double tmp = 0;
     for (Element const& elem : cnst.enabled_element_set) {
       Variable* var = elem.variable;
@@ -57,12 +56,12 @@ static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, 
     if (double_positive(tmp - cnst.bound, sg_maxmin_precision)) {
       if (warn)
         XBT_WARN("The link (%p) is over-used. Expected less than %f and got %f", &cnst, cnst.bound, tmp);
-      return 0;
+      return false;
     }
     XBT_DEBUG("Checking feasability for constraint (%p): sat = %f, lambda = %f ", &cnst, tmp - cnst.bound, cnst.lambda);
   }
 
-  for (Variable const& var : var_list) {
+  for (Variable const& var : variable_set) {
     if (not var.sharing_weight)
       break;
     if (var.bound < 0)
@@ -72,10 +71,10 @@ static int __check_feasible(const CnstList& cnst_list, const VarList& var_list, 
     if (double_positive(var.value - var.bound, sg_maxmin_precision)) {
       if (warn)
         XBT_WARN("The variable (%p) is too large. Expected less than %f and got %f", &var, var.bound, var.value);
-      return 0;
+      return false;
     }
   }
-  return 1;
+  return true;
 }
 
 static double new_value(const Variable& var)
@@ -106,12 +105,11 @@ static double new_mu(const Variable& var)
   return mu_i;
 }
 
-template <class VarList, class CnstList>
-static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
+double Lagrange::dual_objective()
 {
   double obj = 0.0;
 
-  for (Variable const& var : var_list) {
+  for (Variable const& var : variable_set) {
     double sigma_i = 0.0;
 
     if (not var.sharing_weight)
@@ -131,7 +129,7 @@ static double dual_objective(const VarList& var_list, const CnstList& cnst_list)
       obj += var.mu * var.bound;
   }
 
-  for (Constraint const& cnst : cnst_list)
+  for (Constraint const& cnst : active_constraint_set)
     obj += cnst.lambda * cnst.bound;
 
   return obj;
@@ -195,7 +193,7 @@ void Lagrange::lagrange_solve()
   }
 
   /*  Compute dual objective. */
-  double obj = dual_objective(var_list, cnst_list);
+  double obj = dual_objective();
 
   /* While doesn't reach a minimum error or a number maximum of iterations. */
   int iteration = 0;
@@ -212,7 +210,7 @@ void Lagrange::lagrange_solve()
         XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", &var, var.mu, var.new_mu);
         var.mu = var.new_mu;
 
-        double new_obj = dual_objective(var_list, cnst_list);
+        double new_obj = dual_objective();
         XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj, obj - new_obj);
         xbt_assert(obj - new_obj >= -epsilon_min_error, "Our gradient sucks! (%1.20f)", obj - new_obj);
         obj = new_obj;
@@ -226,7 +224,7 @@ void Lagrange::lagrange_solve()
       XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda, cnst.new_lambda);
       cnst.lambda = cnst.new_lambda;
 
-      double new_obj = dual_objective(var_list, cnst_list);
+      double new_obj = dual_objective();
       XBT_DEBUG("Improvement for Objective (%g -> %g) : %g", obj, new_obj, obj - new_obj);
       xbt_assert(obj - new_obj >= -epsilon_min_error, "Our gradient sucks! (%1.20f)", obj - new_obj);
       obj = new_obj;
@@ -249,12 +247,12 @@ void Lagrange::lagrange_solve()
     }
 
     XBT_DEBUG("-------------- Check feasability ----------");
-    if (not __check_feasible(cnst_list, var_list, 0))
+    if (not check_feasible(false))
       overall_modification = 1.0;
     XBT_DEBUG("Iteration %d: overall_modification : %f", iteration, overall_modification);
   }
 
-  __check_feasible(cnst_list, var_list, 1);
+  check_feasible(true);
 
   if (overall_modification <= epsilon_min_error) {
     XBT_DEBUG("The method converges in %d iterations.", iteration);

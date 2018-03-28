@@ -627,6 +627,9 @@ public:
 
 private:
   void lagrange_solve();
+
+  bool check_feasible(bool warn);
+  double dual_objective();
 };
 
 XBT_PUBLIC System* make_new_maxmin_system(bool selective_update);
