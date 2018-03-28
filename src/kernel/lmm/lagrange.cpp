@@ -146,18 +146,16 @@ void Lagrange::lagrange_solve()
     return;
 
   /* Initialize lambda. */
-  auto& cnst_list = active_constraint_set;
-  for (Constraint& cnst : cnst_list) {
+  for (Constraint& cnst : active_constraint_set) {
     cnst.lambda     = 1.0;
     cnst.new_lambda = 2.0;
     XBT_DEBUG("#### cnst(%p)->lambda :  %e", &cnst, cnst.lambda);
   }
 
   /*
-   * Initialize the var_list variable with only the active variables. Initialize mu.
+   * Initialize the active variables. Initialize mu.
    */
-  auto& var_list = variable_set;
-  for (Variable& var : var_list) {
+  for (Variable& var : variable_set) {
     if (not var.sharing_weight)
       var.value = 0.0;
     else {
@@ -191,7 +189,7 @@ void Lagrange::lagrange_solve()
     XBT_DEBUG("-------------- Gradient Descent ----------");
 
     /* Improve the value of mu_i */
-    for (Variable& var : var_list) {
+    for (Variable& var : variable_set) {
       if (var.sharing_weight && var.bound >= 0) {
         XBT_DEBUG("Working on var (%p)", &var);
         var.new_mu = new_mu(var);
@@ -206,7 +204,7 @@ void Lagrange::lagrange_solve()
     }
 
     /* Improve the value of lambda_i */
-    for (Constraint& cnst : cnst_list) {
+    for (Constraint& cnst : active_constraint_set) {
       XBT_DEBUG("Working on cnst (%p)", &cnst);
       cnst.new_lambda = dichotomy(cnst.lambda, partial_diff_lambda, cnst, dichotomy_min_error);
       XBT_DEBUG("Updating lambda : cnst->lambda (%p) : %1.20f -> %1.20f", &cnst, cnst.lambda, cnst.new_lambda);
@@ -221,7 +219,7 @@ void Lagrange::lagrange_solve()
     /* Now computes the values of each variable (\rho) based on the values of \lambda and \mu. */
     XBT_DEBUG("-------------- Check convergence ----------");
     overall_modification = 0;
-    for (Variable& var : var_list) {
+    for (Variable& var : variable_set) {
       if (var.sharing_weight <= 0)
         var.value = 0.0;
       else {
