@@ -34,8 +34,7 @@ static MPI_Datatype MPI_DEFAULT_TYPE;
                            "%zu items were given on the line. First two should be process_id and action.  "            \
                            "This action needs after them %lu mandatory arguments, and accepts %lu optional ones. \n"   \
                            "Please contact the Simgrid team if support is needed",                                     \
-             __FUNCTION__, action.size(), static_cast<unsigned long>(mandatory),                                       \
-             static_cast<unsigned long>(optional));                                                                    \
+             __func__, action.size(), static_cast<unsigned long>(mandatory), static_cast<unsigned long>(optional));    \
   }
 
 static void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
@@ -444,7 +443,7 @@ public:
     int dst                  = request->comm()->group()->rank(request->dst());
     bool is_wait_for_receive = (request->flags() & RECV);
     // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
-    TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("wait"));
+    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("wait"));
 
     MPI_Status status;
     Request::wait(&request, &status);
@@ -463,8 +462,8 @@ public:
   {
     int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->getPid();
 
-    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
-                                                                                 Datatype::encode(args.datatype1)));
+    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
+                                                                             Datatype::encode(args.datatype1)));
     if (not TRACE_smpi_view_internals())
       TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, args.size * args.datatype1->size());
 
@@ -489,8 +488,8 @@ public:
   {
     int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->getPid();
 
-    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
-                                                                                 Datatype::encode(args.datatype1)));
+    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
+                                                                             Datatype::encode(args.datatype1)));
 
     MPI_Status status;
     // unknown size from the receiver point of view
@@ -583,8 +582,7 @@ public:
     const unsigned int count_requests = get_reqq_self()->size();
 
     if (count_requests > 0) {
-      TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-                         new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
+      TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
       std::vector<std::pair</*sender*/int,/*recv*/int>> sender_receiver;
       for (const auto& req : (*get_reqq_self())) {
         if (req && (req->flags() & RECV)) {
@@ -607,7 +605,7 @@ public:
   BarrierAction() : ReplayAction("barrier") {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__, new simgrid::instr::NoOpTIData("barrier"));
+    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("barrier"));
     Colls::barrier(MPI_COMM_WORLD);
     TRACE_smpi_comm_out(my_proc_id);
   }
@@ -785,10 +783,10 @@ public:
   AllToAllVAction() : ReplayAction("allToAllV") {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    TRACE_smpi_comm_in(my_proc_id, __FUNCTION__,
-        new simgrid::instr::VarCollTIData("allToAllV", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
-          Datatype::encode(args.datatype1),
-          Datatype::encode(args.datatype2)));
+    TRACE_smpi_comm_in(my_proc_id, __func__,
+                       new simgrid::instr::VarCollTIData(
+                           "allToAllV", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
+                           Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
     Colls::alltoallv(send_buffer(args.send_buf_size * args.datatype1->size()), args.sendcounts->data(), args.senddisps.data(), args.datatype1,
                      recv_buffer(args.recv_buf_size * args.datatype2->size()), args.recvcounts->data(), args.recvdisps.data(), args.datatype2, MPI_COMM_WORLD);

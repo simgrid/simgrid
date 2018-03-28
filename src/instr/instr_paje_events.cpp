@@ -17,7 +17,7 @@ namespace instr {
 NewEvent::NewEvent(double timestamp, container_t container, Type* type, EntityValue* val)
     : simgrid::instr::PajeEvent::PajeEvent(container, type, timestamp, PAJE_NewEvent), val(val)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, eventType_, timestamp_);
   insertIntoBuffer();
 }
 
@@ -35,14 +35,14 @@ LinkEvent::LinkEvent(container_t container, Type* type, e_event_type event_type,
     , key_(key)
     , size_(size)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f, value:%s", __FUNCTION__, eventType_, timestamp_, value_.c_str());
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f, value:%s", __func__, eventType_, timestamp_, value_.c_str());
   insertIntoBuffer();
 }
 
 VariableEvent::VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value)
     : PajeEvent::PajeEvent(container, type, timestamp, event_type), value(value)
 {
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, eventType_, timestamp_);
   insertIntoBuffer();
 }
 
@@ -65,7 +65,7 @@ StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type
   linenumber = -1;
 #endif
 
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, eventType_, timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, eventType_, timestamp_);
   insertIntoBuffer();
 };
 
@@ -73,7 +73,7 @@ void NewEvent::print()
 {
   std::stringstream stream;
   stream << std::fixed << std::setprecision(TRACE_precision());
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type != instr_fmt_paje)
     return;
 
@@ -90,7 +90,7 @@ void LinkEvent::print()
 {
   std::stringstream stream;
   stream << std::fixed << std::setprecision(TRACE_precision());
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type != instr_fmt_paje)
     return;
   if (timestamp_ < 1e-12)
@@ -111,7 +111,7 @@ void VariableEvent::print()
 {
   std::stringstream stream;
   stream << std::fixed << std::setprecision(TRACE_precision());
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type != instr_fmt_paje)
     return;
 
@@ -128,7 +128,7 @@ void StateEvent::print()
 {
   std::stringstream stream;
   stream << std::fixed << std::setprecision(TRACE_precision());
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, eventType_, TRACE_precision(), timestamp_);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type == instr_fmt_paje) {
     if (timestamp_ < 1e-12)
       stream << eventType_ << " " << 0 << " " << getType()->getId() << " " << getContainer()->getId();

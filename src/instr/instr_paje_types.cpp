@@ -129,7 +129,7 @@ void Type::logDefinition(e_event_type event_type)
   if (instr_fmt_type != instr_fmt_paje)
     return;
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, event_type, TRACE_precision(), 0.);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, TRACE_precision(), 0.);
   stream << std::fixed << std::setprecision(TRACE_precision()) << event_type << " " << getId();
   stream << " " << father_->getId() << " " << getName();
   if (isColored())
@@ -144,7 +144,7 @@ void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* des
   if (instr_fmt_type != instr_fmt_paje)
     return;
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __FUNCTION__, PAJE_DefineLinkType, TRACE_precision(), 0.);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, TRACE_precision(), 0.);
   stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineLinkType << " " << getId();
   stream << " " << father_->getId() << " " << source->getId() << " " << dest->getId() << " " << getName();
   XBT_DEBUG("Dump %s", stream.str().c_str());

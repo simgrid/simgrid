@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
 
 #define NOT_YET_IMPLEMENTED                                                                                            \
   {                                                                                                                    \
-    xbt_die("Not yet implemented: %s. Please contact the SimGrid team if support is needed", __FUNCTION__);            \
+    xbt_die("Not yet implemented: %s. Please contact the SimGrid team if support is needed", __func__);                \
     return MPI_SUCCESS;                                                                                                \
   }
 
@@ -21,18 +21,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
       XBT_WARN("Not yet implemented: %s. "                                                                             \
                "Please contact the SimGrid team if support is needed. "                                                \
                "Run with --log=smpi_mpi.thresh:error to hide",                                                         \
-               __FUNCTION__);                                                                                          \
+               __func__);                                                                                              \
     warning_todo = false;                                                                                              \
     return MPI_SUCCESS;                                                                                                \
   }
 
-#define WRAPPED_PMPI_CALL(type,name,args,args2) \
-type name args { \
-  XBT_VERB("SMPI - Entering %s", __FUNCTION__);\
-  type ret = P##name args2 ; \
-  XBT_VERB("SMPI - Leaving %s", __FUNCTION__);\
-  return ret;\
-}\
+#define WRAPPED_PMPI_CALL(type, name, args, args2)                                                                     \
+  type name args                                                                                                       \
+  {                                                                                                                    \
+    XBT_VERB("SMPI - Entering %s", __func__);                                                                          \
+    type ret = P##name args2;                                                                                          \
+    XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \
+    return ret;                                                                                                        \
+  }
 
 #define UNIMPLEMENTED_WRAPPED_PMPI_CALL(type,name,args,args2) \
 type P##name args { \

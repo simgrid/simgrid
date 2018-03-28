@@ -20,7 +20,7 @@ void EntityValue::print()
   if (instr_fmt_type != instr_fmt_paje)
     return;
   std::stringstream stream;
-  XBT_DEBUG("%s: event_type=%u", __FUNCTION__, PAJE_DefineEntityValue);
+  XBT_DEBUG("%s: event_type=%u", __func__, PAJE_DefineEntityValue);
   stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineEntityValue;
   stream << " " << id_ << " " << father_->getId() << " " << name_;
   if (not color_.empty())

@@ -38,7 +38,7 @@ int PMPI_Init(int *argc, char ***argv)
     smpi_process()->mark_as_initialized();
     int rank = simgrid::s4u::Actor::self()->getPid();
     TRACE_smpi_init(rank);
-    TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("init"));
+    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("init"));
     TRACE_smpi_comm_out(rank);
     TRACE_smpi_computing_init(rank);
     smpi_bench_begin();
@@ -53,7 +53,7 @@ int PMPI_Finalize()
 {
   smpi_bench_end();
   int rank = simgrid::s4u::Actor::self()->getPid();
-  TRACE_smpi_comm_in(rank, __FUNCTION__, new simgrid::instr::NoOpTIData("finalize"));
+  TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("finalize"));
 
   smpi_process()->finalize();
 

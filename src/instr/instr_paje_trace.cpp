@@ -52,7 +52,7 @@ void TRACE_paje_dump_buffer(bool force)
 {
   if (not TRACE_is_enabled())
     return;
-  XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
+  XBT_DEBUG("%s: dump until %f. starts", __func__, TRACE_last_timestamp_to_dump);
   if (force){
     for (auto const& event : buffer) {
       event->print();
@@ -71,7 +71,7 @@ void TRACE_paje_dump_buffer(bool force)
     }
     buffer.erase(buffer.begin(), i);
   }
-  XBT_DEBUG("%s: ends", __FUNCTION__);
+  XBT_DEBUG("%s: ends", __func__);
 }
 
 void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
@@ -98,8 +98,7 @@ void simgrid::instr::PajeEvent::insertIntoBuffer()
   }
   buffer_debug(&buffer);
 
-  XBT_DEBUG("%s: insert event_type=%u, timestamp=%f, buffersize=%zu)", __FUNCTION__, eventType_, timestamp_,
-            buffer.size());
+  XBT_DEBUG("%s: insert event_type=%u, timestamp=%f, buffersize=%zu)", __func__, eventType_, timestamp_, buffer.size());
   std::vector<simgrid::instr::PajeEvent*>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
     simgrid::instr::PajeEvent* e1 = *i;
@@ -108,11 +107,11 @@ void simgrid::instr::PajeEvent::insertIntoBuffer()
       break;
   }
   if (i == buffer.rend())
-    XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
+    XBT_DEBUG("%s: inserted at beginning", __func__);
   else if (i == buffer.rbegin())
-    XBT_DEBUG("%s: inserted at end", __FUNCTION__);
+    XBT_DEBUG("%s: inserted at end", __func__);
   else
-    XBT_DEBUG("%s: inserted at pos= %zd from its end", __FUNCTION__, std::distance(buffer.rbegin(), i));
+    XBT_DEBUG("%s: inserted at pos= %zd from its end", __func__, std::distance(buffer.rbegin(), i));
   buffer.insert(i.base(), this);
 
   buffer_debug(&buffer);

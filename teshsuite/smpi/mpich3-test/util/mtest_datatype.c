@@ -113,7 +113,7 @@ static void *MTestTypeContigInit(MTestDatatype * mtype)
         p = (unsigned char *) (mtype->buf);
         if (!p) {
             char errmsg[128] = { 0 };
-            sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+            sprintf(errmsg, "Out of memory in %s", __func__);
             MTestError(errmsg);
         }
         for (i = 0; i < totsize; i++) {
@@ -191,7 +191,7 @@ static void *MTestTypeVectorInit(MTestDatatype * mtype)
         p = (unsigned char *) (mtype->buf);
         if (!p) {
             char errmsg[128] = { 0 };
-            sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+            sprintf(errmsg, "Out of memory in %s", __func__);
             MTestError(errmsg);
         }
 
@@ -301,7 +301,7 @@ static void *MTestTypeIndexedInit(MTestDatatype * mtype)
         p = (unsigned char *) (mtype->buf);
         if (!p) {
             char errmsg[128] = { 0 };
-            sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+            sprintf(errmsg, "Out of memory in %s", __func__);
             MTestError(errmsg);
         }
 
@@ -419,7 +419,7 @@ static void *MTestTypeIndexedBlockInit(MTestDatatype * mtype)
         p = (unsigned char *) (mtype->buf);
         if (!p) {
             char errmsg[128] = { 0 };
-            sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+            sprintf(errmsg, "Out of memory in %s", __func__);
             MTestError(errmsg);
         }
 
@@ -530,7 +530,7 @@ static void *MTestTypeSubarrayInit(MTestDatatype * mtype)
         p = (unsigned char *) (mtype->buf);
         if (!p) {
             char errmsg[128] = { 0 };
-            sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+            sprintf(errmsg, "Out of memory in %s", __func__);
             MTestError(errmsg);
         }
 
@@ -630,7 +630,7 @@ static int MTestTypeSubarrayCheckbuf(MTestDatatype * mtype)
         }
     }
     if (err)
-        printf("%s error\n", __FUNCTION__);
+      printf("%s error\n", __func__);
     return err;
 }
 
@@ -813,7 +813,7 @@ static int MTestTypeIndexedCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_Aint s
     mtype->index = (int *) malloc(nblock * sizeof(int));
     if (!mtype->displs || !mtype->displ_in_bytes || !mtype->index) {
         char errmsg[128] = { 0 };
-        sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+        sprintf(errmsg, "Out of memory in %s", __func__);
         MTestError(errmsg);
     }
 
@@ -875,7 +875,7 @@ static inline int MTestTypeHindexedCreate(MPI_Aint nblock, MPI_Aint blocklen, MP
     mtype->displ_in_bytes = (MPI_Aint *) malloc(nblock * sizeof(MPI_Aint));
     if (!mtype->displ_in_bytes || !mtype->index) {
         char errmsg[128] = { 0 };
-        sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+        sprintf(errmsg, "Out of memory in %s", __func__);
         MTestError(errmsg);
     }
 
@@ -939,7 +939,7 @@ static int MTestTypeIndexedBlockCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_A
     mtype->displ_in_bytes = (MPI_Aint *) malloc(nblock * sizeof(MPI_Aint));
     if (!mtype->displs || !mtype->displ_in_bytes) {
         char errmsg[128] = { 0 };
-        sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+        sprintf(errmsg, "Out of memory in %s", __func__);
         MTestError(errmsg);
     }
 
@@ -1001,7 +1001,7 @@ static int MTestTypeHindexedBlockCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_
     mtype->displ_in_bytes = (MPI_Aint *) malloc(nblock * sizeof(MPI_Aint));
     if (!mtype->displ_in_bytes) {
         char errmsg[128] = { 0 };
-        sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+        sprintf(errmsg, "Out of memory in %s", __func__);
         MTestError(errmsg);
     }
 
@@ -1065,7 +1065,7 @@ static int MTestTypeStructCreate(MPI_Aint nblock, MPI_Aint blocklen, MPI_Aint st
     mtype->index = (int *) malloc(nblock * sizeof(int));
     if (!mtype->displ_in_bytes || !mtype->old_datatypes) {
         char errmsg[128] = { 0 };
-        sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+        sprintf(errmsg, "Out of memory in %s", __func__);
         MTestError(errmsg);
     }
 
@@ -1303,7 +1303,7 @@ void *MTestTypeInitRecv(MTestDatatype * mtype)
         p = (signed char *) (mtype->buf);
         if (!p) {
             char errmsg[128] = { 0 };
-            sprintf(errmsg, "Out of memory in %s", __FUNCTION__);
+            sprintf(errmsg, "Out of memory in %s", __func__);
             MTestError(errmsg);
         }
         for (i = 0; i < totsize; i++) {

@@ -148,7 +148,7 @@ void Container::logCreation()
   double timestamp = SIMIX_get_clock();
   std::stringstream stream;
 
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, PAJE_CreateContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_CreateContainer, timestamp);
 
   if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
@@ -192,7 +192,7 @@ void Container::logDestruction()
   std::stringstream stream;
   double timestamp = SIMIX_get_clock();
 
-  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __FUNCTION__, PAJE_DestroyContainer, timestamp);
+  XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_DestroyContainer, timestamp);
 
   if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";

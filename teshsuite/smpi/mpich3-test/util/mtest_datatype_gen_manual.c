@@ -341,9 +341,9 @@ static inline int MTestGetBasicDatatypes(MTestDatatype * sendtype,
     int merr = 0;
     int bdt_index = SMPI_VARGET_GLOBAL(datatype_index) - SMPI_VARGET_GLOBAL(MTEST_BDT_START_IDX);
     if (bdt_index >= MTEST_BDT_MAX) {
-        printf("Wrong index:  global %d, bst %d in %s\n", SMPI_VARGET_GLOBAL(datatype_index), bdt_index, __FUNCTION__);
-        merr++;
-        return merr;
+      printf("Wrong index:  global %d, bst %d in %s\n", SMPI_VARGET_GLOBAL(datatype_index), bdt_index, __func__);
+      merr++;
+      return merr;
     }
 
     switch (bdt_index) {
@@ -406,20 +406,20 @@ static inline int MTestGetSendDerivedDatatypes(MTestDatatype * sendtype,
     ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - SMPI_VARGET_GLOBAL(MTEST_SEND_DDT_START_IDX);
     ddt_c_dt = ddt_datatype_index / MTEST_DDT_NUM_SUBTESTS;
     if (ddt_c_dt >= MTEST_DDT_MAX || !SMPI_VARGET_GLOBAL(mtestDdtCreators)[ddt_c_dt]) {
-        printf("Wrong index:  global %d, send %d send-ddt %d, or undefined creator in %s\n",
-               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
-        merr++;
-        return merr;
+      printf("Wrong index:  global %d, send %d send-ddt %d, or undefined creator in %s\n",
+             SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __func__);
+      merr++;
+      return merr;
     }
 
     /* Set datatype structure */
     merr = MTestDdtStructDefine(ddt_datatype_index, tot_count, &count, &blen,
                                 &stride, &align_tot_count, &lb);
     if (merr) {
-        printf("Wrong index:  global %d, send %d send-ddt %d, or undefined ddt structure in %s\n",
-               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
-        merr++;
-        return merr;
+      printf("Wrong index:  global %d, send %d send-ddt %d, or undefined ddt structure in %s\n",
+             SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __func__);
+      merr++;
+      return merr;
     }
 
     /* Create send datatype */
@@ -451,19 +451,19 @@ static inline int MTestGetRecvDerivedDatatypes(MTestDatatype * sendtype,
     ddt_datatype_index = SMPI_VARGET_GLOBAL(datatype_index) - SMPI_VARGET_GLOBAL(MTEST_RECV_DDT_START_IDX);
     ddt_c_dt = ddt_datatype_index / MTEST_DDT_NUM_SUBTESTS;
     if (ddt_c_dt >= MTEST_DDT_MAX || !SMPI_VARGET_GLOBAL(mtestDdtCreators)[ddt_c_dt]) {
-        printf("Wrong index:  global %d, recv %d recv-ddt %d, or undefined creator in %s\n",
-               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
-        merr++;
-        return merr;
+      printf("Wrong index:  global %d, recv %d recv-ddt %d, or undefined creator in %s\n",
+             SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __func__);
+      merr++;
+      return merr;
     }
 
     /* Set datatype structure */
     merr = MTestDdtStructDefine(ddt_datatype_index, tot_count, &count, &blen,
                                 &stride, &align_tot_count, &lb);
     if (merr) {
-        printf("Wrong index:  global %d, recv %d recv-ddt %d, or undefined ddt structure in %s\n",
-               SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __FUNCTION__);
-        return merr;
+      printf("Wrong index:  global %d, recv %d recv-ddt %d, or undefined ddt structure in %s\n",
+             SMPI_VARGET_GLOBAL(datatype_index), ddt_datatype_index, ddt_c_dt, __func__);
+      return merr;
     }
 
     /* Create receive datatype */

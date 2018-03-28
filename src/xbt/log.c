@@ -662,7 +662,7 @@ static void xbt_log_help(void)
          "in 'l'etter)\n"
          "         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
          "         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
-         "                 Defined only when using gcc because there is no __FUNCTION__ elsewhere.\n"
+         "                 Defined only when using gcc because there is no __func__ elsewhere.\n"
          "\n"
          "         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the "
          "GNU libc because\n"
