@@ -19,7 +19,6 @@ static int getPid(MPI_Comm comm, int id)
 }
 
 /* PMPI User level calls */
-extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 int PMPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request * request)
 {
@@ -687,6 +686,4 @@ MPI_Request PMPI_Request_f2c(MPI_Fint request){
 
 MPI_Fint PMPI_Request_c2f(MPI_Request request) {
   return request->c2f();
-}
-
 }

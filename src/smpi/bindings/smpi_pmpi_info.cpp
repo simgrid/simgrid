@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,7 +9,6 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 /* PMPI User level calls */
-extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 int PMPI_Info_create( MPI_Info *info){
   if (info == nullptr)
@@ -80,6 +79,4 @@ MPI_Info PMPI_Info_f2c(MPI_Fint info){
 
 MPI_Fint PMPI_Info_c2f(MPI_Info info){
   return info->c2f();
-}
-
 }

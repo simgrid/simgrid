@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,7 +9,6 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 /* PMPI User level calls */
-extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 /* The topo part of MPI_COMM_WORLD should always be nullptr. When other topologies will be implemented, not only should we
  * check if the topology is nullptr, but we should check if it is the good topology type (so we have to add a
@@ -131,6 +130,4 @@ int PMPI_Cart_sub(MPI_Comm comm, int* remain_dims, MPI_Comm* comm_new) {
   if(cart==nullptr)
     return  MPI_ERR_ARG;
   return MPI_SUCCESS;
-}
-
 }

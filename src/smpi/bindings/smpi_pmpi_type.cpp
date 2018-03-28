@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,7 +9,6 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 /* PMPI User level calls */
-extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 int PMPI_Type_free(MPI_Datatype * datatype)
 {
@@ -366,6 +365,4 @@ int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size)
   *size=incount*datatype->size();
 
   return MPI_SUCCESS;
-}
-
 }

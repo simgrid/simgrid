@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,7 +25,6 @@ void TRACE_smpi_set_category(const char *category)
 }
 
 /* PMPI User level calls */
-extern "C" { // Obviously, the C MPI interface should use the C linkage
 
 int PMPI_Init(int *argc, char ***argv)
 {
@@ -216,5 +215,3 @@ int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_f
 int PMPI_Keyval_free(int* keyval) {
   return simgrid::smpi::Keyval::keyval_free<simgrid::smpi::Comm>(keyval);
 }
-
-} // extern "C"

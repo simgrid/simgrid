@@ -396,7 +396,6 @@ void smpi_sample_3(int global, const char *file, int line)
   data.benching = false;
 }
 
-extern "C" { /** These functions will be called from the user code **/
 smpi_trace_call_location_t* smpi_trace_get_call_location()
 {
   return smpi_process()->call_location();
@@ -422,7 +421,6 @@ void smpi_trace_set_call_location_(const char* file, int* line)
 void smpi_trace_set_call_location__(const char* file, int* line)
 {
   smpi_trace_set_call_location(file, *line);
-}
 }
 
 void smpi_bench_destroy()
