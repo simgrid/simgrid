@@ -163,7 +163,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     retval = MPI_ERR_TAG;
   } else {
 
-    int my_proc_id = simgrid::s4u::Actor::self()->getPid();
+    int my_proc_id = simgrid::s4u::this_actor::getPid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("Irecv", src,
@@ -204,7 +204,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int my_proc_id = simgrid::s4u::Actor::self()->getPid();
+    int my_proc_id = simgrid::s4u::this_actor::getPid();
     int trace_dst = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("Isend", dst,
@@ -246,7 +246,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, M
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int my_proc_id = simgrid::s4u::Actor::self()->getPid();
+    int my_proc_id = simgrid::s4u::this_actor::getPid();
     int trace_dst = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("ISsend", dst,
@@ -286,7 +286,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
+    int my_proc_id = simgrid::s4u::this_actor::getPid();
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("recv", src,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
@@ -328,7 +328,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
   } else if(tag < 0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
+    int my_proc_id         = simgrid::s4u::this_actor::getPid();
     int dst_traced         = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("send", dst,
@@ -366,7 +366,7 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
   } else if(tag<0 && tag !=  MPI_ANY_TAG){
     retval = MPI_ERR_TAG;
   } else {
-    int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
+    int my_proc_id         = simgrid::s4u::this_actor::getPid();
     int dst_traced         = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("Ssend", dst,
@@ -415,7 +415,7 @@ int PMPI_Sendrecv(void* sendbuf, int sendcount, MPI_Datatype sendtype, int dst, 
   } else if((sendtag<0 && sendtag !=  MPI_ANY_TAG)||(recvtag<0 && recvtag != MPI_ANY_TAG)){
     retval = MPI_ERR_TAG;
   } else {
-    int my_proc_id         = simgrid::s4u::Actor::self()->getPid();
+    int my_proc_id         = simgrid::s4u::this_actor::getPid();
     int dst_traced         = getPid(comm, dst);
     int src_traced         = getPid(comm, src);
 
@@ -476,7 +476,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
     simgrid::smpi::Status::empty(status);
     retval = MPI_SUCCESS;
   } else {
-    int my_proc_id = ((*request)->comm() != MPI_COMM_NULL) ? simgrid::s4u::Actor::self()->getPid() : -1;
+    int my_proc_id = ((*request)->comm() != MPI_COMM_NULL) ? simgrid::s4u::this_actor::getPid() : -1;
 
     TRACE_smpi_testing_in(my_proc_id);
 
@@ -591,7 +591,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     retval = MPI_SUCCESS;
   } else {
     int my_proc_id = (*request)->comm() != MPI_COMM_NULL
-                         ? simgrid::s4u::Actor::self()->getPid()
+                         ? simgrid::s4u::this_actor::getPid()
                          : -1; // TODO: cheinrich: Check if this correct or if it should be MPI_UNDEFINED
 
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("wait"));
@@ -618,7 +618,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 
   smpi_bench_end();
 
-  int rank_traced = simgrid::s4u::Actor::self()->getPid(); // FIXME: In PMPI_Wait, we check if the comm is null?
+  int rank_traced = simgrid::s4u::this_actor::getPid(); // FIXME: In PMPI_Wait, we check if the comm is null?
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("waitAny", static_cast<double>(count)));
 
   *index = simgrid::smpi::Request::waitany(count, requests, status);
@@ -636,7 +636,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   smpi_bench_end();
 
-  int rank_traced = simgrid::s4u::Actor::self()->getPid(); // FIXME: In PMPI_Wait, we check if the comm is null?
+  int rank_traced = simgrid::s4u::this_actor::getPid(); // FIXME: In PMPI_Wait, we check if the comm is null?
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("waitAll", static_cast<double>(count)));
 
   int retval = simgrid::smpi::Request::waitall(count, requests, status);

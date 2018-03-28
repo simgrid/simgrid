@@ -101,7 +101,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     return MPI_ERR_GROUP;
   } else if (newcomm == nullptr) {
     return MPI_ERR_ARG;
-  } else if(group->rank(simgrid::s4u::Actor::self()->getPid())==MPI_UNDEFINED){
+  } else if (group->rank(simgrid::s4u::this_actor::getPid()) == MPI_UNDEFINED) {
     *newcomm= MPI_COMM_NULL;
     return MPI_SUCCESS;
   }else{

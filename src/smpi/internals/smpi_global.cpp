@@ -114,7 +114,7 @@ void smpi_process_init(int *argc, char ***argv){
 }
 
 int smpi_process_index(){
-  return simgrid::s4u::Actor::self()->getPid();
+  return simgrid::s4u::this_actor::getPid();
 }
 
 void * smpi_process_get_user_data(){
