@@ -9,10 +9,11 @@
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
 #include "smpi_process.hpp"
+#include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");
 
-static std::unordered_map<int, simgrid::smpi::Datatype*> id2type_lookup;
+static std::unordered_map<std::string, simgrid::smpi::Datatype*> id2type_lookup;
 
 #define CREATE_MPI_DATATYPE(name, id, type)                                                                            \
   static simgrid::smpi::Datatype mpi_##name((char*)#name, id, sizeof(type), /* size */                                 \
@@ -97,9 +98,9 @@ namespace smpi{
 
 std::unordered_map<int, smpi_key_elem> Datatype::keyvals_; // required by the Keyval class implementation
 int Datatype::keyval_id_=0; // required by the Keyval class implementation
-Datatype::Datatype(int id, int size, MPI_Aint lb, MPI_Aint ub, int flags) : Datatype(size, lb, ub, flags)
+Datatype::Datatype(int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags) : Datatype(size, lb, ub, flags)
 {
-  id = id;
+  id = std::to_string(ident);
 }
 Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(1){
 #if SIMGRID_HAVE_MC
@@ -109,8 +110,8 @@ Datatype::Datatype(int size,MPI_Aint lb, MPI_Aint ub, int flags) : name_(nullptr
 }
 
 //for predefined types, so in_use = 0.
-Datatype::Datatype(char* name, int id, int size, MPI_Aint lb, MPI_Aint ub, int flags)
-    : name_(name), id(id), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
+Datatype::Datatype(char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
+    : name_(name), id(std::to_string(ident)), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
 {
   id2type_lookup.insert({id, this});
 #if SIMGRID_HAVE_MC
@@ -207,12 +208,12 @@ const char* Datatype::encode(MPI_Datatype dt)
   if (dt == MPI_DATATYPE_NULL)
     return "-1";
 
-  return std::to_string(dt->id).c_str();
+  return dt->id.c_str();
 }
 
 MPI_Datatype Datatype::decode(std::string datatype_id)
 {
-  return id2type_lookup.find(std::stoi(datatype_id))->second;
+  return id2type_lookup.find(datatype_id)->second;
 }
 
 bool Datatype::is_replayable()

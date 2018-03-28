@@ -80,7 +80,7 @@ class Datatype : public F2C, public Keyval{
    * It's default value is set to -1 since some code expects this return value
    * when no other id has been assigned
    */
-  int id = -1;
+  std::string id = "-1";
   size_t size_;
   MPI_Aint lb_;
   MPI_Aint ub_;
