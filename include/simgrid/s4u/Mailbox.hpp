@@ -113,9 +113,9 @@ class XBT_PUBLIC Mailbox {
   explicit Mailbox(kernel::activity::MailboxImpl * mbox) : pimpl_(mbox) {}
 
   /** private function to manage the mailboxes' lifetime (see @ref s4u_raii) */
-  friend void intrusive_ptr_add_ref(Mailbox*) {}
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Mailbox*) {}
   /** private function to manage the mailboxes' lifetime (see @ref s4u_raii) */
-  friend void intrusive_ptr_release(Mailbox*) {}
+  friend XBT_PUBLIC void intrusive_ptr_release(Mailbox*) {}
 public:
   /** private function, do not use. FIXME: make me protected */
   kernel::activity::MailboxImpl* getImpl() { return pimpl_; }
