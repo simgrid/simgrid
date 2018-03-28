@@ -12,10 +12,8 @@
 #include "xbt/sysdep.h"
 
 #include <algorithm>
-#include <cstdlib>
-#ifndef MATH
 #include <cmath>
-#endif
+#include <cstdlib>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_lagrange, surf, "Logging specific to SURF (lagrange)");
 XBT_LOG_NEW_SUBCATEGORY(surf_lagrange_dichotomy, surf_lagrange, "Logging specific to SURF (lagrange dichotomy)");
