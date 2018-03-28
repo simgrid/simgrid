@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-using namespace simgrid::surf;
+using namespace simgrid::kernel;
 
 #define PRINT_VAR(var) XBT_DEBUG(#var " = %g", (var)->get_value())
 #define SHOW_EXPR(expr) XBT_DEBUG(#expr " = %g",expr)
@@ -27,14 +27,14 @@ using namespace simgrid::surf;
 
 enum method_t { MAXMIN, LAGRANGE_RENO, LAGRANGE_VEGAS };
 
-static simgrid::kernel::lmm::System* new_system(method_t method, bool update)
+static lmm::System* new_system(method_t method, bool update)
 {
   switch (method) {
     case MAXMIN:
-      return simgrid::kernel::lmm::make_new_maxmin_system(update);
+      return lmm::make_new_maxmin_system(update);
     case LAGRANGE_VEGAS:
     case LAGRANGE_RENO:
-      return simgrid::kernel::lmm::make_new_lagrange_system(update);
+      return lmm::make_new_lagrange_system(update);
     default:
       xbt_die("Invalid method");
   }
@@ -104,21 +104,19 @@ static void test1(method_t method)
   double b = 10.0;
 
   if (method == LAGRANGE_VEGAS)
-    set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
-                                  simgrid::kernel::lmm::func_vegas_fpi);
+    set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
   else if (method == LAGRANGE_RENO)
-    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
-                                  simgrid::kernel::lmm::func_reno_fpi);
+    set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
-  simgrid::kernel::lmm::System* Sys    = new_system(method, true);
-  simgrid::kernel::lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
-  simgrid::kernel::lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
-  simgrid::kernel::lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
+  lmm::System* Sys    = new_system(method, true);
+  lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
+  lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
+  lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
 
-  simgrid::kernel::lmm::Variable* R_1_2_3 = Sys->variable_new(nullptr, 1.0, -1.0, 3);
-  simgrid::kernel::lmm::Variable* R_1     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  simgrid::kernel::lmm::Variable* R_2     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  simgrid::kernel::lmm::Variable* R_3     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* R_1_2_3 = Sys->variable_new(nullptr, 1.0, -1.0, 3);
+  lmm::Variable* R_1     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* R_2     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* R_3     = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
   Sys->update_variable_weight(R_1_2_3, 1.0);
   Sys->update_variable_weight(R_1, 1.0);
@@ -192,19 +190,17 @@ static void test1(method_t method)
 static void test2(method_t method)
 {
   if (method == LAGRANGE_VEGAS)
-    set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
-                                  simgrid::kernel::lmm::func_vegas_fpi);
+    set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
-                                  simgrid::kernel::lmm::func_reno_fpi);
+    set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
-  simgrid::kernel::lmm::System* Sys = new_system(method, true);
+  lmm::System* Sys = new_system(method, true);
 
-  simgrid::kernel::lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
-  simgrid::kernel::lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
+  lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
+  lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
 
-  simgrid::kernel::lmm::Variable* T1 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
-  simgrid::kernel::lmm::Variable* T2 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* T1 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
+  lmm::Variable* T2 = Sys->variable_new(nullptr, 1.0, -1.0, 1);
 
   Sys->update_variable_weight(T1, 1.0);
   Sys->update_variable_weight(T2, 1.0);
@@ -260,21 +256,19 @@ static void test3(method_t method)
   A[14][15] =                                        1.0;
 
   if (method == LAGRANGE_VEGAS)
-    set_default_protocol_function(simgrid::kernel::lmm::func_vegas_f, simgrid::kernel::lmm::func_vegas_fp,
-                                  simgrid::kernel::lmm::func_vegas_fpi);
+    set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
   if (method == LAGRANGE_RENO)
-    set_default_protocol_function(simgrid::kernel::lmm::func_reno_f, simgrid::kernel::lmm::func_reno_fp,
-                                  simgrid::kernel::lmm::func_reno_fpi);
+    set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
-  simgrid::kernel::lmm::System* Sys = new_system(method, true);
+  lmm::System* Sys = new_system(method, true);
 
   /* Creates the constraints */
-  simgrid::kernel::lmm::Constraint** tmp_cnst = new simgrid::kernel::lmm::Constraint*[15];
+  lmm::Constraint** tmp_cnst = new lmm::Constraint*[15];
   for (int i = 0; i < 15; i++)
     tmp_cnst[i] = Sys->constraint_new(nullptr, B[i]);
 
   /* Creates the variables */
-  simgrid::kernel::lmm::Variable** tmp_var = new simgrid::kernel::lmm::Variable*[16];
+  lmm::Variable** tmp_var = new lmm::Variable*[16];
   for (int j = 0; j < 16; j++) {
     tmp_var[j] = Sys->variable_new(nullptr, 1.0, -1.0, 15);
     Sys->update_variable_weight(tmp_var[j], 1.0);
