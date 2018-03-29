@@ -641,10 +641,11 @@ make
 @endverbatim
 
 Indeed, the programs compiled with <tt>smpicc</tt> cannot be executed
-without <tt>smpirun</tt>, while configure wants to test them directly.
-With <tt>SMPI_PRETEND_CC</tt>, any program compiled with smpicc stops
-and returns 0 before doing anything that would fail without
-<tt>smpirun</tt>.
+without <tt>smpirun</tt> (they are shared libraries, and they do weird
+things on startup), while configure wants to test them directly.
+With <tt>SMPI_PRETEND_CC</tt> smpicc does not compile as shared,
+and the SMPI initialization stops and returns 0 before doing anything
+that would fail without <tt>smpirun</tt>.
 
 \warning 
 

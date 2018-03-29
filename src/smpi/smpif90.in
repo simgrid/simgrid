@@ -16,7 +16,10 @@ CMAKE_LINKARGS="-L@libdir@"
 @SMPITOOLS_SH@
 
 list_set FFLAGS @SMPI_Fortran_FLAGS@
-list_set LINKARGS "-shared" "-lsimgrid" @SMPI_Fortran_LIBS@ "-lm"
+    if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
+       list_add LINKARGS "-shared"
+    fi
+list_set LINKARGS "-lsimgrid" @SMPI_Fortran_LIBS@ "-lm"
 list_set TMPFILES
 main_name=main
 
