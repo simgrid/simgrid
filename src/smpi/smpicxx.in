@@ -20,11 +20,11 @@ list_set CXXFLAGS
 list_set LINKARGS
 if [ "@WIN32@" != "1" ]; then
     # list_add CXXFLAGS "-Dmain=smpi_simulated_main_"
-    list_add CXXFLAGS "-fpic"
-    list_add LINKARGS "-shared" "-lsimgrid"
+    list_add CXXFLAGS "-fpic" "-std=gnu++11"
+    list_add LINKARGS "-shared" "-lsimgrid" "-std=gnu++11"
 else
-    list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_main.h"
-    list_add LINKARGS "@libdir@\libsimgrid.dll"
+    list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_main.h" "-std=gnu++11"
+    list_add LINKARGS "@libdir@\libsimgrid.dll" "-std=gnu++11"
 fi
 
 list_set CMDARGS
