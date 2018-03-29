@@ -271,7 +271,7 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 
 $ rm -f replay/one_trace
 
-p Test of Isend replay with SMPI (one trace for all processes)
+p Test of AllReduce replay with SMPI (one trace for all processes)
 
 < replay/actions_allReduce.txt
 $ mkfile replay/one_trace
