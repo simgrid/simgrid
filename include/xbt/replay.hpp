@@ -19,7 +19,6 @@ namespace simgrid {
 namespace xbt {
 /* To split the file if a unique one is given (specific variable for the other case live in runner()) */
 typedef std::vector<std::string> ReplayAction;
-static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
 
 XBT_PUBLIC_DATA std::ifstream* action_fs;
 XBT_PUBLIC int replay_runner(int argc, char* argv[]);

@@ -17,6 +17,7 @@ namespace xbt {
 
 std::ifstream* action_fs = nullptr;
 std::unordered_map<std::string, action_fun> action_funs;
+static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
 
 static void read_and_trim_line(std::ifstream* fs, std::string* line)
 {
