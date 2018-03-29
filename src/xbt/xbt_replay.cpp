@@ -54,7 +54,7 @@ bool ReplayReader::get(ReplayAction* action)
   return not fs->eof();
 }
 
-static ReplayAction get_action(char* name)
+static ReplayAction* get_action(char* name)
 {
   ReplayAction* action;
 
@@ -75,7 +75,7 @@ static ReplayAction get_action(char* name)
       // if it's for me, I'm done
       std::string evtname = action->front();
       if (evtname.compare(name) == 0) {
-        return *action;
+        return action;
       } else {
         // Else, I have to store it for the relevant colleague
         std::queue<ReplayAction*>* otherqueue = nullptr;
@@ -94,10 +94,10 @@ static ReplayAction get_action(char* name)
     // Get something from my queue and return it
     action = myqueue->front();
     myqueue->pop();
-    return *action;
+    return action;
   }
 
-  return ReplayAction();
+  return nullptr;
 }
 
 static void handle_action(ReplayAction& action)
@@ -120,10 +120,11 @@ int replay_runner(int argc, char* argv[])
 {
   if (simgrid::xbt::action_fs) { // A unique trace file
     while (true) {
-      simgrid::xbt::ReplayAction evt(simgrid::xbt::get_action(argv[0]));
-      if (evt.empty())
+      simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(argv[0]);
+      if (!evt)
         break;
-      simgrid::xbt::handle_action(evt);
+      simgrid::xbt::handle_action(*evt);
+      delete evt;
     }
     if (action_queues.find(std::string(argv[0])) != action_queues.end()) {
       std::queue<ReplayAction*>* myqueue = action_queues.at(std::string(argv[0]));
