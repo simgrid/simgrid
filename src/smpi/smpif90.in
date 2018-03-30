@@ -16,9 +16,11 @@ CMAKE_LINKARGS="-L@libdir@"
 @SMPITOOLS_SH@
 
 list_set FFLAGS @SMPI_Fortran_FLAGS@
-    if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
-       list_add LINKARGS "-shared"
-    fi
+if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
+   list_add LINKARGS "-shared"
+else
+   echo "Warning: smpif90 pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
+fi
 list_set LINKARGS "-lsimgrid" @SMPI_Fortran_LIBS@ "-lm"
 list_set TMPFILES
 main_name=main
