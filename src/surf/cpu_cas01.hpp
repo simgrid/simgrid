@@ -24,7 +24,7 @@ class XBT_PRIVATE CpuCas01Action;
 
 class CpuCas01Model : public simgrid::surf::CpuModel {
 public:
-  CpuCas01Model(bool optim_lazy);
+  CpuCas01Model(kernel::resource::Model::UpdateAlgo algo);
   ~CpuCas01Model() override;
 
   Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;

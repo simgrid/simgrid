@@ -373,8 +373,7 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
 CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
   : Cpu(model, host, speedPerPstate, core)
 {
-  xbt_assert(core==1,"Multi-core not handled by this model yet");
-  coresAmount_ = core;
+  xbt_assert(core == 1, "Multi-core not handled by this model yet");
 
   speed_.peak = speedPerPstate->front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);

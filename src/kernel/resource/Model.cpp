@@ -13,6 +13,7 @@ namespace kernel {
 namespace resource {
 
 Model::Model() = default;
+Model::Model(Model::UpdateAlgo algo) : update_mechanism_(algo) {}
 
 Model::~Model()
 {

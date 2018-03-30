@@ -29,6 +29,8 @@ public:
   };
 
   Model();
+  Model(Model::UpdateAlgo algo);
+
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
@@ -52,10 +54,7 @@ public:
   /** @brief Set the maxmin system of the current Model */
   void set_maxmin_system(lmm::System* system) { maxmin_system_ = system; }
 
-  /**
-   * @brief Get the update mechanism of the current Model
-   * @see e_UM_t
-   */
+  /** @brief Get the update mechanism of the current Model */
   UpdateAlgo getUpdateMechanism() const { return update_mechanism_; }
   void setUpdateMechanism(UpdateAlgo mechanism) { update_mechanism_ = mechanism; }
 

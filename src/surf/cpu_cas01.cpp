@@ -42,32 +42,35 @@ void surf_cpu_model_init_Cas01()
     return;
   }
 
-  surf_cpu_model_pm = new simgrid::surf::CpuCas01Model(cpu_optim_opt == "Lazy");
+  simgrid::kernel::resource::Model::UpdateAlgo algo;
+  if (cpu_optim_opt == "Lazy")
+    algo = simgrid::kernel::resource::Model::UpdateAlgo::Lazy;
+  else
+    algo = simgrid::kernel::resource::Model::UpdateAlgo::Full;
+
+  surf_cpu_model_pm = new simgrid::surf::CpuCas01Model(algo);
   all_existing_models->push_back(surf_cpu_model_pm);
 
-  surf_cpu_model_vm = new simgrid::surf::CpuCas01Model(cpu_optim_opt == "Lazy");
+  surf_cpu_model_vm = new simgrid::surf::CpuCas01Model(algo);
   all_existing_models->push_back(surf_cpu_model_vm);
 }
 
 namespace simgrid {
 namespace surf {
 
-CpuCas01Model::CpuCas01Model(bool optim_lazy) : simgrid::surf::CpuModel()
+CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : simgrid::surf::CpuModel(algo)
 {
   bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
-  if (optim_lazy) {
+  if (algo == Model::UpdateAlgo::Lazy) {
     xbt_assert(select || xbt_cfg_is_default_value("cpu/maxmin-selective-update"),
                "You cannot disable cpu selective update when using the lazy update mechanism");
-    setUpdateMechanism(Model::UpdateAlgo::Lazy);
     select = true;
-  } else {
-    setUpdateMechanism(Model::UpdateAlgo::Full);
   }
 
   set_maxmin_system(new simgrid::kernel::lmm::System(select));
 
-  if (optim_lazy)
+  if (algo == Model::UpdateAlgo::Lazy)
     get_maxmin_system()->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 

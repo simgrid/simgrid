@@ -26,6 +26,9 @@ namespace surf {
  */
 class XBT_PUBLIC CpuModel : public kernel::resource::Model {
 public:
+  CpuModel(kernel::resource::Model::UpdateAlgo algo) : Model(algo) {}
+  CpuModel() : Model() {}
+
   /**
    * @brief Create a Cpu
    *
