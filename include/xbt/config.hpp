@@ -155,7 +155,7 @@ bindFlag(T& value, const char* name, const char* description,
  *
  *  <pre><code>
  *  static int x;
- *  simgrid::config::bindFlag(a, "x", [](int x) { return return x > 0; });
+ *  simgrid::config::bindFlag(a, "x", [](int x) { return x > 0; });
  *  </code></pre>
  */
 // F is a predicate, F : T const& -> bool
@@ -169,7 +169,7 @@ bindFlag(T& value, const char* name, const char* description,
 {
   declareFlag(name, description, value, [&value, callback](const T& val) {
     if (not callback(val))
-      throw std::range_error("invalid value");
+      throw std::range_error("invalid value.");
     value = std::move(val);
   });
 }
@@ -178,7 +178,7 @@ bindFlag(T& value, const char* name, const char* description,
  *
  *  <pre><code>
  *  static simgrid::config::flag<int> answer("answer", "Expected answer", 42);
- *  static simgrid::config::flag<std::string> name("name", "Ford Prefect", "John Doe");
+ *  static simgrid::config::flag<std::string> name("name", "Ford Perfect", "John Doe");
  *  static simgrid::config::flag<double> gamma("gamma", "Gamma factor", 1.987);
  *  </code></pre>
  */
