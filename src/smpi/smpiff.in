@@ -38,7 +38,7 @@ filter_and_compile_f77() {
       echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > ${TMPFILE}
       echo "#line 1 \"${ARG}\"" >> ${TMPFILE}
     fi
-    sed 's/[[:space:]]\{6\}[[:space:]]*\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][[:space:]]+\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
+    sed 's/[[:space:]]\{6\}[[:space:]]*\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][[:space:]][[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
     SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }
@@ -49,7 +49,7 @@ filter_and_compile_f90() {
       echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > ${TMPFILE}
       echo "#line 1 \"${ARG}\"" >> ${TMPFILE}
     fi
-    sed 's/[[:space:]]*[pP][rR][oO][gG][rR][aA][mM][[:space:]]*\([a-zA-Z0-9\-\_]*\)/ subroutine user\_main /g;s/[[:space:]]*[uU][sS][eE][[:space:]]*[mM][pP][iI]/\include \"mpif\.h\" /g' "${ARG}" > "${TMPFILE}"
+    sed 's/[[:space:]]*[pP][rR][oO][gG][rR][aA][mM][[:space:]][[:space:]]*\([a-zA-Z0-9\-\_]*\)/ subroutine user\_main /g' "${ARG}" > "${TMPFILE}"
     SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }
