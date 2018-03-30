@@ -113,16 +113,20 @@ public:
 };
 
 class Pt2PtTIData : public TIData {
+  int tag;
 public:
+  explicit Pt2PtTIData(std::string name, int endpoint, int size, int tag, std::string datatype)
+      : TIData(name, endpoint, size, datatype), tag(tag) {};
+
   explicit Pt2PtTIData(std::string name, int endpoint, int size, std::string datatype)
-      : TIData(name, endpoint, size, datatype){};
+      : TIData(name, endpoint, size, datatype), tag(0) {};
   std::string print() override
   {
     std::stringstream stream;
     stream << getName() << " ";
     if (endpoint >= 0)
       stream << endpoint << " ";
-    stream << send_size << " " << send_type;
+    stream << tag << " " << send_size << " " << send_type;
     return stream.str();
   }
   std::string display_size() override { return std::to_string(send_size); }
