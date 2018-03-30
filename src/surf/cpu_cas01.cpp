@@ -7,10 +7,27 @@
 #include "cpu_ti.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "xbt/config.hpp"
 #include "xbt/utility.hpp"
+
 #include <algorithm>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU module");
+
+static simgrid::config::Flag<std::string>
+    cpu_optim_opt("cpu/optim", "Optimization algorithm to use for CPU resources. ", "Lazy",
+
+                  std::map<std::string, std::string>({
+                      {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining)."},
+                      {"TI", "Trace integration. Highly optimized mode when using availability traces (only available "
+                             "for the Cas01 CPU model for now)."},
+                      {"Full", "Full update of remaining and variables. Slow but may be useful when debugging."},
+                  }),
+
+                  [](std::string const& val) {
+                    xbt_assert(_sg_cfg_init_status < 2,
+                               "Cannot change the optimization algorithm after the initialization");
+                  });
 
 /*********
  * Model *
@@ -20,40 +37,37 @@ void surf_cpu_model_init_Cas01()
   xbt_assert(not surf_cpu_model_pm);
   xbt_assert(not surf_cpu_model_vm);
 
-  if (xbt_cfg_get_string("cpu/optim") == "TI") {
+  if (cpu_optim_opt == "TI") {
     surf_cpu_model_init_ti();
     return;
   }
 
-  surf_cpu_model_pm = new simgrid::surf::CpuCas01Model();
+  surf_cpu_model_pm = new simgrid::surf::CpuCas01Model(cpu_optim_opt == "Lazy");
   all_existing_models->push_back(surf_cpu_model_pm);
 
-  surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
+  surf_cpu_model_vm = new simgrid::surf::CpuCas01Model(cpu_optim_opt == "Lazy");
   all_existing_models->push_back(surf_cpu_model_vm);
 }
 
 namespace simgrid {
 namespace surf {
 
-CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
+CpuCas01Model::CpuCas01Model(bool optim_lazy) : simgrid::surf::CpuModel()
 {
-  std::string optim = xbt_cfg_get_string("cpu/optim");
   bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
-  if (optim == "Full") {
-    setUpdateMechanism(Model::UpdateAlgo::Full);
-  } else if (optim == "Lazy") {
+  if (optim_lazy) {
     xbt_assert(select || xbt_cfg_is_default_value("cpu/maxmin-selective-update"),
                "You cannot disable cpu selective update when using the lazy update mechanism");
     setUpdateMechanism(Model::UpdateAlgo::Lazy);
     select = true;
   } else {
-    xbt_die("Unsupported optimization (%s) for this model", optim.c_str());
+    setUpdateMechanism(Model::UpdateAlgo::Full);
   }
 
   set_maxmin_system(new simgrid::kernel::lmm::System(select));
 
-  if (getUpdateMechanism() == Model::UpdateAlgo::Lazy)
+  if (optim_lazy)
     get_maxmin_system()->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 

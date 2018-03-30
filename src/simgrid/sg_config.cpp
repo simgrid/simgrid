@@ -301,10 +301,6 @@ void sg_config_init(int *argc, char **argv)
   describe_model(description, descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
   xbt_cfg_register_string("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, description);
 
-  describe_model(description, descsize, surf_optimization_mode_description, "optimization mode",
-                 "The optimization modes to use for the CPU");
-  xbt_cfg_register_string("cpu/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
-
   describe_model(description, descsize, surf_storage_model_description, "model", "The model to use for the storage");
   xbt_cfg_register_string("storage/model", "default", &_sg_cfg_cb__storage_mode, description);
 
