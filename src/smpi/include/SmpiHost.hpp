@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 #include <xbt/Extendable.hpp>
-#include <xbt/config.hpp>
 
 namespace simgrid {
 namespace smpi {

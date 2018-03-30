@@ -15,6 +15,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "xbt/config.hpp"
 
 #include <algorithm>
 

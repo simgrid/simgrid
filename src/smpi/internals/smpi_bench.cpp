@@ -11,6 +11,8 @@
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "xbt/config.hpp"
+
 #include <unordered_map>
 
 #ifndef WIN32

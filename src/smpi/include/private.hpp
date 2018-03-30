@@ -6,7 +6,6 @@
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
-#include "include/xbt/config.hpp"
 #include "simgrid/msg.h" // msg_bar_t
 #include "smpi/smpi.h"
 #include "src/instr/instr_smpi.hpp"

@@ -37,6 +37,8 @@
 #include <cstring>
 
 #include "private.hpp"
+#include "xbt/config.hpp"
+
 #include <cerrno>
 
 #include <sys/types.h>
