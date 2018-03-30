@@ -165,18 +165,14 @@ void *SIMIX_context_stack_new()
 {
   void *stack;
 
-  /* FIXME: current code for stack overflow protection assumes that stacks are
-   * growing downward (PTH_STACKGROWTH == -1).  Protected pages need to be put
-   * after the stack when PTH_STACKGROWTH == 1. */
-
   if (smx_context_guard_size > 0 && not MC_is_active()) {
 
 #if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
-    static int warned_once = 0;
-    if (not warned_once) {
-      XBT_WARN("Stack overflow protection is known to be broken on your system.  Either stack grows upwards, or it was not even tested properly.");
-      warned_once = 1;
-    }
+    xbt_die("Stack overflow protection is known to be broken on your system: you stacks grow upwards (or detection is "
+            "broken). "
+            "Please disable stack guards with --cfg=contexts:guard-size:0");
+    /* Current code for stack overflow protection assumes that stacks are growing downward (PTH_STACKGROWTH == -1).
+     * Protected pages need to be put after the stack when PTH_STACKGROWTH == 1. */
 #endif
 
     size_t size = smx_context_stack_size + smx_context_guard_size;
