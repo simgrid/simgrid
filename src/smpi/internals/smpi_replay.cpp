@@ -82,15 +82,17 @@ public:
   /* communication partner; if we send, this is the receiver and vice versa */
   int partner;
   double size;
+  int tag;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
 
   void parse(simgrid::xbt::ReplayAction& action, std::string name) override
   {
-    CHECK_ACTION_PARAMS(action, 2, 1)
+    CHECK_ACTION_PARAMS(action, 3, 1)
     partner = std::stoi(action[2]);
-    size    = parse_double(action[3]);
-    if (action.size() > 4)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+    tag     = std::stoi(action[3]);
+    size    = parse_double(action[4]);
+    if (action.size() > 5)
+      datatype1 = simgrid::smpi::Datatype::decode(action[5]);
   }
 };
 
@@ -452,6 +454,7 @@ public:
     // MPI_REQUEST_NULL by Request::wait!
     int src                  = request->comm()->group()->rank(request->src());
     int dst                  = request->comm()->group()->rank(request->dst());
+    int tag                  = request->tag();
     bool is_wait_for_receive = (request->flags() & RECV);
     // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("wait"));
@@ -461,7 +464,7 @@ public:
 
     TRACE_smpi_comm_out(rank);
     if (is_wait_for_receive)
-      TRACE_smpi_recv(src, dst, 0);
+      TRACE_smpi_recv(src, dst, tag);
   }
 };
 
@@ -474,14 +477,14 @@ public:
     int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
-                                                                             Datatype::encode(args.datatype1)));
+                                                                             args.tag, Datatype::encode(args.datatype1)));
     if (not TRACE_smpi_view_internals())
-      TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, 0, args.size * args.datatype1->size());
+      TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, args.tag, args.size * args.datatype1->size());
 
     if (name == "send") {
-      Request::send(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD);
+      Request::send(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
     } else if (name == "Isend") {
-      MPI_Request request = Request::isend(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD);
+      MPI_Request request = Request::isend(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
       get_reqq_self()->push_back(request);
     } else {
       xbt_die("Don't know this action, %s", name.c_str());
@@ -500,26 +503,26 @@ public:
     int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
-                                                                             Datatype::encode(args.datatype1)));
+                                                                             args.tag, Datatype::encode(args.datatype1)));
 
     MPI_Status status;
     // unknown size from the receiver point of view
     if (args.size <= 0.0) {
-      Request::probe(args.partner, 0, MPI_COMM_WORLD, &status);
+      Request::probe(args.partner, args.tag, MPI_COMM_WORLD, &status);
       args.size = status.count;
     }
 
     if (name == "recv") {
-      Request::recv(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD, &status);
+      Request::recv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);
     } else if (name == "Irecv") {
-      MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, 0, MPI_COMM_WORLD);
+      MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
       get_reqq_self()->push_back(request);
     }
 
     TRACE_smpi_comm_out(my_proc_id);
     // TODO: Check why this was only activated in the "recv" case and not in the "Irecv" case
     if (name == "recv" && not TRACE_smpi_view_internals()) {
-      TRACE_smpi_recv(src_traced, my_proc_id, 0);
+      TRACE_smpi_recv(src_traced, my_proc_id, args.tag);
     }
   }
 };
