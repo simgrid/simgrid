@@ -437,13 +437,8 @@ extern "C" {
 XBT_PUBLIC smpi_trace_call_location_t* smpi_trace_get_call_location();
 }
 
-enum smpi_priv_strategies {
-  SMPI_PRIVATIZE_NONE    = 0,
-  SMPI_PRIVATIZE_MMAP    = 1,
-  SMPI_PRIVATIZE_DLOPEN  = 2,
-  SMPI_PRIVATIZE_DEFAULT = SMPI_PRIVATIZE_DLOPEN
-};
+enum class SmpiPrivStrategies { None = 0, Mmap = 1, Dlopen = 2, Default = Dlopen };
 
-extern XBT_PRIVATE int smpi_privatize_global_variables;
+extern XBT_PRIVATE SmpiPrivStrategies smpi_privatize_global_variables;
 
 #endif
