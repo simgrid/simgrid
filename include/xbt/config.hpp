@@ -145,10 +145,12 @@ typename std::enable_if<std::is_same<
 bindFlag(T& value, const char* name, const char* description,
   F callback)
 {
-  declareFlag(name, description, value, [&value,callback](const T& val) {
-    callback(val);
-    value = std::move(val);
-  });
+  declareFlag(name, description, value,
+    std::function<void(const T&)>([&value,callback](const T& val) {
+      callback(val);
+      value = std::move(val);
+    }
+  ));
 }
 
 /** Bind a variable to configuration flag
@@ -167,11 +169,13 @@ typename std::enable_if<std::is_same<
 bindFlag(T& value, const char* name, const char* description,
   F callback)
 {
-  declareFlag(name, description, value, [&value, callback](const T& val) {
-    if (not callback(val))
-      throw std::range_error("invalid value");
-    value = std::move(val);
-  });
+  declareFlag(name, description, value,
+    std::function<void(const T&)>([&value, callback](const T& val) {
+      if (not callback(val))
+        throw std::range_error("invalid value");
+        value = std::move(val);
+    })
+  );
 }
 
 /** A variable bound to a CLI option
