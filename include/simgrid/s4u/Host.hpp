@@ -96,8 +96,8 @@ public:
   void setPstate(int pstate_index);
   int getPstate();
   std::vector<const char*> get_attached_storages();
-  // XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.")
-  void getAttachedStorages(std::vector<const char*> * storages);
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
+      std::vector<const char*>* storages);
 
   /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
