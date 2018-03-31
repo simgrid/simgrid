@@ -189,7 +189,8 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
   check_blocks(private_blocks, buff_size);
   void* tmpbuff=buff;
-  if ((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && (static_cast<char*>(buff) >= smpi_data_exe_start) &&
+  if ((smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) &&
+      (static_cast<char*>(buff) >= smpi_data_exe_start) &&
       (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
     smpi_switch_data_segment(comm->src_proc->iface());
@@ -197,7 +198,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     memcpy_private(tmpbuff, buff, private_blocks);
   }
 
-  if ((smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) && ((char*)comm->dst_buff >= smpi_data_exe_start) &&
+  if ((smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) && ((char*)comm->dst_buff >= smpi_data_exe_start) &&
       ((char*)comm->dst_buff < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
     smpi_switch_data_segment(comm->dst_proc->iface());
@@ -355,7 +356,7 @@ void smpi_global_destroy()
     xbt_os_timer_free(global_timer);
   }
 
-  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
 }
@@ -371,21 +372,25 @@ static void smpi_init_options(){
   xbt_assert(smpi_host_speed >= 0, "You're trying to set the host_speed to a negative value (%f)", smpi_host_speed);
   std::string smpi_privatize_option                = xbt_cfg_get_string("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
-    smpi_privatize_global_variables = SMPI_PRIVATIZE_NONE;
+    smpi_privatize_global_variables = SmpiPrivStrategies::None;
   else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
-    smpi_privatize_global_variables = SMPI_PRIVATIZE_DEFAULT;
+    smpi_privatize_global_variables = SmpiPrivStrategies::Default;
   else if (smpi_privatize_option == "mmap")
-    smpi_privatize_global_variables = SMPI_PRIVATIZE_MMAP;
+    smpi_privatize_global_variables = SmpiPrivStrategies::Mmap;
   else if (smpi_privatize_option == "dlopen")
-    smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
+    smpi_privatize_global_variables = SmpiPrivStrategies::Dlopen;
   else
     xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option.c_str());
 
+  if (not SMPI_switch_data_segment) {
+    XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
+    smpi_privatize_global_variables = SmpiPrivStrategies::None;
+  }
 #if defined(__FreeBSD__)
-    if (smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP) {
-      XBT_INFO("mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
-      smpi_privatize_global_variables = SMPI_PRIVATIZE_DLOPEN;
-    }
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+    XBT_INFO("mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
+    smpi_privatize_global_variables = SmpiPrivStrategies::Dlopen;
+  }
 #endif
 
     if (smpi_cpu_threshold < 0)
@@ -475,7 +480,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
-  if (smpi_privatize_global_variables == SMPI_PRIVATIZE_DLOPEN) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::Dlopen) {
 
     std::string executable_copy = executable;
 
@@ -499,13 +504,13 @@ int smpi_main(const char* executable, int argc, char *argv[])
         int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
         xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
 
+        XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target_executable.c_str());
 #if HAVE_SENDFILE
         ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
         xbt_assert(sent_size == fdin_size,
                    "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
                    target_executable.c_str(), sent_size, fdin_size, errno, strerror(errno));
 #else
-        XBT_VERB("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
         const int bufsize = 1024 * 1024 * 4;
         char buf[bufsize];
         while (int got = read(fdin, buf, bufsize)) {
@@ -619,7 +624,7 @@ void SMPI_init(){
   smpi_check_options();
   TRACE_smpi_alloc();
   simgrid::s4u::onSimulationEnd.connect(TRACE_smpi_release);
-  if(smpi_privatize_global_variables == SMPI_PRIVATIZE_MMAP)
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
     smpi_backup_global_memory_segment();
 }
 

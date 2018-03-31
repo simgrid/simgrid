@@ -30,7 +30,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SM
 int smpi_loaded_page      = -1;
 char* smpi_data_exe_start = nullptr;
 int smpi_data_exe_size    = 0;
-int smpi_privatize_global_variables;
+SmpiPrivStrategies smpi_privatize_global_variables;
 static void* smpi_data_exe_copy;
 
 // We keep a copy of all the privatization regions: We can then delete everything easily by iterating over this
@@ -148,7 +148,7 @@ void smpi_backup_global_memory_segment()
   XBT_DEBUG("bss+data segment found : size %d starting at %p", smpi_data_exe_size, smpi_data_exe_start);
 
   if (smpi_data_exe_size == 0) { // no need to do anything as global variables don't exist
-    smpi_privatize_global_variables=false;
+    smpi_privatize_global_variables = SmpiPrivStrategies::None;
     return;
   }
 
@@ -157,7 +157,7 @@ void smpi_backup_global_memory_segment()
   // of the simulation and can be used to initialize a dynamically added, new process.
   asan_safe_memcpy(smpi_data_exe_copy, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
 #else /* ! HAVE_PRIVATIZATION */
-  smpi_privatize_global_variables = false;
+  smpi_privatize_global_variables = SmpiPrivStrategies::None;
   xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
   return;
 #endif

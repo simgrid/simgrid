@@ -88,7 +88,7 @@ Session::Session(pid_t pid, int socket)
 {
   std::unique_ptr<simgrid::mc::RemoteClient> process(new simgrid::mc::RemoteClient(pid, socket));
   // TODO, automatic detection of the config from the process
-  process->privatized(smpi_privatize_global_variables != SMPI_PRIVATIZE_NONE);
+  process->privatized(smpi_privatize_global_variables != SmpiPrivStrategies::None);
   modelChecker_ = std::unique_ptr<ModelChecker>(
     new simgrid::mc::ModelChecker(std::move(process)));
   xbt_assert(mc_model_checker == nullptr);

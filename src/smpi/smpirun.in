@@ -158,7 +158,7 @@ while true; do
             shift 2
             ;;
 	"-no-privatize")
-	    PRIVATIZE=""
+	    PRIVATIZE="--cfg=smpi/privatization:no"
 	    shift 1
 	    ;;
         "-map")

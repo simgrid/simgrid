@@ -33,8 +33,8 @@ trap 'cleanup' EXIT
 
 filter_and_compile() {
     list_add TMPFILES "${TMPFILE}"
-    #replace "program main_name by subroutine user\_main (and the end clause as well)"
-    sed 's/[[:space:]]*[pP][rR][oO][gG][rR][aA][mM][[:space:]][[:space:]]*\([a-zA-Z0-9\-\_]*\)/ subroutine user\_main /g' "${ARG}" > "${TMPFILE}"
+    #replace "program main_name by subroutine user_main (and the end clause as well)"
+    sed 's/[[:space:]]*[pP][rR][oO][gG][rR][aA][mM][[:space:]][[:space:]]*\([a-zA-Z0-9_]*\)/ subroutine user_main /g' "${ARG}" > "${TMPFILE}"
     SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }
