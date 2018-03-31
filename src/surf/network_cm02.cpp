@@ -134,20 +134,17 @@ void surf_network_model_init_Vegas()
 namespace simgrid {
 namespace surf {
 
-NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool)) : NetworkModel()
+NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool))
+    : NetworkModel(xbt_cfg_get_string("network/optim") == "Full" ? kernel::resource::Model::UpdateAlgo::Full
+                                                                 : kernel::resource::Model::UpdateAlgo::Lazy)
 {
   std::string optim = xbt_cfg_get_string("network/optim");
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
 
-  if (optim == "Full") {
-    setUpdateMechanism(kernel::resource::Model::UpdateAlgo::Full);
-  } else if (optim == "Lazy") {
+  if (optim == "Lazy") {
     xbt_assert(select || xbt_cfg_is_default_value("network/maxmin-selective-update"),
                "You cannot disable network selective update when using the lazy update mechanism");
     select = true;
-    setUpdateMechanism(kernel::resource::Model::UpdateAlgo::Lazy);
-  } else {
-    xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim.c_str());
   }
 
   set_maxmin_system(make_new_lmm_system(select));

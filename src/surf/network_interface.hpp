@@ -34,7 +34,7 @@ namespace surf {
 class NetworkModel : public kernel::resource::Model {
 public:
   /** @brief Constructor */
-  NetworkModel() : Model() {}
+  explicit NetworkModel(kernel::resource::Model::UpdateAlgo algo) : Model(algo) {}
 
   /** @brief Destructor */
   ~NetworkModel() override;

@@ -147,7 +147,8 @@ static simgrid::config::Flag<std::string>
 namespace simgrid {
 namespace surf {
 
-NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
+NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::Full)
+{
   xbt_assert(not sg_link_energy_is_inited(),
              "LinkEnergy plugin and NS3 network models are not compatible. Are you looking for Ecofen, maybe?");
 

@@ -20,16 +20,14 @@ class XBT_PUBLIC Model {
 public:
   /** @brief Possible update mechanisms */
   enum class UpdateAlgo {
-    Full,     /**< Full update mechanism: the remaining time of every action is recomputed at each step */
-    Lazy,     /**< Lazy update mechanism: only the modified actions get recomputed.
-                      It may be slower than full if your system is tightly coupled to the point where every action
-                      gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
-                      a simple full update.  */
-    Undefined /**< Mechanism not defined */
+    Full, /**< Full update mechanism: the remaining time of every action is recomputed at each step */
+    Lazy  /**< Lazy update mechanism: only the modified actions get recomputed.
+                   It may be slower than full if your system is tightly coupled to the point where every action
+                   gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
+                   a simple full update.  */
   };
 
-  Model();
-  Model(Model::UpdateAlgo algo);
+  explicit Model(Model::UpdateAlgo algo);
 
   virtual ~Model();
 
@@ -55,8 +53,7 @@ public:
   void set_maxmin_system(lmm::System* system) { maxmin_system_ = system; }
 
   /** @brief Get the update mechanism of the current Model */
-  UpdateAlgo getUpdateMechanism() const { return update_mechanism_; }
-  void setUpdateMechanism(UpdateAlgo mechanism) { update_mechanism_ = mechanism; }
+  UpdateAlgo getUpdateMechanism() const { return update_algorithm_; }
 
   /** @brief Get Action heap */
   heap_type& getActionHeap() { return action_heap_; }
@@ -94,7 +91,7 @@ public:
 
 private:
   lmm::System* maxmin_system_           = nullptr;
-  UpdateAlgo update_mechanism_          = UpdateAlgo::Undefined;
+  const UpdateAlgo update_algorithm_;
   Action::StateSet* ready_action_set_   = new Action::StateSet(); /**< Actions in state SURF_ACTION_READY */
   Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Actions in state SURF_ACTION_RUNNING */
   Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Actions in state SURF_ACTION_FAILED */

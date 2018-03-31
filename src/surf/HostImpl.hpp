@@ -33,7 +33,7 @@ namespace surf {
  */
 class XBT_PRIVATE HostModel : public kernel::resource::Model {
 public:
-  HostModel() : Model() {}
+  HostModel() : Model(Model::UpdateAlgo::Full) {}
 
   virtual void ignore_empty_vm_in_pm_LMM();
   virtual kernel::resource::Action* execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
