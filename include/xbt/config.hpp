@@ -196,13 +196,11 @@ typename std::enable_if<std::is_same<
 bindFlag(T& value, const char* name, const char* description,
   F callback)
 {
-  declareFlag(name, description, value,
-    std::function<void(const T&)>([&value, callback](const T& val) {
-      if (not callback(val))
-        throw std::range_error("invalid value.");
-        value = std::move(val);
-    })
-  );
+  declareFlag(name, description, value, std::function<void(const T&)>([&value, callback](const T& val) {
+                if (not callback(val))
+                  throw std::range_error("invalid value.");
+                value = std::move(val);
+              }));
 }
 
 /** A variable bound to a CLI option
