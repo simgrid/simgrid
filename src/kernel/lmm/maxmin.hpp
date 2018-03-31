@@ -575,7 +575,7 @@ private:
   template <class CnstList> void lmm_solve(CnstList& cnst_list);
 
 public:
-  bool modified;
+  bool modified_ = false;
   boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
                                                                  &Variable::variable_set_hook>>
       variable_set;
@@ -593,15 +593,17 @@ public:
 
 private:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
-  unsigned visited_counter;     /* used by System::update_modified_set() and System::remove_all_modified_set() to
-                                 * cleverly (un-)flag the constraints (more details in these functions) */
+  unsigned visited_counter_ = 1; /* used by System::update_modified_set() and System::remove_all_modified_set() to
+                                  * cleverly (un-)flag the constraints (more details in these functions) */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
                                                                    &Constraint::constraint_set_hook>>
       constraint_set;
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
                                                                    &Constraint::modified_constraint_set_hook>>
       modified_constraint_set;
-  xbt_mallocator_t variable_mallocator;
+  xbt_mallocator_t variable_mallocator_ =
+      xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
+  ;
 };
 
 class XBT_PUBLIC FairBottleneck : public System {

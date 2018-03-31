@@ -117,7 +117,7 @@ void System::check_concurrency() const
 void System::var_free(Variable* var)
 {
   XBT_IN("(sys=%p, var=%p)", this, var);
-  modified = true;
+  modified_ = true;
 
   // TODOLATER Can do better than that by leaving only the variable in only one enabled_element_set, call
   // update_modified_set, and then remove it..
@@ -144,19 +144,13 @@ void System::var_free(Variable* var)
 
   check_concurrency();
 
-  xbt_mallocator_release(variable_mallocator, var);
+  xbt_mallocator_release(variable_mallocator_, var);
   XBT_OUT();
 }
 
 System::System(bool selective_update) : selective_update_active(selective_update)
 {
-  modified        = false;
-  visited_counter = 1;
-
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
-
-  variable_mallocator =
-      xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
 }
 
 System::~System()
@@ -173,7 +167,7 @@ System::~System()
   while ((cnst = extract_constraint()))
     cnst_free(cnst);
 
-  xbt_mallocator_free(variable_mallocator);
+  xbt_mallocator_free(variable_mallocator_);
   delete modified_set_;
 }
 
@@ -221,8 +215,8 @@ Variable* System::variable_new(simgrid::kernel::resource::Action* id, double sha
 {
   XBT_IN("(sys=%p, id=%p, weight=%f, bound=%f, num_cons =%d)", this, id, sharing_weight, bound, number_of_constraints);
 
-  Variable* var = static_cast<Variable*>(xbt_mallocator_get(variable_mallocator));
-  var->initialize(id, sharing_weight, bound, number_of_constraints, visited_counter - 1);
+  Variable* var = static_cast<Variable*>(xbt_mallocator_get(variable_mallocator_));
+  var->initialize(id, sharing_weight, bound, number_of_constraints, visited_counter_ - 1);
   if (sharing_weight)
     variable_set.push_front(*var);
   else
@@ -240,7 +234,7 @@ void System::variable_free(Variable* var)
 
 void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 {
-  modified = true;
+  modified_ = true;
 
   // Check if this variable already has an active element in this constraint
   // If it does, substract it from the required slack
@@ -293,7 +287,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 
 void System::expand_add(Constraint* cnst, Variable* var, double value)
 {
-  modified = true;
+  modified_ = true;
 
   check_concurrency();
 
@@ -492,7 +486,7 @@ void System::print() const
 
 void System::lmm_solve()
 {
-  if (modified) {
+  if (modified_) {
     XBT_IN("(sys=%p)", this);
     /* Compute Usage and store the variables that reach the maximum. If selective_update_active is true, only
      * constraints that changed are considered. Otherwise all constraints with active actions are considered.
@@ -681,7 +675,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
 
   } while (cnst_light_num > 0);
 
-  modified = false;
+  modified_ = false;
   if (selective_update_active)
     remove_all_modified_set();
 
@@ -704,7 +698,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
  */
 void System::update_variable_bound(Variable* var, double bound)
 {
-  modified   = true;
+  modified_  = true;
   var->bound = bound;
 
   if (not var->cnsts.empty())
@@ -860,7 +854,7 @@ void System::update_variable_weight(Variable* var, double weight)
 
   XBT_IN("(sys=%p, var=%p, weight=%f)", this, var, weight);
 
-  modified = true;
+  modified_ = true;
 
   // Are we enabling this variable?
   if (enabling_var) {
@@ -888,7 +882,7 @@ void System::update_variable_weight(Variable* var, double weight)
 
 void System::update_constraint_bound(Constraint* cnst, double bound)
 {
-  modified = true;
+  modified_ = true;
   update_modified_set(cnst);
   cnst->bound = bound;
 }
@@ -906,7 +900,7 @@ void System::update_modified_set_rec(Constraint* cnst)
   for (Element const& elem : cnst->enabled_element_set) {
     Variable* var = elem.variable;
     for (Element const& elem2 : var->cnsts) {
-      if (var->visited == visited_counter)
+      if (var->visited == visited_counter_)
         break;
       if (elem2.constraint != cnst && not elem2.constraint->modified_constraint_set_hook.is_linked()) {
         modified_constraint_set.push_back(*elem2.constraint);
@@ -914,7 +908,7 @@ void System::update_modified_set_rec(Constraint* cnst)
       }
     }
     // var will be ignored in later visits as long as sys->visited_counter does not move
-    var->visited = visited_counter;
+    var->visited = visited_counter_;
   }
 }
 
@@ -934,7 +928,7 @@ void System::remove_all_modified_set()
   // To be clean, when visited counter has wrapped around, we force these var->visited values so that variables that
   // were in the modified a long long time ago are not wrongly skipped here, which would lead to very nasty bugs
   // (i.e. not readibily reproducible, and requiring a lot of run time before happening).
-  if (++visited_counter == 1) {
+  if (++visited_counter_ == 1) {
     /* the counter wrapped around, reset each variable->visited */
     for (Variable& var : variable_set)
       var.visited = 0;

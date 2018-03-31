@@ -142,7 +142,7 @@ void Lagrange::lagrange_solve()
     print();
   }
 
-  if (not modified)
+  if (not modified_)
     return;
 
   /* Initialize lambda. */

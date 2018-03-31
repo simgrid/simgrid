@@ -14,6 +14,10 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU module");
 
+/***********
+ * Options *
+ ***********/
+
 static simgrid::config::Flag<std::string>
     cpu_optim_opt("cpu/optim", "Optimization algorithm to use for CPU resources. ", "Lazy",
 

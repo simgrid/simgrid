@@ -21,7 +21,7 @@ simgrid::kernel::lmm::System* simgrid::kernel::lmm::make_new_fair_bottleneck_sys
 
 void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
 {
-  if (not modified)
+  if (not modified_)
     return;
 
   XBT_DEBUG("Variable set : %zu", variable_set.size());
@@ -144,7 +144,7 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
   } while (not var_list.empty());
 
   cnst_list.clear();
-  modified = true;
+  modified_ = true;
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     XBT_DEBUG("Fair bottleneck done");
     print();
