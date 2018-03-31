@@ -114,7 +114,7 @@ protected:
 
 public:
   /** @brief Get the available speed of the current Cpu */
-  virtual double getAvailableSpeed();
+  virtual double get_available_speed();
 
   /** @brief Get the current Cpu computational speed */
   virtual double getPstateSpeed(int pstate_index);
@@ -132,7 +132,9 @@ public:
   int pstate_ = 0;                     /*< Current pstate (index in the speedPeakList)*/
 
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
-  virtual void setSpeedTrace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
+  virtual void
+  set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to
+                                          external load). Trace must contain relative values (ratio between 0 and 1) */
 
   tmgr_trace_event_t stateEvent_ = nullptr;
   Metric speed_                  = {1.0, 0, nullptr};

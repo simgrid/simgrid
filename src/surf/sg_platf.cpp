@@ -83,7 +83,7 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   if (args->state_trace)
     host->pimpl_cpu->setStateTrace(args->state_trace);
   if (args->speed_trace)
-    host->pimpl_cpu->setSpeedTrace(args->speed_trace);
+    host->pimpl_cpu->set_speed_trace(args->speed_trace);
   if (args->pstate != 0)
     host->pimpl_cpu->setPState(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
@@ -490,7 +490,7 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
   if (peer->state_trace)
     host->pimpl_cpu->setStateTrace(peer->state_trace);
   if (peer->speed_trace)
-    host->pimpl_cpu->setSpeedTrace(peer->speed_trace);
+    host->pimpl_cpu->set_speed_trace(peer->speed_trace);
 }
 
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }

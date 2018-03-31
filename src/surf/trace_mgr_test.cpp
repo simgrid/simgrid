@@ -27,12 +27,12 @@ double thedate;
 class MockedResource : public simgrid::kernel::resource::Resource {
 public:
   explicit MockedResource() : simgrid::kernel::resource::Resource(nullptr, "fake", nullptr) {}
-  void apply_event(tmgr_trace_event_t event, double value)
+  void apply_event(tmgr_trace_event_t event, double value) override
   {
     XBT_VERB("t=%.1f: Change value to %lg (idx: %u)", thedate, value, event->idx);
     tmgr_trace_event_unref(&event);
   }
-  bool isUsed() { return true; }
+  bool is_used() override { return true; }
 };
 
 static void trace2vector(const char* str, std::vector<tmgr::DatedValue>* whereto)

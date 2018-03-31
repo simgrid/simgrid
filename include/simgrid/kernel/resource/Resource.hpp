@@ -53,7 +53,7 @@ public:
   virtual void apply_event(TraceEvent* event, double value) = 0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
-  virtual bool isUsed() = 0;
+  virtual bool is_used() = 0;
 
   /** @brief returns the current load (in flops per second, byte per second or similar) */
   virtual double getLoad();

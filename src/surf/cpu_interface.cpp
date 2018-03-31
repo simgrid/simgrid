@@ -136,7 +136,7 @@ double Cpu::getSpeed(double load)
   return load * speed_.peak;
 }
 
-double Cpu::getAvailableSpeed()
+double Cpu::get_available_speed()
 {
 /* number between 0 and 1 */
   return speed_.scale;
@@ -158,7 +158,7 @@ void Cpu::setStateTrace(tmgr_trace_t trace)
 
   stateEvent_ = future_evt_set->add_trace(trace, this);
 }
-void Cpu::setSpeedTrace(tmgr_trace_t trace)
+void Cpu::set_speed_trace(tmgr_trace_t trace)
 {
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->getCname());
 

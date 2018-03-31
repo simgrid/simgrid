@@ -104,7 +104,7 @@ std::vector<double> * CpuCas01::getSpeedPeakList(){
   return &speedPerPstate_;
 }
 
-bool CpuCas01::isUsed()
+bool CpuCas01::is_used()
 {
   return model()->get_maxmin_system()->constraint_used(constraint());
 }

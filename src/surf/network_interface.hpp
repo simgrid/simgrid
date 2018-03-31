@@ -141,7 +141,7 @@ public:
   virtual int sharingPolicy();
 
   /** @brief Check if the Link is used */
-  bool isUsed() override;
+  bool is_used() override;
 
   void turnOn() override;
   void turnOff() override;

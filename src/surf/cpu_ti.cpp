@@ -25,23 +25,23 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
   double integral = 0;
   double time = 0;
   int i = 0;
-  nbPoints_ = speedTrace->event_list.size() + 1;
-  timePoints_ = new double[nbPoints_];
-  integral_ =  new double[nbPoints_];
+  nb_points_      = speedTrace->event_list.size() + 1;
+  time_points_    = new double[nb_points_];
+  integral_       = new double[nb_points_];
   for (auto const& val : speedTrace->event_list) {
-    timePoints_[i] = time;
+    time_points_[i] = time;
     integral_[i] = integral;
     integral += val.date_ * val.value_;
     time += val.date_;
     i++;
   }
-  timePoints_[i] = time;
+  time_points_[i] = time;
   integral_[i] = integral;
 }
 
 CpuTiTrace::~CpuTiTrace()
 {
-  delete [] timePoints_;
+  delete[] time_points_;
   delete [] integral_;
 }
 
@@ -76,20 +76,20 @@ double CpuTiTgmr::integrate(double a, double b)
     return ((b - a) * value_);
   }
 
-  if (fabs(ceil(a / lastTime_) - a / lastTime_) < EPSILON)
-    a_index = 1 + static_cast<int>(ceil(a / lastTime_));
+  if (fabs(ceil(a / last_time_) - a / last_time_) < EPSILON)
+    a_index = 1 + static_cast<int>(ceil(a / last_time_));
   else
-    a_index = static_cast<int> (ceil(a / lastTime_));
+    a_index = static_cast<int>(ceil(a / last_time_));
 
-  int b_index = static_cast<int> (floor(b / lastTime_));
+  int b_index = static_cast<int>(floor(b / last_time_));
 
   if (a_index > b_index) {      /* Same chunk */
-    return trace_->integrateSimple(a - (a_index - 1) * lastTime_, b - (b_index) * lastTime_);
+    return trace_->integrate_simple(a - (a_index - 1) * last_time_, b - (b_index)*last_time_);
   }
 
-  double first_chunk = trace_->integrateSimple(a - (a_index - 1) * lastTime_, lastTime_);
+  double first_chunk  = trace_->integrate_simple(a - (a_index - 1) * last_time_, last_time_);
   double middle_chunk = (b_index - a_index) * total_;
-  double last_chunk = trace_->integrateSimple(0.0, b - (b_index) * lastTime_);
+  double last_chunk   = trace_->integrate_simple(0.0, b - (b_index)*last_time_);
 
   XBT_DEBUG("first_chunk=%.2f  middle_chunk=%.2f  last_chunk=%.2f\n", first_chunk, middle_chunk, last_chunk);
 
@@ -102,28 +102,28 @@ double CpuTiTgmr::integrate(double a, double b)
  * \param a  Initial point
  * \param b  Final point
 */
-double CpuTiTrace::integrateSimple(double a, double b)
+double CpuTiTrace::integrate_simple(double a, double b)
 {
-  return integrateSimplePoint(b) - integrateSimplePoint(a);
+  return integrate_simple_point(b) - integrate_simple_point(a);
 }
 
 /**
  * \brief Auxiliary function to compute the integral at point a.
  * \param a        point
  */
-double CpuTiTrace::integrateSimplePoint(double a)
+double CpuTiTrace::integrate_simple_point(double a)
 {
   double integral = 0;
   double a_aux = a;
-  int ind = binarySearch(timePoints_, a, 0, nbPoints_ - 1);
+  int ind         = binary_search(time_points_, a, 0, nb_points_ - 1);
   integral += integral_[ind];
 
-  XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f",
-       a, ind, integral, integral_[ind + 1], integral_[ind], timePoints_[ind + 1], timePoints_[ind]);
-  double_update(&a_aux, timePoints_[ind], sg_maxmin_precision*sg_surf_precision);
+  XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f", a, ind, integral, integral_[ind + 1],
+            integral_[ind], time_points_[ind + 1], time_points_[ind]);
+  double_update(&a_aux, time_points_[ind], sg_maxmin_precision * sg_surf_precision);
   if (a_aux > 0)
-    integral += ((integral_[ind + 1] - integral_[ind]) / (timePoints_[ind + 1] - timePoints_[ind])) *
-                (a - timePoints_[ind]);
+    integral +=
+        ((integral_[ind + 1] - integral_[ind]) / (time_points_[ind + 1] - time_points_[ind])) * (a - time_points_[ind]);
   XBT_DEBUG("Integral a %f = %f", a, integral);
 
   return integral;
@@ -168,38 +168,23 @@ double CpuTiTgmr::solve(double a, double amount)
   /* Reduce the problem to one where amount <= trace_total */
   int quotient = static_cast<int>(floor(amount / total_));
   double reduced_amount = (total_) * ((amount / total_) - floor(amount / total_));
-  double reduced_a = a - (lastTime_) * static_cast<int>(floor(a / lastTime_));
+  double reduced_a      = a - (last_time_) * static_cast<int>(floor(a / last_time_));
 
   XBT_DEBUG("Quotient: %d reduced_amount: %f reduced_a: %f", quotient, reduced_amount, reduced_a);
 
   /* Now solve for new_amount which is <= trace_total */
-  double reduced_b = solveSomewhatSimple(reduced_a, reduced_amount);
+  double reduced_b;
+  XBT_DEBUG("Solve integral: [%.2f, amount=%.2f]", reduced_a, reduced_amount);
+  double amount_till_end = integrate(reduced_a, last_time_);
 
-/* Re-map to the original b and amount */
-  double b = (lastTime_) * static_cast<int>(floor(a / lastTime_)) + (quotient * lastTime_) + reduced_b;
-  return b;
-}
-
-/**
-* \brief Auxiliary function to solve integral
-*
-* Here, amount is <= trace->total
-* and a <=trace->last_time
-*
-*/
-double CpuTiTgmr::solveSomewhatSimple(double a, double amount)
-{
-  double b;
-
-  XBT_DEBUG("Solve integral: [%.2f, amount=%.2f]", a, amount);
-  double amount_till_end = integrate(a, lastTime_);
-
-  if (amount_till_end > amount) {
-    b = trace_->solveSimple(a, amount);
+  if (amount_till_end > reduced_amount) {
+    reduced_b = trace_->solve_simple(reduced_a, reduced_amount);
   } else {
-    b = lastTime_ + trace_->solveSimple(0.0, amount - amount_till_end);
+    reduced_b = last_time_ + trace_->solve_simple(0.0, reduced_amount - amount_till_end);
   }
-  return b;
+
+  /* Re-map to the original b and amount */
+  return (last_time_) * static_cast<int>(floor(a / last_time_)) + (quotient * last_time_) + reduced_b;
 }
 
 /**
@@ -209,13 +194,13 @@ double CpuTiTgmr::solveSomewhatSimple(double a, double amount)
  * \param amount  Amount of flops
  * \return The date when amount is available.
 */
-double CpuTiTrace::solveSimple(double a, double amount)
+double CpuTiTrace::solve_simple(double a, double amount)
 {
-  double integral_a = integrateSimplePoint(a);
-  int ind = binarySearch(integral_, integral_a + amount, 0, nbPoints_ - 1);
-  double time = timePoints_[ind];
+  double integral_a = integrate_simple_point(a);
+  int ind           = binary_search(integral_, integral_a + amount, 0, nb_points_ - 1);
+  double time       = time_points_[ind];
   time += (integral_a + amount - integral_[ind]) /
-           ((integral_[ind + 1] - integral_[ind]) / (timePoints_[ind + 1] - timePoints_[ind]));
+          ((integral_[ind + 1] - integral_[ind]) / (time_points_[ind + 1] - time_points_[ind]));
 
   return time;
 }
@@ -227,11 +212,11 @@ double CpuTiTrace::solveSimple(double a, double amount)
 * \param a        Time
 * \return CPU speed scale
 */
-double CpuTiTgmr::getPowerScale(double a)
+double CpuTiTgmr::get_power_scale(double a)
 {
-  double reduced_a = a - floor(a / lastTime_) * lastTime_;
-  int point = trace_->binarySearch(trace_->timePoints_, reduced_a, 0, trace_->nbPoints_ - 1);
-  trace_mgr::DatedValue val = speedTrace_->event_list.at(point);
+  double reduced_a          = a - floor(a / last_time_) * last_time_;
+  int point                 = trace_->binary_search(trace_->time_points_, reduced_a, 0, trace_->nb_points_ - 1);
+  trace_mgr::DatedValue val = speed_trace_->event_list.at(point);
   return val.value_;
 }
 
@@ -242,8 +227,7 @@ double CpuTiTgmr::getPowerScale(double a)
 * \param  value          Percentage of CPU speed available (useful to fixed tracing)
 * \return  Integration trace structure
 */
-CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
-    speedTrace_(speedTrace)
+CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) : speed_trace_(speedTrace)
 {
   double total_time = 0.0;
   trace_ = 0;
@@ -271,10 +255,10 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
     total_time += val.date_;
 
   trace_ = new CpuTiTrace(speedTrace);
-  lastTime_ = total_time;
-  total_ = trace_->integrateSimple(0, total_time);
+  last_time_ = total_time;
+  total_    = trace_->integrate_simple(0, total_time);
 
-  XBT_DEBUG("Total integral %f, last_time %f ", total_, lastTime_);
+  XBT_DEBUG("Total integral %f, last_time %f ", total_, last_time_);
 }
 
 /**
@@ -286,7 +270,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) :
  * \param high    Upper bound to search in array
  * \return Index of point
 */
-int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
+int CpuTiTrace::binary_search(double* array, double a, int low, int high)
 {
   xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);
 
@@ -341,10 +325,10 @@ double CpuTiModel::next_occuring_event(double now)
   double min_action_duration = -1;
 
   /* iterates over modified cpus to update share resources */
-  for (auto it = std::begin(modifiedCpu_); it != std::end(modifiedCpu_);) {
+  for (auto it = std::begin(modified_cpus_); it != std::end(modified_cpus_);) {
     CpuTi& ti = *it;
     ++it; // increment iterator here since the following call to ti.updateActionsFinishTime() may invalidate it
-    ti.updateActionsFinishTime(now);
+    ti.update_actions_finish_time(now);
   }
 
   /* get the min next event if heap not empty */
@@ -363,7 +347,7 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
     XBT_DEBUG("Action %p: finish", action);
     action->finish(kernel::resource::Action::State::done);
     /* update remaining amount of all actions */
-    action->cpu_->updateRemainingAmount(surf_get_clock());
+    action->cpu_->update_remaining_amount(surf_get_clock());
   }
 }
 
@@ -378,20 +362,20 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, std::vector<double> *s
   speed_.peak = speedPerPstate->front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
-  speedIntegratedTrace_ = new CpuTiTgmr(nullptr, 1/*scale*/);
+  speed_integrated_trace_ = new CpuTiTgmr(nullptr, 1 /*scale*/);
 }
 
 CpuTi::~CpuTi()
 {
-  modified(false);
-  delete speedIntegratedTrace_;
+  set_modified(false);
+  delete speed_integrated_trace_;
 }
-void CpuTi::setSpeedTrace(tmgr_trace_t trace)
+void CpuTi::set_speed_trace(tmgr_trace_t trace)
 {
-  if (speedIntegratedTrace_)
-    delete speedIntegratedTrace_;
+  if (speed_integrated_trace_)
+    delete speed_integrated_trace_;
 
-  speedIntegratedTrace_ = new CpuTiTgmr(trace, speed_.scale);
+  speed_integrated_trace_ = new CpuTiTgmr(trace, speed_.scale);
 
   /* add a fake trace event if periodicity == 0 */
   if (trace && trace->event_list.size() > 1) {
@@ -409,19 +393,19 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
     XBT_DEBUG("Finish trace date: value %f", value);
     /* update remaining of actions and put in modified cpu list */
-    updateRemainingAmount(surf_get_clock());
+    update_remaining_amount(surf_get_clock());
 
-    modified(true);
+    set_modified(true);
 
-    speedTrace = speedIntegratedTrace_->speedTrace_;
+    speedTrace                = speed_integrated_trace_->speed_trace_;
     trace_mgr::DatedValue val = speedTrace->event_list.back();
-    delete speedIntegratedTrace_;
+    delete speed_integrated_trace_;
     speed_.scale = val.value_;
 
     trace = new CpuTiTgmr(TRACE_FIXED, val.value_);
     XBT_DEBUG("value %f", val.value_);
 
-    speedIntegratedTrace_ = trace;
+    speed_integrated_trace_ = trace;
 
     tmgr_trace_event_unref(&speed_.event);
 
@@ -435,7 +419,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
-      for (CpuTiAction& action : actionSet_) {
+      for (CpuTiAction& action : action_set_) {
         if (action.get_state() == kernel::resource::Action::State::running ||
             action.get_state() == kernel::resource::Action::State::ready ||
             action.get_state() == kernel::resource::Action::State::not_in_the_system) {
@@ -452,15 +436,15 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
   }
 }
 
-void CpuTi::updateActionsFinishTime(double now)
+/** Update the actions that are running on this CPU (which was modified recently) */
+void CpuTi::update_actions_finish_time(double now)
 {
-  double sum_priority = 0.0;
-  double total_area;
-
   /* update remaining amount of actions */
-  updateRemainingAmount(now);
+  update_remaining_amount(now);
 
-  for (CpuTiAction const& action : actionSet_) {
+  /* Compute the sum of priorities for the actions running on that CPU */
+  sum_priority_ = 0.0;
+  for (CpuTiAction const& action : action_set_) {
     /* action not running, skip it */
     if (action.get_state_set() != surf_cpu_model_pm->get_running_action_set())
       continue;
@@ -473,11 +457,10 @@ void CpuTi::updateActionsFinishTime(double now)
     if (action.suspended_ != kernel::resource::Action::SuspendStates::not_suspended)
       continue;
 
-    sum_priority += 1.0 / action.get_priority();
+    sum_priority_ += 1.0 / action.get_priority();
   }
-  sumPriority_ = sum_priority;
 
-  for (CpuTiAction& action : actionSet_) {
+  for (CpuTiAction& action : action_set_) {
     double min_finish = -1;
     /* action not running, skip it */
     if (action.get_state_set() != surf_cpu_model_pm->get_running_action_set())
@@ -486,11 +469,9 @@ void CpuTi::updateActionsFinishTime(double now)
     /* verify if the action is really running on cpu */
     if (action.suspended_ == kernel::resource::Action::SuspendStates::not_suspended && action.get_priority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
-      total_area = (action.get_remains()) * sum_priority * action.get_priority();
+      double total_area = (action.get_remains() * sum_priority_ * action.get_priority()) / speed_.peak;
 
-      total_area /= speed_.peak;
-
-      action.set_finish_time(speedIntegratedTrace_->solve(now, total_area));
+      action.set_finish_time(speed_integrated_trace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
       if (action.get_max_duration() > NO_MAX_DURATION &&
           action.get_start_time() + action.get_max_duration() < action.get_finish_time())
@@ -512,32 +493,32 @@ void CpuTi::updateActionsFinishTime(double now)
               &action, action.get_start_time(), action.get_finish_time(), action.get_max_duration());
   }
   /* remove from modified cpu */
-  modified(false);
+  set_modified(false);
 }
 
-bool CpuTi::isUsed()
+bool CpuTi::is_used()
 {
-  return not actionSet_.empty();
+  return not action_set_.empty();
 }
 
-double CpuTi::getAvailableSpeed()
+double CpuTi::get_available_speed()
 {
-  speed_.scale = speedIntegratedTrace_->getPowerScale(surf_get_clock());
-  return Cpu::getAvailableSpeed();
+  speed_.scale = speed_integrated_trace_->get_power_scale(surf_get_clock());
+  return Cpu::get_available_speed();
 }
 
 /** @brief Update the remaining amount of actions */
-void CpuTi::updateRemainingAmount(double now)
+void CpuTi::update_remaining_amount(double now)
 {
 
   /* already updated */
-  if (lastUpdate_ >= now)
+  if (last_update_ >= now)
     return;
 
   /* compute the integration area */
-  double area_total = speedIntegratedTrace_->integrate(lastUpdate_, now) * speed_.peak;
-  XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
-  for (CpuTiAction& action : actionSet_) {
+  double area_total = speed_integrated_trace_->integrate(last_update_, now) * speed_.peak;
+  XBT_DEBUG("Flops total: %f, Last update %f", area_total, last_update_);
+  for (CpuTiAction& action : action_set_) {
     /* action not running, skip it */
     if (action.get_state_set() != model()->get_running_action_set())
       continue;
@@ -559,10 +540,10 @@ void CpuTi::updateRemainingAmount(double now)
       continue;
 
     /* update remaining */
-    action.update_remains(area_total / (sumPriority_ * action.get_priority()));
+    action.update_remains(area_total / (sum_priority_ * action.get_priority()));
     XBT_DEBUG("Update remaining action(%p) remaining %f", &action, action.get_remains_no_update());
   }
-  lastUpdate_ = now;
+  last_update_ = now;
 }
 
 CpuAction *CpuTi::execution_start(double size)
@@ -570,7 +551,7 @@ CpuAction *CpuTi::execution_start(double size)
   XBT_IN("(%s,%g)", getCname(), size);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), size, isOff(), this);
 
-  actionSet_.push_back(*action);
+  action_set_.push_back(*action);
 
   XBT_OUT();
   return action;
@@ -594,14 +575,15 @@ CpuAction *CpuTi::sleep(double duration)
     action->get_state_set()->push_back(*action);
   }
 
-  actionSet_.push_back(*action);
+  action_set_.push_back(*action);
 
   XBT_OUT();
   return action;
 }
 
-void CpuTi::modified(bool modified){
-  CpuTiList& modifiedCpu = static_cast<CpuTiModel*>(model())->modifiedCpu_;
+void CpuTi::set_modified(bool modified)
+{
+  CpuTiList& modifiedCpu = static_cast<CpuTiModel*>(model())->modified_cpus_;
   if (modified) {
     if (not cpu_ti_hook.is_linked()) {
       modifiedCpu.push_back(*this);
@@ -620,29 +602,29 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cp
  : CpuAction(model_, cost, failed)
  , cpu_(cpu)
 {
-  cpu_->modified(true);
+  cpu_->set_modified(true);
 }
 CpuTiAction::~CpuTiAction()
 {
   /* remove from action_set */
   if (action_ti_hook.is_linked())
-    simgrid::xbt::intrusive_erase(cpu_->actionSet_, *this);
+    simgrid::xbt::intrusive_erase(cpu_->action_set_, *this);
   /* remove from heap */
   heapRemove();
-  cpu_->modified(true);
+  cpu_->set_modified(true);
 }
 
 void CpuTiAction::set_state(Action::State state)
 {
   CpuAction::set_state(state);
-  cpu_->modified(true);
+  cpu_->set_modified(true);
 }
 
 void CpuTiAction::cancel()
 {
   this->set_state(Action::State::failed);
   heapRemove();
-  cpu_->modified(true);
+  cpu_->set_modified(true);
 }
 
 void CpuTiAction::suspend()
@@ -651,7 +633,7 @@ void CpuTiAction::suspend()
   if (suspended_ != Action::SuspendStates::sleeping) {
     suspended_ = Action::SuspendStates::suspended;
     heapRemove();
-    cpu_->modified(true);
+    cpu_->set_modified(true);
   }
   XBT_OUT();
 }
@@ -661,7 +643,7 @@ void CpuTiAction::resume()
   XBT_IN("(%p)", this);
   if (suspended_ != Action::SuspendStates::sleeping) {
     suspended_ = Action::SuspendStates::not_suspended;
-    cpu_->modified(true);
+    cpu_->set_modified(true);
   }
   XBT_OUT();
 }
@@ -690,14 +672,14 @@ void CpuTiAction::set_priority(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
   set_priority_no_update(priority);
-  cpu_->modified(true);
+  cpu_->set_modified(true);
   XBT_OUT();
 }
 
 double CpuTiAction::get_remains()
 {
   XBT_IN("(%p)", this);
-  cpu_->updateRemainingAmount(surf_get_clock());
+  cpu_->update_remaining_amount(surf_get_clock());
   XBT_OUT();
   return get_remains_no_update();
 }

@@ -65,7 +65,7 @@ StorageImpl::~StorageImpl()
   storageDestructedCallbacks(this);
 }
 
-bool StorageImpl::isUsed()
+bool StorageImpl::is_used()
 {
   THROW_UNIMPLEMENTED;
   return false;

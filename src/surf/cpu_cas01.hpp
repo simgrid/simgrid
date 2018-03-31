@@ -44,7 +44,7 @@ public:
   CpuAction* execution_start(double size, int requestedCore) override;
   CpuAction* sleep(double duration) override;
 
-  bool isUsed() override;
+  bool is_used() override;
 
   std::vector<double> * getSpeedPeakList(); // FIXME: killme to hide our internals
 

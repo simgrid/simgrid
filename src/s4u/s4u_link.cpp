@@ -94,7 +94,7 @@ const char* Link::name()
 }
 bool Link::isUsed()
 {
-  return this->pimpl_->isUsed();
+  return this->pimpl_->is_used();
 }
 
 double Link::latency()

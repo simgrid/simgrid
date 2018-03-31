@@ -94,7 +94,7 @@ public:
   s4u::Storage piface_;
 
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
-  bool isUsed() override;
+  bool is_used() override;
 
   void apply_event(tmgr_trace_event_t event, double value) override;
 

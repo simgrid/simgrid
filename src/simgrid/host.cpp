@@ -151,7 +151,7 @@ int sg_host_core_count(sg_host_t host)
 
 double sg_host_get_available_speed(sg_host_t host)
 {
-  return host->pimpl_cpu->getAvailableSpeed();
+  return host->pimpl_cpu->get_available_speed();
 }
 
 /** @brief Returns the number of power states for a host.
