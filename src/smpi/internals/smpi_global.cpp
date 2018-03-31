@@ -504,13 +504,13 @@ int smpi_main(const char* executable, int argc, char *argv[])
         int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
         xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
 
+        XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target_executable.c_str());
 #if HAVE_SENDFILE
         ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
         xbt_assert(sent_size == fdin_size,
                    "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
                    target_executable.c_str(), sent_size, fdin_size, errno, strerror(errno));
 #else
-        XBT_VERB("Copy %d bytes into %s", static_cast<int>(fdin_size), target_executable.c_str());
         const int bufsize = 1024 * 1024 * 4;
         char buf[bufsize];
         while (int got = read(fdin, buf, bufsize)) {
