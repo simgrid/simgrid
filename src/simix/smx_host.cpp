@@ -181,7 +181,7 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
     /* set surf's synchro */
     sg_host_t* host_list_cpy = new sg_host_t[host_nb];
     std::copy_n(host_list, host_nb, host_list_cpy);
-    exec->surfAction_ = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
+    exec->surfAction_ = surf_host_model->execute_parallel(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
     exec->surfAction_->set_data(exec.get());
     if (timeout > 0) {
       exec->timeoutDetector = host_list[0]->pimpl_cpu->sleep(timeout);

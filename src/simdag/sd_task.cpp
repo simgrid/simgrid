@@ -808,7 +808,7 @@ void SD_task_run(SD_task_t task)
   if(task->bytes_amount)
     std::copy_n(task->bytes_amount, host_nb * host_nb, bytes_amount);
 
-  task->surf_action = surf_host_model->executeParallelTask(host_nb, hosts, flops_amount, bytes_amount, task->rate);
+  task->surf_action = surf_host_model->execute_parallel(host_nb, hosts, flops_amount, bytes_amount, task->rate);
 
   task->surf_action->set_data(task);
 

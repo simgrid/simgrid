@@ -35,9 +35,9 @@ class XBT_PRIVATE HostModel : public kernel::resource::Model {
 public:
   HostModel() : Model() {}
 
-  virtual void ignoreEmptyVmInPmLMM();
-  virtual kernel::resource::Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount,
-                                                        double* bytes_amount, double rate);
+  virtual void ignore_empty_vm_in_pm_LMM();
+  virtual kernel::resource::Action* execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
+                                                     double* bytes_amount, double rate);
 };
 
 /************
@@ -54,7 +54,7 @@ public:
   virtual ~HostImpl() = default;
 
   /** @brief Get the vector of storages (by names) attached to the Host */
-  virtual void getAttachedStorageList(std::vector<const char*>* storages);
+  virtual std::vector<const char*> get_attached_storages();
 
   std::map<std::string, simgrid::surf::StorageImpl*> storage_;
   simgrid::s4u::Host* piface_ = nullptr;

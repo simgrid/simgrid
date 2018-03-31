@@ -235,11 +235,17 @@ int Host::getPstate()
  * \brief Returns the list of storages attached to an host.
  * \return a vector containing all storages attached to the host
  */
+std::vector<const char*> Host::get_attached_storages()
+{
+  return simgrid::simix::kernelImmediate([this] { return this->pimpl_->get_attached_storages(); });
+}
+
 void Host::getAttachedStorages(std::vector<const char*>* storages)
 {
-  simgrid::simix::kernelImmediate([this, storages] {
-     this->pimpl_->getAttachedStorageList(storages);
-  });
+  std::vector<const char*> local_storages =
+      simgrid::simix::kernelImmediate([this] { return this->pimpl_->get_attached_storages(); });
+  for (auto elm : local_storages)
+    storages->push_back(elm);
 }
 
 std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()

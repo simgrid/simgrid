@@ -24,7 +24,7 @@ namespace surf {
 /* Each VM has a dummy CPU action on the PM layer. This CPU action works as the constraint (capacity) of the VM in the
  * PM layer. If the VM does not have any active task, the dummy CPU action must be deactivated, so that the VM does not
  * get any CPU share in the PM layer. */
-void HostModel::ignoreEmptyVmInPmLMM()
+void HostModel::ignore_empty_vm_in_pm_LMM()
 {
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : vm::VirtualMachineImpl::allVms_) {
@@ -51,8 +51,8 @@ static inline double has_cost(double* array, int pos)
     return -1.0;
 }
 
-kernel::resource::Action* HostModel::executeParallelTask(int host_nb, s4u::Host** host_list, double* flops_amount,
-                                                         double* bytes_amount, double rate)
+kernel::resource::Action* HostModel::execute_parallel(int host_nb, s4u::Host** host_list, double* flops_amount,
+                                                      double* bytes_amount, double rate)
 {
   kernel::resource::Action* action = nullptr;
   if ((host_nb == 1) && (has_cost(bytes_amount, 0) <= 0)) {
@@ -101,11 +101,13 @@ HostImpl::HostImpl(s4u::Host* host) : piface_(host)
   piface_->pimpl_ = this;
 }
 
-void HostImpl::getAttachedStorageList(std::vector<const char*>* storages)
+std::vector<const char*> HostImpl::get_attached_storages()
 {
+  std::vector<const char*> storages;
   for (auto const& s : storage_)
     if (s.second->getHost() == piface_->getCname())
-      storages->push_back(s.second->piface_.getCname());
+      storages.push_back(s.second->piface_.getCname());
+  return storages;
 }
 
 }

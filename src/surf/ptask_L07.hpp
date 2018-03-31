@@ -40,8 +40,8 @@ public:
 
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount,
-                                                double* bytes_amount, double rate) override;
+  kernel::resource::Action* execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
+                                             double* bytes_amount, double rate) override;
 };
 
 class CpuL07Model : public CpuModel {
@@ -104,8 +104,9 @@ public:
 class L07Action : public CpuAction {
   friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
-  friend Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t*host_list,
-                                                   double *flops_amount, double *bytes_amount, double rate);
+  friend Action* HostL07Model::execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
+                                                double* bytes_amount, double rate);
+
 public:
   L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* host_list, double* flops_amount,
             double* bytes_amount, double rate);

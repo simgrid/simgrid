@@ -47,7 +47,7 @@ namespace surf {
 
 double HostCLM03Model::next_occuring_event(double now)
 {
-  ignoreEmptyVmInPmLMM();
+  ignore_empty_vm_in_pm_LMM();
 
   double min_by_cpu = surf_cpu_model_pm->next_occuring_event(now);
   double min_by_net =

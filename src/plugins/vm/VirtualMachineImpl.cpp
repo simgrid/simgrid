@@ -103,7 +103,7 @@ double VMModel::next_occuring_event(double now)
   }
 
   /* 2. Calculate resource share at the virtual machine layer. */
-  ignoreEmptyVmInPmLMM();
+  ignore_empty_vm_in_pm_LMM();
 
   /* 3. Ready. Get the next occurring event */
   return surf_cpu_model_vm->next_occuring_event(now);

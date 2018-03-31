@@ -134,8 +134,8 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-kernel::resource::Action* HostL07Model::executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount,
-                                                            double* bytes_amount, double rate)
+kernel::resource::Action* HostL07Model::execute_parallel(int host_nb, sg_host_t* host_list, double* flops_amount,
+                                                         double* bytes_amount, double rate)
 {
   return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
 }
@@ -221,7 +221,7 @@ kernel::resource::Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host
   host_list[1]    = dst;
   bytes_amount[1] = size;
 
-  return hostModel_->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);
+  return hostModel_->execute_parallel(2, host_list, flops_amount, bytes_amount, rate);
 }
 
 Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  std::vector<double> *speedPerPstate, int core)
@@ -267,7 +267,7 @@ kernel::resource::Action* CpuL07::execution_start(double size)
   host_list[0] = getHost();
   flops_amount[0] = size;
 
-  return static_cast<CpuL07Model*>(model())->hostModel_->executeParallelTask(1, host_list, flops_amount, nullptr, -1);
+  return static_cast<CpuL07Model*>(model())->hostModel_->execute_parallel(1, host_list, flops_amount, nullptr, -1);
 }
 
 kernel::resource::Action* CpuL07::sleep(double duration)

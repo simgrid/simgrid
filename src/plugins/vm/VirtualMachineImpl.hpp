@@ -98,7 +98,7 @@ private:
 class XBT_PRIVATE VMModel : public surf::HostModel {
 public:
   VMModel();
-  void ignoreEmptyVmInPmLMM() override{};
+  void ignore_empty_vm_in_pm_LMM() override{};
 
   double next_occuring_event(double now) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{};
