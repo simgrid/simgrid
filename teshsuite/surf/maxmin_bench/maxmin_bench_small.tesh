@@ -4,7 +4,7 @@
 ! expect return 0
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '9' usage: 4.703796 remaining: 7.082917 concurrency: 2<=2<=-1
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '6' usage: 5.688312 remaining: 9.860140 concurrency: 3<=3<=3
@@ -73,7 +73,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '6'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '7'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '8'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '16' usage: 2.596903 remaining: 9.730270 concurrency: 2<=2<=3
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '20' usage: 6.927572 remaining: 1.978022 concurrency: 4<=4<=4
@@ -150,7 +150,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '11'(1.000000) : 0.316463
 > [0.000000]: [surf_maxmin/DEBUG] '16'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '20'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '28' usage: 2.611888 remaining: 2.127872 concurrency: 1<=1<=3
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '26' usage: 3.101898 remaining: 6.863137 concurrency: 2<=2<=-1
@@ -219,7 +219,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '27'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '29'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '30'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '31' usage: 1.213786 remaining: 9.950050 concurrency: 1<=1<=4
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '35' usage: 6.809191 remaining: 3.656344 concurrency: 4<=4<=-1
@@ -295,7 +295,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '31'(1.000000) : 0.757364
 > [0.000000]: [surf_maxmin/DEBUG] '34'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '37'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '42' usage: 10.002498 remaining: 3.556444 concurrency: 4<=4<=4
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '49' usage: 2.623876 remaining: 2.117882 concurrency: 1<=2<=3
@@ -368,7 +368,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '45'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '48'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '49'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '54' usage: 5.379620 remaining: 3.456543 concurrency: 3<=3<=-1
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '53' usage: 4.633367 remaining: 6.793207 concurrency: 3<=3<=3
@@ -445,7 +445,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '51'(1.000000) : 1.219766
 > [0.000000]: [surf_maxmin/DEBUG] '55'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '60'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '66' usage: 8.571429 remaining: 7.002997 concurrency: 4<=4<=-1
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '65' usage: 4.924076 remaining: 2.937063 concurrency: 2<=3<=4
@@ -513,7 +513,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '68'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '69'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '70'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '73' usage: 5.087413 remaining: 7.882118 concurrency: 2<=2<=-1
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '72' usage: 4.393606 remaining: 8.511489 concurrency: 2<=2<=3
@@ -590,7 +590,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '71'(1.000000) : 0.854701
 > [0.000000]: [surf_maxmin/DEBUG] '78'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '79'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '86' usage: 5.734765 remaining: 0.609391 concurrency: 4<=4<=4
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '85' usage: 7.075924 remaining: 3.776224 concurrency: 3<=3<=4
@@ -663,7 +663,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] '86'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '87'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '90'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '99' usage: 6.451049 remaining: 0.949051 concurrency: 2<=2<=4
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '94' usage: 4.122378 remaining: 4.585415 concurrency: 2<=3<=4

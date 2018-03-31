@@ -4,7 +4,7 @@
 ! expect return 0
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 100
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '98' usage: 13.060939 remaining: 3.166833 concurrency: 7<=8<=10
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '80' usage: 12.338661 remaining: 3.766234 concurrency: 7<=8<=16
@@ -573,7 +573,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] '97'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '98'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '99'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 100
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '111' usage: 16.414585 remaining: 0.229770 concurrency: 9<=9<=9
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '112' usage: 12.855644 remaining: 0.239760 concurrency: 7<=8<=40
@@ -1134,7 +1134,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] '198'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '199'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '200'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 100
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '285' usage: 14.339161 remaining: 6.593407 concurrency: 7<=8<=24
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '249' usage: 17.094905 remaining: 3.656344 concurrency: 9<=9<=9
@@ -1715,7 +1715,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] '298'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '299'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '300'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 100
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '325' usage: 22.924076 remaining: 9.700300 concurrency: 11<=12<=40
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '400' usage: 10.918082 remaining: 9.520480 concurrency: 7<=7<=16
@@ -2304,7 +2304,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] '398'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '399'(0.000000) : 0.000000
 > [0.000000]: [surf_maxmin/DEBUG] '400'(0.000000) : 0.000000
-> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 0
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 100
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '500' usage: 16.228771 remaining: 6.223776 concurrency: 7<=8<=24
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '464' usage: 13.778721 remaining: 2.417582 concurrency: 9<=9<=9

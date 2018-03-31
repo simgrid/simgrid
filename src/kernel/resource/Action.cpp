@@ -36,12 +36,11 @@ Action::~Action()
     simgrid::xbt::intrusive_erase(*state_set_, *this);
   if (get_variable())
     get_model()->get_maxmin_system()->variable_free(get_variable());
-  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) {
-    /* remove from heap */
-    heapRemove();
-    if (modified_set_hook_.is_linked())
-      simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
-  }
+
+  /* remove from heap on need (ie, if selective update) */
+  heapRemove();
+  if (modified_set_hook_.is_linked())
+    simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
 
   xbt_free(category_);
 }

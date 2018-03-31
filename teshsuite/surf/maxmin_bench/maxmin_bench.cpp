@@ -44,7 +44,8 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
   lmm::Variable* var[nb_var];
   int used[nb_cnst];
 
-  lmm::System* Sys = new lmm::System(true);
+  /* We cannot activate the selective update as we pass nullptr as an Action when creating the variables */
+  lmm::System* Sys = new lmm::System(false);
 
   for (int i = 0; i < nb_cnst; i++) {
     cnst[i] = Sys->constraint_new(NULL, float_random(10.0));

@@ -73,9 +73,6 @@ CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : simgrid
   }
 
   set_maxmin_system(new simgrid::kernel::lmm::System(select));
-
-  if (algo == Model::UpdateAlgo::Lazy)
-    get_maxmin_system()->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
 CpuCas01Model::~CpuCas01Model()

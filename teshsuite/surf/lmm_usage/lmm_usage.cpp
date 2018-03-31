@@ -27,14 +27,15 @@ using namespace simgrid::kernel;
 
 enum method_t { MAXMIN, LAGRANGE_RENO, LAGRANGE_VEGAS };
 
-static lmm::System* new_system(method_t method, bool update)
+static lmm::System* new_system(method_t method)
 {
+  /* selective update would need real actions instead of NULL as a first parameter to the variable constructor */
   switch (method) {
     case MAXMIN:
-      return lmm::make_new_maxmin_system(update);
+      return lmm::make_new_maxmin_system(false);
     case LAGRANGE_VEGAS:
     case LAGRANGE_RENO:
-      return lmm::make_new_lagrange_system(update);
+      return lmm::make_new_lagrange_system(false);
     default:
       xbt_die("Invalid method");
   }
@@ -108,7 +109,7 @@ static void test1(method_t method)
   else if (method == LAGRANGE_RENO)
     lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
-  lmm::System* Sys    = new_system(method, true);
+  lmm::System* Sys    = new_system(method);
   lmm::Constraint* L1 = Sys->constraint_new(nullptr, a);
   lmm::Constraint* L2 = Sys->constraint_new(nullptr, b);
   lmm::Constraint* L3 = Sys->constraint_new(nullptr, a);
@@ -194,7 +195,7 @@ static void test2(method_t method)
   if (method == LAGRANGE_RENO)
     lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
-  lmm::System* Sys = new_system(method, true);
+  lmm::System* Sys = new_system(method);
 
   lmm::Constraint* CPU1 = Sys->constraint_new(nullptr, 200.0);
   lmm::Constraint* CPU2 = Sys->constraint_new(nullptr, 100.0);
@@ -260,7 +261,7 @@ static void test3(method_t method)
   if (method == LAGRANGE_RENO)
     lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
-  lmm::System* Sys = new_system(method, true);
+  lmm::System* Sys = new_system(method);
 
   /* Creates the constraints */
   lmm::Constraint** tmp_cnst = new lmm::Constraint*[15];

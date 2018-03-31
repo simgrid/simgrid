@@ -151,6 +151,9 @@ void System::var_free(Variable* var)
 System::System(bool selective_update) : selective_update_active(selective_update)
 {
   XBT_DEBUG("Setting selective_update_active flag to %d", selective_update_active);
+
+  if (selective_update)
+    modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
 System::~System()

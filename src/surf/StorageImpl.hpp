@@ -152,7 +152,7 @@ public:
    * @brief StorageAction constructor
    *
    * @param model The StorageModel associated to this StorageAction
-   * @param cost The cost of this  NetworkAction in [TODO]
+   * @param cost The cost of this StorageAction in bytes
    * @param failed [description]
    * @param storage The Storage associated to this StorageAction
    * @param type [description]

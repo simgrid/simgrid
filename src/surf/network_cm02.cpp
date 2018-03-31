@@ -152,9 +152,6 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
 
   set_maxmin_system(make_new_lmm_system(select));
   loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
-
-  if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy)
-    get_maxmin_system()->modified_set_ = new kernel::resource::Action::ModifiedSet();
 }
 
 LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth, double latency,
