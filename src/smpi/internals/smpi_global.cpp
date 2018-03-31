@@ -382,6 +382,10 @@ static void smpi_init_options(){
   else
     xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option.c_str());
 
+  if (not SMPI_switch_data_segment) {
+    XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
+    smpi_privatize_global_variables = SmpiPrivStrategies::None;
+  }
 #if defined(__FreeBSD__)
   if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
     XBT_INFO("mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
