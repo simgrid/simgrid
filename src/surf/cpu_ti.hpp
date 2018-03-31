@@ -73,7 +73,7 @@ public:
  * Action *
  **********/
 
-class CpuTiAction: public CpuAction {
+class XBT_PRIVATE CpuTiAction : public CpuAction {
   friend class CpuTi;
 public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
