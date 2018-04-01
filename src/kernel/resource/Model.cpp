@@ -23,14 +23,6 @@ Model::~Model()
   delete maxmin_system_;
 }
 
-Action* Model::actionHeapPop()
-{
-  Action* action = action_heap_.top().second;
-  action_heap_.pop();
-  action->heap_clear_handle();
-  return action;
-}
-
 Action::ModifiedSet* Model::get_modified_set() const
 {
   return maxmin_system_->modified_set_;
@@ -62,7 +54,7 @@ double Model::next_occuring_event_lazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action->get_priority() <= 0 || action->get_type() == Action::Type::latency)
+    if (action->get_priority() <= 0 || action->get_type() == ActionHeap::Type::latency)
       continue;
 
     action->update_remains_lazy(now);
@@ -93,7 +85,7 @@ double Model::next_occuring_event_lazy(double now)
               action->get_start_time(), min, share, action->get_max_duration());
 
     if (min > -1) {
-      action->heapUpdate(min, max_duration_flag ? Action::Type::max_duration : Action::Type::normal);
+      action_heap_.update(action, min, max_duration_flag ? ActionHeap::Type::max_duration : ActionHeap::Type::normal);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
       DIE_IMPOSSIBLE;
@@ -101,7 +93,7 @@ double Model::next_occuring_event_lazy(double now)
 
   // hereafter must have already the min value for this resource model
   if (not action_heap_.empty()) {
-    double min = actionHeapTopDate() - now;
+    double min = action_heap_.top_date() - now;
     XBT_DEBUG("minimum with the HEAP %f", min);
     return min;
   } else {

@@ -24,8 +24,30 @@ typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_
                                   boost::heap::compare<simgrid::xbt::HeapComparator<heap_element_type>>>
     heap_type;
 
+typedef std::pair<double, simgrid::kernel::resource::Action*> heap_element_type;
+class XBT_PUBLIC ActionHeap : heap_type {
+  friend Action;
+
+public:
+  enum class Type {
+    latency = 100, /* this is a heap entry to warn us when the latency is payed */
+    max_duration,  /* this is a heap entry to warn us when the max_duration limit (timeout) is reached */
+    normal,        /* this is a normal heap entry stating the date to finish transmitting */
+    unset
+  };
+
+  double top_date() const;
+  void insert(Action* action, double date, ActionHeap::Type type);
+  void update(Action* action, double date, ActionHeap::Type type);
+  void remove(Action* action);
+  Action* pop();
+  bool empty() const { return heap_type::empty(); }
+};
+
 /** @details An action is a consumption on a resource (e.g.: a communication for the network) */
 class XBT_PUBLIC Action {
+  friend ActionHeap;
+
 public:
   /* Lazy update needs this Set hook to maintain a list of the tracked actions */
   boost::intrusive::list_member_hook<> modified_set_hook_;
@@ -52,13 +74,6 @@ public:
     not_suspended = 0, /**< Action currently not suspended **/
     suspended,
     sleeping
-  };
-
-  enum class Type {
-    latency = 100, /* this is a heap entry to warn us when the latency is payed */
-    max_duration,  /* this is a heap entry to warn us when the max_duration limit (timeout) is reached */
-    normal,        /* this is a normal heap entry stating the date to finish transmitting */
-    unset
   };
 
   /**
@@ -194,14 +209,12 @@ private:
   double last_update_                                = 0;
   double last_value_                                 = 0;
   kernel::lmm::Variable* variable_                   = nullptr;
-  Action::Type type_                                 = Action::Type::unset;
-  boost::optional<heap_type::handle_type> heap_hook_ = boost::none;
+
+  ActionHeap::Type type_                              = ActionHeap::Type::unset;
+  boost::optional<ActionHeap::handle_type> heap_hook_ = boost::none;
 
 public:
-  void heapInsert(double key, Action::Type type);
-  void heapRemove();
-  void heapUpdate(double key, Action::Type type);
-  void heap_clear_handle();
+  ActionHeap::Type get_type() const { return type_; }
 
   lmm::Variable* get_variable() const { return variable_; }
   void set_variable(lmm::Variable* var) { variable_ = var; }
@@ -211,8 +224,6 @@ public:
 
   double get_last_value() const { return last_value_; }
   void set_last_value(double val) { last_value_ = val; }
-
-  Action::Type get_type() const { return type_; }
 
 protected:
   Action::SuspendStates suspended_ = Action::SuspendStates::not_suspended;

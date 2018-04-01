@@ -56,10 +56,7 @@ public:
   UpdateAlgo get_update_algorithm() const { return update_algorithm_; }
 
   /** @brief Get Action heap */
-  heap_type& get_action_heap() { return action_heap_; }
-
-  double actionHeapTopDate() const { return action_heap_.top().first; }
-  Action* actionHeapPop();
+  ActionHeap& get_action_heap() { return action_heap_; }
 
   /**
    * @brief Share the resources between the actions
@@ -95,7 +92,7 @@ private:
   Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Actions in state SURF_ACTION_RUNNING */
   Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Actions in state SURF_ACTION_FAILED */
   Action::StateSet* done_action_set_    = new Action::StateSet(); /**< Actions in state SURF_ACTION_DONE */
-  heap_type action_heap_;
+  ActionHeap action_heap_;
 };
 
 } // namespace resource

@@ -159,9 +159,9 @@ LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
 {
-  while (not get_action_heap().empty() && double_equals(actionHeapTopDate(), now, sg_surf_precision)) {
+  while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
 
-    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(actionHeapPop());
+    NetworkCm02Action* action = static_cast<NetworkCm02Action*>(get_action_heap().pop());
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       int n = action->get_variable()->get_number_of_constraint();
@@ -176,20 +176,20 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
     }
 
     // if I am wearing a latency hat
-    if (action->get_type() == kernel::resource::Action::Type::latency) {
+    if (action->get_type() == kernel::resource::ActionHeap::Type::latency) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
-      action->heapRemove();
+      get_action_heap().remove(action);
       action->set_last_update();
 
       // if I am wearing a max_duration or normal hat
-    } else if (action->get_type() == kernel::resource::Action::Type::max_duration ||
-               action->get_type() == kernel::resource::Action::Type::normal) {
+    } else if (action->get_type() == kernel::resource::ActionHeap::Type::max_duration ||
+               action->get_type() == kernel::resource::ActionHeap::Type::normal) {
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
       action->finish(kernel::resource::Action::State::done);
-      action->heapRemove();
+      get_action_heap().remove(action);
     }
   }
 }
@@ -295,10 +295,15 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
     action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
     if (get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy) {
       // add to the heap the event when the latency is payed
-      XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->get_last_update());
-      action->heapInsert(action->latency_ + action->get_last_update(), route.empty()
-                                                                           ? kernel::resource::Action::Type::normal
-                                                                           : kernel::resource::Action::Type::latency);
+      double date = action->latency_ + action->get_last_update();
+      kernel::resource::ActionHeap::Type type;
+      if (route.empty())
+        type = kernel::resource::ActionHeap::Type::normal;
+      else
+        type = kernel::resource::ActionHeap::Type::latency;
+
+      XBT_DEBUG("Added action (%p) one latency event at date %f", action, date);
+      get_action_heap().insert(action, date, type);
     }
   } else
     action->set_variable(get_maxmin_system()->variable_new(action, 1.0, -1.0, constraints_per_variable));
@@ -472,7 +477,7 @@ void NetworkCm02Action::update_remains_lazy(double now)
   if ((get_remains_no_update() <= 0 && (get_variable()->get_weight() > 0)) ||
       ((max_duration > NO_MAX_DURATION) && (max_duration <= 0))) {
     finish(Action::State::done);
-    heapRemove();
+    get_model()->get_action_heap().remove(this);
   }
 
   set_last_update();

@@ -333,7 +333,7 @@ double CpuTiModel::next_occuring_event(double now)
 
   /* get the min next event if heap not empty */
   if (not get_action_heap().empty())
-    min_action_duration = actionHeapTopDate() - now;
+    min_action_duration = get_action_heap().top_date() - now;
 
   XBT_DEBUG("Share resources, min next event date: %f", min_action_duration);
 
@@ -342,8 +342,8 @@ double CpuTiModel::next_occuring_event(double now)
 
 void CpuTiModel::update_actions_state(double now, double /*delta*/)
 {
-  while (not get_action_heap().empty() && actionHeapTopDate() <= now) {
-    CpuTiAction* action = static_cast<CpuTiAction*>(actionHeapPop());
+  while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
+    CpuTiAction* action = static_cast<CpuTiAction*>(get_action_heap().pop());
     XBT_DEBUG("Action %p: finish", action);
     action->finish(kernel::resource::Action::State::done);
     /* update remaining amount of all actions */
@@ -425,7 +425,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
             action.get_state() == kernel::resource::Action::State::not_in_the_system) {
           action.set_finish_time(date);
           action.set_state(kernel::resource::Action::State::failed);
-          action.heapRemove();
+          model()->get_action_heap().remove(&action);
         }
       }
     }
@@ -485,9 +485,9 @@ void CpuTi::update_actions_finish_time(double now)
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
-      action.heapUpdate(min_finish, kernel::resource::Action::Type::unset);
+      model()->get_action_heap().update(&action, min_finish, kernel::resource::ActionHeap::Type::unset);
     else
-      action.heapRemove();
+      model()->get_action_heap().remove(&action);
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
               &action, action.get_start_time(), action.get_finish_time(), action.get_max_duration());
@@ -610,7 +610,7 @@ CpuTiAction::~CpuTiAction()
   if (action_ti_hook.is_linked())
     simgrid::xbt::intrusive_erase(cpu_->action_set_, *this);
   /* remove from heap */
-  heapRemove();
+  get_model()->get_action_heap().remove(this);
   cpu_->set_modified(true);
 }
 
@@ -623,7 +623,7 @@ void CpuTiAction::set_state(Action::State state)
 void CpuTiAction::cancel()
 {
   this->set_state(Action::State::failed);
-  heapRemove();
+  get_model()->get_action_heap().remove(this);
   cpu_->set_modified(true);
 }
 
@@ -632,7 +632,7 @@ void CpuTiAction::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != Action::SuspendStates::sleeping) {
     suspended_ = Action::SuspendStates::suspended;
-    heapRemove();
+    get_model()->get_action_heap().remove(this);
     cpu_->set_modified(true);
   }
   XBT_OUT();
@@ -663,7 +663,7 @@ void CpuTiAction::set_max_duration(double duration)
     min_finish = get_finish_time();
 
   /* add in action heap */
-  heapUpdate(min_finish, Action::Type::unset);
+  get_model()->get_action_heap().update(this, min_finish, kernel::resource::ActionHeap::Type::unset);
 
   XBT_OUT();
 }

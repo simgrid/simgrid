@@ -22,9 +22,9 @@ namespace surf {
 
 void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 {
-  while (not get_action_heap().empty() && double_equals(actionHeapTopDate(), now, sg_surf_precision)) {
+  while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
 
-    CpuAction* action = static_cast<CpuAction*>(actionHeapPop());
+    CpuAction* action = static_cast<CpuAction*>(get_action_heap().pop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       Cpu* cpu = static_cast<Cpu*>(action->get_variable()->get_constraint(0)->get_id());

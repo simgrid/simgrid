@@ -38,7 +38,7 @@ Action::~Action()
     get_model()->get_maxmin_system()->variable_free(get_variable());
 
   /* remove from heap on need (ie, if selective update) */
-  heapRemove();
+  get_model()->get_action_heap().remove(this);
   if (modified_set_hook_.is_linked())
     simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
 
@@ -101,7 +101,7 @@ void Action::set_bound(double bound)
     get_model()->get_maxmin_system()->update_variable_bound(variable_, bound);
 
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy && get_last_update() != surf_get_clock())
-    heapRemove();
+    get_model()->get_action_heap().remove(this);
   XBT_OUT();
 }
 
@@ -119,7 +119,7 @@ void Action::set_max_duration(double duration)
 {
   max_duration_ = duration;
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) // remove action from the heap
-    heapRemove();
+    get_model()->get_action_heap().remove(this);
 }
 
 void Action::set_priority(double weight)
@@ -129,7 +129,7 @@ void Action::set_priority(double weight)
   get_model()->get_maxmin_system()->update_variable_weight(get_variable(), weight);
 
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy)
-    heapRemove();
+    get_model()->get_action_heap().remove(this);
   XBT_OUT();
 }
 
@@ -139,7 +139,7 @@ void Action::cancel()
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) {
     if (modified_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
-    heapRemove();
+    get_model()->get_action_heap().remove(this);
   }
 }
 
@@ -159,7 +159,7 @@ void Action::suspend()
   if (suspended_ != SuspendStates::sleeping) {
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) {
-      heapRemove();
+      get_model()->get_action_heap().remove(this);
       if (state_set_ == get_model()->get_running_action_set() && sharing_priority_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
         update_remains_lazy(surf_get_clock());
@@ -177,7 +177,7 @@ void Action::resume()
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), get_priority());
     suspended_ = SuspendStates::not_suspended;
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy)
-      heapRemove();
+      get_model()->get_action_heap().remove(this);
   }
   XBT_OUT();
 }
@@ -185,35 +185,6 @@ void Action::resume()
 bool Action::is_suspended()
 {
   return suspended_ == SuspendStates::suspended;
-}
-/* insert action on heap using a given key and a type  */
-void Action::heapInsert(double key, Action::Type type)
-{
-  type_      = type;
-  heap_hook_ = get_model()->get_action_heap().emplace(std::make_pair(key, this));
-}
-
-void Action::heapRemove()
-{
-  type_ = Action::Type::unset;
-  if (heap_hook_) {
-    get_model()->get_action_heap().erase(*heap_hook_);
-    heap_hook_ = boost::none;
-  }
-}
-void Action::heap_clear_handle()
-{
-  heap_hook_ = boost::none;
-}
-
-void Action::heapUpdate(double key, Action::Type type)
-{
-  type_ = type;
-  if (heap_hook_) {
-    get_model()->get_action_heap().update(*heap_hook_, std::make_pair(key, this));
-  } else {
-    heap_hook_ = get_model()->get_action_heap().emplace(std::make_pair(key, this));
-  }
 }
 
 double Action::get_remains()
@@ -238,6 +209,40 @@ void Action::update_remains(double delta)
 void Action::set_last_update()
 {
   last_update_ = surf_get_clock();
+}
+
+double ActionHeap::top_date() const
+{
+  return top().first;
+}
+void ActionHeap::insert(Action* action, double date, ActionHeap::Type type)
+{
+  action->type_      = type;
+  action->heap_hook_ = emplace(std::make_pair(date, action));
+}
+void ActionHeap::remove(Action* action)
+{
+  action->type_ = ActionHeap::Type::unset;
+  if (action->heap_hook_) {
+    erase(*action->heap_hook_);
+    action->heap_hook_ = boost::none;
+  }
+}
+void ActionHeap::update(Action* action, double date, ActionHeap::Type type)
+{
+  action->type_ = type;
+  if (action->heap_hook_) {
+    heap_type::update(*action->heap_hook_, std::make_pair(date, action));
+  } else {
+    action->heap_hook_ = emplace(std::make_pair(date, action));
+  }
+}
+Action* ActionHeap::pop()
+{
+  Action* action = top().second;
+  heap_type::pop();
+  action->heap_hook_ = boost::none;
+  return action;
 }
 
 } // namespace surf
