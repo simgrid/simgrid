@@ -211,7 +211,7 @@ public:
   virtual std::list<LinkImpl*> links();
 
   double latency_    = {};
-  double latCurrent_ = {};
+  double lat_current_ = {};
   double weight_     = {};
   double rate_       = {};
 };

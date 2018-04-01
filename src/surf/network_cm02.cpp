@@ -176,15 +176,15 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
     }
 
     // if I am wearing a latency hat
-    if (action->get_type() == kernel::resource::Action::Type::LATENCY) {
+    if (action->get_type() == kernel::resource::Action::Type::latency) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
       action->heapRemove();
       action->set_last_update();
 
       // if I am wearing a max_duration or normal hat
-    } else if (action->get_type() == kernel::resource::Action::Type::MAX_DURATION ||
-               action->get_type() == kernel::resource::Action::Type::NORMAL) {
+    } else if (action->get_type() == kernel::resource::Action::Type::max_duration ||
+               action->get_type() == kernel::resource::Action::Type::normal) {
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
@@ -270,7 +270,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   action->weight_ = latency;
   action->latency_ = latency;
   action->rate_ = rate;
-  if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy) {
+  if (get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy) {
     action->set_last_update();
   }
 
@@ -284,7 +284,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
     bandwidth_bound = (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
   }
 
-  action->latCurrent_ = action->latency_;
+  action->lat_current_ = action->latency_;
   action->latency_ *= latencyFactor(size);
   action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
 
@@ -293,24 +293,24 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
 
   if (action->latency_ > 0) {
     action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
-    if (getUpdateMechanism() == kernel::resource::Model::UpdateAlgo::Lazy) {
+    if (get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->get_last_update());
       action->heapInsert(action->latency_ + action->get_last_update(), route.empty()
-                                                                           ? kernel::resource::Action::Type::NORMAL
-                                                                           : kernel::resource::Action::Type::LATENCY);
+                                                                           ? kernel::resource::Action::Type::normal
+                                                                           : kernel::resource::Action::Type::latency);
     }
   } else
     action->set_variable(get_maxmin_system()->variable_new(action, 1.0, -1.0, constraints_per_variable));
 
   if (action->rate_ < 0) {
     get_maxmin_system()->update_variable_bound(
-        action->get_variable(), (action->latCurrent_ > 0) ? sg_tcp_gamma / (2.0 * action->latCurrent_) : -1.0);
+        action->get_variable(), (action->lat_current_ > 0) ? sg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
   } else {
-    get_maxmin_system()->update_variable_bound(action->get_variable(),
-                                               (action->latCurrent_ > 0)
-                                                   ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_))
-                                                   : action->rate_);
+    get_maxmin_system()->update_variable_bound(
+        action->get_variable(), (action->lat_current_ > 0)
+                                    ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->lat_current_))
+                                    : action->rate_);
   }
 
   for (auto const& link : route)
@@ -424,19 +424,19 @@ void NetworkCm02Link::setLatency(double value)
 
   while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
     NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
-    action->latCurrent_ += delta;
+    action->lat_current_ += delta;
     action->weight_ += delta;
     if (action->rate_ < 0)
       model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
-                                                          sg_tcp_gamma / (2.0 * action->latCurrent_));
+                                                          sg_tcp_gamma / (2.0 * action->lat_current_));
     else {
       model()->get_maxmin_system()->update_variable_bound(
-          action->get_variable(), std::min(action->rate_, sg_tcp_gamma / (2.0 * action->latCurrent_)));
+          action->get_variable(), std::min(action->rate_, sg_tcp_gamma / (2.0 * action->lat_current_)));
 
-      if (action->rate_ < sg_tcp_gamma / (2.0 * action->latCurrent_)) {
+      if (action->rate_ < sg_tcp_gamma / (2.0 * action->lat_current_)) {
         XBT_INFO("Flow is limited BYBANDWIDTH");
       } else {
-        XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->latCurrent_);
+        XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);
       }
     }
     if (not action->is_suspended())

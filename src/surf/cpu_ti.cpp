@@ -485,7 +485,7 @@ void CpuTi::update_actions_finish_time(double now)
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
-      action.heapUpdate(min_finish, kernel::resource::Action::Type::NOTSET);
+      action.heapUpdate(min_finish, kernel::resource::Action::Type::unset);
     else
       action.heapRemove();
 
@@ -663,7 +663,7 @@ void CpuTiAction::set_max_duration(double duration)
     min_finish = get_finish_time();
 
   /* add in action heap */
-  heapUpdate(min_finish, Action::Type::NOTSET);
+  heapUpdate(min_finish, Action::Type::unset);
 
   XBT_OUT();
 }

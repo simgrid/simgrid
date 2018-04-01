@@ -27,7 +27,7 @@ Action* Model::actionHeapPop()
 {
   Action* action = action_heap_.top().second;
   action_heap_.pop();
-  action->clearHeapHandle();
+  action->heap_clear_handle();
   return action;
 }
 
@@ -62,7 +62,7 @@ double Model::next_occuring_event_lazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (action->get_priority() <= 0 || action->get_type() == Action::Type::LATENCY)
+    if (action->get_priority() <= 0 || action->get_type() == Action::Type::latency)
       continue;
 
     action->update_remains_lazy(now);
@@ -93,7 +93,7 @@ double Model::next_occuring_event_lazy(double now)
               action->get_start_time(), min, share, action->get_max_duration());
 
     if (min > -1) {
-      action->heapUpdate(min, max_duration_flag ? Action::Type::MAX_DURATION : Action::Type::NORMAL);
+      action->heapUpdate(min, max_duration_flag ? Action::Type::max_duration : Action::Type::normal);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min, now);
     } else
       DIE_IMPOSSIBLE;

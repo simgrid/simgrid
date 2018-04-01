@@ -100,7 +100,7 @@ void Action::set_bound(double bound)
   if (variable_)
     get_model()->get_maxmin_system()->update_variable_bound(variable_, bound);
 
-  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy && get_last_update() != surf_get_clock())
+  if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy && get_last_update() != surf_get_clock())
     heapRemove();
   XBT_OUT();
 }
@@ -118,7 +118,7 @@ void Action::ref()
 void Action::set_max_duration(double duration)
 {
   max_duration_ = duration;
-  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) // remove action from the heap
+  if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) // remove action from the heap
     heapRemove();
 }
 
@@ -128,7 +128,7 @@ void Action::set_priority(double weight)
   sharing_priority_ = weight;
   get_model()->get_maxmin_system()->update_variable_weight(get_variable(), weight);
 
-  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy)
+  if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy)
     heapRemove();
   XBT_OUT();
 }
@@ -136,7 +136,7 @@ void Action::set_priority(double weight)
 void Action::cancel()
 {
   set_state(Action::State::failed);
-  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) {
+  if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) {
     if (modified_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
     heapRemove();
@@ -158,7 +158,7 @@ void Action::suspend()
   XBT_IN("(%p)", this);
   if (suspended_ != SuspendStates::sleeping) {
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
-    if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) {
+    if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) {
       heapRemove();
       if (state_set_ == get_model()->get_running_action_set() && sharing_priority_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
@@ -176,7 +176,7 @@ void Action::resume()
   if (suspended_ != SuspendStates::sleeping) {
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), get_priority());
     suspended_ = SuspendStates::not_suspended;
-    if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy)
+    if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy)
       heapRemove();
   }
   XBT_OUT();
@@ -186,35 +186,33 @@ bool Action::is_suspended()
 {
   return suspended_ == SuspendStates::suspended;
 }
-/* insert action on heap using a given key and a hat (heap_action_type)
- * a hat can be of three types for communications:
- *
- * NORMAL = this is a normal heap entry stating the date to finish transmitting
- * LATENCY = this is a heap entry to warn us when the latency is payed
- * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
- */
-void Action::heapInsert(double key, Action::Type hat)
+/* insert action on heap using a given key and a type  */
+void Action::heapInsert(double key, Action::Type type)
 {
-  type_       = hat;
-  heap_hook_  = get_model()->getActionHeap().emplace(std::make_pair(key, this));
+  type_      = type;
+  heap_hook_ = get_model()->get_action_heap().emplace(std::make_pair(key, this));
 }
 
 void Action::heapRemove()
 {
-  type_ = Action::Type::NOTSET;
+  type_ = Action::Type::unset;
   if (heap_hook_) {
-    get_model()->getActionHeap().erase(*heap_hook_);
-    clearHeapHandle();
+    get_model()->get_action_heap().erase(*heap_hook_);
+    heap_hook_ = boost::none;
   }
 }
-
-void Action::heapUpdate(double key, Action::Type hat)
+void Action::heap_clear_handle()
 {
-  type_ = hat;
+  heap_hook_ = boost::none;
+}
+
+void Action::heapUpdate(double key, Action::Type type)
+{
+  type_ = type;
   if (heap_hook_) {
-    get_model()->getActionHeap().update(*heap_hook_, std::make_pair(key, this));
+    get_model()->get_action_heap().update(*heap_hook_, std::make_pair(key, this));
   } else {
-    heap_hook_ = get_model()->getActionHeap().emplace(std::make_pair(key, this));
+    heap_hook_ = get_model()->get_action_heap().emplace(std::make_pair(key, this));
   }
 }
 
@@ -222,7 +220,7 @@ double Action::get_remains()
 {
   XBT_IN("(%p)", this);
   /* update remains before return it */
-  if (get_model()->getUpdateMechanism() == Model::UpdateAlgo::Lazy) /* update remains before return it */
+  if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) /* update remains before return it */
     update_remains_lazy(surf_get_clock());
   XBT_OUT();
   return remains_;

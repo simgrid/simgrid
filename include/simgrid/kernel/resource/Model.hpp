@@ -52,11 +52,11 @@ public:
   /** @brief Set the maxmin system of the current Model */
   void set_maxmin_system(lmm::System* system) { maxmin_system_ = system; }
 
-  /** @brief Get the update mechanism of the current Model */
-  UpdateAlgo getUpdateMechanism() const { return update_algorithm_; }
+  /** @brief Get the update algorithm of the current Model */
+  UpdateAlgo get_update_algorithm() const { return update_algorithm_; }
 
   /** @brief Get Action heap */
-  heap_type& getActionHeap() { return action_heap_; }
+  heap_type& get_action_heap() { return action_heap_; }
 
   double actionHeapTopDate() const { return action_heap_.top().first; }
   Action* actionHeapPop();

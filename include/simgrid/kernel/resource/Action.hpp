@@ -54,7 +54,12 @@ public:
     sleeping
   };
 
-  enum class Type { LATENCY = 100, MAX_DURATION, NORMAL, NOTSET };
+  enum class Type {
+    latency = 100, /* this is a heap entry to warn us when the latency is payed */
+    max_duration,  /* this is a heap entry to warn us when the max_duration limit (timeout) is reached */
+    normal,        /* this is a normal heap entry stating the date to finish transmitting */
+    unset
+  };
 
   /**
    * @brief Action constructor
@@ -189,14 +194,14 @@ private:
   double last_update_                                = 0;
   double last_value_                                 = 0;
   kernel::lmm::Variable* variable_                   = nullptr;
-  Action::Type type_                                 = Action::Type::NOTSET;
+  Action::Type type_                                 = Action::Type::unset;
   boost::optional<heap_type::handle_type> heap_hook_ = boost::none;
 
 public:
-  void heapInsert(double key, Action::Type hat);
+  void heapInsert(double key, Action::Type type);
   void heapRemove();
-  void heapUpdate(double key, Action::Type hat);
-  void clearHeapHandle() { heap_hook_ = boost::none; }
+  void heapUpdate(double key, Action::Type type);
+  void heap_clear_handle();
 
   lmm::Variable* get_variable() const { return variable_; }
   void set_variable(lmm::Variable* var) { variable_ = var; }
