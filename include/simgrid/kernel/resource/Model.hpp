@@ -60,7 +60,6 @@ public:
 
   double actionHeapTopDate() const { return action_heap_.top().first; }
   Action* actionHeapPop();
-  bool actionHeapIsEmpty() const { return action_heap_.empty(); }
 
   /**
    * @brief Share the resources between the actions

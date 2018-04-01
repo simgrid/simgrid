@@ -332,7 +332,7 @@ double CpuTiModel::next_occuring_event(double now)
   }
 
   /* get the min next event if heap not empty */
-  if (not actionHeapIsEmpty())
+  if (not get_action_heap().empty())
     min_action_duration = actionHeapTopDate() - now;
 
   XBT_DEBUG("Share resources, min next event date: %f", min_action_duration);
@@ -342,7 +342,7 @@ double CpuTiModel::next_occuring_event(double now)
 
 void CpuTiModel::update_actions_state(double now, double /*delta*/)
 {
-  while (not actionHeapIsEmpty() && actionHeapTopDate() <= now) {
+  while (not get_action_heap().empty() && actionHeapTopDate() <= now) {
     CpuTiAction* action = static_cast<CpuTiAction*>(actionHeapPop());
     XBT_DEBUG("Action %p: finish", action);
     action->finish(kernel::resource::Action::State::done);
