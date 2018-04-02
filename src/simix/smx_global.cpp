@@ -229,8 +229,8 @@ void SIMIX_global_init(int *argc, char **argv)
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::StorageImpl* storage) {
-      sg_storage_t s = simgrid::s4u::Storage::byName(storage->getCname());
-      xbt_assert(s != nullptr, "Storage not found for name %s", storage->getCname());
+      sg_storage_t s = simgrid::s4u::Storage::byName(storage->get_cname());
+      xbt_assert(s != nullptr, "Storage not found for name %s", storage->get_cname());
     });
   }
 
@@ -496,7 +496,7 @@ void SIMIX_run()
       /* If only daemon processes remain, cancel their actions, mark them to die and reschedule them */
       if (simix_global->process_list.size() == simix_global->daemons.size())
         for (auto const& dmon : simix_global->daemons) {
-          XBT_DEBUG("Kill %s", dmon->getCname());
+          XBT_DEBUG("Kill %s", dmon->get_cname());
           SIMIX_process_kill(dmon, simix_global->maestro_process);
         }
     }
@@ -523,7 +523,7 @@ void SIMIX_run()
 
     /* Autorestart all process */
     for (auto const& host : host_that_restart) {
-      XBT_INFO("Restart processes on host %s", host->getCname());
+      XBT_INFO("Restart processes on host %s", host->get_cname());
       SIMIX_host_autorestart(host);
     }
     host_that_restart.clear();
@@ -654,11 +654,11 @@ void SIMIX_display_process_status()
         synchro_description = "I/O";
 
       XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
-               process->getCname(), process->host->getCname(), synchro_description, process->waiting_synchro.get(),
+               process->get_cname(), process->host->get_cname(), synchro_description, process->waiting_synchro.get(),
                process->waiting_synchro->name.c_str(), (int)process->waiting_synchro->state);
     }
     else {
-      XBT_INFO("Process %ld (%s@%s)", process->pid, process->getCname(), process->host->getCname());
+      XBT_INFO("Process %ld (%s@%s)", process->pid, process->get_cname(), process->host->get_cname());
     }
   }
 }

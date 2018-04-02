@@ -24,7 +24,7 @@ static void check_disk_attachment()
   for (auto const& s : simgrid::s4u::Engine::getInstance()->getAllStorages()) {
     simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s->getImpl()->getHost().c_str());
     if (not host_elm)
-      surf_parse_error(std::string("Unable to attach storage ") + s->getCname() + ": host " +
+      surf_parse_error(std::string("Unable to attach storage ") + s->get_cname() + ": host " +
                        s->getImpl()->getHost().c_str() + " does not exist.");
     else
       s->attached_to_ = sg_host_by_name(s->getImpl()->getHost().c_str());
@@ -122,7 +122,7 @@ StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, 
                                    e_surf_action_storage_type_t type)
     : StorageAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3), storage, type)
 {
-  XBT_IN("(%s,%g", storage->getCname(), cost);
+  XBT_IN("(%s,%g", storage->get_cname(), cost);
 
   // Must be less than the max bandwidth for all actions
   model->get_maxmin_system()->expand(storage->constraint(), get_variable(), 1.0);

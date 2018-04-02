@@ -23,7 +23,7 @@ ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father
 
 void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
-  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
+  XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
   xbt_assert(not private_links_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
@@ -79,22 +79,22 @@ void ClusterZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
              "Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
-  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->getCname(), nodes);
+  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->get_cname(), nodes);
 
   xbt_node_t backboneNode = nullptr;
   if (backbone_) {
-    backboneNode = new_xbt_graph_node(graph, backbone_->getCname(), nodes);
+    backboneNode = new_xbt_graph_node(graph, backbone_->get_cname(), nodes);
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
   for (auto const& src : getVertices()) {
     if (not src->isRouter()) {
-      xbt_node_t previous = new_xbt_graph_node(graph, src->getCname(), nodes);
+      xbt_node_t previous = new_xbt_graph_node(graph, src->get_cname(), nodes);
 
       std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(src->id());
 
       if (info.first) { // link up
-        xbt_node_t current = new_xbt_graph_node(graph, info.first->getCname(), nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.first->get_cname(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {
@@ -105,7 +105,7 @@ void ClusterZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
       }
 
       if (info.second) { // link down
-        xbt_node_t current = new_xbt_graph_node(graph, info.second->getCname(), nodes);
+        xbt_node_t current = new_xbt_graph_node(graph, info.second->get_cname(), nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
         if (backbone_) {

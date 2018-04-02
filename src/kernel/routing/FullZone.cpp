@@ -54,7 +54,7 @@ FullZone::~FullZone()
 
 void FullZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* res, double* lat)
 {
-  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->getCname(), src->id(), dst->getCname(), dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   unsigned int table_size        = getTableSize();
   RouteCreationArgs* e_route     = TO_ROUTE_FULL(src->id(), dst->id());
@@ -85,11 +85,11 @@ void FullZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoin
   if (gw_dst) // inter-zone route (to adapt the error message, if any)
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
                "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-               src->getCname(), gw_src->getCname(), dst->getCname(), gw_dst->getCname());
+               src->get_cname(), gw_src->get_cname(), dst->get_cname(), gw_dst->get_cname());
   else
     xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
-               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->getCname(),
-               dst->getCname());
+               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->get_cname(),
+               dst->get_cname());
 
   /* Add the route to the base */
   TO_ROUTE_FULL(src->id(), dst->id()) =
@@ -105,11 +105,11 @@ void FullZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoin
       xbt_assert(
           nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          dst->getCname(), gw_dst->getCname(), src->getCname(), gw_src->getCname());
+          dst->get_cname(), gw_dst->get_cname(), src->get_cname(), gw_src->get_cname());
     else
       xbt_assert(nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-                 dst->getCname(), src->getCname());
+                 dst->get_cname(), src->get_cname());
 
     TO_ROUTE_FULL(dst->id(), src->id()) =
         newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, false);

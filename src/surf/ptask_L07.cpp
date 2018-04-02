@@ -172,7 +172,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
           latency = std::max(latency, lat);
 
           for (auto const& link : route)
-            affected_links.insert(link->getCname());
+            affected_links.insert(link->get_cname());
         }
       }
     }
@@ -309,7 +309,7 @@ bool LinkL07::is_used()
 
 void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
 {
-  XBT_DEBUG("Updating cpu %s (%p) with value %g", getCname(), this, value);
+  XBT_DEBUG("Updating cpu %s (%p) with value %g", get_cname(), this, value);
   if (triggered == speed_.event) {
     speed_.scale = value;
     onSpeedChange();
@@ -329,7 +329,7 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
 
 void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 {
-  XBT_DEBUG("Updating link %s (%p) with value=%f", getCname(), this, value);
+  XBT_DEBUG("Updating link %s (%p) with value=%f", get_cname(), this, value);
   if (triggered == bandwidth_.event) {
     setBandwidth(value);
     tmgr_trace_event_unref(&bandwidth_.event);

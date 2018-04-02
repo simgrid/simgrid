@@ -45,7 +45,7 @@ sg_host_t *sg_host_list() {
 
 const char *sg_host_get_name(sg_host_t host)
 {
-  return host->getCname();
+  return host->get_cname();
 }
 
 void* sg_host_extension_get(sg_host_t host, size_t ext)
@@ -65,8 +65,8 @@ sg_host_t sg_host_by_name(const char *name)
 
 static int hostcmp_voidp(const void* pa, const void* pb)
 {
-  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->getCname(),
-                (*static_cast<simgrid::s4u::Host* const*>(pb))->getCname());
+  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->get_cname(),
+                (*static_cast<simgrid::s4u::Host* const*>(pb))->get_cname());
 }
 
 xbt_dynar_t sg_hosts_as_dynar()
@@ -103,7 +103,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
   for (auto const& elm : host->getMountedStorages()) {
     const char* mount_name = elm.first.c_str();
     sg_storage_t storage   = elm.second;
-    xbt_dict_set(res, mount_name, (void*)storage->getCname(), nullptr);
+    xbt_dict_set(res, mount_name, (void*)storage->get_cname(), nullptr);
   }
 
   return res;
@@ -303,7 +303,7 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 /** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
 {
-  XBT_INFO("Displaying host %s", host->getCname());
+  XBT_INFO("Displaying host %s", host->get_cname());
   XBT_INFO("  - speed: %.0f", host->getSpeed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
   std::map<std::string, std::string>* props = host->getProperties();

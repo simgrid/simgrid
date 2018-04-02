@@ -27,7 +27,7 @@ void XBT_ATTRIB_DEPRECATED_v322(
     getStorageList(std::map<std::string, Storage*>* whereTo)
 {
   for (auto const& s : simgrid::s4u::Engine::getInstance()->getAllStorages())
-    whereTo->insert({s->getName(), s});
+    whereTo->insert({s->get_name(), s});
 }
 
 Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
@@ -40,12 +40,12 @@ Storage* Storage::byName(std::string name)
   return Engine::getInstance()->storageByNameOrNull(name);
 }
 
-const std::string& Storage::getName() const
+const std::string& Storage::get_name() const
 {
   return name_;
 }
 
-const char* Storage::getCname() const
+const char* Storage::get_cname() const
 {
   return name_.c_str();
 }
@@ -109,13 +109,13 @@ simgrid::xbt::signal<void(s4u::Storage&)> Storage::onDestruction;
 const char* sg_storage_get_name(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->getCname();
+  return storage->get_cname();
 }
 
 const char* sg_storage_get_host(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->getHost()->getCname();
+  return storage->getHost()->get_cname();
 }
 
 /** \ingroup sg_storage_management

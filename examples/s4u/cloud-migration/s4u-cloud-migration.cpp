@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015, 2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +16,7 @@ static void vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst
   sg_vm_migrate(vm, dst_pm);
   double mig_end = simgrid::s4u::Engine::getClock();
 
-  XBT_INFO("%s migrated: %s->%s in %g s", vm->getCname(), src_pm->getCname(), dst_pm->getCname(), mig_end - mig_sta);
+  XBT_INFO("%s migrated: %s->%s in %g s", vm->get_cname(), src_pm->get_cname(), dst_pm->get_cname(), mig_end - mig_sta);
 }
 
 static void vm_migrate_async(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)

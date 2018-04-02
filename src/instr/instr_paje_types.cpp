@@ -21,7 +21,7 @@ Type::Type(std::string name, std::string alias, std::string color, Type* father)
 
   if (father != nullptr){
     father->children_.insert({alias, this});
-    XBT_DEBUG("new type %s, child of %s", name_.c_str(), father->getCname());
+    XBT_DEBUG("new type %s, child of %s", name_.c_str(), father->get_cname());
   }
 }
 
@@ -39,19 +39,19 @@ ValueType::~ValueType()
 
 ContainerType::ContainerType(std::string name, Type* father) : Type(name, name, "", father)
 {
-  XBT_DEBUG("ContainerType %s(%lld), child of %s(%lld)", getCname(), getId(), father->getCname(), father->getId());
+  XBT_DEBUG("ContainerType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   logDefinition(PAJE_DefineContainerType);
 }
 
 EventType::EventType(std::string name, Type* father) : ValueType(name, father)
 {
-  XBT_DEBUG("EventType %s(%lld), child of %s(%lld)", getCname(), getId(), father->getCname(), father->getId());
+  XBT_DEBUG("EventType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   logDefinition(PAJE_DefineEventType);
 }
 
 StateType::StateType(std::string name, Type* father) : ValueType(name, father)
 {
-  XBT_DEBUG("StateType %s(%lld), child of %s(%lld)", getCname(), getId(), father->getCname(), father->getId());
+  XBT_DEBUG("StateType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   logDefinition(PAJE_DefineStateType);
 }
 
@@ -82,7 +82,7 @@ void StateType::popEvent()
 
 VariableType::VariableType(std::string name, std::string color, Type* father) : Type(name, name, color, father)
 {
-  XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", getCname(), getId(), father->getCname(), father->getId());
+  XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
   logDefinition(PAJE_DefineVariableType);
 }
 
@@ -130,8 +130,8 @@ void Type::logDefinition(e_event_type event_type)
     return;
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, TRACE_precision(), 0.);
-  stream << std::fixed << std::setprecision(TRACE_precision()) << event_type << " " << getId();
-  stream << " " << father_->getId() << " " << getName();
+  stream << std::fixed << std::setprecision(TRACE_precision()) << event_type << " " << get_id();
+  stream << " " << father_->get_id() << " " << get_name();
   if (isColored())
     stream << " \"" << color_ << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
@@ -145,8 +145,8 @@ void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* des
     return;
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, TRACE_precision(), 0.);
-  stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineLinkType << " " << getId();
-  stream << " " << father_->getId() << " " << source->getId() << " " << dest->getId() << " " << getName();
+  stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineLinkType << " " << get_id();
+  stream << " " << father_->get_id() << " " << source->get_id() << " " << dest->get_id() << " " << get_name();
   XBT_DEBUG("Dump %s", stream.str().c_str());
   stream << std::endl;
   fprintf(tracing_file, "%s", stream.str().c_str());
@@ -165,7 +165,7 @@ Type* Type::byName(std::string name)
     }
   }
   if (ret == nullptr)
-    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), getCname());
+    THROWF(tracing_error, 2, "type with name (%s) not found in father type (%s)", name.c_str(), get_cname());
   return ret;
 }
 
@@ -183,7 +183,7 @@ void ValueType::addEntityValue(std::string name, std::string color)
   if (it == values_.end()) {
     EntityValue* new_val = new EntityValue(name, color, this);
     values_.insert({name, new_val});
-    XBT_DEBUG("new value %s, child of %s", name.c_str(), getCname());
+    XBT_DEBUG("new value %s, child of %s", name.c_str(), get_cname());
     new_val->print();
   }
 }
@@ -192,7 +192,7 @@ EntityValue* ValueType::getEntityValue(std::string name)
 {
   auto ret = values_.find(name);
   if (ret == values_.end()) {
-    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), getCname());
+    THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name.c_str(), get_cname());
   }
   return ret->second;
 }
@@ -228,8 +228,8 @@ LinkType* Type::getOrCreateLinkType(std::string name, Type* source, Type* dest)
   auto it           = children_.find(alias);
   if (it == children_.end()) {
     LinkType* ret = new LinkType(name, alias, this);
-    XBT_DEBUG("LinkType %s(%lld), child of %s(%lld)  %s(%lld)->%s(%lld)", ret->getCname(), ret->getId(), getCname(),
-              getId(), source->getCname(), source->getId(), dest->getCname(), dest->getId());
+    XBT_DEBUG("LinkType %s(%lld), child of %s(%lld)  %s(%lld)->%s(%lld)", ret->get_cname(), ret->get_id(), get_cname(),
+              get_id(), source->get_cname(), source->get_id(), dest->get_cname(), dest->get_id());
     ret->logDefinition(source, dest);
     return ret;
   } else

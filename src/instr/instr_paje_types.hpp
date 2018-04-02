@@ -28,9 +28,9 @@ public:
   Type(std::string name, std::string alias, std::string color, Type* father);
   virtual ~Type();
 
-  std::string getName() { return name_; }
-  const char* getCname() { return name_.c_str(); }
-  long long int getId() { return id_; }
+  std::string get_name() { return name_; }
+  const char* get_cname() { return name_.c_str(); }
+  long long int get_id() { return id_; }
   bool isColored() { return not color_.empty(); }
 
   Type* byName(std::string name);

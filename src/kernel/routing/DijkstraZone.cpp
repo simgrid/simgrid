@@ -146,7 +146,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
     xbt_edge_t edge     = xbt_graph_get_edge(route_graph_, node_s_v, node_e_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->get_cname(), dst->get_cname());
 
     RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
@@ -216,7 +216,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
     xbt_edge_t edge        = xbt_graph_get_edge(route_graph_, node_pred_v, node_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->getCname(), dst->getCname());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->get_cname(), dst->get_cname());
 
     RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
@@ -227,7 +227,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (hierarchy_ == RoutingMode::recursive && v != dst_node_id && gw_dst->getName() != prev_gw_src->getName()) {
+    if (hierarchy_ == RoutingMode::recursive && v != dst_node_id && gw_dst->get_name() != prev_gw_src->get_name()) {
       std::vector<surf::LinkImpl*> e_route_as_to_as;
 
       NetPoint* gw_dst_net_elm      = nullptr;
@@ -273,8 +273,8 @@ void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::Net
                             kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                             std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
-  const char* srcName = src->getCname();
-  const char* dstName = dst->getCname();
+  const char* srcName = src->get_cname();
+  const char* dstName = dst->get_cname();
 
   addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
@@ -302,10 +302,10 @@ void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::Net
       if (edge)
         THROWF(arg_error, 0, "Route from %s to %s already exists", dstName, srcName);
     } else {
-      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, gw_dst->getCname(), srcName, gw_src->getCname());
+      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, gw_dst->get_cname(), srcName, gw_src->get_cname());
       if (edge)
-        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, gw_dst->getCname(), srcName,
-               gw_src->getCname());
+        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, gw_dst->get_cname(), srcName,
+               gw_src->get_cname());
     }
 
     if (gw_dst && gw_src) {

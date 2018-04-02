@@ -32,7 +32,7 @@ public:
 
   explicit HostChord(simgrid::s4u::Host* ptr) : host(ptr)
   {
-    std::string descr = std::string("RngSream<") + host->getCname() + ">";
+    std::string descr = std::string("RngSream<") + host->get_cname() + ">";
     stream_           = RngStream_CreateStream(descr.c_str());
   }
 
@@ -64,7 +64,7 @@ public:
   simgrid::s4u::MailboxPtr answer_to; // mailbox to send an answer to (if any)
 
   explicit ChordMessage(e_message_type_t type)
-      : type(type), issuer_host_name(simgrid::s4u::this_actor::getHost()->getName())
+      : type(type), issuer_host_name(simgrid::s4u::this_actor::getHost()->get_name())
   {
   }
 

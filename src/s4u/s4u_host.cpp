@@ -165,10 +165,10 @@ void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>& links, double* late
 {
   simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
-    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", getCname(), dest->getCname(),
+    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", get_cname(), dest->get_cname(),
                (latency == nullptr ? -1 : *latency));
     for (auto const& link : links)
-      XBT_CDEBUG(surf_route, "Link %s", link->getCname());
+      XBT_CDEBUG(surf_route, "Link %s", link->get_cname());
   }
 }
 

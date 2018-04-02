@@ -26,7 +26,7 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   IBNode* act = new IBNode(id);
 
   id++;
-  ((NetworkIBModel*)surf_network_model)->active_nodes.insert({host.getName(), act});
+  ((NetworkIBModel*)surf_network_model)->active_nodes.insert({host.get_name(), act});
 }
 
 static void IB_action_state_changed_callback(simgrid::surf::NetworkAction* action)
@@ -52,18 +52,18 @@ static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgri
   simgrid::surf::IBNode* act_src;
   simgrid::surf::IBNode* act_dst;
 
-  auto asrc = ibModel->active_nodes.find(src->getName());
+  auto asrc = ibModel->active_nodes.find(src->get_name());
   if (asrc != ibModel->active_nodes.end()) {
     act_src = asrc->second;
   } else {
-    throw std::out_of_range(std::string("Could not find '") + src->getCname() + "' active comms !");
+    throw std::out_of_range(std::string("Could not find '") + src->get_cname() + "' active comms !");
   }
 
-  auto adst = ibModel->active_nodes.find(dst->getName());
+  auto adst = ibModel->active_nodes.find(dst->get_name());
   if (adst != ibModel->active_nodes.end()) {
     act_dst = adst->second;
   } else {
-    throw std::out_of_range(std::string("Could not find '") + dst->getCname() + "' active comms !");
+    throw std::out_of_range(std::string("Could not find '") + dst->get_cname() + "' active comms !");
   }
 
   ibModel->active_comms[action]=std::make_pair(act_src, act_dst);

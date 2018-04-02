@@ -22,7 +22,7 @@ void EntityValue::print()
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u", __func__, PAJE_DefineEntityValue);
   stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineEntityValue;
-  stream << " " << id_ << " " << father_->getId() << " " << name_;
+  stream << " " << id_ << " " << father_->get_id() << " " << name_;
   if (not color_.empty())
     stream << " \"" << color_ << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());

@@ -46,7 +46,7 @@ static void worker_busy_loop(const char* name, double speed)
     simgrid::s4u::this_actor::sleep_for(100);
     double exec_remain_now = exec->getRemains();
     double flops_per_sec   = exec_remain_prev - exec_remain_now;
-    XBT_INFO("%s@%s: %.0f flops/s", name, simgrid::s4u::this_actor::getHost()->getCname(), flops_per_sec / 100);
+    XBT_INFO("%s@%s: %.0f flops/s", name, simgrid::s4u::this_actor::getHost()->get_cname(), flops_per_sec / 100);
     exec_remain_prev = exec_remain_now;
     simgrid::s4u::this_actor::sleep_for(1);
   }
@@ -77,27 +77,27 @@ static void test_one_task(simgrid::s4u::Host* host)
 
   XBT_INFO("### Test: with/without MSG_task_set_bound");
 
-  XBT_INFO("### Test: no bound for Task1@%s", host->getCname());
+  XBT_INFO("### Test: no bound for Task1@%s", host->get_cname());
   simgrid::s4u::Actor::createActor("worker0", host, worker, computation_amount, false, 0);
 
   simgrid::s4u::this_actor::sleep_for(1000);
 
-  XBT_INFO("### Test: 50%% for Task1@%s", host->getCname());
+  XBT_INFO("### Test: 50%% for Task1@%s", host->get_cname());
   simgrid::s4u::Actor::createActor("worker0", host, worker, computation_amount, true, cpu_speed / 2);
 
   simgrid::s4u::this_actor::sleep_for(1000);
 
-  XBT_INFO("### Test: 33%% for Task1@%s", host->getCname());
+  XBT_INFO("### Test: 33%% for Task1@%s", host->get_cname());
   simgrid::s4u::Actor::createActor("worker0", host, worker, computation_amount, true, cpu_speed / 3);
 
   simgrid::s4u::this_actor::sleep_for(1000);
 
-  XBT_INFO("### Test: zero for Task1@%s (i.e., unlimited)", host->getCname());
+  XBT_INFO("### Test: zero for Task1@%s (i.e., unlimited)", host->get_cname());
   simgrid::s4u::Actor::createActor("worker0", host, worker, computation_amount, true, 0);
 
   simgrid::s4u::this_actor::sleep_for(1000);
 
-  XBT_INFO("### Test: 200%% for Task1@%s (i.e., meaningless)", host->getCname());
+  XBT_INFO("### Test: 200%% for Task1@%s (i.e., meaningless)", host->get_cname());
   simgrid::s4u::Actor::createActor("worker0", host, worker, computation_amount, true, cpu_speed * 2);
 
   simgrid::s4u::this_actor::sleep_for(1000);
@@ -108,8 +108,8 @@ static void test_two_tasks(simgrid::s4u::Host* hostA, simgrid::s4u::Host* hostB)
   const double cpu_speed = hostA->getSpeed();
   xbt_assert(cpu_speed == hostB->getSpeed());
   const double computation_amount = cpu_speed * 10;
-  const char* hostA_name          = hostA->getCname();
-  const char* hostB_name          = hostB->getCname();
+  const char* hostA_name          = hostA->get_cname();
+  const char* hostB_name          = hostB->get_cname();
 
   XBT_INFO("### Test: no bound for Task1@%s, no bound for Task2@%s", hostA_name, hostB_name);
   simgrid::s4u::Actor::createActor("worker0", hostA, worker, computation_amount, false, 0);

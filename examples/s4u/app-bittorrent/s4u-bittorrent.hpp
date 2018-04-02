@@ -92,7 +92,7 @@ public:
 
   explicit HostBittorrent(simgrid::s4u::Host* ptr) : host(ptr)
   {
-    std::string descr = std::string("RngSream<") + host->getCname() + ">";
+    std::string descr = std::string("RngSream<") + host->get_cname() + ">";
     stream_           = RngStream_CreateStream(descr.c_str());
   }
 

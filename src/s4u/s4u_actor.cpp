@@ -119,7 +119,7 @@ void Actor::migrate(Host* new_host)
 
   if (TRACE_actor_is_enabled()) {
     // create new container on the new_host location
-    simgrid::instr::Container::byName(new_host->getName())->createChild(instr_pid(this), "ACTOR");
+    simgrid::instr::Container::byName(new_host->get_name())->createChild(instr_pid(this), "ACTOR");
     // end link
     link->endEvent(simgrid::instr::Container::byName(instr_pid(this)), "M", key);
   }
@@ -140,14 +140,14 @@ bool Actor::isDaemon()
   return this->pimpl_->isDaemon();
 }
 
-const simgrid::xbt::string& Actor::getName() const
+const simgrid::xbt::string& Actor::get_name() const
 {
-  return this->pimpl_->getName();
+  return this->pimpl_->get_name();
 }
 
-const char* Actor::getCname() const
+const char* Actor::get_cname() const
 {
-  return this->pimpl_->getCname();
+  return this->pimpl_->get_cname();
 }
 
 aid_t Actor::getPid()
@@ -339,14 +339,14 @@ aid_t getPpid()
   return SIMIX_process_self()->ppid;
 }
 
-std::string getName()
+std::string get_name()
 {
-  return SIMIX_process_self()->getName();
+  return SIMIX_process_self()->get_name();
 }
 
-const char* getCname()
+const char* get_cname()
 {
-  return SIMIX_process_self()->getCname();
+  return SIMIX_process_self()->get_cname();
 }
 
 Host* getHost()
@@ -357,7 +357,9 @@ Host* getHost()
 void suspend()
 {
   if (TRACE_actor_is_enabled())
-    instr::Container::byName(getName() + "-" + std::to_string(getPid()))->getState("ACTOR_STATE")->pushEvent("suspend");
+    instr::Container::byName(get_name() + "-" + std::to_string(getPid()))
+        ->getState("ACTOR_STATE")
+        ->pushEvent("suspend");
   simcall_process_suspend(SIMIX_process_self());
 }
 
@@ -367,7 +369,7 @@ void resume()
   simgrid::simix::kernelImmediate([process] { process->resume(); });
 
   if (TRACE_actor_is_enabled())
-    instr::Container::byName(getName() + "-" + std::to_string(getPid()))->getState("ACTOR_STATE")->popEvent();
+    instr::Container::byName(get_name() + "-" + std::to_string(getPid()))->getState("ACTOR_STATE")->popEvent();
 }
 
 bool isSuspended()
@@ -432,7 +434,7 @@ int sg_actor_get_PPID(sg_actor_t actor)
  */
 const char* sg_actor_get_name(sg_actor_t actor)
 {
-  return actor->getCname();
+  return actor->get_cname();
 }
 
 sg_host_t sg_actor_get_host(sg_actor_t actor)

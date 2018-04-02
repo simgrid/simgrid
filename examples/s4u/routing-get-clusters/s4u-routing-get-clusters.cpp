@@ -20,11 +20,11 @@ int main(int argc, char* argv[])
   e.getNetzoneByType<simgrid::kernel::routing::ClusterZone>(clusters);
 
   for (auto c : *clusters) {
-    XBT_INFO("%s", c->getCname());
+    XBT_INFO("%s", c->get_cname());
     std::vector<simgrid::s4u::Host*>* hosts = new std::vector<simgrid::s4u::Host*>;
     c->getHosts(hosts);
     for (auto h : *hosts)
-      XBT_INFO("   %s", h->getCname());
+      XBT_INFO("   %s", h->get_cname());
     delete hosts;
   }
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
   if (not dragonfly_clusters->empty()) {
     for (auto d : *dragonfly_clusters) {
-      XBT_INFO("%s' dragonfly topology:", d->getCname());
+      XBT_INFO("%s' dragonfly topology:", d->get_cname());
       for (int i = 0; i < d->getHostCount(); i++) {
         unsigned int coords[4];
         d->rankId_to_coords(i, &coords);

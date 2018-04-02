@@ -1,5 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,7 +16,7 @@ static void vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst
   sg_vm_migrate(vm, dst_pm);
   double mig_end = simgrid::s4u::Engine::getClock();
 
-  XBT_INFO("%s migrated: %s->%s in %g s", vm->getCname(), src_pm->getCname(), dst_pm->getCname(), mig_end - mig_sta);
+  XBT_INFO("%s migrated: %s->%s in %g s", vm->get_cname(), src_pm->get_cname(), dst_pm->get_cname(), mig_end - mig_sta);
 }
 
 static simgrid::s4u::ActorPtr vm_migrate_async(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
@@ -34,16 +33,16 @@ static void master_main()
   vm0->setRamsize(1e9); // 1Gbytes
   vm0->start();
 
-  XBT_INFO("Start the migration of %s from %s to %s", vm0->getCname(), pm0->getCname(), pm1->getCname());
+  XBT_INFO("Start the migration of %s from %s to %s", vm0->get_cname(), pm0->get_cname(), pm1->get_cname());
   vm_migrate_async(vm0, pm1);
 
   simgrid::s4u::this_actor::sleep_for(2);
-  XBT_INFO("Wait! change my mind, shutdown %s. This ends the migration", vm0->getCname());
+  XBT_INFO("Wait! change my mind, shutdown %s. This ends the migration", vm0->get_cname());
   vm0->shutdown();
 
   simgrid::s4u::this_actor::sleep_for(8);
 
-  XBT_INFO("Start again the migration of %s from %s to %s", vm0->getCname(), pm0->getCname(), pm1->getCname());
+  XBT_INFO("Start again the migration of %s from %s to %s", vm0->get_cname(), pm0->get_cname(), pm1->get_cname());
 
   vm0->start();
   vm_migrate_async(vm0, pm1);

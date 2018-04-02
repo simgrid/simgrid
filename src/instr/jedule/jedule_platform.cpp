@@ -72,7 +72,7 @@ void Container::createHierarchy(sg_netzone_t from_as)
     this->addResources(table);
   } else {
     for (auto const& nz : *from_as->getChildren()) {
-      jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->getCname()));
+      jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->get_cname()));
       this->addChild(child_container);
       child_container->createHierarchy(nz);
     }

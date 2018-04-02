@@ -176,7 +176,8 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
   xbt_dict_free(&properties);
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t process = SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->getCname(), &props, nullptr);
+  smx_actor_t process =
+      SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->get_cname(), &props, nullptr);
   if (not process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);

@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv* env, jclass cl
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {
   simgrid::s4u::NetZone* as = jnetzone_get_native(env, jas);
-  return env->NewStringUTF(as->getCname());
+  return env->NewStringUTF(as->get_cname());
 }
 
 JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
@@ -141,11 +141,11 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   for (auto const& host : table) {
     jhost = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
     if (not jhost) {
-      jname = env->NewStringUTF(host->getCname());
+      jname = env->NewStringUTF(host->get_cname());
 
       jhost = Java_org_simgrid_msg_Host_getByName(env, cls, jname);
 
-      env->ReleaseStringUTFChars(static_cast<jstring>(jname), host->getCname());
+      env->ReleaseStringUTFChars(static_cast<jstring>(jname), host->get_cname());
     }
 
     env->SetObjectArrayElement(jtable, index, jhost);

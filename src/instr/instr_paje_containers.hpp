@@ -30,9 +30,9 @@ public:
 
   static Container* byNameOrNull(std::string name);
   static Container* byName(std::string name);
-  std::string getName() { return name_; }
-  const char* getCname() { return name_.c_str(); }
-  long long int getId() { return id_; }
+  std::string get_name() { return name_; }
+  const char* get_cname() { return name_.c_str(); }
+  long long int get_id() { return id_; }
   void removeFromParent();
   void logCreation();
   void logDestruction();

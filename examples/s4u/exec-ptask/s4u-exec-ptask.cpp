@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -76,7 +76,7 @@ static void runner()
   communication_amounts = new double[hosts_count * hosts_count]();
   simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, communication_amounts);
 
-  XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", hosts[1]->getCname());
+  XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", hosts[1]->get_cname());
   computation_amounts = new double[1]{1e9};
 
   simgrid::s4u::Host* remote[] = {hosts[1]};

@@ -489,7 +489,7 @@ void CpuTi::update_actions_finish_time(double now)
     else
       model()->get_action_heap().remove(&action);
 
-    XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", getCname(),
+    XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", get_cname(),
               &action, action.get_start_time(), action.get_finish_time(), action.get_max_duration());
   }
   /* remove from modified cpu */
@@ -548,7 +548,7 @@ void CpuTi::update_remaining_amount(double now)
 
 CpuAction *CpuTi::execution_start(double size)
 {
-  XBT_IN("(%s,%g)", getCname(), size);
+  XBT_IN("(%s,%g)", get_cname(), size);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), size, isOff(), this);
 
   action_set_.push_back(*action);
@@ -563,7 +563,7 @@ CpuAction *CpuTi::sleep(double duration)
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", getCname(), duration);
+  XBT_IN("(%s,%g)", get_cname(), duration);
   CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
 
   action->set_max_duration(duration);

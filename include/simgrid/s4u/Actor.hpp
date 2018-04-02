@@ -206,10 +206,16 @@ public:
   /** Returns whether or not this actor has been daemonized or not **/
   bool isDaemon();
 
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_name()") const simgrid::xbt::string& getName() const
+  {
+    return get_name();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_cname()") const char* getCname() const { return get_cname(); }
+
   /** Retrieves the name of that actor as a C++ string */
-  const simgrid::xbt::string& getName() const;
+  const simgrid::xbt::string& get_name() const;
   /** Retrieves the name of that actor as a C string */
-  const char* getCname() const;
+  const char* get_cname() const;
   /** Retrieves the host on which that actor is running */
   s4u::Host* getHost();
   /** Retrieves the PID of that actor
@@ -328,10 +334,12 @@ XBT_PUBLIC aid_t getPid();
 XBT_PUBLIC aid_t getPpid();
 
 /** @brief Returns the name of the current actor. */
-XBT_PUBLIC std::string getName();
-
+XBT_PUBLIC std::string get_name();
 /** @brief Returns the name of the current actor as a C string. */
-XBT_PUBLIC const char* getCname();
+XBT_PUBLIC const char* get_cname();
+
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_cname()") XBT_PUBLIC const char* getCname();
 
 /** @brief Returns the name of the host on which the actor is running. */
 XBT_PUBLIC Host* getHost();

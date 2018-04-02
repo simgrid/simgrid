@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -62,9 +62,9 @@ public:
     double size                 = std::stod(action[3]);
     std::string* payload        = new std::string(action[3]);
     double clock                = simgrid::s4u::Engine::getClock();
-    simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getName() + "_" + action[2]);
+    simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::get_name() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME.c_str(), size,
-    simgrid::s4u::this_actor::getCname(), to->getCname());
+              simgrid::s4u::this_actor::get_cname(), to->get_cname());
     to->put(payload, size);
     delete payload;
 
@@ -75,10 +75,10 @@ public:
   {
     double clock = simgrid::s4u::Engine::getClock();
     simgrid::s4u::MailboxPtr from =
-        simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::getName());
+        simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::get_name());
 
-    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::getCname(),
-    from->getCname());
+    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::get_cname(),
+              from->get_cname());
     from->get();
     log_action(action, simgrid::s4u::Engine::getClock() - clock);
   }

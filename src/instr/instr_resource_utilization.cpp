@@ -22,7 +22,7 @@ static void instr_event(double now, double delta, simgrid::instr::VariableType* 
    */
 
   // create a key considering the resource and variable
-  std::string key = resource->getName() + variable->getName();
+  std::string key = resource->get_name() + variable->get_name();
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the global map.
   if (platform_variables.find(key) == platform_variables.end()) {

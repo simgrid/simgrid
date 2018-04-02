@@ -31,8 +31,8 @@ public:
 
   // Our rank in the vertices_ array of the netzone that contains us.
   unsigned int id() { return id_; }
-  const std::string& getName() const { return name_; }
-  const char* getCname() const { return name_.c_str(); }
+  const std::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
   /** @brief the NetZone in which this NetPoint is included */
   NetZoneImpl* netzone() { return netzone_; }
 

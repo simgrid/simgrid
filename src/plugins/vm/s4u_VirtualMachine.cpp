@@ -42,10 +42,12 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   if (TRACE_vm_is_enabled()) {
-    container_t host_container = instr::Container::byName(pm->getName());
+    container_t host_container = instr::Container::byName(pm->get_name());
     new instr::Container(name, "MSG_VM", host_container);
-    instr::Container::byName(getName())->getState("MSG_VM_STATE")->addEntityValue("start", "0 0 1");   // start is blue
-    instr::Container::byName(getName())->getState("MSG_VM_STATE")->addEntityValue("suspend", "1 0 0"); // suspend is red
+    instr::Container::byName(get_name())->getState("MSG_VM_STATE")->addEntityValue("start", "0 0 1"); // start is blue
+    instr::Container::byName(get_name())
+        ->getState("MSG_VM_STATE")
+        ->addEntityValue("suspend", "1 0 0"); // suspend is red
   }
 }
 
@@ -53,7 +55,7 @@ VirtualMachine::~VirtualMachine()
 {
   onDestruction(*this);
 
-  XBT_DEBUG("destroy %s", getCname());
+  XBT_DEBUG("destroy %s", get_cname());
 
   /* FIXME: this is really strange that everything fails if the next line is removed.
    * This is as if we shared these data with the PM, which definitely should not be the case...
@@ -67,13 +69,13 @@ VirtualMachine::~VirtualMachine()
   pimpl_netpoint = nullptr;
 
   if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(getName())->removeFromParent();
+    simgrid::instr::Container::byName(get_name())->removeFromParent();
 }
 
 void VirtualMachine::start()
 {
   if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->pushEvent("start");
+    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->pushEvent("start");
 
   simgrid::simix::kernelImmediate([this]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
@@ -95,9 +97,9 @@ void VirtualMachine::start()
 
       if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
         XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
-                 this->getCname(), pm->getCname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
-        THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->getCname(),
-               this->getCname());
+                 this->get_cname(), pm->get_cname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
+        THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->get_cname(),
+               this->get_cname());
       }
     }
 
@@ -105,7 +107,7 @@ void VirtualMachine::start()
   });
 
   if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->popEvent();
+    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->popEvent();
 }
 
 void VirtualMachine::suspend()
@@ -113,7 +115,7 @@ void VirtualMachine::suspend()
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->suspend(issuer); });
   if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->pushEvent("suspend");
+    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->pushEvent("suspend");
   XBT_DEBUG("vm_suspend done");
 }
 
@@ -121,7 +123,7 @@ void VirtualMachine::resume()
 {
   pimpl_vm_->resume();
   if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(getName())->getState("MSG_VM_STATE")->popEvent();
+    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->popEvent();
 }
 
 void VirtualMachine::shutdown()
@@ -220,7 +222,7 @@ sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
 
 const char* sg_vm_get_name(sg_vm_t vm)
 {
-  return vm->getCname();
+  return vm->get_cname();
 }
 
 /** @brief Get the physical host of a given VM. */

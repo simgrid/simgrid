@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage, "Messages specific for this simulation");
 static void host()
 {
   /* - Display information on the disks mounted by the current host */
-  XBT_INFO("*** Storage info on %s ***", simgrid::s4u::Host::current()->getCname());
+  XBT_INFO("*** Storage info on %s ***", simgrid::s4u::Host::current()->get_cname());
 
   /* - Retrieve all mount points of current host */
   std::unordered_map<std::string, simgrid::s4u::Storage*> const& storage_list =
@@ -20,7 +20,7 @@ static void host()
 
   /* - For each disk mounted on host, display disk name and mount point */
   for (auto const& kv : storage_list)
-    XBT_INFO("Storage name: %s, mount name: %s", kv.second->getCname(), kv.first.c_str());
+    XBT_INFO("Storage name: %s, mount name: %s", kv.second->get_cname(), kv.first.c_str());
 
   /* - Write 200,000 bytes on Disk4 */
   simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName("Disk4");

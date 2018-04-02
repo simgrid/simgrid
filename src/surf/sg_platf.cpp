@@ -296,10 +296,10 @@ void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb)
       dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing);
 
   xbt_assert(cluster, "Only hosts from Cluster can get a backbone.");
-  xbt_assert(nullptr == cluster->backbone_, "Cluster %s already has a backbone link!", cluster->getCname());
+  xbt_assert(nullptr == cluster->backbone_, "Cluster %s already has a backbone link!", cluster->get_cname());
 
   cluster->backbone_ = bb;
-  XBT_DEBUG("Add a backbone to AS '%s'", current_routing->getCname());
+  XBT_DEBUG("Add a backbone to AS '%s'", current_routing->get_cname());
 }
 
 void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet)
@@ -419,7 +419,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
 
     for (auto const& host : list) {
-      msg += host->getName();
+      msg += host->get_name();
       msg += "', '";
       if (msg.length() > 1024) {
         msg.pop_back(); // remove trailing quote
@@ -449,7 +449,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
     arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);
 
-    XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->getCname(), start_time);
+    XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);
     SIMIX_timer_set(start_time, [arg, auto_restart]() {
       smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(arg->code), arg->data,
                                                                 arg->host, arg->properties.get(), nullptr);
@@ -460,7 +460,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
-    XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->getCname());
+    XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->get_cname());
 
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), std::move(code), nullptr, host,
                                                               arg->properties.get(), nullptr);
@@ -657,7 +657,7 @@ void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostl
   if (as_cluster->private_links_.find(netpoint->id()) != as_cluster->private_links_.end())
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->getCname(), netpoint->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
   as_cluster->private_links_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 

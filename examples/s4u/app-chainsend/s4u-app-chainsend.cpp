@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2015, 2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -43,7 +42,7 @@ public:
   unsigned int received_pieces      = 0;
   unsigned int total_pieces         = 0;
 
-  Peer() { me = simgrid::s4u::Mailbox::byName(simgrid::s4u::Host::current()->getCname()); }
+  Peer() { me = simgrid::s4u::Mailbox::byName(simgrid::s4u::Host::current()->get_cname()); }
   ~Peer()     = default;
 
   void joinChain()
@@ -52,8 +51,8 @@ public:
     prev              = msg->prev_;
     next              = msg->next_;
     total_pieces      = msg->num_pieces;
-    XBT_DEBUG("Peer %s got a 'BUILD_CHAIN' message (prev: %s / next: %s)", me->getCname(),
-              prev ? prev->getCname() : nullptr, next ? next->getCname() : nullptr);
+    XBT_DEBUG("Peer %s got a 'BUILD_CHAIN' message (prev: %s / next: %s)", me->get_cname(),
+              prev ? prev->get_cname() : nullptr, next ? next->get_cname() : nullptr);
     delete msg;
   }
 
@@ -69,10 +68,10 @@ public:
       int idx = simgrid::s4u::Comm::wait_any(&pending_recvs);
       if (idx != -1) {
         comm = pending_recvs.at(idx);
-        XBT_DEBUG("Peer %s got a 'SEND_DATA' message", me->getCname());
+        XBT_DEBUG("Peer %s got a 'SEND_DATA' message", me->get_cname());
         pending_recvs.erase(pending_recvs.begin() + idx);
         if (next != nullptr) {
-          XBT_DEBUG("Sending (asynchronously) from %s to %s", me->getCname(), next->getCname());
+          XBT_DEBUG("Sending (asynchronously) from %s to %s", me->get_cname(), next->get_cname());
           simgrid::s4u::CommPtr send = next->put_async(received, MESSAGE_SEND_DATA_HEADER_SIZE + PIECE_SIZE);
           pending_sends.push_back(send);
         } else
@@ -119,8 +118,8 @@ public:
           next = nullptr;
 
         XBT_DEBUG("Building chain--broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"",
-                  simgrid::s4u::Host::current()->getCname(), current_mailbox->getCname(),
-                  prev ? prev->getCname() : nullptr, next ? next->getCname() : nullptr);
+                  simgrid::s4u::Host::current()->get_cname(), current_mailbox->get_cname(),
+                  prev ? prev->get_cname() : nullptr, next ? next->get_cname() : nullptr);
 
         /* Send message to current peer */
         current_mailbox->put(new ChainMessage(prev, next, piece_count), MESSAGE_BUILD_CHAIN_SIZE);
@@ -135,7 +134,7 @@ public:
     std::vector<simgrid::s4u::CommPtr> pending_sends;
     for (unsigned int current_piece = 0; current_piece < piece_count; current_piece++) {
       XBT_DEBUG("Sending (send) piece %u from %s into mailbox %s", current_piece,
-                simgrid::s4u::Host::current()->getCname(), first->getCname());
+                simgrid::s4u::Host::current()->get_cname(), first->get_cname());
       simgrid::s4u::CommPtr comm = first->put_async(new FilePiece(), MESSAGE_SEND_DATA_HEADER_SIZE + PIECE_SIZE);
       pending_sends.push_back(comm);
     }

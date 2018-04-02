@@ -92,18 +92,18 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
   if (link_list.size() == 1) {
     simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list[0]);
 
-    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->getCname(), dst->getCname(), link->getCname(),
+    XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->get_cname(), dst->get_cname(), link->get_cname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
 
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
-    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->getCname(), link->bandwidth(), link->latency());
+    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->bandwidth(), link->latency());
 
     // create link ns3
     NetPointNs3* host_src = src->extension<NetPointNs3>();
     NetPointNs3* host_dst = dst->extension<NetPointNs3>();
 
-    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->getCname());
-    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->getCname());
+    xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->get_cname());
+    xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->get_cname());
 
     ns3_add_link(host_src, host_dst, link->bandwidth(), link->latency());
   } else {
@@ -115,7 +115,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
                "of length 1.\n"
                "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
                "ignored.",
-               src->getCname(), dst->getCname(), link_list.size());
+               src->get_cname(), dst->get_cname(), link_list.size());
     warned_about_long_routes = true;
   }
 }
@@ -158,7 +158,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::Full)
 
   simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {
     pt->extension_set<NetPointNs3>(new NetPointNs3());
-    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->getCname(), pt->extension<NetPointNs3>()->node_num);
+    XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->get_cname(), pt->extension<NetPointNs3>()->node_num);
   });
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
 
@@ -231,7 +231,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
       action->src_->routeTo(action->dst_, route, nullptr);
       for (auto const& link : route)
-        TRACE_surf_link_set_utilization(link->getCname(), action->get_category(), (data_delta_sent) / delta,
+        TRACE_surf_link_set_utilization(link->get_cname(), action->get_category(), (data_delta_sent) / delta,
                                         now - delta, delta);
 
       action->lastSent_ = sgFlow->sentBytes_;
@@ -292,7 +292,7 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
 NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
     : NetworkAction(model, totalBytes, false)
 {
-  XBT_DEBUG("Communicate from %s to %s", src->getCname(), dst->getCname());
+  XBT_DEBUG("Communicate from %s to %s", src->get_cname(), dst->get_cname());
 
   src_ = src;
   dst_ = dst;
@@ -305,10 +305,10 @@ NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalB
   ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->getCname());
+             dst->pimpl_netpoint->get_cname());
   std::string& addr = IPV4addr[node2];
   xbt_assert(not addr.empty(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
-             dst->pimpl_netpoint->getCname());
+             dst->pimpl_netpoint->get_cname());
 
   XBT_DEBUG("ns3: Create flow of %.0f Bytes from %u to %u with Interface %s", totalBytes, node1, node2, addr.c_str());
   ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress(ns3::Ipv4Address::GetAny(), port_number));

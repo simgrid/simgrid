@@ -38,9 +38,9 @@ public:
   Model* model() const;
 
   /** @brief Get the name of the current Resource */
-  const std::string& getName() const;
+  const std::string& get_name() const;
   /** @brief Get the name of the current Resource */
-  const char* getCname() const;
+  const char* get_cname() const;
 
   bool operator==(const Resource& other) const;
 
@@ -95,7 +95,7 @@ template <> class hash<simgrid::kernel::resource::Resource> {
 public:
   std::size_t operator()(const simgrid::kernel::resource::Resource& r) const
   {
-    return (std::size_t)xbt_str_hash(r.getCname());
+    return (std::size_t)xbt_str_hash(r.get_cname());
   }
 };
 } // namespace std

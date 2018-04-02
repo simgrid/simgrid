@@ -35,11 +35,11 @@ static int host(int argc, char* argv[])
 
     if (std::stoi(argv[5]) != 0) {
       XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, remoteFile.size(),
-               simgrid::s4u::Host::current()->getCname(), argv[3]);
+               simgrid::s4u::Host::current()->get_cname(), argv[3]);
       remoteFile.remoteMove(simgrid::s4u::Host::by_name(argv[3]), argv[4]);
     } else {
       XBT_INFO("Copy '%s' (of size %llu) from '%s' to '%s'", filename, remoteFile.size(),
-               simgrid::s4u::Host::current()->getCname(), argv[3]);
+               simgrid::s4u::Host::current()->get_cname(), argv[3]);
       remoteFile.remoteCopy(simgrid::s4u::Host::by_name(argv[3]), argv[4]);
     }
   }
@@ -58,14 +58,14 @@ int main(int argc, char** argv)
 
   for (auto const& s : allStorages) {
     XBT_INFO("Init: %llu/%llu MiB used/free on '%s'", sg_storage_get_size_used(s) / INMEGA,
-             sg_storage_get_size_free(s) / INMEGA, s->getCname());
+             sg_storage_get_size_free(s) / INMEGA, s->get_cname());
   }
 
   e.run();
 
   for (auto const& s : allStorages) {
     XBT_INFO("End: %llu/%llu MiB used/free on '%s'", sg_storage_get_size_used(s) / INMEGA,
-             sg_storage_get_size_free(s) / INMEGA, s->getCname());
+             sg_storage_get_size_free(s) / INMEGA, s->get_cname());
   }
 
   XBT_INFO("Simulation time %g", simgrid::s4u::Engine::getClock());

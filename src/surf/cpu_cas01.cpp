@@ -185,7 +185,7 @@ CpuAction *CpuCas01::sleep(double duration)
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", getCname(), duration);
+  XBT_IN("(%s,%g)", get_cname(), duration);
   CpuCas01Action* action = new CpuCas01Action(model(), 1.0, isOff(), speed_.scale * speed_.peak, constraint());
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()

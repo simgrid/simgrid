@@ -193,7 +193,7 @@ s4u::NetZone* Engine::getNetRoot()
 
 static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* name)
 {
-  if (not strcmp(current->getCname(), name))
+  if (not strcmp(current->get_cname(), name))
     return current;
 
   for (auto const& elem : *(current->getChildren())) {
@@ -228,14 +228,14 @@ void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* l
 void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
 {
   // simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
-  pimpl->netpoints_[point->getName()] = point;
+  pimpl->netpoints_[point->get_name()] = point;
   // });
 }
 /** @brief Unregister a given netpoint */
 void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
 {
   simgrid::simix::kernelImmediate([this, point] {
-    pimpl->netpoints_.erase(point->getName());
+    pimpl->netpoints_.erase(point->get_name());
     delete point;
   });
 }

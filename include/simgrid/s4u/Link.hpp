@@ -37,9 +37,12 @@ public:
   static Link* byName(const char* name);
 
   /** @brief Retrieves the name of that link as a C++ string */
-  const std::string& getName() const;
+  const std::string& get_name() const;
   /** @brief Retrieves the name of that link as a C string */
-  const char* getCname() const;
+  const char* get_cname() const;
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_name()") const std::string& getName() const { return get_name(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_cname()") const char* getCname() const { return get_cname(); }
 
   /** @brief Get the bandwidth in bytes per second of current Link */
   double bandwidth();
@@ -89,7 +92,7 @@ public:
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static simgrid::xbt::signal<void(surf::NetworkAction*)> onCommunicationStateChange;
 
-  XBT_ATTRIB_DEPRECATED_v321("Use getCname(): v3.21 will turn this warning into an error.") const char* name();
+  XBT_ATTRIB_DEPRECATED_v321("Use get_cname(): v3.21 will turn this warning into an error.") const char* name();
 };
 }
 }

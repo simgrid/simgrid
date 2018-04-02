@@ -30,7 +30,7 @@ namespace simgrid {
       if (not process_list.empty()) {
         std::string msg     = std::string("Shutting down host, but it's not empty:");
         for (auto const& process : process_list)
-          msg += "\n\t" + std::string(process.getName());
+          msg += "\n\t" + std::string(process.get_name());
 
         SIMIX_display_process_status();
         THROWF(arg_error, 0, "%s", msg.c_str());
@@ -50,7 +50,7 @@ namespace simgrid {
     void Host::turnOn()
     {
       for (auto const& arg : boot_processes) {
-        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->getCname());
+        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
         smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
                                                                   arg->properties.get(), nullptr);
         if (arg->kill_time >= 0)
@@ -76,12 +76,12 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
     if (not host->process_list.empty()) {
       for (auto& process : host->process_list) {
         SIMIX_process_kill(&process, issuer);
-        XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.getCname(),
-                  process.host->getCname(), issuer->getCname());
+        XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.get_cname(),
+                  process.host->get_cname(), issuer->get_cname());
       }
     }
   } else {
-    XBT_INFO("Host %s is already off", h->getCname());
+    XBT_INFO("Host %s is already off", h->get_cname());
   }
 }
 
@@ -92,7 +92,7 @@ const char* sg_host_self_get_name()
   if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
     return "";
 
-  return host->getCname();
+  return host->get_cname();
 }
 
 /**
@@ -110,11 +110,11 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::
       new simgrid::kernel::actor::ProcessArg(name, code, data, host, kill_time, nullptr, auto_restart);
   arg->properties.reset(properties, [](decltype(properties)) {});
 
-  if (host->isOff() && watched_hosts.find(host->getCname()) == watched_hosts.end()) {
-    watched_hosts.insert(host->getCname());
-    XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->getCname());
+  if (host->isOff() && watched_hosts.find(host->get_cname()) == watched_hosts.end()) {
+    watched_hosts.insert(host->get_cname());
+    XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
   }
-  XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->getCname());
+  XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->get_cname());
   host->extension<simgrid::simix::Host>()->auto_restart_processes.push_back(arg);
 }
 
@@ -125,7 +125,7 @@ void SIMIX_host_autorestart(sg_host_t host)
       host->extension<simgrid::simix::Host>()->auto_restart_processes;
 
   for (auto const& arg : process_list) {
-    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->getCname());
+    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->get_cname());
     smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
                                                               arg->properties.get(), nullptr);
     if (arg->kill_time >= 0)
@@ -243,7 +243,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host->getCname());
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host->get_cname());
         simcall->issuer->context->iwannadie = 1;
         SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;

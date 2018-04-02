@@ -170,7 +170,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
         kernel::lmm::Constraint* constraint = action->get_variable()->get_constraint(i);
         NetworkCm02Link* link       = static_cast<NetworkCm02Link*>(constraint->get_id());
         double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
-        TRACE_surf_link_set_utilization(link->getCname(), action->get_category(), value, action->get_last_update(),
+        TRACE_surf_link_set_utilization(link->get_cname(), action->get_category(), value, action->get_last_update(),
                                         now - action->get_last_update());
       }
     }
@@ -218,7 +218,7 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
         kernel::lmm::Constraint* constraint = action.get_variable()->get_constraint(i);
         NetworkCm02Link* link = static_cast<NetworkCm02Link*>(constraint->get_id());
         TRACE_surf_link_set_utilization(
-            link->getCname(), action.get_category(),
+            link->get_cname(), action.get_category(),
             (action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i)),
             action.get_last_update(), now - action.get_last_update());
       }
@@ -248,12 +248,12 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   std::vector<LinkImpl*> back_route;
   std::vector<LinkImpl*> route;
 
-  XBT_IN("(%s,%s,%g,%g)", src->getCname(), dst->getCname(), size, rate);
+  XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
 
   src->routeTo(dst, route, &latency);
   xbt_assert(not route.empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
-             src->getCname(), dst->getCname());
+             src->get_cname(), dst->get_cname());
 
   for (auto const& link : route)
     if (link->isOff())
@@ -399,7 +399,8 @@ void NetworkCm02Link::setBandwidth(double value)
 
   model()->get_maxmin_system()->update_constraint_bound(constraint(),
                                                         sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
-  TRACE_surf_link_set_bandwidth(surf_get_clock(), getCname(), sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
+  TRACE_surf_link_set_bandwidth(surf_get_clock(), get_cname(),
+                                sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
 
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);

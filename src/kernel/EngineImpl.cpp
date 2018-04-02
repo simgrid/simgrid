@@ -26,7 +26,7 @@ EngineImpl::~EngineImpl()
    */
   std::vector<std::string> names;
   for (auto const& kv : hosts_)
-    names.push_back(kv.second->getName());
+    names.push_back(kv.second->get_name());
 
   std::sort(names.begin(), names.end());
 

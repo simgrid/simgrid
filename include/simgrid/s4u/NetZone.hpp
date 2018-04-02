@@ -39,10 +39,13 @@ public:
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   virtual void seal();
   /** @brief Retrieves the name of that netzone as a C++ string */
-  const std::string& getName() const { return name_; }
+  const std::string& get_name() const { return name_; }
   /** @brief Retrieves the name of that netzone as a C string */
-  const char* getCname() const;
+  const char* get_cname() const;
   NetZone* getFather();
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_name()") const std::string& getName() const { return get_name(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_cname()") const char* getCname() const { return get_cname(); }
 
   std::vector<NetZone*>* getChildren();             // Sub netzones
   void getHosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts

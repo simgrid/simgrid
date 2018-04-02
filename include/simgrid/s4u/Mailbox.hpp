@@ -120,10 +120,16 @@ public:
   /** private function, do not use. FIXME: make me protected */
   kernel::activity::MailboxImpl* getImpl() { return pimpl_; }
 
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const simgrid::xbt::string& getName() const
+  {
+    return get_name();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_cname()") const char* getCname() const { return get_cname(); }
+
   /** @brief Retrieves the name of that mailbox as a C++ string */
-  const simgrid::xbt::string& getName() const;
+  const simgrid::xbt::string& get_name() const;
   /** @brief Retrieves the name of that mailbox as a C string */
-  const char* getCname() const;
+  const char* get_cname() const;
 
   /** Retrieve the mailbox associated to the given C string */
   static MailboxPtr byName(const char *name);

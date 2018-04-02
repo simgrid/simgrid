@@ -47,12 +47,12 @@ Model* Resource::model() const
   return model_;
 }
 
-const std::string& Resource::getName() const
+const std::string& Resource::get_name() const
 {
   return name_;
 }
 
-const char* Resource::getCname() const
+const char* Resource::get_cname() const
 {
   return name_.c_str();
 }

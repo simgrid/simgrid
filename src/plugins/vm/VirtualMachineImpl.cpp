@@ -95,7 +95,7 @@ double VMModel::next_occuring_event(double now)
     double solved_value =
         ws_vm->getImpl()->action_->get_variable()->get_value(); // this is X1 in comment above, what
                                                                 // this VM got in the sharing on the PM
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getCname(), ws_vm->getPm()->getCname());
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->getPm()->get_cname());
 
     xbt_assert(cpu->model() == surf_cpu_model_vm);
     kernel::lmm::System* vcpu_system = cpu->model()->get_maxmin_system();
@@ -124,7 +124,7 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, sim
   /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   action_ = host_PM->pimpl_cpu->execution_start(0, coreAmount);
 
-  XBT_VERB("Create VM(%s)@PM(%s)", piface->getCname(), hostPM_->getCname());
+  XBT_VERB("Create VM(%s)@PM(%s)", piface->get_cname(), hostPM_->get_cname());
   onVmCreation(this);
 }
 
@@ -155,12 +155,13 @@ void VirtualMachineImpl::setState(e_surf_vm_state_t state)
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
   if (getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->getCname());
+    THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->get_cname());
   if (issuer->host == piface_)
-    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->getCname(), piface_->getCname());
+    THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
+           piface_->get_cname());
 
   auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->getCname(), process_list.size());
+  XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->get_cname(), process_list.size());
 
   action_->suspend();
 
@@ -177,15 +178,15 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 void VirtualMachineImpl::resume()
 {
   if (getState() != SURF_VM_STATE_SUSPENDED)
-    THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->getCname());
+    THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->get_cname());
 
   auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->getCname(), process_list.size());
+  XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->get_cname(), process_list.size());
 
   action_->resume();
 
   for (auto& smx_process : process_list) {
-    XBT_DEBUG("resume %s", smx_process.getCname());
+    XBT_DEBUG("resume %s", smx_process.get_cname());
     smx_process.resume();
   }
 
@@ -217,15 +218,15 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
         THROW_IMPOSSIBLE;
         break;
     }
-    XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->getCname(), stateName);
+    XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->get_cname(), stateName);
   }
 
   auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
-  XBT_DEBUG("shutdown VM %s, that contains %zu processes", piface_->getCname(), process_list.size());
+  XBT_DEBUG("shutdown VM %s, that contains %zu processes", piface_->get_cname(), process_list.size());
 
   for (auto& smx_process : process_list) {
-    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process.getCname(),
-              smx_process.host->getCname(), issuer->getCname());
+    XBT_DEBUG("kill %s@%s on behalf of %s which shutdown that VM.", smx_process.get_cname(),
+              smx_process.host->get_cname(), issuer->get_cname());
     SIMIX_process_kill(&smx_process, issuer);
   }
 
@@ -246,9 +247,9 @@ s4u::Host* VirtualMachineImpl::getPm()
  */
 void VirtualMachineImpl::setPm(s4u::Host* destination)
 {
-  const char* vm_name     = piface_->getCname();
-  const char* pm_name_src = hostPM_->getCname();
-  const char* pm_name_dst = destination->getCname();
+  const char* vm_name     = piface_->get_cname();
+  const char* pm_name_src = hostPM_->get_cname();
+  const char* pm_name_dst = destination->get_cname();
 
   /* update net_elm with that of the destination physical host */
   piface_->pimpl_netpoint = destination->pimpl_netpoint;

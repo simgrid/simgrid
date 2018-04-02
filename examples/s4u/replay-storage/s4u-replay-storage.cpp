@@ -31,7 +31,7 @@ static void log_action(simgrid::xbt::ReplayAction& action, double date)
 
 static simgrid::s4u::File* get_file_descriptor(std::string file_name)
 {
-  std::string full_name = simgrid::s4u::this_actor::getName() + ":" + file_name;
+  std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
 
   return opened_files.at(full_name);
 }
@@ -62,7 +62,7 @@ public:
   {
     std::string file_name = action[2];
     double clock          = simgrid::s4u::Engine::getClock();
-    std::string full_name = simgrid::s4u::this_actor::getName() + ":" + file_name;
+    std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     simgrid::s4u::File* file = new simgrid::s4u::File(file_name, NULL);

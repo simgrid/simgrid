@@ -233,7 +233,7 @@ static void on_host_added(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  std::string name              = std::string("dvfs-daemon-") + host.getCname();
+  std::string name              = std::string("dvfs-daemon-") + host.get_cname();
   simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::createActor(name.c_str(), &host, []() {
     /**
      * This lambda function is the function the actor (daemon) will execute
@@ -242,7 +242,7 @@ static void on_host_added(simgrid::s4u::Host& host)
      */
     simgrid::s4u::ActorPtr daemonProc = simgrid::s4u::Actor::self();
 
-    XBT_DEBUG("DVFS process on %s is a daemon: %d", daemonProc->getHost()->getName().c_str(), daemonProc->isDaemon());
+    XBT_DEBUG("DVFS process on %s is a daemon: %d", daemonProc->getHost()->get_cname(), daemonProc->isDaemon());
 
     std::string dvfs_governor;
     const char* host_conf = daemonProc->getHost()->getProperty(property_governor);
@@ -269,7 +269,7 @@ static void on_host_added(simgrid::s4u::Host& host)
             new simgrid::plugin::dvfs::Powersave(daemonProc->getHost()));
       } else {
         XBT_CRITICAL("No governor specified for host %s, falling back to Performance",
-                     daemonProc->getHost()->getCname());
+                     daemonProc->getHost()->get_cname());
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
             new simgrid::plugin::dvfs::Performance(daemonProc->getHost()));
       }

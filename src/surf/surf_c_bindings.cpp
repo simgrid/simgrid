@@ -108,7 +108,7 @@ double surf_solve(double max_date)
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
-      if (resource->is_used() || (watched_hosts.find(resource->getCname()) != watched_hosts.end())) {
+      if (resource->is_used() || (watched_hosts.find(resource->get_cname()) != watched_hosts.end())) {
         time_delta = next_event_date - NOW;
         XBT_DEBUG("This event invalidates the next_occuring_event() computation of models. Next event set to %f", time_delta);
       }
@@ -117,7 +117,7 @@ double surf_solve(double max_date)
       NOW = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      XBT_DEBUG("Calling update_resource_state for resource %s", resource->getCname());
+      XBT_DEBUG("Calling update_resource_state for resource %s", resource->get_cname());
       resource->apply_event(event, value);
       NOW = round_start;
     }

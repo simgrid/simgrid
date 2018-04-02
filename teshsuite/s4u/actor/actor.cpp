@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,7 +26,7 @@ static void master()
   simgrid::s4u::this_actor::getHost()->actorList(actor_list);
 
   for (auto const& actor : *actor_list) {
-    XBT_INFO("Actor (pid=%ld, ppid=%ld, name=%s)", actor->getPid(), actor->getPpid(), actor->getCname());
+    XBT_INFO("Actor (pid=%ld, ppid=%ld, name=%s)", actor->getPid(), actor->getPpid(), actor->get_cname());
     if (simgrid::s4u::this_actor::getPid() != actor->getPid())
       actor->kill();
   }

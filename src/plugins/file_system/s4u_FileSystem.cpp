@@ -34,7 +34,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
   // this cannot fail because we get a xbt_die if the mountpoint does not exist
   Storage* st                  = nullptr;
   size_t longest_prefix_length = 0;
-  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath.c_str(), host->getCname());
+  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath.c_str(), host->get_cname());
 
   for (auto const& mnt : host->getMountedStorages()) {
     XBT_DEBUG("See '%s'", mnt.first.c_str());
@@ -50,7 +50,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
     mount_point_ = fullpath.substr(0, longest_prefix_length);
     path_        = fullpath.substr(longest_prefix_length, fullpath.length());
   } else
-    xbt_die("Can't find mount point for '%s' on '%s'", fullpath.c_str(), host->getCname());
+    xbt_die("Can't find mount point for '%s' on '%s'", fullpath.c_str(), host->get_cname());
 
   localStorage = st;
 
@@ -91,7 +91,7 @@ void File::dump()
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           getPath(), size_, mount_point_.c_str(), localStorage->getCname(), localStorage->getType(), desc_id);
+           getPath(), size_, mount_point_.c_str(), localStorage->get_cname(), localStorage->getType(), desc_id);
 }
 
 sg_size_t File::read(sg_size_t size)
@@ -101,14 +101,14 @@ sg_size_t File::read(sg_size_t size)
 
   /* Find the host where the file is physically located and read it */
   Host* host = localStorage->getHost();
-  XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->getCname());
+  XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->get_cname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
   sg_size_t read_size = localStorage->read(std::min(size, size_ - current_position_));
   current_position_ += read_size;
 
-  if (strcmp(host->getCname(), Host::current()->getCname())) {
+  if (strcmp(host->get_cname(), Host::current()->get_cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->getCname(), read_size);
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), read_size);
     Host* m_host_list[]  = {Host::current(), host};
     double* flops_amount = new double[2]{0, 0};
     double* bytes_amount = new double[4]{0, 0, static_cast<double>(read_size), 0};
@@ -133,9 +133,9 @@ sg_size_t File::write(sg_size_t size)
   /* Find the host where the file is physically located (remote or local)*/
   Host* host = localStorage->getHost();
 
-  if (strcmp(host->getCname(), Host::current()->getCname())) {
+  if (strcmp(host->get_cname(), Host::current()->get_cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
-    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->getCname(), size);
+    XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
     Host* m_host_list[]  = {Host::current(), host};
     double* flops_amount = new double[2]{0, 0};
     double* bytes_amount = new double[4]{0, static_cast<double>(size), 0, 0};
@@ -143,7 +143,7 @@ sg_size_t File::write(sg_size_t size)
     this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
   }
 
-  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getPath(), localStorage->getCname(), size, size_);
+  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getPath(), localStorage->get_cname(), size, size_);
   // If the storage is full before even starting to write
   if (sg_storage_get_size_used(localStorage) >= sg_storage_get_size(localStorage))
     return 0;
@@ -221,10 +221,10 @@ int File::unlink()
   std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
 
   if (content->find(path_) == content->end()) {
-    XBT_WARN("File %s is not on disk %s. Impossible to unlink", path_.c_str(), localStorage->getCname());
+    XBT_WARN("File %s is not on disk %s. Impossible to unlink", path_.c_str(), localStorage->get_cname());
     return -1;
   } else {
-    XBT_DEBUG("UNLINK %s on disk '%s'", path_.c_str(), localStorage->getCname());
+    XBT_DEBUG("UNLINK %s on disk '%s'", path_.c_str(), localStorage->get_cname());
     localStorage->extension<FileSystemStorageExt>()->decrUsedSize(size_);
 
     // Remove the file from storage
@@ -240,7 +240,7 @@ int File::remoteCopy(sg_host_t host, const char* fullpath)
   Storage* storage_src = localStorage;
   Host* src_host       = storage_src->getHost();
   seek(0, SEEK_SET);
-  XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->getCname());
+  XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->get_cname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
   sg_size_t read_size = localStorage->read(size_);
   current_position_ += read_size;
@@ -263,12 +263,12 @@ int File::remoteCopy(sg_host_t host, const char* fullpath)
     /* Mount point found, retrieve the host the storage is attached to */
     dst_host = storage_dest->getHost();
   } else {
-    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->getCname());
+    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->get_cname());
     return -1;
   }
 
-  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->getCname(),
-            storage_dest->getHost()->getCname());
+  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
+            storage_dest->getHost()->get_cname());
   Host* m_host_list[]     = {src_host, dst_host};
   double* flops_amount    = new double[2]{0, 0};
   double* bytes_amount    = new double[4]{0, static_cast<double>(read_size), 0, 0};

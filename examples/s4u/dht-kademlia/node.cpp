@@ -1,5 +1,4 @@
-/* Copyright (c) 2010, 2012-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -83,7 +82,7 @@ void Node::sendFindNode(unsigned int id, unsigned int destination)
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(id));
   /* Build the task */
   Message* msg = new Message(id_, destination, simgrid::s4u::Mailbox::byName(std::to_string(id_)),
-                             simgrid::s4u::Host::current()->getCname());
+                             simgrid::s4u::Host::current()->get_cname());
 
   /* Send the task */
   mailbox->put_init(msg, 1)->detach(kademlia::destroy);
@@ -217,7 +216,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
           answers++;
 
           nodes_added = node_list->merge(msg->answer_);
-          XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", msg->answer_to_->getCname(),
+          XBT_DEBUG("Received an answer from %s (%s) with %zu nodes on it", msg->answer_to_->get_cname(),
                     msg->issuer_host_name_, msg->answer_->nodes.size());
         } else {
           if (msg->answer_) {
@@ -272,12 +271,12 @@ void Node::randomLookup()
 void Node::handleFindNode(Message* msg)
 {
   routingTableUpdate(msg->sender_id_);
-  XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x", msg->answer_to_->getCname(),
+  XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x", msg->answer_to_->get_cname(),
            msg->issuer_host_name_, msg->destination_id_);
   // Building the answer to the request
   Message* answer =
       new Message(id_, msg->destination_id_, findClosest(msg->destination_id_),
-                  simgrid::s4u::Mailbox::byName(std::to_string(id_)), simgrid::s4u::Host::current()->getCname());
+                  simgrid::s4u::Mailbox::byName(std::to_string(id_)), simgrid::s4u::Host::current()->get_cname());
   // Sending the answer
   msg->answer_to_->put_init(answer, 1)->detach(kademlia::destroy);
 }

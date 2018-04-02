@@ -81,7 +81,7 @@ void NewEvent::print()
     stream << eventType_ << " " << 0 << " ";
   else
     stream << eventType_ << " " << timestamp_ << " ";
-  stream << getType()->getId() << " " << getContainer()->getId() << " " << val->getId();
+  stream << getType()->get_id() << " " << getContainer()->get_id() << " " << val->getId();
   XBT_DEBUG("Dump %s", stream.str().c_str());
   fprintf(tracing_file, "%s\n", stream.str().c_str());
 }
@@ -94,11 +94,11 @@ void LinkEvent::print()
   if (instr_fmt_type != instr_fmt_paje)
     return;
   if (timestamp_ < 1e-12)
-    stream << eventType_ << " " << 0 << " " << getType()->getId() << " " << getContainer()->getId();
+    stream << eventType_ << " " << 0 << " " << getType()->get_id() << " " << getContainer()->get_id();
   else
-    stream << eventType_ << " " << timestamp_ << " " << getType()->getId() << " " << getContainer()->getId();
+    stream << eventType_ << " " << timestamp_ << " " << getType()->get_id() << " " << getContainer()->get_id();
 
-  stream << " " << value_ << " " << endpoint_->getId() << " " << key_;
+  stream << " " << value_ << " " << endpoint_->get_id() << " " << key_;
 
   if (TRACE_display_sizes()) {
     stream << " " << size_;
@@ -119,7 +119,7 @@ void VariableEvent::print()
     stream << eventType_ << " " << 0 << " ";
   else
     stream << eventType_ << " " << timestamp_ << " ";
-  stream << getType()->getId() << " " << getContainer()->getId() << " " << value;
+  stream << getType()->get_id() << " " << getContainer()->get_id() << " " << value;
   XBT_DEBUG("Dump %s", stream.str().c_str());
   fprintf(tracing_file, "%s\n", stream.str().c_str());
 }
@@ -131,9 +131,9 @@ void StateEvent::print()
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type == instr_fmt_paje) {
     if (timestamp_ < 1e-12)
-      stream << eventType_ << " " << 0 << " " << getType()->getId() << " " << getContainer()->getId();
+      stream << eventType_ << " " << 0 << " " << getType()->get_id() << " " << getContainer()->get_id();
     else
-      stream << eventType_ << " " << timestamp_ << " " << getType()->getId() << " " << getContainer()->getId();
+      stream << eventType_ << " " << timestamp_ << " " << getType()->get_id() << " " << getContainer()->get_id();
 
     if (value != nullptr) // PAJE_PopState Event does not need to have a value
       stream << " " << value->getId();
@@ -155,11 +155,11 @@ void StateEvent::print()
     /* Unimplemented calls are: WAITANY, SENDRECV, SCAN, EXSCAN, SSEND, and ISSEND. */
 
     // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-    if (getContainer()->getName().find("rank-") != 0)
-      stream << getContainer()->getName() << " " << extra_->print();
+    if (getContainer()->get_name().find("rank-") != 0)
+      stream << getContainer()->get_name() << " " << extra_->print();
     else
       /* Subtract -1 because this is the process id and we transform it to the rank id */
-      stream << stoi(getContainer()->getName().erase(0, 5)) - 1 << " " << extra_->print();
+      stream << stoi(getContainer()->get_name().erase(0, 5)) - 1 << " " << extra_->print();
 
     fprintf(tracing_files.at(getContainer()), "%s\n", stream.str().c_str());
   } else {

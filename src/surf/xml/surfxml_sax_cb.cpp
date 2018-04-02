@@ -59,7 +59,7 @@ void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::stri
   std::vector<simgrid::kernel::routing::NetPoint*> list;
   simgrid::s4u::Engine::getInstance()->getNetpointList(&list);
   std::sort(list.begin(), list.end(), [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
-    return a->getName() < b->getName();
+    return a->get_name() < b->get_name();
   });
   bool first = true;
   for (auto const& np : list) {
@@ -69,7 +69,7 @@ void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::stri
     if (not first)
       msg += ",";
     first = false;
-    msg += "'" + np->getName() + "'";
+    msg += "'" + np->get_name() + "'";
     if (msg.length() > 4096) {
       msg.pop_back(); // remove trailing quote
       msg += "...(list truncated)......";

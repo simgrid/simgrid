@@ -31,7 +31,7 @@ void MigrationRx::operator()()
   bool received_finalize = false;
 
   std::string finalize_task_name =
-      std::string("__mig_stage3:") + vm_->getCname() + "(" + src_pm_->getCname() + "-" + dst_pm_->getCname() + ")";
+      std::string("__mig_stage3:") + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
 
   while (not received_finalize) {
     std::string* payload = static_cast<std::string*>(mbox->get());
@@ -55,7 +55,7 @@ void MigrationRx::operator()()
 
   // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
   vm_->getImpl()->isMigrating = false;
-  XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm_->getCname(), src_pm_->getCname(), dst_pm_->getCname());
+  XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm_->get_cname(), src_pm_->get_cname(), dst_pm_->get_cname());
 
   if (TRACE_vm_is_enabled()) {
     static long long int counter = 0;
@@ -63,22 +63,22 @@ void MigrationRx::operator()()
     counter++;
 
     // start link
-    container_t msg = simgrid::instr::Container::byName(vm_->getName());
+    container_t msg = simgrid::instr::Container::byName(vm_->get_name());
     simgrid::instr::Container::getRoot()->getLink("MSG_VM_LINK")->startEvent(msg, "M", key);
 
     // destroy existing container of this vm
-    simgrid::instr::Container::byName(vm_->getName())->removeFromParent();
+    simgrid::instr::Container::byName(vm_->get_name())->removeFromParent();
 
     // create new container on the new_host location
-    new simgrid::instr::Container(vm_->getCname(), "MSG_VM", simgrid::instr::Container::byName(dst_pm_->getName()));
+    new simgrid::instr::Container(vm_->get_cname(), "MSG_VM", simgrid::instr::Container::byName(dst_pm_->get_name()));
 
     // end link
-    msg = simgrid::instr::Container::byName(vm_->getName());
+    msg = simgrid::instr::Container::byName(vm_->get_name());
     simgrid::instr::Container::getRoot()->getLink("MSG_VM_LINK")->endEvent(msg, "M", key);
   }
   // Inform the SRC that the migration has been correctly performed
   std::string* payload = new std::string("__mig_stage4:");
-  *payload             = *payload + vm_->getCname() + "(" + src_pm_->getCname() + "-" + dst_pm_->getCname() + ")";
+  *payload             = *payload + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
 
   mbox_ctl->put(payload, 0);
 
@@ -100,8 +100,8 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
 {
   sg_size_t sent   = size;
   std::string* msg = new std::string("__mig_stage");
-  *msg = *msg + std::to_string(stage) + ":" + vm_->getCname() + "(" + src_pm_->getCname() + "-" + dst_pm_->getCname() +
-         ")";
+  *msg             = *msg + std::to_string(stage) + ":" + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" +
+         dst_pm_->get_cname() + ")";
 
   double clock_sta = s4u::Engine::getClock();
 
@@ -338,20 +338,21 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   simgrid::s4u::Host* src_pm = vm->getPm();
 
   if (src_pm->isOff())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->getCname(), src_pm->getCname());
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->get_cname(),
+           src_pm->get_cname());
   if (dst_pm->isOff())
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->getCname(), dst_pm->getCname());
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->get_cname(), dst_pm->get_cname());
   if (vm->getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->getCname());
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->get_cname());
   if (vm->getImpl()->isMigrating)
-    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->getCname());
+    THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());
 
   vm->getImpl()->isMigrating = true;
 
   std::string rx_name =
-      std::string("__pr_mig_rx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";
+      std::string("__pr_mig_rx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
   std::string tx_name =
-      std::string("__pr_mig_tx:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")";
+      std::string("__pr_mig_tx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
 
   simgrid::s4u::ActorPtr rx =
       simgrid::s4u::Actor::createActor(rx_name.c_str(), dst_pm, simgrid::vm::MigrationRx(vm, dst_pm));
@@ -363,7 +364,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
   simgrid::s4u::MailboxPtr mbox_ctl = simgrid::s4u::Mailbox::byName(
-      std::string("__mbox_mig_ctl:") + vm->getCname() + "(" + src_pm->getCname() + "-" + dst_pm->getCname() + ")");
+      std::string("__mbox_mig_ctl:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")");
   delete static_cast<std::string*>(mbox_ctl->get());
   tx->join();
   rx->join();

@@ -29,11 +29,11 @@ void jedule_log_sd_event(SD_task_t task)
 void jedule_sd_init()
 {
   sg_netzone_t root_comp = simgrid::s4u::Engine::getInstance()->getNetRoot();
-  XBT_DEBUG("root name %s\n", root_comp->getCname());
+  XBT_DEBUG("root name %s\n", root_comp->get_cname());
 
   my_jedule = new simgrid::jedule::Jedule();
 
-  jed_container_t root_container = new simgrid::jedule::Container(std::string(root_comp->getCname()));
+  jed_container_t root_container = new simgrid::jedule::Container(std::string(root_comp->get_cname()));
   root_container->createHierarchy(root_comp);
   my_jedule->root_container = root_container;
 }

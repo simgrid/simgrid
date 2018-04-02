@@ -39,7 +39,7 @@ NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZone
   xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
   if (father_) {
     type_ = father_->type_->getOrCreateContainerType(std::string("L") + std::to_string(level));
-    father_->children_.insert({getName(), this});
+    father_->children_.insert({get_name(), this});
     logCreation();
   } else {
     type_         = new ContainerType("0");
@@ -54,18 +54,18 @@ RouterContainer::RouterContainer(std::string name, Container* father) : Containe
   netpoint_ = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
   xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
 
-  trivaNodeTypes.insert(type_->getName());
+  trivaNodeTypes.insert(type_->get_name());
 }
 
 HostContainer::HostContainer(simgrid::s4u::Host& host, NetZoneContainer* father)
-    : Container::Container(host.getCname(), "HOST", father)
+    : Container::Container(host.get_cname(), "HOST", father)
 {
   xbt_assert(father, "Only the Root container has no father");
 
   netpoint_ = host.pimpl_netpoint;
-  xbt_assert(netpoint_, "Element '%s' not found", host.getCname());
+  xbt_assert(netpoint_, "Element '%s' not found", host.get_cname());
 
-  trivaNodeTypes.insert(type_->getName());
+  trivaNodeTypes.insert(type_->get_name());
 }
 
 Container::Container(std::string name, std::string type_name, Container* father) : name_(name), father_(father)
@@ -92,7 +92,7 @@ Container::Container(std::string name, std::string type_name, Container* father)
 
   //register NODE types for triva configuration
   if (type_name == "LINK")
-    trivaNodeTypes.insert(type_->getName());
+    trivaNodeTypes.insert(type_->get_name());
 }
 
 Container::~Container()
@@ -137,7 +137,7 @@ Container* Container::byName(std::string name)
 void Container::removeFromParent()
 {
   if (father_) {
-    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", getCname(), father_->getCname());
+    XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", get_cname(), father_->get_cname());
     father_->children_.erase(name_);
   }
   delete this;
@@ -157,7 +157,7 @@ void Container::logCreation()
       stream << 0;
     else
       stream << timestamp;
-    stream << " " << id_ << " " << type_->getId() << " " << father_->id_ << " \"" << name_ << "\"";
+    stream << " " << id_ << " " << type_->get_id() << " " << father_->id_ << " \"" << name_ << "\"";
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -198,9 +198,9 @@ void Container::logDestruction()
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";
     /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
     if (timestamp < 1e-12)
-      stream << 0 << " " << type_->getId() << " " << id_;
+      stream << 0 << " " << type_->get_id() << " " << id_;
     else
-      stream << timestamp << " " << type_->getId() << " " << id_;
+      stream << timestamp << " " << type_->get_id() << " " << id_;
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
   } else if (instr_fmt_type == instr_fmt_TI) {

@@ -32,10 +32,15 @@ public:
   virtual ~Storage() = default;
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* byName(std::string name);
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_name()") std::string const& getName() const { return get_name(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_cname()") const char* getCname() const { return get_cname(); }
+
   /** @brief Retrieves the name of that storage as a C++ string */
-  std::string const& getName() const;
+  std::string const& get_name() const;
   /** @brief Retrieves the name of that storage as a C string */
-  const char* getCname() const;
+  const char* get_cname() const;
+
   const char* getType();
   Host* getHost();
 

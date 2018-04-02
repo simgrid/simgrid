@@ -15,14 +15,14 @@ class MyHost {
 public:
   void show_info(std::unordered_map<std::string, simgrid::s4u::Storage*> const& mounts)
   {
-    XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->getCname());
+    XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->get_cname());
 
     for (auto const& kv : mounts) {
       std::string mountpoint         = kv.first;
       simgrid::s4u::Storage* storage = kv.second;
 
       // Retrieve disk's information
-      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->getCname(), mountpoint.c_str(),
+      XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.", storage->get_cname(), mountpoint.c_str(),
                sg_storage_get_size_used(storage), sg_storage_get_size_free(storage), sg_storage_get_size(storage));
     }
   }
@@ -71,7 +71,7 @@ public:
     delete file;
 
     // Now attach some user data to disk1
-    XBT_INFO("Get/set data for storage element: %s", storage->getCname());
+    XBT_INFO("Get/set data for storage element: %s", storage->get_cname());
     XBT_INFO("    Uninitialized storage data: '%s'", static_cast<char*>(storage->getUserdata()));
 
     storage->setUserdata(new std::string("Some user data"));

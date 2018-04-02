@@ -67,7 +67,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
 static void linkContainers(container_t src, container_t dst, std::set<std::string>* filter)
 {
   //ignore loopback
-  if (src->getName() == "__loopback__" || dst->getName() == "__loopback__") {
+  if (src->get_name() == "__loopback__" || dst->get_name() == "__loopback__") {
     XBT_DEBUG ("  linkContainers: ignoring loopback link");
     return;
   }
@@ -79,14 +79,14 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   }
 
   // check if we already register this pair (we only need one direction)
-  std::string aux1 = src->getName() + dst->getName();
-  std::string aux2 = dst->getName() + src->getName();
+  std::string aux1 = src->get_name() + dst->get_name();
+  std::string aux2 = dst->get_name() + src->get_name();
   if (filter->find(aux1) != filter->end()) {
-    XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->getCname(), dst->getCname());
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (1)", src->get_cname(), dst->get_cname());
     return;
   }
   if (filter->find(aux2) != filter->end()) {
-    XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->getCname(), src->getCname());
+    XBT_DEBUG("  linkContainers: already registered %s <-> %s (2)", dst->get_cname(), src->get_cname());
     return;
   }
 
@@ -95,14 +95,14 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   filter->insert(aux2);
 
   //declare type
-  std::string link_typename = father->type_->getName() + "-" + src->type_->getName() +
-                              std::to_string(src->type_->getId()) + "-" + dst->type_->getName() +
-                              std::to_string(dst->type_->getId());
+  std::string link_typename = father->type_->get_name() + "-" + src->type_->get_name() +
+                              std::to_string(src->type_->get_id()) + "-" + dst->type_->get_name() +
+                              std::to_string(dst->type_->get_id());
   simgrid::instr::LinkType* link = father->type_->getOrCreateLinkType(link_typename, src->type_, dst->type_);
   link->setCallingContainer(father);
 
   //register EDGE types for triva configuration
-  trivaEdgeTypes.insert(link->getName());
+  trivaEdgeTypes.insert(link->get_name());
 
   //create the link
   static long long counter = 0;
@@ -113,7 +113,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   link->startEvent(src, "topology", key);
   link->endEvent(dst, "topology", key);
 
-  XBT_DEBUG("  linkContainers %s <-> %s", src->getCname(), dst->getCname());
+  XBT_DEBUG("  linkContainers %s <-> %s", src->get_cname(), dst->get_cname());
 }
 
 static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t container,
@@ -123,11 +123,11 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
     XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
-  XBT_DEBUG("Graph extraction for NetZone = %s", netzone->getCname());
+  XBT_DEBUG("Graph extraction for NetZone = %s", netzone->get_cname());
   if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
     for (auto const& nz_son : *netzone->getChildren()) {
-      container_t child_container = container->children_.at(nz_son->getCname());
+      container_t child_container = container->children_.at(nz_son->get_cname());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
@@ -152,7 +152,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
  */
 static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
 {
-  std::string id = netzone.getName();
+  std::string id = netzone.get_name();
 
   if (simgrid::instr::Container::getRoot() == nullptr) {
     simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
@@ -190,7 +190,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
     return;
 
   container_t father    = currentContainer.back();
-  container_t container = new simgrid::instr::Container(link.getName(), "LINK", father);
+  container_t container = new simgrid::instr::Container(link.get_name(), "LINK", father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::VariableType* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");
@@ -250,7 +250,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
 static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
 {
   if (netpoint->isRouter() && TRACE_is_enabled() && TRACE_needs_platform())
-    new simgrid::instr::RouterContainer(netpoint->getCname(), currentContainer.back());
+    new simgrid::instr::RouterContainer(netpoint->get_cname(), currentContainer.back());
 }
 
 static void instr_routing_parse_end_platform ()
@@ -284,10 +284,10 @@ void instr_routing_define_callbacks ()
  */
 static void recursiveNewVariableType(std::string new_typename, std::string color, simgrid::instr::Type* root)
 {
-  if (root->getName() == "HOST" || root->getName() == "MSG_VM")
+  if (root->get_name() == "HOST" || root->get_name() == "MSG_VM")
     root->getOrCreateVariableType(std::string("p") + new_typename, color);
 
-  if (root->getName() == "LINK")
+  if (root->get_name() == "LINK")
     root->getOrCreateVariableType(std::string("b") + new_typename, color);
 
   for (auto elm : root->children_) {
@@ -303,7 +303,7 @@ void instr_new_variable_type(std::string new_typename, std::string color)
 static void recursiveNewUserVariableType(std::string father_type, std::string new_typename, std::string color,
                                          simgrid::instr::Type* root)
 {
-  if (root->getName() == father_type) {
+  if (root->get_name() == father_type) {
     root->getOrCreateVariableType(new_typename, color);
   }
   for (auto elm : root->children_)
@@ -317,7 +317,7 @@ void instr_new_user_variable_type(std::string father_type, std::string new_typen
 
 static void recursiveNewUserStateType(std::string father_type, std::string new_typename, simgrid::instr::Type* root)
 {
-  if (root->getName() == father_type)
+  if (root->get_name() == father_type)
     root->getOrCreateStateType(new_typename);
 
   for (auto elm : root->children_)
@@ -332,7 +332,7 @@ void instr_new_user_state_type(std::string father_type, std::string new_typename
 static void recursiveNewValueForUserStateType(std::string type_name, const char* val, std::string color,
                                               simgrid::instr::Type* root)
 {
-  if (root->getName() == type_name)
+  if (root->get_name() == type_name)
     static_cast<simgrid::instr::StateType*>(root)->addEntityValue(val, color);
 
   for (auto elm : root->children_)
@@ -353,7 +353,7 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
   if (not netzone->getChildren()->empty()) {
     //bottom-up recursion
     for (auto const& netzone_child : *netzone->getChildren()) {
-      container_t child_container = container->children_.at(netzone_child->getCname());
+      container_t child_container = container->children_.at(netzone_child->get_cname());
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }

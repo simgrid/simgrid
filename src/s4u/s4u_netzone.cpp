@@ -69,7 +69,7 @@ std::vector<NetZone*>* NetZone::getChildren()
   return children_;
 }
 
-const char* NetZone::getCname() const
+const char* NetZone::get_cname() const
 {
   return name_.c_str();
 }
@@ -81,7 +81,7 @@ NetZone* NetZone::getFather()
 void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
 {
   for (auto const& card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->getName());
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
     if (host != nullptr)
       whereto->push_back(host);
   }
@@ -91,7 +91,7 @@ int NetZone::getHostCount()
 {
   int count = 0;
   for (auto const& card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->getName());
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
     if (host != nullptr)
       count++;
   }
@@ -122,7 +122,7 @@ sg_netzone_t sg_zone_get_root()
 
 const char* sg_zone_get_name(sg_netzone_t netzone)
 {
-  return netzone->getCname();
+  return netzone->get_cname();
 }
 
 sg_netzone_t sg_zone_get_by_name(const char* name)
@@ -133,7 +133,7 @@ sg_netzone_t sg_zone_get_by_name(const char* name)
 void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)
 {
   for (auto const& elem : *netzone->getChildren()) {
-    xbt_dict_set(whereto, elem->getCname(), static_cast<void*>(elem), nullptr);
+    xbt_dict_set(whereto, elem->get_cname(), static_cast<void*>(elem), nullptr);
   }
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,17 +25,17 @@ static void worker(simgrid::s4u::Host* first, simgrid::s4u::Host* second)
 {
   double flopAmount = first->getSpeed() * 5 + second->getSpeed() * 5;
 
-  XBT_INFO("Let's move to %s to execute %.2f Mflops (5sec on %s and 5sec on %s)", first->getCname(), flopAmount / 1e6,
-           first->getCname(), second->getCname());
+  XBT_INFO("Let's move to %s to execute %.2f Mflops (5sec on %s and 5sec on %s)", first->get_cname(), flopAmount / 1e6,
+           first->get_cname(), second->get_cname());
 
   simgrid::s4u::this_actor::migrate(first);
   simgrid::s4u::this_actor::execute(flopAmount);
 
-  XBT_INFO("I wake up on %s. Let's suspend a bit", simgrid::s4u::this_actor::getHost()->getCname());
+  XBT_INFO("I wake up on %s. Let's suspend a bit", simgrid::s4u::this_actor::getHost()->get_cname());
 
   simgrid::s4u::this_actor::suspend();
 
-  XBT_INFO("I wake up on %s", simgrid::s4u::this_actor::getHost()->getCname());
+  XBT_INFO("I wake up on %s", simgrid::s4u::this_actor::getHost()->get_cname());
   XBT_INFO("Done");
 }
 
@@ -49,11 +49,11 @@ static void monitor()
 
   simgrid::s4u::this_actor::sleep_for(5);
 
-  XBT_INFO("After 5 seconds, move the process to %s", jacquelin->getCname());
+  XBT_INFO("After 5 seconds, move the process to %s", jacquelin->get_cname());
   actor->migrate(jacquelin);
 
   simgrid::s4u::this_actor::sleep_until(15);
-  XBT_INFO("At t=15, move the process to %s and resume it.", fafard->getCname());
+  XBT_INFO("At t=15, move the process to %s and resume it.", fafard->get_cname());
   actor->migrate(fafard);
   actor->resume();
 }

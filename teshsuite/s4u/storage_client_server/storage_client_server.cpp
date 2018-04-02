@@ -15,7 +15,7 @@ static void display_storage_properties(simgrid::s4u::Storage* storage)
 {
   std::map<std::string, std::string>* props = storage->getProperties();
   if (not props->empty()) {
-    XBT_INFO("\tProperties of mounted storage: %s", storage->getCname());
+    XBT_INFO("\tProperties of mounted storage: %s", storage->get_cname());
 
     for (auto const& elm : *props) {
       XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
@@ -30,7 +30,7 @@ static sg_size_t write_local_file(const std::string& dest, sg_size_t file_size)
   simgrid::s4u::File file(dest, nullptr);
   sg_size_t written = file.write(file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1", written, file_size,
-           simgrid::s4u::Actor::self()->getCname());
+           simgrid::s4u::Actor::self()->get_cname());
   return written;
 }
 
@@ -39,7 +39,7 @@ static sg_size_t read_local_file(const std::string& src)
   simgrid::s4u::File file(src, nullptr);
   sg_size_t file_size = file.size();
   sg_size_t read      = file.read(file_size);
-  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->getCname(), read, src.c_str());
+  XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->get_cname(), read, src.c_str());
   return read;
 }
 
@@ -50,7 +50,7 @@ static void hsm_put(const std::string& remote_host, const std::string& src, cons
   sg_size_t read_size = read_local_file(src);
 
   // Send file
-  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::getCname(), read_size, remote_host.c_str());
+  XBT_INFO("%s sends %llu to %s", simgrid::s4u::this_actor::get_cname(), read_size, remote_host.c_str());
   std::string* payload             = new std::string(simgrid::xbt::string_printf("%s %llu", dest.c_str(), read_size));
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(remote_host);
   mailbox->put(payload, static_cast<double>(read_size));
@@ -59,7 +59,7 @@ static void hsm_put(const std::string& remote_host, const std::string& src, cons
 
 static void display_storage_content(simgrid::s4u::Storage* storage)
 {
-  XBT_INFO("Print the content of the storage element: %s", storage->getCname());
+  XBT_INFO("Print the content of the storage element: %s", storage->get_cname());
   std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->getContent();
   if (not content->empty()) {
     for (auto const& entry : *content)
@@ -94,25 +94,25 @@ static void dump_platform_storages()
   std::vector<simgrid::s4u::Storage*> storages = simgrid::s4u::Engine::getInstance()->getAllStorages();
 
   for (auto const& s : storages) {
-    XBT_INFO("Storage %s is attached to %s", s->getCname(), s->getHost()->getCname());
+    XBT_INFO("Storage %s is attached to %s", s->get_cname(), s->getHost()->get_cname());
     s->setProperty("other usage", "gpfs");
   }
 }
 
 static void storage_info(simgrid::s4u::Host* host)
 {
-  XBT_INFO("*** Storage info on %s ***", host->getCname());
+  XBT_INFO("*** Storage info on %s ***", host->get_cname());
 
   for (auto const& elm : host->getMountedStorages()) {
     const std::string& mount_name  = elm.first;
     simgrid::s4u::Storage* storage = elm.second;
-    XBT_INFO("\tStorage name: %s, mount name: %s", storage->getCname(), mount_name.c_str());
+    XBT_INFO("\tStorage name: %s, mount name: %s", storage->get_cname(), mount_name.c_str());
 
     XBT_INFO("\t\tFree size: %llu bytes", sg_storage_get_size_free(storage));
     XBT_INFO("\t\tUsed size: %llu bytes", sg_storage_get_size_used(storage));
 
     display_storage_properties(storage);
-    dump_storage_by_name(storage->getCname());
+    dump_storage_by_name(storage->get_cname());
   }
 }
 
@@ -131,7 +131,7 @@ static void client()
 static void server()
 {
   storage_info(simgrid::s4u::this_actor::getHost());
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getHost()->getCname());
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getHost()->get_cname());
 
   XBT_INFO("Server waiting for transfers ...");
   while (1) {

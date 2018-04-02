@@ -105,12 +105,12 @@ void LinkEnergy::initWattsRangeList()
     boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
     xbt_assert(current_power_values.size() == 2,
                "Power properties incorrectly defined - could not retrieve idle and busy power values for link %s",
-               this->link_->getCname());
+               this->link_->get_cname());
 
     /* min_power corresponds to the idle power (link load = 0) */
     /* max_power is the power consumed at 100% link load       */
-    char* idleMsg = bprintf("Invalid idle power value for link%s", this->link_->getCname());
-    char* busyMsg = bprintf("Invalid busy power value for %s", this->link_->getCname());
+    char* idleMsg = bprintf("Invalid idle power value for link%s", this->link_->get_cname());
+    char* busyMsg = bprintf("Invalid busy power value for %s", this->link_->get_cname());
 
     idle_ = xbt_str_parse_double((current_power_values.at(0)).c_str(), idleMsg);
     busy_ = xbt_str_parse_double((current_power_values.at(1)).c_str(), busyMsg);
@@ -155,7 +155,7 @@ static void onCommunicate(simgrid::surf::NetworkAction* action, simgrid::s4u::Ho
     if (link == nullptr)
       continue;
 
-    XBT_DEBUG("Update link %s", link->getCname());
+    XBT_DEBUG("Update link %s", link->get_cname());
     LinkEnergy* link_energy = link->piface_.extension<LinkEnergy>();
     link_energy->initWattsRangeList();
     link_energy->update();
@@ -203,8 +203,8 @@ void sg_link_energy_plugin_init()
   });
 
   simgrid::s4u::Link::onDestruction.connect([](simgrid::s4u::Link& link) {
-    if (strcmp(link.getCname(), "__loopback__"))
-      XBT_INFO("Energy consumption of link '%s': %f Joules", link.getCname(),
+    if (strcmp(link.get_cname(), "__loopback__"))
+      XBT_INFO("Energy consumption of link '%s': %f Joules", link.get_cname(),
                link.extension<LinkEnergy>()->getConsumedEnergy());
   });
 

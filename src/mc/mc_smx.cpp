@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -117,7 +117,7 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 const char* MC_smx_actor_get_host_name(smx_actor_t actor)
 {
   if (mc_model_checker == nullptr)
-    return actor->host->getCname();
+    return actor->host->get_cname();
 
   simgrid::mc::RemoteClient* process = &mc_model_checker->process();
 
@@ -137,7 +137,7 @@ const char* MC_smx_actor_get_host_name(smx_actor_t actor)
     ~fake_host() { /* Nothing to do*/}
   };
   fake_host foo;
-  const size_t offset = (char*)&foo.host.getName() - (char*)&foo.host;
+  const size_t offset = (char*)&foo.host.get_name() - (char*)&foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::ActorInformation* info     = actor_info_cast(actor);

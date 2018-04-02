@@ -28,7 +28,7 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       Cpu* cpu = static_cast<Cpu*>(action->get_variable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), action->get_category(), action->get_variable()->get_value(),
+      TRACE_surf_host_set_utilization(cpu->get_cname(), action->get_category(), action->get_variable()->get_value(),
                                       action->get_last_update(), now - action->get_last_update());
     }
 
@@ -56,7 +56,7 @@ void CpuModel::update_actions_state_full(double now, double delta)
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (TRACE_is_enabled()) {
       Cpu* cpu = static_cast<Cpu*>(action.get_variable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), action.get_category(), action.get_variable()->get_value(),
+      TRACE_surf_host_set_utilization(cpu->get_cname(), action.get_category(), action.get_variable()->get_value(),
                                       now - delta, delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
@@ -83,14 +83,14 @@ Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, std::vector<d
 
 Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
          std::vector<double>* speedPerPstate, int core)
-    : Resource(model, host->getCname(), constraint), coresAmount_(core), host_(host)
+    : Resource(model, host->get_cname(), constraint), coresAmount_(core), host_(host)
 {
-  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->getCname());
+  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->get_cname());
 
   speed_.peak = speedPerPstate->front();
   speed_.scale = 1;
   host->pimpl_cpu = this;
-  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->getCname());
+  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->get_cname());
 
   // Copy the power peak array:
   for (double const& value : *speedPerPstate) {
@@ -110,7 +110,7 @@ void Cpu::setPState(int pstate_index)
   xbt_assert(pstate_index <= static_cast<int>(speedPerPstate_.size()),
              "Invalid parameters for CPU %s (pstate %d > length of pstates %d). Please fix your platform file, or your "
              "call to change the pstate.",
-             getCname(), pstate_index, static_cast<int>(speedPerPstate_.size()));
+             get_cname(), pstate_index, static_cast<int>(speedPerPstate_.size()));
 
   double new_peak_speed = speedPerPstate_[pstate_index];
   pstate_ = pstate_index;
@@ -143,7 +143,7 @@ double Cpu::get_available_speed()
 }
 
 void Cpu::onSpeedChange() {
-  TRACE_surf_host_set_speed(surf_get_clock(), getCname(), coresAmount_ * speed_.scale * speed_.peak);
+  TRACE_surf_host_set_speed(surf_get_clock(), get_cname(), coresAmount_ * speed_.scale * speed_.peak);
   s4u::Host::onSpeedChange(*host_);
 }
 
@@ -154,13 +154,13 @@ int Cpu::coreCount()
 
 void Cpu::setStateTrace(tmgr_trace_t trace)
 {
-  xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Host %s", host_->getCname());
+  xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Host %s", host_->get_cname());
 
   stateEvent_ = future_evt_set->add_trace(trace, this);
 }
 void Cpu::set_speed_trace(tmgr_trace_t trace)
 {
-  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->getCname());
+  xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->get_cname());
 
   speed_.event = future_evt_set->add_trace(trace, this);
 }
@@ -185,7 +185,7 @@ void CpuAction::update_remains_lazy(double now)
 
     if (TRACE_is_enabled()) {
       Cpu* cpu = static_cast<Cpu*>(get_variable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->getCname(), get_category(), get_last_value(), get_last_update(),
+      TRACE_surf_host_set_utilization(cpu->get_cname(), get_category(), get_last_value(), get_last_update(),
                                       now - get_last_update());
     }
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, get_remains_no_update());

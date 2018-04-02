@@ -121,7 +121,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
       return nullptr;
     }
     /* Sets the host name */
-    jobject jname = env->NewStringUTF(host->getCname());
+    jobject jname = env->NewStringUTF(host->get_cname());
     env->SetObjectField(jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
@@ -248,7 +248,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
   }
 
   for (auto const& elm : mounted_storages) {
-    jname    = env->NewStringUTF(elm.second->getCname());
+    jname    = env->NewStringUTF(elm.second->get_cname());
     jstorage = Java_org_simgrid_msg_Storage_getByName(env,cls,jname);
     env->SetObjectArrayElement(jtable, index, jstorage);
     index++;
@@ -313,7 +313,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
     jobject jhost   = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
 
     if (not jhost) {
-      jstring jname = env->NewStringUTF(host->getCname());
+      jstring jname = env->NewStringUTF(host->get_cname());
       jhost         = Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
     }
 

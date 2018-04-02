@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U link
 
 const char* sg_link_name(sg_link_t link)
 {
-  return link->getCname();
+  return link->get_cname();
 }
 sg_link_t sg_link_by_name(const char* name)
 {
@@ -80,17 +80,17 @@ Link* Link::byName(const char* name)
     return nullptr;
   return &res->piface_;
 }
-const std::string& Link::getName() const
+const std::string& Link::get_name() const
 {
-  return this->pimpl_->getName();
+  return this->pimpl_->get_name();
 }
-const char* Link::getCname() const
+const char* Link::get_cname() const
 {
-  return this->pimpl_->getCname();
+  return this->pimpl_->get_cname();
 }
 const char* Link::name()
 {
-  return getCname();
+  return get_cname();
 }
 bool Link::isUsed()
 {

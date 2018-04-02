@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,7 +23,7 @@ public:
   void operator()()
   {
     try {
-      rank = std::stoi(simgrid::s4u::this_actor::getName());
+      rank = std::stoi(simgrid::s4u::this_actor::get_name());
     } catch (std::invalid_argument& ia) {
       throw std::invalid_argument(std::string("Processes of this example must have a numerical name, not ") +
                                   ia.what());
@@ -38,7 +38,7 @@ public:
 
     if (rank == 0) {
       /* The root process (rank 0) first sends the token then waits to receive it back */
-      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getCname());
+      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       std::string msg = "Token";
       neighbor_mailbox->put(&msg, task_comm_size);
       std::string* res = static_cast<std::string*>(my_mailbox->get());
@@ -46,7 +46,7 @@ public:
     } else {
       std::string* res = static_cast<std::string*>(my_mailbox->get());
       XBT_INFO("Host \"%u\" received \"%s\"", rank, res->c_str());
-      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->getCname());
+      XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox->get_cname());
       neighbor_mailbox->put(res, task_comm_size);
     }
   }
