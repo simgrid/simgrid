@@ -97,9 +97,9 @@ double VMModel::next_occuring_event(double now)
                                                                 // this VM got in the sharing on the PM
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->getPm()->get_cname());
 
-    xbt_assert(cpu->model() == surf_cpu_model_vm);
-    kernel::lmm::System* vcpu_system = cpu->model()->get_maxmin_system();
-    vcpu_system->update_constraint_bound(cpu->constraint(), virt_overhead * solved_value);
+    xbt_assert(cpu->get_model() == surf_cpu_model_vm);
+    kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
+    vcpu_system->update_constraint_bound(cpu->get_constraint(), virt_overhead * solved_value);
   }
 
   /* 2. Calculate resource share at the virtual machine layer. */

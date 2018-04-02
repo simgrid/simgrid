@@ -103,7 +103,7 @@ void Host::turnOn() {
   if (isOff()) {
     simgrid::simix::kernelImmediate([this] {
       this->extension<simgrid::simix::Host>()->turnOn();
-      this->pimpl_cpu->turnOn();
+      this->pimpl_cpu->turn_on();
       onStateChange(*this);
     });
   }
@@ -120,7 +120,7 @@ void Host::turnOff() {
 }
 
 bool Host::isOn() {
-  return this->pimpl_cpu->isOn();
+  return this->pimpl_cpu->is_on();
 }
 
 int Host::getPstatesCount() const
@@ -270,7 +270,7 @@ void Host::execute(double flops)
 
 double Host::getLoad()
 {
-  return this->pimpl_cpu->getLoad();
+  return this->pimpl_cpu->get_load();
 }
 
 } // namespace simgrid

@@ -35,7 +35,7 @@ public:
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model* model() const;
+  Model* get_model() const;
 
   /** @brief Get the name of the current Resource */
   const std::string& get_name() const;
@@ -44,28 +44,23 @@ public:
 
   bool operator==(const Resource& other) const;
 
-  /**
-   * @brief Apply an event of external load event to that resource
-   *
-   * @param event What happened
-   * @param value [TODO]
-   */
+  /** @brief Apply an event of external load event to that resource */
   virtual void apply_event(TraceEvent* event, double value) = 0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool is_used() = 0;
 
   /** @brief returns the current load (in flops per second, byte per second or similar) */
-  virtual double getLoad();
+  virtual double get_load();
 
   /** @brief Check if the current Resource is active */
-  virtual bool isOn() const;
+  virtual bool is_on() const;
   /** @brief Check if the current Resource is shut down */
-  virtual bool isOff() const;
+  virtual bool is_off() const;
   /** @brief Turn on the current Resource */
-  virtual void turnOn();
+  virtual void turn_on();
   /** @brief Turn off the current Resource */
-  virtual void turnOff();
+  virtual void turn_off();
 
 private:
   std::string name_;
@@ -74,7 +69,7 @@ private:
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
-  kernel::lmm::Constraint* constraint() const;
+  lmm::Constraint* get_constraint() const;
 
 private:
   kernel::lmm::Constraint* const constraint_ = nullptr;

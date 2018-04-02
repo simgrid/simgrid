@@ -54,7 +54,7 @@ StorageImpl::StorageImpl(kernel::resource::Model* model, std::string name, kerne
     , size_(size)
     , attach_(attach)
 {
-  StorageImpl::turnOn();
+  StorageImpl::turn_on();
   XBT_DEBUG("Create resource with Bread '%f' Bwrite '%f' and Size '%llu'", bread, bwrite, size);
   constraintRead_  = maxminSystem->constraint_new(this, bread);
   constraintWrite_ = maxminSystem->constraint_new(this, bwrite);
@@ -76,17 +76,17 @@ void StorageImpl::apply_event(tmgr_trace_event_t /*event*/, double /*value*/)
   THROW_UNIMPLEMENTED;
 }
 
-void StorageImpl::turnOn()
+void StorageImpl::turn_on()
 {
-  if (isOff()) {
-    Resource::turnOn();
+  if (is_off()) {
+    Resource::turn_on();
     storageStateChangedCallbacks(this, 0, 1);
   }
 }
-void StorageImpl::turnOff()
+void StorageImpl::turn_off()
 {
-  if (isOn()) {
-    Resource::turnOff();
+  if (is_on()) {
+    Resource::turn_off();
     storageStateChangedCallbacks(this, 1, 0);
   }
 }

@@ -133,7 +133,7 @@ namespace simgrid {
 
     bool LinkImpl::is_used()
     {
-      return model()->get_maxmin_system()->constraint_used(constraint());
+      return get_model()->get_maxmin_system()->constraint_used(get_constraint());
     }
 
     double LinkImpl::latency()
@@ -148,20 +148,20 @@ namespace simgrid {
 
     int LinkImpl::sharingPolicy()
     {
-      return constraint()->get_sharing_policy();
+      return get_constraint()->get_sharing_policy();
     }
 
-    void LinkImpl::turnOn()
+    void LinkImpl::turn_on()
     {
-      if (isOff()) {
-        Resource::turnOn();
+      if (is_off()) {
+        Resource::turn_on();
         s4u::Link::onStateChange(this->piface_);
       }
     }
-    void LinkImpl::turnOff()
+    void LinkImpl::turn_off()
     {
-      if (isOn()) {
-        Resource::turnOff();
+      if (is_on()) {
+        Resource::turn_off();
         s4u::Link::onStateChange(this->piface_);
       }
     }

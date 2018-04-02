@@ -114,20 +114,16 @@ int Link::sharingPolicy()
 
 double Link::getUsage()
 {
-  return this->pimpl_->constraint()->get_usage();
+  return this->pimpl_->get_constraint()->get_usage();
 }
 
 void Link::turnOn()
 {
-  simgrid::simix::kernelImmediate([this]() {
-    this->pimpl_->turnOn();
-  });
+  simgrid::simix::kernelImmediate([this]() { this->pimpl_->turn_on(); });
 }
 void Link::turnOff()
 {
-  simgrid::simix::kernelImmediate([this]() {
-    this->pimpl_->turnOff();
-  });
+  simgrid::simix::kernelImmediate([this]() { this->pimpl_->turn_off(); });
 }
 
 void* Link::getData()

@@ -237,7 +237,7 @@ double HostEnergy::getCurrentWattsValue()
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
     cpu_load = 1;
   else
-    cpu_load = host->pimpl_cpu->constraint()->get_usage() / current_speed;
+    cpu_load = host->pimpl_cpu->get_constraint()->get_usage() / current_speed;
 
   /** Divide by the number of cores here **/
   cpu_load /= host->pimpl_cpu->coreCount();

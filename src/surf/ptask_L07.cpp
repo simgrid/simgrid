@@ -125,7 +125,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
       while (cnst != nullptr) {
         i++;
         void* constraint_id = cnst->get_id();
-        if (static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->isOff()) {
+        if (static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_off()) {
           XBT_DEBUG("Action (%p) Failed!!", &action);
           action.finish(kernel::resource::Action::State::failed);
           break;
@@ -189,7 +189,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
     model->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
 
   for (int i = 0; i < host_nb; i++)
-    model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->constraint(), get_variable(), flops_amount[i]);
+    model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(), flops_amount[i]);
 
   if(bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
@@ -199,7 +199,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
           hostList_->at(i)->routeTo(hostList_->at(j), route, nullptr);
 
           for (auto const& link : route)
-            model->get_maxmin_system()->expand_add(link->constraint(), this->get_variable(),
+            model->get_maxmin_system()->expand_add(link->get_constraint(), this->get_variable(),
                                                    bytes_amount[i * host_nb + j]);
         }
       }
@@ -256,7 +256,7 @@ LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwid
   latency_.peak   = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    constraint()->unshare();
+    get_constraint()->unshare();
 
   s4u::Link::onCreation(this->piface_);
 }
@@ -269,7 +269,7 @@ kernel::resource::Action* CpuL07::execution_start(double size)
   host_list[0] = getHost();
   flops_amount[0] = size;
 
-  return static_cast<CpuL07Model*>(model())->hostModel_->execute_parallel(1, host_list, flops_amount, nullptr, -1);
+  return static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(1, host_list, flops_amount, nullptr, -1);
 }
 
 kernel::resource::Action* CpuL07::sleep(double duration)
@@ -277,14 +277,14 @@ kernel::resource::Action* CpuL07::sleep(double duration)
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
-  model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
+  get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), 0.0);
 
   return action;
 }
 
 bool CpuL07::is_used()
 {
-  return model()->get_maxmin_system()->constraint_used(constraint());
+  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
 /** @brief take into account changes of speed (either load or max) */
@@ -292,11 +292,11 @@ void CpuL07::onSpeedChange() {
   kernel::lmm::Variable* var = nullptr;
   const_lmm_element_t elem = nullptr;
 
-  model()->get_maxmin_system()->update_constraint_bound(constraint(), speed_.peak * speed_.scale);
-  while ((var = constraint()->get_variable(&elem))) {
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), speed_.peak * speed_.scale);
+  while ((var = get_constraint()->get_variable(&elem))) {
     kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
-    model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
+    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
   }
 
   Cpu::onSpeedChange();
@@ -304,7 +304,7 @@ void CpuL07::onSpeedChange() {
 
 bool LinkL07::is_used()
 {
-  return model()->get_maxmin_system()->constraint_used(constraint());
+  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
 void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
@@ -317,9 +317,9 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
 
   } else if (triggered == stateEvent_) {
     if (value > 0)
-      turnOn();
+      turn_on();
     else
-      turnOff();
+      turn_off();
     tmgr_trace_event_unref(&stateEvent_);
 
   } else {
@@ -340,9 +340,9 @@ void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 
   } else if (triggered == stateEvent_) {
     if (value > 0)
-      turnOn();
+      turn_on();
     else
-      turnOff();
+      turn_off();
     tmgr_trace_event_unref(&stateEvent_);
 
   } else {
@@ -353,7 +353,7 @@ void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 void LinkL07::setBandwidth(double value)
 {
   bandwidth_.peak = value;
-  model()->get_maxmin_system()->update_constraint_bound(constraint(), bandwidth_.peak * bandwidth_.scale);
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), bandwidth_.peak * bandwidth_.scale);
 }
 
 void LinkL07::setLatency(double value)
@@ -363,7 +363,7 @@ void LinkL07::setLatency(double value)
   const_lmm_element_t elem = nullptr;
 
   latency_.peak = value;
-  while ((var = constraint()->get_variable(&elem))) {
+  while ((var = get_constraint()->get_variable(&elem))) {
     action = static_cast<L07Action*>(var->get_id());
     action->updateBound();
   }

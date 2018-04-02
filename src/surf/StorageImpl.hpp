@@ -98,8 +98,8 @@ public:
 
   void apply_event(tmgr_trace_event_t event, double value) override;
 
-  void turnOn() override;
-  void turnOff() override;
+  void turn_on() override;
+  void turn_off() override;
 
   /**
    * @brief Read a file

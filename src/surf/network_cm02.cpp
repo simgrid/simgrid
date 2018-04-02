@@ -256,13 +256,13 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
              src->get_cname(), dst->get_cname());
 
   for (auto const& link : route)
-    if (link->isOff())
+    if (link->is_off())
       failed = 1;
 
   if (sg_network_crosstraffic == 1) {
     dst->routeTo(src, back_route, nullptr);
     for (auto const& link : back_route)
-      if (link->isOff())
+      if (link->is_off())
         failed = 1;
   }
 
@@ -319,12 +319,12 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   }
 
   for (auto const& link : route)
-    get_maxmin_system()->expand(link->constraint(), action->get_variable(), 1.0);
+    get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
 
   if (not back_route.empty()) { //  sg_network_crosstraffic was activated
     XBT_DEBUG("Crosstraffic active adding backward flow using 5%%");
     for (auto const& link : back_route)
-      get_maxmin_system()->expand(link->constraint(), action->get_variable(), .05);
+      get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
 
     // Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     // (You would also have to change simgrid::kernel::lmm::Element::get_concurrency())
@@ -350,7 +350,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
   latency_.peak  = latency;
 
   if (policy == SURF_LINK_FATPIPE)
-    constraint()->unshare();
+    get_constraint()->unshare();
 
   simgrid::s4u::Link::onCreation(this->piface_);
 }
@@ -368,14 +368,14 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
 
   } else if (triggered == stateEvent_) {
     if (value > 0)
-      turnOn();
+      turn_on();
     else {
       kernel::lmm::Variable* var = nullptr;
       const_lmm_element_t elem = nullptr;
       double now               = surf_get_clock();
 
-      turnOff();
-      while ((var = constraint()->get_variable(&elem))) {
+      turn_off();
+      while ((var = get_constraint()->get_variable(&elem))) {
         kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
         if (action->get_state() == kernel::resource::Action::State::running ||
@@ -390,15 +390,16 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
     xbt_die("Unknown event!\n");
   }
 
-  XBT_DEBUG("There was a resource state event, need to update actions related to the constraint (%p)", constraint());
+  XBT_DEBUG("There was a resource state event, need to update actions related to the constraint (%p)",
+            get_constraint());
 }
 
 void NetworkCm02Link::setBandwidth(double value)
 {
   bandwidth_.peak = value;
 
-  model()->get_maxmin_system()->update_constraint_bound(constraint(),
-                                                        sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
+                                                            sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
   TRACE_surf_link_set_bandwidth(surf_get_clock(), get_cname(),
                                 sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
 
@@ -409,11 +410,11 @@ void NetworkCm02Link::setBandwidth(double value)
     const_lmm_element_t elem     = nullptr;
     const_lmm_element_t nextelem = nullptr;
     int numelem                  = 0;
-    while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
+    while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
       NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->weight_ += delta;
       if (not action->is_suspended())
-        model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
+        get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
     }
   }
 }
@@ -428,15 +429,15 @@ void NetworkCm02Link::setLatency(double value)
 
   latency_.peak = value;
 
-  while ((var = constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
+  while ((var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem))) {
     NetworkCm02Action* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->lat_current_ += delta;
     action->weight_ += delta;
     if (action->rate_ < 0)
-      model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
-                                                          sg_tcp_gamma / (2.0 * action->lat_current_));
+      get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
+                                                              sg_tcp_gamma / (2.0 * action->lat_current_));
     else {
-      model()->get_maxmin_system()->update_variable_bound(
+      get_model()->get_maxmin_system()->update_variable_bound(
           action->get_variable(), std::min(action->rate_, sg_tcp_gamma / (2.0 * action->lat_current_)));
 
       if (action->rate_ < sg_tcp_gamma / (2.0 * action->lat_current_)) {
@@ -446,7 +447,7 @@ void NetworkCm02Link::setLatency(double value)
       }
     }
     if (not action->is_suspended())
-      model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
+      get_model()->get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
   }
 }
 

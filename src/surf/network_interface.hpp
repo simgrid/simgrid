@@ -143,8 +143,8 @@ public:
   /** @brief Check if the Link is used */
   bool is_used() override;
 
-  void turnOn() override;
-  void turnOff() override;
+  void turn_on() override;
+  void turn_off() override;
 
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF).
                                                           Trace must contain boolean values. */

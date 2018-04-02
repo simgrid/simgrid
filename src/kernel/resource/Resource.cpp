@@ -18,31 +18,31 @@ Resource::Resource(Model* model, const std::string& name, lmm::Constraint* const
 
 Resource::~Resource() = default;
 
-bool Resource::isOn() const
+bool Resource::is_on() const
 {
   return is_on_;
 }
-bool Resource::isOff() const
+bool Resource::is_off() const
 {
   return not is_on_;
 }
 
-void Resource::turnOn()
+void Resource::turn_on()
 {
   is_on_ = true;
 }
 
-void Resource::turnOff()
+void Resource::turn_off()
 {
   is_on_ = false;
 }
 
-double Resource::getLoad()
+double Resource::get_load()
 {
   return constraint_->get_usage();
 }
 
-Model* Resource::model() const
+Model* Resource::get_model() const
 {
   return model_;
 }
@@ -62,7 +62,7 @@ bool Resource::operator==(const Resource& other) const
   return name_ == other.name_;
 }
 
-kernel::lmm::Constraint* Resource::constraint() const
+kernel::lmm::Constraint* Resource::get_constraint() const
 {
   return constraint_;
 }

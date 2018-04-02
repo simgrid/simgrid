@@ -106,12 +106,12 @@ StorageN11::StorageN11(StorageModel* model, std::string name, kernel::lmm::Syste
 
 StorageAction* StorageN11::read(sg_size_t size)
 {
-  return new StorageN11Action(model(), size, isOff(), this, READ);
+  return new StorageN11Action(get_model(), size, is_off(), this, READ);
 }
 
 StorageAction* StorageN11::write(sg_size_t size)
 {
-  return new StorageN11Action(model(), size, isOff(), this, WRITE);
+  return new StorageN11Action(get_model(), size, is_off(), this, WRITE);
 }
 
 /**********
@@ -125,7 +125,7 @@ StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, 
   XBT_IN("(%s,%g", storage->get_cname(), cost);
 
   // Must be less than the max bandwidth for all actions
-  model->get_maxmin_system()->expand(storage->constraint(), get_variable(), 1.0);
+  model->get_maxmin_system()->expand(storage->get_constraint(), get_variable(), 1.0);
   switch(type) {
   case READ:
     model->get_maxmin_system()->expand(storage->constraintRead_, get_variable(), 1.0);

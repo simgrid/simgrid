@@ -60,7 +60,7 @@ HostLoad::HostLoad(simgrid::s4u::Host* ptr)
     , last_updated(surf_get_clock())
     , last_reset(surf_get_clock())
     , current_speed(host->getSpeed())
-    , current_flops(host->pimpl_cpu->constraint()->get_usage())
+    , current_flops(host->pimpl_cpu->get_constraint()->get_usage())
     , theor_max_flops(0)
     , was_prev_idle(current_flops == 0)
 {
@@ -74,7 +74,7 @@ void HostLoad::update()
 
   /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k \in {0, 1, ..., cores}
    * number of active cores */
-  current_flops = host->pimpl_cpu->constraint()->get_usage();
+  current_flops = host->pimpl_cpu->get_constraint()->get_usage();
 
   /* flops == pstate_speed * cores_being_currently_used */
   computed_flops += (now - last_updated) * current_flops;
@@ -137,7 +137,7 @@ void HostLoad::reset()
   idle_time       = 0;
   computed_flops  = 0;
   theor_max_flops = 0;
-  current_flops   = host->pimpl_cpu->constraint()->get_usage();
+  current_flops   = host->pimpl_cpu->get_constraint()->get_usage();
   current_speed   = host->getSpeed();
   was_prev_idle   = (current_flops == 0);
 }

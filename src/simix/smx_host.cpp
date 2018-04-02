@@ -70,7 +70,7 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
   xbt_assert((host != nullptr), "Invalid parameters");
 
   if (h->isOn()) {
-    h->pimpl_cpu->turnOff();
+    h->pimpl_cpu->turn_off();
 
     /* Clean Simulator data */
     if (not host->process_list.empty()) {

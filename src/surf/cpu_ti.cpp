@@ -411,11 +411,11 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
   } else if (event == stateEvent_) {
     if (value > 0) {
-      if(isOff())
+      if (is_off())
         host_that_restart.push_back(getHost());
-      turnOn();
+      turn_on();
     } else {
-      turnOff();
+      turn_off();
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
@@ -425,7 +425,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
             action.get_state() == kernel::resource::Action::State::not_in_the_system) {
           action.set_finish_time(date);
           action.set_state(kernel::resource::Action::State::failed);
-          model()->get_action_heap().remove(&action);
+          get_model()->get_action_heap().remove(&action);
         }
       }
     }
@@ -485,9 +485,9 @@ void CpuTi::update_actions_finish_time(double now)
     }
     /* add in action heap */
     if (min_finish > NO_MAX_DURATION)
-      model()->get_action_heap().update(&action, min_finish, kernel::resource::ActionHeap::Type::unset);
+      get_model()->get_action_heap().update(&action, min_finish, kernel::resource::ActionHeap::Type::unset);
     else
-      model()->get_action_heap().remove(&action);
+      get_model()->get_action_heap().remove(&action);
 
     XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f", get_cname(),
               &action, action.get_start_time(), action.get_finish_time(), action.get_max_duration());
@@ -520,7 +520,7 @@ void CpuTi::update_remaining_amount(double now)
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, last_update_);
   for (CpuTiAction& action : action_set_) {
     /* action not running, skip it */
-    if (action.get_state_set() != model()->get_running_action_set())
+    if (action.get_state_set() != get_model()->get_running_action_set())
       continue;
 
     /* bogus priority, skip it */
@@ -549,7 +549,7 @@ void CpuTi::update_remaining_amount(double now)
 CpuAction *CpuTi::execution_start(double size)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
-  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), size, isOff(), this);
+  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(get_model()), size, is_off(), this);
 
   action_set_.push_back(*action);
 
@@ -564,14 +564,14 @@ CpuAction *CpuTi::sleep(double duration)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(model()), 1.0, isOff(), this);
+  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(get_model()), 1.0, is_off(), this);
 
   action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
     simgrid::xbt::intrusive_erase(*action->get_state_set(), *action);
-    action->state_set_ = &static_cast<CpuTiModel*>(model())->runningActionSetThatDoesNotNeedBeingChecked_;
+    action->state_set_ = &static_cast<CpuTiModel*>(get_model())->runningActionSetThatDoesNotNeedBeingChecked_;
     action->get_state_set()->push_back(*action);
   }
 
@@ -583,7 +583,7 @@ CpuAction *CpuTi::sleep(double duration)
 
 void CpuTi::set_modified(bool modified)
 {
-  CpuTiList& modifiedCpu = static_cast<CpuTiModel*>(model())->modified_cpus_;
+  CpuTiList& modifiedCpu = static_cast<CpuTiModel*>(get_model())->modified_cpus_;
   if (modified) {
     if (not cpu_ti_hook.is_linked()) {
       modifiedCpu.push_back(*this);
