@@ -72,7 +72,7 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* r
     route_stack.pop_back();
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr &&
         prev_dst_gw->get_cname() != e_route->gw_src->get_cname()) {
-      getGlobalRoute(prev_dst_gw, e_route->gw_src, route->link_list, lat);
+      get_global_route(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
 
     for (auto const& link : e_route->link_list) {

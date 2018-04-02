@@ -63,8 +63,8 @@ RoutedZone::RoutedZone(NetZone* father, std::string name) : NetZoneImpl(father, 
 {
 }
 
-void RoutedZone::getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
-                          std::map<std::string, xbt_edge_t>* edges)
+void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                           std::map<std::string, xbt_edge_t>* edges)
 {
   std::vector<kernel::routing::NetPoint*> vertices = getVertices();
 

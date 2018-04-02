@@ -232,7 +232,7 @@ void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs
 
       NetPoint* gw_dst_net_elm      = nullptr;
       NetPoint* prev_gw_src_net_elm = nullptr;
-      getGlobalRoute(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
+      get_global_route(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
       auto pos = route->link_list.begin();
       for (auto const& link : e_route_as_to_as) {
         route->link_list.insert(pos, link);

@@ -43,8 +43,8 @@ NetZoneImpl::~NetZoneImpl()
   simgrid::s4u::Engine::getInstance()->netpointUnregister(netpoint_);
 }
 
-simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
-                                            std::map<std::string, std::string>* props)
+simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
+                                             std::map<std::string, std::string>* props)
 {
   simgrid::s4u::Host* res = new simgrid::s4u::Host(name);
 
@@ -64,8 +64,8 @@ simgrid::s4u::Host* NetZoneImpl::createHost(const char* name, std::vector<double
   return res;
 }
 
-void NetZoneImpl::addBypassRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                 std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                                   std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
   /* Argument validity checks */
   if (gw_dst) {
@@ -203,8 +203,8 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
 }
 
 /* PRECONDITION: this is the common ancestor of src and dst */
-bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
-                                 /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
+bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
+                                   /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
 {
   // If never set a bypass route return nullptr without any further computations
   if (bypass_routes_.empty())
@@ -297,22 +297,22 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
               "calls to getRoute",
               src->get_cname(), dst->get_cname(), bypassedRoute->links.size());
     if (src != key.first)
-      getGlobalRoute(src, bypassedRoute->gw_src, links, latency);
+      get_global_route(src, bypassedRoute->gw_src, links, latency);
     for (surf::LinkImpl* const& link : bypassedRoute->links) {
       links.push_back(link);
       if (latency)
         *latency += link->latency();
     }
     if (dst != key.second)
-      getGlobalRoute(bypassedRoute->gw_dst, dst, links, latency);
+      get_global_route(bypassedRoute->gw_dst, dst, links, latency);
     return true;
   }
   XBT_DEBUG("No bypass route from '%s' to '%s'.", src->get_cname(), dst->get_cname());
   return false;
 }
 
-void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
-                                 /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
+void NetZoneImpl::get_global_route(routing::NetPoint* src, routing::NetPoint* dst,
+                                   /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
 {
   RouteCreationArgs route;
 
@@ -327,7 +327,7 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
             src_ancestor->get_cname(), dst_ancestor->get_cname());
 
   /* Check whether a direct bypass is defined. If so, use it and bail out */
-  if (common_ancestor->getBypassRoute(src, dst, links, latency))
+  if (common_ancestor->get_bypass_route(src, dst, links, latency))
     return;
 
   /* If src and dst are in the same netzone, life is good */
@@ -346,13 +346,13 @@ void NetZoneImpl::getGlobalRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != route.gw_src)
-    getGlobalRoute(src, route.gw_src, links, latency);
+    get_global_route(src, route.gw_src, links, latency);
   for (auto const& link : route.link_list)
     links.push_back(link);
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   if (route.gw_dst != dst)
-    getGlobalRoute(route.gw_dst, dst, links, latency);
+    get_global_route(route.gw_dst, dst, links, latency);
 }
 }
 }

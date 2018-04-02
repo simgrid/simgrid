@@ -21,8 +21,8 @@ EmptyZone::EmptyZone(NetZone* father, std::string name) : NetZoneImpl(father, na
 
 EmptyZone::~EmptyZone() = default;
 
-void EmptyZone::getGraph(xbt_graph_t /*graph*/, std::map<std::string, xbt_node_t>* /*nodes*/,
-                         std::map<std::string, xbt_edge_t>* /*edges*/)
+void EmptyZone::get_graph(xbt_graph_t /*graph*/, std::map<std::string, xbt_node_t>* /*nodes*/,
+                          std::map<std::string, xbt_edge_t>* /*edges*/)
 {
   XBT_ERROR("No routing no graph");
 }

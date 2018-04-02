@@ -74,7 +74,7 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   }
 
   simgrid::s4u::Host* host =
-      routing_get_current()->createHost(args->id, &args->speed_per_pstate, args->core_amount, &props);
+      routing_get_current()->create_host(args->id, &args->speed_per_pstate, args->core_amount, &props);
 
   host->pimpl_->storage_ = mount_list;
   mount_list.clear();
@@ -404,8 +404,8 @@ void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
 
 void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassRoute)
 {
-  routing_get_current()->addBypassRoute(bypassRoute->src, bypassRoute->dst, bypassRoute->gw_src, bypassRoute->gw_dst,
-                                        bypassRoute->link_list, bypassRoute->symmetrical);
+  routing_get_current()->add_bypass_route(bypassRoute->src, bypassRoute->dst, bypassRoute->gw_src, bypassRoute->gw_dst,
+                                          bypassRoute->link_list, bypassRoute->symmetrical);
 }
 
 void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
@@ -482,7 +482,7 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
 
   std::vector<double> speedPerPstate;
   speedPerPstate.push_back(peer->speed);
-  simgrid::s4u::Host* host = as->createHost(peer->id.c_str(), &speedPerPstate, 1, nullptr);
+  simgrid::s4u::Host* host = as->create_host(peer->id.c_str(), &speedPerPstate, 1, nullptr);
 
   as->setPeerLink(host->pimpl_netpoint, peer->bw_in, peer->bw_out, peer->coord);
 

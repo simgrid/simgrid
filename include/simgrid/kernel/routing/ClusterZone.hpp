@@ -70,8 +70,8 @@ public:
   explicit ClusterZone(NetZone* father, std::string name);
 
   void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
-  void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
-                std::map<std::string, xbt_edge_t>* edges) override;
+  void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                 std::map<std::string, xbt_edge_t>* edges) override;
 
   virtual void create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position);
   virtual void parse_specific_arguments(ClusterCreationArgs* cluster)

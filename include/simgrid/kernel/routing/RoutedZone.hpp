@@ -52,8 +52,8 @@ class XBT_PRIVATE RoutedZone : public NetZoneImpl {
 public:
   explicit RoutedZone(NetZone* father, std::string name);
 
-  void getGraph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
-                std::map<std::string, xbt_edge_t>* edges) override;
+  void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
+                 std::map<std::string, xbt_edge_t>* edges) override;
   virtual RouteCreationArgs* newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
                                               NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
                                               bool symmetrical, bool change_order);

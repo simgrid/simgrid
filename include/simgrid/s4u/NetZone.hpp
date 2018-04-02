@@ -63,9 +63,9 @@ public:
   virtual void addRoute(kernel::routing::NetPoint * src, kernel::routing::NetPoint * dst,
                         kernel::routing::NetPoint * gw_src, kernel::routing::NetPoint * gw_dst,
                         std::vector<simgrid::surf::LinkImpl*> & link_list, bool symmetrical);
-  virtual void addBypassRoute(kernel::routing::NetPoint * src, kernel::routing::NetPoint * dst,
-                              kernel::routing::NetPoint * gw_src, kernel::routing::NetPoint * gw_dst,
-                              std::vector<simgrid::surf::LinkImpl*> & link_list, bool symmetrical) = 0;
+  virtual void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                                kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                                std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) = 0;
 
   /*** Called on each newly created regular route (not on bypass routes) */
   static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,

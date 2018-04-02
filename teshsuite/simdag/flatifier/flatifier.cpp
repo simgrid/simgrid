@@ -129,7 +129,7 @@ static void dump_routes()
       simgrid::s4u::Host* host2 = hosts[it_dst];
       std::vector<simgrid::surf::LinkImpl*> route;
       simgrid::kernel::routing::NetPoint* netcardDst = host2->pimpl_netpoint;
-      simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(netcardSrc, netcardDst, route, nullptr);
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(netcardSrc, netcardDst, route, nullptr);
       if (not route.empty()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), host2->get_cname());
         for (auto const& link : route)
@@ -142,7 +142,7 @@ static void dump_routes()
       if (netcardDst->is_router()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), netcardDst->get_cname());
         std::vector<simgrid::surf::LinkImpl*> route;
-        simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(netcardSrc, netcardDst, route, nullptr);
+        simgrid::kernel::routing::NetZoneImpl::get_global_route(netcardSrc, netcardDst, route, nullptr);
         for (auto const& link : route)
           std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
         std::printf("\n  </route>\n");
@@ -156,7 +156,7 @@ static void dump_routes()
         if (value2->is_router()) {
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), value2->get_cname());
           std::vector<simgrid::surf::LinkImpl*> route;
-          simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);
+          simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, value2, route, nullptr);
           for (auto const& link : route)
             std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
           std::printf("\n  </route>\n");
@@ -167,7 +167,7 @@ static void dump_routes()
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), host2->get_cname());
         std::vector<simgrid::surf::LinkImpl*> route;
         simgrid::kernel::routing::NetPoint* netcardDst = host2->pimpl_netpoint;
-        simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, netcardDst, route, nullptr);
+        simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, netcardDst, route, nullptr);
         for (auto const& link : route)
           std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
         std::printf("\n  </route>\n");
