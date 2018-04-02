@@ -76,7 +76,7 @@ xbt_dynar_t sg_hosts_as_dynar()
   std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
 
   for (auto const& host : list) {
-    if (host && host->pimpl_netpoint && host->pimpl_netpoint->isHost())
+    if (host && host->pimpl_netpoint && host->pimpl_netpoint->is_host())
       xbt_dynar_push(res, &host);
   }
   xbt_dynar_sort(res, hostcmp_voidp);

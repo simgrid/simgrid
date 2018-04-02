@@ -63,7 +63,7 @@ void surf_parse_assert_netpoint(std::string hostname, std::string pre, std::stri
   });
   bool first = true;
   for (auto const& np : list) {
-    if (np->isNetZone())
+    if (np->is_netzone())
       continue;
 
     if (not first)

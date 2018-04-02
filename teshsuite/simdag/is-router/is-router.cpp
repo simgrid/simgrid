@@ -31,11 +31,11 @@ int main(int argc, char **argv)
   xbt_dynar_foreach(hosts, it, host) {
     simgrid::kernel::routing::NetPoint* nc = host->pimpl_netpoint;
     const char *type = "buggy";
-    if (nc->isRouter())
+    if (nc->is_router())
       type = "router";
-    if (nc->isNetZone())
+    if (nc->is_netzone())
       type = "netzone";
-    if (nc->isHost())
+    if (nc->is_host())
       type = "host";
     std::printf("   - Seen: \"%s\". Type: %s\n", host->get_cname(), type);
   }
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
   std::printf("NetCards count: %zu\n", netcardList.size());
   for (auto const& nc : netcardList)
     std::printf("   - Seen: \"%s\". Type: %s\n", nc->get_cname(),
-                nc->isRouter() ? "router" : (nc->isNetZone() ? "netzone" : (nc->isHost() ? "host" : "buggy")));
+                nc->is_router() ? "router" : (nc->is_netzone() ? "netzone" : (nc->is_host() ? "host" : "buggy")));
 
   return 0;
 }

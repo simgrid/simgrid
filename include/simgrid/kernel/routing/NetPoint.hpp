@@ -34,11 +34,11 @@ public:
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   /** @brief the NetZone in which this NetPoint is included */
-  NetZoneImpl* netzone() { return netzone_; }
+  NetZoneImpl* get_englobing_zone() { return englobing_zone_; }
 
-  bool isNetZone() { return component_type_ == Type::NetZone; }
-  bool isHost() { return component_type_ == Type::Host; }
-  bool isRouter() { return component_type_ == Type::Router; }
+  bool is_netzone() { return component_type_ == Type::NetZone; }
+  bool is_host() { return component_type_ == Type::Host; }
+  bool is_router() { return component_type_ == Type::Router; }
 
   static simgrid::xbt::signal<void(NetPoint*)> onCreation;
 
@@ -48,7 +48,7 @@ private:
   unsigned int id_;
   std::string name_;
   NetPoint::Type component_type_;
-  NetZoneImpl* netzone_;
+  NetZoneImpl* englobing_zone_;
 };
 } // namespace routing
 } // namespace kernel

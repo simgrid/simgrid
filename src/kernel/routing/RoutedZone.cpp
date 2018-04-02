@@ -152,8 +152,8 @@ void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->get_cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->get_cname());
 
-  NetZone* src_as = src->netzone();
-  NetZone* dst_as = dst->netzone();
+  NetZone* src_as = src->get_englobing_zone();
+  NetZone* dst_as = dst->get_englobing_zone();
 
   xbt_assert(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same netzone as expected. Please report that bug.",
@@ -176,20 +176,20 @@ void RoutedZone::addRouteCheckParams(kernel::routing::NetPoint* src, kernel::rou
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
     xbt_assert(not link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
-    xbt_assert(not src->isNetZone(),
+    xbt_assert(not src->is_netzone(),
                "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
                srcName);
-    xbt_assert(not dst->isNetZone(),
+    xbt_assert(not dst->is_netzone(),
                "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have an NetzoneRoute?",
                dstName);
   } else {
     XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->get_cname(), dstName, gw_dst->get_cname());
-    xbt_assert(src->isNetZone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
-    xbt_assert(dst->isNetZone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
+    xbt_assert(src->is_netzone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
+    xbt_assert(dst->is_netzone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
 
-    xbt_assert(gw_src->isHost() || gw_src->isRouter(),
+    xbt_assert(gw_src->is_host() || gw_src->is_router(),
                "When defining a NetzoneRoute, gw_src must be an host or a router but '%s' is not.", srcName);
-    xbt_assert(gw_dst->isHost() || gw_dst->isRouter(),
+    xbt_assert(gw_dst->is_host() || gw_dst->is_router(),
                "When defining a NetzoneRoute, gw_dst must be an host or a router but '%s' is not.", dstName);
 
     xbt_assert(gw_src != gw_dst, "Cannot define an NetzoneRoute from '%s' to itself", gw_src->get_cname());

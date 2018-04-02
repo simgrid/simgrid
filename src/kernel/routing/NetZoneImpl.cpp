@@ -148,8 +148,8 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
                                   NetZoneImpl** dst_ancestor)
 {
   /* Deal with the easy base case */
-  if (src->netzone() == dst->netzone()) {
-    *common_ancestor = src->netzone();
+  if (src->get_englobing_zone() == dst->get_englobing_zone()) {
+    *common_ancestor = src->get_englobing_zone();
     *src_ancestor    = *common_ancestor;
     *dst_ancestor    = *common_ancestor;
     return;
@@ -158,21 +158,21 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
   /* engage the full recursive search */
 
   /* (1) find the path to root of src and dst*/
-  NetZoneImpl* src_as = src->netzone();
-  NetZoneImpl* dst_as = dst->netzone();
+  NetZoneImpl* src_as = src->get_englobing_zone();
+  NetZoneImpl* dst_as = dst->get_englobing_zone();
 
   xbt_assert(src_as, "Host %s must be in a netzone", src->get_cname());
   xbt_assert(dst_as, "Host %s must be in a netzone", dst->get_cname());
 
   /* (2) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
-  NetZoneImpl* current = src->netzone();
+  NetZoneImpl* current = src->get_englobing_zone();
   while (current != nullptr) {
     path_src.push_back(current);
     current = static_cast<NetZoneImpl*>(current->getFather());
   }
   std::vector<NetZoneImpl*> path_dst;
-  current = dst->netzone();
+  current = dst->get_englobing_zone();
   while (current != nullptr) {
     path_dst.push_back(current);
     current = static_cast<NetZoneImpl*>(current->getFather());
@@ -211,7 +211,7 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
     return false;
 
   /* Base case, no recursion is needed */
-  if (dst->netzone() == this && src->netzone() == this) {
+  if (dst->get_englobing_zone() == this && src->get_englobing_zone() == this) {
     if (bypass_routes_.find({src, dst}) != bypass_routes_.end()) {
       BypassRoute* bypassedRoute = bypass_routes_.at({src, dst});
       for (surf::LinkImpl* const& link : bypassedRoute->links) {
@@ -230,14 +230,14 @@ bool NetZoneImpl::getBypassRoute(routing::NetPoint* src, routing::NetPoint* dst,
 
   /* (1) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
-  NetZone* current = src->netzone();
+  NetZone* current = src->get_englobing_zone();
   while (current != nullptr) {
     path_src.push_back(static_cast<NetZoneImpl*>(current));
     current = current->father_;
   }
 
   std::vector<NetZoneImpl*> path_dst;
-  current = dst->netzone();
+  current = dst->get_englobing_zone();
   while (current != nullptr) {
     path_dst.push_back(static_cast<NetZoneImpl*>(current));
     current = current->father_;

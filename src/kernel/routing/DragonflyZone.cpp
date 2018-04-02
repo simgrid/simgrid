@@ -267,7 +267,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArg
   // Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?
 
-  if (dst->isRouter() || src->isRouter())
+  if (dst->is_router() || src->is_router())
     return;
 
   XBT_VERB("dragonfly getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(),

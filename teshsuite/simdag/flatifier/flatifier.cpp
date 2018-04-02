@@ -105,7 +105,7 @@ static void dump_routers()
             });
 
   for (auto const& srcCard : netcardList)
-    if (srcCard->isRouter())
+    if (srcCard->is_router())
       std::printf("  <router id=\"%s\"/>\n", srcCard->get_cname());
 }
 
@@ -139,7 +139,7 @@ static void dump_routes()
     }
 
     for (auto const& netcardDst : netcardList) { // to router
-      if (netcardDst->isRouter()) {
+      if (netcardDst->is_router()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), netcardDst->get_cname());
         std::vector<simgrid::surf::LinkImpl*> route;
         simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(netcardSrc, netcardDst, route, nullptr);
@@ -151,9 +151,9 @@ static void dump_routes()
   }
 
   for (auto const& value1 : netcardList) { // Routes from router
-    if (value1->isRouter()) {
+    if (value1->is_router()) {
       for (auto const& value2 : netcardList) { // to router
-        if (value2->isRouter()) {
+        if (value2->is_router()) {
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), value2->get_cname());
           std::vector<simgrid::surf::LinkImpl*> route;
           simgrid::kernel::routing::NetZoneImpl::getGlobalRoute(value1, value2, route, nullptr);

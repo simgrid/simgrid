@@ -54,7 +54,7 @@ static std::vector<double>* getCoordsFromNetpoint(NetPoint* np)
 {
   simgrid::kernel::routing::vivaldi::Coords* coords = np->extension<simgrid::kernel::routing::vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
-             (np->isNetZone() ? "Netzone" : (np->isHost() ? "Host" : "Router")), np->get_cname(), np);
+             (np->is_netzone() ? "Netzone" : (np->is_host() ? "Host" : "Router")), np->get_cname(), np);
   return &coords->coords;
 }
 
@@ -64,7 +64,8 @@ VivaldiZone::VivaldiZone(NetZone* father, std::string name) : ClusterZone(father
 
 void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, std::string coord)
 {
-  xbt_assert(netpoint->netzone() == this, "Cannot add a peer link to a netpoint that is not in this netzone");
+  xbt_assert(netpoint->get_englobing_zone() == this,
+             "Cannot add a peer link to a netpoint that is not in this netzone");
 
   new simgrid::kernel::routing::vivaldi::Coords(netpoint, coord);
 
@@ -79,7 +80,7 @@ void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 {
   XBT_DEBUG("vivaldi getLocalRoute from '%s'[%u] '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
-  if (src->isNetZone()) {
+  if (src->is_netzone()) {
     std::string srcName = "router_" + src->get_name();
     std::string dstName = "router_" + dst->get_name();
     route->gw_src       = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(srcName.c_str());

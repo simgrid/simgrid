@@ -249,7 +249,7 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
 
 static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
 {
-  if (netpoint->isRouter() && TRACE_is_enabled() && TRACE_needs_platform())
+  if (netpoint->is_router() && TRACE_is_enabled() && TRACE_needs_platform())
     new simgrid::instr::RouterContainer(netpoint->get_cname(), currentContainer.back());
 }
 

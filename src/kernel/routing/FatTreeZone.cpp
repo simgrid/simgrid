@@ -61,7 +61,7 @@ bool FatTreeZone::isInSubTree(FatTreeNode* root, FatTreeNode* node)
 void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency)
 {
 
-  if (dst->isRouter() || src->isRouter())
+  if (dst->is_router() || src->is_router())
     return;
 
   /* Let's find the source and the destination in our internal structure */

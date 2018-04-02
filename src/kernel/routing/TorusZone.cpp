@@ -98,7 +98,7 @@ void TorusZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* r
 
   XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
-  if (dst->isRouter() || src->isRouter())
+  if (dst->is_router() || src->is_router())
     return;
 
   if (src->id() == dst->id() && has_loopback_) {
