@@ -25,7 +25,7 @@ typedef boost::heap::pairing_heap<heap_element_type, boost::heap::constant_time_
     heap_type;
 
 typedef std::pair<double, simgrid::kernel::resource::Action*> heap_element_type;
-class XBT_PUBLIC ActionHeap : heap_type {
+class XBT_PUBLIC ActionHeap : public heap_type {
   friend Action;
 
 public:
