@@ -394,9 +394,8 @@ public:
 template <class T> class ReplayAction {
 protected:
   const std::string name;
+  const int my_proc_id;
   T args;
-
-  int my_proc_id;
 
 public:
   explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::getPid()) {}
