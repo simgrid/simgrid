@@ -62,7 +62,6 @@ public:
   s4u::Host* host       = nullptr; /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
-  // TODO, pack them
   std::exception_ptr exception;
   bool finished     = false;
   bool blocked      = false;

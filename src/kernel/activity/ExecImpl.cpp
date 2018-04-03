@@ -75,7 +75,7 @@ void simgrid::kernel::activity::ExecImpl::post()
                                  /* If the host running the synchro failed, notice it. This way, the asking
                                   * process can be killed if it runs on that host itself */
     state = SIMIX_FAILED;
-  } else if (surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
+  } else if (surfAction_ && surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state = SIMIX_CANCELED;
   } else if (timeoutDetector && timeoutDetector->get_state() == simgrid::kernel::resource::Action::State::done) {
