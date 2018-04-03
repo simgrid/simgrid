@@ -60,11 +60,8 @@ class XBT_PUBLIC string : private string_data {
 public:
   // Types
   typedef std::size_t size_type;
-  typedef std::ptrdiff_t difference_type;
   typedef char& reference;
   typedef const char& const_reference;
-  typedef char* pointer;
-  typedef const char* const_pointer;
   typedef char* iterator;
   typedef const char* const_iterator;
 
