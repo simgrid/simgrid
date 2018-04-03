@@ -73,7 +73,10 @@ public:
   void rankId_to_coords(int rankId, unsigned int (*coords)[4]);
 
 private:
-  ClusterCreationArgs* cluster_     = nullptr;
+  e_surf_link_sharing_policy_t sharing_policy_;
+  double bw_  = 0;
+  double lat_ = 0;
+
   unsigned int num_nodes_per_blade_    = 0;
   unsigned int num_blades_per_chassis_ = 0;
   unsigned int num_chassis_per_group_  = 0;
