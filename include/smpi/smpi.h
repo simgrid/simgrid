@@ -925,7 +925,7 @@ XBT_PUBLIC int smpi_nanosleep(const struct timespec* tp, struct timespec* t);
 XBT_PUBLIC int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp);
 #endif
 XBT_PUBLIC unsigned int smpi_sleep(unsigned int secs);
-XBT_PUBLIC int smpi_gettimeofday(struct timeval* tv, void* tz);
+XBT_PUBLIC int smpi_gettimeofday(struct timeval* tv, struct timezone* tz);
 XBT_PUBLIC unsigned long long smpi_rastro_resolution();
 XBT_PUBLIC unsigned long long smpi_rastro_timestamp();
 XBT_PUBLIC void smpi_sample_1(int global, const char* file, int line, int iters, double threshold);

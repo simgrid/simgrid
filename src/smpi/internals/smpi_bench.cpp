@@ -193,23 +193,32 @@ static unsigned int private_sleep(double secs)
 
 unsigned int smpi_sleep(unsigned int secs)
 {
+  if (not smpi_process())
+    return sleep(secs);
   return private_sleep(static_cast<double>(secs));
 }
 
 int smpi_usleep(useconds_t usecs)
 {
+  if (not smpi_process())
+    return usleep(usecs);
   return static_cast<int>(private_sleep(static_cast<double>(usecs) / 1000000.0));
 }
 
 #if _POSIX_TIMERS > 0
-int smpi_nanosleep(const struct timespec* tp, struct timespec* /*t*/)
-{
+int smpi_nanosleep(const struct timespec* tp, struct timespec* t)
+{ 
+  if (not smpi_process())
+    return nanosleep(tp,t);
   return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));
 }
 #endif
 
-int smpi_gettimeofday(struct timeval* tv, void* /*tz*/)
+int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
 {
+  if (not smpi_process())
+    return gettimeofday(tv, tz);
+
   smpi_bench_end();
   double now = SIMIX_get_clock();
   if (tv) {
@@ -225,8 +234,10 @@ int smpi_gettimeofday(struct timeval* tv, void* /*tz*/)
 }
 
 #if _POSIX_TIMERS > 0
-int smpi_clock_gettime(clockid_t /*clk_id*/, struct timespec* tp)
+int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
 {
+  if (not smpi_process())
+    return clock_gettime(clk_id, tp);
   //there is only one time in SMPI, so clk_id is ignored.
   smpi_bench_end();
   double now = SIMIX_get_clock();
@@ -435,16 +446,20 @@ void smpi_bench_destroy()
 int smpi_getopt_long (int argc,  char *const *argv,  const char *options,
                       const struct option * long_options, int *opt_index)
 {
-  optind = smpi_process()->get_optind();
+  if (smpi_process())
+    optind = smpi_process()->get_optind();
   int ret = getopt_long (argc,  argv,  options, long_options, opt_index);
-  smpi_process()->set_optind(optind);
+  if (smpi_process())
+    smpi_process()->set_optind(optind);
   return ret;
 }
 
 int smpi_getopt (int argc,  char *const *argv,  const char *options)
 {
-  optind = smpi_process()->get_optind();
+  if (smpi_process())
+    optind = smpi_process()->get_optind();
   int ret = getopt (argc,  argv,  options);
-  smpi_process()->set_optind(optind);
+  if (smpi_process())
+    smpi_process()->set_optind(optind);
   return ret;
 }
