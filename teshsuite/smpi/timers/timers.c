@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
   clock_gettime(CLOCK_REALTIME, &tp1);
   clock_gettime(CLOCK_REALTIME, &tp2);
   if (tp1.tv_sec != tp2.tv_sec || tp1.tv_nsec != tp2.tv_nsec)
-    printf("Error, two consecutive calls to gettimeofday did not return same time (with running power to 0)\n");
+    printf("Error, two consecutive calls to clock_gettime did not return same time (with running power to 0)\n");
 
   // nanosleep for 100ns
   clock_gettime(CLOCK_REALTIME, &tp1);

@@ -1,6 +1,7 @@
 #ifndef MPI_HELPERS_H
 #define MPI_HELPERS_H
 
+#include <unistd.h>
 #include <sys/time.h> /* Load it before the define next line to not mess with the system headers */
 
 #define sleep(x) smpi_sleep(x)
