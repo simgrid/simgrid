@@ -92,7 +92,6 @@ typedef simgrid::s4u::NetZone s4u_NetZone;
 typedef simgrid::s4u::VirtualMachine s4u_VM;
 typedef boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> smx_activity_t;
 typedef simgrid::kernel::routing::NetPoint routing_NetPoint;
-typedef simgrid::kernel::resource::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 typedef simgrid::kernel::context::Context* smx_context_t;
@@ -115,7 +114,6 @@ typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
 typedef struct kernel_Activity* smx_activity_t;
 typedef struct routing_NetPoint routing_NetPoint;
-typedef struct surf_Resource surf_Resource;
 typedef struct Trace tmgr_Trace;
 
 typedef struct s_smx_context* smx_context_t;
@@ -135,7 +133,6 @@ typedef s4u_VM* sg_vm_t;
 typedef s4u_Actor* sg_actor_t;
 
 typedef routing_NetPoint* sg_netpoint_t;
-typedef surf_Resource *sg_resource_t;
 
 typedef tmgr_Trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 

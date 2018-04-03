@@ -20,7 +20,7 @@ class TraceEvent {
 public:
   tmgr_trace_t trace;
   unsigned int idx;
-  sg_resource_t resource;
+  Resource* resource;
   bool free_me;
 };
 
