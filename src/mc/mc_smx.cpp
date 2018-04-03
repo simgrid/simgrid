@@ -96,7 +96,7 @@ void RemoteClient::refresh_simix()
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
+smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req)
 {
   xbt_assert(mc_model_checker != nullptr);
 

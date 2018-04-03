@@ -136,7 +136,6 @@ typedef routing_NetPoint* sg_netpoint_t;
 
 typedef tmgr_Trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
-typedef struct s_smx_simcall s_smx_simcall_t;
 typedef struct s_smx_simcall* smx_simcall_t;
 
 typedef enum { // FIXME: move this to s4u::Link; make it an enum class

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -106,14 +106,14 @@ public:
   Transition transition;
 
   /** The simcall which was executed, going out of that state */
-  s_smx_simcall_t executed_req;
+  s_smx_simcall executed_req;
 
   /* Internal translation of the executed_req simcall
    *
    * SIMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
    * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.
    */
-  s_smx_simcall_t internal_req;
+  s_smx_simcall internal_req;
 
   /* Can be used as a copy of the remote synchro object */
   simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> internal_comm;

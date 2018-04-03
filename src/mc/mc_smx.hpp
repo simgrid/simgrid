@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -39,7 +39,7 @@ extern "C" {
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-XBT_PRIVATE smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req);
+XBT_PRIVATE smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall const* req);
 
 XBT_PRIVATE const char* MC_smx_actor_get_name(smx_actor_t p);
 XBT_PRIVATE const char* MC_smx_actor_get_host_name(smx_actor_t p);
