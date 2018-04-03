@@ -29,8 +29,6 @@ typedef struct s_xbt_dict {
   int fill;
 } s_xbt_dict_t;
 
-typedef struct s_xbt_dict_cursor s_xbt_dict_cursor_t;
-
 extern XBT_PRIVATE xbt_mallocator_t dict_elm_mallocator;
 XBT_PRIVATE void * dict_elm_mallocator_new_f(void);
 #define dict_elm_mallocator_free_f xbt_free_f
