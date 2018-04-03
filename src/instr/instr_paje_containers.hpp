@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,7 +26,7 @@ public:
   Type* type_; /* Type of this container */
   Container* father_;
   std::map<std::string, Container*> children_;
-  sg_netpoint_t netpoint_ = nullptr;
+  kernel::routing::NetPoint* netpoint_ = nullptr;
 
   static Container* byNameOrNull(std::string name);
   static Container* byName(std::string name);

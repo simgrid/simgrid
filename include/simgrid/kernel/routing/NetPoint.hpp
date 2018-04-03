@@ -54,6 +54,6 @@ private:
 } // namespace kernel
 } // namespace simgrid
 
-XBT_PUBLIC sg_netpoint_t sg_netpoint_by_name_or_null(const char* name);
+XBT_PUBLIC simgrid::kernel::routing::NetPoint* sg_netpoint_by_name_or_null(const char* name);
 
 #endif /* KERNEL_ROUTING_NETPOINT_HPP_ */

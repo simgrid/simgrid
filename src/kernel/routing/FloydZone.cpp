@@ -66,7 +66,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     route->gw_dst = route_stack.front()->gw_dst;
   }
 
-  sg_netpoint_t prev_dst_gw = nullptr;
+  NetPoint* prev_dst_gw = nullptr;
   while (not route_stack.empty()) {
     RouteCreationArgs* e_route = route_stack.back();
     route_stack.pop_back();
@@ -85,8 +85,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   }
 }
 
-void FloydZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                           std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
   /* set the size of table routing */

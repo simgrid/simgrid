@@ -73,11 +73,11 @@ public:
 
 class RouteCreationArgs {
 public:
-  bool symmetrical     = false;
-  sg_netpoint_t src    = nullptr;
-  sg_netpoint_t dst    = nullptr;
-  sg_netpoint_t gw_src = nullptr;
-  sg_netpoint_t gw_dst = nullptr;
+  bool symmetrical = false;
+  NetPoint* src    = nullptr;
+  NetPoint* dst    = nullptr;
+  NetPoint* gw_src = nullptr;
+  NetPoint* gw_dst = nullptr;
   std::vector<simgrid::surf::LinkImpl*> link_list;
 };
 
