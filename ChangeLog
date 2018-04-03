@@ -2,7 +2,11 @@ SimGrid (3.20) NOT RELEASED YET (Release target: June 21. 2018 10:07 UTC)
 
 TRACE
  - Change --cfg=tracing/msg/vm to --cfg=tracing/vm as virtual machine
-   behavior tracing is no longer limited to MSG 
+   behavior tracing is no longer limited to MSG
+
+ Fixed bugs:
+ - #258: daemonized actors hang after all non-daemonized actors have completed
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.19.1) Released March 22 2018
