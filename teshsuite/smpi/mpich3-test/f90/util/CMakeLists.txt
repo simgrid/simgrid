@@ -10,6 +10,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   #F90 version of the mtest library
   add_library(mtest_f90 STATIC ../util/mtestf90.f90)
+  #fake dependency, to ensure mpi.mod is generated properly before
+  target_link_libraries(mtest_f90 mpi)
 endif()
 
 set(txt_files
