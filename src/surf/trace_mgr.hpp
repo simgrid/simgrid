@@ -28,7 +28,6 @@ public:
 } // namespace kernel
 } // namespace simgrid
 typedef simgrid::kernel::resource::TraceEvent* tmgr_trace_event_t;
-extern "C" {
 
 /**
  * \brief Free a trace event structure
@@ -43,7 +42,6 @@ XBT_PUBLIC void tmgr_finalize();
 
 XBT_PUBLIC tmgr_trace_t tmgr_trace_new_from_file(std::string filename);
 XBT_PUBLIC tmgr_trace_t tmgr_trace_new_from_string(std::string id, std::string input, double periodicity);
-}
 
 namespace simgrid {
 /** @brief Modeling of the availability profile (due to an external load) or the churn
