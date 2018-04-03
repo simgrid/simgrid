@@ -543,10 +543,19 @@ void SIMIX_run()
 
     TRACE_end();
 
-    XBT_CRITICAL("Oops ! Deadlock or code not perfectly clean.");
-    SIMIX_display_process_status();
-    simgrid::s4u::onDeadlock();
-    xbt_abort();
+    if (simix_global->process_list.size() <= simix_global->daemons.size()) {
+      XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
+                   "once the simulation is over. Please fix your on_exit() functions.");
+      SIMIX_display_process_status();
+      simgrid::s4u::onDeadlock();
+      xbt_abort();
+
+    } else {
+      XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
+      SIMIX_display_process_status();
+      simgrid::s4u::onDeadlock();
+      xbt_abort();
+    }
   }
   simgrid::s4u::onSimulationEnd();
 }
