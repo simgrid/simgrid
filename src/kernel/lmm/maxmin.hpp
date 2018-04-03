@@ -260,7 +260,7 @@ public:
    * @param elem A element of constraint of the constraint or NULL
    * @return A variable associated to a constraint
    */
-  Variable* get_variable(const_lmm_element_t * elem) const;
+  Variable* get_variable(const Element** elem) const;
 
   /**
    * @brief Get a var associated to a constraint
@@ -270,7 +270,7 @@ public:
    * @param numelem parameter representing the number of elements to go
    * @return A variable associated to a constraint
    */
-  Variable* get_variable_safe(const_lmm_element_t * elem, const_lmm_element_t * nextelem, int* numelem) const;
+  Variable* get_variable_safe(const Element** elem, const Element** nextelem, int* numelem) const;
 
   /**
    * @brief Get the data associated to a constraint
@@ -304,7 +304,7 @@ public:
   int id_int;
   double lambda;
   double new_lambda;
-  lmm_constraint_light_t cnst_light;
+  ConstraintLight* cnst_light;
 
 private:
   static int Global_debug_id;

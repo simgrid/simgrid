@@ -99,9 +99,6 @@ typedef simgrid::kernel::activity::MutexImpl* smx_mutex_t;
 typedef simgrid::kernel::activity::MailboxImpl* smx_mailbox_t;
 typedef simgrid::surf::StorageImpl* surf_storage_t;
 
-typedef const simgrid::kernel::lmm::Element* const_lmm_element_t;
-typedef simgrid::kernel::lmm::ConstraintLight* lmm_constraint_light_t;
-
 #else
 
 typedef struct s4u_Actor s4u_Actor;

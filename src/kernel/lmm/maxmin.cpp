@@ -326,7 +326,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
   check_concurrency();
 }
 
-Variable* Constraint::get_variable(const_lmm_element_t* elem) const
+Variable* Constraint::get_variable(const Element** elem) const
 {
   if (*elem == nullptr) {
     // That is the first call, pick the first element among enabled_element_set (or disabled_element_set if
@@ -361,7 +361,7 @@ Variable* Constraint::get_variable(const_lmm_element_t* elem) const
 
 // if we modify the list between calls, normal version may loop forever
 // this safe version ensures that we browse the list elements only once
-Variable* Constraint::get_variable_safe(const_lmm_element_t* elem, const_lmm_element_t* nextelem, int* numelem) const
+Variable* Constraint::get_variable_safe(const Element** elem, const Element** nextelem, int* numelem) const
 {
   if (*elem == nullptr) {
     *numelem = enabled_element_set.size() + disabled_element_set.size() - 1;
