@@ -240,7 +240,7 @@ behavior of concurrent applications on the platform, we need to
 alleviate this. Several solutions exist:
 
 Now that the the master creates the workers, it knows their PID
-(process ID -- given by @ref MSG_process_get_pid()), so you could use
+(process ID -- given by @ref MSG_process_get_PID()), so you could use
 it in the channel name.
 
 Another possibility for the master is to determine a channel name
