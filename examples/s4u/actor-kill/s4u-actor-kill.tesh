@@ -10,6 +10,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/s4u-actor-kill ${platfdir}/small_platform.xml "--l
 > [ 12.000000] (killer@Tremblay) Kill the victim A
 > [ 12.000000] (victim A@Fafard) I have been killed!
 > [ 13.000000] (killer@Tremblay) Kill victimB, even if it's already dead
-> [ 14.000000] (killer@Tremblay) Killing everybody but myself
-> [ 14.000000] (killer@Tremblay) OK, goodbye now. I commit a suicide.
-> [ 14.000000] (maestro@) Simulation time 14
+> [ 14.000000] (killer@Tremblay) Start a new actor, and kill it right away
+> [ 14.000000] (victim C@Jupiter) I have been killed!
+> [ 15.000000] (killer@Tremblay) Killing everybody but myself
+> [ 15.000000] (killer@Tremblay) OK, goodbye now. I commit a suicide.

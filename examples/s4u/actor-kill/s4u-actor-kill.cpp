@@ -52,6 +52,13 @@ static void killer()
 
   simgrid::s4u::this_actor::sleep_for(1);
 
+  XBT_INFO("Start a new actor, and kill it right away");
+  simgrid::s4u::ActorPtr victimC =
+      simgrid::s4u::Actor::createActor("victim C", simgrid::s4u::Host::by_name("Jupiter"), victimA_fun);
+  victimC->kill();
+
+  simgrid::s4u::this_actor::sleep_for(1);
+
   XBT_INFO("Killing everybody but myself");
   simgrid::s4u::Actor::killAll();
 
@@ -71,8 +78,6 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::createActor("killer", simgrid::s4u::Host::by_name("Tremblay"), killer);
 
   e.run(); /* - Run the simulation */
-
-  XBT_INFO("Simulation time %g", e.getClock());
 
   return 0;
 }
