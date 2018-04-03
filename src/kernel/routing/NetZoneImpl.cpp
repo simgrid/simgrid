@@ -333,14 +333,14 @@ void NetZoneImpl::get_global_route(routing::NetPoint* src, routing::NetPoint* ds
   /* If src and dst are in the same netzone, life is good */
   if (src_ancestor == dst_ancestor) { /* SURF_ROUTING_BASE */
     route.link_list = std::move(links);
-    common_ancestor->getLocalRoute(src, dst, &route, latency);
+    common_ancestor->get_local_route(src, dst, &route, latency);
     links = std::move(route.link_list);
     return;
   }
 
   /* Not in the same netzone, no bypass. We'll have to find our path between the netzones recursively */
 
-  common_ancestor->getLocalRoute(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
+  common_ancestor->get_local_route(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
   xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
              src->get_cname(), dst->get_cname());
 

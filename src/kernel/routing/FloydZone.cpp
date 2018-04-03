@@ -44,7 +44,7 @@ FloydZone::~FloydZone()
   delete[] cost_table_;
 }
 
-void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   unsigned int table_size = getTableSize();
 
@@ -85,9 +85,9 @@ void FloydZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* r
   }
 }
 
-void FloydZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+void FloydZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                          std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
   /* set the size of table routing */
   unsigned int table_size = getTableSize();

@@ -262,7 +262,7 @@ void DragonflyZone::generateLinks()
   }
 }
 
-void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* latency)
+void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* latency)
 {
   // Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?
@@ -274,7 +274,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArg
            dst->id());
 
   if ((src->id() == dst->id()) && has_loopback_) {
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePosition(src->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos(src->id()));
 
     route->link_list.push_back(info.first);
     if (latency)
@@ -302,7 +302,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArg
     *latency += myRouter->my_nodes_[myCoords[3] * num_links_per_link_]->latency();
 
   if (has_limiter_) { // limiter for sender
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLoopback(src->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
     route->link_list.push_back(info.first);
   }
 
@@ -352,7 +352,7 @@ void DragonflyZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArg
   }
 
   if (has_limiter_) { // limiter for receiver
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLoopback(dst->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos_with_loopback(dst->id()));
     route->link_list.push_back(info.first);
   }
 

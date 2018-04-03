@@ -58,7 +58,7 @@ bool FatTreeZone::isInSubTree(FatTreeNode* root, FatTreeNode* node)
   return true;
 }
 
-void FatTreeZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency)
+void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency)
 {
 
   if (dst->is_router() || src->is_router())
@@ -190,8 +190,8 @@ int FatTreeZone::connectNodeToParents(FatTreeNode* node)
                 node->id, node->level, node->position, (*currentParentNode)->id, (*currentParentNode)->level,
                 (*currentParentNode)->position, this->num_port_lower_level_[level]);
       for (unsigned int j = 0; j < this->num_port_lower_level_[level]; j++) {
-        this->addLink(*currentParentNode, node->label[level] + j * this->num_children_per_node_[level], node,
-                      (*currentParentNode)->label[level] + j * this->num_parents_per_node_[level]);
+        this->add_link(*currentParentNode, node->label[level] + j * this->num_children_per_node_[level], node,
+                       (*currentParentNode)->label[level] + j * this->num_parents_per_node_[level]);
       }
       connectionsNumber++;
     }
@@ -346,7 +346,7 @@ void FatTreeZone::add_processing_node(int id)
   this->nodes_.push_back(newNode);
 }
 
-void FatTreeZone::addLink(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
+void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTreeNode* child, unsigned int childPort)
 {
   FatTreeLink* newLink;
   newLink = new FatTreeLink(this->cluster_, child, parent);

@@ -227,7 +227,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
 
       auto* as_cluster = static_cast<ClusterZone*>(current_as);
-      as_cluster->private_links_.insert({as_cluster->nodePosition(rankId), {linkUp, linkDown}});
+      as_cluster->private_links_.insert({as_cluster->node_pos(rankId), {linkUp, linkDown}});
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -245,14 +245,14 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       sg_platf_new_link(&link);
       linkDown = simgrid::surf::LinkImpl::byName(tmp_link);
       linkUp   = linkDown;
-      current_as->private_links_.insert({current_as->nodePositionWithLoopback(rankId), {linkUp, linkDown}});
+      current_as->private_links_.insert({current_as->node_pos_with_loopback(rankId), {linkUp, linkDown}});
     }
 
     //call the cluster function that adds the others links
     if (cluster->topology == simgrid::kernel::routing::ClusterTopology::FAT_TREE) {
       static_cast<FatTreeZone*>(current_as)->add_processing_node(i);
     } else {
-      current_as->create_links_for_node(cluster, i, rankId, current_as->nodePositionWithLimiter(rankId));
+      current_as->create_links_for_node(cluster, i, rankId, current_as->node_pos_with_loopback_limiter(rankId));
     }
     rankId++;
   }
@@ -398,8 +398,8 @@ void sg_platf_new_mount(simgrid::kernel::routing::MountCreationArgs* mount)
 
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
 {
-  routing_get_current()->addRoute(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
-                                  route->symmetrical);
+  routing_get_current()->add_route(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
+                                   route->symmetrical);
 }
 
 void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassRoute)

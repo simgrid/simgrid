@@ -75,7 +75,7 @@ void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
 
       RouteCreationArgs* route = new RouteCreationArgs();
 
-      getLocalRoute(my_src, my_dst, route, nullptr);
+      get_local_route(my_src, my_dst, route, nullptr);
 
       XBT_DEBUG("get_route_and_latency %s -> %s", my_src->get_cname(), my_dst->get_cname());
 

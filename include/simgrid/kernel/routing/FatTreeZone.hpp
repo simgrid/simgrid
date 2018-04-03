@@ -100,7 +100,7 @@ class XBT_PRIVATE FatTreeZone : public ClusterZone {
 public:
   explicit FatTreeZone(NetZone* father, std::string name);
   ~FatTreeZone() override;
-  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
+  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 
   /** \brief Generate the fat tree
    *
@@ -131,7 +131,7 @@ private:
 
   ClusterCreationArgs* cluster_ = nullptr;
 
-  void addLink(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
+  void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
   int getLevelPosition(const unsigned int level);
   void generateLabels();
   void generateSwitches();

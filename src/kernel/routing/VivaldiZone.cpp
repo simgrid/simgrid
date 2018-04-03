@@ -76,7 +76,7 @@ void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, s
   private_links_.insert({netpoint->id(), {linkUp, linkDown}});
 }
 
-void VivaldiZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   XBT_DEBUG("vivaldi getLocalRoute from '%s'[%u] '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 

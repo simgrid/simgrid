@@ -69,7 +69,7 @@ class ClusterZone : public NetZoneImpl {
 public:
   explicit ClusterZone(NetZone* father, std::string name);
 
-  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
+  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                  std::map<std::string, xbt_edge_t>* edges) override;
 
@@ -83,12 +83,12 @@ public:
   /* The pair is {linkUp, linkDown} */
   std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> private_links_;
 
-  unsigned int nodePosition(int id) { return id * num_links_per_node_; }
-  unsigned int nodePositionWithLoopback(int id) { return nodePosition(id) + (has_loopback_ ? 1 : 0); }
-  unsigned int nodePositionWithLimiter(int id) { return nodePositionWithLoopback(id) + (has_limiter_ ? 1 : 0); }
+  unsigned int node_pos(int id) { return id * num_links_per_node_; }
+  unsigned int node_pos_with_loopback(int id) { return node_pos(id) + (has_loopback_ ? 1 : 0); }
+  unsigned int node_pos_with_loopback_limiter(int id) { return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0); }
 
-  surf::LinkImpl* backbone_      = nullptr;
   void* loopback_                = nullptr;
+  surf::LinkImpl* backbone_        = nullptr;
   NetPoint* router_              = nullptr;
   bool has_limiter_                = false;
   bool has_loopback_               = false;

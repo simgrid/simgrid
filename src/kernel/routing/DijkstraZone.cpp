@@ -123,7 +123,7 @@ void DijkstraZone::newRoute(int src_id, int dst_id, simgrid::kernel::routing::Ro
   xbt_graph_new_edge(route_graph_, src, dst, e_route);
 }
 
-void DijkstraZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   getRouteCheckParams(src, dst);
   int src_id = src->id();
@@ -269,9 +269,9 @@ DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : Rou
 {
 }
 
-void DijkstraZone::addRoute(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                            kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                            std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+void DijkstraZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                             kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                             std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
 {
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();

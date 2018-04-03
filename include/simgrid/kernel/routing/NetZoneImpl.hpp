@@ -70,7 +70,7 @@ protected:
    * @param into Container into which the traversed links and gateway informations should be pushed
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) = 0;
+  virtual void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) = 0;
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
   bool get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,

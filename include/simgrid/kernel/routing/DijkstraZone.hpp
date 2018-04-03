@@ -51,9 +51,9 @@ public:
    * After this function returns, any node in the graph
    * will have a loopback attached to it.
    */
-  void getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat) override;
-  void addRoute(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) override;
+  void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat) override;
+  void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                 std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) override;
 
   xbt_graph_t route_graph_ = nullptr;          /* xbt_graph */
   std::map<int, xbt_node_t> graph_node_map_;   /* map */

@@ -21,7 +21,7 @@ ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father
 {
 }
 
-void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
+void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
   XBT_VERB("cluster getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
   xbt_assert(not private_links_.empty(),
@@ -30,7 +30,7 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
   if ((src->id() == dst->id()) && has_loopback_) {
     xbt_assert(not src->is_router(), "Routing from a cluster private router to itself is meaningless");
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePosition(src->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos(src->id()));
     route->link_list.push_back(info.first);
     if (lat)
       *lat += info.first->latency();
@@ -39,11 +39,11 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
   if (not src->is_router()) { // No private link for the private router
     if (has_limiter_) {      // limiter for sender
-      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLoopback(src->id()));
+      std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
       route->link_list.push_back(info.first);
     }
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLimiter(src->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos_with_loopback_limiter(src->id()));
     if (info.first) { // link up
       route->link_list.push_back(info.first);
       if (lat)
@@ -59,14 +59,14 @@ void ClusterZone::getLocalRoute(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
   if (not dst->is_router()) { // No specific link for router
 
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(nodePositionWithLimiter(dst->id()));
+    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos_with_loopback_limiter(dst->id()));
     if (info.second) { // link down
       route->link_list.push_back(info.second);
       if (lat)
         *lat += info.second->latency();
     }
     if (has_limiter_) { // limiter for receiver
-      info = private_links_.at(nodePositionWithLoopback(dst->id()));
+      info = private_links_.at(node_pos_with_loopback(dst->id()));
       route->link_list.push_back(info.first);
     }
   }

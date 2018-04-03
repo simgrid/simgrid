@@ -104,8 +104,9 @@ int NetZone::addComponent(kernel::routing::NetPoint* elm)
   return vertices_.size() - 1; // The rank of the newly created object
 }
 
-void NetZone::addRoute(sg_netpoint_t /*src*/, sg_netpoint_t /*dst*/, sg_netpoint_t /*gw_src*/, sg_netpoint_t /*gw_dst*/,
-                       std::vector<simgrid::surf::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
+void NetZone::add_route(sg_netpoint_t /*src*/, sg_netpoint_t /*dst*/, sg_netpoint_t /*gw_src*/,
+                        sg_netpoint_t /*gw_dst*/, std::vector<simgrid::surf::LinkImpl*>& /*link_list*/,
+                        bool /*symmetrical*/)
 {
   xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
 }
