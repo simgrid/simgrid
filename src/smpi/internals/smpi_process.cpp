@@ -276,5 +276,12 @@ void Process::init(int *argc, char ***argv){
                              "Please use MPI_Init(&argc, &argv) as usual instead.");
 }
 
+int Process::get_optind(){
+  return optind;
+}
+void Process::set_optind(int new_optind){
+  optind=new_optind;
+}
+
 }
 }

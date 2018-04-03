@@ -12,6 +12,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "xbt/config.hpp"
+#include "getopt.h"
 
 #include <unordered_map>
 
@@ -429,4 +430,21 @@ void smpi_trace_set_call_location__(const char* file, int* line)
 void smpi_bench_destroy()
 {
   samples.clear();
+}
+
+int smpi_getopt_long (int argc,  char *const *argv,  const char *options,
+                      const struct option * long_options, int *opt_index)
+{
+  optind = smpi_process()->get_optind();
+  int ret = getopt_long (argc,  argv,  options, long_options, opt_index);
+  smpi_process()->set_optind(optind);
+  return ret;
+}
+
+int smpi_getopt (int argc,  char *const *argv,  const char *options)
+{
+  optind = smpi_process()->get_optind();
+  int ret = getopt (argc,  argv,  options);
+  smpi_process()->set_optind(optind);
+  return ret;
 }

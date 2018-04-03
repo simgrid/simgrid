@@ -36,6 +36,7 @@ class Process {
     smpi_trace_call_location_t trace_call_loc_;
     simgrid::s4u::ActorPtr process_ = nullptr;
     smpi_privatization_region_t privatized_region_;
+    int optind=0; /*for getopt replacement */
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
     int papi_event_set_;
@@ -75,6 +76,8 @@ class Process {
     msg_bar_t finalization_barrier();
     static void init(int *argc, char ***argv);
     simgrid::s4u::ActorPtr process();
+    int get_optind();
+    void set_optind(int optind);
 };
 
 

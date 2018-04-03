@@ -994,6 +994,10 @@ XBT_PUBLIC void SMPI_finalize();
 XBT_PUBLIC void smpi_register_static(void* arg, void_f_pvoid_t free_fn);
 XBT_PUBLIC void smpi_free_static();
 
+
+struct option;
+XBT_PUBLIC int smpi_getopt_long (int argc,  char *const *argv,  const char *options,  const struct option *long_options, int *opt_index);
+XBT_PUBLIC int smpi_getopt (int argc,  char *const *argv,  const char *options);
 #define SMPI_VARINIT_GLOBAL(name,type)                          \
 type *name = NULL;                                              \
 static void __attribute__((constructor)) __preinit_##name(void) { \
@@ -1064,6 +1068,8 @@ std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std:
                                                                       size_t offset, size_t buff_size);
 std::vector<std::pair<size_t, size_t>> merge_private_blocks(std::vector<std::pair<size_t, size_t>> src,
                                                             std::vector<std::pair<size_t, size_t>> dst);
+                                                            
+                                                            
 #endif
 
 #endif
