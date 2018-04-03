@@ -1,4 +1,4 @@
-/* Copyright (c) 2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016, 2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,7 +53,6 @@ typedef struct SMPI_Datatype SMPI_Datatype;
 typedef struct SMPI_Group SMPI_Group;
 typedef struct SMPI_Info SMPI_Info;
 typedef struct SMPI_Op SMPI_Op;
-typedef struct SMPI_Process SMPI_Process;
 typedef struct SMPI_Request SMPI_Request;
 typedef struct SMPI_Topology SMPI_Topology;
 typedef struct SMPI_Win SMPI_Win;
