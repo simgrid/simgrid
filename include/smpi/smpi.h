@@ -8,10 +8,6 @@
 
 #include <unistd.h>
 #include <sys/time.h>
-#if _POSIX_TIMERS
-#include <time.h>
-#endif
-
 #include <simgrid/forward.h>
 #include <smpi/forward.hpp>
 #include <stddef.h>
@@ -919,13 +915,7 @@ XBT_PUBLIC int smpi_get_host_pstate();
 
 XBT_PUBLIC double smpi_get_host_consumed_energy();
 
-XBT_PUBLIC int smpi_usleep(useconds_t usecs);
-#if _POSIX_TIMERS > 0
-XBT_PUBLIC int smpi_nanosleep(const struct timespec* tp, struct timespec* t);
-XBT_PUBLIC int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp);
-#endif
-XBT_PUBLIC unsigned int smpi_sleep(unsigned int secs);
-XBT_PUBLIC int smpi_gettimeofday(struct timeval* tv, struct timezone* tz);
+
 XBT_PUBLIC unsigned long long smpi_rastro_resolution();
 XBT_PUBLIC unsigned long long smpi_rastro_timestamp();
 XBT_PUBLIC void smpi_sample_1(int global, const char* file, int line, int iters, double threshold);
@@ -994,10 +984,6 @@ XBT_PUBLIC void SMPI_finalize();
 XBT_PUBLIC void smpi_register_static(void* arg, void_f_pvoid_t free_fn);
 XBT_PUBLIC void smpi_free_static();
 
-
-struct option;
-XBT_PUBLIC int smpi_getopt_long (int argc,  char *const *argv,  const char *options,  const struct option *long_options, int *opt_index);
-XBT_PUBLIC int smpi_getopt (int argc,  char *const *argv,  const char *options);
 #define SMPI_VARINIT_GLOBAL(name,type)                          \
 type *name = NULL;                                              \
 static void __attribute__((constructor)) __preinit_##name(void) { \
