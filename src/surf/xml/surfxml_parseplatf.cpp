@@ -3,14 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.hpp" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
+#include "instr/instr_interface.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "xbt/log.h"
-#include "xbt/misc.h"
+#include "src/surf/surf_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.hpp"
+
 #include <vector>
 
-#include "src/surf/xml/platf_private.hpp"
 
 #if SIMGRID_HAVE_LUA
 #include "src/bindings/lua/simgrid_lua.hpp"

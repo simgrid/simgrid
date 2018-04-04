@@ -3,15 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/plugins/live_migration.h>
-#include <simgrid/s4u.hpp>
-#include <simgrid/s4u/VirtualMachine.hpp>
-#include <simgrid/vm.h>
-#include <src/instr/instr_private.hpp>
-#include <src/plugins/vm/VirtualMachineImpl.hpp>
-#include <src/plugins/vm/VmHostExt.hpp>
-#include <src/plugins/vm/VmLiveMigration.hpp>
-#include <xbt/ex.hpp>
+#include "src/plugins/vm/VmLiveMigration.hpp"
+#include "src/instr/instr_private.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VmHostExt.hpp"
+#include "xbt/ex.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(vm_live_migration, "S4U virtual machines live migration");
 

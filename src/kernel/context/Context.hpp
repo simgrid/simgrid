@@ -6,32 +6,11 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 
-#include <functional>
-#include <memory>
-#include <unordered_map>
-#include <vector>
-
-#include <xbt/functional.hpp>
-
-#include "simgrid/simix.h"
-#include "src/instr/instr_private.hpp"
+#include "instr/instr_interface.h"
 #include "src/internal_config.h"
-#include "src/simix/popping_private.hpp"
-#include "src/simix/smx_host_private.hpp"
-#include "src/simix/smx_io_private.hpp"
 #include "src/simix/smx_network_private.hpp"
-#include "src/simix/smx_synchro_private.hpp"
-#include "surf/surf.hpp"
-#include "xbt/base.h"
-#include "xbt/config.h"
-#include "xbt/function_types.h"
-#include "xbt/mallocator.h"
-#include "xbt/xbt_os_time.h"
 
-#include "src/simix/ActorImpl.hpp"
 #include <csignal>
-
-#include <simgrid/simix.hpp>
 
 namespace simgrid {
 namespace kernel {

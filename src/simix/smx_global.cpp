@@ -3,37 +3,20 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <boost/heap/fibonacci_heap.hpp>
-#include <functional>
-#include <memory>
-
-#include "src/internal_config.h"
-#include <csignal> /* Signal handling */
-#include <cstdlib>
-
-#include <xbt/functional.hpp>
-#include <xbt/utility.hpp>
-
+#include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-
-#include "smx_private.hpp"
-#include "src/surf/surf_interface.hpp"
-#include "src/surf/xml/platf.hpp"
-#include "xbt/ex.h" /* ex_backtrace_display */
-
-#include "mc/mc.h"
 #include "simgrid/sg_config.hpp"
-#include "src/mc/mc_replay.hpp"
-#include "src/surf/StorageImpl.hpp"
-
-#include "src/smpi/include/smpi_process.hpp"
-
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
+#include "smx_private.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/mc/mc_record.hpp"
+#include "src/mc/mc_replay.hpp"
+#include "src/simix/smx_host_private.hpp"
+#include "src/smpi/include/smpi_process.hpp"
+#include "src/surf/StorageImpl.hpp"
+#include "src/surf/xml/platf.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/mc_private.hpp"
@@ -41,11 +24,11 @@
 #include "src/mc/remote/mc_protocol.h"
 #endif
 
-#include "src/mc/mc_record.hpp"
-
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
+
+#include <boost/heap/fibonacci_heap.hpp>
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");

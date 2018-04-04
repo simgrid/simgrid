@@ -10,7 +10,7 @@
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include "xbt/log.h"
+#include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_route);
 

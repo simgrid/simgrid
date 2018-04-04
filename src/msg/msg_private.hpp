@@ -10,9 +10,6 @@
 
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "xbt/Extendable.hpp"
-
-#include <atomic>
 
 /**************** datatypes **********************************/
 /********************************* Task **************************************/

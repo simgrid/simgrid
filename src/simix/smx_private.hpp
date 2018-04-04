@@ -8,10 +8,8 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/context/Context.hpp"
-#include <csignal>
 
-#include <boost/intrusive/list.hpp>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 /********************************** Simix Global ******************************/

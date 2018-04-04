@@ -1,17 +1,11 @@
-/* Copyright (c) 2013-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdlib>
-
-#include <algorithm>
-
 #include "host_clm03.hpp"
-
-#include "cpu_cas01.hpp"
 #include "simgrid/sg_config.hpp"
+#include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 

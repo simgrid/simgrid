@@ -7,6 +7,7 @@
 #include "simgrid/kernel/resource/Model.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "surf/surf.hpp"
 
 XBT_LOG_NEW_CATEGORY(kernel, "Logging specific to the internals of SimGrid");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(resource, kernel, "Logging specific to the resources");

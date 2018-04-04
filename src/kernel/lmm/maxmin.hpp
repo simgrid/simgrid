@@ -7,13 +7,8 @@
 #define SURF_MAXMIN_HPP
 
 #include "simgrid/kernel/resource/Action.hpp"
-#include "src/internal_config.h"
-#include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 #include "xbt/asserts.h"
 #include "xbt/mallocator.h"
-#include "xbt/misc.h"
-#include "xbt/utility.hpp"
 
 #include <boost/intrusive/list.hpp>
 #include <cmath>

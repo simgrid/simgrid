@@ -4,9 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
-#include "xbt/utility.hpp"
-#include <algorithm>
+#include "surf/surf.hpp"
 
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_

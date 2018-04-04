@@ -3,37 +3,24 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <exception>
-#include <functional>
-#include <map>
-#include <string>
-#include <utility>
-
-#include <boost/range/algorithm.hpp>
-
-#include "xbt/ex.hpp"
-#include "xbt/functional.hpp"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
-#include "xbt/utility.hpp"
-
-#include "simgrid/s4u/Host.hpp"
-
 #include "mc/mc.h"
-
 #include "smx_private.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"
-#include "src/msg/msg_private.hpp"
+#include "src/simix/smx_host_private.hpp"
+#include "src/simix/smx_io_private.hpp"
+#include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "xbt/ex.hpp"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
+
+#include <boost/range/algorithm.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
 

@@ -8,6 +8,9 @@
 #include "simgrid/host.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "surf/surf.hpp"
+#include "xbt/config.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 

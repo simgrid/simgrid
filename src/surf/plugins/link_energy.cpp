@@ -5,14 +5,12 @@
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/simix.hpp"
 #include "src/surf/network_interface.hpp"
+#include "surf/surf.hpp"
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <map>
 #include <string>
-#include <utility>
-#include <vector>
 
 /** @addtogroup SURF_plugin_energy
 

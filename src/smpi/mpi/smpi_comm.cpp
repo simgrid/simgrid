@@ -12,7 +12,9 @@
 #include "smpi_request.hpp"
 #include "smpi_status.hpp"
 #include "smpi_win.hpp"
+#include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
+
 #include <algorithm>
 #include <climits>
 #include <vector>

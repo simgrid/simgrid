@@ -6,20 +6,13 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
-#include "xbt/signal.hpp"
-#include "xbt/utility.hpp"
-
 #include "src/surf/surf_private.hpp"
-#include "surf/surf.hpp"
-#include "xbt/str.h"
 
-#include <boost/heap/pairing_heap.hpp>
-#include <boost/intrusive/list.hpp>
-#include <boost/optional.hpp>
 #include <cmath>
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 /*********
  * Utils *

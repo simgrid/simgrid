@@ -17,6 +17,7 @@
 #include "src/instr/instr_paje_values.hpp"
 #include "src/internal_config.h"
 #include "xbt/graph.h"
+
 #include <iomanip> /** std::setprecision **/
 #include <map>
 #include <memory>

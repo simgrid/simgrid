@@ -4,8 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/maxmin.hpp"
-#include "xbt/log.h"
+#include "src/surf/surf_interface.hpp"
 #include "xbt/sysdep.h"
+
 #include <algorithm>
 #include <cfloat>
 #include <cmath>

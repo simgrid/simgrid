@@ -7,13 +7,14 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.hpp"
 #include "xbt/file.hpp"
 
-#include "src/surf/xml/platf_private.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <initializer_list>
 #include <string>
 #include <tuple>
 #include <unordered_map>

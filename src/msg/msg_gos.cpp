@@ -5,6 +5,7 @@
 
 #include <xbt/ex.hpp>
 
+#include "src/instr/instr_private.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp" /* MSG_task_listen looks inside the rdv directly. Not clean. */

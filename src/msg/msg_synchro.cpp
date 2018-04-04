@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,6 +7,7 @@
 
 #include "msg_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/simix/smx_synchro_private.hpp"
 #include "xbt/synchro.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (synchro)");

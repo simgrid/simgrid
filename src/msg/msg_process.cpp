@@ -5,6 +5,7 @@
 
 #include "msg_private.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/instr/instr_private.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.hpp"
 

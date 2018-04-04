@@ -3,22 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_interface.hpp"
 #include "cpu_interface.hpp"
 #include "network_interface.hpp"
 #include "src/surf/PropertyHolder.hpp"
 
 #include "StorageImpl.hpp"
-#include <xbt/base.h>
 
 #ifndef SURF_HOST_INTERFACE_HPP_
 #define SURF_HOST_INTERFACE_HPP_
-
-/*********
- * Tools *
- *********/
-
-XBT_PUBLIC_DATA simgrid::surf::HostModel* surf_host_model;
 
 /*********
  * Model *
@@ -63,5 +55,7 @@ public:
 };
 }
 }
+
+XBT_PUBLIC_DATA simgrid::surf::HostModel* surf_host_model;
 
 #endif /* SURF_Host_INTERFACE_HPP_ */

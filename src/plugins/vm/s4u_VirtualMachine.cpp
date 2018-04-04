@@ -9,8 +9,6 @@
 #include "src/plugins/vm/VmHostExt.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/surf/cpu_cas01.hpp"
-#include <simgrid/vm.h>
-#include <src/plugins/vm/VmLiveMigration.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 

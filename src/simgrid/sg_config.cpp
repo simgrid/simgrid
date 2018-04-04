@@ -9,18 +9,13 @@
 #include "instr/instr_interface.h"
 #include "mc/mc.h"
 #include "simgrid/instr.h"
-#include "simgrid/simix.h"
-#include "simgrid_config.h" /* what was compiled in? */
+#include "src/internal_config.h"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 #include "xbt/config.h"
 #include "xbt/config.hpp"
-#include "xbt/log.h"
-#include "xbt/mallocator.h"
-#include "xbt/misc.h"
-#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 

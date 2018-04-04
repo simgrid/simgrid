@@ -1,9 +1,12 @@
-/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u.hpp"
+#include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
+#include "simgrid/s4u/VirtualMachine.hpp"
 
 #ifndef VM_LIVE_MIGRATION_HPP_
 #define VM_LIVE_MIGRATION_HPP_

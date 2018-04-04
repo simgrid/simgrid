@@ -9,6 +9,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.hpp"
 
 #include <boost/algorithm/string.hpp>
 

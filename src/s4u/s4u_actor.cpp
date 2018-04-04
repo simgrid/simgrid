@@ -3,18 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
-
 #include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/Mailbox.hpp"
-
-#include "src/kernel/context/Context.hpp"
+#include "src/instr/instr_private.hpp"
 #include "src/simix/smx_private.hpp"
-
-#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 

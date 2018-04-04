@@ -3,14 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/base.h>
-#include <xbt/signal.hpp>
-
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "src/surf/PropertyHolder.hpp"
+#include "src/surf/trace_mgr.hpp"
 #include "surf_interface.hpp"
 
 #include <map>

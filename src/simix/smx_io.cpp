@@ -9,12 +9,12 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
+#include "smx_private.hpp"
+#include "src/simix/smx_io_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
-#include "surf/surf.hpp"
-
-#include "smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "surf/surf.hpp"
 
 #include "src/kernel/activity/SynchroIo.hpp"
 

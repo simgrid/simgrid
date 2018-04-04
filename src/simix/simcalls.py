@@ -311,6 +311,9 @@ if __name__ == '__main__':
     fd.write('#if SIMGRID_HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
+    fd.write('#include "src/simix/smx_synchro_private.hpp"\n')
+    fd.write('#include "src/simix/smx_host_private.hpp"\n')
+    
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
 
@@ -365,6 +368,8 @@ if __name__ == '__main__':
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <functional>\n')
     fd.write('#include <simgrid/simix.hpp>\n')
+    fd.write('#include "src/simix/smx_synchro_private.hpp"\n')
+    
     fd.write("/** @cond */ // Please Doxygen, don't look at this\n")
     fd.write('''
 template<class R, class... T>

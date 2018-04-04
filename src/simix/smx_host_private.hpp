@@ -11,14 +11,9 @@
 #include <map>
 #include <vector>
 
-#include <xbt/Extendable.hpp>
-#include <xbt/base.h>
-
-#include "popping_private.hpp"
-#include "simgrid/simix.h"
-
-#include "ActorImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/simix/ActorImpl.hpp"
+#include "src/simix/popping_private.hpp"
+#include "xbt/Extendable.hpp"
 
 /** @brief Host datatype from SIMIX POV */
 namespace simgrid {

@@ -15,13 +15,11 @@
 #include "simgrid/kernel/routing/TorusZone.hpp"
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Storage.hpp"
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/cpu_interface.hpp"
-#include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 
 #include <string>

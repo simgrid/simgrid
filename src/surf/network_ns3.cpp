@@ -25,8 +25,10 @@
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/surf/xml/platf_private.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/surf/surf_interface.hpp"
+#include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 

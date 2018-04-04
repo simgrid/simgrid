@@ -5,8 +5,7 @@
 
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
-#include "src/simix/smx_private.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simix/smx_io_private.hpp"
 
 void simgrid::kernel::activity::IoImpl::suspend()
 {

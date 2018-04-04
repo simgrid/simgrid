@@ -1,16 +1,14 @@
-/* Copyright (c) 2014-2018. The SimGrid Team.
-*All rights reserved.                                                     */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <utility>
-
-#include "simgrid/sg_config.hpp"
-#include "src/kernel/lmm/maxmin.hpp"
-#include "src/surf/HostImpl.hpp"
 #include "src/surf/network_ib.hpp"
+#include "simgrid/sg_config.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
+#include "surf/surf.hpp"
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 

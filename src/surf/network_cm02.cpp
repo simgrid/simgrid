@@ -3,13 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <algorithm>
-
 #include "network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
-#include "src/kernel/lmm/maxmin.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 

@@ -6,8 +6,8 @@
 #include "simgrid/kernel/routing/FloydZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/surf/network_interface.hpp"
-#include "xbt/log.h"
 #include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.hpp"
 
 #include <cfloat>
 #include <limits>

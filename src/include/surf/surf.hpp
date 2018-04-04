@@ -7,12 +7,7 @@
 #define SURF_SURF_H
 
 #include "simgrid/forward.h"
-#include "src/internal_config.h"
-#include "xbt/config.h"
-#include "xbt/dict.h"
-#include "xbt/dynar.h"
 #include "xbt/graph.h"
-#include "xbt/misc.h"
 
 namespace simgrid {
 namespace surf {

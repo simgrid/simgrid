@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_constant.hpp"
+#include "src/surf/surf_interface.hpp"
+#include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 

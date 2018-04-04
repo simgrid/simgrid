@@ -6,11 +6,9 @@
 #include "storage_n11.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "src/surf/xml/platf.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "xbt/utility.hpp"
-#include <cmath> /*ceil*/
+#include "src/surf/xml/platf.hpp"
+#include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 

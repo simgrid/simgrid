@@ -5,8 +5,7 @@
 
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
-
-#include "src/simix/smx_private.hpp"
+#include "src/simix/smx_synchro_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mutex, simix_synchro, "Mutex kernel-space implementation");
 

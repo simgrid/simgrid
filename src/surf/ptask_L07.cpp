@@ -3,16 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdlib>
-
-#include <algorithm>
-#include <unordered_set>
-
 #include "ptask_L07.hpp"
-
-#include "cpu_interface.hpp"
+#include "surf/surf.hpp"
 #include "xbt/config.hpp"
-#include "xbt/utility.hpp"
+
+#include <unordered_set>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);

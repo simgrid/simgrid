@@ -4,13 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_cas01.hpp"
-#include "cpu_ti.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/kernel/lmm/maxmin.hpp"
-#include "xbt/config.hpp"
-#include "xbt/utility.hpp"
-
-#include <algorithm>
+#include "src/surf/surf_interface.hpp"
+#include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU module");
 

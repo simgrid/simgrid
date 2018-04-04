@@ -8,6 +8,7 @@
  * "ssh://username@scm.gforge.inria.fr/svn/memo/people/pvelho/lagrange/ppf.ps".
  */
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
