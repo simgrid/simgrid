@@ -260,11 +260,6 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
   }
 }
 
-static void _sg_cfg_cb__surf_network_crosstraffic(const char *name)
-{
-  sg_network_crosstraffic = xbt_cfg_get_boolean(name);
-}
-
 /* build description line with possible values */
 static void describe_model(char *result,int resultsize,
                            const s_surf_model_description_t model_description[],
@@ -434,9 +429,6 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("contexts/synchro", "busy_wait", _sg_cfg_cb_contexts_parallel_mode,
         "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
 #endif
-
-    xbt_cfg_register_boolean("network/crosstraffic", "yes", _sg_cfg_cb__surf_network_crosstraffic,
-        "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)");
 
     // For smpi/bw-factor and smpi/lat-factor
     // SMPI model can be used without enable_smpi, so keep this out of the ifdef.

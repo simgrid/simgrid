@@ -34,6 +34,7 @@ namespace surf {
 class NetworkModel : public kernel::resource::Model {
 public:
   static simgrid::config::Flag<double> cfg_tcp_gamma;
+  static simgrid::config::Flag<bool> cfg_crosstraffic;
 
   explicit NetworkModel(kernel::resource::Model::UpdateAlgo algo) : Model(algo) {}
   ~NetworkModel() override;

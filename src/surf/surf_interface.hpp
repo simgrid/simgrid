@@ -33,7 +33,6 @@ XBT_PUBLIC_DATA int sg_concurrency_limit;
 extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;
-extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE std::vector<std::string> surf_path;
 extern XBT_PRIVATE std::unordered_map<std::string, tmgr_trace_t> traces_set_list;
 extern XBT_PRIVATE std::set<std::string> watched_hosts;

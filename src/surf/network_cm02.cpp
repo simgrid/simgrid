@@ -17,8 +17,6 @@ double sg_latency_factor = 1.0; /* default value; can be set by model or from co
 double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */
 double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
 
-int sg_network_crosstraffic = 0;
-
 /************************************************************************/
 /* New model based on optimizations discussed during Pedro Velho's thesis*/
 /************************************************************************/
@@ -258,7 +256,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
     if (link->is_off())
       failed = 1;
 
-  if (sg_network_crosstraffic == 1) {
+  if (cfg_crosstraffic == 1) {
     dst->routeTo(src, back_route, nullptr);
     for (auto const& link : back_route)
       if (link->is_off())
@@ -320,7 +318,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   for (auto const& link : route)
     get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
 
-  if (not back_route.empty()) { //  sg_network_crosstraffic was activated
+  if (not back_route.empty()) { //  cfg_crosstraffic was activated
     XBT_DEBUG("Crosstraffic active adding backward flow using 5%%");
     for (auto const& link : back_route)
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
