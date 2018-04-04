@@ -227,6 +227,12 @@ public:
     simgrid::config::bindFlag(value_, name, desc);
   }
 
+  /** Constructor taking an array of aliases as name */
+  Flag(std::initializer_list<const char*> names, const char* desc, T value) : value_(value)
+  {
+    simgrid::config::bindFlag(value_, names, desc);
+  }
+
   /* A constructor accepting a callback that will be passed the parameter.
    * It can either return a boolean (informing whether the parameter is valid), or returning void.
    */

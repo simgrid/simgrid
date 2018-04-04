@@ -11,6 +11,7 @@
 #include "ptask_L07.hpp"
 
 #include "cpu_interface.hpp"
+#include "xbt/config.hpp"
 #include "xbt/utility.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
@@ -400,7 +401,7 @@ void L07Action::updateBound()
       }
     }
   }
-  double lat_bound = sg_tcp_gamma / (2.0 * lat_current);
+  double lat_bound = NetworkModel::cfg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
   if ((latency_ <= 0.0) && (suspended_ == Action::SuspendStates::not_suspended)) {
     if (rate_ < 0)

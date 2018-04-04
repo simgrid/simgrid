@@ -30,7 +30,6 @@ XBT_PUBLIC_DATA double sg_maxmin_precision;
 XBT_PUBLIC_DATA double sg_surf_precision;
 XBT_PUBLIC_DATA int sg_concurrency_limit;
 
-extern XBT_PRIVATE double sg_tcp_gamma;
 extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
 extern XBT_PRIVATE double sg_weight_S_parameter;

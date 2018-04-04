@@ -314,11 +314,6 @@ void sg_config_init(int *argc, char **argv)
   describe_model(description, descsize, surf_host_model_description, "model", "The model to use for the host");
   xbt_cfg_register_string("host/model", "default", &_sg_cfg_cb__host_model, description);
 
-  sg_tcp_gamma = 4194304.0;
-  simgrid::config::bindFlag(sg_tcp_gamma, {"network/TCP-gamma", "network/TCP_gamma"},
-                            "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
-                            "Use the last given value, which is the max window size)");
-
   simgrid::config::bindFlag(sg_surf_precision, "surf/precision",
                             "Numerical precision used when updating simulation times (in seconds)");
 

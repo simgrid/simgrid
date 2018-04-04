@@ -14,6 +14,9 @@
 #include <boost/intrusive_ptr.hpp>
 
 namespace simgrid {
+namespace config {
+template <class T> class Flag;
+}
 namespace kernel {
 class EngineImpl;
 namespace context {

@@ -17,7 +17,6 @@ double sg_latency_factor = 1.0; /* default value; can be set by model or from co
 double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */
 double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or from command line */
 
-double sg_tcp_gamma = 0.0;
 int sg_network_crosstraffic = 0;
 
 /************************************************************************/
@@ -310,11 +309,11 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
 
   if (action->rate_ < 0) {
     get_maxmin_system()->update_variable_bound(
-        action->get_variable(), (action->lat_current_ > 0) ? sg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
+        action->get_variable(), (action->lat_current_ > 0) ? cfg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
   } else {
     get_maxmin_system()->update_variable_bound(
         action->get_variable(), (action->lat_current_ > 0)
-                                    ? std::min(action->rate_, sg_tcp_gamma / (2.0 * action->lat_current_))
+                                    ? std::min(action->rate_, cfg_tcp_gamma / (2.0 * action->lat_current_))
                                     : action->rate_);
   }
 
@@ -434,13 +433,13 @@ void NetworkCm02Link::setLatency(double value)
     action->lat_current_ += delta;
     action->weight_ += delta;
     if (action->rate_ < 0)
-      get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
-                                                              sg_tcp_gamma / (2.0 * action->lat_current_));
+      get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), NetworkModel::cfg_tcp_gamma /
+                                                                                          (2.0 * action->lat_current_));
     else {
       get_model()->get_maxmin_system()->update_variable_bound(
-          action->get_variable(), std::min(action->rate_, sg_tcp_gamma / (2.0 * action->lat_current_)));
+          action->get_variable(), std::min(action->rate_, NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)));
 
-      if (action->rate_ < sg_tcp_gamma / (2.0 * action->lat_current_)) {
+      if (action->rate_ < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
         XBT_INFO("Flow is limited BYBANDWIDTH");
       } else {
         XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);

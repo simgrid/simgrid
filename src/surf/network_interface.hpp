@@ -33,10 +33,9 @@ namespace surf {
  */
 class NetworkModel : public kernel::resource::Model {
 public:
-  /** @brief Constructor */
-  explicit NetworkModel(kernel::resource::Model::UpdateAlgo algo) : Model(algo) {}
+  static simgrid::config::Flag<double> cfg_tcp_gamma;
 
-  /** @brief Destructor */
+  explicit NetworkModel(kernel::resource::Model::UpdateAlgo algo) : Model(algo) {}
   ~NetworkModel() override;
 
   /**
