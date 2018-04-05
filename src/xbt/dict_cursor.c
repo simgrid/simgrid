@@ -128,17 +128,17 @@ inline int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor, char **key, v
   XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_get_or_free");
 
   if (!cursor || !(*cursor))
-    return false;
+    return 0;
 
   current = (*cursor)->current;
   if (current == NULL) {        /* no data left */
     xbt_dict_cursor_free(cursor);
-    return false;
+    return 0;
   }
 
   *key = current->key;
   *data = current->content;
-  return true;
+  return 1;
 }
 
 /**

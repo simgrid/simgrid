@@ -186,10 +186,6 @@
 
 #endif
 
-#ifndef __cplusplus
-#include <stdbool.h>
-#endif
-
 /* C++ users need love */
 #ifndef SG_BEGIN_DECL
 # ifdef __cplusplus

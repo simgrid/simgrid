@@ -208,17 +208,17 @@ typedef struct xbt_dynar_s {
 static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void* const dst)
 {
   if (!dynar) /* iterating over a NULL dynar is a no-op */
-    return false;
+    return 0;
 
   if (idx >= dynar->used) {
     //XBT_DEBUG("Cursor on %p already on last elem", (void *) dynar);
-    return false;
+    return 0;
   }
   //  XBT_DEBUG("Cash out cursor on %p at %u", (void *) dynar, *idx);
 
   memcpy(dst, ((char *) dynar->data) + idx * dynar->elmsize, dynar->elmsize);
 
-  return true;
+  return 1;
 }
 
 /** @brief Iterates over the whole dynar.
