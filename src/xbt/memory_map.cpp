@@ -46,9 +46,10 @@
 # include <libprocstat.h>
 #endif
 
-#include <xbt/sysdep.h>
+#include <cinttypes>
 #include <xbt/base.h>
 #include <xbt/log.h>
+#include <xbt/sysdep.h>
 
 #include "memory_map.hpp"
 
@@ -150,15 +151,9 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     path[pathlen]   = '\0';
     memreg.pathname = path;
 
-#if 0 /* Display mappings for debug */
-    fprintf(stderr,
-        "%#014llx - %#014llx | %c%c%c | %s\n",
-        memreg.start_addr, memreg.end_addr,
-        (memreg.prot & PROT_READ) ? 'r' : '-',
-        (memreg.prot & PROT_WRITE) ? 'w' : '-',
-        (memreg.prot & PROT_EXEC) ? 'x' : '-',
-        memreg.pathname.c_str());
-#endif
+    XBT_DEBUG("Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s", memreg.start_addr, memreg.end_addr,
+              (memreg.prot & PROT_READ) ? 'r' : '-', (memreg.prot & PROT_WRITE) ? 'w' : '-',
+              (memreg.prot & PROT_EXEC) ? 'x' : '-', memreg.pathname.c_str());
 
     ret.push_back(std::move(memreg));
     address += size;
