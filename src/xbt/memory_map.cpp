@@ -13,13 +13,13 @@
 #include <sys/types.h>
 
 #if defined __APPLE__
+# include <dlfcn.h>
 # include <mach/mach_init.h>
 # include <mach/mach_traps.h>
 # include <mach/mach_port.h>
 # include <mach/mach_vm.h>
 # include <sys/mman.h>
 # include <sys/param.h>
-# include <libproc.h>
 # if __MAC_OS_X_VERSION_MIN_REQUIRED < 1050
 #  define mach_vm_address_t vm_address_t
 #  define mach_vm_size_t vm_size_t
@@ -145,11 +145,9 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     memreg.inode = 0;
 
     /* Path */
-    char path[MAXPATHLEN];
-    int pathlen;
-    pathlen = proc_regionfilename(pid, address, path, sizeof(path));
-    path[pathlen]   = '\0';
-    memreg.pathname = path;
+    Dl_info dlinfo;
+    if (dladdr(reinterpret_cast<void*>(address), &dlinfo))
+      memreg.pathname = dlinfo.dli_fname;
 
     XBT_DEBUG("Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s", memreg.start_addr, memreg.end_addr,
               (memreg.prot & PROT_READ) ? 'r' : '-', (memreg.prot & PROT_WRITE) ? 'w' : '-',
