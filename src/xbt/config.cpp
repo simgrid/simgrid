@@ -263,7 +263,7 @@ private:
   bool warn_for_aliases = true;
 
 public:
-  Config() = default;
+  Config();
   ~Config();
 
   // No copy:
@@ -297,6 +297,10 @@ protected:
   ConfigurationElement* getDictElement(const char* name);
 };
 
+Config::Config()
+{
+  atexit(&sg_config_finalize);
+}
 Config::~Config()
 {
   XBT_DEBUG("Frees cfg set %p", this);
@@ -420,7 +424,6 @@ template XBT_PUBLIC void declareFlag(const char* name, const char* description, 
 
 xbt_cfg_t xbt_cfg_new()
 {
-  atexit(&sg_config_finalize);
   return new simgrid::config::Config();
 }
 void xbt_cfg_free(xbt_cfg_t * cfg) { delete *cfg; }
