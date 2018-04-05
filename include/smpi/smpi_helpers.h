@@ -1,6 +1,10 @@
 #ifndef MPI_HELPERS_H
 #define MPI_HELPERS_H
 
+#ifndef _GNU_SOURCE
+  #define _GNU_SOURCE
+#endif
+
 #include <unistd.h>
 #include <sys/time.h> /* Load it before the define next line to not mess with the system headers */
 #if _POSIX_TIMERS
