@@ -3,12 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/kernel/resource/Resource.hpp"
-#include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
-#include "simgrid/simix.hpp"
 #include "simgrid/storage.h"
 #include "src/surf/StorageImpl.hpp"
 

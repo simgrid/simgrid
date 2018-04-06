@@ -7,10 +7,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "simgrid/simix.hpp"
-#include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
-#include "xbt/log.h"
-#include <simgrid/zone.h>
+#include "simgrid/zone.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_netzone, "S4U Networking Zones");
 
