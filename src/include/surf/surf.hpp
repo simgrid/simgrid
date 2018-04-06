@@ -19,19 +19,6 @@ class NetworkCm02Link;
 }
 }
 
-/** @ingroup SURF_c_bindings
- *  \brief Model datatype
- *
- *  Generic data structure for a model. The hosts,
- *  the CPUs and the network links are examples of models.
- */
-typedef simgrid::surf::CpuModel* surf_cpu_model_t;
-typedef simgrid::surf::HostModel* surf_host_model_t;
-typedef simgrid::surf::NetworkModel* surf_network_model_t;
-typedef simgrid::surf::StorageModel* surf_storage_model_t;
-
-/* Actions and models are highly connected structures... */
-
 /** \brief Resource model description
  */
 struct surf_model_description {
@@ -94,12 +81,12 @@ XBT_PUBLIC void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* act
 /** \ingroup SURF_models
  *  \brief The CPU model object for the physical machine layer
  */
-XBT_PUBLIC_DATA surf_cpu_model_t surf_cpu_model_pm;
+XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_pm;
 
 /** \ingroup SURF_models
  *  \brief The CPU model object for the virtual machine layer
  */
-XBT_PUBLIC_DATA surf_cpu_model_t surf_cpu_model_vm;
+XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_vm;
 
 /** \ingroup SURF_models
  *  \brief Initializes the CPU model with the model Cas01
@@ -250,7 +237,7 @@ XBT_PUBLIC void surf_storage_model_init_default();
  */
 XBT_PUBLIC_DATA s_surf_model_description_t surf_storage_model_description[];
 
-XBT_PUBLIC_DATA surf_storage_model_t surf_storage_model;
+XBT_PUBLIC_DATA simgrid::surf::StorageModel* surf_storage_model;
 
 /** \ingroup SURF_models
  *  \brief The host model
@@ -258,7 +245,7 @@ XBT_PUBLIC_DATA surf_storage_model_t surf_storage_model;
  *  Note that when you create an API on top of SURF, the host model should be the only one you use
  *  because depending on the platform model, the network model and the CPU model may not exist.
  */
-XBT_PUBLIC_DATA surf_host_model_t surf_host_model;
+XBT_PUBLIC_DATA simgrid::surf::HostModel* surf_host_model;
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with a compound host model
