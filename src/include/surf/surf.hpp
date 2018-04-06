@@ -136,14 +136,6 @@ XBT_PUBLIC_DATA s_surf_model_description_t surf_plugin_description[];
 XBT_PUBLIC_DATA s_surf_model_description_t surf_cpu_model_description[];
 
 /** \ingroup SURF_models
- *  \brief The network model
- *
- *  When creating a new API on top on SURF, you shouldn't use the network model unless you know what you are doing.
- *  Only the host model should be accessed because depending on the platform model, the network model can be NULL.
- */
-XBT_PUBLIC_DATA surf_network_model_t surf_network_model;
-
-/** \ingroup SURF_models
  *  \brief Same as network model 'LagrangeVelho', only with different correction factors.
  *
  * This model is proposed by Pierre-Nicolas Clauss and Martin Quinson and Stéphane Génaud based on the model 'LV08' and

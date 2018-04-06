@@ -217,6 +217,11 @@ public:
 }
 }
 
+/** \ingroup SURF_models
+ *  \brief The network model
+ */
+XBT_PUBLIC_DATA simgrid::surf::NetworkModel* surf_network_model;
+
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */
 
 
