@@ -18,19 +18,16 @@
  ***********/
 
 namespace simgrid {
-namespace surf {
-class NetworkAction;
-};
 namespace s4u {
 /** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
 class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
-  friend simgrid::surf::LinkImpl;
+  friend simgrid::kernel::resource::LinkImpl;
 
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
-  explicit Link(surf::LinkImpl* pimpl) : pimpl_(pimpl) {}
+  explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}
   virtual ~Link() = default;
   // The private implementation, that never changes
-  surf::LinkImpl* const pimpl_;
+  kernel::resource::LinkImpl* const pimpl_;
 
 public:
   /** @brief Retrieve a link from its name */
@@ -87,10 +84,10 @@ public:
   static simgrid::xbt::signal<void(s4u::Link&)> onStateChange;
 
   /** @brief Callback signal fired when a communication starts */
-  static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
+  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
-  static simgrid::xbt::signal<void(surf::NetworkAction*)> onCommunicationStateChange;
+  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> onCommunicationStateChange;
 
   XBT_ATTRIB_DEPRECATED_v321("Use get_cname(): v3.21 will turn this warning into an error.") const char* name();
 };

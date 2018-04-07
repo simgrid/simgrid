@@ -19,7 +19,7 @@ static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
-SgFlow::SgFlow(uint32_t totalBytes, simgrid::surf::NetworkNS3Action* action)
+SgFlow::SgFlow(uint32_t totalBytes, simgrid::kernel::resource::NetworkNS3Action* action)
 {
   totalBytes_ = totalBytes;
   remaining_  = totalBytes;

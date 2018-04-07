@@ -23,7 +23,7 @@ public:
   explicit BypassRoute(NetPoint* gwSrc, NetPoint* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
   NetPoint* gw_src;
   NetPoint* gw_dst;
-  std::vector<surf::LinkImpl*> links;
+  std::vector<resource::LinkImpl*> links;
 };
 
 NetZoneImpl::NetZoneImpl(NetZone* father, std::string name) : NetZone(father, name)
@@ -65,7 +65,7 @@ simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, std::vector<doubl
 }
 
 void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                   std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+                                   std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   /* Argument validity checks */
   if (gw_dst) {
@@ -204,7 +204,7 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
 
 /* PRECONDITION: this is the common ancestor of src and dst */
 bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
-                                   /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
+                                   /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency)
 {
   // If never set a bypass route return nullptr without any further computations
   if (bypass_routes_.empty())
@@ -214,7 +214,7 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
   if (dst->get_englobing_zone() == this && src->get_englobing_zone() == this) {
     if (bypass_routes_.find({src, dst}) != bypass_routes_.end()) {
       BypassRoute* bypassedRoute = bypass_routes_.at({src, dst});
-      for (surf::LinkImpl* const& link : bypassedRoute->links) {
+      for (resource::LinkImpl* const& link : bypassedRoute->links) {
         links.push_back(link);
         if (latency)
           *latency += link->latency();
@@ -298,7 +298,7 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
               src->get_cname(), dst->get_cname(), bypassedRoute->links.size());
     if (src != key.first)
       get_global_route(src, bypassedRoute->gw_src, links, latency);
-    for (surf::LinkImpl* const& link : bypassedRoute->links) {
+    for (resource::LinkImpl* const& link : bypassedRoute->links) {
       links.push_back(link);
       if (latency)
         *latency += link->latency();
@@ -311,8 +311,8 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
   return false;
 }
 
-void NetZoneImpl::get_global_route(routing::NetPoint* src, routing::NetPoint* dst,
-                                   /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency)
+void NetZoneImpl::get_global_route(NetPoint* src, NetPoint* dst,
+                                   /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency)
 {
   RouteCreationArgs route;
 

@@ -17,12 +17,9 @@ namespace simgrid {
 namespace config {
 template <class T> class Flag;
 }
+
 namespace kernel {
 class EngineImpl;
-namespace context {
-class Context;
-class ContextFactory;
-}
 namespace actor {
 class ActorImpl;
 using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
@@ -48,6 +45,10 @@ namespace activity {
 
   class MailboxImpl;
 }
+namespace context {
+class Context;
+class ContextFactory;
+} // namespace context
 namespace lmm {
 class Element;
 class Variable;
@@ -60,6 +61,8 @@ class Action;
 class Model;
 class Resource;
 class TraceEvent;
+class LinkImpl;
+class NetworkAction;
 }
 namespace routing {
 class ClusterCreationArgs;
@@ -68,14 +71,12 @@ class NetPoint;
 class NetZoneImpl;
 class RouteCreationArgs;
 }
-}
+} // namespace kernel
 namespace simix {
   class Host;
 }
-
 namespace surf {
   class Cpu;
-  class LinkImpl;
   class HostImpl;
   class StorageImpl;
   class StorageType;
@@ -84,7 +85,7 @@ namespace trace_mgr {
   class trace;
   class future_evt_set;
 }
-}
+} // namespace simgrid
 
 typedef simgrid::s4u::Actor s4u_Actor;
 typedef simgrid::s4u::Host s4u_Host;

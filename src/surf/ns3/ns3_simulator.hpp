@@ -7,17 +7,12 @@
 #define NS3_SIMULATOR_HPP
 
 #include "simgrid/s4u/Host.hpp"
+#include "src/surf/network_ns3.hpp"
 
 #include <ns3/node.h>
 #include <ns3/tcp-socket-factory.h>
 
 #include <cstdint>
-
-namespace simgrid {
-namespace surf {
-class NetworkNS3Action;
-}
-} // namespace simgrid
 
 class NetPointNs3 {
 public:
@@ -37,7 +32,7 @@ XBT_PUBLIC void ns3_add_cluster(const char* id, double bw, double lat);
 
 class XBT_PRIVATE SgFlow {
 public:
-  SgFlow(uint32_t totalBytes, simgrid::surf::NetworkNS3Action* action);
+  SgFlow(uint32_t totalBytes, simgrid::kernel::resource::NetworkNS3Action* action);
 
   // private:
   std::uint32_t bufferedBytes_ = 0;
@@ -45,7 +40,7 @@ public:
   std::uint32_t remaining_;
   std::uint32_t totalBytes_;
   bool finished_ = false;
-  simgrid::surf::NetworkNS3Action* action_;
+  simgrid::kernel::resource::NetworkNS3Action* action_;
 };
 
 void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number);

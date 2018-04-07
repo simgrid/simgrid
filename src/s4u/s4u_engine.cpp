@@ -158,7 +158,7 @@ void Engine::delStorage(std::string name)
 /** @brief Returns the amount of links in the platform */
 size_t Engine::getLinkCount()
 {
-  return simgrid::surf::LinkImpl::linksCount();
+  return kernel::resource::LinkImpl::linksCount();
 }
 
 /** @brief Fills the passed list with all links found in the platform
@@ -167,14 +167,14 @@ size_t Engine::getLinkCount()
 void XBT_ATTRIB_DEPRECATED_v322("Engine::getLinkList() is deprecated in favor of Engine::getAllLinks(). Please switch before v3.22")
 Engine::getLinkList(std::vector<Link*>* list)
 {
-  simgrid::surf::LinkImpl::linksList(list);
+  kernel::resource::LinkImpl::linksList(list);
 }
 
 /** @brief Returns the list of all links found in the platform */
 std::vector<Link*> Engine::getAllLinks()
 {
   std::vector<Link*> res;
-  simgrid::surf::LinkImpl::linksList(&res);
+  kernel::resource::LinkImpl::linksList(&res);
   return res;
 }
 

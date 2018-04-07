@@ -163,7 +163,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
         if (bytes_amount[i * host_nb + j] > 0) {
           double lat=0.0;
 
-          std::vector<LinkImpl*> route;
+          std::vector<kernel::resource::LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
           latency = std::max(latency, lat);
 
@@ -191,7 +191,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
         if (bytes_amount[i * host_nb + j] > 0.0) {
-          std::vector<LinkImpl*> route;
+          std::vector<kernel::resource::LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), route, nullptr);
 
           for (auto const& link : route)
@@ -227,8 +227,8 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  std::vector<double> *spee
   return new CpuL07(this, host, speedPerPstate, core);
 }
 
-LinkImpl* NetworkL07Model::createLink(const std::string& name, double bandwidth, double latency,
-                                      e_surf_link_sharing_policy_t policy)
+kernel::resource::LinkImpl* NetworkL07Model::createLink(const std::string& name, double bandwidth, double latency,
+                                                        e_surf_link_sharing_policy_t policy)
 {
   return new LinkL07(this, name, bandwidth, latency, policy);
 }
@@ -388,7 +388,7 @@ void L07Action::updateBound()
 
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
-          std::vector<LinkImpl*> route;
+          std::vector<kernel::resource::LinkImpl*> route;
           hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
 
           lat_current = std::max(lat_current, lat * communicationAmount_[i * hostNb + j]);
@@ -396,7 +396,7 @@ void L07Action::updateBound()
       }
     }
   }
-  double lat_bound = NetworkModel::cfg_tcp_gamma / (2.0 * lat_current);
+  double lat_bound = kernel::resource::NetworkModel::cfg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
   if ((latency_ <= 0.0) && (suspended_ == Action::SuspendStates::not_suspended)) {
     if (rate_ < 0)

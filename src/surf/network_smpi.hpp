@@ -9,16 +9,18 @@
 #include "network_cm02.hpp"
 
 namespace simgrid {
-  namespace surf {
+namespace kernel {
+namespace resource {
 
-    class XBT_PRIVATE NetworkSmpiModel : public NetworkCm02Model {
-    public:
-      NetworkSmpiModel();
-      ~NetworkSmpiModel();
+class XBT_PRIVATE NetworkSmpiModel : public NetworkCm02Model {
+public:
+  NetworkSmpiModel();
+  ~NetworkSmpiModel();
 
-      double latencyFactor(double size);
-      double bandwidthFactor(double size);
-      double bandwidthConstraint(double rate, double bound, double size);
-    };
-  }
+  double latencyFactor(double size);
+  double bandwidthFactor(double size);
+  double bandwidthConstraint(double rate, double bound, double size);
+};
+} // namespace resource
+} // namespace kernel
 }

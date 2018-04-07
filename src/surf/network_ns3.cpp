@@ -89,10 +89,10 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs* cl
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
                              simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* gw_src,
                              simgrid::kernel::routing::NetPoint* gw_dst,
-                             std::vector<simgrid::surf::LinkImpl*>& link_list)
+                             std::vector<simgrid::kernel::resource::LinkImpl*>& link_list)
 {
   if (link_list.size() == 1) {
-    simgrid::surf::LinkNS3* link = static_cast<simgrid::surf::LinkNS3*>(link_list[0]);
+    simgrid::kernel::resource::LinkNS3* link = static_cast<simgrid::kernel::resource::LinkNS3*>(link_list[0]);
 
     XBT_DEBUG("Route from '%s' to '%s' with link '%s' %s", src->get_cname(), dst->get_cname(), link->get_cname(),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
@@ -139,7 +139,7 @@ void surf_network_model_init_NS3()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkNS3Model();
+  surf_network_model = new simgrid::kernel::resource::NetworkNS3Model();
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -147,7 +147,8 @@ static simgrid::config::Flag<std::string>
     ns3_tcp_model("ns3/TcpModel", "The ns3 tcp model can be : NewReno or Reno or Tahoe", "default");
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::Full)
 {
@@ -347,6 +348,7 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
   THROW_IMPOSSIBLE;
 }
 
+} // namespace resource
 }
 }
 

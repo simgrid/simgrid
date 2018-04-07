@@ -15,8 +15,8 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 static void IB_create_host_callback(simgrid::s4u::Host& host){
-  using simgrid::surf::NetworkIBModel;
-  using simgrid::surf::IBNode;
+  using simgrid::kernel::resource::IBNode;
+  using simgrid::kernel::resource::NetworkIBModel;
 
   static int id=0;
   // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
@@ -27,10 +27,10 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   ((NetworkIBModel*)surf_network_model)->active_nodes.insert({host.get_name(), act});
 }
 
-static void IB_action_state_changed_callback(simgrid::surf::NetworkAction* action)
+static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkAction* action)
 {
-  using simgrid::surf::NetworkIBModel;
-  using simgrid::surf::IBNode;
+  using simgrid::kernel::resource::IBNode;
+  using simgrid::kernel::resource::NetworkIBModel;
 
   if (action->get_state() != simgrid::kernel::resource::Action::State::done)
     return;
@@ -43,12 +43,12 @@ static void IB_action_state_changed_callback(simgrid::surf::NetworkAction* actio
 
 }
 
-static void IB_action_init_callback(simgrid::surf::NetworkAction* action, simgrid::s4u::Host* src,
+static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host* src,
                                     simgrid::s4u::Host* dst)
 {
-  simgrid::surf::NetworkIBModel* ibModel = (simgrid::surf::NetworkIBModel*)surf_network_model;
-  simgrid::surf::IBNode* act_src;
-  simgrid::surf::IBNode* act_dst;
+  simgrid::kernel::resource::NetworkIBModel* ibModel = (simgrid::kernel::resource::NetworkIBModel*)surf_network_model;
+  simgrid::kernel::resource::IBNode* act_src;
+  simgrid::kernel::resource::IBNode* act_dst;
 
   auto asrc = ibModel->active_nodes.find(src->get_name());
   if (asrc != ibModel->active_nodes.end()) {
@@ -88,7 +88,7 @@ void surf_network_model_init_IB()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkIBModel();
+  surf_network_model = new simgrid::kernel::resource::NetworkIBModel();
   all_existing_models->push_back(surf_network_model);
   simgrid::s4u::Link::onCommunicationStateChange.connect(IB_action_state_changed_callback);
   simgrid::s4u::Link::onCommunicate.connect(IB_action_init_callback);
@@ -98,7 +98,8 @@ void surf_network_model_init_IB()
 }
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
@@ -237,3 +238,4 @@ void NetworkIBModel::updateIBfactors(NetworkAction* action, IBNode* from, IBNode
 }
 }
 }
+} // namespace simgrid

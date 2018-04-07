@@ -59,7 +59,7 @@ public:
                                   std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
   void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                        std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) override;
+                        std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 
 protected:
   /**
@@ -74,7 +74,7 @@ protected:
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
   bool get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
-                        /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency);
+                        /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
 public:
   /* @brief get the route between two nodes in the full platform
@@ -85,7 +85,7 @@ public:
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
   static void get_global_route(routing::NetPoint* src, routing::NetPoint* dst,
-                               /* OUT */ std::vector<surf::LinkImpl*>& links, double* latency);
+                               /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
   virtual void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                          std::map<std::string, xbt_edge_t>* edges) = 0;

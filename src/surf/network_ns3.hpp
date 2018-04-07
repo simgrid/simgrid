@@ -11,7 +11,8 @@
 #include "network_interface.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 class NetworkNS3Model : public NetworkModel {
 public:
@@ -58,6 +59,7 @@ public:
   s4u::Host* dst_;
 };
 
+} // namespace resource
 }
 }
 

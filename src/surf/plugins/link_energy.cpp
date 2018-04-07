@@ -145,10 +145,11 @@ double LinkEnergy::getConsumedEnergy()
 using simgrid::plugin::LinkEnergy;
 
 /* **************************** events  callback *************************** */
-static void onCommunicate(simgrid::surf::NetworkAction* action, simgrid::s4u::Host* src, simgrid::s4u::Host* dst)
+static void onCommunicate(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host* src,
+                          simgrid::s4u::Host* dst)
 {
   XBT_DEBUG("onCommunicate is called");
-  for (simgrid::surf::LinkImpl* link : action->links()) {
+  for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
 
     if (link == nullptr)
       continue;
@@ -206,8 +207,8 @@ void sg_link_energy_plugin_init()
                link.extension<LinkEnergy>()->getConsumedEnergy());
   });
 
-  simgrid::s4u::Link::onCommunicationStateChange.connect([](simgrid::surf::NetworkAction* action) {
-    for (simgrid::surf::LinkImpl* link : action->links()) {
+  simgrid::s4u::Link::onCommunicationStateChange.connect([](simgrid::kernel::resource::NetworkAction* action) {
+    for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
       if (link != nullptr)
         link->piface_.extension<LinkEnergy>()->update();
     }

@@ -143,14 +143,14 @@ void Host::actorList(std::vector<ActorPtr>* whereto)
  */
 void Host::routeTo(Host* dest, std::vector<Link*>& links, double* latency)
 {
-  std::vector<surf::LinkImpl*> linkImpls;
+  std::vector<kernel::resource::LinkImpl*> linkImpls;
   this->routeTo(dest, linkImpls, latency);
-  for (surf::LinkImpl* const& l : linkImpls)
+  for (kernel::resource::LinkImpl* const& l : linkImpls)
     links.push_back(&l->piface_);
 }
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
-void Host::routeTo(Host* dest, std::vector<surf::LinkImpl*>& links, double* latency)
+void Host::routeTo(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
 {
   simgrid::kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {

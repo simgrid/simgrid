@@ -78,7 +78,7 @@ public:
   NetPoint* dst    = nullptr;
   NetPoint* gw_src = nullptr;
   NetPoint* gw_dst = nullptr;
-  std::vector<simgrid::surf::LinkImpl*> link_list;
+  std::vector<simgrid::kernel::resource::LinkImpl*> link_list;
 };
 
 enum class ClusterTopology { DRAGONFLY = 3, FAT_TREE = 2, FLAT = 1, TORUS = 0 };
@@ -182,7 +182,7 @@ public:
 extern "C" {
 
 /********** Routing **********/
-void routing_cluster_add_backbone(simgrid::surf::LinkImpl* bb);
+void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC void sg_platf_begin(); // Start a new platform

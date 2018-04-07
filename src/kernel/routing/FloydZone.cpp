@@ -86,7 +86,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 }
 
 void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                          std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+                          std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   /* set the size of table routing */
   unsigned int table_size = getTableSize();

@@ -13,15 +13,16 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf, "Logging specific to the SURF network module");
 
 namespace simgrid {
-  namespace surf {
+namespace kernel {
+namespace resource {
 
-  /* List of links */
-  std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
+/* List of links */
+std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
 
-  LinkImpl* LinkImpl::byName(std::string name)
-  {
-    auto link = links->find(name);
-    return link == links->end() ? nullptr : link->second;
+LinkImpl* LinkImpl::byName(std::string name)
+{
+  auto link = links->find(name);
+  return link == links->end() ? nullptr : link->second;
   }
   /** @brief Returns the amount of links in the platform */
   int LinkImpl::linksCount()
@@ -55,32 +56,35 @@ namespace simgrid {
   }
   }
 }
+} // namespace simgrid
 
 /*********
  * Model *
  *********/
 
-simgrid::surf::NetworkModel *surf_network_model = nullptr;
+simgrid::kernel::resource::NetworkModel* surf_network_model = nullptr;
 
 namespace simgrid {
-  namespace surf {
+namespace kernel {
+namespace resource {
 
-  /** @brief Command-line option 'network/TCP-gamma' -- see \ref options_model_network_gamma */
-  simgrid::config::Flag<double> NetworkModel::cfg_tcp_gamma(
-      {"network/TCP-gamma", "network/TCP_gamma"},
-      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
-      "Use the last given value, which is the max window size)",
-      4194304.0);
+/** @brief Command-line option 'network/TCP-gamma' -- see \ref options_model_network_gamma */
+simgrid::config::Flag<double> NetworkModel::cfg_tcp_gamma(
+    {"network/TCP-gamma", "network/TCP_gamma"},
+    "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
+    "Use the last given value, which is the max window size)",
+    4194304.0);
 
-  /** @brief Command-line option 'network/crosstraffic' -- see \ref options_model_network_crosstraffic */
-  simgrid::config::Flag<bool> NetworkModel::cfg_crosstraffic(
-      "network/crosstraffic",
-      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)", "yes");
+/** @brief Command-line option 'network/crosstraffic' -- see \ref options_model_network_crosstraffic */
+simgrid::config::Flag<bool> NetworkModel::cfg_crosstraffic(
+    "network/crosstraffic",
+    "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)", "yes");
 
-  NetworkModel::~NetworkModel() = default;
+NetworkModel::~NetworkModel() = default;
 
-    double NetworkModel::latencyFactor(double /*size*/) {
-      return sg_latency_factor;
+double NetworkModel::latencyFactor(double /*size*/)
+{
+  return sg_latency_factor;
     }
 
     double NetworkModel::bandwidthFactor(double /*size*/) {
@@ -95,7 +99,7 @@ namespace simgrid {
     {
       double minRes = Model::next_occuring_event_full(now);
 
-      for (kernel::resource::Action const& action : *get_running_action_set()) {
+      for (Action const& action : *get_running_action_set()) {
         const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
         if (net_action.latency_ > 0)
           minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);
@@ -110,7 +114,7 @@ namespace simgrid {
      * Resource *
      ************/
 
-    LinkImpl::LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, kernel::lmm::Constraint* constraint)
+    LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint)
         : Resource(model, name, constraint), piface_(this)
     {
 
@@ -212,8 +216,7 @@ namespace simgrid {
       for (int i = 0; i < llen; i++) {
         /* Beware of composite actions: ptasks put links and cpus together */
         // extra pb: we cannot dynamic_cast from void*...
-        kernel::resource::Resource* resource =
-            static_cast<kernel::resource::Resource*>(get_variable()->get_constraint(i)->get_id());
+        Resource* resource = static_cast<Resource*>(get_variable()->get_constraint(i)->get_id());
         LinkImpl* link     = dynamic_cast<LinkImpl*>(resource);
         if (link != nullptr)
           retlist.push_back(link);
@@ -222,6 +225,7 @@ namespace simgrid {
       return retlist;
     }
   }
+  } // namespace kernel
 }
 
 #endif /* NETWORK_INTERFACE_CPP_ */

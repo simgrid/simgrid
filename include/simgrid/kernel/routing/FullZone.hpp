@@ -25,9 +25,8 @@ public:
   ~FullZone() override;
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
-  void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-                 kernel::routing::NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
-                 bool symmetrical) override;
+  void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                 std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
 
 private:
   RouteCreationArgs** routing_table_ = nullptr;

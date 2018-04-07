@@ -55,14 +55,13 @@ public:
   void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                  std::map<std::string, xbt_edge_t>* edges) override;
   virtual RouteCreationArgs* newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
-                                              NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
+                                              NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
                                               bool symmetrical, bool change_order);
 
 protected:
   void getRouteCheckParams(NetPoint* src, NetPoint* dst);
-  void addRouteCheckParams(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                           kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                           std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical);
+  void addRouteCheckParams(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                           std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
 };
 } // namespace routing
 } // namespace kernel

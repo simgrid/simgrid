@@ -17,10 +17,10 @@ public:
   unsigned int group_;
   unsigned int chassis_;
   unsigned int blade_;
-  surf::LinkImpl** blue_links_  = nullptr;
-  surf::LinkImpl** black_links_ = nullptr;
-  surf::LinkImpl** green_links_ = nullptr;
-  surf::LinkImpl** my_nodes_    = nullptr;
+  resource::LinkImpl** blue_links_  = nullptr;
+  resource::LinkImpl** black_links_ = nullptr;
+  resource::LinkImpl** green_links_ = nullptr;
+  resource::LinkImpl** my_nodes_    = nullptr;
   DragonflyRouter(int i, int j, int k);
   ~DragonflyRouter();
 };
@@ -68,7 +68,7 @@ public:
   void seal() override;
   void generateRouters();
   void generateLinks();
-  void createLink(const std::string& id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown);
+  void createLink(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
 
   void rankId_to_coords(int rankId, unsigned int (*coords)[4]);
 

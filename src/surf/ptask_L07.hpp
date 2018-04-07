@@ -53,12 +53,12 @@ public:
   HostL07Model *hostModel_;
 };
 
-class NetworkL07Model : public NetworkModel {
+class NetworkL07Model : public kernel::resource::NetworkModel {
 public:
   NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   ~NetworkL07Model();
-  LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                       e_surf_link_sharing_policy_t policy) override;
+  kernel::resource::LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
+                                         e_surf_link_sharing_policy_t policy) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 
@@ -87,7 +87,7 @@ protected:
   void onSpeedChange() override;
 };
 
-class LinkL07 : public LinkImpl {
+class LinkL07 : public kernel::resource::LinkImpl {
 public:
   LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
           e_surf_link_sharing_policy_t policy);

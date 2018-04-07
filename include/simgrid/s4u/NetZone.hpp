@@ -48,13 +48,13 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_cname()") const char* getCname() const { return get_cname(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_route()") void addRoute(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
   {
     add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_bypass_route()") void addBypassRoute(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
   {
     add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
@@ -74,15 +74,15 @@ public:
   virtual int addComponent(kernel::routing::NetPoint * elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical);
+                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
   virtual void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                 kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical) = 0;
+                                std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical) = 0;
 
   /*** Called on each newly created regular route (not on bypass routes) */
   static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                    kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                   std::vector<surf::LinkImpl*>& link_list)>
+                                   std::vector<kernel::resource::LinkImpl*>& link_list)>
       onRouteCreation;
   static simgrid::xbt::signal<void(NetZone&)> onCreation;
   static simgrid::xbt::signal<void(NetZone&)> onSeal;

@@ -154,7 +154,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     for (auto const& link : e_route->link_list) {
       route->link_list.insert(route->link_list.begin(), link);
       if (lat)
-        *lat += static_cast<surf::LinkImpl*>(link)->latency();
+        *lat += static_cast<resource::LinkImpl*>(link)->latency();
     }
   }
 
@@ -229,7 +229,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
       first_gw = gw_dst;
 
     if (hierarchy_ == RoutingMode::recursive && v != dst_node_id && gw_dst->get_name() != prev_gw_src->get_name()) {
-      std::vector<surf::LinkImpl*> e_route_as_to_as;
+      std::vector<resource::LinkImpl*> e_route_as_to_as;
 
       NetPoint* gw_dst_net_elm      = nullptr;
       NetPoint* prev_gw_src_net_elm = nullptr;
@@ -246,7 +246,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     for (auto const& link : e_route->link_list) {
       route->link_list.insert(route->link_list.begin(), link);
       if (lat)
-        *lat += static_cast<surf::LinkImpl*>(link)->latency();
+        *lat += static_cast<resource::LinkImpl*>(link)->latency();
     }
   }
 
@@ -270,9 +270,8 @@ DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : Rou
 {
 }
 
-void DijkstraZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                             kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                             std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                             std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();

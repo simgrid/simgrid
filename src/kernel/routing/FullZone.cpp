@@ -71,9 +71,8 @@ void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
   }
 }
 
-void FullZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                         std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 

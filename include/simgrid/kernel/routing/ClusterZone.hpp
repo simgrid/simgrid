@@ -81,14 +81,14 @@ public:
 
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {linkUp, linkDown} */
-  std::unordered_map<unsigned int, std::pair<surf::LinkImpl*, surf::LinkImpl*>> private_links_;
+  std::unordered_map<unsigned int, std::pair<kernel::resource::LinkImpl*, kernel::resource::LinkImpl*>> private_links_;
 
   unsigned int node_pos(int id) { return id * num_links_per_node_; }
   unsigned int node_pos_with_loopback(int id) { return node_pos(id) + (has_loopback_ ? 1 : 0); }
   unsigned int node_pos_with_loopback_limiter(int id) { return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0); }
 
   void* loopback_                = nullptr;
-  surf::LinkImpl* backbone_        = nullptr;
+  kernel::resource::LinkImpl* backbone_ = nullptr;
   NetPoint* router_              = nullptr;
   bool has_limiter_                = false;
   bool has_loopback_               = false;

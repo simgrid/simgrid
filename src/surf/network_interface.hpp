@@ -21,7 +21,8 @@
  ***********/
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 /*********
  * Model *
  *********/
@@ -30,12 +31,12 @@ namespace surf {
  * @brief SURF network model interface class
  * @details A model is an object which handles the interactions between its Resources and its Actions
  */
-class NetworkModel : public kernel::resource::Model {
+class NetworkModel : public Model {
 public:
   static simgrid::config::Flag<double> cfg_tcp_gamma;
   static simgrid::config::Flag<bool> cfg_crosstraffic;
 
-  explicit NetworkModel(kernel::resource::Model::UpdateAlgo algo) : Model(algo) {}
+  explicit NetworkModel(Model::UpdateAlgo algo) : Model(algo) {}
   ~NetworkModel() override;
 
   /**
@@ -61,7 +62,7 @@ public:
    * unlimited.
    * @return The action representing the communication
    */
-  virtual kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) = 0;
+  virtual Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) = 0;
 
   /**
    * @brief Get the right multiplicative factor for the latency.
@@ -109,9 +110,9 @@ public:
  * @brief SURF network link interface class
  * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
  */
-class LinkImpl : public simgrid::kernel::resource::Resource, public simgrid::surf::PropertyHolder {
+class LinkImpl : public Resource, public simgrid::surf::PropertyHolder {
 protected:
-  LinkImpl(simgrid::surf::NetworkModel* model, const std::string& name, kernel::lmm::Constraint* constraint);
+  LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint* constraint);
   ~LinkImpl() override;
 
 public:
@@ -182,7 +183,7 @@ public:
  * @brief SURF network action interface class
  * @details A NetworkAction represents a communication between two [hosts](\ref HostImpl)
  */
-class NetworkAction : public simgrid::kernel::resource::Action {
+class NetworkAction : public Action {
 public:
   /** @brief Constructor
    *
@@ -190,23 +191,19 @@ public:
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
    */
-  NetworkAction(simgrid::kernel::resource::Model* model, double cost, bool failed)
-      : simgrid::kernel::resource::Action(model, cost, failed)
-  {
-  }
+  NetworkAction(Model* model, double cost, bool failed) : Action(model, cost, failed) {}
 
   /**
    * @brief NetworkAction constructor
    *
    * @param model The NetworkModel associated to this NetworkAction
-   * @param cost The cost of this  NetworkAction in [TODO]
-   * @param failed [description]
+   * @param cost The cost of this  NetworkAction in bytes
+   * @param failed Actions can be created in a failed state
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  NetworkAction(simgrid::kernel::resource::Model* model, double cost, bool failed, kernel::lmm::Variable* var)
-      : simgrid::kernel::resource::Action(model, cost, failed, var){};
+  NetworkAction(Model* model, double cost, bool failed, lmm::Variable* var) : Action(model, cost, failed, var){};
 
-  void set_state(simgrid::kernel::resource::Action::State state) override;
+  void set_state(Action::State state) override;
   virtual std::list<LinkImpl*> links();
 
   double latency_    = {};
@@ -216,11 +213,11 @@ public:
 };
 }
 }
-
+} // namespace simgrid
 /** \ingroup SURF_models
  *  \brief The network model
  */
-XBT_PUBLIC_DATA simgrid::surf::NetworkModel* surf_network_model;
+XBT_PUBLIC_DATA simgrid::kernel::resource::NetworkModel* surf_network_model;
 
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */
 

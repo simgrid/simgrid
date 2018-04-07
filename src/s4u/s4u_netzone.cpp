@@ -16,7 +16,7 @@ namespace s4u {
 
 simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                           kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                          std::vector<surf::LinkImpl*>& link_list)>
+                          std::vector<kernel::resource::LinkImpl*>& link_list)>
     NetZone::onRouteCreation;
 simgrid::xbt::signal<void(NetZone&)> NetZone::onCreation;
 simgrid::xbt::signal<void(NetZone&)> NetZone::onSeal;
@@ -103,7 +103,7 @@ int NetZone::addComponent(kernel::routing::NetPoint* elm)
 
 void NetZone::add_route(kernel::routing::NetPoint* /*src*/, kernel::routing::NetPoint* /*dst*/,
                         kernel::routing::NetPoint* /*gw_src*/, kernel::routing::NetPoint* /*gw_dst*/,
-                        std::vector<simgrid::surf::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
+                        std::vector<kernel::resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
 {
   xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
 }

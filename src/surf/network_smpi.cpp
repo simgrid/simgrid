@@ -33,14 +33,15 @@ void surf_network_model_init_SMPI()
 {
   if (surf_network_model)
     return;
-  surf_network_model = new simgrid::surf::NetworkSmpiModel();
+  surf_network_model = new simgrid::kernel::resource::NetworkSmpiModel();
   all_existing_models->push_back(surf_network_model);
 
   xbt_cfg_setdefault_double("network/weight-S", 8775);
 }
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 NetworkSmpiModel::NetworkSmpiModel() : NetworkCm02Model()
 {
@@ -98,3 +99,4 @@ double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double s
  **********/
 }
 }
+} // namespace simgrid

@@ -11,28 +11,27 @@
 #include "network_interface.hpp"
 
 namespace simgrid {
-  namespace surf {
+namespace kernel {
+namespace resource {
 
-    /***********
-     * Classes *
-     ***********/
+/***********
+ * Classes *
+ ***********/
 
-    class XBT_PRIVATE NetworkConstantModel;
-    class XBT_PRIVATE NetworkConstantAction;
+class XBT_PRIVATE NetworkConstantModel;
+class XBT_PRIVATE NetworkConstantAction;
 
-    /*********
-     * Model *
-     *********/
-    class NetworkConstantModel : public NetworkModel {
-    public:
-      NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::Full) {}
-      kernel::resource::Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size,
-                                            double rate) override;
-      double next_occuring_event(double now) override;
-      void update_actions_state(double now, double delta) override;
+/*********
+ * Model *
+ *********/
+class NetworkConstantModel : public NetworkModel {
+public:
+  NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::Full) {}
+  Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) override;
+  double next_occuring_event(double now) override;
+  void update_actions_state(double now, double delta) override;
 
-      LinkImpl* createLink(const std::string& name, double bw, double lat,
-                           e_surf_link_sharing_policy_t policy) override;
+  LinkImpl* createLink(const std::string& name, double bw, double lat, e_surf_link_sharing_policy_t policy) override;
     };
 
     /**********
@@ -48,5 +47,6 @@ namespace simgrid {
 
   }
 }
+} // namespace simgrid
 
 #endif /* NETWORK_CONSTANT_HPP_ */

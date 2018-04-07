@@ -15,12 +15,13 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 void surf_network_model_init_Constant()
 {
   xbt_assert(surf_network_model == nullptr);
-  surf_network_model = new simgrid::surf::NetworkConstantModel();
+  surf_network_model = new simgrid::kernel::resource::NetworkConstantModel();
   all_existing_models->push_back(surf_network_model);
 }
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 LinkImpl* NetworkConstantModel::createLink(const std::string& name, double bw, double lat,
                                            e_surf_link_sharing_policy_t policy)
 {
@@ -91,4 +92,5 @@ void NetworkConstantAction::update_remains_lazy(double /*now*/)
   THROW_IMPOSSIBLE;
 }
 }
+} // namespace kernel
 }

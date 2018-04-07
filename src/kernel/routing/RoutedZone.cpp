@@ -121,7 +121,7 @@ void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
 RouteCreationArgs* RoutedZone::newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
-                                                NetPoint* gw_dst, std::vector<simgrid::surf::LinkImpl*>& link_list,
+                                                NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
                                                 bool symmetrical, bool change_order)
 {
   RouteCreationArgs* result = new RouteCreationArgs();
@@ -164,9 +164,8 @@ void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
              "%s@%s). Please report that bug.",
              src->get_cname(), dst->get_cname(), src_as->get_cname(), dst_as->get_cname(), get_cname());
 }
-void RoutedZone::addRouteCheckParams(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                                     kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                     std::vector<simgrid::surf::LinkImpl*>& link_list, bool symmetrical)
+void RoutedZone::addRouteCheckParams(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                                     std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();

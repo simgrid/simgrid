@@ -159,7 +159,8 @@ void DragonflyZone::generateRouters()
   }
 }
 
-void DragonflyZone::createLink(const std::string& id, int numlinks, surf::LinkImpl** linkup, surf::LinkImpl** linkdown)
+void DragonflyZone::createLink(const std::string& id, int numlinks, resource::LinkImpl** linkup,
+                               resource::LinkImpl** linkdown)
 {
   *linkup   = nullptr;
   *linkdown = nullptr;
@@ -170,12 +171,12 @@ void DragonflyZone::createLink(const std::string& id, int numlinks, surf::LinkIm
   linkTemplate.id        = id;
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", id.c_str());
-  surf::LinkImpl* link;
+  resource::LinkImpl* link;
   if (this->sharing_policy_ == SURF_LINK_SPLITDUPLEX) {
-    *linkup   = surf::LinkImpl::byName(linkTemplate.id + "_UP");   // check link?
-    *linkdown = surf::LinkImpl::byName(linkTemplate.id + "_DOWN"); // check link ?
+    *linkup   = resource::LinkImpl::byName(linkTemplate.id + "_UP");   // check link?
+    *linkdown = resource::LinkImpl::byName(linkTemplate.id + "_DOWN"); // check link ?
   } else {
-    link      = surf::LinkImpl::byName(linkTemplate.id);
+    link      = resource::LinkImpl::byName(linkTemplate.id);
     *linkup   = link;
     *linkdown = link;
   }
@@ -184,17 +185,17 @@ void DragonflyZone::createLink(const std::string& id, int numlinks, surf::LinkIm
 void DragonflyZone::generateLinks()
 {
   static int uniqueId = 0;
-  surf::LinkImpl* linkup;
-  surf::LinkImpl* linkdown;
+  resource::LinkImpl* linkup;
+  resource::LinkImpl* linkdown;
 
   unsigned int numRouters = this->num_groups_ * this->num_chassis_per_group_ * this->num_blades_per_chassis_;
 
   // Links from routers to their local nodes.
   for (unsigned int i = 0; i < numRouters; i++) {
     // allocate structures
-    this->routers_[i]->my_nodes_    = new surf::LinkImpl*[num_links_per_link_ * this->num_nodes_per_blade_];
-    this->routers_[i]->green_links_ = new surf::LinkImpl*[this->num_blades_per_chassis_];
-    this->routers_[i]->black_links_ = new surf::LinkImpl*[this->num_chassis_per_group_];
+    this->routers_[i]->my_nodes_    = new resource::LinkImpl*[num_links_per_link_ * this->num_nodes_per_blade_];
+    this->routers_[i]->green_links_ = new resource::LinkImpl*[this->num_blades_per_chassis_];
+    this->routers_[i]->black_links_ = new resource::LinkImpl*[this->num_chassis_per_group_];
 
     for (unsigned int j = 0; j < num_links_per_link_ * this->num_nodes_per_blade_; j += num_links_per_link_) {
       std::string id = "local_link_from_router_" + std::to_string(i) + "_to_node_" +
@@ -250,8 +251,8 @@ void DragonflyZone::generateLinks()
     for (unsigned int j = i + 1; j < this->num_groups_; j++) {
       unsigned int routernumi                 = i * num_blades_per_chassis_ * num_chassis_per_group_ + j;
       unsigned int routernumj                 = j * num_blades_per_chassis_ * num_chassis_per_group_ + i;
-      this->routers_[routernumi]->blue_links_ = new surf::LinkImpl*;
-      this->routers_[routernumj]->blue_links_ = new surf::LinkImpl*;
+      this->routers_[routernumi]->blue_links_ = new resource::LinkImpl*;
+      this->routers_[routernumj]->blue_links_ = new resource::LinkImpl*;
       std::string id = "blue_link_between_group_"+ std::to_string(i) +"_and_" + std::to_string(j) +"_routers_" +
           std::to_string(routernumi) + "_and_" + std::to_string(routernumj) + "_" + std::to_string(uniqueId);
       this->createLink(id, this->num_links_blue_, &linkup, &linkdown);
@@ -275,7 +276,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
            dst->id());
 
   if ((src->id() == dst->id()) && has_loopback_) {
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos(src->id()));
+    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos(src->id()));
 
     route->link_list.push_back(info.first);
     if (latency)
@@ -303,7 +304,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
     *latency += myRouter->my_nodes_[myCoords[3] * num_links_per_link_]->latency();
 
   if (has_limiter_) { // limiter for sender
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
+    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(src->id()));
     route->link_list.push_back(info.first);
   }
 
@@ -353,7 +354,7 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   }
 
   if (has_limiter_) { // limiter for receiver
-    std::pair<surf::LinkImpl*, surf::LinkImpl*> info = private_links_.at(node_pos_with_loopback(dst->id()));
+    std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos_with_loopback(dst->id()));
     route->link_list.push_back(info.first);
   }
 

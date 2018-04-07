@@ -35,7 +35,7 @@ void surf_network_model_init_LegrandVelho()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model();
+  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
   all_existing_models->push_back(surf_network_model);
 
   xbt_cfg_setdefault_double("network/latency-factor",      13.01);
@@ -64,7 +64,7 @@ void surf_network_model_init_CM02()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 1.0);
   xbt_cfg_setdefault_double("network/weight-S",         0.0);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model();
+  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -90,7 +90,7 @@ void surf_network_model_init_Reno()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
+  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -107,7 +107,7 @@ void surf_network_model_init_Reno2()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
+  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
@@ -123,16 +123,16 @@ void surf_network_model_init_Vegas()
   xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
   xbt_cfg_setdefault_double("network/weight-S", 20537);
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
+  surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
 }
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool))
-    : NetworkModel(xbt_cfg_get_string("network/optim") == "Full" ? kernel::resource::Model::UpdateAlgo::Full
-                                                                 : kernel::resource::Model::UpdateAlgo::Lazy)
+    : NetworkModel(xbt_cfg_get_string("network/optim") == "Full" ? Model::UpdateAlgo::Full : Model::UpdateAlgo::Lazy)
 {
   std::string optim = xbt_cfg_get_string("network/optim");
   bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
@@ -172,19 +172,18 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
     }
 
     // if I am wearing a latency hat
-    if (action->get_type() == kernel::resource::ActionHeap::Type::latency) {
+    if (action->get_type() == ActionHeap::Type::latency) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
       get_maxmin_system()->update_variable_weight(action->get_variable(), action->weight_);
       get_action_heap().remove(action);
       action->set_last_update();
 
       // if I am wearing a max_duration or normal hat
-    } else if (action->get_type() == kernel::resource::ActionHeap::Type::max_duration ||
-               action->get_type() == kernel::resource::ActionHeap::Type::normal) {
+    } else if (action->get_type() == ActionHeap::Type::max_duration || action->get_type() == ActionHeap::Type::normal) {
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
-      action->finish(kernel::resource::Action::State::done);
+      action->finish(Action::State::done);
       get_action_heap().remove(action);
     }
   }
@@ -232,12 +231,12 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
 
     if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(kernel::resource::Action::State::done);
+      action.finish(Action::State::done);
     }
   }
 }
 
-kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   int failed = 0;
   double latency = 0.0;
@@ -266,7 +265,7 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
   action->weight_ = latency;
   action->latency_ = latency;
   action->rate_ = rate;
-  if (get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy) {
+  if (get_update_algorithm() == Model::UpdateAlgo::Lazy) {
     action->set_last_update();
   }
 
@@ -289,14 +288,14 @@ kernel::resource::Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Hos
 
   if (action->latency_ > 0) {
     action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
-    if (get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy) {
+    if (get_update_algorithm() == Model::UpdateAlgo::Lazy) {
       // add to the heap the event when the latency is payed
       double date = action->latency_ + action->get_last_update();
-      kernel::resource::ActionHeap::Type type;
+      ActionHeap::Type type;
       if (route.empty())
-        type = kernel::resource::ActionHeap::Type::normal;
+        type = ActionHeap::Type::normal;
       else
-        type = kernel::resource::ActionHeap::Type::latency;
+        type = ActionHeap::Type::latency;
 
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, date);
       get_action_heap().insert(action, date, type);
@@ -372,12 +371,11 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
 
       turn_off();
       while ((var = get_constraint()->get_variable(&elem))) {
-        kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
+        Action* action = static_cast<Action*>(var->get_id());
 
-        if (action->get_state() == kernel::resource::Action::State::running ||
-            action->get_state() == kernel::resource::Action::State::ready) {
+        if (action->get_state() == Action::State::running || action->get_state() == Action::State::ready) {
           action->set_finish_time(now);
-          action->set_state(kernel::resource::Action::State::failed);
+          action->set_state(Action::State::failed);
         }
       }
     }
@@ -484,3 +482,4 @@ void NetworkCm02Action::update_remains_lazy(double now)
 
 }
 }
+} // namespace simgrid

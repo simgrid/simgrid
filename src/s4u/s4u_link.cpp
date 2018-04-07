@@ -49,11 +49,11 @@ void sg_link_data_set(sg_link_t link, void* data)
 }
 int sg_link_count()
 {
-  return simgrid::surf::LinkImpl::linksCount();
+  return simgrid::kernel::resource::LinkImpl::linksCount();
 }
 sg_link_t* sg_link_list()
 {
-  simgrid::surf::LinkImpl** list = simgrid::surf::LinkImpl::linksList();
+  simgrid::kernel::resource::LinkImpl** list = simgrid::kernel::resource::LinkImpl::linksList();
   sg_link_t* res                 = (sg_link_t*)list; // Use the same memory area
 
   int size = sg_link_count();
@@ -64,7 +64,7 @@ sg_link_t* sg_link_list()
 }
 void sg_link_exit()
 {
-  simgrid::surf::LinkImpl::linksExit();
+  simgrid::kernel::resource::LinkImpl::linksExit();
 }
 
 /***********
@@ -75,7 +75,7 @@ namespace simgrid {
 namespace s4u {
 Link* Link::byName(const char* name)
 {
-  surf::LinkImpl* res = surf::LinkImpl::byName(name);
+  kernel::resource::LinkImpl* res = kernel::resource::LinkImpl::byName(name);
   if (res == nullptr)
     return nullptr;
   return &res->piface_;
@@ -171,7 +171,7 @@ void Link::setProperty(std::string key, std::string value)
 simgrid::xbt::signal<void(s4u::Link&)> Link::onCreation;
 simgrid::xbt::signal<void(s4u::Link&)> Link::onDestruction;
 simgrid::xbt::signal<void(s4u::Link&)> Link::onStateChange;
-simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
-simgrid::xbt::signal<void(surf::NetworkAction*)> Link::onCommunicationStateChange;
+simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
+simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::onCommunicationStateChange;
 }
 }

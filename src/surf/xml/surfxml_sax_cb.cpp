@@ -25,7 +25,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF 
 #include "simgrid_dtd.c"
 
 static const char* surf_parsed_filename; // Currently parsed file (for the error messages)
-std::vector<simgrid::surf::LinkImpl*> parsed_link_list; /* temporary store of current list link of a route */
+std::vector<simgrid::kernel::resource::LinkImpl*>
+    parsed_link_list; /* temporary store of current list link of a route */
 
 /*
  * Helping functions
@@ -608,17 +609,17 @@ void ETag_surfxml_link(){
 
 void STag_surfxml_link___ctn()
 {
-  simgrid::surf::LinkImpl* link = nullptr;
+  simgrid::kernel::resource::LinkImpl* link = nullptr;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link = simgrid::surf::LinkImpl::byName(A_surfxml_link___ctn_id);
+    link = simgrid::kernel::resource::LinkImpl::byName(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_UP");
+    link = simgrid::kernel::resource::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_UP");
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link = simgrid::surf::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_DOWN");
+    link = simgrid::kernel::resource::LinkImpl::byName(std::string(A_surfxml_link___ctn_id) + "_DOWN");
     break;
   default:
     surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
@@ -650,7 +651,7 @@ void ETag_surfxml_backbone(){
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(simgrid::surf::LinkImpl::byName(A_surfxml_backbone_id));
+  routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl::byName(A_surfxml_backbone_id));
 }
 
 void STag_surfxml_route(){
