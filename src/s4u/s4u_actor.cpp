@@ -311,7 +311,7 @@ ExecPtr exec_init(double flops_amount)
   ExecPtr res        = ExecPtr(new Exec());
   res->host_         = getHost();
   res->flops_amount_ = flops_amount;
-  res->setRemains(flops_amount);
+  res->set_remaining(flops_amount);
   return res;
 }
 

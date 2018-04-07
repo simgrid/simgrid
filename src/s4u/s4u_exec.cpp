@@ -76,7 +76,7 @@ ExecPtr Exec::setHost(Host* host)
   return this;
 }
 
-double Exec::getRemains()
+double Exec::get_remaining()
 {
   return simgrid::simix::kernelImmediate(
       [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->remains(); });

@@ -14,7 +14,8 @@ namespace s4u {
 
 /** @brief Activities
  *
- * This class is the ancestor of every activities that an actor can undertake, that is, of the actions that do take time in the simulated world.
+ * This class is the ancestor of every activities that an actor can undertake.
+ * That is, of the actions that do take time in the simulated world.
  */
 class XBT_PUBLIC Activity {
   friend Comm;
@@ -49,23 +50,36 @@ public:
   /** Cancel that activity */
   //virtual void cancel();
   /** Retrieve the current state of the activity */
-  Activity::State getState() { return state_; }
+  Activity::State get_state() { return state_; }
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
-  virtual double getRemains();
+  virtual double get_remaining();
+
   /** Set the [remaining] amount of work that this Activity will entail
    *
    * It is forbidden to change the amount of work once the Activity is started */
-  Activity* setRemains(double remains);
+  Activity* set_remaining(double remains);
 
   /** Put some user data onto the Activity */
-  Activity* setUserData(void* data)
+  Activity* set_user_data(void* data)
   {
     user_data_ = data;
     return this;
   }
   /** Retrieve the user data of the Activity */
-  void* getUserData() { return user_data_; }
+  void* get_user_data() { return user_data_; }
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_remaining()") double getRemains() { return get_remaining(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_remaining()") Activity* setRemains(double remains)
+  {
+    return set_remaining(remains);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") Activity* setUserData(void* data)
+  {
+    return set_user_data(data);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
 
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;

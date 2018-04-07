@@ -34,7 +34,7 @@ public:
   ExecPtr setHost(Host * host);
   Host* getHost() { return host_; }
 
-  double getRemains() override;
+  double get_remaining() override;
   double getRemainingRatio();
 
 private:

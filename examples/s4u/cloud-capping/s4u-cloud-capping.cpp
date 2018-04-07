@@ -44,7 +44,7 @@ static void worker_busy_loop(const char* name, double speed)
       static_cast<simgrid::s4u::VirtualMachine*>(simgrid::s4u::this_actor::getHost())->setBound(new_bound);
     }
     simgrid::s4u::this_actor::sleep_for(100);
-    double exec_remain_now = exec->getRemains();
+    double exec_remain_now = exec->get_remaining();
     double flops_per_sec   = exec_remain_prev - exec_remain_now;
     XBT_INFO("%s@%s: %.0f flops/s", name, simgrid::s4u::this_actor::getHost()->get_cname(), flops_per_sec / 100);
     exec_remain_prev = exec_remain_now;

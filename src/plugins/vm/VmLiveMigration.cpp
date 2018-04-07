@@ -109,7 +109,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
       comm = mbox->put_async(msg, size)->wait();
   } catch (xbt_ex& e) {
     if (comm) {
-      sg_size_t remaining = static_cast<sg_size_t>(comm->getRemains());
+      sg_size_t remaining = static_cast<sg_size_t>(comm->get_remaining());
       XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
       sent -= remaining;
     }

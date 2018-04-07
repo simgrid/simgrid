@@ -13,7 +13,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static void monitor(simgrid::s4u::ExecPtr activity)
 {
   while (not activity->test()) {
-    XBT_INFO("activity remaining duration: %g (%.0f%%)", activity->getRemains(), 100 * activity->getRemainingRatio());
+    XBT_INFO("activity remaining duration: %g (%.0f%%)", activity->get_remaining(),
+             100 * activity->getRemainingRatio());
     simgrid::s4u::this_actor::sleep_for(5);
   }
   XBT_INFO("My task is over.");

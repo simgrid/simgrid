@@ -79,7 +79,7 @@ CommPtr Mailbox::put_init()
 s4u::CommPtr Mailbox::put_init(void* data, uint64_t simulatedSize)
 {
   s4u::CommPtr res = put_init();
-  res->setRemains(simulatedSize);
+  res->set_remaining(simulatedSize);
   res->srcBuff_     = data;
   res->srcBuffSize_ = sizeof(void*);
   return res;
@@ -97,7 +97,7 @@ void Mailbox::put(void* payload, uint64_t simulatedSize)
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
   CommPtr c = put_init();
-  c->setRemains(simulatedSize);
+  c->set_remaining(simulatedSize);
   c->setSrcData(payload);
   c->wait();
 }
@@ -107,7 +107,7 @@ void Mailbox::put(void* payload, uint64_t simulatedSize, double timeout)
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
   CommPtr c = put_init();
-  c->setRemains(simulatedSize);
+  c->set_remaining(simulatedSize);
   c->setSrcData(payload);
   // c->start() is optional.
   c->wait(timeout);
