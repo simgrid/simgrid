@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2014-2016. The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2010, 2014-2018. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -57,13 +57,13 @@ int main(int argc, char *argv[])
   if (handler_addr < skaddr + sksize) {
     /* stack was placed into lower area */
     if (*(skaddr + sksize) != 'A')
-      printf("(skaddr)+(sksize)-%d;(sksize)-%d", sizeof(union alltypes), sizeof(union alltypes));
+      printf("(skaddr)+(sksize)-%zu;(sksize)-%zu", sizeof(union alltypes), sizeof(union alltypes));
     else
       printf("(skaddr)+(sksize);(sksize)");
   } else {
     /* stack was placed into higher area */
     if (*(skaddr + sksize * 2) != 'A')
-      printf("(skaddr);(sksize)-%d", sizeof(union alltypes));
+      printf("(skaddr);(sksize)-%zu", sizeof(union alltypes));
     else
       printf("(skaddr);(sksize)");
   }
