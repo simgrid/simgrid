@@ -313,7 +313,7 @@ if __name__ == '__main__':
     fd.write('#endif\n')
     fd.write('#include "src/simix/smx_synchro_private.hpp"\n')
     fd.write('#include "src/simix/smx_host_private.hpp"\n')
-    
+
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
 
