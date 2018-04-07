@@ -48,7 +48,7 @@ public:
    * @param policy The sharing policy of the Link
    */
   virtual LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                               e_surf_link_sharing_policy_t policy) = 0;
+                               s4u::Link::SharingPolicy policy) = 0;
 
   /**
    * @brief Create a communication between two hosts.

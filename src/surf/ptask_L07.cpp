@@ -57,7 +57,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : NetworkModel(Model::UpdateAlgo::Full), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_     = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
+  loopback_ = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
@@ -228,7 +228,7 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  std::vector<double> *spee
 }
 
 kernel::resource::LinkImpl* NetworkL07Model::createLink(const std::string& name, double bandwidth, double latency,
-                                                        e_surf_link_sharing_policy_t policy)
+                                                        s4u::Link::SharingPolicy policy)
 {
   return new LinkL07(this, name, bandwidth, latency, policy);
 }
@@ -245,13 +245,13 @@ CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>
 CpuL07::~CpuL07()=default;
 
 LinkL07::LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
-                 e_surf_link_sharing_policy_t policy)
+                 s4u::Link::SharingPolicy policy)
     : LinkImpl(model, name, model->get_maxmin_system()->constraint_new(this, bandwidth))
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
 
-  if (policy == SURF_LINK_FATPIPE)
+  if (policy == s4u::Link::SharingPolicy::FATPIPE)
     get_constraint()->unshare();
 
   s4u::Link::onCreation(this->piface_);

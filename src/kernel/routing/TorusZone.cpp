@@ -56,7 +56,7 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     sg_platf_new_link(&link);
     resource::LinkImpl* linkUp;
     resource::LinkImpl* linkDown;
-    if (link.policy == SURF_LINK_SPLITDUPLEX) {
+    if (link.policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
       std::string tmp_link = link_id + "_UP";
       linkUp               = resource::LinkImpl::byName(tmp_link);
       tmp_link             = link_id + "_DOWN";

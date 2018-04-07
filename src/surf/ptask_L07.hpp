@@ -58,7 +58,7 @@ public:
   NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   ~NetworkL07Model();
   kernel::resource::LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                                         e_surf_link_sharing_policy_t policy) override;
+                                         s4u::Link::SharingPolicy policy) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 
@@ -90,7 +90,7 @@ protected:
 class LinkL07 : public kernel::resource::LinkImpl {
 public:
   LinkL07(NetworkL07Model* model, const std::string& name, double bandwidth, double latency,
-          e_surf_link_sharing_policy_t policy);
+          s4u::Link::SharingPolicy policy);
   ~LinkL07() override;
   bool is_used() override;
   void apply_event(tmgr_trace_event_t event, double value) override;

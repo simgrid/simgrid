@@ -10,8 +10,10 @@
 #define SG_PLATF_H
 
 #include "simgrid/host.h"
+#include "simgrid/s4u/Link.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/simgrid_dtd.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -56,7 +58,7 @@ public:
   double latency                      = 0;
   tmgr_trace_t latency_trace          = nullptr;
   tmgr_trace_t state_trace            = nullptr;
-  e_surf_link_sharing_policy_t policy = SURF_LINK_FATPIPE;
+  simgrid::s4u::Link::SharingPolicy policy       = simgrid::s4u::Link::SharingPolicy::FATPIPE;
   std::map<std::string, std::string>* properties = nullptr;
 };
 
@@ -102,8 +104,8 @@ public:
   std::string topo_parameters;
   std::map<std::string, std::string>* properties;
   std::string router_id;
-  e_surf_link_sharing_policy_t sharing_policy;
-  e_surf_link_sharing_policy_t bb_sharing_policy;
+  simgrid::s4u::Link::SharingPolicy sharing_policy;
+  simgrid::s4u::Link::SharingPolicy bb_sharing_policy;
 };
 
 class CabinetCreationArgs {

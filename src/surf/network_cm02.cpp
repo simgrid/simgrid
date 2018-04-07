@@ -144,11 +144,11 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
   }
 
   set_maxmin_system(make_new_lmm_system(select));
-  loopback_     = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
+  loopback_ = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
 }
 
 LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth, double latency,
-                                       e_surf_link_sharing_policy_t policy)
+                                       s4u::Link::SharingPolicy policy)
 {
   return new NetworkCm02Link(this, name, bandwidth, latency, policy, get_maxmin_system());
 }
@@ -335,7 +335,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
  * Resource *
  ************/
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
-                                 e_surf_link_sharing_policy_t policy, kernel::lmm::System* system)
+                                 s4u::Link::SharingPolicy policy, kernel::lmm::System* system)
     : LinkImpl(model, name, system->constraint_new(this, sg_bandwidth_factor * bandwidth))
 {
   bandwidth_.scale = 1.0;
@@ -344,7 +344,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
   latency_.scale = 1.0;
   latency_.peak  = latency;
 
-  if (policy == SURF_LINK_FATPIPE)
+  if (policy == s4u::Link::SharingPolicy::FATPIPE)
     get_constraint()->unshare();
 
   simgrid::s4u::Link::onCreation(this->piface_);

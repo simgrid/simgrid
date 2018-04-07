@@ -114,7 +114,7 @@ void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
   }
 
   this->sharing_policy_ = cluster->sharing_policy;
-  if (cluster->sharing_policy == SURF_LINK_SPLITDUPLEX)
+  if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX)
     this->num_links_per_link_ = 2;
   this->bw_  = cluster->bw;
   this->lat_ = cluster->lat;
@@ -172,7 +172,7 @@ void DragonflyZone::createLink(const std::string& id, int numlinks, resource::Li
   sg_platf_new_link(&linkTemplate);
   XBT_DEBUG("Generating link %s", id.c_str());
   resource::LinkImpl* link;
-  if (this->sharing_policy_ == SURF_LINK_SPLITDUPLEX) {
+  if (this->sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
     *linkup   = resource::LinkImpl::byName(linkTemplate.id + "_UP");   // check link?
     *linkdown = resource::LinkImpl::byName(linkTemplate.id + "_DOWN"); // check link ?
   } else {
@@ -203,7 +203,7 @@ void DragonflyZone::generateLinks()
       this->createLink(id, 1, &linkup, &linkdown);
 
       this->routers_[i]->my_nodes_[j] = linkup;
-      if (this->sharing_policy_ == SURF_LINK_SPLITDUPLEX)
+      if (this->sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX)
         this->routers_[i]->my_nodes_[j + 1] = linkdown;
 
       uniqueId++;

@@ -7,6 +7,7 @@
 #define SURF_ROUTING_CLUSTER_DRAGONFLY_HPP_
 
 #include <simgrid/kernel/routing/ClusterZone.hpp>
+#include <simgrid/s4u/Link.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -73,7 +74,7 @@ public:
   void rankId_to_coords(int rankId, unsigned int (*coords)[4]);
 
 private:
-  e_surf_link_sharing_policy_t sharing_policy_;
+  simgrid::s4u::Link::SharingPolicy sharing_policy_;
   double bw_  = 0;
   double lat_ = 0;
 

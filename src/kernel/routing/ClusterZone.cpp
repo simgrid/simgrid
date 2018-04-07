@@ -133,7 +133,7 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
 
   resource::LinkImpl* linkUp;
   resource::LinkImpl* linkDown;
-  if (link.policy == SURF_LINK_SPLITDUPLEX) {
+  if (link.policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
     linkUp   = resource::LinkImpl::byName(link_id + "_UP");
     linkDown = resource::LinkImpl::byName(link_id + "_DOWN");
   } else {

@@ -23,7 +23,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 LinkImpl* NetworkConstantModel::createLink(const std::string& name, double bw, double lat,
-                                           e_surf_link_sharing_policy_t policy)
+                                           s4u::Link::SharingPolicy policy)
 {
 
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "

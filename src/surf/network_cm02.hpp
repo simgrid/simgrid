@@ -33,7 +33,7 @@ public:
   explicit NetworkCm02Model(lmm::System* (*make_new_sys)(bool) = &lmm::make_new_maxmin_system);
   virtual ~NetworkCm02Model() = default;
   LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                       e_surf_link_sharing_policy_t policy) override;
+                       s4u::Link::SharingPolicy policy) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
@@ -46,7 +46,7 @@ public:
 class NetworkCm02Link : public LinkImpl {
 public:
   NetworkCm02Link(NetworkCm02Model* model, const std::string& name, double bandwidth, double latency,
-                  e_surf_link_sharing_policy_t policy, lmm::System* system);
+                  s4u::Link::SharingPolicy policy, lmm::System* system);
   virtual ~NetworkCm02Link() = default;
   void apply_event(tmgr_trace_event_t event, double value) override;
   void setBandwidth(double value) override;

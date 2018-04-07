@@ -93,13 +93,13 @@ int console_add_backbone(lua_State *L) {
   lua_pop(L, 1);
   if (policy && not strcmp(policy, "FULLDUPLEX")) {
     XBT_WARN("Please update your platform to use SPLITDUPLEX instead of FULLDUPLEX");
-    link.policy = SURF_LINK_SPLITDUPLEX;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "SPLITDUPLEX")) {
-    link.policy = SURF_LINK_SPLITDUPLEX;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "FATPIPE")) {
-    link.policy = SURF_LINK_FATPIPE;
+    link.policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
   } else {
-    link.policy = SURF_LINK_SHARED;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SHARED;
   }
 
   sg_platf_new_link(&link);
@@ -269,13 +269,13 @@ int  console_add_link(lua_State *L) {
   lua_pop(L, 1);
   if (policy && not strcmp(policy, "FULLDUPLEX")) {
     XBT_WARN("Please update your platform to use SPLITDUPLEX instead of FULLDUPLEX");
-    link.policy = SURF_LINK_SPLITDUPLEX;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "SPLITDUPLEX")) {
-    link.policy = SURF_LINK_SPLITDUPLEX;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
   } else if (policy && not strcmp(policy, "FATPIPE")) {
-    link.policy = SURF_LINK_FATPIPE;
+    link.policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
   } else {
-    link.policy = SURF_LINK_SHARED;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SHARED;
   }
 
   sg_platf_new_link(&link);

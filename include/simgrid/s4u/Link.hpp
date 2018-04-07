@@ -30,6 +30,8 @@ class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
   kernel::resource::LinkImpl* const pimpl_;
 
 public:
+  enum class SharingPolicy { SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
+
   /** @brief Retrieve a link from its name */
   static Link* by_name(const char* name);
 

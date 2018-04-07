@@ -113,7 +113,7 @@ void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link)
 {
   std::vector<std::string> names;
 
-  if (link->policy == SURF_LINK_SPLITDUPLEX) {
+  if (link->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
     names.push_back(link->id+ "_UP");
     names.push_back(link->id+ "_DOWN");
   } else {
@@ -219,7 +219,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       link.id        = tmp_link;
       link.bandwidth = cluster->loopback_bw;
       link.latency   = cluster->loopback_lat;
-      link.policy    = SURF_LINK_FATPIPE;
+      link.policy    = simgrid::s4u::Link::SharingPolicy::FATPIPE;
       sg_platf_new_link(&link);
       linkUp   = simgrid::kernel::resource::LinkImpl::byName(tmp_link);
       linkDown = simgrid::kernel::resource::LinkImpl::byName(tmp_link);
@@ -239,7 +239,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       link.id        = tmp_link;
       link.bandwidth = cluster->limiter_link;
       link.latency = 0;
-      link.policy = SURF_LINK_SHARED;
+      link.policy    = simgrid::s4u::Link::SharingPolicy::SHARED;
       sg_platf_new_link(&link);
       linkDown = simgrid::kernel::resource::LinkImpl::byName(tmp_link);
       linkUp   = linkDown;
@@ -312,7 +312,7 @@ void sg_platf_new_cabinet(simgrid::kernel::routing::CabinetCreationArgs* cabinet
     sg_platf_new_host(&host);
 
     simgrid::kernel::routing::LinkCreationArgs link;
-    link.policy    = SURF_LINK_SPLITDUPLEX;
+    link.policy    = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
     link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;
     link.id        = "link_" + hostname;

@@ -174,7 +174,7 @@ NetworkNS3Model::~NetworkNS3Model() {
 }
 
 LinkImpl* NetworkNS3Model::createLink(const std::string& name, double bandwidth, double latency,
-                                      e_surf_link_sharing_policy_t policy)
+                                      s4u::Link::SharingPolicy policy)
 {
   return new LinkNS3(this, name, bandwidth, latency);
 }

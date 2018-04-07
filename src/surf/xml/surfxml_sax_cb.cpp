@@ -497,17 +497,17 @@ void ETag_surfxml_cluster(){
 
   switch (AX_surfxml_cluster_sharing___policy) {
   case A_surfxml_cluster_sharing___policy_SHARED:
-    cluster.sharing_policy = SURF_LINK_SHARED;
+    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
     break;
   case A_surfxml_cluster_sharing___policy_FULLDUPLEX:
     XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
-    cluster.sharing_policy = SURF_LINK_SPLITDUPLEX;
+    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
     break;
   case A_surfxml_cluster_sharing___policy_SPLITDUPLEX:
-    cluster.sharing_policy = SURF_LINK_SPLITDUPLEX;
+    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
     break;
   case A_surfxml_cluster_sharing___policy_FATPIPE:
-    cluster.sharing_policy = SURF_LINK_FATPIPE;
+    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
     break;
   default:
     surf_parse_error(std::string("Invalid cluster sharing policy for cluster ") + cluster.id);
@@ -515,10 +515,10 @@ void ETag_surfxml_cluster(){
   }
   switch (AX_surfxml_cluster_bb___sharing___policy) {
   case A_surfxml_cluster_bb___sharing___policy_FATPIPE:
-    cluster.bb_sharing_policy = SURF_LINK_FATPIPE;
+    cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
     break;
   case A_surfxml_cluster_bb___sharing___policy_SHARED:
-    cluster.bb_sharing_policy = SURF_LINK_SHARED;
+    cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
     break;
   default:
     surf_parse_error(std::string("Invalid bb sharing policy in cluster ") + cluster.id);
@@ -587,17 +587,17 @@ void ETag_surfxml_link(){
 
   switch (A_surfxml_link_sharing___policy) {
   case A_surfxml_link_sharing___policy_SHARED:
-    link.policy = SURF_LINK_SHARED;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SHARED;
     break;
   case A_surfxml_link_sharing___policy_FATPIPE:
-     link.policy = SURF_LINK_FATPIPE;
-     break;
+    link.policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
+    break;
   case A_surfxml_link_sharing___policy_FULLDUPLEX:
     XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
-    link.policy = SURF_LINK_SPLITDUPLEX;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
     break;
   case A_surfxml_link_sharing___policy_SPLITDUPLEX:
-    link.policy = SURF_LINK_SPLITDUPLEX;
+    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
     break;
   default:
     surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
@@ -648,7 +648,7 @@ void ETag_surfxml_backbone(){
   link.id = std::string(A_surfxml_backbone_id);
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id.c_str());
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id.c_str());
-  link.policy = SURF_LINK_SHARED;
+  link.policy     = simgrid::s4u::Link::SharingPolicy::SHARED;
 
   sg_platf_new_link(&link);
   routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl::byName(A_surfxml_backbone_id));

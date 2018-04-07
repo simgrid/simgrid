@@ -31,22 +31,21 @@ public:
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  LinkImpl* createLink(const std::string& name, double bw, double lat, e_surf_link_sharing_policy_t policy) override;
-    };
+  LinkImpl* createLink(const std::string& name, double bw, double lat, s4u::Link::SharingPolicy policy) override;
+};
 
-    /**********
-     * Action *
-     **********/
-    class NetworkConstantAction : public NetworkAction {
-    public:
-      NetworkConstantAction(NetworkConstantModel *model_, double size, double latency);
-      ~NetworkConstantAction();
-      double initialLatency_;
-      void update_remains_lazy(double now) override;
-    };
-
-  }
+/**********
+ * Action *
+ **********/
+class NetworkConstantAction : public NetworkAction {
+public:
+  NetworkConstantAction(NetworkConstantModel* model_, double size, double latency);
+  ~NetworkConstantAction();
+  double initialLatency_;
+  void update_remains_lazy(double now) override;
+};
 }
+} // namespace kernel
 } // namespace simgrid
 
 #endif /* NETWORK_CONSTANT_HPP_ */
