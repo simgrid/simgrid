@@ -22,7 +22,7 @@ double Activity::getRemains()
 
 Activity* Activity::setRemains(double remains)
 {
-  xbt_assert(state_ == inited, "Cannot change the remaining amount of work once the Activity is started");
+  xbt_assert(state_ == State::inited, "Cannot change the remaining amount of work once the Activity is started");
   remains_ = remains;
   return this;
 }

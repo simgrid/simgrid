@@ -15,8 +15,8 @@ namespace simgrid {
 namespace s4u {
 Comm::~Comm()
 {
-  if (state_ == started && not detached_ && (pimpl_ == nullptr || pimpl_->state == SIMIX_RUNNING)) {
-    XBT_INFO("Comm %p freed before its completion. Detached: %d, State: %d", this, detached_, state_);
+  if (state_ == State::started && not detached_ && (pimpl_ == nullptr || pimpl_->state == SIMIX_RUNNING)) {
+    XBT_INFO("Comm %p freed before its completion. Detached: %d, State: %d", this, detached_, (int)state_);
     if (pimpl_ != nullptr)
       XBT_INFO("pimpl_->state: %d", pimpl_->state);
     else
@@ -27,27 +27,27 @@ Comm::~Comm()
 
 Activity* Comm::setRate(double rate)
 {
-  xbt_assert(state_==inited);
+  xbt_assert(state_ == State::inited);
   rate_ = rate;
   return this;
 }
 
 Activity* Comm::setSrcData(void* buff)
 {
-  xbt_assert(state_==inited);
+  xbt_assert(state_ == State::inited);
   xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
   return this;
 }
 Activity* Comm::setSrcDataSize(size_t size)
 {
-  xbt_assert(state_==inited);
+  xbt_assert(state_ == State::inited);
   srcBuffSize_ = size;
   return this;
 }
 Activity* Comm::setSrcData(void* buff, size_t size)
 {
-  xbt_assert(state_==inited);
+  xbt_assert(state_ == State::inited);
 
   xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
@@ -56,18 +56,18 @@ Activity* Comm::setSrcData(void* buff, size_t size)
 }
 Activity* Comm::setDstData(void** buff)
 {
-  xbt_assert(state_==inited);
+  xbt_assert(state_ == State::inited);
   xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
   return this;
 }
 size_t Comm::getDstDataSize(){
-  xbt_assert(state_==finished);
+  xbt_assert(state_ == State::finished);
   return dstBuffSize_;
 }
 Activity* Comm::setDstData(void** buff, size_t size)
 {
-  xbt_assert(state_==inited);
+  xbt_assert(state_ == State::inited);
 
   xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
@@ -77,7 +77,7 @@ Activity* Comm::setDstData(void** buff, size_t size)
 
 Activity* Comm::start()
 {
-  xbt_assert(state_ == inited);
+  xbt_assert(state_ == State::inited);
 
   if (srcBuff_ != nullptr) { // Sender side
     pimpl_ = simcall_comm_isend(sender_, mailbox_->getImpl(), remains_, rate_, srcBuff_, srcBuffSize_, matchFunction_,
@@ -90,7 +90,7 @@ Activity* Comm::start()
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
   }
-  state_ = started;
+  state_ = State::started;
   return this;
 }
 
@@ -109,10 +109,10 @@ Activity* Comm::wait()
 Activity* Comm::wait(double timeout)
 {
   switch (state_) {
-    case finished:
+    case State::finished:
       return this;
 
-    case inited: // It's not started yet. Do it in one simcall
+    case State::inited: // It's not started yet. Do it in one simcall
       if (srcBuff_ != nullptr) {
         simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_, srcBuff_, srcBuffSize_, matchFunction_,
                           copyDataFunction_, user_data_, timeout);
@@ -120,12 +120,12 @@ Activity* Comm::wait(double timeout)
         simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_, matchFunction_, copyDataFunction_,
                           user_data_, timeout, rate_);
       }
-      state_ = finished;
+      state_ = State::finished;
       return this;
 
-    case started:
+    case State::started:
       simcall_comm_wait(pimpl_, timeout);
-      state_ = finished;
+      state_ = State::finished;
       return this;
 
     default:
@@ -146,7 +146,7 @@ int Comm::test_any(std::vector<CommPtr>* comms)
 
 Activity* Comm::detach()
 {
-  xbt_assert(state_ == inited, "You cannot detach communications once they are started.");
+  xbt_assert(state_ == State::inited, "You cannot detach communications once they are started (not implemented).");
   xbt_assert(srcBuff_ != nullptr && srcBuffSize_ != 0, "You can only detach sends, not recvs");
   detached_ = true;
   return start();
@@ -162,18 +162,16 @@ Activity* Comm::cancel()
 
 bool Comm::test()
 {
-  xbt_assert(state_ == inited || state_ == started || state_ == finished);
+  xbt_assert(state_ == State::inited || state_ == State::started || state_ == State::finished);
 
-  if (state_ == finished) {
+  if (state_ == State::finished)
     return true;
-  }
 
-  if (state_ == inited) {
+  if (state_ == State::inited)
     this->start();
-  }
 
   if(simcall_comm_test(pimpl_)){
-    state_ = finished;
+    state_ = State::finished;
     return true;
   }
   return false;

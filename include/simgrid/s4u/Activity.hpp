@@ -9,8 +9,6 @@
 #include <simgrid/s4u/forward.hpp>
 #include <simgrid/forward.h>
 
-enum e_s4u_activity_state_t { inited = 0, started, canceled, errored, finished };
-
 namespace simgrid {
 namespace s4u {
 
@@ -34,6 +32,8 @@ public:
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
 
+  enum class State { inited = 0, started, canceled, errored, finished };
+
   /** Starts a previously created activity.
    *
    * This function is optional: you can call wait() even if you didn't call start()
@@ -49,7 +49,7 @@ public:
   /** Cancel that activity */
   //virtual void cancel();
   /** Retrieve the current state of the activity */
-  e_s4u_activity_state_t getState() {return state_;}
+  Activity::State getState() { return state_; }
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   virtual double getRemains();
@@ -69,7 +69,7 @@ public:
 
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;
-  e_s4u_activity_state_t state_ = inited;
+  Activity::State state_                            = Activity::State::inited;
   double remains_ = 0;
   void* user_data_                                  = nullptr;
 }; // class

@@ -17,14 +17,14 @@ Activity* Exec::start()
 {
   pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1 / priority_, 0., host_);
   boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->setBound(bound_);
-  state_ = started;
+  state_ = State::started;
   return this;
 }
 
 Activity* Exec::wait()
 {
   simcall_execution_wait(pimpl_);
-  state_ = finished;
+  state_ = State::finished;
   return this;
 }
 
@@ -36,18 +36,16 @@ Activity* Exec::wait(double timeout)
 
 bool Exec::test()
 {
-  xbt_assert(state_ == inited || state_ == started || state_ == finished);
+  xbt_assert(state_ == State::inited || state_ == State::started || state_ == State::finished);
 
-  if (state_ == finished) {
+  if (state_ == State::finished)
     return true;
-  }
 
-  if (state_ == inited) {
+  if (state_ == State::inited)
     this->start();
-  }
 
   if (simcall_execution_test(pimpl_)) {
-    state_ = finished;
+    state_ = State::finished;
     return true;
   }
 
@@ -56,22 +54,23 @@ bool Exec::test()
 
 ExecPtr Exec::setPriority(double priority)
 {
-  xbt_assert(state_ == inited, "Cannot change the priority of an exec after its start");
+  xbt_assert(state_ == State::inited, "Cannot change the priority of an exec after its start");
   priority_ = priority;
   return this;
 }
 
 ExecPtr Exec::setBound(double bound)
 {
-  xbt_assert(state_ == inited, "Cannot change the bound of an exec after its start");
+  xbt_assert(state_ == State::inited, "Cannot change the bound of an exec after its start");
   bound_ = bound;
   return this;
 }
 
 ExecPtr Exec::setHost(Host* host)
 {
-  xbt_assert(state_ == inited || state_ == started, "Cannot change the host of an exec once it's done (state: %d)", state_);
-  if (state_ == started)
+  xbt_assert(state_ == State::inited || state_ == State::started,
+             "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
+  if (state_ == State::started)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
   return this;

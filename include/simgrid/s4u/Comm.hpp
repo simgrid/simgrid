@@ -44,9 +44,9 @@ public:
       intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
     });
     for (auto const& comm : *comms_in) {
-      if (comm->state_ == inited)
+      if (comm->state_ == Activity::State::inited)
         comm->start();
-      xbt_assert(comm->state_ == started);
+      xbt_assert(comm->state_ == Activity::State::started);
       simgrid::kernel::activity::ActivityImpl* ptr = comm->pimpl_.get();
       intrusive_ptr_add_ref(ptr);
       xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, ptr);
