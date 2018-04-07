@@ -316,7 +316,7 @@ private:
  */
 class XBT_PUBLIC Variable {
 public:
-  void initialize(simgrid::kernel::resource::Action * id_value, double sharing_weight_value, double bound_value,
+  void initialize(resource::Action* id_value, double sharing_weight_value, double bound_value,
                   int number_of_constraints, unsigned visited_value);
 
   /**
@@ -361,7 +361,7 @@ public:
    * @brief Get the data associated to a variable
    * @return The data associated to the variable
    */
-  simgrid::kernel::resource::Action* get_id() const { return id; }
+  resource::Action* get_id() const { return id; }
 
   /**
    * @brief Get the weight of a variable
@@ -394,7 +394,7 @@ public:
   double bound;
   double value;
   short int concurrency_share; /* The maximum number of elements that variable will add to a constraint */
-  simgrid::kernel::resource::Action* id;
+  resource::Action* id;
   int id_int;
   unsigned visited; /* used by System::update_modified_set() */
   /* \begin{For Lagrange only} */
@@ -443,8 +443,7 @@ public:
    * @param bound The maximum value of the variable (-1.0 if no maximum value)
    * @param number_of_constraints The maximum number of constraint to associate to the variable
    */
-  Variable* variable_new(simgrid::kernel::resource::Action * id, double weight_value, double bound,
-                         int number_of_constraints);
+  Variable* variable_new(resource::Action* id, double weight_value, double bound, int number_of_constraints);
 
   /**
    * @brief Free a variable
@@ -584,7 +583,7 @@ public:
                                                                    &Constraint::saturated_constraint_set_hook>>
       saturated_constraint_set;
 
-  simgrid::kernel::resource::Action::ModifiedSet* modified_set_ = nullptr;
+  resource::Action::ModifiedSet* modified_set_ = nullptr;
 
 private:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */

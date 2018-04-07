@@ -77,9 +77,12 @@ namespace simix {
 }
 namespace surf {
   class Cpu;
+  class CpuModel;
   class HostImpl;
+  class HostModel;
   class StorageImpl;
   class StorageType;
+  class StorageModel;
 }
 namespace trace_mgr {
   class trace;

@@ -9,16 +9,6 @@
 #include "simgrid/forward.h"
 #include "xbt/graph.h"
 
-namespace simgrid {
-namespace surf {
-class CpuModel;
-class HostModel;
-class NetworkModel;
-class StorageModel;
-class NetworkCm02Link;
-}
-}
-
 /** \brief Resource model description
  */
 struct surf_model_description {
