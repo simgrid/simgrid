@@ -136,9 +136,8 @@ public:
   /** @brief Update the latency in seconds of current Link */
   virtual void setLatency(double value) = 0;
 
-  /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2:
-   * SPLITDUPLEX) */
-  virtual int sharingPolicy();
+  /** @brief The sharing policy */
+  virtual s4u::Link::SharingPolicy sharingPolicy();
 
   /** @brief Check if the Link is used */
   bool is_used() override;

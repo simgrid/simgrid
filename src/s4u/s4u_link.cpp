@@ -29,7 +29,7 @@ sg_link_t sg_link_by_name(const char* name)
 
 int sg_link_is_shared(sg_link_t link)
 {
-  return link->sharingPolicy();
+  return (int)link->sharingPolicy();
 }
 double sg_link_bandwidth(sg_link_t link)
 {
@@ -107,7 +107,7 @@ double Link::bandwidth()
   return this->pimpl_->bandwidth();
 }
 
-int Link::sharingPolicy()
+Link::SharingPolicy Link::sharingPolicy()
 {
   return this->pimpl_->sharingPolicy();
 }

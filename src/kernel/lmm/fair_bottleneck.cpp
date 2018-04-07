@@ -73,7 +73,7 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
           nb++;
       }
       XBT_DEBUG("\tThere are %d variables", nb);
-      if (nb > 0 && not cnst.sharing_policy)
+      if (nb > 0 && cnst.sharing_policy == s4u::Link::SharingPolicy::FATPIPE)
         nb = 1;
       if (nb == 0) {
         cnst.remaining = 0.0;
@@ -107,7 +107,7 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
     for (auto iter = std::begin(cnst_list); iter != std::end(cnst_list);) {
       Constraint& cnst = *iter;
       XBT_DEBUG("Updating cnst %p ", &cnst);
-      if (cnst.sharing_policy) {
+      if (cnst.sharing_policy != s4u::Link::SharingPolicy::FATPIPE) {
         for (Element& elem : cnst.enabled_element_set) {
           xbt_assert(elem.variable->sharing_weight > 0);
           XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining, elem.variable,

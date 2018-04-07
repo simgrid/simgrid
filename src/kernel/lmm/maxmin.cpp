@@ -178,7 +178,7 @@ Constraint::Constraint(void* id_value, double bound_value) : bound(bound_value),
   concurrency_limit   = sg_concurrency_limit;
   concurrency_current = 0;
   concurrency_maximum = 0;
-  sharing_policy      = 1; /* FIXME: don't hardcode the value */
+  sharing_policy      = s4u::Link::SharingPolicy::SHARED;
 
   lambda     = 0.0;
   new_lambda = 0.0;
@@ -290,7 +290,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
     if (var->sharing_weight)
       elem.decrease_concurrency();
 
-    if (cnst->sharing_policy)
+    if (cnst->sharing_policy != s4u::Link::SharingPolicy::FATPIPE)
       elem.consumption_weight += value;
     else
       elem.consumption_weight = std::max(elem.consumption_weight, value);
@@ -417,12 +417,14 @@ static inline void saturated_variable_set_update(ConstraintLight* cnst_light_tab
 }
 
 template <class ElemList>
-static void format_element_list(const ElemList& elem_list, int sharing_policy, double& sum, std::string& buf)
+static void format_element_list(const ElemList& elem_list, s4u::Link::SharingPolicy sharing_policy, double& sum,
+                                std::string& buf)
 {
   for (Element const& elem : elem_list) {
     buf += std::to_string(elem.consumption_weight) + ".'" + std::to_string(elem.variable->id_int) + "'(" +
-           std::to_string(elem.variable->value) + ")" + (sharing_policy ? " + " : " , ");
-    if (sharing_policy)
+           std::to_string(elem.variable->value) + ")" +
+           (sharing_policy != s4u::Link::SharingPolicy::FATPIPE ? " + " : " , ");
+    if (sharing_policy != s4u::Link::SharingPolicy::FATPIPE)
       sum += elem.consumption_weight * elem.variable->value;
     else
       sum = std::max(sum, elem.consumption_weight * elem.variable->value);
@@ -446,14 +448,14 @@ void System::print() const
     double sum            = 0.0;
     // Show  the enabled variables
     buf += "\t";
-    buf += cnst.sharing_policy ? "(" : "max(";
+    buf += cnst.sharing_policy != s4u::Link::SharingPolicy::FATPIPE ? "(" : "max(";
     format_element_list(cnst.enabled_element_set, cnst.sharing_policy, sum, buf);
     // TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
     format_element_list(cnst.disabled_element_set, cnst.sharing_policy, sum, buf);
 
     buf += "0) <= " + std::to_string(cnst.bound) + " ('" + std::to_string(cnst.id_int) + "')";
 
-    if (not cnst.sharing_policy) {
+    if (cnst.sharing_policy == s4u::Link::SharingPolicy::FATPIPE) {
       buf += " [MAX-Constraint]";
     }
     XBT_DEBUG("%s", buf.c_str());
@@ -518,7 +520,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
     for (Element& elem : cnst.enabled_element_set) {
       xbt_assert(elem.variable->sharing_weight > 0);
       if (elem.consumption_weight > 0) {
-        if (cnst.sharing_policy)
+        if (cnst.sharing_policy != s4u::Link::SharingPolicy::FATPIPE)
           cnst.usage += elem.consumption_weight / elem.variable->sharing_weight;
         else if (cnst.usage < elem.consumption_weight / elem.variable->sharing_weight)
           cnst.usage = elem.consumption_weight / elem.variable->sharing_weight;
@@ -591,7 +593,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       /* Update the usage of contraints where this variable is involved */
       for (Element& elem : var.cnsts) {
         Constraint* cnst = elem.constraint;
-        if (cnst->sharing_policy) {
+        if (cnst->sharing_policy != s4u::Link::SharingPolicy::FATPIPE) {
           // Remember: shared constraints require that sum(elem.value * var.value) < cnst->bound
           double_update(&(cnst->remaining), elem.consumption_weight * var.value, cnst->bound * sg_maxmin_precision);
           double_update(&(cnst->usage), elem.consumption_weight / var.sharing_weight, sg_maxmin_precision);
@@ -939,7 +941,7 @@ void System::remove_all_modified_set()
 double Constraint::get_usage() const
 {
   double result              = 0.0;
-  if (sharing_policy) {
+  if (sharing_policy != s4u::Link::SharingPolicy::FATPIPE) {
     for (Element const& elem : enabled_element_set)
       if (elem.consumption_weight > 0)
         result += elem.consumption_weight * elem.variable->value;

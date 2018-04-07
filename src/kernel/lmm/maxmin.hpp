@@ -7,6 +7,7 @@
 #define SURF_MAXMIN_HPP
 
 #include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/s4u/Link.hpp"
 #include "xbt/asserts.h"
 #include "xbt/mallocator.h"
 
@@ -194,13 +195,13 @@ public:
   Constraint(void* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
-  void unshare() { sharing_policy = 0; }
+  void unshare() { sharing_policy = s4u::Link::SharingPolicy::FATPIPE; }
 
   /**
    * @brief Check if a constraint is shared (shared by default)
    * @return 1 if shared, 0 otherwise
    */
-  int get_sharing_policy() const { return sharing_policy; }
+  s4u::Link::SharingPolicy get_sharing_policy() const { return sharing_policy; }
 
   /**
    * @brief Get the usage of the constraint after the last lmm solve
@@ -295,7 +296,7 @@ public:
   int concurrency_maximum; /* The maximum number of (enabled and disabled) variables associated to the constraint at any
                             * given time (essentially for tracing)*/
 
-  int sharing_policy; /* see @e_surf_link_sharing_policy_t (0: FATPIPE, 1: SHARED, 2: SPLITDUPLEX) */
+  s4u::Link::SharingPolicy sharing_policy;
   int id_int;
   double lambda;
   double new_lambda;

@@ -52,7 +52,7 @@ public:
 
   /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: SPLITDUPLEX)
    */
-  int sharingPolicy();
+  SharingPolicy sharingPolicy();
 
   /** @brief Returns the current load (in flops per second) */
   double getUsage();

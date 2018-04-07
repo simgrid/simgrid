@@ -161,7 +161,7 @@ double NetworkModel::latencyFactor(double /*size*/)
       return bandwidth_.peak * bandwidth_.scale;
     }
 
-    int LinkImpl::sharingPolicy()
+    s4u::Link::SharingPolicy LinkImpl::sharingPolicy()
     {
       return get_constraint()->get_sharing_policy();
     }
