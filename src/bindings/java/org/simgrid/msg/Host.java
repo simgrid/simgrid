@@ -10,16 +10,16 @@ package org.simgrid.msg;
 import org.simgrid.msg.Storage;
 
 /**
- * A host object represents a location (any possible place) where a process may run. 
- * Thus it is represented as a physical resource with computing capabilities, some 
- * mailboxes to enable running process to communicate with remote ones, and some private 
- * data that can be only accessed by local process. An instance of this class is always 
+ * A host object represents a location (any possible place) where a process may run.
+ * Thus it is represented as a physical resource with computing capabilities, some
+ * mailboxes to enable running process to communicate with remote ones, and some private
+ * data that can be only accessed by local process. An instance of this class is always
  * bound with the corresponding native host. All the native hosts are automatically created
  * during the call of the method Msg.createEnvironment(). This method take as parameter a
  * platform file which describes all elements of the platform (host, link, root..).
  * You cannot create a host yourself.
  *
- * The best way to get an host instance is to call the static method 
+ * The best way to get an host instance is to call the static method
  * Host.getByName().
  *
  * For example to get the instance of the host. If your platform
@@ -28,7 +28,7 @@ import org.simgrid.msg.Storage;
  * \verbatim
 Host jacquelin;
 
-try { 
+try {
 	jacquelin = Host.getByName("Jacquelin");
 } catch(HostNotFoundException e) {
 	System.err.println(e.toString());
@@ -36,21 +36,21 @@ try {
 ...
 \endverbatim
  *
- */ 
+ */
 public class Host {
 
 	/**
 	 * This attribute represents a bind between a java host object and
 	 * a native host. Even if this attribute is public you must never
-	 * access to it. It is set automatically during the call of the 
+	 * access to it. It is set automatically during the call of the
 	 * static method Host.getByName().
 	 *
 	 * @see				Host.getByName().
-	 */ 
+	 */
 	private long bind;
 	protected String name;
 
-	/** User data. */ 
+	/** User data. */
 	private Object data;
 	protected Host() {
 		this.bind = 0;
@@ -59,7 +59,7 @@ public class Host {
 
 	@Override
 	public String toString (){
-		return this.name; 
+		return this.name;
 	}
 
 	/**
@@ -70,24 +70,24 @@ public class Host {
 	 *
 	 * @return		The host object with the given name.
 	 * @exception		HostNotFoundException if the name of the host is not valid.
-	 */ 
+	 */
 	public static native Host getByName(String name) throws HostNotFoundException;
-	/** Counts the installed hosts. */ 
+	/** Counts the installed hosts. */
 	public static native int getCount();
 
-	/** Returns the host of the current process. */ 
+	/** Returns the host of the current process. */
 	public static native Host currentHost();
 
-	/** Returns all hosts of the installed platform. */ 
+	/** Returns all hosts of the installed platform. */
 	public static native Host[] all();
 
-	/** 
+	/**
 	 * This static method sets a mailbox to receive in asynchronous mode.
-	 * 
-	 * All messages sent to this mailbox will be transferred to 
-	 * the receiver without waiting for the receive call. 
+	 *
+	 * All messages sent to this mailbox will be transferred to
+	 * the receiver without waiting for the receive call.
 	 * The receive call will still be necessary to use the received data.
-	 * If there is a need to receive some messages asynchronously, and some not, 
+	 * If there is a need to receive some messages asynchronously, and some not,
 	 * two different mailboxes should be used.
 	 *
 	 * @param mailboxName The name of the mailbox
@@ -100,7 +100,7 @@ public class Host {
 
 	public void setData(Object data) {
 		this.data = data;
-	} 
+	}
 
 	public Object getData() {
 		return this.data;
@@ -110,15 +110,15 @@ public class Host {
 		return null != this.data;
 	}
 
-	/** Starts the host if it is off */ 
+	/** Starts the host if it is off */
 	public native void on();
-	/** Stops the host if it is on */ 
+	/** Stops the host if it is on */
 	public native void off();
 
 	/**
 	 * This method returns the speed of the processor of a host (in flops),
 	 * regardless of the current load of the machine.
-	 */ 
+	 */
 	public native double getSpeed();
 	public native double getCoreNumber();
 
@@ -136,7 +136,7 @@ public class Host {
 	 * (until after the next clock update).
 	 */
 	public static native void updateAllEnergyConsumptions();
-	/** Returns the amount of Joules consumed by that host so far 
+	/** Returns the amount of Joules consumed by that host so far
 	 *
 	 * Please note that since the consumption is lazily updated, it may require a simcall to update it.
 	 * The result is that the actor requesting this value will be interrupted,
@@ -160,4 +160,4 @@ public class Host {
 	static {
 		nativeInit();
 	}	
-} 
+}

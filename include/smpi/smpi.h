@@ -1054,8 +1054,7 @@ std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std:
                                                                       size_t offset, size_t buff_size);
 std::vector<std::pair<size_t, size_t>> merge_private_blocks(std::vector<std::pair<size_t, size_t>> src,
                                                             std::vector<std::pair<size_t, size_t>> dst);
-                                                            
-                                                            
+
 #endif
 
 #endif

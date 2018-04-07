@@ -4,5 +4,5 @@ ________________________________________________________________________________
    int main( int argc, char *argv[] )
   then the compilation smpicc fails : conflicting types for ‘smpi_simulated_main’
   since smpicc substitutes smpi_simulated_main for the user main() declaration.
-   
+
 ___________________________________________________________________________________________

@@ -64,13 +64,13 @@ if(NS3_INCLUDE_DIR)
 
     # Compute NS3_PATH
     string(REGEX REPLACE "(.*)/lib" "\\1" NS3_PATH "${NS3_LIBRARY_PATH}")
-    
+
     message(STATUS "NS-3 found (v${NS3_VERSION}; incl:${NS3_INCLUDE_DIR}; lib: ${NS3_LIBRARY_PATH}).")
 
-    if (NOT NS3_LIBRARY_PATH STREQUAL "/usr/lib") 
+    if (NOT NS3_LIBRARY_PATH STREQUAL "/usr/lib")
       string(REGEX MATCH "${NS3_LIBRARY_PATH}" MatchResult "$ENV{LD_LIBRARY_PATH}")
       if(NOT MatchResult)
-        message(STATUS "Warning: NS3 not installed in system path, and not listed in LD_LIBRARY_PATH." 
+        message(STATUS "Warning: NS3 not installed in system path, and not listed in LD_LIBRARY_PATH."
                        "         You want to: export LD_LIBRARY_PATH=${NS3_LIBRARY_PATH}\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}")
       endif()
     endif()

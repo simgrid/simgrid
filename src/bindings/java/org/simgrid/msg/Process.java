@@ -9,20 +9,20 @@ import java.util.Arrays;
 import java.util.ArrayList;
 
 /**
- * A process may be defined as a code, with some private data, executing 
+ * A process may be defined as a code, with some private data, executing
  * in a location (host). All the process used by your simulation must be
  * declared in the deployment file (XML format).
- * To create your own process you must inherit your own process from this 
- * class and override the method "main()". For example if you want to use 
+ * To create your own process you must inherit your own process from this
+ * class and override the method "main()". For example if you want to use
  * a process named Slave proceed as it :
  *
  * (1) import the class Process of the package simgrid.msg
  * import simgrid.msg.Process;
- * 
+ *
  * public class Slave extends simgrid.msg.Process {
  *
  *  (2) Override the method function
- * 
+ *
  *  \verbatim
  * 	public void main(String[] args) {
  *		System.out.println("Hello MSG");
@@ -33,10 +33,10 @@ import java.util.ArrayList;
  * For the example, for the previous process Slave this file must contains a line :
  * &lt;process host="Maxims" function="Slave"/&gt;, where Maxims is the host of the process
  * Slave. All the process of your simulation are automatically launched and managed by Msg.
- * A process use tasks to simulate communications or computations with another process. 
- * For more information see Task. For more information on host concept 
+ * A process use tasks to simulate communications or computations with another process.
+ * For more information see Task. For more information on host concept
  * see Host.
- * 
+ *
  */
 
 public abstract class Process implements Runnable {
@@ -70,7 +70,7 @@ public abstract class Process implements Runnable {
 	 * @param name			The name of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-	 *                      
+	 *
 	 *
 	 */
 	public Process(String hostname, String name) throws HostNotFoundException {
@@ -86,12 +86,12 @@ public abstract class Process implements Runnable {
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
 	 *
-	 */ 
+	 */
 	public Process(String hostname, String name, String[] args) throws HostNotFoundException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
-	 * Constructs a new process from a host and his name. The method function of the 
+	 * Constructs a new process from a host and his name. The method function of the
 	 * process doesn't have argument.
 	 *
 	 * @param host			Where to create the process.
@@ -109,7 +109,7 @@ public abstract class Process implements Runnable {
 	 * @param name			The name of the process.
 	 * @param argsParam		The arguments of main method of the process.
 	 */	
-	public Process(Host host, String name, String[]argsParam) 
+	public Process(Host host, String name, String[]argsParam)
 	{
 		if (host == null)
 			throw new IllegalArgumentException("Cannot create a process on the null host");
@@ -150,7 +150,7 @@ public abstract class Process implements Runnable {
 	 *
 	 * @return				The function returns the PID of the next created process.
 	 *			
-	 */ 
+	 */
 	public static native int killAll();
 
 	/** Simply kills the receiving process.
@@ -178,7 +178,7 @@ public abstract class Process implements Runnable {
 	
 	/**
 	 * Specify whether the process should restart when its host restarts after a failure
-	 * 
+	 *
 	 * A process naturally stops when its host stops. It starts again only if autoRestart is set to true.
 	 * Otherwise, it just disappears when the host stops.
 	 */
@@ -194,7 +194,7 @@ public abstract class Process implements Runnable {
 	/**
 	 * Returns the host of the process.
 	 * @return				The host instance of the process.
-	 */ 
+	 */
 	public Host getHost() {
 		return this.host;
 	}
@@ -204,17 +204,17 @@ public abstract class Process implements Runnable {
 	 * @param pid			The process identifier of the process to get.
 	 *
 	 * @return				The process with the specified PID.
-	 */ 
+	 */
 	public static native Process fromPID(int pid);
 	/**
 	 * This method returns the PID of the process.
 	 *
 	 * @return				The PID of the process.
 	 *
-	 */ 
+	 */
 	public int getPID()  {
 		if (pid == -1) // Don't traverse the JNI barrier if you already have the answer
-			pid = nativeGetPID(); 
+			pid = nativeGetPID();
 		return pid;
 	}
 	// This should not be used: the PID is supposed to be initialized from the C directly when the actor is created,
@@ -225,12 +225,12 @@ public abstract class Process implements Runnable {
 	 *
 	 * @return				The PID of the parent of the process.
 	 *
-	 */ 
+	 */
 	public int getPPID()  {
 		return ppid;
 	}
 	/**
-	 * Returns the value of a given process property. 
+	 * Returns the value of a given process property.
 	 */
 	public native String getProperty(String name);
 
@@ -245,7 +245,7 @@ public abstract class Process implements Runnable {
 	 *
 	 * @return				The current process.
 	 *
-	 */ 
+	 */
 	public static native Process getCurrentProcess();
 	/**
 	 * Migrates a process to another host.
@@ -264,9 +264,9 @@ public abstract class Process implements Runnable {
 		sleep(millis,0);
 	}
 	/**
-	 * Makes the current process sleep until millis milliseconds and nanos nanoseconds 
+	 * Makes the current process sleep until millis milliseconds and nanos nanoseconds
 	 * have elapsed.
-	 * Unlike {@link #waitFor(double)} which takes seconds, this method takes 
+	 * Unlike {@link #waitFor(double)} which takes seconds, this method takes
 	 * milliseconds and nanoseconds.
 	 * Overloads Thread.sleep.
 	 * @param millis the length of time to sleep in milliseconds.
@@ -276,8 +276,8 @@ public abstract class Process implements Runnable {
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.
 	 * @param seconds		The time the current process must sleep.
-	 */ 
-	public native void waitFor(double seconds) throws HostFailureException;    
+	 */
+	public native void waitFor(double seconds) throws HostFailureException;
 	/**
 	 * This method actually creates and run the process.
 	 * It is a noop if the process is already launched.
@@ -331,7 +331,7 @@ public abstract class Process implements Runnable {
 	 * This static method returns the current amount of processes running
 	 *
 	 * @return			The count of the running processes
-	 */ 
+	 */
 	public static native int getCount();
 
 }

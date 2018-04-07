@@ -90,11 +90,11 @@ set(umpire_tests_deadlock_broken
   dropped-req
   comm-deadlock
 )
- 
+
 set(umpire_tests_problematic
   deadlock-config # No deadlock detected by ISP unless MPI_Send blocking activated
  ) # problematic tests
- 
+
  # These files are not listed on http://formalverification.cs.utah.edu/ISP_Tests/
 set(umpire_src_other
   abort1.c
@@ -132,11 +132,11 @@ set(umpire_src_other
   intercomm_merge-deadlock.c
   lost-request2.c
   lost-request3.c
-  lost-request.c  
+  lost-request.c
   no-error4-any_src.c
   no-error4.c
   no-error-derived-comms.c
-    
+
   no-error-persistent-all-completions.c
   no-error-persistent.c
   no-error-persistent-test.c
@@ -145,14 +145,14 @@ set(umpire_src_other
   no-error-probe-any_src.c
   no-error-probe-any_tag.c
   no-error-probe.c
-  
+
   no-error-wait2.c # Does not compile.
   no-error-waitall-any_src2.c
   no-error-waitall-any_src3.c
   no-error-waitall-any_src.c
   no-error-waitall.c
   no-error-waitany2.c
-  
+
   op-no-error.c
   op-no-free.c
   partial-recv-exhaustive.c
@@ -212,7 +212,7 @@ if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
     set(umpire_tesh ${umpire_tesh} ${test})
     set(files_to_clean ${files_to_clean} ${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh)
   endforeach(test)
-  
+
   # TODO, what should we do about ${umpire_tests_missed_deadlock}?
 
   foreach (test ${umpire_tests_passing})

@@ -42,24 +42,24 @@ if(enable_maintainer_mode AND NOT WIN32)
 endif()
 
 # Let's generate header files required by SMPI when the call location tracing
-# has been activated. 
+# has been activated.
 if(enable_maintainer_mode AND NOT WIN32)
   add_custom_command(OUTPUT ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h
                             ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h
-  
+
     COMMENT "Generating header files for call-location tracing with SMPI"
     # Make sure there is no space after the redirection operator (>). I received
     # error messages in that case on my Debian system.
     COMMAND "${CMAKE_HOME_DIRECTORY}/tools/smpi/generate_smpi_defines.pl" "${CMAKE_HOME_DIRECTORY}/include/smpi/smpi.h >${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h"
     COMMAND "${CMAKE_HOME_DIRECTORY}/tools/smpi/generate_smpi_defines.pl" "-f" "${CMAKE_HOME_DIRECTORY}/include/smpi/smpi.h >${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h"
   )
-  
+
   add_custom_target(smpi_generated_headers_call_location_tracing
     DEPENDS
     ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h
     ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h
   )
-  
+
   SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
     "${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h;${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h"
   )

@@ -216,6 +216,7 @@ public:
   {
     this->content = std::move(value);
     this->update();
+    this->unsetDefault();
   }
 
   void setDefaultValue(T value)

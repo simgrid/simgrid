@@ -19,5 +19,5 @@ Each of them modify the generated/given X86_64 assembly by prepending stack-clea
 
 The modification of the assembly is done by the clean-stack-filter program.
 
-If the underlying compiler is clang, it might be necessary to add the -no-integrated-as flag in order to force the 
+If the underlying compiler is clang, it might be necessary to add the -no-integrated-as flag in order to force the
 usage of an external assembler.

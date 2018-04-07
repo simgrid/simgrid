@@ -9,7 +9,7 @@
 #define SIMGRID_PUBLIC_CONFIG_H
 #include <xbt/base.h>
 
-/** Define the version numbers of the used header files. 
+/** Define the version numbers of the used header files.
   See sg_version_get() to retrieve the version of the dynamic library. */
 #define SIMGRID_VERSION_MAJOR @SIMGRID_VERSION_MAJOR@
 #define SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@

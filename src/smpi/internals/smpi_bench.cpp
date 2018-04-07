@@ -207,7 +207,7 @@ int smpi_usleep(useconds_t usecs)
 
 #if _POSIX_TIMERS > 0
 int smpi_nanosleep(const struct timespec* tp, struct timespec* t)
-{ 
+{
   if (not smpi_process())
     return nanosleep(tp,t);
   return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));

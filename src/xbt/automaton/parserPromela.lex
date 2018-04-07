@@ -15,9 +15,9 @@
 
 #include <stdio.h>
 #include "parserPromela.tab.hacc"
-  
+
   extern YYSTYPE yylval;
- 
+
 %}
 
 blancs       [ \t]+
@@ -60,20 +60,20 @@ commentaire  "/*"([^\*\/]*{nouv_ligne}*[^\*\/]*)*"*/"
 {blancs}                  { }
 
 
-{reel}                    { sscanf(yytext,"%lf",&yylval.real); 
+{reel}                    { sscanf(yytext,"%lf",&yylval.real);
                             return (LITT_REEL); }
 
-{entier}                  { sscanf(yytext,"%d",&yylval.integer); 
+{entier}                  { sscanf(yytext,"%d",&yylval.integer);
                             return (LITT_ENT); }
 
 {chaine}                  { yylval.string=(char *)malloc(strlen(yytext)+1);
-                            sscanf(yytext,"%s",yylval.string); 
+                            sscanf(yytext,"%s",yylval.string);
                             return (LITT_CHAINE); }
 
 [a-zA-Z]{caractere}*      { yylval.string=(char *)malloc(strlen(yytext)+1);
                             sscanf(yytext,"%s",yylval.string);
 			                      return (ID); }
-		   
+		
 {numl}                    { }
 
 .                         { }

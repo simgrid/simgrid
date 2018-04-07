@@ -5,21 +5,21 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-/** A semaphore implemented on top of SimGrid synchronization mechanisms. 
+/** A semaphore implemented on top of SimGrid synchronization mechanisms.
  * You can use it exactly the same way that you use classical semaphores
- * but to handle the interactions between the processes within the simulation.   
+ * but to handle the interactions between the processes within the simulation.
  *
  */
 
 public class Semaphore {
 	private long bind; // The C object -- don't touch it
 	/**
-	 * Semaphore capacity, defined when the semaphore is created. At most capacity 
+	 * Semaphore capacity, defined when the semaphore is created. At most capacity
 	 * process can acquire this semaphore at the same time.
 	 */
 	protected final int capacity;
 	/**
-	 * Creates a new semaphore with the given capacity. At most capacity 
+	 * Creates a new semaphore with the given capacity. At most capacity
 	 * process can acquire this semaphore at the same time.
 	 */
 	public Semaphore(int capacity) {
@@ -32,7 +32,7 @@ public class Semaphore {
 
 
 	/** Locks on the semaphore object until the provided timeout expires
-	 * @exception TimeoutException if the timeout expired before 
+	 * @exception TimeoutException if the timeout expired before
 	 *            the semaphore could be acquired.
 	 * @param timeout the duration of the lock
 	 */

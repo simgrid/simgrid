@@ -9,7 +9,7 @@ package org.simgrid.msg;
 public class StorageNotFoundException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
-	/** Constructs an <code>StorageNotFoundException</code> without a detail message. */ 
+	/** Constructs an <code>StorageNotFoundException</code> without a detail message. */
 	public StorageNotFoundException() {
 		super();
 	}

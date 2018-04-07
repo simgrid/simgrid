@@ -112,7 +112,7 @@ be persistent and exist as a filesystem object after the creating
 process has gone away.
 
 @item
-Because multiple heaps can be managed, data used for a 
+Because multiple heaps can be managed, data used for a
 specific purpose can be allocated into its own heap, making
 it easier to allow applications to ``dump'' and ``restore'' initialized
 malloc-managed memory regions.  For example, the ``unexec'' hack popularized
@@ -184,7 +184,7 @@ calls with the above patterns if using @code{#define} causes problems.
 @section Function Descriptions
 
 These are the details on the functions that make up the @code{mmalloc}
-package. 
+package.
 
 @table @code
 @item void *mmalloc_attach (int @var{fd}, void *@var{baseaddr});
@@ -223,7 +223,7 @@ On failure returns @code{NULL}.
 @item void *mmalloc_detach (void *@var{md});
 Terminate access to a @code{mmalloc} managed region identified by the
 descriptor @var{md}, by closing the base file and unmapping all memory
-pages associated with the region. 
+pages associated with the region.
 
 Returns @code{NULL} on success.
 

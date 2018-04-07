@@ -14,7 +14,7 @@ public class Storage {
 	 * This attribute represents a bind between a java storage object and
 	 * a native storage. Even if this attribute is public you must never
 	 * access to it.
-	 */ 
+	 */
 	private long bind = 0;
 
 	/** Storage name */
@@ -22,7 +22,7 @@ public class Storage {
 
 	@Override
 	public String toString (){
-		return this.name; 
+		return this.name;
 
 	}
 
@@ -34,15 +34,15 @@ public class Storage {
 	 *
 	 * @return		The storage object with the given name.
 	 * @exception		StorageNotFoundException if the name of the storage is not valid.
-	 */ 
-	public static native Storage getByName(String name) 
+	 */
+	public static native Storage getByName(String name)
 			throws HostNotFoundException, StorageNotFoundException;
 
 	/**
 	 * This method returns the name of a storage.
 	 * @return			The name of the storage.
 	 *
-	 */ 
+	 */
 	public String getName() {
 		return name;
 	}
@@ -52,7 +52,7 @@ public class Storage {
 	 *
 	 * @return	The size (in bytes) of the storage element.
 	 *
-	 */ 
+	 */
 	public native long getSize();
 
 	/**
@@ -60,7 +60,7 @@ public class Storage {
 	 *
 	 * @return	The free size (in bytes) of the storage element.
 	 *
-	 */ 
+	 */
 	public native long getFreeSize();
 
 	/**
@@ -68,21 +68,21 @@ public class Storage {
 	 *
 	 * @return	The used size (in bytes) of the storage element.
 	 *
-	 */ 
+	 */
 	public native long getUsedSize();
 
 	/**
-	 * Returns the value of a given storage property. 
+	 * Returns the value of a given storage property.
 	 */
 	public native String getProperty(String name);
 
 	/**
-	 * Change the value of a given storage property. 
+	 * Change the value of a given storage property.
 	 */
 	public native void setProperty(String name, String value);
 
 
-	/** 
+	/**
 	 *
 	 * Returns the host name the storage is attached to
 	 *
@@ -95,7 +95,7 @@ public class Storage {
 	 *
 	 * @return			An array containing all the storages installed.
 	 *
-	 */ 
+	 */
 	public static native Storage[] all();
 
 	/**

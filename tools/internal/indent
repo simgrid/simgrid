@@ -8,7 +8,7 @@
 
 declare -a OPTIONS
 OPTIONS=(
-    -kr         # Use Kernighan & Ritchie coding style. 
+    -kr         # Use Kernighan & Ritchie coding style.
     -l120       # Set maximum line length for non-comment lines to 120.
     -nut        # Use spaces instead of tabs.
     -i2         # Set indentation level to 2 spaces.

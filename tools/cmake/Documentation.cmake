@@ -17,7 +17,7 @@ endif()
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
 if(enable_documentation)
-  ADD_CUSTOM_TARGET(documentation 
+  ADD_CUSTOM_TARGET(documentation
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
@@ -27,7 +27,7 @@ if(enable_documentation)
 
   message(STATUS "Doxygen version: ${DOXYGEN_VERSION}")
 
-  # This is a workaround for older cmake versions (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide 
+  # This is a workaround for older cmake versions (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide
   # the DOXYGEN_VERSION variable and hence, building the documentation will always  fail. This code is the same as used
   # in the cmake library, version 3.
   if(DOXYGEN_EXECUTABLE)
@@ -98,7 +98,7 @@ add_custom_target(gforge-sync
 add_dependencies(gforge-sync documentation)
 
 else(enable_documentation)
-  ADD_CUSTOM_TARGET(documentation 
+  ADD_CUSTOM_TARGET(documentation
     COMMENT "The generation of the SimGrid documentation was disabled in cmake"
     )
 endif(enable_documentation)
@@ -106,14 +106,14 @@ endif(enable_documentation)
 if (Java_FOUND)
   find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
   mark_as_advanced(JAVADOC_PATH)
-  
+
   ADD_CUSTOM_COMMAND(TARGET documentation
     COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
     COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
   )
 endif()
-       
+
 #### Generate the manpages
 if( NOT MANPAGE_DIR)
   set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )

@@ -170,7 +170,7 @@ public:
 
   void update_remains_lazy(double now) override;
   std::list<Cpu*> cpus();
-  
+
   void suspend() override;
   void resume() override;
 };

@@ -94,7 +94,7 @@ called the "malloc descriptor".
      int mmalloc_errno (void *md);
      int mmalloc_setkey (void *md, int keynum, void *key);
      void *mmalloc_getkey (void *md, int keynum);
-     
+
      void *mmalloc (void *md, size_t size);
      void *mrealloc (void *md, void *ptr, size_t size);
      void *mvalloc (void *md, size_t size);

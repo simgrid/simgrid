@@ -1,10 +1,10 @@
 ! output ignore
 $ cmake -E remove bgtesh.pl bgtesh.data
 
-< use strict; 
+< use strict;
 < sleep(1);
 < open (FILE, "<bgtesh.data") || die "Cannot open bgtesh.data: $!\n";
-< 
+<
 < while (<FILE>) {
 <   print;
 < }

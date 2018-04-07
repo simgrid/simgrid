@@ -1,5 +1,5 @@
 # Search for the Lua 5.3 include files and libraries
-# 
+#
 #  Input variable:
 #     LUA_HINT: path to Lua installation -- only needed for non-standard installs
 #  Output variable:
@@ -40,7 +40,7 @@ find_library(LUA_LIBRARY
   /opt/csw
   /opt
 )
-if (NOT LUA_LIBRARY) 
+if (NOT LUA_LIBRARY)
   message(FATAL_ERROR "Error: Lua library not found. Please install that package (and set LUA_HINT) or disable Lua.")
 endif()
 if (NOT LUA_INCLUDE_DIR OR NOT EXISTS "${LUA_INCLUDE_DIR}/lua.h")
@@ -53,7 +53,7 @@ file(STRINGS "${LUA_INCLUDE_DIR}/lua.h" lua_version_str REGEX "^#define[ \t]+LUA
 file(STRINGS "${LUA_INCLUDE_DIR}/lua.h" lua_version_str REGEX "^#define[ \t]+LUA_VERSION_MINOR[ \t]+\"[0123456789]+\"")
   string(REGEX REPLACE "^#define[ \t]+LUA_VERSION_MINOR[ \t]+\"([^\"]+)\"" "\\1" LUA_VERSION_MINOR "${lua_version_str}")
 unset(lua_version_str)
-  
+
 # Check that we have a sufficient version of Lua
 if(LUA_VERSION_MAJOR EQUAL 5 AND LUA_VERSION_MINOR EQUAL 3)
   set(SIMGRID_HAVE_LUA 1)

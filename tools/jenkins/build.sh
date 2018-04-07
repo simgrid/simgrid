@@ -12,14 +12,14 @@ export LC_ALL=C
 
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
-rm -rf /tmp/jvm-* 
+rm -rf /tmp/jvm-*
 find /builds/workspace/SimGrid-Multi/ -name "hs_err_pid*.log" | xargs rm -f
 ls /tmp
 df -h
 echo "XXXX Let's go"
 
 # Help older cmakes
-if [ -e /usr/lib/jvm/java-7-openjdk-amd64 ] ; 
+if [ -e /usr/lib/jvm/java-7-openjdk-amd64 ] ;
 then
   export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
 fi

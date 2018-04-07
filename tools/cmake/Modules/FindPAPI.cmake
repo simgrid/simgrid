@@ -29,10 +29,10 @@ find_path(PAPI_PREFIX
 message(STATUS "Looking for libpapi")
 find_library(PAPI_LIBRARY
     NAMES libpapi papi
-    PATH_SUFFIXES lib64 lib 
+    PATH_SUFFIXES lib64 lib
     # HINTS gets searched before PATHS
-    HINTS 
-    ${PAPI_PREFIX}/lib 
+    HINTS
+    ${PAPI_PREFIX}/lib
 )
 if(PAPI_LIBRARY)
   message(STATUS "Looking for libpapi - found at ${PAPI_LIBRARY}")
@@ -44,7 +44,7 @@ message(STATUS "Looking for papi.h")
 find_path(PAPI_INCLUDE_DIRS
     NAMES papi.h
     # HINTS gets searched before PATHS
-    HINTS ${PAPI_PREFIX}/include 
+    HINTS ${PAPI_PREFIX}/include
 )
 if(PAPI_INCLUDE_DIRS)
   message(STATUS "Looking for papi.h - found at ${PAPI_INCLUDE_DIRS}")

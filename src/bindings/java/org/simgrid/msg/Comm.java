@@ -14,7 +14,7 @@ public class Comm {
 	protected boolean finished = false;
 	/**
 	 * Represents the bind between the java comm and the
-	 * native C comm. You must never access it, since it is 
+	 * native C comm. You must never access it, since it is
 	 * automatically set.
 	 */
 	private long bind = 0;

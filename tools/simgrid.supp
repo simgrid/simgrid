@@ -181,7 +181,7 @@
 }
 
 {
-   ignore unwind cruft 
+   ignore unwind cruft
    Memcheck:Param
    rt_sigprocmask(set)
    ...
@@ -189,16 +189,16 @@
    ...
 }
 {
-   ignore unwind cruft 
+   ignore unwind cruft
    Memcheck:Param
    msync(start)
    ...
    obj:/usr/lib/x86_64-linux-gnu/libunwind.so.*
    ...
 }
- 
+
 {
-   ignore unwind invalid reads 
+   ignore unwind invalid reads
    Memcheck:Addr8
    fun:_Ux86_64_setcontext
 }

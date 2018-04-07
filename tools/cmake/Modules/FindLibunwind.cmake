@@ -45,7 +45,7 @@ SET(HAVE_LIBUNWIND 1)
 
 #
 # Search for the header file
-# 
+#
 
 find_path(PATH_LIBUNWIND_H "libunwind.h"
   HINTS
@@ -56,7 +56,7 @@ find_path(PATH_LIBUNWIND_H "libunwind.h"
 if(PATH_LIBUNWIND_H)
   string(REGEX REPLACE "/libunwind.h"               "" PATH_LIBUNWIND_H   "${PATH_LIBUNWIND_H}")
   message("   Found libunwind.h in ${PATH_LIBUNWIND_H}")
-  include_directories(${PATH_LIBUNWIND_H})  
+  include_directories(${PATH_LIBUNWIND_H})
 else()
   message("   NOT FOUND libunwind.h")
   SET(HAVE_LIBUNWIND 0)
@@ -80,7 +80,7 @@ foreach(component ${LIBUNWIND_COMPONENTS})
     string(REGEX REPLACE "/lib${component}.*[.]${LIB_EXE}$" "" PATH_LIBUNWIND_LIB_${component} "${PATH_LIBUNWIND_LIB_${component}}")
     message("   Found lib${component}.${LIB_EXE} in ${PATH_LIBUNWIND_LIB_${component}}")
     link_directories(${PATH_LIBUNWIND_LIB_${component}})
-    
+
     if(${component} STREQUAL "unwind" AND APPLE)
         # Apple forbids to link directly against its libunwind implementation
         # So let's comply to that stupid restriction and link against the System framework
@@ -100,7 +100,7 @@ unset(LIBUNWIND_COMPONENTS)
 
 #
 # Conclude and cleanup
-# 
+#
 if(HAVE_LIBUNWIND)
   message(STATUS "Dependencies induced by libunwind: ${LIBUNWIND_LIBRARIES}")
 else()

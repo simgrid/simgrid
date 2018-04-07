@@ -255,7 +255,7 @@ while [ $# -gt 0 ]; do
             ;;
         *)
             PROC_ARGS="${PROC_ARGS:+$PROC_ARGS }$1"
-            shift      
+            shift
             ;;
     esac
 done
@@ -270,12 +270,12 @@ if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
-    perl -ne 'if (/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/) { 
-                my ($pre,$rad,$post)=($1,$2,$3); 
-	        for my $elm (split(",",$rad)) { 
-	          if ($elm=~/^([^-]*?)-([^-]*)$/) { 
-	             for (my $i=$1; $i<=$2;$i++) { 
-	                print "$pre$i$post\n"; 
+    perl -ne 'if (/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/) {
+                my ($pre,$rad,$post)=($1,$2,$3);
+	        for my $elm (split(",",$rad)) {
+	          if ($elm=~/^([^-]*?)-([^-]*)$/) {
+	             for (my $i=$1; $i<=$2;$i++) {
+	                print "$pre$i$post\n";
 	             }
 	          } else {
 	             print "$pre$elm$post\n";
@@ -386,7 +386,7 @@ fi
 
 ##----------------------------------------------------------
 ##  generate application.xml with hostnames from hostfile:
-##  the name of host_i (1<=i<=p, where -np p) is the line i in hostfile (where -hostfile hostfile), or "host$i" if 
+##  the name of host_i (1<=i<=p, where -np p) is the line i in hostfile (where -hostfile hostfile), or "host$i" if
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
@@ -430,7 +430,7 @@ do
         else
             echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
         fi
-    else 
+    else
     echo ${XML_ARGS} >> ${APPLICATIONTMP}
     fi
     echo "  </actor>" >> ${APPLICATIONTMP}
@@ -480,7 +480,7 @@ if [ -n "${KEEP}" ] ; then
         echo "Generated hostfile ${HOSTFILE} kept."
     fi
     if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
-        echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept." 
+        echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept."
     fi
 fi
 

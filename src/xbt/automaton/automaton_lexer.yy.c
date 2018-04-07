@@ -28,7 +28,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 6
-#define YY_FLEX_SUBMINOR_VERSION 0
+#define YY_FLEX_SUBMINOR_VERSION 1
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -107,25 +107,13 @@ typedef unsigned int flex_uint32_t;
 
 #endif /* ! FLEXINT_H */
 
-#ifdef __cplusplus
-
-/* The "const" storage-class-modifier is valid. */
-#define YY_USE_CONST
-
-#else  /* ! __cplusplus */
-
-/* C99 requires __STDC__ to be defined as 1. */
-#if defined (__STDC__)
-
-#define YY_USE_CONST
-
-#endif  /* defined (__STDC__) */
-#endif  /* ! __cplusplus */
-
-#ifdef YY_USE_CONST
+/* TODO: this is always defined, so inline it */
 #define yyconst const
+
+#if defined(__GNUC__) && __GNUC__ >= 3
+#define yynoreturn __attribute__((__noreturn__))
 #else
-#define yyconst
+#define yynoreturn
 #endif
 
 /* Returned upon end-of-file. */
@@ -186,7 +174,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 typedef size_t yy_size_t;
 #endif
 
-extern yy_size_t xbt_automaton_parser_leng;
+extern int xbt_automaton_parser_leng;
 
 extern FILE *xbt_automaton_parser_in, *xbt_automaton_parser_out;
 
@@ -198,34 +186,30 @@ extern FILE *xbt_automaton_parser_in, *xbt_automaton_parser_out;
     #define YY_LINENO_REWIND_TO(ptr)
 
 /* Return all but the first "n" matched characters back to the input stream. */
-#define yyless(n) \
-  do \
-    { \
-    /* Undo effects of setting up xbt_automaton_parser_text. */ \
-        int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
-    *yy_cp = (yy_hold_char); \
-    YY_RESTORE_YY_MORE_OFFSET \
-    (yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
-    YY_DO_BEFORE_ACTION; /* set up xbt_automaton_parser_text again */ \
-    } \
-  while ( 0 )
+#define yyless(n)                                                                                                      \
+  do {                                                                                                                 \
+    /* Undo effects of setting up xbt_automaton_parser_text. */                                                        \
+    int yyless_macro_arg = (n);                                                                                        \
+    YY_LESS_LINENO(yyless_macro_arg);                                                                                  \
+    *yy_cp                                = (yy_hold_char);                                                            \
+    YY_RESTORE_YY_MORE_OFFSET(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ;                            \
+    YY_DO_BEFORE_ACTION; /* set up xbt_automaton_parser_text again */                                                  \
+  } while (0)
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
-struct yy_buffer_state
-  {
-  FILE *yy_input_file;
+struct yy_buffer_state {
+  FILE* yy_input_file;
 
-  char *yy_ch_buf;    /* input buffer */
-  char *yy_buf_pos;    /* current position in input buffer */
+  char* yy_ch_buf;  /* input buffer */
+  char* yy_buf_pos; /* current position in input buffer */
 
   /* Size of input buffer in bytes, not including room for EOB
    * characters.
    */
-  yy_size_t yy_buf_size;
+  int yy_buf_size;
 
   /* Number of characters read into yy_ch_buf, not including EOB
    * characters.
@@ -251,8 +235,8 @@ struct yy_buffer_state
    */
   int yy_at_bol;
 
-    int yy_bs_lineno; /**< The line count. */
-    int yy_bs_column; /**< The column count. */
+  int yy_bs_lineno; /**< The line count. */
+  int yy_bs_column; /**< The column count. */
 
   /* Whether to try to fill the input buffer when we reach the
    * end of it.
@@ -274,14 +258,13 @@ struct yy_buffer_state
    * just pointing xbt_automaton_parser_in at a new input file.
    */
 #define YY_BUFFER_EOF_PENDING 2
-
-  };
+};
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
 
 /* Stack of input buffers. */
 static size_t yy_buffer_stack_top = 0; /**< index of top of stack. */
 static size_t yy_buffer_stack_max = 0; /**< capacity of stack. */
-static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
+static YY_BUFFER_STATE* yy_buffer_stack = NULL; /**< Stack as an array. */
 
 /* We provide macros for accessing buffer states in case in the
  * future we want to put the buffer states in a more general
@@ -300,13 +283,13 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when xbt_automaton_parser_text is formed. */
 static char yy_hold_char;
-static int yy_n_chars;    /* number of characters read into yy_ch_buf */
-yy_size_t xbt_automaton_parser_leng;
+static int yy_n_chars; /* number of characters read into yy_ch_buf */
+int xbt_automaton_parser_leng;
 
 /* Points to current character in buffer. */
-static char *yy_c_buf_p = (char *) 0;
-static int yy_init = 0;    /* whether we need to initialize */
-static int yy_start = 0;  /* start state number */
+static char* yy_c_buf_p = NULL;
+static int yy_init      = 0; /* whether we need to initialize */
+static int yy_start     = 0; /* start state number */
 
 /* Flag which is used to allow xbt_automaton_parser_wrap()'s to do buffer switches
  * instead of setting up a fresh xbt_automaton_parser_in.  A bit of a hack ...
@@ -329,7 +312,7 @@ static void xbt_automaton_parser__init_buffer (YY_BUFFER_STATE b,FILE *file  );
 
 YY_BUFFER_STATE xbt_automaton_parser__scan_buffer (char *base,yy_size_t size  );
 YY_BUFFER_STATE xbt_automaton_parser__scan_string (yyconst char *yy_str  );
-YY_BUFFER_STATE xbt_automaton_parser__scan_bytes (yyconst char *bytes,yy_size_t len  );
+YY_BUFFER_STATE xbt_automaton_parser__scan_bytes(yyconst char* bytes, int len);
 
 void *xbt_automaton_parser_alloc (yy_size_t  );
 void *xbt_automaton_parser_realloc (void *,yy_size_t  );
@@ -337,24 +320,22 @@ void xbt_automaton_parser_free (void *  );
 
 #define yy_new_buffer xbt_automaton_parser__create_buffer
 
-#define yy_set_interactive(is_interactive) \
-  { \
-  if ( ! YY_CURRENT_BUFFER ){ \
-        xbt_automaton_parser_ensure_buffer_stack (); \
-    YY_CURRENT_BUFFER_LVALUE =    \
-            xbt_automaton_parser__create_buffer(xbt_automaton_parser_in,YY_BUF_SIZE ); \
-  } \
-  YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
+#define yy_set_interactive(is_interactive)                                                                             \
+  {                                                                                                                    \
+    if (!YY_CURRENT_BUFFER) {                                                                                          \
+      xbt_automaton_parser_ensure_buffer_stack();                                                                      \
+      YY_CURRENT_BUFFER_LVALUE = xbt_automaton_parser__create_buffer(xbt_automaton_parser_in, YY_BUF_SIZE);            \
+    }                                                                                                                  \
+    YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive;                                                      \
   }
 
-#define yy_set_bol(at_bol) \
-  { \
-  if ( ! YY_CURRENT_BUFFER ){\
-        xbt_automaton_parser_ensure_buffer_stack (); \
-    YY_CURRENT_BUFFER_LVALUE =    \
-            xbt_automaton_parser__create_buffer(xbt_automaton_parser_in,YY_BUF_SIZE ); \
-  } \
-  YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
+#define yy_set_bol(at_bol)                                                                                             \
+  {                                                                                                                    \
+    if (!YY_CURRENT_BUFFER) {                                                                                          \
+      xbt_automaton_parser_ensure_buffer_stack();                                                                      \
+      YY_CURRENT_BUFFER_LVALUE = xbt_automaton_parser__create_buffer(xbt_automaton_parser_in, YY_BUF_SIZE);            \
+    }                                                                                                                  \
+    YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol;                                                                      \
   }
 
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
@@ -366,7 +347,7 @@ void xbt_automaton_parser_free (void *  );
 
 typedef unsigned char YY_CHAR;
 
-FILE *xbt_automaton_parser_in = (FILE *) 0, *xbt_automaton_parser_out = (FILE *) 0;
+FILE *xbt_automaton_parser_in = NULL, *xbt_automaton_parser_out = NULL;
 
 typedef int yy_state_type;
 
@@ -383,30 +364,26 @@ extern char *xbt_automaton_parser_text;
 static yy_state_type yy_get_previous_state (void );
 static yy_state_type yy_try_NUL_trans (yy_state_type current_state  );
 static int yy_get_next_buffer (void );
-#if defined(__GNUC__) && __GNUC__ >= 3
-__attribute__((__noreturn__))
-#endif
-static void yy_fatal_error (yyconst char msg[]  );
+static void yynoreturn yy_fatal_error(yyconst char* msg);
 
 /* Done after the current pattern has been matched and before the
  * corresponding action - sets up xbt_automaton_parser_text.
  */
-#define YY_DO_BEFORE_ACTION \
-  (yytext_ptr) = yy_bp; \
-  xbt_automaton_parser_leng = (size_t) (yy_cp - yy_bp); \
-  (yy_hold_char) = *yy_cp; \
-  *yy_cp = '\0'; \
-  (yy_c_buf_p) = yy_cp;
+#define YY_DO_BEFORE_ACTION                                                                                            \
+  (yytext_ptr)              = yy_bp;                                                                                   \
+  xbt_automaton_parser_leng = (int)(yy_cp - yy_bp);                                                                    \
+  (yy_hold_char)            = *yy_cp;                                                                                  \
+  *yy_cp                    = '\0';                                                                                    \
+  (yy_c_buf_p)              = yy_cp;
 
 #define YY_NUM_RULES 25
 #define YY_END_OF_BUFFER 26
 /* This struct is not used in this scanner,
    but its presence is necessary. */
-struct yy_trans_info
-  {
+struct yy_trans_info {
   flex_int32_t yy_verify;
   flex_int32_t yy_nxt;
-  };
+};
 static yyconst flex_int16_t yy_accept[54] =
     {   0,
         0,    0,   26,   24,   18,   23,    8,   24,   24,    9,
@@ -544,7 +521,7 @@ char *xbt_automaton_parser_text;
 
   extern YYSTYPE yylval;
 
-#line 548 "automaton_lexer.yy.c"
+#line 533 "automaton_lexer.yy.c"
 
 #define INITIAL 0
 
@@ -583,7 +560,7 @@ FILE *xbt_automaton_parser_get_out (void );
 
 void xbt_automaton_parser_set_out  (FILE * _out_str  );
 
-yy_size_t xbt_automaton_parser_get_leng (void );
+int xbt_automaton_parser_get_leng(void);
 
 char *xbt_automaton_parser_get_text (void );
 
@@ -642,42 +619,39 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO do { if (fwrite( xbt_automaton_parser_text, xbt_automaton_parser_leng, 1, xbt_automaton_parser_out )) {} } while (0)
+#define ECHO                                                                                                           \
+  do {                                                                                                                 \
+    if (fwrite(xbt_automaton_parser_text, (size_t)xbt_automaton_parser_leng, 1, xbt_automaton_parser_out)) {           \
+    }                                                                                                                  \
+  } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
  * is returned in "result".
  */
 #ifndef YY_INPUT
-#define YY_INPUT(buf,result,max_size) \
-  if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
-    { \
-    int c = '*'; \
-    size_t n; \
-    for ( n = 0; n < max_size && \
-           (c = getc( xbt_automaton_parser_in )) != EOF && c != '\n'; ++n ) \
-      buf[n] = (char) c; \
-    if ( c == '\n' ) \
-      buf[n++] = (char) c; \
-    if ( c == EOF && ferror( xbt_automaton_parser_in ) ) \
-      YY_FATAL_ERROR( "input in flex scanner failed" ); \
-    result = n; \
-    } \
-  else \
-    { \
-    errno=0; \
-    while ( (result = fread(buf, 1, max_size, xbt_automaton_parser_in))==0 && ferror(xbt_automaton_parser_in)) \
-      { \
-      if( errno != EINTR) \
-        { \
-        YY_FATAL_ERROR( "input in flex scanner failed" ); \
-        break; \
-        } \
-      errno=0; \
-      clearerr(xbt_automaton_parser_in); \
-      } \
-    }\
-\
+#define YY_INPUT(buf, result, max_size)                                                                                \
+  if (YY_CURRENT_BUFFER_LVALUE->yy_is_interactive) {                                                                   \
+    int c = '*';                                                                                                       \
+    size_t n;                                                                                                          \
+    for (n = 0; n < max_size && (c = getc(xbt_automaton_parser_in)) != EOF && c != '\n'; ++n)                          \
+      buf[n] = (char)c;                                                                                                \
+    if (c == '\n')                                                                                                     \
+      buf[n++] = (char)c;                                                                                              \
+    if (c == EOF && ferror(xbt_automaton_parser_in))                                                                   \
+      YY_FATAL_ERROR("input in flex scanner failed");                                                                  \
+    result = n;                                                                                                        \
+  } else {                                                                                                             \
+    errno = 0;                                                                                                         \
+    while ((result = (int)fread(buf, 1, max_size, xbt_automaton_parser_in)) == 0 && ferror(xbt_automaton_parser_in)) { \
+      if (errno != EINTR) {                                                                                            \
+        YY_FATAL_ERROR("input in flex scanner failed");                                                                \
+        break;                                                                                                         \
+      }                                                                                                                \
+      errno = 0;                                                                                                       \
+      clearerr(xbt_automaton_parser_in);                                                                               \
+    }                                                                                                                  \
+  }
 
 #endif
 
@@ -724,8 +698,7 @@ extern int xbt_automaton_parser_lex (void);
 #define YY_BREAK /*LINTED*/break;
 #endif
 
-#define YY_RULE_SETUP \
-  YY_USER_ACTION
+#define YY_RULE_SETUP YY_USER_ACTION
 
 /** The main scanner function which does all the work.
  */
@@ -735,196 +708,187 @@ YY_DECL
   char *yy_cp, *yy_bp;
   int yy_act;
 
-  if ( !(yy_init) )
-    {
+  if (!(yy_init)) {
     (yy_init) = 1;
 
 #ifdef YY_USER_INIT
     YY_USER_INIT;
 #endif
 
-    if ( ! (yy_start) )
-      (yy_start) = 1;  /* first start state */
+    if (!(yy_start))
+      (yy_start) = 1; /* first start state */
 
-    if ( ! xbt_automaton_parser_in )
+    if (!xbt_automaton_parser_in)
       xbt_automaton_parser_in = stdin;
 
-    if ( ! xbt_automaton_parser_out )
+    if (!xbt_automaton_parser_out)
       xbt_automaton_parser_out = stdout;
 
-    if ( ! YY_CURRENT_BUFFER ) {
-      xbt_automaton_parser_ensure_buffer_stack ();
-      YY_CURRENT_BUFFER_LVALUE =
-        xbt_automaton_parser__create_buffer(xbt_automaton_parser_in,YY_BUF_SIZE );
+    if (!YY_CURRENT_BUFFER) {
+      xbt_automaton_parser_ensure_buffer_stack();
+      YY_CURRENT_BUFFER_LVALUE = xbt_automaton_parser__create_buffer(xbt_automaton_parser_in, YY_BUF_SIZE);
     }
 
-    xbt_automaton_parser__load_buffer_state( );
-    }
+    xbt_automaton_parser__load_buffer_state();
+  }
 
   {
 #line 38 "parserPromela.lex"
 
+#line 754 "automaton_lexer.yy.c"
 
-#line 769 "automaton_lexer.yy.c"
-
-  while ( /*CONSTCOND*/1 )    /* loops until end-of-file is reached */
+    while (/*CONSTCOND*/ 1) /* loops until end-of-file is reached */
     {
-    yy_cp = (yy_c_buf_p);
+      yy_cp = (yy_c_buf_p);
 
-    /* Support of xbt_automaton_parser_text. */
-    *yy_cp = (yy_hold_char);
-
-    /* yy_bp points to the position in yy_ch_buf of the start of
-     * the current run.
-     */
-    yy_bp = yy_cp;
-
-    yy_current_state = (yy_start);
-yy_match:
-    do
-      {
-      YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
-      if ( yy_accept[yy_current_state] )
-        {
-        (yy_last_accepting_state) = yy_current_state;
-        (yy_last_accepting_cpos) = yy_cp;
-        }
-      while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-        {
-        yy_current_state = (int) yy_def[yy_current_state];
-        if ( yy_current_state >= 54 )
-          yy_c = yy_meta[(unsigned int) yy_c];
-        }
-      yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-      ++yy_cp;
-      }
-    while ( yy_base[yy_current_state] != 90 );
-
-yy_find_action:
-    yy_act = yy_accept[yy_current_state];
-    if ( yy_act == 0 )
-      { /* have to back up */
-      yy_cp = (yy_last_accepting_cpos);
-      yy_current_state = (yy_last_accepting_state);
-      yy_act = yy_accept[yy_current_state];
-      }
-
-    YY_DO_BEFORE_ACTION;
-
-do_action:  /* This label is used only to access EOF actions. */
-
-    switch ( yy_act )
-  { /* beginning of action switch */
-      case 0: /* must back up */
-      /* undo the effects of YY_DO_BEFORE_ACTION */
+      /* Support of xbt_automaton_parser_text. */
       *yy_cp = (yy_hold_char);
-      yy_cp = (yy_last_accepting_cpos);
-      yy_current_state = (yy_last_accepting_state);
-      goto yy_find_action;
 
-case 1:
-YY_RULE_SETUP
+      /* yy_bp points to the position in yy_ch_buf of the start of
+       * the current run.
+       */
+      yy_bp = yy_cp;
+
+      yy_current_state = (yy_start);
+    yy_match:
+      do {
+        YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+        if (yy_accept[yy_current_state]) {
+          (yy_last_accepting_state) = yy_current_state;
+          (yy_last_accepting_cpos)  = yy_cp;
+        }
+        while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
+          yy_current_state = (int)yy_def[yy_current_state];
+          if (yy_current_state >= 54)
+            yy_c = yy_meta[(unsigned int)yy_c];
+        }
+        yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t)yy_c];
+        ++yy_cp;
+      } while (yy_base[yy_current_state] != 90);
+
+    yy_find_action:
+      yy_act = yy_accept[yy_current_state];
+      if (yy_act == 0) { /* have to back up */
+        yy_cp            = (yy_last_accepting_cpos);
+        yy_current_state = (yy_last_accepting_state);
+        yy_act           = yy_accept[yy_current_state];
+      }
+
+      YY_DO_BEFORE_ACTION;
+
+    do_action: /* This label is used only to access EOF actions. */
+
+      switch (yy_act) { /* beginning of action switch */
+        case 0:         /* must back up */
+          /* undo the effects of YY_DO_BEFORE_ACTION */
+          *yy_cp           = (yy_hold_char);
+          yy_cp            = (yy_last_accepting_cpos);
+          yy_current_state = (yy_last_accepting_state);
+          goto yy_find_action;
+
+        case 1:
+          YY_RULE_SETUP
 #line 40 "parserPromela.lex"
 { return (NEVER); }
-  YY_BREAK
+YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 41 "parserPromela.lex"
 { return (IF); }
-  YY_BREAK
+YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 42 "parserPromela.lex"
 { return (FI); }
-  YY_BREAK
+YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 43 "parserPromela.lex"
 { return (IMPLIES); }
-  YY_BREAK
+YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 44 "parserPromela.lex"
 { return (GOTO); }
-  YY_BREAK
+YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 45 "parserPromela.lex"
 { return (AND); }
-  YY_BREAK
+YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 46 "parserPromela.lex"
 { return (OR); }
-  YY_BREAK
+YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 47 "parserPromela.lex"
 { return (NOT); }
-  YY_BREAK
+YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 48 "parserPromela.lex"
 { return (LEFT_PAR); }
-  YY_BREAK
+YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 49 "parserPromela.lex"
 { return (RIGHT_PAR); }
-  YY_BREAK
+YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 50 "parserPromela.lex"
 { return (CASE); }
-  YY_BREAK
+YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 51 "parserPromela.lex"
 { return (COLON); }
-  YY_BREAK
+YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 52 "parserPromela.lex"
 { return (SEMI_COLON); }
-  YY_BREAK
+YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 53 "parserPromela.lex"
 { return (CASE_TRUE); }
-  YY_BREAK
+YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 54 "parserPromela.lex"
 { return (LEFT_BRACE); }
-  YY_BREAK
+YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 55 "parserPromela.lex"
 { return (RIGHT_BRACE); }
-  YY_BREAK
+YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
 #line 58 "parserPromela.lex"
 { }
-  YY_BREAK
+YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 60 "parserPromela.lex"
 { }
-  YY_BREAK
+YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 63 "parserPromela.lex"
 { sscanf(xbt_automaton_parser_text,"%lf",&yylval.real);
                             return (LITT_REEL); }
-  YY_BREAK
+YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 66 "parserPromela.lex"
 { sscanf(xbt_automaton_parser_text,"%d",&yylval.integer);
                             return (LITT_ENT); }
-  YY_BREAK
+YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
@@ -932,110 +896,104 @@ YY_RULE_SETUP
 { yylval.string=(char *)malloc(strlen(xbt_automaton_parser_text)+1);
                             sscanf(xbt_automaton_parser_text,"%s",yylval.string);
                             return (LITT_CHAINE); }
-  YY_BREAK
+YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 73 "parserPromela.lex"
 { yylval.string=(char *)malloc(strlen(xbt_automaton_parser_text)+1);
                             sscanf(xbt_automaton_parser_text,"%s",yylval.string);
-                            return (ID); }
-  YY_BREAK
+                            return (ID);
+}
+YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
 #line 77 "parserPromela.lex"
 { }
-  YY_BREAK
+YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 79 "parserPromela.lex"
 { }
-  YY_BREAK
+YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 81 "parserPromela.lex"
 ECHO;
-  YY_BREAK
-#line 960 "automaton_lexer.yy.c"
+YY_BREAK
+#line 945 "automaton_lexer.yy.c"
 case YY_STATE_EOF(INITIAL):
   yyterminate();
 
-  case YY_END_OF_BUFFER:
-    {
-    /* Amount of text matched not including the EOB char. */
-    int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
+case YY_END_OF_BUFFER: {
+  /* Amount of text matched not including the EOB char. */
+  int yy_amount_of_matched_text = (int)(yy_cp - (yytext_ptr)) - 1;
 
-    /* Undo the effects of YY_DO_BEFORE_ACTION. */
-    *yy_cp = (yy_hold_char);
-    YY_RESTORE_YY_MORE_OFFSET
+  /* Undo the effects of YY_DO_BEFORE_ACTION. */
+  *yy_cp = (yy_hold_char);
+  YY_RESTORE_YY_MORE_OFFSET
 
-    if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW )
-      {
-      /* We're scanning a new file or input source.  It's
-       * possible that this happened because the user
-       * just pointed xbt_automaton_parser_in at a new source and called
-       * xbt_automaton_parser_lex().  If so, then we have to assure
-       * consistency between YY_CURRENT_BUFFER and our
-       * globals.  Here is the right place to do so, because
-       * this is the first action (other than possibly a
-       * back-up) that will match for the new input source.
-       */
-      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-      YY_CURRENT_BUFFER_LVALUE->yy_input_file = xbt_automaton_parser_in;
-      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
-      }
-
-    /* Note that here we test for yy_c_buf_p "<=" to the position
-     * of the first EOB in the buffer, since yy_c_buf_p will
-     * already have been incremented past the NUL character
-     * (since all states make transitions on EOB to the
-     * end-of-buffer state).  Contrast this with the test
-     * in input().
+  if (YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW) {
+    /* We're scanning a new file or input source.  It's
+     * possible that this happened because the user
+     * just pointed xbt_automaton_parser_in at a new source and called
+     * xbt_automaton_parser_lex().  If so, then we have to assure
+     * consistency between YY_CURRENT_BUFFER and our
+     * globals.  Here is the right place to do so, because
+     * this is the first action (other than possibly a
+     * back-up) that will match for the new input source.
      */
-    if ( (yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
-      { /* This was really a NUL. */
-      yy_state_type yy_next_state;
+    (yy_n_chars)                               = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+    YY_CURRENT_BUFFER_LVALUE->yy_input_file    = xbt_automaton_parser_in;
+    YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
+  }
 
-      (yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
+  /* Note that here we test for yy_c_buf_p "<=" to the position
+   * of the first EOB in the buffer, since yy_c_buf_p will
+   * already have been incremented past the NUL character
+   * (since all states make transitions on EOB to the
+   * end-of-buffer state).  Contrast this with the test
+   * in input().
+   */
+  if ((yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)]) { /* This was really a NUL. */
+    yy_state_type yy_next_state;
 
-      yy_current_state = yy_get_previous_state(  );
+    (yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
 
-      /* Okay, we're now positioned to make the NUL
-       * transition.  We couldn't have
-       * yy_get_previous_state() go ahead and do it
-       * for us because it doesn't know how to deal
-       * with the possibility of jamming (and we don't
-       * want to build jamming into it because then it
-       * will run more slowly).
-       */
+    yy_current_state = yy_get_previous_state();
 
-      yy_next_state = yy_try_NUL_trans( yy_current_state );
+    /* Okay, we're now positioned to make the NUL
+     * transition.  We couldn't have
+     * yy_get_previous_state() go ahead and do it
+     * for us because it doesn't know how to deal
+     * with the possibility of jamming (and we don't
+     * want to build jamming into it because then it
+     * will run more slowly).
+     */
 
-      yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+    yy_next_state = yy_try_NUL_trans(yy_current_state);
 
-      if ( yy_next_state )
-        {
-        /* Consume the NUL. */
-        yy_cp = ++(yy_c_buf_p);
-        yy_current_state = yy_next_state;
-        goto yy_match;
-        }
+    yy_bp = (yytext_ptr) + YY_MORE_ADJ;
 
-      else
-        {
-        yy_cp = (yy_c_buf_p);
-        goto yy_find_action;
-        }
-      }
+    if (yy_next_state) {
+      /* Consume the NUL. */
+      yy_cp            = ++(yy_c_buf_p);
+      yy_current_state = yy_next_state;
+      goto yy_match;
+    }
 
-    else switch ( yy_get_next_buffer(  ) )
-      {
-      case EOB_ACT_END_OF_FILE:
-        {
+    else {
+      yy_cp = (yy_c_buf_p);
+      goto yy_find_action;
+    }
+  }
+
+  else
+    switch (yy_get_next_buffer()) {
+      case EOB_ACT_END_OF_FILE: {
         (yy_did_buffer_switch_on_eof) = 0;
 
-        if ( xbt_automaton_parser_wrap( ) )
-          {
+        if (xbt_automaton_parser_wrap()) {
           /* Note: because we've taken care in
            * yy_get_next_buffer() to have set up
            * xbt_automaton_parser_text, we can now set up
@@ -1049,179 +1007,158 @@ case YY_STATE_EOF(INITIAL):
 
           yy_act = YY_STATE_EOF(YY_START);
           goto do_action;
-          }
-
-        else
-          {
-          if ( ! (yy_did_buffer_switch_on_eof) )
-            YY_NEW_FILE;
-          }
-        break;
         }
 
-      case EOB_ACT_CONTINUE_SCAN:
-        (yy_c_buf_p) =
-          (yytext_ptr) + yy_amount_of_matched_text;
+        else {
+          if (!(yy_did_buffer_switch_on_eof))
+            YY_NEW_FILE;
+        }
+        break;
+      }
 
-        yy_current_state = yy_get_previous_state(  );
+      case EOB_ACT_CONTINUE_SCAN:
+        (yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
+
+        yy_current_state = yy_get_previous_state();
 
         yy_cp = (yy_c_buf_p);
         yy_bp = (yytext_ptr) + YY_MORE_ADJ;
         goto yy_match;
 
       case EOB_ACT_LAST_MATCH:
-        (yy_c_buf_p) =
-        &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
+        (yy_c_buf_p) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
 
-        yy_current_state = yy_get_previous_state(  );
+        yy_current_state = yy_get_previous_state();
 
         yy_cp = (yy_c_buf_p);
         yy_bp = (yytext_ptr) + YY_MORE_ADJ;
         goto yy_find_action;
-      }
-    break;
     }
+  break;
+}
 
-  default:
-    YY_FATAL_ERROR(
-      "fatal flex scanner internal error--no action found" );
-  } /* end of action switch */
-    } /* end of scanning one token */
-  } /* end of user's declarations */
+default:
+  YY_FATAL_ERROR("fatal flex scanner internal error--no action found");
+      } /* end of action switch */
+    }   /* end of scanning one token */
+  }     /* end of user's declarations */
 } /* end of xbt_automaton_parser_lex */
 
 /* yy_get_next_buffer - try to read in a new buffer
  *
  * Returns a code representing an action:
- *  EOB_ACT_LAST_MATCH -
- *  EOB_ACT_CONTINUE_SCAN - continue scanning from current position
- *  EOB_ACT_END_OF_FILE - end of file
+ *	EOB_ACT_LAST_MATCH -
+ *	EOB_ACT_CONTINUE_SCAN - continue scanning from current position
+ *	EOB_ACT_END_OF_FILE - end of file
  */
 static int yy_get_next_buffer (void)
 {
-      char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-  char *source = (yytext_ptr);
-  yy_size_t number_to_move, i;
+  char* dest   = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+  char* source = (yytext_ptr);
+  int number_to_move, i;
   int ret_val;
 
-  if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
-    YY_FATAL_ERROR(
-    "fatal flex scanner internal error--end of buffer missed" );
+  if ((yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1])
+    YY_FATAL_ERROR("fatal flex scanner internal error--end of buffer missed");
 
-  if ( YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0 )
-    { /* Don't try to fill the buffer, so this is an EOF. */
-    if ( (yy_c_buf_p) - (yytext_ptr) - YY_MORE_ADJ == 1 )
-      {
+  if (YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0) { /* Don't try to fill the buffer, so this is an EOF. */
+    if ((yy_c_buf_p) - (yytext_ptr)-YY_MORE_ADJ == 1) {
       /* We matched a single character, the EOB, so
        * treat this as a final EOF.
        */
       return EOB_ACT_END_OF_FILE;
-      }
+    }
 
-    else
-      {
+    else {
       /* We matched some text prior to the EOB, first
        * process it.
        */
       return EOB_ACT_LAST_MATCH;
-      }
     }
+  }
 
   /* Try to read more data. */
 
   /* First move last chars to start of buffer. */
-  number_to_move = (yy_size_t) ((yy_c_buf_p) - (yytext_ptr)) - 1;
+  number_to_move = (int)((yy_c_buf_p) - (yytext_ptr)-1);
 
-  for ( i = 0; i < number_to_move; ++i )
+  for (i = 0; i < number_to_move; ++i)
     *(dest++) = *(source++);
 
-  if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING )
+  if (YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING)
     /* don't do the read, it's not guaranteed to return an EOF,
      * just force an EOF
      */
     YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = 0;
 
-  else
-    {
-      yy_size_t num_to_read =
-      YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
+  else {
+    int num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
-    while ( num_to_read <= 0 )
-      { /* Not enough room in the buffer - grow it. */
+    while (num_to_read <= 0) { /* Not enough room in the buffer - grow it. */
 
       /* just a shorter name for the current buffer */
       YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
-      int yy_c_buf_p_offset =
-        (int) ((yy_c_buf_p) - b->yy_ch_buf);
+      int yy_c_buf_p_offset = (int)((yy_c_buf_p)-b->yy_ch_buf);
 
-      if ( b->yy_is_our_buffer )
-        {
-        yy_size_t new_size = b->yy_buf_size * 2;
+      if (b->yy_is_our_buffer) {
+        int new_size = b->yy_buf_size * 2;
 
-        if ( new_size <= 0 )
+        if (new_size <= 0)
           b->yy_buf_size += b->yy_buf_size / 8;
         else
           b->yy_buf_size *= 2;
 
-        b->yy_ch_buf = (char *)
-          /* Include room in for 2 EOB chars. */
-          xbt_automaton_parser_realloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
-        }
-      else
+        b->yy_ch_buf = (char*)
+            /* Include room in for 2 EOB chars. */
+            xbt_automaton_parser_realloc((void*)b->yy_ch_buf, b->yy_buf_size + 2);
+      } else
         /* Can't grow it, we don't own it. */
-        b->yy_ch_buf = 0;
+        b->yy_ch_buf = NULL;
 
-      if ( ! b->yy_ch_buf )
-        YY_FATAL_ERROR(
-        "fatal error - scanner input buffer overflow" );
+      if (!b->yy_ch_buf)
+        YY_FATAL_ERROR("fatal error - scanner input buffer overflow");
 
       (yy_c_buf_p) = &b->yy_ch_buf[yy_c_buf_p_offset];
 
-      num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size -
-            number_to_move - 1;
+      num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
+    }
 
-      }
-
-    if ( num_to_read > YY_READ_BUF_SIZE )
+    if (num_to_read > YY_READ_BUF_SIZE)
       num_to_read = YY_READ_BUF_SIZE;
 
     /* Read in more data. */
-    YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-      (yy_n_chars), num_to_read );
+    YY_INPUT((&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]), (yy_n_chars), num_to_read);
 
     YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-    }
+  }
 
-  if ( (yy_n_chars) == 0 )
-    {
-    if ( number_to_move == YY_MORE_ADJ )
-      {
+  if ((yy_n_chars) == 0) {
+    if (number_to_move == YY_MORE_ADJ) {
       ret_val = EOB_ACT_END_OF_FILE;
-      xbt_automaton_parser_restart(xbt_automaton_parser_in  );
-      }
-
-    else
-      {
-      ret_val = EOB_ACT_LAST_MATCH;
-      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status =
-        YY_BUFFER_EOF_PENDING;
-      }
+      xbt_automaton_parser_restart(xbt_automaton_parser_in);
     }
+
+    else {
+      ret_val                                    = EOB_ACT_LAST_MATCH;
+      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_EOF_PENDING;
+    }
+  }
 
   else
     ret_val = EOB_ACT_CONTINUE_SCAN;
 
-  if ((int) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+  if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
     /* Extend the array by 50%, plus the number we really need. */
     int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
-    YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) xbt_automaton_parser_realloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
-    if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
-      YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
+    YY_CURRENT_BUFFER_LVALUE->yy_ch_buf =
+        (char*)xbt_automaton_parser_realloc((void*)YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, new_size);
+    if (!YY_CURRENT_BUFFER_LVALUE->yy_ch_buf)
+      YY_FATAL_ERROR("out of dynamic memory in yy_get_next_buffer()");
   }
 
   (yy_n_chars) += number_to_move;
-  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] = YY_END_OF_BUFFER_CHAR;
+  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)]     = YY_END_OF_BUFFER_CHAR;
   YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] = YY_END_OF_BUFFER_CHAR;
 
   (yytext_ptr) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[0];
@@ -1234,26 +1171,23 @@ static int yy_get_next_buffer (void)
     static yy_state_type yy_get_previous_state (void)
 {
   yy_state_type yy_current_state;
-  char *yy_cp;
+  char* yy_cp;
 
   yy_current_state = (yy_start);
 
-  for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
-    {
+  for (yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp) {
     YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
-    if ( yy_accept[yy_current_state] )
-      {
+    if (yy_accept[yy_current_state]) {
       (yy_last_accepting_state) = yy_current_state;
-      (yy_last_accepting_cpos) = yy_cp;
-      }
-    while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-      {
-      yy_current_state = (int) yy_def[yy_current_state];
-      if ( yy_current_state >= 54 )
-        yy_c = yy_meta[(unsigned int) yy_c];
-      }
-    yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+      (yy_last_accepting_cpos)  = yy_cp;
     }
+    while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
+      yy_current_state = (int)yy_def[yy_current_state];
+      if (yy_current_state >= 54)
+        yy_c = yy_meta[(unsigned int)yy_c];
+    }
+    yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t)yy_c];
+  }
 
   return yy_current_state;
 }
@@ -1261,68 +1195,62 @@ static int yy_get_next_buffer (void)
 /* yy_try_NUL_trans - try to make a transition on the NUL character
  *
  * synopsis
- *  next_state = yy_try_NUL_trans( current_state );
+ *	next_state = yy_try_NUL_trans( current_state );
  */
-    static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
+static yy_state_type yy_try_NUL_trans(yy_state_type yy_current_state)
 {
   int yy_is_jam;
-      char *yy_cp = (yy_c_buf_p);
+  char* yy_cp = (yy_c_buf_p);
 
   YY_CHAR yy_c = 1;
-  if ( yy_accept[yy_current_state] )
-    {
+  if (yy_accept[yy_current_state]) {
     (yy_last_accepting_state) = yy_current_state;
-    (yy_last_accepting_cpos) = yy_cp;
-    }
-  while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-    {
-    yy_current_state = (int) yy_def[yy_current_state];
-    if ( yy_current_state >= 54 )
-      yy_c = yy_meta[(unsigned int) yy_c];
-    }
-  yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-  yy_is_jam = (yy_current_state == 53);
+    (yy_last_accepting_cpos)  = yy_cp;
+  }
+  while (yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state) {
+    yy_current_state = (int)yy_def[yy_current_state];
+    if (yy_current_state >= 54)
+      yy_c = yy_meta[(unsigned int)yy_c];
+  }
+  yy_current_state = yy_nxt[yy_base[yy_current_state] + (flex_int16_t)yy_c];
+  yy_is_jam        = (yy_current_state == 53);
 
-    return yy_is_jam ? 0 : yy_current_state;
+  return yy_is_jam ? 0 : yy_current_state;
 }
 
 #ifndef YY_NO_UNPUT
 
     static void yyunput (int c, char * yy_bp )
 {
-  char *yy_cp;
+  char* yy_cp;
 
-    yy_cp = (yy_c_buf_p);
+  yy_cp = (yy_c_buf_p);
 
   /* undo effects of setting up xbt_automaton_parser_text */
   *yy_cp = (yy_hold_char);
 
-  if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-    { /* need to shift things up to make room */
+  if (yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2) { /* need to shift things up to make room */
     /* +2 for EOB chars. */
-    yy_size_t number_to_move = (yy_n_chars) + 2;
-    char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
-          YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-    char *source =
-        &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
+    int number_to_move = (yy_n_chars) + 2;
+    char* dest         = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
+    char* source       = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
 
-    while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
+    while (source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf)
       *--dest = *--source;
 
-    yy_cp += (int) (dest - source);
-    yy_bp += (int) (dest - source);
-    YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
+    yy_cp += (int)(dest - source);
+    yy_bp += (int)(dest - source);
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = (int)YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
 
-    if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-      YY_FATAL_ERROR( "flex scanner push-back overflow" );
-    }
+    if (yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2)
+      YY_FATAL_ERROR("flex scanner push-back overflow");
+  }
 
-  *--yy_cp = (char) c;
+  *--yy_cp = (char)c;
 
-  (yytext_ptr) = yy_bp;
+  (yytext_ptr)   = yy_bp;
   (yy_hold_char) = *yy_cp;
-  (yy_c_buf_p) = yy_cp;
+  (yy_c_buf_p)   = yy_cp;
 }
 
 #endif
@@ -1339,23 +1267,20 @@ static int yy_get_next_buffer (void)
 
   *(yy_c_buf_p) = (yy_hold_char);
 
-  if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
-    {
+  if (*(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR) {
     /* yy_c_buf_p now points to the character we want to return.
      * If this occurs *before* the EOB characters, then it's a
      * valid NUL; if not, then we've hit the end of the buffer.
      */
-    if ( (yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
+    if ((yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)])
       /* This was really a NUL. */
       *(yy_c_buf_p) = '\0';
 
-    else
-      { /* need more input */
-      yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
+    else { /* need more input */
+      int offset = (yy_c_buf_p) - (yytext_ptr);
       ++(yy_c_buf_p);
 
-      switch ( yy_get_next_buffer(  ) )
-        {
+      switch (yy_get_next_buffer()) {
         case EOB_ACT_LAST_MATCH:
           /* This happens because yy_g_n_b()
            * sees that we've accumulated a
@@ -1368,83 +1293,80 @@ static int yy_get_next_buffer (void)
            */
 
           /* Reset buffer status. */
-          xbt_automaton_parser_restart(xbt_automaton_parser_in );
+          xbt_automaton_parser_restart(xbt_automaton_parser_in);
 
           /*FALLTHROUGH*/
 
-        case EOB_ACT_END_OF_FILE:
-          {
-          if ( xbt_automaton_parser_wrap( ) )
-            return EOF;
+        case EOB_ACT_END_OF_FILE: {
+          if (xbt_automaton_parser_wrap())
+            return 0;
 
-          if ( ! (yy_did_buffer_switch_on_eof) )
+          if (!(yy_did_buffer_switch_on_eof))
             YY_NEW_FILE;
 #ifdef __cplusplus
           return yyinput();
 #else
           return input();
 #endif
-          }
+        }
 
         case EOB_ACT_CONTINUE_SCAN:
           (yy_c_buf_p) = (yytext_ptr) + offset;
           break;
-        }
       }
     }
+  }
 
-  c = *(unsigned char *) (yy_c_buf_p);  /* cast for 8-bit char's */
-  *(yy_c_buf_p) = '\0';  /* preserve xbt_automaton_parser_text */
+  c              = *(unsigned char*)(yy_c_buf_p); /* cast for 8-bit char's */
+  *(yy_c_buf_p)  = '\0';                          /* preserve xbt_automaton_parser_text */
   (yy_hold_char) = *++(yy_c_buf_p);
 
   return c;
 }
-#endif  /* ifndef YY_NO_INPUT */
+#endif /* ifndef YY_NO_INPUT */
 
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
  *
  * @note This function does not reset the start condition to @c INITIAL .
  */
-    void xbt_automaton_parser_restart  (FILE * input_file )
+void xbt_automaton_parser_restart(FILE* input_file)
 {
 
-  if ( ! YY_CURRENT_BUFFER ){
-        xbt_automaton_parser_ensure_buffer_stack ();
-    YY_CURRENT_BUFFER_LVALUE =
-            xbt_automaton_parser__create_buffer(xbt_automaton_parser_in,YY_BUF_SIZE );
+  if (!YY_CURRENT_BUFFER) {
+    xbt_automaton_parser_ensure_buffer_stack();
+    YY_CURRENT_BUFFER_LVALUE = xbt_automaton_parser__create_buffer(xbt_automaton_parser_in, YY_BUF_SIZE);
   }
 
-  xbt_automaton_parser__init_buffer(YY_CURRENT_BUFFER,input_file );
-  xbt_automaton_parser__load_buffer_state( );
+  xbt_automaton_parser__init_buffer(YY_CURRENT_BUFFER, input_file);
+  xbt_automaton_parser__load_buffer_state();
 }
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
  *
  */
-    void xbt_automaton_parser__switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
+void xbt_automaton_parser__switch_to_buffer(YY_BUFFER_STATE new_buffer)
 {
 
   /* TODO. We should be able to replace this entire function body
    * with
-   *    xbt_automaton_parser_pop_buffer_state();
-   *    xbt_automaton_parser_push_buffer_state(new_buffer);
-     */
-  xbt_automaton_parser_ensure_buffer_stack ();
-  if ( YY_CURRENT_BUFFER == new_buffer )
+   *		xbt_automaton_parser_pop_buffer_state();
+   *		xbt_automaton_parser_push_buffer_state(new_buffer);
+   */
+  xbt_automaton_parser_ensure_buffer_stack();
+  if (YY_CURRENT_BUFFER == new_buffer)
     return;
 
-  if ( YY_CURRENT_BUFFER )
-    {
+  if (YY_CURRENT_BUFFER) {
     /* Flush out information for old buffer. */
-    *(yy_c_buf_p) = (yy_hold_char);
+    *(yy_c_buf_p)                        = (yy_hold_char);
     YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
     YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-    }
+  }
 
   YY_CURRENT_BUFFER_LVALUE = new_buffer;
-  xbt_automaton_parser__load_buffer_state( );
+  xbt_automaton_parser__load_buffer_state();
 
   /* We don't actually know whether we did this switch during
    * EOF (xbt_automaton_parser_wrap()) processing, but the only time this flag
@@ -1456,10 +1378,10 @@ static int yy_get_next_buffer (void)
 
 static void xbt_automaton_parser__load_buffer_state  (void)
 {
-      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+  (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
   (yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
-  xbt_automaton_parser_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
-  (yy_hold_char) = *(yy_c_buf_p);
+  xbt_automaton_parser_in     = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+  (yy_hold_char)              = *(yy_c_buf_p);
 }
 
 /** Allocate and initialize an input buffer state.
@@ -1468,26 +1390,26 @@ static void xbt_automaton_parser__load_buffer_state  (void)
  *
  * @return the allocated buffer state.
  */
-    YY_BUFFER_STATE xbt_automaton_parser__create_buffer  (FILE * file, int  size )
+YY_BUFFER_STATE xbt_automaton_parser__create_buffer(FILE* file, int size)
 {
   YY_BUFFER_STATE b;
 
-  b = (YY_BUFFER_STATE) xbt_automaton_parser_alloc(sizeof( struct yy_buffer_state )  );
-  if ( ! b )
-    YY_FATAL_ERROR( "out of dynamic memory in xbt_automaton_parser__create_buffer()" );
+  b = (YY_BUFFER_STATE)xbt_automaton_parser_alloc(sizeof(struct yy_buffer_state));
+  if (!b)
+    YY_FATAL_ERROR("out of dynamic memory in xbt_automaton_parser__create_buffer()");
 
   b->yy_buf_size = (yy_size_t)size;
 
   /* yy_ch_buf has to be 2 characters longer than the size given because
    * we need to put in 2 end-of-buffer characters.
    */
-  b->yy_ch_buf = (char *) xbt_automaton_parser_alloc(b->yy_buf_size + 2  );
-  if ( ! b->yy_ch_buf )
-    YY_FATAL_ERROR( "out of dynamic memory in xbt_automaton_parser__create_buffer()" );
+  b->yy_ch_buf = (char*)xbt_automaton_parser_alloc(b->yy_buf_size + 2);
+  if (!b->yy_ch_buf)
+    YY_FATAL_ERROR("out of dynamic memory in xbt_automaton_parser__create_buffer()");
 
   b->yy_is_our_buffer = 1;
 
-  xbt_automaton_parser__init_buffer(b,file );
+  xbt_automaton_parser__init_buffer(b, file);
 
   return b;
 }
@@ -1496,19 +1418,19 @@ static void xbt_automaton_parser__load_buffer_state  (void)
  * @param b a buffer created with xbt_automaton_parser__create_buffer()
  *
  */
-    void xbt_automaton_parser__delete_buffer (YY_BUFFER_STATE  b )
+void xbt_automaton_parser__delete_buffer(YY_BUFFER_STATE b)
 {
 
-  if ( ! b )
+  if (!b)
     return;
 
-  if ( b == YY_CURRENT_BUFFER ) /* Not sure if we should pop here. */
-    YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
+  if (b == YY_CURRENT_BUFFER) /* Not sure if we should pop here. */
+    YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE)0;
 
-  if ( b->yy_is_our_buffer )
-    xbt_automaton_parser_free((void *) b->yy_ch_buf  );
+  if (b->yy_is_our_buffer)
+    xbt_automaton_parser_free((void*)b->yy_ch_buf);
 
-  xbt_automaton_parser_free((void *) b  );
+  xbt_automaton_parser_free((void*)b);
 }
 
 /* Initializes or reinitializes a buffer.
@@ -1520,32 +1442,32 @@ static void xbt_automaton_parser__load_buffer_state  (void)
 {
   int oerrno = errno;
 
-  xbt_automaton_parser__flush_buffer(b );
+  xbt_automaton_parser__flush_buffer(b);
 
-  b->yy_input_file = file;
+  b->yy_input_file  = file;
   b->yy_fill_buffer = 1;
 
-    /* If b is the current buffer, then xbt_automaton_parser__init_buffer was _probably_
-     * called from xbt_automaton_parser_restart() or through yy_get_next_buffer.
-     * In that case, we don't want to reset the lineno or column.
-     */
-    if (b != YY_CURRENT_BUFFER){
-        b->yy_bs_lineno = 1;
-        b->yy_bs_column = 0;
+  /* If b is the current buffer, then xbt_automaton_parser__init_buffer was _probably_
+   * called from xbt_automaton_parser_restart() or through yy_get_next_buffer.
+   * In that case, we don't want to reset the lineno or column.
+   */
+  if (b != YY_CURRENT_BUFFER) {
+    b->yy_bs_lineno = 1;
+    b->yy_bs_column = 0;
     }
 
         b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
 
-  errno = oerrno;
+        errno = oerrno;
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
  *
  */
-    void xbt_automaton_parser__flush_buffer (YY_BUFFER_STATE  b )
+void xbt_automaton_parser__flush_buffer(YY_BUFFER_STATE b)
 {
-      if ( ! b )
+  if (!b)
     return;
 
   b->yy_n_chars = 0;
@@ -1559,11 +1481,11 @@ static void xbt_automaton_parser__load_buffer_state  (void)
 
   b->yy_buf_pos = &b->yy_ch_buf[0];
 
-  b->yy_at_bol = 1;
+  b->yy_at_bol        = 1;
   b->yy_buffer_status = YY_BUFFER_NEW;
 
-  if ( b == YY_CURRENT_BUFFER )
-    xbt_automaton_parser__load_buffer_state( );
+  if (b == YY_CURRENT_BUFFER)
+    xbt_automaton_parser__load_buffer_state();
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -1574,19 +1496,18 @@ static void xbt_automaton_parser__load_buffer_state  (void)
  */
 void xbt_automaton_parser_push_buffer_state (YY_BUFFER_STATE new_buffer )
 {
-      if (new_buffer == NULL)
+  if (new_buffer == NULL)
     return;
 
   xbt_automaton_parser_ensure_buffer_stack();
 
   /* This block is copied from xbt_automaton_parser__switch_to_buffer. */
-  if ( YY_CURRENT_BUFFER )
-    {
+  if (YY_CURRENT_BUFFER) {
     /* Flush out information for old buffer. */
-    *(yy_c_buf_p) = (yy_hold_char);
+    *(yy_c_buf_p)                        = (yy_hold_char);
     YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
     YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-    }
+  }
 
   /* Only push if top exists. Otherwise, replace top. */
   if (YY_CURRENT_BUFFER)
@@ -1594,7 +1515,7 @@ void xbt_automaton_parser_push_buffer_state (YY_BUFFER_STATE new_buffer )
   YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
   /* copied from xbt_automaton_parser__switch_to_buffer. */
-  xbt_automaton_parser__load_buffer_state( );
+  xbt_automaton_parser__load_buffer_state();
   (yy_did_buffer_switch_on_eof) = 1;
 }
 
@@ -1604,16 +1525,16 @@ void xbt_automaton_parser_push_buffer_state (YY_BUFFER_STATE new_buffer )
  */
 void xbt_automaton_parser_pop_buffer_state (void)
 {
-      if (!YY_CURRENT_BUFFER)
+  if (!YY_CURRENT_BUFFER)
     return;
 
-  xbt_automaton_parser__delete_buffer(YY_CURRENT_BUFFER );
+  xbt_automaton_parser__delete_buffer(YY_CURRENT_BUFFER);
   YY_CURRENT_BUFFER_LVALUE = NULL;
   if ((yy_buffer_stack_top) > 0)
     --(yy_buffer_stack_top);
 
   if (YY_CURRENT_BUFFER) {
-    xbt_automaton_parser__load_buffer_state( );
+    xbt_automaton_parser__load_buffer_state();
     (yy_did_buffer_switch_on_eof) = 1;
   }
 }
@@ -1623,20 +1544,19 @@ void xbt_automaton_parser_pop_buffer_state (void)
  */
 static void xbt_automaton_parser_ensure_buffer_stack (void)
 {
-  yy_size_t num_to_alloc;
+  int num_to_alloc;
 
   if (!(yy_buffer_stack)) {
 
     /* First allocation is just for 2 elements, since we don't know if this
      * scanner will even need a stack. We use 2 instead of 1 to avoid an
      * immediate realloc on the next call.
-         */
+     */
     num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
-    (yy_buffer_stack) = (struct yy_buffer_state**)xbt_automaton_parser_alloc
-                (num_to_alloc * sizeof(struct yy_buffer_state*)
-                );
-    if ( ! (yy_buffer_stack) )
-      YY_FATAL_ERROR( "out of dynamic memory in xbt_automaton_parser_ensure_buffer_stack()" );
+    (yy_buffer_stack) =
+        (struct yy_buffer_state**)xbt_automaton_parser_alloc(num_to_alloc * sizeof(struct yy_buffer_state*));
+    if (!(yy_buffer_stack))
+      YY_FATAL_ERROR("out of dynamic memory in xbt_automaton_parser_ensure_buffer_stack()");
 
     memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
 
@@ -1645,18 +1565,16 @@ static void xbt_automaton_parser_ensure_buffer_stack (void)
     return;
   }
 
-  if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
+  if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1) {
 
     /* Increase the buffer to prepare for a possible push. */
     yy_size_t grow_size = 8 /* arbitrary grow size */;
 
-    num_to_alloc = (yy_buffer_stack_max) + grow_size;
-    (yy_buffer_stack) = (struct yy_buffer_state**)xbt_automaton_parser_realloc
-                ((yy_buffer_stack),
-                num_to_alloc * sizeof(struct yy_buffer_state*)
-                );
-    if ( ! (yy_buffer_stack) )
-      YY_FATAL_ERROR( "out of dynamic memory in xbt_automaton_parser_ensure_buffer_stack()" );
+    num_to_alloc      = (yy_buffer_stack_max) + grow_size;
+    (yy_buffer_stack) = (struct yy_buffer_state**)xbt_automaton_parser_realloc(
+        (yy_buffer_stack), num_to_alloc * sizeof(struct yy_buffer_state*));
+    if (!(yy_buffer_stack))
+      YY_FATAL_ERROR("out of dynamic memory in xbt_automaton_parser_ensure_buffer_stack()");
 
     /* zero only the new slots.*/
     memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
@@ -1674,27 +1592,25 @@ YY_BUFFER_STATE xbt_automaton_parser__scan_buffer  (char * base, yy_size_t  size
 {
   YY_BUFFER_STATE b;
 
-  if ( size < 2 ||
-       base[size-2] != YY_END_OF_BUFFER_CHAR ||
-       base[size-1] != YY_END_OF_BUFFER_CHAR )
+  if (size < 2 || base[size - 2] != YY_END_OF_BUFFER_CHAR || base[size - 1] != YY_END_OF_BUFFER_CHAR)
     /* They forgot to leave room for the EOB's. */
-    return 0;
+    return NULL;
 
-  b = (YY_BUFFER_STATE) xbt_automaton_parser_alloc(sizeof( struct yy_buffer_state )  );
-  if ( ! b )
-    YY_FATAL_ERROR( "out of dynamic memory in xbt_automaton_parser__scan_buffer()" );
+  b = (YY_BUFFER_STATE)xbt_automaton_parser_alloc(sizeof(struct yy_buffer_state));
+  if (!b)
+    YY_FATAL_ERROR("out of dynamic memory in xbt_automaton_parser__scan_buffer()");
 
-  b->yy_buf_size = size - 2;  /* "- 2" to take care of EOB's */
+  b->yy_buf_size = size - 2; /* "- 2" to take care of EOB's */
   b->yy_buf_pos = b->yy_ch_buf = base;
-  b->yy_is_our_buffer = 0;
-  b->yy_input_file = 0;
-  b->yy_n_chars = b->yy_buf_size;
-  b->yy_is_interactive = 0;
-  b->yy_at_bol = 1;
-  b->yy_fill_buffer = 0;
-  b->yy_buffer_status = YY_BUFFER_NEW;
+  b->yy_is_our_buffer          = 0;
+  b->yy_input_file             = NULL;
+  b->yy_n_chars                = b->yy_buf_size;
+  b->yy_is_interactive         = 0;
+  b->yy_at_bol                 = 1;
+  b->yy_fill_buffer            = 0;
+  b->yy_buffer_status          = YY_BUFFER_NEW;
 
-  xbt_automaton_parser__switch_to_buffer(b  );
+  xbt_automaton_parser__switch_to_buffer(b);
 
   return b;
 }
@@ -1710,7 +1626,7 @@ YY_BUFFER_STATE xbt_automaton_parser__scan_buffer  (char * base, yy_size_t  size
 YY_BUFFER_STATE xbt_automaton_parser__scan_string (yyconst char * yystr )
 {
 
-  return xbt_automaton_parser__scan_bytes(yystr,strlen(yystr) );
+  return xbt_automaton_parser__scan_bytes(yystr, (int)strlen(yystr));
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to xbt_automaton_parser_lex() will
@@ -1720,27 +1636,27 @@ YY_BUFFER_STATE xbt_automaton_parser__scan_string (yyconst char * yystr )
  *
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE xbt_automaton_parser__scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len )
+YY_BUFFER_STATE xbt_automaton_parser__scan_bytes(yyconst char* yybytes, int _yybytes_len)
 {
   YY_BUFFER_STATE b;
-  char *buf;
+  char* buf;
   yy_size_t n;
-  yy_size_t i;
+  int i;
 
   /* Get memory for full buffer, including space for trailing EOB's. */
-  n = _yybytes_len + 2;
-  buf = (char *) xbt_automaton_parser_alloc(n  );
-  if ( ! buf )
-    YY_FATAL_ERROR( "out of dynamic memory in xbt_automaton_parser__scan_bytes()" );
+  n   = (yy_size_t)(_yybytes_len + 2);
+  buf = (char*)xbt_automaton_parser_alloc(n);
+  if (!buf)
+    YY_FATAL_ERROR("out of dynamic memory in xbt_automaton_parser__scan_bytes()");
 
-  for ( i = 0; i < _yybytes_len; ++i )
+  for (i = 0; i < _yybytes_len; ++i)
     buf[i] = yybytes[i];
 
-  buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
+  buf[_yybytes_len] = buf[_yybytes_len + 1] = YY_END_OF_BUFFER_CHAR;
 
-  b = xbt_automaton_parser__scan_buffer(buf,n );
-  if ( ! b )
-    YY_FATAL_ERROR( "bad buffer in xbt_automaton_parser__scan_bytes()" );
+  b = xbt_automaton_parser__scan_buffer(buf, n);
+  if (!b)
+    YY_FATAL_ERROR("bad buffer in xbt_automaton_parser__scan_bytes()");
 
   /* It's okay to grow etc. this buffer, and we should throw it
    * away when we're done.
@@ -1754,28 +1670,26 @@ YY_BUFFER_STATE xbt_automaton_parser__scan_bytes  (yyconst char * yybytes, yy_si
 #define YY_EXIT_FAILURE 2
 #endif
 
-static void yy_fatal_error (yyconst char* msg )
+static void yynoreturn yy_fatal_error(yyconst char* msg)
 {
-      (void) fprintf( stderr, "%s\n", msg );
-  exit( YY_EXIT_FAILURE );
+  (void)fprintf(stderr, "%s\n", msg);
+  exit(YY_EXIT_FAILURE);
 }
 
 /* Redefine yyless() so it works in section 3 code. */
 
 #undef yyless
-#define yyless(n) \
-  do \
-    { \
-    /* Undo effects of setting up xbt_automaton_parser_text. */ \
-        int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
-    xbt_automaton_parser_text[xbt_automaton_parser_leng] = (yy_hold_char); \
-    (yy_c_buf_p) = xbt_automaton_parser_text + yyless_macro_arg; \
-    (yy_hold_char) = *(yy_c_buf_p); \
-    *(yy_c_buf_p) = '\0'; \
-    xbt_automaton_parser_leng = yyless_macro_arg; \
-    } \
-  while ( 0 )
+#define yyless(n)                                                                                                      \
+  do {                                                                                                                 \
+    /* Undo effects of setting up xbt_automaton_parser_text. */                                                        \
+    int yyless_macro_arg = (n);                                                                                        \
+    YY_LESS_LINENO(yyless_macro_arg);                                                                                  \
+    xbt_automaton_parser_text[xbt_automaton_parser_leng] = (yy_hold_char);                                             \
+    (yy_c_buf_p)                                         = xbt_automaton_parser_text + yyless_macro_arg;               \
+    (yy_hold_char)                                       = *(yy_c_buf_p);                                              \
+    *(yy_c_buf_p)                                        = '\0';                                                       \
+    xbt_automaton_parser_leng                            = yyless_macro_arg;                                           \
+  } while (0)
 
 /* Accessor  methods (get/set functions) to struct members. */
 
@@ -1807,7 +1721,7 @@ FILE *xbt_automaton_parser_get_out  (void)
 /** Get the length of the current token.
  *
  */
-yy_size_t xbt_automaton_parser_get_leng  (void)
+int xbt_automaton_parser_get_leng(void)
 {
         return xbt_automaton_parser_leng;
 }
@@ -1863,20 +1777,20 @@ static int yy_init_globals (void)
      * This function is called from xbt_automaton_parser_lex_destroy(), so don't allocate here.
      */
 
-    (yy_buffer_stack) = 0;
-    (yy_buffer_stack_top) = 0;
-    (yy_buffer_stack_max) = 0;
-    (yy_c_buf_p) = (char *) 0;
-    (yy_init) = 0;
-    (yy_start) = 0;
+        (yy_buffer_stack)     = NULL;
+        (yy_buffer_stack_top) = 0;
+        (yy_buffer_stack_max) = 0;
+        (yy_c_buf_p)          = NULL;
+        (yy_init)             = 0;
+        (yy_start)            = 0;
 
 /* Defined in main.c */
 #ifdef YY_STDINIT
     xbt_automaton_parser_in = stdin;
     xbt_automaton_parser_out = stdout;
 #else
-    xbt_automaton_parser_in = (FILE *) 0;
-    xbt_automaton_parser_out = (FILE *) 0;
+  xbt_automaton_parser_in  = NULL;
+  xbt_automaton_parser_out = NULL;
 #endif
 
     /* For future reference: Set errno on error, since we are called by
@@ -1890,15 +1804,15 @@ int xbt_automaton_parser_lex_destroy  (void)
 {
 
     /* Pop the buffer stack, destroying each element. */
-  while(YY_CURRENT_BUFFER){
-    xbt_automaton_parser__delete_buffer(YY_CURRENT_BUFFER  );
-    YY_CURRENT_BUFFER_LVALUE = NULL;
-    xbt_automaton_parser_pop_buffer_state();
-  }
+    while (YY_CURRENT_BUFFER) {
+      xbt_automaton_parser__delete_buffer(YY_CURRENT_BUFFER);
+      YY_CURRENT_BUFFER_LVALUE = NULL;
+      xbt_automaton_parser_pop_buffer_state();
+    }
 
-  /* Destroy the stack itself. */
-  xbt_automaton_parser_free((yy_buffer_stack) );
-  (yy_buffer_stack) = NULL;
+    /* Destroy the stack itself. */
+    xbt_automaton_parser_free((yy_buffer_stack));
+    (yy_buffer_stack) = NULL;
 
     /* Reset the globals. This is important in a non-reentrant scanner so the next time
      * xbt_automaton_parser_lex() is called, initialization will occur. */
@@ -1916,7 +1830,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
 
   int i;
-  for ( i = 0; i < n; ++i )
+  for (i = 0; i < n; ++i)
     s1[i] = s2[i];
 }
 #endif
@@ -1925,7 +1839,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 static int yy_flex_strlen (yyconst char * s )
 {
   int n;
-  for ( n = 0; s[n]; ++n )
+  for (n = 0; s[n]; ++n)
     ;
 
   return n;
@@ -1934,7 +1848,7 @@ static int yy_flex_strlen (yyconst char * s )
 
 void *xbt_automaton_parser_alloc (yy_size_t  size )
 {
-      return (void *) malloc( size );
+  return malloc(size);
 }
 
 void *xbt_automaton_parser_realloc  (void * ptr, yy_size_t  size )
@@ -1947,12 +1861,12 @@ void *xbt_automaton_parser_realloc  (void * ptr, yy_size_t  size )
    * any pointer type to void*, and deal with argument conversions
    * as though doing an assignment.
    */
-  return (void *) realloc( (char *) ptr, size );
+  return realloc(ptr, size);
 }
 
 void xbt_automaton_parser_free (void * ptr )
 {
-      free( (char *) ptr );  /* see xbt_automaton_parser_realloc() for (char *) cast */
+  free((char*)ptr); /* see xbt_automaton_parser_realloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"

@@ -18,7 +18,7 @@ print "        \@{\n";
 # Search for calls to macros defining new channels, and prepare the tree representation
 my %ancestor;
 my %desc;
-# $ancestor{"toto"} is the ancestor of the toto channel as declared by XBT_LOG_NEW_SUBCATEGORY and 
+# $ancestor{"toto"} is the ancestor of the toto channel as declared by XBT_LOG_NEW_SUBCATEGORY and
 # XBT_LOG_NEW_DEFAULT_SUBCATEGORY ie, when the channel toto is initialized (does not work under windows)
 
 # $desc{"toto"} is its description
@@ -65,7 +65,7 @@ sub parse_file {
 	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data";
 
         my ($name,$anc,$desc) = cleanup_ctn($1);
-    
+
         # build the tree, checking for name conflict
         die "ERROR: Category name conflict: $name used several times (in $ancestor{$name} and $anc, last time in $filename)\n"
 	   if defined ($ancestor{$name}) && $ancestor{$name} ne $anc && defined ($desc{$name}) && $desc{$name} ne $desc;
@@ -85,13 +85,13 @@ while (my $file=<FILES>) {
 parse_file("../include/xbt/sysdep.h");	
 close FILES;
 
-# Display the tree, looking for disconnected elems    
+# Display the tree, looking for disconnected elems
 my %used;
 
 sub display_subtree {
     my $name=shift;
     my $indent=shift;
-    
+
     $used{$name} = 1;
     unless ($name eq "XBT_LOG_ROOT_CAT") { # do not display the root
 	print "$indent - $name: ".($desc{$name}|| "(undocumented)")."\n";

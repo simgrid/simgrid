@@ -9,7 +9,7 @@ package org.simgrid.msg;
 public class HostNotFoundException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
-	/** Constructs an <code>HostNotFoundException</code> without a detail message. */ 
+	/** Constructs an <code>HostNotFoundException</code> without a detail message. */
 	public HostNotFoundException() {
 		super();
 	}

@@ -97,9 +97,9 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     TARGET unit_tmgr
     APPEND PROPERTY
            INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
-	   )  
-  
-  
+	   )
+
+
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       src/surf/trace_mgr_test.cpp)
 endif()
@@ -122,7 +122,7 @@ if((NOT enable_memcheck) AND (NOT enable_address_sanitizer) AND (NOT enable_unde
   SET_TESTS_PROPERTIES(tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4 PROPERTIES FIXTURES_REQUIRED tuto-msg-clean)
 
   FOREACH(TUTOTEST tuto-msg-0 tuto-msg-1 tuto-msg-2 tuto-msg-3 tuto-msg-4)
-  SET_TESTS_PROPERTIES(${TUTOTEST} 
+  SET_TESTS_PROPERTIES(${TUTOTEST}
                        PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
   ENDFOREACH()
 endif()

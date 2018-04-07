@@ -232,9 +232,9 @@ public:
 
   /** Resume a suspended actor by resuming the task on which it was waiting for the completion. */
   void resume();
-  
+
   void yield();
-  
+
   /** Returns true if the actor is suspended. */
   int isSuspended();
 

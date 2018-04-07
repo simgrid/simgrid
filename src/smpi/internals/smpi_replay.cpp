@@ -674,9 +674,9 @@ public:
                                                     Datatype::encode(args.datatype1),
                                                     Datatype::encode(args.datatype2)));
 
-    Colls::alltoall(send_buffer(args.send_size*args.comm_size* args.datatype1->size()), 
-      args.send_size, args.datatype1, recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()),
-      args.recv_size, args.datatype2, MPI_COMM_WORLD);
+    Colls::alltoall(send_buffer(args.send_size * args.comm_size * args.datatype1->size()), args.send_size,
+                    args.datatype1, recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()),
+                    args.recv_size, args.datatype2, MPI_COMM_WORLD);
 
     TRACE_smpi_comm_out(my_proc_id);
   }
@@ -715,14 +715,14 @@ public:
                                                Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
     if (name == "gatherV") {
-      Colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1, 
-                     (rank == args.root) ? recv_buffer(args.recv_size_sum  * args.datatype2->size()) : nullptr, args.recvcounts->data(), args.disps.data(), args.datatype2, args.root,
-                     MPI_COMM_WORLD);
+      Colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
+                     (rank == args.root) ? recv_buffer(args.recv_size_sum * args.datatype2->size()) : nullptr,
+                     args.recvcounts->data(), args.disps.data(), args.datatype2, args.root, MPI_COMM_WORLD);
     }
     else {
-      Colls::allgatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1, 
-                        recv_buffer(args.recv_size_sum * args.datatype2->size()), args.recvcounts->data(), args.disps.data(), args.datatype2,
-                    MPI_COMM_WORLD);
+      Colls::allgatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
+                        recv_buffer(args.recv_size_sum * args.datatype2->size()), args.recvcounts->data(),
+                        args.disps.data(), args.datatype2, MPI_COMM_WORLD);
     }
 
     TRACE_smpi_comm_out(my_proc_id);
@@ -757,9 +757,10 @@ public:
           nullptr, Datatype::encode(args.datatype1),
           Datatype::encode(args.datatype2)));
 
-    Colls::scatterv((rank == args.root) ? send_buffer(args.send_size_sum * args.datatype1->size()) : nullptr, args.sendcounts->data(), args.disps.data(), 
-        args.datatype1, recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, args.root,
-        MPI_COMM_WORLD);
+    Colls::scatterv((rank == args.root) ? send_buffer(args.send_size_sum * args.datatype1->size()) : nullptr,
+                    args.sendcounts->data(), args.disps.data(), args.datatype1,
+                    recv_buffer(args.recv_size * args.datatype2->size()), args.recv_size, args.datatype2, args.root,
+                    MPI_COMM_WORLD);
 
     TRACE_smpi_comm_out(my_proc_id);
   }
@@ -775,8 +776,9 @@ public:
                                                          std::to_string(args.comp_size), /* ugly hack to print comp_size */
                                                          Datatype::encode(args.datatype1)));
 
-    Colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()), recv_buffer(args.recv_size_sum * args.datatype1->size()), 
-                          args.recvcounts->data(), args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+    Colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()),
+                          recv_buffer(args.recv_size_sum * args.datatype1->size()), args.recvcounts->data(),
+                          args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
 
     smpi_execute_flops(args.comp_size);
     TRACE_smpi_comm_out(my_proc_id);

@@ -107,7 +107,7 @@ public:
  */
 class OnDemand : public Governor {
   /**
-   * See https://elixir.bootlin.com/linux/v4.15.4/source/drivers/cpufreq/cpufreq_ondemand.c 
+   * See https://elixir.bootlin.com/linux/v4.15.4/source/drivers/cpufreq/cpufreq_ondemand.c
    * DEF_FREQUENCY_UP_THRESHOLD and od_update()
    */
   double freq_up_threshold = 0.80;

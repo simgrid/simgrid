@@ -15,7 +15,7 @@ public abstract class MsgException extends Exception {
 	public MsgException() {
 		super();
 	}
-	/** Constructs an <code>MsgException</code> with a detail message. */ 
+	/** Constructs an <code>MsgException</code> with a detail message. */
 	public MsgException(String msg) {
 		super(msg);
 	}

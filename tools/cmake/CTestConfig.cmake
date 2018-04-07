@@ -40,7 +40,7 @@ SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "3000000")
 
 set(PATTERN_CTEST_IGNORED "")
 if(enable_coverage)
-    set(PATTERN_CTEST_IGNORED 
+    set(PATTERN_CTEST_IGNORED
       "/tools/"
       "/buildtools/"
       "/include/"
@@ -48,7 +48,7 @@ if(enable_coverage)
       "/src/bindings/"
     )
     if(NOT release)
-       set(PATTERN_CTEST_IGNORED 
+       set(PATTERN_CTEST_IGNORED
         ${PATTERN_CTEST_IGNORED}
         "/examples/"
         )

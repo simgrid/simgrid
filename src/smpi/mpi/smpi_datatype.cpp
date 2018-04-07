@@ -530,7 +530,7 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
       return MPI_ERR_ARG;
     }
   }
-  
+
   MPI_Aint extent = oldtype->get_extent();
 
   int i;
@@ -545,7 +545,7 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
       step = 1;
       end = ndims;
   }
-  
+
   MPI_Aint size = (MPI_Aint)array_of_sizes[i] * (MPI_Aint)array_of_sizes[i+step];
   MPI_Aint lb = (MPI_Aint)array_of_starts[i] + (MPI_Aint)array_of_starts[i+step] *(MPI_Aint)array_of_sizes[i];
 
@@ -568,7 +568,7 @@ int Datatype::create_subarray(int ndims, int* array_of_sizes,
   //handle LB and UB with a resized call
   create_hindexed( 1, sizes, lbs, tmp, newtype);
   unref(tmp);
-  
+
   tmp = *newtype;
   create_resized(tmp, 0, extent, newtype);
 

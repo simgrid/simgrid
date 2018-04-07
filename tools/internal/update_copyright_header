@@ -89,7 +89,7 @@ for file; do
         continue
     fi
 
-    if grep -q "Copyright.*SimGrid" $file ; then 
+    if grep -q "Copyright.*SimGrid" $file ; then
         if head -n 1 "$file" | grep -q '^#!'; then
             script=1
         else
@@ -128,7 +128,7 @@ for file; do
         cat "$tmp_head" "$tmp_copy" "$tmp_foot" > $file
     else
         echo "Pass: there is no SimGrid Copyright header."
-    fi ; # 
+    fi ; #
 done
 
 cat <<EOF

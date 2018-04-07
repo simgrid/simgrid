@@ -14,7 +14,7 @@ public class As {
 
 	@Override
 	public String toString (){
-		return this.getName(); 
+		return this.getName();
 	}
 	public native String getName();
 

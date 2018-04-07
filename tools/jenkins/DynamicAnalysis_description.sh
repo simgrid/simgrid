@@ -13,11 +13,11 @@ rm index.html
 #set html description and write it in a file
 
 echo "
-Testing with valgrind and gcov. Click on the graphs for details. 
+Testing with valgrind and gcov. Click on the graphs for details.
 <br><br>
 
-<table id=\"configuration-matrix\"> 
- <tr class=\"matrix-row\">  
+<table id=\"configuration-matrix\">
+ <tr class=\"matrix-row\">
   <td class=\"matrix-header\">
     Valgrind Results
   </td>
@@ -28,7 +28,7 @@ Testing with valgrind and gcov. Click on the graphs for details.
     Test Results
   </td>
  </tr>
- <tr class=\"matrix-row\">  
+ <tr class=\"matrix-row\">
   <td class=\"matrix-cell\">
     <a href=\"https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis-Valgrind/label=simgrid-debian8-64-dynamic-analysis/valgrindResult/\">
   	 <img src=\"https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/lastCompletedBuild/label=simgrid-debian8-64-dynamic-analysis/artifact/valgrind_graph.png\" title=\"$VALGRIND_RES\">
@@ -45,7 +45,7 @@ Testing with valgrind and gcov. Click on the graphs for details.
    </a>
   </td>
  </tr>
- <tr class=\"matrix-row\">  
+ <tr class=\"matrix-row\">
   <td class=\"matrix-header\">
     Sloccount Results
   </td>
@@ -56,7 +56,7 @@ Testing with valgrind and gcov. Click on the graphs for details.
     Test Results : Address Sanitizer (<a href=\"https://github.com/google/sanitizers/wiki/AddressSanitizer\">info</a>)
   </td>
  </tr>
- <tr class=\"matrix-row\">  
+ <tr class=\"matrix-row\">
   <td class=\"matrix-cell\">
     <a href=\"https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis-Coverage/label=simgrid-debian8-64-dynamic-analysis/sloccountResult\">
   	 <img src=\"https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis-Coverage/label=simgrid-debian8-64-dynamic-analysis/sloccountResult/trend\">
@@ -73,7 +73,7 @@ Testing with valgrind and gcov. Click on the graphs for details.
    </a>
   </td>
  </tr>
- <tr class=\"matrix-row\">  
+ <tr class=\"matrix-row\">
   <td class=\"matrix-header\">
    Test Results : Thread Sanitizer (<a href=\"https://github.com/google/sanitizers/wiki/ThreadSanitizerCppManual\">info</a>)
   </td>
@@ -81,7 +81,7 @@ Testing with valgrind and gcov. Click on the graphs for details.
    Test Results : Undefined Sanitizer (<a href=\"http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html\">info</a>)
   </td>
  </tr>
- <tr class=\"matrix-row\">  
+ <tr class=\"matrix-row\">
   <td class=\"matrix-cell\">
    <a href=\"https://ci.inria.fr/simgrid/view/Tous/job/SimGrid-DynamicAnalysis-Sanitizers/label=simgrid-debian8-64-dynamic-analysis-2/lastCompletedBuild/testReport/ThreadSanitizer/junit/\">
     <img src=\"https://ci.inria.fr/simgrid/view/Tous/job/SimGrid-DynamicAnalysis-Sanitizers/label=simgrid-debian8-64-dynamic-analysis-2/groupedTests/trendGraph/ThreadSanitizer/png?width=500&height=250\">

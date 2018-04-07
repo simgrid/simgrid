@@ -13,9 +13,9 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Helper class loading the native functions of SimGrid that we use for downcalls 
- * 
- * Almost all org.simgrid.msg.* classes contain a static bloc (thus executed when the class is loaded) 
+/** Helper class loading the native functions of SimGrid that we use for downcalls
+ *
+ * Almost all org.simgrid.msg.* classes contain a static bloc (thus executed when the class is loaded)
  * containing a call to this.
  */
 public final class NativeLib {
@@ -27,8 +27,8 @@ public final class NativeLib {
 		throw new IllegalAccessError("Utility class");
 	}
 
-	/** Hidden debug main() function 
-	 * 
+	/** Hidden debug main() function
+	 *
 	 * It is not the Main-Class defined in src/bindings/java/MANIFEST.in (org.simgrid.msg.Msg is),
 	 * so it won't get executed by default. But that's helpful to debug linkage errors, if you
 	 * know that it exists. It's used by cmake during the configure, to inform the user.
@@ -96,8 +96,8 @@ public final class NativeLib {
 		}
 		
 		/* For each possible filename of the given library on all possible OSes, try it */
-		for (String filename : new String[] 
-		   { name, 
+		for (String filename : new String[]
+		   { name,
 		     "lib"+name+".so",               /* linux */
 		     name+".dll", "lib"+name+".dll", /* windows (pure and mingw) */
 		     "lib"+name+".dylib"             /* mac osx */}) {
@@ -110,11 +110,11 @@ public final class NativeLib {
 				if (in == null)
 					continue; // Try the next name: no such file found
 				
-				/* copy the library in position */  
-				byte[] buffer = new byte[4096]; 
-				int bytesRead; 
+				/* copy the library in position */
+				byte[] buffer = new byte[4096];
+				int bytesRead;
 				while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
-					out.write(buffer, 0, bytesRead); 
+					out.write(buffer, 0, bytesRead);
 				
 				out.close(); // Windows cannot open it twice, so close it first. Shame.
 				

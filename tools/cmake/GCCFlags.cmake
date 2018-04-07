@@ -5,7 +5,7 @@
 ##
 ##   These flags do break some classical CMake tests, so you don't
 ##   want to do so before the very end of the configuration.
-## 
+##
 ##   Other compiler flags (C/C++ standard version) are tested and set
 ##   by the beginning of the configuration, directly in ~/CMakeList.txt
 
@@ -49,7 +49,7 @@ if(enable_compile_warnings)
   endif()
 
   # the one specific to C but refused by C++
-  set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
+  set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes")
 
   if(CMAKE_Fortran_COMPILER_ID MATCHES "GCC|PGI")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
@@ -126,12 +126,12 @@ if(enable_lto) # User wants LTO. Try if we can do that
   else()
     if(NOT enable_compile_optimizations)
       message(STATUS "LTO disabled: Compile-time optimizations turned off.")
-    else() 
+    else()
       if(enable_model-checking)
         message(STATUS "LTO disabled when compiling with model-checking.")
       else()
         message(STATUS "LTO does not seem usable -- try updating your build chain.")
-      endif() 
+      endif()
     endif()
   endif()
 else()
@@ -194,7 +194,7 @@ endif()
 
 # Avoid a failure seen with gcc 7.2.0 and ns3 3.27
 if(enable_ns3)
-  set_source_files_properties(src/surf/network_ns3.cpp PROPERTIES COMPILE_FLAGS " -Wno-unused-local-typedef")  
+  set_source_files_properties(src/surf/network_ns3.cpp PROPERTIES COMPILE_FLAGS " -Wno-unused-local-typedef")
 endif()
 
 set(TESH_OPTION "")
@@ -259,13 +259,13 @@ if(MINGW)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
   set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS   "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -static-libgcc")
   set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -static-libgcc -static-libstdc++")
-  
+
   # JNI searches for stdcalls
   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wl,--add-stdcall-alias")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--add-stdcall-alias")
   set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -Wl,--add-stdcall-alias")
   set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -Wl,--add-stdcall-alias")
-  
+
   # Specify the data model that we are using (yeah it may help Java)
   if(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m32")
@@ -273,5 +273,5 @@ if(MINGW)
   else()
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m64")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
-  endif()  
+  endif()
 endif()

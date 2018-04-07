@@ -31,13 +31,17 @@ class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
 
 public:
   /** @brief Retrieve a link from its name */
-  static Link* byName(const char* name);
+  static Link* by_name(const char* name);
 
   /** @brief Retrieves the name of that link as a C++ string */
   const std::string& get_name() const;
   /** @brief Retrieves the name of that link as a C string */
   const char* get_cname() const;
 
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::by_name()") static Link* byName(const char* name)
+  {
+    return by_name(name);
+  }
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_name()") const std::string& getName() const { return get_name(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_cname()") const char* getCname() const { return get_cname(); }
 

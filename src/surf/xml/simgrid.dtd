@@ -1,4 +1,4 @@
-<!-- 
+<!--
              DTD of SimGrid platform and deployment files.
 
 More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
@@ -25,16 +25,16 @@ To upgrade your files, use the tool simgrid_update_xml
      that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
 
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
-   
+
    - In <host> and <link>, attributes availability and state are gone.
      It was redundent with state and availability traces, and with peak values.
-     
-   - In <cluster>, cannot set the availability nor state traces. 
+
+   - In <cluster>, cannot set the availability nor state traces.
      This was too complex and unused.
 
    - The DOCTYPE points to the right URL (this file):
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
-     
+
    - Kill <gpu>. Was not doing anything.
 
    - A warning is emitted for unit-less values (they are still accepted).
@@ -70,7 +70,7 @@ To upgrade your files, use the tool simgrid_update_xml
 
 * New in DTD version 1 (in SimGrid 3.3):
    - DTD is now versionned with the version attribute of platform
-   - Unit change: 
+   - Unit change:
      - Link bandwidth: from Mb/s to b/s
      - CPU speed: from MFlop/s to Flop/s
 

@@ -24,7 +24,7 @@ const char* sg_link_name(sg_link_t link)
 }
 sg_link_t sg_link_by_name(const char* name)
 {
-  return simgrid::s4u::Link::byName(name);
+  return simgrid::s4u::Link::by_name(name);
 }
 
 int sg_link_is_shared(sg_link_t link)
@@ -73,7 +73,7 @@ void sg_link_exit()
 
 namespace simgrid {
 namespace s4u {
-Link* Link::byName(const char* name)
+Link* Link::by_name(const char* name)
 {
   kernel::resource::LinkImpl* res = kernel::resource::LinkImpl::byName(name);
   if (res == nullptr)

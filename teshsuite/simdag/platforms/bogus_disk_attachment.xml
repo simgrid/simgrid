@@ -7,7 +7,7 @@
     <storage_type id="single_HDD" model="SSD" size="4kB">
       <model_prop id="Bwrite" value="30MBps" />
       <model_prop id="Bread" value="100MBps" />
-      <model_prop id="Bconnection" value="150MBps" /> 
+      <model_prop id="Bconnection" value="150MBps" />
     </storage_type>
 
     <storage id="cdisk" typeId="single_HDD"  attach="plouf" />

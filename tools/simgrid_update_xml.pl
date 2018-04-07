@@ -16,11 +16,11 @@ eval 'exec perl -S $0 ${1+"$@"}'
 =head1 NAME
 
 simgrid_update_xml - updates simgrid XML files to latest version
-  
+
 =head1 SYNOPSIS
 
 B<simgrid_update_xml> I<xml_file>
-  
+
 =head1 DESCRIPTION
 
 simgrid_update_xml updates the simgrid XML file passed as argument.  The file
@@ -39,7 +39,7 @@ changes in each version.
 
 =over 4
 
-=item 
+=item
 
 The version attribute of platform were added to allow file versioning.
 
@@ -52,13 +52,13 @@ from MFlop/s to Flop/s
 
 =item B<Version 2:> Introduced in SimGrid 3.4
 
-=over 
+=over
 
-=item 
+=item
 
-Several tags were renamed: 
+Several tags were renamed:
 
-  CPU -> HOST 
+  CPU -> HOST
   NETWORK_LINK -> LINK
   ROUTE_ELEMENT ->  LINK_CTN
   PLATFORM_DESCRIPTION -> PLATFORM
@@ -74,7 +74,7 @@ Several tags were renamed:
 The AS tag were introduced. Every platform should now contain an englobing AS
 tag.
 
-=item 
+=item
 
 Routes are now symmetric by default.
 
@@ -109,16 +109,16 @@ The DOCTYPE points to the right URL: http://simgrid.gforge.inria.fr/simgrid/simg
 
 Units are now mandatory in attributes. USE THE SCRIPT sg_xml_unit_converter.py TO CONVERT THIS
 
-     - speed. Old default: 'f' or 'flops'. Also defined: 
-        'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf' 
+     - speed. Old default: 'f' or 'flops'. Also defined:
+        'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
         'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
-        
+
      - bandwidth. Old default: 'Bps' bytes per second (or 'bps' but 1 Bps = 8 bps)
        Also defined in bytes: 'TiBps', 'GiBps', 'MiBps', 'KiBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
-       And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps' 
-       
+       And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+
      - latency. Old default: 's' second. Also defined:
-       'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond   
+       'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
 
 
 =back
@@ -145,7 +145,7 @@ Rename a few tags, but in a backward-compatible manner: the old names are still 
 =item
 
 Rename the FULLDUPLEX sharing into SPLITDUPLEX.
- 
+
 =back
 
 =back
@@ -153,14 +153,14 @@ Rename the FULLDUPLEX sharing into SPLITDUPLEX.
 =head1 AUTHORS
 
  The SimGrid team (simgrid-devel@lists.gforge.inria.fr)
-  
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.
-  
+
 This program is free software; you may redistribute it and/or modify it
 under the terms of GNU LGPL (v2.1) license.
-  
+
 =cut
 
 
@@ -184,7 +184,7 @@ while (defined($line = <INPUT>)) {
     # eat the header, whatever form it has
     next if ($line =~ s/<\?xml[^>]*>//           && ! $line =~ /\S/); # just in case several tags are on the same line
     next if ($line =~ s/<!DOCTYPE[^>]*>//        && ! $line =~ /\S/);
-    
+
     if ($line =~ s/<platform(_description)? *>//) {
 	$fromversion = 0;
 	print "$filename was using version 0\n";
@@ -200,7 +200,7 @@ while (defined($line = <INPUT>)) {
 	next if !$line =~ /\S/;
 	print "$filename was using version $fromversion\n";
     }
-    
+
     if ($fromversion == 0) {
 	while ($line =~ m|^(.*?)<cpu(.*?)power="([^"]*)"(.*)$|) {
 	    $line = "$1TOTOTUTUTATA${2}TOTOTUTUTATA".($3*1000000)."TOTOTUTUTATA${4}";
@@ -224,7 +224,7 @@ while (defined($line = <INPUT>)) {
 	$line =~ s/\bnetwork_link\b/link/g;
 	$line =~ s/\broute_element\b/link:ctn/g;
     }
-    
+
     if ($fromversion < 3)  {
 	$line =~ s/\blink:ctn\b/link_ctn/g;
 	$line =~ s/\btrace:connect\b/trace_connect/g;

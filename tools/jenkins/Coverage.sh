@@ -24,10 +24,10 @@ do_cleanup() {
 for pkg in xsltproc gcovr ant cover2cover.py
 do
    if command -v $pkg
-   then 
+   then
       echo "$pkg is installed. Good."
-   else 
-      die "please install $pkg before proceeding" 
+   else
+      die "please install $pkg before proceeding"
    fi
 done
 

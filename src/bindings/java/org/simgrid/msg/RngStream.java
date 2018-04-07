@@ -16,7 +16,7 @@ public class RngStream {
 	 */
 	private long bind;
 	/**
-	 * Creates and returns a new stream without identifier. 
+	 * Creates and returns a new stream without identifier.
 	 * This procedure reserves space to keep the information relative to
 	 * the RngStream, initializes its seed Ig , sets Bg and Cg equal to Ig , sets its antithetic and
 	 * precision switches to 0. The seed Ig is equal to the initial seed of the package given by
@@ -27,7 +27,7 @@ public class RngStream {
 		create("");
 	}
 	/**
-	 * Creates and returns a new stream with identifier "name". 
+	 * Creates and returns a new stream with identifier "name".
 	 * This procedure reserves space to keep the information relative to
 	 * the RngStream, initializes its seed Ig , sets Bg and Cg equal to Ig , sets its antithetic and
 	 * precision switches to 0. The seed Ig is equal to the initial seed of the package given by
@@ -89,7 +89,7 @@ public class RngStream {
 	 * Advances the state of the stream by k values, without modifying the states of other streams (as
 	 * in RngStream_SetSeed), nor the values of Bg and Ig associated with this stream. If e &gt; 0, then
 	 * k = 2e + c; if e &lt; 0, then k = -2-e + c; and if e = 0, then k = c. Note: c is allowed to take
-	 * negative values. We discourage the use of this procedure.	 
+	 * negative values. We discourage the use of this procedure.	
 	 */
 	public native void advanceState(int e, int g);
 

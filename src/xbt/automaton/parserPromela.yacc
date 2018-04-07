@@ -54,11 +54,11 @@ void yyerror(const char *s);
 
 %%
 
-automaton : NEVER LEFT_BRACE stateseq RIGHT_BRACE 
+automaton : NEVER LEFT_BRACE stateseq RIGHT_BRACE
           ;
 
-stateseq : 
-         | ID COLON { new_state($1, 1);} IF option FI SEMI_COLON stateseq 
+stateseq :
+         | ID COLON { new_state($1, 1);} IF option FI SEMI_COLON stateseq
          ;
 
 option :
@@ -72,7 +72,7 @@ exp : LEFT_PAR exp RIGHT_PAR { $$ = $2; }
     | CASE_TRUE { $$ = new_label(4); }
     | ID { $$ = new_label(3, $1); }
     ;
- 
+
 %%
 
 

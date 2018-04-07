@@ -86,7 +86,7 @@ set(EXTRA_DIST
   teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh
-  
+
   examples/java/.classpath
   examples/java/.project
   )
@@ -303,11 +303,11 @@ set(SURF_SRC
   src/kernel/lmm/lagrange.cpp
   src/kernel/lmm/maxmin.hpp
   src/kernel/lmm/maxmin.cpp
-  
+
   src/kernel/resource/Action.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.cpp
-  
+
   src/kernel/routing/ClusterZone.cpp
   src/kernel/routing/DijkstraZone.cpp
   src/kernel/routing/DragonflyZone.cpp
@@ -320,7 +320,7 @@ set(SURF_SRC
   src/kernel/routing/TorusZone.cpp
   src/kernel/routing/RoutedZone.cpp
   src/kernel/routing/VivaldiZone.cpp
-  
+
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
 
@@ -365,7 +365,7 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.cpp
   src/plugins/vm/VmLiveMigration.hpp
   )
-  
+
 set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )
 set(SIMIX_SRC
   src/kernel/future.cpp
@@ -401,7 +401,7 @@ set(SIMIX_SRC
   src/kernel/activity/SynchroIo.hpp
   src/kernel/activity/SynchroRaw.cpp
   src/kernel/activity/SynchroRaw.hpp
-  
+
   ${SIMIX_GENERATED_SRC}
   )
 
@@ -423,9 +423,9 @@ set(S4U_SRC
   src/s4u/s4u_activity.cpp
   src/s4u/s4u_conditionVariable.cpp
   src/s4u/s4u_comm.cpp
-  src/s4u/s4u_engine.cpp  
-  src/s4u/s4u_exec.cpp  
-  src/s4u/s4u_host.cpp  
+  src/s4u/s4u_engine.cpp
+  src/s4u/s4u_exec.cpp
+  src/s4u/s4u_host.cpp
   src/s4u/s4u_link.cpp
   src/s4u/s4u_mailbox.cpp
   src/s4u/s4u_mutex.cpp
@@ -595,7 +595,7 @@ set(MC_SRC
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
   src/mc/remote/mc_protocol.cpp
-  
+
   src/mc/AddressSpace.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
@@ -685,15 +685,15 @@ set(headers_to_install
   include/simgrid/s4u/Actor.hpp
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
-  include/simgrid/s4u/Engine.hpp  
+  include/simgrid/s4u/Engine.hpp
   include/simgrid/s4u/Exec.hpp
-  include/simgrid/s4u/Host.hpp  
-  include/simgrid/s4u/Link.hpp  
+  include/simgrid/s4u/Host.hpp
+  include/simgrid/s4u/Link.hpp
   include/simgrid/s4u/Mailbox.hpp
   include/simgrid/s4u/Mutex.hpp
   include/simgrid/s4u/NetZone.hpp
-  include/simgrid/s4u/Storage.hpp  
-  include/simgrid/s4u/VirtualMachine.hpp  
+  include/simgrid/s4u/Storage.hpp
+  include/simgrid/s4u/VirtualMachine.hpp
   include/simgrid/s4u.hpp
 
   include/simgrid/kernel/resource/Action.hpp
@@ -711,7 +711,7 @@ set(headers_to_install
   include/simgrid/kernel/routing/NetZoneImpl.hpp
   include/simgrid/kernel/routing/RoutedZone.hpp
   include/simgrid/kernel/routing/TorusZone.hpp
-  include/simgrid/kernel/routing/VivaldiZone.hpp  
+  include/simgrid/kernel/routing/VivaldiZone.hpp
 
   include/smpi/mpi.h
   include/smpi/smpi.h
@@ -806,7 +806,7 @@ set(simgrid_sources
   ${XBT_SRC}
   )
 
-if(${SIMGRID_HAVE_JEDULE})  
+if(${SIMGRID_HAVE_JEDULE})
   set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
@@ -892,10 +892,10 @@ set(DOC_SOURCES
   doc/doxygen/module-index.doc
   doc/doxygen/ns3.doc
   doc/doxygen/options.doc
-  doc/doxygen/outcomes.doc  
-  doc/doxygen/outcomes_logs.doc  
-  doc/doxygen/outcomes_MC.doc  
-  doc/doxygen/outcomes_vizu.doc  
+  doc/doxygen/outcomes.doc
+  doc/doxygen/outcomes_logs.doc
+  doc/doxygen/outcomes_MC.doc
+  doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
   doc/doxygen/platform_lua.doc
   doc/doxygen/scenario.doc
@@ -982,7 +982,7 @@ set(txt_files
   TODO
   )
 
-# The list of cmake build directories is constructed from the following list. 
+# The list of cmake build directories is constructed from the following list.
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
   examples/java/CMakeLists.txt
@@ -1006,7 +1006,7 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
-  
+
   teshsuite/smpi/isp/umpire/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
@@ -1038,7 +1038,7 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/perf/CMakeLists.txt
-  
+
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
   tools/tesh/CMakeLists.txt

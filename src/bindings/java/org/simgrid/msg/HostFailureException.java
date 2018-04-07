@@ -9,7 +9,7 @@ package org.simgrid.msg;
 public class HostFailureException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
-	/** Constructs an <code>HostFailureException</code> without a detail message. */ 
+	/** Constructs an <code>HostFailureException</code> without a detail message. */
 	public HostFailureException() {
 		super();
 	}

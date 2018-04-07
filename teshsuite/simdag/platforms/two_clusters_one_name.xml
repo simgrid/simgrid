@@ -8,9 +8,9 @@
     <cluster id="bob_cluster_1" prefix="bob" suffix=".hamburger.edu" radical="2-3" speed="1Gf" bw="125MBps" lat="50us"
              bb_bw="2.25GBps" bb_lat="500us"/>
 
-    <link id="backbone" bandwidth="1.25GBps" latency="500us"/>  
+    <link id="backbone" bandwidth="1.25GBps" latency="500us"/>
 
-    <zoneRoute src="bob_cluster" dst="bob_cluster_1" gw_src="bobbob_cluster_router.hamburger.edu" 
+    <zoneRoute src="bob_cluster" dst="bob_cluster_1" gw_src="bobbob_cluster_router.hamburger.edu"
              gw_dst="bobbob_cluster_1_router.hamburger.edu">
       <link_ctn id="backbone"/>
     </zoneRoute>

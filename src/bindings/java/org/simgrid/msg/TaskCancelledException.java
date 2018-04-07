@@ -9,7 +9,7 @@ package org.simgrid.msg;
 public class TaskCancelledException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
-	/** Constructs an <code>TaskCancelledException</code> without a detail message. */ 
+	/** Constructs an <code>TaskCancelledException</code> without a detail message. */
 	public TaskCancelledException() {
 		super();
 	}

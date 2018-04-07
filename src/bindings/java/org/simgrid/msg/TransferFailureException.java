@@ -9,12 +9,12 @@ package org.simgrid.msg;
 public class TransferFailureException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
-	/** Constructs an <code>TransferFailureException</code> without a detail message. */ 
+	/** Constructs an <code>TransferFailureException</code> without a detail message. */
 	public TransferFailureException() {
 		super();
 	}
 	/**
-	 * Constructs an <code>TransferFailureException</code> with a detail message. 
+	 * Constructs an <code>TransferFailureException</code> with a detail message.
 	 *
 	 * @param   s   the detail message.
 	 */

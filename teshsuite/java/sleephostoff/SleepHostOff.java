@@ -45,7 +45,7 @@ class TestRunner extends Process {
     host.off();
     Msg.info(host.getName()+" has been stopped");
     waitFor(0.3);
-    Msg.info("Test sleep seems ok, cool! (number of Process : " + Process.getCount() 
+    Msg.info("Test sleep seems ok, cool! (number of Process : " + Process.getCount()
              + ", it should be 1 (i.e. the Test one))");
   }
 }

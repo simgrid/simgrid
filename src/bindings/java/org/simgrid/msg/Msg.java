@@ -44,8 +44,8 @@ public final class Msg {
 
 	/** Run the MSG simulation.
 	 *
-	 * After the simulation, you can freely retrieve the information that you want.. 
-	 * In particular, retrieving the status of a process or the current date is perfectly ok. 
+	 * After the simulation, you can freely retrieve the information that you want..
+	 * In particular, retrieving the status of a process or the current date is perfectly ok.
 	 */
 	public static final native void run() ;
 

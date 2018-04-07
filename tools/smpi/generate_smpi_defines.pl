@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 # Copyright 2016 Vincent Danjean <vincent.danjean@inria.fr>
 #                Christian Heinrich <franz-christian.heinrich@inria.fr>
-# 
+#
 # Call this script like this:
 # C/C++  : ./generate_smpi_defines.pl ../../include/smpi/smpi.h
 # FORTRAN: ./generate_smpi_defines.pl -f ../../include/smpi/smpi.h
@@ -12,7 +12,7 @@
 # with MPI+TAU).
 use strict;
 use warnings;
-use Getopt::Std; 
+use Getopt::Std;
 
 my %options=();
 getopts("fc", \%options);
@@ -61,7 +61,7 @@ while (defined($line = <>)) {
     }
     $incall=1;
     $wholemacro = $line;
-  } elsif ($incall && $line =~ /^\s+\S/) { 
+  } elsif ($incall && $line =~ /^\s+\S/) {
     # Did we already start parsing an MPI_CALL macro? If so, just concatenate
     $wholemacro .= ' '.$line;
   } elsif ($incall) {

@@ -9,7 +9,7 @@ use strict;
 use Getopt::Long qw(GetOptions);
 
 my $progname="sg_unit_extractor";
-# Get the args 
+# Get the args
 
 sub usage($) {
     my $ret;
@@ -36,25 +36,25 @@ map {process_one($_)} @ARGV;
 sub process_one($) {
     my $infile = shift;
     my $outfile;
-    
+
     $infile =~ s|src/|| unless (-e $infile);
-    
+
     $outfile =  $infile;
     $outfile =~ s/\.c$/_unit.c/;
     $outfile =~ s/\.cpp$/_unit.cpp/;
     $outfile =~ s|.*/([^/]*)$|$1| if $outfile =~ m|/|;
     $outfile = "$outdir$outfile";
-    
-    print "$progname: processing $infile (generating $outfile)...\n";    
-    
+
+    print "$progname: processing $infile (generating $outfile)...\n";
+
     # Get the unit data
     my ($unit_source,$suite_name,$suite_title)=("","","");
     my (%tests); # to detect multiple definition
     my (@tests); # actual content
-    
+
     open IN, "$infile" || die "$progname: Cannot open input file '$infile': $!\n";
     $infile =~ s|$root|| if defined($root);
-    
+
     my $takeit=0;
     my $line=0;
     my $beginline=0;
@@ -82,7 +82,7 @@ sub process_one($) {
 
         if (m/XBT_TEST_UNIT\(\w*"([^"]*)"\w*,([^,]*),(.*?)\)/) { #"{
 	    die "$progname: multiply defined unit in file $infile: $1\n" if (defined($tests{$1}));
-            
+
 	    my @t=($1,$2,$3);
 	    push @tests,\@t;
 	    $tests{$1} = 1;
@@ -102,7 +102,7 @@ sub process_one($) {
     }
 
     die "$progname: no suite defined in $infile\n" unless (length($suite_name));
-  
+
     # Write the test
 
     my ($GENERATED)=("/*******************************/\n".
@@ -133,7 +133,7 @@ sub process_one($) {
 	#  print OUT "# 93 \"sg_unit_extractor.pl\"\n";
 	print OUT <<EOF;
 int main(int argc, char *argv[]) {
-  xbt_test_suite_t suite; 
+  xbt_test_suite_t suite;
   char selection[STRLEN];
   int verbosity = 0;
   int i;
@@ -141,9 +141,9 @@ int main(int argc, char *argv[]) {
 
   /* SGU: BEGIN SUITES DECLARATION */
   /* SGU: END SUITES DECLARATION */
-      
+
   xbt_init(&argc,argv);
-    
+
   /* Search for the tests to do */
     selection[0]='\\0';
     for (i=1;i<argc;i++) {
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
       }
     }
   /* Got all my tests to do */
-      
+
   res = xbt_test_run(selection, verbosity);
   xbt_test_exit();
   return res;
@@ -220,7 +220,7 @@ EOF
 	   last if  (/SGU: END PROTOTYPES/ || /SGU: BEGIN FILE $infile/);
 	   $newmain .= $_;
        }
-       if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it    
+       if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it
 	   while (<IN>) {
 	       last if /SGU: END FILE/;
 	   }
@@ -235,26 +235,26 @@ EOF
 	   my ($name,$func,$title) = @{$_};
 	   $newmain .=  "    void $func(void);\n"
        } @tests;
-       
+
        $newmain .= "  /* SGU: END FILE */\n\n";
        if ($old_ =~ /SGU: BEGIN FILE/ || $old_ =~ /SGU: END PROTOTYPES/) {
 	   $newmain .= $old_;
        }
-       
+
        # pass remaining prototypes, search declarations
        while (<IN>) {
 	   $newmain .= $_ unless /SGU: END PROTOTYPES/;
 	   last if /SGU: BEGIN SUITES DECLARATION/;
        }
-       
+
        ### Done with prototypes. And now, the actual code
-       
+
        # search my prototype
        while (<IN>) {
 	   last if  (/SGU: END SUITES DECLARATION/ || /SGU: BEGIN FILE $infile/);
 	   $newmain .= $_;
        }
-       if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it    
+       if (/SGU: BEGIN FILE $infile/) { # found an old section for this file. Kill it
 	   while (<IN>) {
 	       last if /SGU: END FILE/;
 	   }
@@ -270,18 +270,18 @@ EOF
 	   my ($name,$func,$title) = @{$_};
 	   $newmain .=  "      xbt_test_suite_push(suite, \"$name\", $func, $title);\n";
        } @tests;
-       
+
        $newmain .= "    /* SGU: END FILE */\n\n";
        if ($old_ =~ /SGU: BEGIN FILE/ || $old_ =~ /SGU: END SUITES DECLARATION/) {
 	   $newmain .= $old_;
        }
-       
-       # pass the remaining 
+
+       # pass the remaining
        while (<IN>) {
 	   $newmain .= $_;
        }
        close IN || die "$progname: Cannot close main file '${outdir}simgrid_units_main.c': $!\n";
-       
+
        # write it back to main
        open OUT,">${outdir}simgrid_units_main.c" || die "$progname: Cannot open main file '${outdir}simgrid_units_main.c': $!\n";
        print OUT $newmain;

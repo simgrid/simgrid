@@ -28,7 +28,7 @@ foreach(file ${FILES_CONTAINING_UNITTESTS})
   get_filename_component(ext ${file} EXT)
   set(EXTRACTED_TEST_SOURCE_FILES ${EXTRACTED_TEST_SOURCE_FILES} ${CMAKE_CURRENT_BINARY_DIR}/src/${basename}_unit${ext})
 endforeach()
-  
+
 set(EXTRACTED_TEST_SOURCE_FILES ${EXTRACTED_TEST_SOURCE_FILES} ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c)
 
 set_source_files_properties(${EXTRACTED_TEST_SOURCE_FILES} PROPERTIES GENERATED true)
@@ -50,5 +50,5 @@ set_property(
     TARGET testall
     APPEND PROPERTY
            INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
-	   )  
+	   )
 

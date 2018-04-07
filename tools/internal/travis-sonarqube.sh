@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Install and run SonarQube on travis. 
+# Install and run SonarQube on travis.
 #
 # Use it as a wrapper to your build command, eg: ./travis-sonarqube.sh make VERBOSE=1
 
@@ -44,7 +44,7 @@ fi
 # generate the gcov files
 ctest -D ExperimentalCoverage
 
-# and finally execute the actual SonarQube analysis 
+# and finally execute the actual SonarQube analysis
 # (the SONAR_TOKEN is set from the travis web interface, to not expose it with an ongoing "set -x")
 # See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
 # don't show the token in the logs

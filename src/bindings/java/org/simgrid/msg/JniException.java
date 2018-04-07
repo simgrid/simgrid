@@ -9,7 +9,7 @@ package org.simgrid.msg;
 
 /**
  * Exception raised when there is a problem within the bindings (in JNI).
- *  
+ *
  * That's a RuntimeException: I guess nobody wants to survive a JNI error in SimGrid
  */
 public class JniException extends RuntimeException {
@@ -20,7 +20,7 @@ public class JniException extends RuntimeException {
 	public JniException() {
 		super();
 	}
-	/** Constructs an <code>JniException</code> with a detail message. */ 
+	/** Constructs an <code>JniException</code> with a detail message. */
 	public JniException(String s) {
 		 super(s);
 	}

@@ -47,14 +47,14 @@ foreach my $file (@ARGV) {
 	open(PIN, "ispell -d american -p $DICTFILE -l < $TEMPFILE | sort -uf |") || die;
 	my @badwords;
 	while (my $err = <PIN>) {
-	    chomp $err;	    
+	    chomp $err;	
 	    push(@badwords, $err) if ($err =~ /\w/ && length($err)>0);
 	}
 	close(PIN) || die;
 
 	if (@badwords) {
 		print "$file: ".scalar(@badwords)." errors: '".join("','",@badwords)."'\n";
-		$total += scalar(@badwords);    
+		$total += scalar(@badwords);
 	}
 }
 

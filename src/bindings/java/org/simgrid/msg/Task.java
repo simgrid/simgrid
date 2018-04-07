@@ -39,14 +39,14 @@ public class Task {
 	 *
 	 * @param name	Task's name
 	 *
-	 * @param flopsAmount 	A value of the processing amount (in flop) needed to process the task. 
+	 * @param flopsAmount 	A value of the processing amount (in flop) needed to process the task.
 	 *				If 0, then it cannot be executed with the execute() method.
 	 *				This value has to be &ge; 0.
 	 *
 	 * @param bytesAmount		A value of amount of data (in bytes) needed to transfert this task.
 	 *				If 0, then it cannot be transfered with the get() and put() methods.
 	 *				This value has to be &ge; 0.
-	 */ 
+	 */
 	public Task(String name, double flopsAmount, double bytesAmount) {
 		if (flopsAmount<0)
 			throw new IllegalArgumentException("Task flopsAmount (" + flopsAmount + ") cannot be negative");
@@ -64,14 +64,14 @@ public class Task {
 	 *
 	 * @param name		The name of the parallel task.
 	 * @param hosts		The list of hosts implied by the parallel task.
-	 * @param flopsAmount	The amount of operations to be performed by each host of hosts. 
-	 *                      flopsAmount[i] is the total number of operations that have to be 
+	 * @param flopsAmount	The amount of operations to be performed by each host of hosts.
+	 *                      flopsAmount[i] is the total number of operations that have to be
 	 *                      performed on hosts[i].
-	 * @param bytesAmount	A matrix describing the amount of data to exchange between hosts. The 
-	 *                      length of this array must be hosts.length * hosts.length. It is actually 
-	 *                      used as a matrix with the lines being the source and the columns being 
+	 * @param bytesAmount	A matrix describing the amount of data to exchange between hosts. The
+	 *                      length of this array must be hosts.length * hosts.length. It is actually
+	 *                      used as a matrix with the lines being the source and the columns being
 	 *                      the destination of the communications.
-	 */ 
+	 */
 	public Task(String name, Host[]hosts, double[]flopsAmount, double[]bytesAmount) {
 		if (flopsAmount == null)
 			throw new IllegalArgumentException("Parallel task flops amounts is null");
@@ -90,12 +90,12 @@ public class Task {
 	 * The natively implemented method to create a MSG task.
 	 *
 	 * @param name            The name of the task.
-	 * @param flopsAmount    A value of the processing amount (in flop) needed 
+	 * @param flopsAmount    A value of the processing amount (in flop) needed
 	 *                        to process the task. If 0, then it cannot be executed
 	 *                        with the execute() method. This value has to be >= 0.
-	 * @param bytesAmount        A value of amount of data (in bytes) needed to transfert 
-	 *                        this task. If 0, then it cannot be transfered this task. 
-	 *                        If 0, then it cannot be transfered with the get() and put() 
+	 * @param bytesAmount        A value of amount of data (in bytes) needed to transfert
+	 *                        this task. If 0, then it cannot be transfered this task.
+	 *                        If 0, then it cannot be transfered with the get() and put()
 	 *                        methods. This value has to be >= 0.
 	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
 	 */
@@ -128,10 +128,10 @@ public class Task {
 	public native Process getSender();
 
 	/** Gets the source of the task (or null if not sent yet). */
-	public native Host getSource();   
+	public native Host getSource();
 
 	/** Gets the remaining amount of flops to execute in this task
-	 * 
+	 *
 	 * If it's ongoing, you get the exact amount at the present time. If it's already done, it's 0.
 	 */
 	public native double getFlopsAmount();
@@ -147,18 +147,18 @@ public class Task {
 	 * the other ones.
 	 *
 	 * @param priority	The new priority of the task.
-	 */ 
+	 */
 	public native void setPriority(double priority);
 
 	/** Set the computation amount needed to process the task
-	 * 
+	 *
 	 * Warning if the execution is already started and ongoing, this call does nothing.
 	 * @param flopsAmount the amount of computation needed to process the task
 	 */
 	public native void setFlopsAmount(double flopsAmount);
 	/**
 	 * Set the amount of bytes to exchange the task
-	 * 
+	 *
 	 * Warning if the communication is already started and ongoing, this call does nothing.
 	 * @param bytesAmount the size of the task
 	 */
@@ -175,9 +175,9 @@ public class Task {
 	public native void execute() throws HostFailureException,TaskCancelledException;
 
 	/** Changes the maximum CPU utilization of a computation task. Unit is flops/s. */
-	public native void setBound(double bound); 
+	public native void setBound(double bound);
 
-	/** Cancels a task. */ 
+	/** Cancels a task. */
 	public native void cancel();
 
 	/** Deletes a task once the garbage collector reclaims it */
@@ -191,48 +191,48 @@ public class Task {
 	 * * Communication-related * *
 	 * *                       * */
 
-	/** Send the task asynchronously on the specified mailbox, 
+	/** Send the task asynchronously on the specified mailbox,
 	 *  with no way to retrieve whether the communication succeeded or not
-	 * 
+	 *
 	 */
 	public native void dsendBounded(String mailbox, double maxrate);
 
 
-	/** Send the task asynchronously on the specified mailbox, 
+	/** Send the task asynchronously on the specified mailbox,
 	 *  with no way to retrieve whether the communication succeeded or not
-	 * 
+	 *
 	 */
 	public native void dsend(String mailbox);
 
 	/**
-	 * Sends the task on the specified mailbox 
+	 * Sends the task on the specified mailbox
 	 *
 	 * @param mailbox where to send the message
 	 * @throws TimeoutException
-	 * @throws HostFailureException 
-	 * @throws TransferFailureException 
+	 * @throws HostFailureException
+	 * @throws TransferFailureException
 	 */
 	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		send(mailbox, -1);
-	} 
+	}
 
 	/**
 	 * Sends the task on the specified mailbox (wait at most \a timeout seconds)
 	 *
 	 * @param mailbox where to send the message
 	 * @param timeout
-	 * @throws TimeoutException 
-	 * @throws HostFailureException 
-	 * @throws TransferFailureException 
+	 * @throws TimeoutException
+	 * @throws HostFailureException
+	 * @throws TransferFailureException
 	 */
 	public void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException {
 		sendBounded(mailbox, timeout, -1);
 	}
 
-	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate) 
+	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate)
 	 *
 	 * @param mailbox where to send the message
-	 * @param maxrate 
+	 * @param maxrate
 	 * @throws TransferFailureException
 	 * @throws HostFailureException
 	 * @throws TimeoutException
@@ -246,7 +246,7 @@ public class Task {
 	 *
 	 * @param mailbox where to send the message
 	 * @param timeout
-	 * @param maxrate 
+	 * @param maxrate
 	 * @throws TransferFailureException
 	 * @throws HostFailureException
 	 * @throws TimeoutException
@@ -273,7 +273,7 @@ public class Task {
 	public static native Comm irecv(String mailbox);
 
 	/**
-	 * Retrieves next task on the mailbox identified by the specified alias 
+	 * Retrieves next task on the mailbox identified by the specified alias
 	 *
 	 * @param mailbox
 	 * @return a Task
@@ -287,7 +287,7 @@ public class Task {
 	 * Retrieves next task on the mailbox identified by the specified alias (wait at most \a timeout seconds)
 	 *
 	 * @param mailbox
-	 * @param timeout 
+	 * @param timeout
 	 * @return a Task
 	 */
 	public static native Task receive(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;

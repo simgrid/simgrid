@@ -18,7 +18,7 @@ class SemCreator extends Process {
   }
 
   public void main(String[] args) throws MsgException{
-    int j; 
+    int j;
     Msg.info("Creating 50 new Semaphores, yielding and triggering a GC after each");
     for(j = 1; j <= 50; j++) {
       new Semaphore(0);

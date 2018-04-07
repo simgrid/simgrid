@@ -369,7 +369,7 @@ if __name__ == '__main__':
     fd.write('#include <functional>\n')
     fd.write('#include <simgrid/simix.hpp>\n')
     fd.write('#include "src/simix/smx_synchro_private.hpp"\n')
-    
+
     fd.write("/** @cond */ // Please Doxygen, don't look at this\n")
     fd.write('''
 template<class R, class... T>

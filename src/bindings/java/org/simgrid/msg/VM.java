@@ -10,7 +10,7 @@ package org.simgrid.msg;
 public class VM extends Host {
 	// No need to declare a new bind variable: we use the one inherited from the super class Host
 
-	private Host currentHost; 
+	private Host currentHost;
 	private int coreAmount = 1;
 
 	/**
@@ -56,7 +56,7 @@ public class VM extends Host {
 	public VM(Host host, String name, int coreAmount, int ramSize, int migNetSpeed, int dpIntensity){
 		super();
 		super.name = name;
-		this.currentHost = host; 
+		this.currentHost = host;
 		this.coreAmount = coreAmount;
 		create(host, name, coreAmount, ramSize, migNetSpeed, dpIntensity);
 	}
@@ -108,8 +108,8 @@ public class VM extends Host {
 	public native void start();
 
 	/**
-	 * Immediately kills all processes within the given VM. 
-	 * 
+	 * Immediately kills all processes within the given VM.
+	 *
 	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep()
 	 */
 	public native void shutdown();
@@ -127,21 +127,21 @@ public class VM extends Host {
 		  Msg.info("Migration of VM "+this.getName()+" to "+destination.getName()+" is impossible ("+e.getMessage()+")");
 		  throw new HostFailureException();
 		}
-		// If the migration correcly returned, then we should change the currentHost value. 
-		this.currentHost = destination; 
+		// If the migration correcly returned, then we should change the currentHost value.
+		this.currentHost = destination;
 	}
 	private native void nativeMigration(Host destination) throws MsgException;
 
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
-	 * No suspension cost occurs. If you want to simulate this too, you want to use a \ref File.write() before or 
+	 * No suspension cost occurs. If you want to simulate this too, you want to use a \ref File.write() before or
 	 * after, depending on the exact semantic of VM suspend to you.
 	 */	
 	public native void suspend();
 
 	/** Immediately resumes the execution of all processes within the given VM
 	 *
-	 * No resume cost occurs. If you want to simulate this too, you want to use a \ref File.read() before or after, 
+	 * No resume cost occurs. If you want to simulate this too, you want to use a \ref File.read() before or after,
 	 * depending on the exact semantic of VM resume to you.
 	 */
 	public native void resume();

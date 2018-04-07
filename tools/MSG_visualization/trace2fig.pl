@@ -13,7 +13,7 @@ use warnings;
 use XFig;
 use POSIX;
 
-my($grid_Y_size)=225; 
+my($grid_Y_size)=225;
 my($grid_X_size)=100550; # Can be changed to improve readability in function of the total execution time
 
 my($color_suspended)=1;
@@ -86,10 +86,10 @@ sub read_link {
 	}
 	if($line =~ /^17\s/) {
 	    my($event,$date,$type,$father,$channel,$dst,$key,$trash) = split(/\t+/,$line);
-	    my($numkey)=hex "$key"; 
+	    my($numkey)=hex "$key";
 	    while (defined($link{$numkey}{dst})) {$numkey++;}
 	    $link{$numkey}{dst}=$dst;
-	    $link{$numkey}{dst_date}=$date;	 
+	    $link{$numkey}{dst_date}=$date;	
 	}
     }
     close INPUT;
@@ -114,7 +114,7 @@ sub build_cat_list {
     my($tree,$cat_list)=@_;
     my($root) = shift @$tree;
     my($u);
-    
+
     push @$cat_list,$root;
 
     foreach $u (@$tree) {
@@ -201,7 +201,7 @@ sub draw_cat {
     my($cat,$e,$link);
     my($max_string_length)=0;
     foreach $cat (keys %$Cat) {
-	next unless (defined($$Cat{$cat}{Y_min}) && 
+	next unless (defined($$Cat{$cat}{Y_min}) &&
 		     defined($$Cat{$cat}{Y_max}));
 	my($text) = new XFig ('text');
 #	$text->{'text'} = "$$Cat{$$Cat{$cat}{father}}{name}"."$$Cat{$cat}{name}";
@@ -273,9 +273,9 @@ sub draw_cat {
 	print STDERR "$link: $src ($src_date) -> $dst ($dst_date)\n";
 
 	print STDERR "$$Cat{$src}{name} -> $$Cat{$dst}{name}\n";
-	$line->{'points'} = [ [$src_date*$grid_X_size, 
+	$line->{'points'} = [ [$src_date*$grid_X_size,
 			       ($$Cat{$src}{Y_min}+$$Cat{$src}{Y_max})/2*$grid_Y_size],
-			      [$dst_date*$grid_X_size, 
+			      [$dst_date*$grid_X_size,
 			       ($$Cat{$dst}{Y_min}+$$Cat{$dst}{Y_max})/2*$grid_Y_size] ];
 	$line->{'forwardarrow'} = ['1', '1', '1.00', '60.00', '120.00'];
 	$fig->add ($line);
@@ -293,7 +293,7 @@ sub draw_cat {
 	next unless (defined($$Cat{$cat}{Y_min_host}) && defined($$Cat{$cat}{Y_max_host}));
 	my($line) = new XFig ('polyline');
 	
-	$line->{'depth'} = 150;  
+	$line->{'depth'} = 150;
 	$line->{'subtype'} = 1;  # line
 	$line->{'points'} = [ [$min_x_for_host, $$Cat{$cat}{Y_min_host}*$grid_Y_size],
 			      [$max_date*$grid_X_size+150, $$Cat{$cat}{Y_min_host}*$grid_Y_size],
@@ -330,7 +330,7 @@ sub draw_cat {
 
 	my($line) = new XFig ('polyline');
 
-	$line->{'depth'} = 50;  
+	$line->{'depth'} = 50;
 	$line->{'subtype'} = 1;  # line
 	$line->{'points'} = [ [$min_x,$min_Y + ($i-1)*$height ],
 			      [$min_x + $width,$min_Y + ($i-1)*$height],
@@ -362,15 +362,15 @@ sub draw_cat {
 	$fig->add ($text);
 	$i++;
     }
-    
+
 # Time axis
     my($line) = new XFig ('polyline');
-    $line->{'depth'} = 0;  
+    $line->{'depth'} = 0;
     $line->{'subtype'} = 1;  # line
     $line->{'points'} = [ [0,0],[$max_date * $grid_X_size+150,0] ];
     $line->{'forwardarrow'} = ['1', '1', '1.00', '60.00', '120.00'];
     $fig->add ($line);
-    
+
     my($digits)=POSIX::floor(log($max_date)/log(10));
     my($exponent) = 10**$digits;
     my($mantissa)= $max_date / $exponent;
@@ -388,7 +388,7 @@ sub draw_cat {
     for($x=0; $x < $max_date; $x += $incr) {
 	print "$x\n";
 	$line = new XFig ('polyline');
-	$line->{'depth'} = 0;  
+	$line->{'depth'} = 0;
 	$line->{'subtype'} = 1;  # line
 	$line->{'points'} = [ [$x * $grid_X_size,0],[$x * $grid_X_size, -100] ];
 	$line->{'forwardarrow'} = 0;
@@ -404,9 +404,9 @@ sub draw_cat {
 
 # Empty line so that the text of the time axis can be seen on the pdf
     $line = new XFig ('polyline');
-    $line->{'depth'} = 999;  
+    $line->{'depth'} = 999;
     $line->{'subtype'} = 1;  # line
-    $line->{'thickness'} = 0;  
+    $line->{'thickness'} = 0;
     $line->{'points'} = [ [0,0],[0, -400] ];
     $fig->add ($line);
 }
@@ -424,7 +424,7 @@ sub main {
     shift @$cat_list;
 #    print "@$cat_list \n";
     set_cat_position($Cat,$cat_list);
-    
+
     my($fig)=create_fig("toto.fig");
     draw_cat($fig,$Cat,$Link);
     $fig->writefile ();

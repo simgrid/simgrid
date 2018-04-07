@@ -5,10 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-/** A mutex  implemented on top of SimGrid synchronization mechanisms. 
- * You can use it exactly the same way that you use the mutexes, 
- * but to handle the interactions between the processes within the simulation.   
- * 
+/** A mutex  implemented on top of SimGrid synchronization mechanisms.
+ * You can use it exactly the same way that you use the mutexes,
+ * but to handle the interactions between the processes within the simulation.
+ *
  * Don't mix simgrid synchronization with Java native one, or it will deadlock!
  */
 public class Mutex {

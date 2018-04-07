@@ -96,7 +96,7 @@ endif()
 
 if(enable_lib_in_jar)
   set(SG_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
-  
+
   if(${SG_SYSTEM_NAME} MATCHES "kFreeBSD")
     set(SG_SYSTEM_NAME GNU/kFreeBSD)
   endif()
@@ -117,9 +117,9 @@ if(enable_lib_in_jar)
     TARGET simgrid-java_jar POST_BUILD
     COMMENT "Add the native libs into simgrid.jar..."
     DEPENDS simgrid simgrid-java ${JAVALIBS}
-	  
+	
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
-    
+
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
   )
@@ -165,11 +165,11 @@ endif(APPLE)
     DEPENDS simgrid simgrid-java ${JAVALIBS}
 
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
-    
+
     COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
     COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
   )
-    
+
 endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})

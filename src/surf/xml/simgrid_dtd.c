@@ -6568,10 +6568,30 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+    case S_surfxml_AS_1:
+    case S_surfxml_AS_3:
+    case S_surfxml_AS_5:
+      SET(S_surfxml_AS_6);
+      break;
+    case S_surfxml_AS:
+    case S_surfxml_AS_4:
+    case S_surfxml_AS_6:
+    case S_surfxml_AS_7:
+    case S_surfxml_AS_8:
+      SET(S_surfxml_AS_8);
+      break;
+    case S_surfxml_zone_3:
+    case S_surfxml_zone_5:
+    case S_surfxml_zone_6:
+      SET(S_surfxml_zone_6);
+      break;
+    case S_surfxml_zone:
+    case S_surfxml_zone_1:
+    case S_surfxml_zone_4:
+    case S_surfxml_zone_7:
+    case S_surfxml_zone_8:
+      SET(S_surfxml_zone_8);
+      break;
   }
  }
 	YY_BREAK
@@ -6595,10 +6615,30 @@ YY_RULE_SETUP
   ETag_surfxml_ASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+    case S_surfxml_AS_1:
+    case S_surfxml_AS_3:
+    case S_surfxml_AS_5:
+      SET(S_surfxml_AS_6);
+      break;
+    case S_surfxml_AS:
+    case S_surfxml_AS_4:
+    case S_surfxml_AS_6:
+    case S_surfxml_AS_7:
+    case S_surfxml_AS_8:
+      SET(S_surfxml_AS_8);
+      break;
+    case S_surfxml_zone_3:
+    case S_surfxml_zone_5:
+    case S_surfxml_zone_6:
+      SET(S_surfxml_zone_6);
+      break;
+    case S_surfxml_zone:
+    case S_surfxml_zone_1:
+    case S_surfxml_zone_4:
+    case S_surfxml_zone_7:
+    case S_surfxml_zone_8:
+      SET(S_surfxml_zone_8);
+      break;
   }
  }
 	YY_BREAK
@@ -8884,68 +8924,65 @@ case YY_STATE_EOF(E_surfxml_peer):
 FAIL("Premature EOF: `</peer>' expected.");
 	YY_BREAK
 
-/* <!-- 
-  *              DTD of SimGrid platform and deployment files.
-  * More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
-  * To upgrade your files, use the tool simgrid_update_xml
-  * * Things that will change in upcoming version 5 (TODO):
-  *   - The following tags will be removed:
-  *     - <include> spits an error since v3.18
-  *     - <random> does nothing since a very long time
-  *     - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
-  *   - FULLDUPLEX sharing will be removed, deprecated in DTD4.2 (v3.19)
-  * * New in DTD version 4.2 (in SimGrid 3.19): backward compatible change (v4 files are valid v4.2 files)
-  *    - SPLITDUPLEX is the new spelling of the deprecated FULLDUPLEX
-  * * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
-  *    - <zone> can be used as a synonym for the now deprecated <as>
-  *    - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
-  *    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
-  *    - <actor> can be used as a synonym for the now deprecated <process>
-  * * New in DTD version 4 (in SimGrid 3.13):
-  *    - Rename (power->speed) the attributes describing the amount of flop
-  *      that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
-  *    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
-  *    
-  *    - In <host> and <link>, attributes availability and state are gone.
-  *      It was redundent with state and availability traces, and with peak values.
-  *      
-  *    - In <cluster>, cannot set the availability nor state traces. 
-  *      This was too complex and unused.
-  *    - The DOCTYPE points to the right URL (this file):
-  *      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
-  *      
-  *    - Kill <gpu>. Was not doing anything.
-  *    - A warning is emitted for unit-less values (they are still accepted).
-  *      - speed. Default: 'f' or 'flops'. Also defined:
-  *         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
-  *         'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
-  *      - bandwidth. Default: 'Bps' bytes per second
-  *        In bytes and powers of 2  (1 KiBps = 1024 Bps): 'EiBps', 'PiBps', 'TiBps', 'GiBps', 'MiBps', 'KiBps'
-  *        In bits  and powers of 2  (1 Bps = 8 bps)     : 'Eibps', 'Pibps', 'Tibps', 'Gibps', 'Mibps', 'Kibps'
-  *        In bytes and powers of 10 (1 KBps = 1000 Bps) : 'EBps', 'PBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
-  *        In bits  and powers of 10                     : 'Ebps', 'Pbps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
-  *        (Exa and Peta notations were introduced in SimGrid v3.14)
-  *      - latency. Default: 's' second. Also defined:
-  *        'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
-  * * New in DTD version 3 (in SimGrid 3.5):
-  *    - The AS tag were introduced. Every platform should now
-  *      contain an englobing AS tag.
-  *    - Routes are now symmetric by default.
-  *    - Renamed tags (for sake of XML sanity):
-  *      - LINK:CTN -> LINK_CTN
-  *      - TRACE:CONNECT -> TRACE_CONNECT
-  * * New in DTD version 2 (in SimGrid 3.4):
-  *    - Renamed tags:
-  *      - CPU -> HOST
-  *      - NETWORK_LINK -> LINK
-  *      - ROUTE_ELEMENT ->  LINK:CTN (changed again in v3)
-  *      - PLATFORM_DESCRIPTION -> PLATFORM
-  * * New in DTD version 1 (in SimGrid 3.3):
-  *    - DTD is now versionned with the version attribute of platform
-  *    - Unit change: 
-  *      - Link bandwidth: from Mb/s to b/s
-  *      - CPU speed: from MFlop/s to Flop/s
-  * -->  */
+/* <!--
+ *              DTD of SimGrid platform and deployment files.
+ * More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
+ * To upgrade your files, use the tool simgrid_update_xml
+ * * Things that will change in upcoming version 5 (TODO):
+ *   - The following tags will be removed:
+ *     - <include> spits an error since v3.18
+ *     - <random> does nothing since a very long time
+ *     - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
+ *   - FULLDUPLEX sharing will be removed, deprecated in DTD4.2 (v3.19)
+ * * New in DTD version 4.2 (in SimGrid 3.19): backward compatible change (v4 files are valid v4.2 files)
+ *    - SPLITDUPLEX is the new spelling of the deprecated FULLDUPLEX
+ * * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
+ *    - <zone> can be used as a synonym for the now deprecated <as>
+ *    - <zoneRoute> can be used as a synonym for the now deprecated <asroute>
+ *    - <bypassZoneRoute> an be used as a synonym for the now deprecated <bypassAsRoute>
+ *    - <actor> can be used as a synonym for the now deprecated <process>
+ * * New in DTD version 4 (in SimGrid 3.13):
+ *    - Rename (power->speed) the attributes describing the amount of flop
+ *      that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
+ *    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
+ *    - In <host> and <link>, attributes availability and state are gone.
+ *      It was redundent with state and availability traces, and with peak values.
+ *    - In <cluster>, cannot set the availability nor state traces.
+ *      This was too complex and unused.
+ *    - The DOCTYPE points to the right URL (this file):
+ *      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+ *    - Kill <gpu>. Was not doing anything.
+ *    - A warning is emitted for unit-less values (they are still accepted).
+ *      - speed. Default: 'f' or 'flops'. Also defined:
+ *         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
+ *         'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
+ *      - bandwidth. Default: 'Bps' bytes per second
+ *        In bytes and powers of 2  (1 KiBps = 1024 Bps): 'EiBps', 'PiBps', 'TiBps', 'GiBps', 'MiBps', 'KiBps'
+ *        In bits  and powers of 2  (1 Bps = 8 bps)     : 'Eibps', 'Pibps', 'Tibps', 'Gibps', 'Mibps', 'Kibps'
+ *        In bytes and powers of 10 (1 KBps = 1000 Bps) : 'EBps', 'PBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
+ *        In bits  and powers of 10                     : 'Ebps', 'Pbps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+ *        (Exa and Peta notations were introduced in SimGrid v3.14)
+ *      - latency. Default: 's' second. Also defined:
+ *        'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
+ * * New in DTD version 3 (in SimGrid 3.5):
+ *    - The AS tag were introduced. Every platform should now
+ *      contain an englobing AS tag.
+ *    - Routes are now symmetric by default.
+ *    - Renamed tags (for sake of XML sanity):
+ *      - LINK:CTN -> LINK_CTN
+ *      - TRACE:CONNECT -> TRACE_CONNECT
+ * * New in DTD version 2 (in SimGrid 3.4):
+ *    - Renamed tags:
+ *      - CPU -> HOST
+ *      - NETWORK_LINK -> LINK
+ *      - ROUTE_ELEMENT ->  LINK:CTN (changed again in v3)
+ *      - PLATFORM_DESCRIPTION -> PLATFORM
+ * * New in DTD version 1 (in SimGrid 3.3):
+ *    - DTD is now versionned with the version attribute of platform
+ *    - Unit change:
+ *      - Link bandwidth: from Mb/s to b/s
+ *      - CPU speed: from MFlop/s to Flop/s
+ * -->  */
 case 401:
 /* rule 401 can match eol */
 YY_RULE_SETUP
@@ -10422,10 +10459,30 @@ YY_RULE_SETUP
   if (!AX_surfxml_zoneRoute_src) FAIL("Required attribute `src' not set for `zoneRoute' element.");
   LEAVE; STag_surfxml_zoneRoute(); surfxml_pcdata_ix = 0; ETag_surfxml_zoneRoute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+    case S_surfxml_AS_1:
+    case S_surfxml_AS_3:
+    case S_surfxml_AS_5:
+      SET(S_surfxml_AS_6);
+      break;
+    case S_surfxml_AS:
+    case S_surfxml_AS_4:
+    case S_surfxml_AS_6:
+    case S_surfxml_AS_7:
+    case S_surfxml_AS_8:
+      SET(S_surfxml_AS_8);
+      break;
+    case S_surfxml_zone_3:
+    case S_surfxml_zone_5:
+    case S_surfxml_zone_6:
+      SET(S_surfxml_zone_6);
+      break;
+    case S_surfxml_zone:
+    case S_surfxml_zone_1:
+    case S_surfxml_zone_4:
+    case S_surfxml_zone_7:
+    case S_surfxml_zone_8:
+      SET(S_surfxml_zone_8);
+      break;
   }
  }
 	YY_BREAK
@@ -10449,10 +10506,30 @@ YY_RULE_SETUP
   ETag_surfxml_zoneRoute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_1: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
-   case S_surfxml_zone_5: SET(S_surfxml_zone_6); break;
-   case S_surfxml_zone: case S_surfxml_zone_1: case S_surfxml_zone_3: case S_surfxml_zone_4: case S_surfxml_zone_6: case S_surfxml_zone_7: case S_surfxml_zone_8: SET(S_surfxml_zone_8); break;
+    case S_surfxml_AS_1:
+    case S_surfxml_AS_3:
+    case S_surfxml_AS_5:
+      SET(S_surfxml_AS_6);
+      break;
+    case S_surfxml_AS:
+    case S_surfxml_AS_4:
+    case S_surfxml_AS_6:
+    case S_surfxml_AS_7:
+    case S_surfxml_AS_8:
+      SET(S_surfxml_AS_8);
+      break;
+    case S_surfxml_zone_3:
+    case S_surfxml_zone_5:
+    case S_surfxml_zone_6:
+      SET(S_surfxml_zone_6);
+      break;
+    case S_surfxml_zone:
+    case S_surfxml_zone_1:
+    case S_surfxml_zone_4:
+    case S_surfxml_zone_7:
+    case S_surfxml_zone_8:
+      SET(S_surfxml_zone_8);
+      break;
   }
  }
 	YY_BREAK
