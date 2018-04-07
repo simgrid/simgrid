@@ -931,4 +931,7 @@ src/bindings/java/MANIFEST.MF
 NATIVE/
 VERSION
 include/smpi/mpif.h
+include/smpi/mpi.mod
+src/smpi/mpif.f90
+src/smpi/mpif.f90.generated
 a.out
