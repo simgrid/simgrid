@@ -66,7 +66,7 @@ case "$build_mode" in
   ;;
 esac
 
-if test "$(uname -o)" = "Msys"; then
+if test "$(uname)" = "Msys"; then
   if [ -z "$NUMBER_OF_PROCESSORS" ]; then
     NUMBER_OF_PROCESSORS=1
   fi
@@ -98,7 +98,7 @@ echo "XX have_NS3: ${have_NS3}"
 # This is for Windows:
 PATH="$WORKSPACE/build/lib:$PATH"
 
-if test "$(uname -o)" != "Msys"; then
+if test "$(uname)" != "Msys"; then
   echo "XX"
   echo "XX Build the archive out of the tree"
   echo "XX   pwd: "$(pwd)
@@ -143,7 +143,7 @@ set +x
 
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
-if test "$(uname -o)" != "Msys"; then
+if test "$(uname)" != "Msys"; then
   cd $WORKSPACE/build
   cd $(cat VERSION)/build
 fi
@@ -159,7 +159,7 @@ if [ -f Testing/TAG ] ; then
    mv CTestResults.xml $WORKSPACE
 fi
 
-if test "$(uname -o)" != "Msys" -a "${build_mode}" = "Debug" ; then
+if test "$(uname)" != "Msys" -a "${build_mode}" = "Debug" ; then
   echo "XX"
   echo "XX Test done. Install everything since it's a regular build + not on a Windows."
   echo "XX"
