@@ -10,5 +10,4 @@ $ ./replay_multiple description_file ${srcdir:=.}/../../platforms/small_platform
 > [0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
 > [0.000000] [msg_test/INFO] Initializing instance 1 of size 32
 > [0.000000] [msg_test/INFO] Initializing instance 2 of size 32
-> [Jupiter:2:(62) 1149120.441959] [smpi_replay/INFO] Simulation time 1132803.089288
-> [1149120.441959] [msg_test/INFO] Simulation time 1.14912e+06
+> [37298.251477] [msg_test/INFO] Simulation time 37298.3
