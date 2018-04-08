@@ -22,7 +22,6 @@ using simgrid::s4u::Actor;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
-static int active_processes  = 0;
 static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 
 static MPI_Datatype MPI_DEFAULT_TYPE;
@@ -566,9 +565,6 @@ public:
 
     /* start a simulated timer */
     smpi_process()->simulated_start();
-    /*initialize the number of active processes */
-    active_processes = smpi_process_count();
-
     set_reqq_self(new std::vector<MPI_Request>);
   }
 };
@@ -860,6 +856,8 @@ void smpi_replay_init(int* argc, char*** argv)
 /** @brief actually run the replay after initialization */
 void smpi_replay_main(int* argc, char*** argv)
 {
+  static int active_processes = 0;
+  active_processes++;
   simgrid::xbt::replay_runner(*argc, *argv);
 
   /* and now, finalize everything */
