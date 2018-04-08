@@ -337,11 +337,6 @@ XBT_PUBLIC const char* MSG_task_get_category(msg_task_t task);
  */
 XBT_PUBLIC void MSG_mailbox_set_async(const char* alias);
 
-/************************** Action handling **********************************/
-XBT_PUBLIC msg_error_t MSG_action_trace_run(char* path);
-XBT_PUBLIC void MSG_action_init();
-XBT_PUBLIC void MSG_action_exit();
-
 /** @brief Opaque type representing a semaphore
  *  @ingroup msg_synchro
  *  @hideinitializer

@@ -28,7 +28,6 @@ abstracted away rather easily.
    - \ref msg_task_usage
    - \ref msg_VMs
    - \ref msg_synchro
-   - \ref msg_trace_driven
    - \ref msg_examples
 
 */ 
@@ -104,25 +103,3 @@ details).
     @ingroup MSG_API
     @brief MSG files (#msg_file_t) and associated functions, inspired from POSIX.
 */
-
-/**
-@defgroup msg_trace_driven Trace-driven simulations
-@ingroup MSG_API
-@brief This section describes the functions allowing to build trace-driven simulations.
-
-This is very handy when you want to test an algorithm or protocol that
-does nothing unless it receives some events from outside. For example,
-a P2P protocol reacts to requests from the user, but does nothing if
-there is no such event.
-
-In such situations, SimGrid allows to write your protocol in your C
-file, and the events to react to in a separate text file. Declare a
-function handling each of the events that you want to accept in your
-trace files, register them using #xbt_replay_action_register in your main,
-and then use #MSG_action_trace_run to launch the simulation. You can
-either have one trace file containing all your events, or a file per
-simulated process.
-
-Check the examples in <b>examples/msg/actions/actions.c</b> for details.
-
- */
