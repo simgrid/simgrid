@@ -45,7 +45,7 @@ CpuTiTrace::~CpuTiTrace()
   delete [] integral_;
 }
 
-CpuTiTgmr::~CpuTiTgmr()
+CpuTiTmgr::~CpuTiTmgr()
 {
   if (trace_)
     delete trace_;
@@ -61,7 +61,7 @@ CpuTiTgmr::~CpuTiTgmr()
 * \param b      End of interval
 * \return the integrate value. -1 if an error occurs.
 */
-double CpuTiTgmr::integrate(double a, double b)
+double CpuTiTmgr::integrate(double a, double b)
 {
   int a_index;
 
@@ -138,7 +138,7 @@ double CpuTiTrace::integrate_simple_point(double a)
 * \param amount  Amount to be executed
 * \return  End time
 */
-double CpuTiTgmr::solve(double a, double amount)
+double CpuTiTmgr::solve(double a, double amount)
 {
   /* Fix very small negative numbers */
   if ((a < 0.0) && (a > -EPSILON)) {
@@ -212,7 +212,7 @@ double CpuTiTrace::solve_simple(double a, double amount)
 * \param a        Time
 * \return CPU speed scale
 */
-double CpuTiTgmr::get_power_scale(double a)
+double CpuTiTmgr::get_power_scale(double a)
 {
   double reduced_a          = a - floor(a / last_time_) * last_time_;
   int point                 = trace_->binary_search(trace_->time_points_, reduced_a, 0, trace_->nb_points_ - 1);
@@ -227,7 +227,7 @@ double CpuTiTgmr::get_power_scale(double a)
 * \param  value          Percentage of CPU speed available (useful to fixed tracing)
 * \return  Integration trace structure
 */
-CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value) : speed_trace_(speedTrace)
+CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speedTrace, double value) : speed_trace_(speedTrace)
 {
   double total_time = 0.0;
   trace_ = 0;
@@ -362,7 +362,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, std::vector<double> *s
   speed_.peak = speedPerPstate->front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
-  speed_integrated_trace_ = new CpuTiTgmr(nullptr, 1 /*scale*/);
+  speed_integrated_trace_ = new CpuTiTmgr(nullptr, 1 /*scale*/);
 }
 
 CpuTi::~CpuTi()
@@ -375,7 +375,7 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
   if (speed_integrated_trace_)
     delete speed_integrated_trace_;
 
-  speed_integrated_trace_ = new CpuTiTgmr(trace, speed_.scale);
+  speed_integrated_trace_ = new CpuTiTmgr(trace, speed_.scale);
 
   /* add a fake trace event if periodicity == 0 */
   if (trace && trace->event_list.size() > 1) {
@@ -389,7 +389,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
     tmgr_trace_t speedTrace;
-    CpuTiTgmr *trace;
+    CpuTiTmgr* trace;
 
     XBT_DEBUG("Finish trace date: value %f", value);
     /* update remaining of actions and put in modified cpu list */
@@ -402,7 +402,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
     delete speed_integrated_trace_;
     speed_.scale = val.value_;
 
-    trace = new CpuTiTgmr(TRACE_FIXED, val.value_);
+    trace = new CpuTiTmgr(TRACE_FIXED, val.value_);
     XBT_DEBUG("value %f", val.value_);
 
     speed_integrated_trace_ = trace;

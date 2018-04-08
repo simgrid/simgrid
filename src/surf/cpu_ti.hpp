@@ -48,15 +48,13 @@ enum trace_type {
   TRACE_DYNAMIC               /*< Dynamic, have an availability file */
 };
 
-class CpuTiTgmr {
+class CpuTiTmgr {
 public:
-  CpuTiTgmr(trace_type type, double value)
-    : type_(type), value_(value)
-  {};
-  CpuTiTgmr(tmgr_trace_t speedTrace, double value);
-  CpuTiTgmr(const CpuTiTgmr&) = delete;
-  CpuTiTgmr& operator=(const CpuTiTgmr&) = delete;
-  ~CpuTiTgmr();
+  CpuTiTmgr(trace_type type, double value) : type_(type), value_(value){};
+  CpuTiTmgr(tmgr_trace_t speedTrace, double value);
+  CpuTiTmgr(const CpuTiTmgr&) = delete;
+  CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
+  ~CpuTiTmgr();
 
   double integrate(double a, double b);
   double solve(double a, double amount);
@@ -125,7 +123,7 @@ public:
 
   void set_modified(bool modified);
 
-  CpuTiTgmr* speed_integrated_trace_ = nullptr; /*< Structure with data needed to integrate trace file */
+  CpuTiTmgr* speed_integrated_trace_ = nullptr; /*< Structure with data needed to integrate trace file */
   ActionTiList action_set_;                     /*< set with all actions running on cpu */
   double sum_priority_ = 0;                  /*< the sum of actions' priority that are running on cpu */
   double last_update_  = 0;                  /*< last update of actions' remaining amount done */
