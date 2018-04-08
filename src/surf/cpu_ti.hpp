@@ -28,6 +28,8 @@ class XBT_PRIVATE CpuTi;
 class CpuTiTrace {
 public:
   explicit CpuTiTrace(tmgr_trace_t speedTrace);
+  CpuTiTrace(const CpuTiTrace&) = delete;
+  CpuTiTrace& operator=(const CpuTiTrace&) = delete;
   ~CpuTiTrace();
 
   double integrate_simple(double a, double b);
@@ -52,6 +54,8 @@ public:
     : type_(type), value_(value)
   {};
   CpuTiTgmr(tmgr_trace_t speedTrace, double value);
+  CpuTiTgmr(const CpuTiTgmr&) = delete;
+  CpuTiTgmr& operator=(const CpuTiTgmr&) = delete;
   ~CpuTiTgmr();
 
   double integrate(double a, double b);
