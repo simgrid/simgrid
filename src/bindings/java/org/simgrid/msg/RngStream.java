@@ -1,6 +1,6 @@
 /* JNI interface to C RngStream code */
 
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

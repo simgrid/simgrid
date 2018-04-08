@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (c) 2005, 2007, 2010, 2014. The SimGrid Team.
+# Copyright (c) 2005-2018. The SimGrid Team.
 # All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it

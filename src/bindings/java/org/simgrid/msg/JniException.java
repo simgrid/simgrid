@@ -1,6 +1,6 @@
 /* This exception is raised when there is a problem within the bindings (in JNI). */
 
-/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
