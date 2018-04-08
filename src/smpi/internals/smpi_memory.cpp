@@ -99,7 +99,7 @@ static void* asan_safe_memcpy(void* dest, void* src, size_t n)
 /** Map a given SMPI privatization segment (make a SMPI process active) */
 void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor)
 {
-  if (smpi_loaded_page == actor->getPid()) // no need to switch, we've already loaded the one we want
+  if (smpi_loaded_page == actor->get_pid()) // no need to switch, we've already loaded the one we want
     return;
 
   // So the job:
@@ -118,14 +118,14 @@ void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor)
 
 #if HAVE_PRIVATIZATION
   // FIXME, cross-process support (mmap across process when necessary)
-  XBT_DEBUG("Switching data frame to the one of process %ld", actor->getPid());
+  XBT_DEBUG("Switching data frame to the one of process %ld", actor->get_pid());
   simgrid::smpi::Process* process = smpi_process_remote(actor);
   int current                     = process->privatized_region()->file_descriptor;
   void* tmp =
       mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_data_exe_start))
     xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
-  smpi_loaded_page = actor->getPid();
+  smpi_loaded_page = actor->get_pid();
 #endif
 }
 

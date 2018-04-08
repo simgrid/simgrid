@@ -465,7 +465,7 @@ public:
   explicit SendAction(std::string name) : ReplayAction(name) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->getPid();
+    int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
                                                                              Datatype::encode(args.datatype1)));
@@ -491,7 +491,7 @@ public:
   explicit RecvAction(std::string name) : ReplayAction(name) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->getPid();
+    int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData(name, args.partner, args.size,
                                                                              Datatype::encode(args.datatype1)));
@@ -622,7 +622,7 @@ public:
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     TRACE_smpi_comm_in(my_proc_id, "action_bcast",
-                       new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->getPid(),
+                       new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
                                                       -1.0, args.size, -1, Datatype::encode(args.datatype1), ""));
 
     Colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
@@ -637,8 +637,9 @@ public:
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     TRACE_smpi_comm_in(my_proc_id, "action_reduce",
-                       new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root)->getPid(), args.comp_size,
-                                                      args.comm_size, -1, Datatype::encode(args.datatype1), ""));
+                       new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
+                                                      args.comp_size, args.comm_size, -1,
+                                                      Datatype::encode(args.datatype1), ""));
 
     Colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
         recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL, args.root, MPI_COMM_WORLD);

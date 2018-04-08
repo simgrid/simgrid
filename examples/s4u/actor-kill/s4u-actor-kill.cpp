@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 The SimGrid Team. All rights reserved.    */
+/* Copyright (c) 2017-2018 The SimGrid Team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,9 +33,9 @@ static void killer()
 {
   XBT_INFO("Hello!"); /* - First start a victim process */
   simgrid::s4u::ActorPtr victimA =
-      simgrid::s4u::Actor::createActor("victim A", simgrid::s4u::Host::by_name("Fafard"), victimA_fun);
+      simgrid::s4u::Actor::create("victim A", simgrid::s4u::Host::by_name("Fafard"), victimA_fun);
   simgrid::s4u::ActorPtr victimB =
-      simgrid::s4u::Actor::createActor("victim B", simgrid::s4u::Host::by_name("Jupiter"), victimB_fun);
+      simgrid::s4u::Actor::create("victim B", simgrid::s4u::Host::by_name("Jupiter"), victimB_fun);
   simgrid::s4u::this_actor::sleep_for(10); /* - Wait for 10 seconds */
 
   XBT_INFO("Resume the victim A"); /* - Resume it from its suspended state */
@@ -43,7 +43,7 @@ static void killer()
   simgrid::s4u::this_actor::sleep_for(2);
 
   XBT_INFO("Kill the victim A"); /* - and then kill it */
-  simgrid::s4u::Actor::kill(victimA->getPid()); // Kill by PID is legit
+  simgrid::s4u::Actor::kill(victimA->get_pid()); // Kill by PID is legit
 
   simgrid::s4u::this_actor::sleep_for(1);
 
@@ -54,7 +54,7 @@ static void killer()
 
   XBT_INFO("Start a new actor, and kill it right away");
   simgrid::s4u::ActorPtr victimC =
-      simgrid::s4u::Actor::createActor("victim C", simgrid::s4u::Host::by_name("Jupiter"), victimA_fun);
+      simgrid::s4u::Actor::create("victim C", simgrid::s4u::Host::by_name("Jupiter"), victimA_fun);
   victimC->kill();
 
   simgrid::s4u::this_actor::sleep_for(1);
@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
 
   e.loadPlatform(argv[1]); /* - Load the platform description */
   /* - Create and deploy killer process, that will create the victim actors  */
-  simgrid::s4u::Actor::createActor("killer", simgrid::s4u::Host::by_name("Tremblay"), killer);
+  simgrid::s4u::Actor::create("killer", simgrid::s4u::Host::by_name("Tremblay"), killer);
 
   e.run(); /* - Run the simulation */
 

@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
   e.loadPlatform(argv[1]);
 
   /* Pick a process, no matter which, from the platform file */
-  simgrid::s4u::Actor::createActor("test", simgrid::s4u::Host::by_name("MyHost1"), runner);
+  simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("MyHost1"), runner);
 
   e.run();
   XBT_INFO("Simulation done.");

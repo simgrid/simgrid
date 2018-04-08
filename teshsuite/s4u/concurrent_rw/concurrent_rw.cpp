@@ -33,7 +33,7 @@ int main(int argc, char** argv)
   e.loadPlatform(argv[1]);
 
   for (int i = 0; i < 5; i++)
-    simgrid::s4u::Actor::createActor("host", simgrid::s4u::Host::by_name("bob"), host);
+    simgrid::s4u::Actor::create("host", simgrid::s4u::Host::by_name("bob"), host);
 
   e.run();
   XBT_INFO("Simulation time %g", e.getClock());

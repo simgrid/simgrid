@@ -98,14 +98,14 @@ int main(int argc, char** argv)
    * You can first directly start your actor, as follows. Note the last parameter: 'Sender()',
    * as if you would call the Sender function.
    */
-  simgrid::s4u::Actor::createActor("sender1", simgrid::s4u::Host::by_name("Tremblay"), Sender());
+  simgrid::s4u::Actor::create("sender1", simgrid::s4u::Host::by_name("Tremblay"), Sender());
 
   /* The second way is to first register your function, and then retrieve it */
   e.registerFunction<Sender>("sender");  // The sender is passed as a template parameter here
   std::vector<std::string> args;         // Here we declare the parameter that the actor will get
   args.push_back("GloubiBoulga");        // Add a parameter to the set (we could have done it in the first approach too)
 
-  simgrid::s4u::Actor::createActor("sender2", simgrid::s4u::Host::by_name("Jupiter"), "sender", args);
+  simgrid::s4u::Actor::create("sender2", simgrid::s4u::Host::by_name("Jupiter"), "sender", args);
 
   /* The third way to start your actors is to use a deployment file. */
   e.registerFunction<Receiver>("receiver");   // You first have to register the actor as with the second approach

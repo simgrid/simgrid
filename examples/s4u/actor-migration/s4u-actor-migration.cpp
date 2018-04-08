@@ -13,7 +13,7 @@
  * Then another migration is done by the monitor while the worker is suspended.
  *
  * Note that worker() takes an uncommon set of parameters,
- * and that this is perfectly accepted by createActor().
+ * and that this is perfectly accepted by create().
  */
 
 #include <simgrid/s4u.hpp>
@@ -45,7 +45,7 @@ static void monitor()
   simgrid::s4u::Host* jacquelin = simgrid::s4u::Host::by_name("Jacquelin");
   simgrid::s4u::Host* fafard    = simgrid::s4u::Host::by_name("Fafard");
 
-  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::createActor("worker", fafard, worker, boivin, jacquelin);
+  simgrid::s4u::ActorPtr actor = simgrid::s4u::Actor::create("worker", fafard, worker, boivin, jacquelin);
 
   simgrid::s4u::this_actor::sleep_for(5);
 
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
   e.loadPlatform(argv[1]);
 
-  simgrid::s4u::Actor::createActor("monitor", simgrid::s4u::Host::by_name("Boivin"), monitor);
+  simgrid::s4u::Actor::create("monitor", simgrid::s4u::Host::by_name("Boivin"), monitor);
   e.run();
 
   return 0;

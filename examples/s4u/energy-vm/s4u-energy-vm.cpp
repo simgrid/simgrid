@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2010, 2013-2015, 2017. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,16 +29,16 @@ static void dvfs()
   vm_host2->start();
 
   XBT_INFO("Create two tasks on Host1: both inside a VM");
-  simgrid::s4u::Actor::createActor("p11", vm_host1, executor);
-  simgrid::s4u::Actor::createActor("p12", vm_host1, executor);
+  simgrid::s4u::Actor::create("p11", vm_host1, executor);
+  simgrid::s4u::Actor::create("p12", vm_host1, executor);
 
   XBT_INFO("Create two tasks on Host2: one inside a VM, the other directly on the host");
-  simgrid::s4u::Actor::createActor("p21", vm_host2, executor);
-  simgrid::s4u::Actor::createActor("p22", host2, executor);
+  simgrid::s4u::Actor::create("p21", vm_host2, executor);
+  simgrid::s4u::Actor::create("p22", host2, executor);
 
   XBT_INFO("Create two tasks on Host3: both directly on the host");
-  simgrid::s4u::Actor::createActor("p31", host3, executor);
-  simgrid::s4u::Actor::createActor("p32", host3, executor);
+  simgrid::s4u::Actor::create("p31", host3, executor);
+  simgrid::s4u::Actor::create("p32", host3, executor);
 
   XBT_INFO("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, "
            "so they run for 6 seconds)");
@@ -60,7 +59,7 @@ int main(int argc, char* argv[])
 
   e.loadPlatform(argv[1]);
 
-  simgrid::s4u::Actor::createActor("dvfs", simgrid::s4u::Host::by_name("MyHost1"), dvfs);
+  simgrid::s4u::Actor::create("dvfs", simgrid::s4u::Host::by_name("MyHost1"), dvfs);
 
   e.run();
 

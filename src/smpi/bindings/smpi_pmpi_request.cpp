@@ -15,7 +15,7 @@ static int getPid(MPI_Comm, int);
 static int getPid(MPI_Comm comm, int id)
 {
   simgrid::s4u::ActorPtr actor = comm->group()->actor(id);
-  return (actor == nullptr) ? MPI_UNDEFINED : actor->getPid();
+  return (actor == nullptr) ? MPI_UNDEFINED : actor->get_pid();
 }
 
 /* PMPI User level calls */

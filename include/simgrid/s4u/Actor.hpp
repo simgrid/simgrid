@@ -163,20 +163,20 @@ public:
   static ActorPtr self();
 
   /** Signal to others that a new actor has been created **/
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> onCreation;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_creation;
   /** Signal indicating that the given actor is about to disappear */
-  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> onDestruction;
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
 
   /** Create an actor using a function
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void()> code);
+  static ActorPtr create(const char* name, s4u::Host* host, std::function<void()> code);
 
-  static ActorPtr createActor(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
-                              std::vector<std::string>* args)
+  static ActorPtr create(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
+                         std::vector<std::string>* args)
   {
-    return createActor(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
+    return create(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
   }
 
   /** Create an actor using code
@@ -186,46 +186,38 @@ public:
    *  state. In order to use auto-restart, an explicit `function` must be passed
    *  instead.
    */
-  template<class F, class... Args,
-    // This constructor is enabled only if the call code(args...) is valid:
-    typename = typename std::result_of<F(Args...)>::type
-    >
-  static ActorPtr createActor(const char* name, s4u::Host *host, F code, Args... args)
+  template <class F, class... Args,
+            // This constructor is enabled only if the call code(args...) is valid:
+            typename = typename std::result_of<F(Args...)>::type>
+  static ActorPtr create(const char* name, s4u::Host* host, F code, Args... args)
   {
-    return createActor(name, host, wrap_task(std::move(code), std::move(args)...));
+    return create(name, host, wrap_task(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:
-
-  static ActorPtr createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
+  static ActorPtr create(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon actor finishes **/
   void daemonize();
 
   /** Returns whether or not this actor has been daemonized or not **/
-  bool isDaemon();
-
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_name()") const simgrid::xbt::string& getName() const
-  {
-    return get_name();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_cname()") const char* getCname() const { return get_cname(); }
+  bool is_daemon() const;
 
   /** Retrieves the name of that actor as a C++ string */
   const simgrid::xbt::string& get_name() const;
   /** Retrieves the name of that actor as a C string */
   const char* get_cname() const;
   /** Retrieves the host on which that actor is running */
-  s4u::Host* getHost();
+  s4u::Host* get_host();
   /** Retrieves the PID of that actor
    *
    * aid_t is an alias for long */
-  aid_t getPid();
+  aid_t get_pid();
   /** Retrieves the PPID of that actor
    *
    * aid_t is an alias for long */
-  aid_t getPpid();
+  aid_t get_ppid();
 
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
   void suspend();
@@ -289,6 +281,38 @@ public:
   const char* getProperty(const char* key);
   void setProperty(const char* key, const char* value);
   Actor* restart();
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
+      createActor(const char* name, s4u::Host* host, std::function<void()> code)
+  {
+    return create(name, host, code);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
+      createActor(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
+                  std::vector<std::string>* args)
+  {
+    return create(name, host, code, args);
+  }
+  template <class F, class... Args, typename = typename std::result_of<F(Args...)>::type>
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
+      createActor(const char* name, s4u::Host* host, F code, Args... args)
+  {
+    return create(name, host, code, std::move(args)...);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
+      createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
+  {
+    return create(name, host, function, args);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_daemon()") bool isDaemon() const;
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_name()") const simgrid::xbt::string& getName() const
+  {
+    return get_name();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_cname()") const char* getCname() const { return get_cname(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_host()") Host* getHost() { return get_host(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_pid()") aid_t getPid() { return get_pid(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_ppid()") aid_t getPpid() { return get_ppid(); }
 };
 
 /** @ingroup s4u_api

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2017-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -109,8 +109,8 @@ int main(int argc, char* argv[])
   } else { // No parameter at all? Then use the default value
     argSender.push_back("25000");
   }
-  simgrid::s4u::Actor::createActor("sender", simgrid::s4u::Host::by_name("MyHost1"), sender, argSender);
-  simgrid::s4u::Actor::createActor("receiver", simgrid::s4u::Host::by_name("MyHost2"), receiver, argReceiver);
+  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("MyHost1"), sender, argSender);
+  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("MyHost2"), receiver, argReceiver);
 
   /* And now, launch the simulation */
   e.run();

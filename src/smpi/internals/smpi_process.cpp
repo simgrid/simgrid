@@ -24,8 +24,8 @@ using simgrid::s4u::ActorPtr;
 Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
     : finalization_barrier_(finalization_barrier), process_(actor)
 {
-  mailbox_         = simgrid::s4u::Mailbox::byName("SMPI-" + std::to_string(process_->getPid()));
-  mailbox_small_   = simgrid::s4u::Mailbox::byName("small-" + std::to_string(process_->getPid()));
+  mailbox_         = simgrid::s4u::Mailbox::byName("SMPI-" + std::to_string(process_->get_pid()));
+  mailbox_small_   = simgrid::s4u::Mailbox::byName("small-" + std::to_string(process_->get_pid()));
   mailboxes_mutex_ = xbt_mutex_init();
   timer_           = xbt_os_timer_new();
   state_           = SMPI_UNINITIALIZED;
@@ -81,14 +81,14 @@ void Process::set_data(int* argc, char*** argv)
   argv_ = argv;
   // set the process attached to the mailbox
   mailbox_small_->setReceiver(process_);
-  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", process_->getPid(), process_.get());
+  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", process_->get_pid(), process_.get());
 }
 
 /** @brief Prepares the current process for termination. */
 void Process::finalize()
 {
   state_ = SMPI_FINALIZED;
-  XBT_DEBUG("<%ld> Process left the game", process_->getPid());
+  XBT_DEBUG("<%ld> Process left the game", process_->get_pid());
 
   // This leads to an explosion of the search graph which cannot be reduced:
   if(MC_is_active() || MC_record_replay_is_active())

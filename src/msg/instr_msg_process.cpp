@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
 std::string instr_pid(msg_process_t proc)
 {
-  return std::string(proc->get_cname()) + "-" + std::to_string(proc->getPid());
+  return std::string(proc->get_cname()) + "-" + std::to_string(proc->get_pid());
 }
 
 void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process)

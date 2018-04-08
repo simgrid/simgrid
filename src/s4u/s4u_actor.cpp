@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 namespace simgrid {
 namespace s4u {
 
-simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::onCreation;
-simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::onDestruction;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_creation;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_destruction;
 
 // ***** Actor creation *****
 ActorPtr Actor::self()
@@ -27,13 +27,13 @@ ActorPtr Actor::self()
   return self_context->process()->iface();
 }
 
-ActorPtr Actor::createActor(const char* name, s4u::Host* host, std::function<void()> code)
+ActorPtr Actor::create(const char* name, s4u::Host* host, std::function<void()> code)
 {
   simgrid::kernel::actor::ActorImpl* actor = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
   return actor->iface();
 }
 
-ActorPtr Actor::createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
+ActorPtr Actor::create(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   simgrid::simix::ActorCode code = factory(std::move(args));
@@ -118,7 +118,7 @@ void Actor::migrate(Host* new_host)
   }
 }
 
-s4u::Host* Actor::getHost()
+s4u::Host* Actor::get_host()
 {
   return this->pimpl_->host;
 }
@@ -128,7 +128,7 @@ void Actor::daemonize()
   simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
 }
 
-bool Actor::isDaemon()
+bool Actor::is_daemon() const
 {
   return this->pimpl_->isDaemon();
 }
@@ -143,12 +143,12 @@ const char* Actor::get_cname() const
   return this->pimpl_->get_cname();
 }
 
-aid_t Actor::getPid()
+aid_t Actor::get_pid()
 {
   return this->pimpl_->pid;
 }
 
-aid_t Actor::getPpid()
+aid_t Actor::get_ppid()
 {
   return this->pimpl_->ppid;
 }
@@ -408,7 +408,7 @@ int sg_actor_get_PID(sg_actor_t actor)
    * and the exceptions, so it would be called back again and again */
   if (actor == nullptr || actor->getImpl() == nullptr)
     return 0;
-  return actor->getPid();
+  return actor->get_pid();
 }
 
 /** \ingroup m_actor_management
@@ -419,7 +419,7 @@ int sg_actor_get_PID(sg_actor_t actor)
  */
 int sg_actor_get_PPID(sg_actor_t actor)
 {
-  return actor->getPpid();
+  return actor->get_ppid();
 }
 
 /** \ingroup m_actor_management
@@ -432,7 +432,7 @@ const char* sg_actor_get_name(sg_actor_t actor)
 
 sg_host_t sg_actor_get_host(sg_actor_t actor)
 {
-  return actor->getHost();
+  return actor->get_host();
 }
 
 /** \ingroup m_actor_management

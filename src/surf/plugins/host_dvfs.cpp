@@ -234,44 +234,44 @@ static void on_host_added(simgrid::s4u::Host& host)
     return;
 
   std::string name              = std::string("dvfs-daemon-") + host.get_cname();
-  simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::createActor(name.c_str(), &host, []() {
+  simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::create(name.c_str(), &host, []() {
     /**
      * This lambda function is the function the actor (daemon) will execute
      * all the time - in the case of the dvfs plugin, this controls when to
      * lower/raise the frequency.
      */
-    simgrid::s4u::ActorPtr daemonProc = simgrid::s4u::Actor::self();
+    simgrid::s4u::ActorPtr daemon_proc = simgrid::s4u::Actor::self();
 
-    XBT_DEBUG("DVFS process on %s is a daemon: %d", daemonProc->getHost()->get_cname(), daemonProc->isDaemon());
+    XBT_DEBUG("DVFS process on %s is a daemon: %d", daemon_proc->get_host()->get_cname(), daemon_proc->is_daemon());
 
     std::string dvfs_governor;
-    const char* host_conf = daemonProc->getHost()->getProperty(property_governor);
+    const char* host_conf = daemon_proc->get_host()->getProperty(property_governor);
     if (host_conf != nullptr) {
-      dvfs_governor = std::string(daemonProc->getHost()->getProperty(property_governor));
+      dvfs_governor = std::string(daemon_proc->get_host()->getProperty(property_governor));
       boost::algorithm::to_lower(dvfs_governor);
     } else {
       dvfs_governor = xbt_cfg_get_string(property_governor);
       boost::algorithm::to_lower(dvfs_governor);
     }
 
-    auto governor = [&dvfs_governor, &daemonProc]() {
+    auto governor = [&dvfs_governor, &daemon_proc]() {
       if (dvfs_governor == "conservative") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Conservative(daemonProc->getHost()));
+            new simgrid::plugin::dvfs::Conservative(daemon_proc->get_host()));
       } else if (dvfs_governor == "ondemand") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::OnDemand(daemonProc->getHost()));
+            new simgrid::plugin::dvfs::OnDemand(daemon_proc->get_host()));
       } else if (dvfs_governor == "performance") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Performance(daemonProc->getHost()));
+            new simgrid::plugin::dvfs::Performance(daemon_proc->get_host()));
       } else if (dvfs_governor == "powersave") {
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Powersave(daemonProc->getHost()));
+            new simgrid::plugin::dvfs::Powersave(daemon_proc->get_host()));
       } else {
         XBT_CRITICAL("No governor specified for host %s, falling back to Performance",
-                     daemonProc->getHost()->get_cname());
+                     daemon_proc->get_host()->get_cname());
         return std::unique_ptr<simgrid::plugin::dvfs::Governor>(
-            new simgrid::plugin::dvfs::Performance(daemonProc->getHost()));
+            new simgrid::plugin::dvfs::Performance(daemon_proc->get_host()));
       }
     }();
 

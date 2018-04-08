@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   e.loadPlatform(argv[1]);
-  simgrid::s4u::Actor::createActor("dvfs_test", simgrid::s4u::Host::by_name("MyHost1"), dvfs);
+  simgrid::s4u::Actor::create("dvfs_test", simgrid::s4u::Host::by_name("MyHost1"), dvfs);
 
   e.run();
 

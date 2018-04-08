@@ -21,7 +21,7 @@ static void computation_fun()
 
 static void launch_computation_worker(s4u_Host* host)
 {
-  simgrid::s4u::Actor::createActor("compute", host, computation_fun);
+  simgrid::s4u::Actor::create("compute", host, computation_fun);
 }
 
 struct s_payload {
@@ -62,9 +62,9 @@ static void launch_communication_worker(s4u_Host* tx_host, s4u_Host* rx_host)
   std::vector<std::string> args;
   args.push_back(mbox_name);
 
-  simgrid::s4u::Actor::createActor("comm_tx", tx_host, communication_tx_fun, args);
+  simgrid::s4u::Actor::create("comm_tx", tx_host, communication_tx_fun, args);
 
-  simgrid::s4u::Actor::createActor("comm_rx", rx_host, communication_rx_fun, args);
+  simgrid::s4u::Actor::create("comm_rx", rx_host, communication_rx_fun, args);
 }
 
 static void master_main()
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
   sg_vm_live_migration_plugin_init();
   e.loadPlatform(argv[1]); /* - Load the platform description */
 
-  simgrid::s4u::Actor::createActor("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);
+  simgrid::s4u::Actor::create("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);
 
   e.run();
 

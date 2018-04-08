@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -59,12 +59,12 @@ int main(int argc, char* argv[])
   e.loadPlatform(argv[1]);
   std::vector<std::string> args;
   args.push_back("Jupiter");
-  simgrid::s4u::Actor::createActor("pinger", simgrid::s4u::Host::by_name("Tremblay"), pinger, args);
+  simgrid::s4u::Actor::create("pinger", simgrid::s4u::Host::by_name("Tremblay"), pinger, args);
 
   args.pop_back();
   args.push_back("Tremblay");
 
-  simgrid::s4u::Actor::createActor("ponger", simgrid::s4u::Host::by_name("Jupiter"), ponger, args);
+  simgrid::s4u::Actor::create("ponger", simgrid::s4u::Host::by_name("Jupiter"), ponger, args);
 
   e.run();
 

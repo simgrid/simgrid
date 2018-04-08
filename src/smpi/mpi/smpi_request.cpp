@@ -180,19 +180,19 @@ MPI_Request Request::send_init(void *buf, int count, MPI_Datatype datatype, int 
 {
 
   return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::getPid(),
-                     comm->group()->actor(dst)->getPid(), tag, comm, PERSISTENT | SEND | PREPARED);
+                     comm->group()->actor(dst)->get_pid(), tag, comm, PERSISTENT | SEND | PREPARED);
 }
 
 MPI_Request Request::ssend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::getPid(),
-                     comm->group()->actor(dst)->getPid(), tag, comm, PERSISTENT | SSEND | SEND | PREPARED);
+                     comm->group()->actor(dst)->get_pid(), tag, comm, PERSISTENT | SSEND | SEND | PREPARED);
 }
 
 MPI_Request Request::isend_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::getPid(),
-                     comm->group()->actor(dst)->getPid(), tag, comm, PERSISTENT | ISEND | SEND | PREPARED);
+                     comm->group()->actor(dst)->get_pid(), tag, comm, PERSISTENT | ISEND | SEND | PREPARED);
 }
 
 
@@ -201,13 +201,13 @@ MPI_Request Request::rma_send_init(void *buf, int count, MPI_Datatype datatype, 
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   if(op==MPI_OP_NULL){
-    request = new Request(buf==MPI_BOTTOM ? nullptr : buf , count, datatype, comm->group()->actor(src)->getPid(),
-                            comm->group()->actor(dst)->getPid(), tag,
-                            comm, RMA | NON_PERSISTENT | ISEND | SEND | PREPARED);
+    request =
+        new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->get_pid(),
+                    comm->group()->actor(dst)->get_pid(), tag, comm, RMA | NON_PERSISTENT | ISEND | SEND | PREPARED);
   }else{
-    request = new Request(buf==MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->getPid(),
-                            comm->group()->actor(dst)->getPid(), tag,
-                            comm, RMA | NON_PERSISTENT | ISEND | SEND | PREPARED | ACCUMULATE);
+    request      = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->get_pid(),
+                          comm->group()->actor(dst)->get_pid(), tag, comm,
+                          RMA | NON_PERSISTENT | ISEND | SEND | PREPARED | ACCUMULATE);
     request->op_ = op;
   }
   return request;
@@ -216,7 +216,7 @@ MPI_Request Request::rma_send_init(void *buf, int count, MPI_Datatype datatype, 
 MPI_Request Request::recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
   return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype,
-                     src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(src)->getPid(),
+                     src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(src)->get_pid(),
                      simgrid::s4u::this_actor::getPid(), tag, comm, PERSISTENT | RECV | PREPARED);
 }
 
@@ -225,10 +225,11 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   if(op==MPI_OP_NULL){
-    request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->getPid(), comm->group()->actor(dst)->getPid(), tag, comm,
-                          RMA | NON_PERSISTENT | RECV | PREPARED);
+    request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->get_pid(),
+                          comm->group()->actor(dst)->get_pid(), tag, comm, RMA | NON_PERSISTENT | RECV | PREPARED);
   }else{
-    request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->getPid(), comm->group()->actor(dst)->getPid(), tag, comm,
+    request      = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, comm->group()->actor(src)->get_pid(),
+                          comm->group()->actor(dst)->get_pid(), tag, comm,
                           RMA | NON_PERSISTENT | RECV | PREPARED | ACCUMULATE);
     request->op_ = op;
   }
@@ -238,7 +239,7 @@ MPI_Request Request::rma_recv_init(void *buf, int count, MPI_Datatype datatype, 
 MPI_Request Request::irecv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm)
 {
   return new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype,
-                     src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(src)->getPid(),
+                     src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(src)->get_pid(),
                      simgrid::s4u::this_actor::getPid(), tag, comm, PERSISTENT | RECV | PREPARED);
 }
 
@@ -246,7 +247,7 @@ MPI_Request Request::isend(void *buf, int count, MPI_Datatype datatype, int dst,
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::getPid(),
-                        comm->group()->actor(dst)->getPid(), tag, comm, NON_PERSISTENT | ISEND | SEND);
+                        comm->group()->actor(dst)->get_pid(), tag, comm, NON_PERSISTENT | ISEND | SEND);
   request->start();
   return request;
 }
@@ -255,7 +256,7 @@ MPI_Request Request::issend(void *buf, int count, MPI_Datatype datatype, int dst
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::getPid(),
-                        comm->group()->actor(dst)->getPid(), tag, comm, NON_PERSISTENT | ISEND | SSEND | SEND);
+                        comm->group()->actor(dst)->get_pid(), tag, comm, NON_PERSISTENT | ISEND | SSEND | SEND);
   request->start();
   return request;
 }
@@ -265,7 +266,7 @@ MPI_Request Request::irecv(void *buf, int count, MPI_Datatype datatype, int src,
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request             = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype,
-                        src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(src)->getPid(),
+                        src == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(src)->get_pid(),
                         simgrid::s4u::this_actor::getPid(), tag, comm, NON_PERSISTENT | RECV);
   request->start();
   return request;
@@ -283,7 +284,7 @@ void Request::send(void *buf, int count, MPI_Datatype datatype, int dst, int tag
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::getPid(),
-                        comm->group()->actor(dst)->getPid(), tag, comm, NON_PERSISTENT | SEND);
+                        comm->group()->actor(dst)->get_pid(), tag, comm, NON_PERSISTENT | SEND);
 
   request->start();
   wait(&request, MPI_STATUS_IGNORE);
@@ -294,7 +295,7 @@ void Request::ssend(void *buf, int count, MPI_Datatype datatype, int dst, int ta
 {
   MPI_Request request = nullptr; /* MC needs the comm to be set to nullptr during the call */
   request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::getPid(),
-                        comm->group()->actor(dst)->getPid(), tag, comm, NON_PERSISTENT | SSEND | SEND);
+                        comm->group()->actor(dst)->get_pid(), tag, comm, NON_PERSISTENT | SSEND | SEND);
 
   request->start();
   wait(&request,MPI_STATUS_IGNORE);
@@ -308,15 +309,15 @@ void Request::sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int d
   MPI_Request requests[2];
   MPI_Status stats[2];
   int myid = simgrid::s4u::this_actor::getPid();
-  if ((comm->group()->actor(dst)->getPid() == myid) && (comm->group()->actor(src)->getPid() == myid)){
-      Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
-      if(status !=MPI_STATUS_IGNORE){
-          status->MPI_SOURCE = src;
-          status->MPI_TAG = recvtag;
-          status->MPI_ERROR = MPI_SUCCESS;
-          status->count = sendcount*sendtype->size();
-      }
-      return;
+  if ((comm->group()->actor(dst)->get_pid() == myid) && (comm->group()->actor(src)->get_pid() == myid)) {
+    Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
+    if (status != MPI_STATUS_IGNORE) {
+      status->MPI_SOURCE = src;
+      status->MPI_TAG    = recvtag;
+      status->MPI_ERROR  = MPI_SUCCESS;
+      status->count      = sendcount * sendtype->size();
+    }
+    return;
   }
   requests[0] = isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
   requests[1] = irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm);
@@ -429,8 +430,8 @@ void Request::start()
     if (detached_ != 0 || ((flags_ & (ISEND | SSEND)) != 0)) { // issend should be treated as isend
       // isend and send timings may be different
       sleeptime = ((flags_ & ISEND) != 0)
-                      ? simgrid::s4u::Actor::self()->getHost()->extension<simgrid::smpi::SmpiHost>()->oisend(size_)
-                      : simgrid::s4u::Actor::self()->getHost()->extension<simgrid::smpi::SmpiHost>()->osend(size_);
+                      ? simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::SmpiHost>()->oisend(size_)
+                      : simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::SmpiHost>()->osend(size_);
     }
 
     if(sleeptime > 0.0){
@@ -635,10 +636,10 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   // nsleeps is a multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
   // This can speed up the execution of certain applications by an order of magnitude, such as HPL
   static int nsleeps = 1;
-  double speed        = simgrid::s4u::Actor::self()->getHost()->getSpeed();
+  double speed        = simgrid::s4u::Actor::self()->get_host()->getSpeed();
   double maxrate = xbt_cfg_get_double("smpi/iprobe-cpu-usage");
   MPI_Request request = new Request(nullptr, 0, MPI_CHAR,
-                                    source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->getPid(),
+                                    source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
                                     simgrid::s4u::this_actor::getPid(), tag, comm, PERSISTENT | RECV);
   if (smpi_iprobe_sleep > 0) {
     smx_activity_t iprobe_sleep = simcall_execution_start(
@@ -736,7 +737,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     double sleeptime =
-        simgrid::s4u::Actor::self()->getHost()->extension<simgrid::smpi::SmpiHost>()->orecv(req->real_size());
+        simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::SmpiHost>()->orecv(req->real_size());
     if(sleeptime > 0.0){
       simcall_process_sleep(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);

@@ -606,12 +606,12 @@ int smpi_main(const char* executable, int argc, char *argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
-  simgrid::s4u::Actor::onCreation.connect([](simgrid::s4u::ActorPtr actor) {
-    if (not actor->isDaemon()) {
+  simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::ActorPtr actor) {
+    if (not actor->is_daemon()) {
       process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
     }
   });
-  simgrid::s4u::Actor::onDestruction.connect([](simgrid::s4u::ActorPtr actor) {
+  simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {
     auto it = process_data.find(actor);
     if (it != process_data.end()) {
       delete it->second;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,9 +49,10 @@ static void master()
   for (int i = 0; i < NB_ACTOR * 2 ; i++) {
     // To create a worker use the static method simgrid::s4u::Actor.
     if((i % 2) == 0 )
-      simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Jupiter"),  workerLockGuard, mutex, std::ref(result));
+      simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), workerLockGuard, mutex,
+                                  std::ref(result));
     else
-      simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Tremblay"), worker,          mutex, std::ref(result));
+      simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Tremblay"), worker, mutex, std::ref(result));
   }
 
   simgrid::s4u::this_actor::sleep_for(10);
@@ -62,7 +63,7 @@ int main(int argc, char **argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
   e.loadPlatform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::createActor("main", simgrid::s4u::Host::by_name("Tremblay"), master);
+  simgrid::s4u::Actor::create("main", simgrid::s4u::Host::by_name("Tremblay"), master);
   e.run();
 
   return 0;

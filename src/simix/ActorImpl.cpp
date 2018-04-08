@@ -342,7 +342,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
     simgrid::instr::Container::byName(process->host->get_name())->createChild(instr_pid(process->ciface()), "ACTOR");
   /* The onCreation() signal must be delayed until there, where the pid and everything is set */
   simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
-  simgrid::s4u::Actor::onCreation(tmp);
+  simgrid::s4u::Actor::on_creation(tmp);
 
   return process;
 }
@@ -757,7 +757,7 @@ smx_actor_t SIMIX_process_from_PID(aid_t PID)
 }
 
 void SIMIX_process_on_exit_runall(smx_actor_t process) {
-  simgrid::s4u::Actor::onDestruction(process->iface());
+  simgrid::s4u::Actor::on_destruction(process->iface());
   smx_process_exit_status_t exit_status = (process->context->iwannadie) ? SMX_EXIT_FAILURE : SMX_EXIT_SUCCESS;
   while (not process->on_exit.empty()) {
     s_smx_process_exit_fun_t exit_fun = process->on_exit.back();
