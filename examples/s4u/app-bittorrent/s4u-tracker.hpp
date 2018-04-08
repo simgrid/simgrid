@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, 2017. The SimGrid Team.
+/* Copyright (c) 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -26,7 +26,8 @@ class TrackerAnswer {
   std::set<int>* peers; // the peer list the peer has asked for.
 public:
   explicit TrackerAnswer(int /*interval*/) /*: interval(interval)*/ { peers = new std::set<int>; }
-  TrackerAnswer(const TrackerAnswer&)                               = delete;
+  TrackerAnswer(const TrackerAnswer&)                                       = delete;
+  TrackerAnswer& operator=(const TrackerAnswer&) = delete;
   ~TrackerAnswer() { delete peers; };
   void addPeer(int peer) { peers->insert(peer); }
   std::set<int>* getPeers() { return peers; }

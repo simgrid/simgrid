@@ -1,6 +1,6 @@
 /* A thread pool (C++ version).                                             */
 
-/* Copyright (c) 2004-2017 The SimGrid Team.
+/* Copyright (c) 2004-2018 The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -39,6 +39,7 @@ template <typename T> class Parmap {
 public:
   Parmap(unsigned num_workers, e_xbt_parmap_mode_t mode);
   Parmap(const Parmap&) = delete;
+  Parmap& operator=(const Parmap&) = delete;
   ~Parmap();
   void apply(void (*fun)(T), const std::vector<T>& data);
   boost::optional<T> next();

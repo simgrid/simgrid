@@ -1,4 +1,4 @@
-/* Copyright (c) 2010, 2012-2015, 2017. The SimGrid Team.
+/* Copyright (c) 2010, 2012-2018. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -40,6 +40,7 @@ public:
     xbt_assert(fs->is_open(), "Cannot read replay file '%s'", filename);
   }
   ReplayReader(const ReplayReader&) = delete;
+  ReplayReader& operator=(const ReplayReader&) = delete;
   ~ReplayReader()
   {
     delete fs;

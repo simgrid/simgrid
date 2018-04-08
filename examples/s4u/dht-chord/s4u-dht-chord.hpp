@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2017. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -88,6 +88,7 @@ class Node {
 public:
   explicit Node(std::vector<std::string> args);
   Node(const Node&) = delete;
+  Node& operator=(const Node&) = delete;
   ~Node();
   void join(int known_id);
   void leave();
