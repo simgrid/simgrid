@@ -93,7 +93,7 @@ void LinkEvent::print()
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type != instr_fmt_paje)
     return;
-  if (timestamp_ < 1e-12)
+  if (timestamp_ < 1e-12) // FIXME: Why is this hardcoded? What does it stand for? Use a constant variable!
     stream << eventType_ << " " << 0 << " " << getType()->get_id() << " " << getContainer()->get_id();
   else
     stream << eventType_ << " " << timestamp_ << " " << getType()->get_id() << " " << getContainer()->get_id();
