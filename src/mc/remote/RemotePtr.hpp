@@ -84,7 +84,7 @@ public:
   explicit RemotePtr(std::nullptr_t) : address_(0) {}
   explicit RemotePtr(std::uint64_t address) : address_(address) {}
   explicit RemotePtr(T* address) : address_((std::uintptr_t)address) {}
-  explicit RemotePtr(Remote<T*> p) : RemotePtr(*p.getBuffer()) {}
+  explicit RemotePtr(Remote<T*> p) : address_((std::uintptr_t)*p.getBuffer()) {}
   std::uint64_t address() const { return address_; }
 
   /** Turn into a local pointer
