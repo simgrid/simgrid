@@ -198,7 +198,6 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
 #ifndef MAP_HUGETLB /* If the system header don't define that mmap flag */
   xbt_assert(not use_huge_page,
              "Huge pages are not available on your system, you cannot use the smpi/shared-malloc-hugepage option.");
-  use_huge_page = 0;
 #endif
   smpi_shared_malloc_blocksize = static_cast<unsigned long>(xbt_cfg_get_double("smpi/shared-malloc-blocksize"));
   void* mem;
