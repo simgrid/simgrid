@@ -33,7 +33,7 @@ static void new_state(char* id, int src){
       type = -1;
     }
   }
-  free(id_copy);
+  xbt_free(id_copy);
 
   xbt_automaton_state_t state = xbt_automaton_state_exists(parsed_automaton, id);
   if(state == NULL){
@@ -45,7 +45,7 @@ static void new_state(char* id, int src){
 
   if(src) {
     if (state_id_src)
-      free(state_id_src);
+      xbt_free(state_id_src);
     state_id_src = xbt_strdup(id);
   }
 }
