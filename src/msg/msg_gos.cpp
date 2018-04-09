@@ -389,7 +389,8 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
  */
 void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
-  MSG_task_isend_internal(task, alias, cleanup, 1);
+  msg_comm_t XBT_ATTRIB_UNUSED comm = MSG_task_isend_internal(task, alias, cleanup, 1);
+  xbt_assert(comm == nullptr);
 }
 
 /** \ingroup msg_task_usage
