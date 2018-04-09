@@ -370,7 +370,7 @@ void Comm::init_smp(){
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && this!=MPI_COMM_WORLD){
     //create leader_communicator
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]), i);
+      leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
     leader_comm = new  Comm(leaders_group, nullptr);
     this->set_leaders_comm(leader_comm);
     this->set_intra_comm(comm_intra);
@@ -378,7 +378,7 @@ void Comm::init_smp(){
     // create intracommunicator
   }else{
     for (i=0; i< leader_group_size;i++)
-      leaders_group->set_mapping(simgrid::s4u::Actor::byPid(leader_list[i]), i);
+      leaders_group->set_mapping(simgrid::s4u::Actor::by_pid(leader_list[i]), i);
 
     if(this->get_leaders_comm()==MPI_COMM_NULL){
       leader_comm = new  Comm(leaders_group, nullptr);

@@ -78,7 +78,7 @@ static int bob(int argc, char* argv[])
   XBT_INFO("   Zone property: author -> %s", root->getProperty("author"));
 
   /* Get the property list of current bob process */
-  std::map<std::string, std::string>* props = simgrid::s4u::Actor::self()->getProperties();
+  std::map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
   const char* noexist = "UnknownProcessProp";
   XBT_ATTRIB_UNUSED const char* value;
 
@@ -88,8 +88,8 @@ static int bob(int argc, char* argv[])
 
   XBT_INFO("== Try to get an actor property that does not exist");
 
-  value = simgrid::s4u::Actor::self()->getProperty(noexist);
-  xbt_assert(not value, "The property is defined (it shouldnt)");
+  value = simgrid::s4u::Actor::self()->get_property(noexist);
+  xbt_assert(not value, "The property is defined (it should not)");
   return 0;
 }
 

@@ -213,11 +213,11 @@ public:
   /** Retrieves the PID of that actor
    *
    * aid_t is an alias for long */
-  aid_t get_pid();
+  aid_t get_pid() const;
   /** Retrieves the PPID of that actor
    *
    * aid_t is an alias for long */
-  aid_t get_ppid();
+  aid_t get_ppid() const;
 
   /** Suspend an actor by suspending the task on which it was waiting for the completion. */
   void suspend();
@@ -228,20 +228,20 @@ public:
   void yield();
 
   /** Returns true if the actor is suspended. */
-  int isSuspended();
+  int is_suspended();
 
   /** If set to true, the actor will automatically restart when its host reboots */
-  void setAutoRestart(bool autorestart);
+  void set_auto_restart(bool autorestart);
 
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
    * executed when your actor is killed. You should use them to free the data used by your actor.
    */
-  void onExit(int_f_pvoid_pvoid_t fun, void* data);
+  void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 
   /** Sets the time at which that actor should be killed */
-  void setKillTime(double time);
+  void set_kill_time(double time);
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
-  double getKillTime();
+  double get_kill_time();
 
   void migrate(Host * new_host);
 
@@ -258,7 +258,7 @@ public:
   static void kill(aid_t pid);
 
   /** Retrieves the actor that have the given PID (or nullptr if not existing) */
-  static ActorPtr byPid(aid_t pid);
+  static ActorPtr by_pid(aid_t pid);
 
   /** @brief Wait for the actor to finish.
    *
@@ -266,21 +266,18 @@ public:
    */
   void join();
   void join(double timeout);
-
-  // Static methods on all actors:
+  Actor* restart();
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
-  static void killAll();
-  static void killAll(int resetPid);
+  static void kill_all();
 
   /** Returns the internal implementation of this actor */
-  kernel::actor::ActorImpl* getImpl();
+  kernel::actor::ActorImpl* get_impl();
 
   /** Retrieve the property value (or nullptr if not set) */
-  std::map<std::string, std::string>* getProperties();
-  const char* getProperty(const char* key);
-  void setProperty(const char* key, const char* value);
-  Actor* restart();
+  std::map<std::string, std::string>* get_properties(); // FIXME: do not export the map, but only the keys or something
+  const char* get_property(const char* key);
+  void set_property(const char* key, const char* value);
 
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
       createActor(const char* name, s4u::Host* host, std::function<void()> code)
@@ -313,6 +310,36 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_host()") Host* getHost() { return get_host(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_pid()") aid_t getPid() { return get_pid(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_ppid()") aid_t getPpid() { return get_ppid(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_suspended()") int isSuspended() { return is_suspended(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_auto_restart()") void setAutoRestart(bool a)
+  {
+    set_auto_restart(a);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::on_exit()") void onExit(int_f_pvoid_pvoid_t fun, void* data)
+  {
+    on_exit(fun, data);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_kill_time()") void setKillTime(double time) { set_kill_time(time); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_kill_time()") double getKillTime() { return get_kill_time(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::by_pid()") static ActorPtr byPid(aid_t pid) { return by_pid(pid); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all()") static void killAll() { kill_all(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(int resetPid)
+  {
+    kill_all();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_impl()") kernel::actor::ActorImpl* getImpl() { return get_impl(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_property()") const char* getProperty(const char* key)
+  {
+    return get_property(key);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") std::map<std::string, std::string>* getProperties()
+  {
+    return get_properties();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") void setProperty(const char* key, const char* value)
+  {
+    set_property(key, value);
+  }
 };
 
 /** @ingroup s4u_api

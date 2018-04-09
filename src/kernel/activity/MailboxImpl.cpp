@@ -54,7 +54,7 @@ MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
 void MailboxImpl::setReceiver(s4u::ActorPtr actor)
 {
   if (actor != nullptr)
-    this->permanent_receiver = actor.get()->getImpl();
+    this->permanent_receiver = actor.get()->get_impl();
   else
     this->permanent_receiver = nullptr;
 }

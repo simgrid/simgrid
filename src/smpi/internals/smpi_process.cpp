@@ -69,7 +69,7 @@ void Process::set_data(int* argc, char*** argv)
     finalization_barrier_ = barrier;
 
   process_                                                                  = simgrid::s4u::Actor::self();
-  static_cast<simgrid::msg::ActorExt*>(process_->getImpl()->userdata)->data = this;
+  static_cast<simgrid::msg::ActorExt*>(process_->get_impl()->userdata)->data = this;
 
   if (*argc > 3) {
     memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
@@ -168,12 +168,12 @@ MPI_Comm Process::comm_world()
 
 smx_mailbox_t Process::mailbox()
 {
-  return mailbox_->getImpl();
+  return mailbox_->get_impl();
 }
 
 smx_mailbox_t Process::mailbox_small()
 {
-  return mailbox_small_->getImpl();
+  return mailbox_small_->get_impl();
 }
 
 xbt_mutex_t Process::mailboxes_mutex()
@@ -249,7 +249,7 @@ void Process::init(int *argc, char ***argv){
   }
   if (argc != nullptr && argv != nullptr) {
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
-    proc->getImpl()->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
+    proc->get_impl()->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
     char* instance_id = (*argv)[1];
     try {

@@ -80,11 +80,11 @@ Activity* Comm::start()
   xbt_assert(state_ == State::inited);
 
   if (srcBuff_ != nullptr) { // Sender side
-    pimpl_ = simcall_comm_isend(sender_, mailbox_->getImpl(), remains_, rate_, srcBuff_, srcBuffSize_, matchFunction_,
+    pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, srcBuff_, srcBuffSize_, matchFunction_,
                                 cleanFunction_, copyDataFunction_, user_data_, detached_);
   } else if (dstBuff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
-    pimpl_ = simcall_comm_irecv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_, matchFunction_,
+    pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dstBuff_, &dstBuffSize_, matchFunction_,
                                 copyDataFunction_, user_data_, rate_);
 
   } else {
@@ -114,10 +114,10 @@ Activity* Comm::wait(double timeout)
 
     case State::inited: // It's not started yet. Do it in one simcall
       if (srcBuff_ != nullptr) {
-        simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_, srcBuff_, srcBuffSize_, matchFunction_,
+        simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, srcBuff_, srcBuffSize_, matchFunction_,
                           copyDataFunction_, user_data_, timeout);
       } else { // Receiver
-        simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_, matchFunction_, copyDataFunction_,
+        simcall_comm_recv(receiver_, mailbox_->get_impl(), dstBuff_, &dstBuffSize_, matchFunction_, copyDataFunction_,
                           user_data_, timeout, rate_);
       }
       state_ = State::finished;

@@ -195,7 +195,7 @@ JNICALL Java_org_simgrid_msg_Process_setAutoRestart (JNIEnv *env, jobject jproce
     return;
   }
 
-  process->setAutoRestart(jauto_restart == JNI_TRUE);
+  process->set_auto_restart(jauto_restart == JNI_TRUE);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart (JNIEnv *env, jobject jprocess) {
@@ -219,7 +219,7 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env
   }
 
   /* true is the process is suspended, false otherwise */
-  return (jboolean)process->isSuspended();
+  return (jboolean)process->is_suspended();
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos)

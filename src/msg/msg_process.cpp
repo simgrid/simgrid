@@ -57,7 +57,7 @@ smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()
                                           smx_actor_t /*parent_process*/)
 {
   msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
-  return p == nullptr ? nullptr : p->getImpl();
+  return p == nullptr ? nullptr : p->get_impl();
 }
 
 /** \ingroup m_process_management
@@ -212,7 +212,7 @@ void* MSG_process_get_data(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simgrid::msg::ActorExt* msgExt = (simgrid::msg::ActorExt*)process->getImpl()->userdata;
+  simgrid::msg::ActorExt* msgExt = (simgrid::msg::ActorExt*)process->get_impl()->userdata;
   if (msgExt)
     return msgExt->data;
   else
@@ -228,7 +228,7 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
-  static_cast<simgrid::msg::ActorExt*>(process->getImpl()->userdata)->data = data;
+  static_cast<simgrid::msg::ActorExt*>(process->get_impl()->userdata)->data = data;
 
   return MSG_OK;
 }
@@ -311,7 +311,7 @@ msg_process_t MSG_process_self()
 }
 
 smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- smx_context_t should die afterward
-  return process->getImpl()->context;
+  return process->get_impl()->context;
 }
 /**
  * \ingroup m_process_management
@@ -329,7 +329,7 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
  */
 XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_restart)
 {
-  process->setAutoRestart(auto_restart);
+  process->set_auto_restart(auto_restart);
 }
 
 /** @ingroup m_process_management

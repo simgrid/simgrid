@@ -60,7 +60,7 @@ static void killer()
   simgrid::s4u::this_actor::sleep_for(1);
 
   XBT_INFO("Killing everybody but myself");
-  simgrid::s4u::Actor::killAll();
+  simgrid::s4u::Actor::kill_all();
 
   XBT_INFO("OK, goodbye now. I commit a suicide.");
   simgrid::s4u::this_actor::kill();

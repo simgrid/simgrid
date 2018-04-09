@@ -114,7 +114,7 @@ void Client::handleSimcall(s_mc_message_simcall_handle_t* message)
 void Client::handleRestore(s_mc_message_restore_t* message)
 {
 #if HAVE_SMPI
-  smpi_really_switch_data_segment(simgrid::s4u::Actor::byPid(message->index));
+  smpi_really_switch_data_segment(simgrid::s4u::Actor::by_pid(message->index));
 #endif
 }
 void Client::handleActorEnabled(s_mc_message_actor_enabled_t* msg)

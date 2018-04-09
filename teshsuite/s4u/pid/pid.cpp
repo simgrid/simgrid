@@ -33,7 +33,7 @@ static void killall()
   for (int i = 0; i < 3; i++) {
     int* pid = static_cast<int*>(mailbox->get());
     XBT_INFO("Killing process \"%d\".", *pid);
-    simgrid::s4u::Actor::byPid(*pid)->kill();
+    simgrid::s4u::Actor::by_pid(*pid)->kill();
   }
 }
 
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.loadPlatform(argv[1]);
 
-  simgrid::s4u::Actor::killAll();
+  simgrid::s4u::Actor::kill_all();
 
   simgrid::s4u::Actor::create("sendpid", simgrid::s4u::Host::by_name("Tremblay"), sendpid);
   simgrid::s4u::Actor::create("sendpid", simgrid::s4u::Host::by_name("Tremblay"), sendpid);

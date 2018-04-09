@@ -118,13 +118,17 @@ class XBT_PUBLIC Mailbox {
   friend void intrusive_ptr_release(Mailbox*) {}
 public:
   /** private function, do not use. FIXME: make me protected */
-  kernel::activity::MailboxImpl* getImpl() { return pimpl_; }
+  kernel::activity::MailboxImpl* get_impl() { return pimpl_; }
 
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const simgrid::xbt::string& getName() const
   {
     return get_name();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_cname()") const char* getCname() const { return get_cname(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_impl()") kernel::activity::MailboxImpl* getImpl()
+  {
+    return get_impl();
+  }
 
   /** @brief Retrieves the name of that mailbox as a C++ string */
   const simgrid::xbt::string& get_name() const;

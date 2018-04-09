@@ -38,13 +38,13 @@ static void master()
   XBT_INFO("Suspend Actor (pid=%ld)", actor->get_pid());
   actor->suspend();
 
-  XBT_INFO("Actor (pid=%ld) is %ssuspended", actor->get_pid(), actor->isSuspended() ? "" : "not ");
+  XBT_INFO("Actor (pid=%ld) is %ssuspended", actor->get_pid(), actor->is_suspended() ? "" : "not ");
   simgrid::s4u::this_actor::sleep_for(2);
 
   XBT_INFO("Resume Actor (pid=%ld)", actor->get_pid());
   actor->resume();
 
-  XBT_INFO("Actor (pid=%ld) is %ssuspended", actor->get_pid(), actor->isSuspended() ? "" : "not ");
+  XBT_INFO("Actor (pid=%ld) is %ssuspended", actor->get_pid(), actor->is_suspended() ? "" : "not ");
   simgrid::s4u::this_actor::sleep_for(2);
   actor->kill();
 

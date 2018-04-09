@@ -61,11 +61,12 @@ void Actor::join(double timeout)
   simcall_process_join(this->pimpl_, timeout);
 }
 
-void Actor::setAutoRestart(bool autorestart) {
+void Actor::set_auto_restart(bool autorestart)
+{
   simgrid::simix::kernelImmediate([this, autorestart]() { pimpl_->auto_restart = autorestart; });
 }
 
-void Actor::onExit(int_f_pvoid_pvoid_t fun, void* data)
+void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data)
 {
   simcall_process_on_exit(pimpl_, fun, data);
 }
@@ -143,12 +144,12 @@ const char* Actor::get_cname() const
   return this->pimpl_->get_cname();
 }
 
-aid_t Actor::get_pid()
+aid_t Actor::get_pid() const
 {
   return this->pimpl_->pid;
 }
 
-aid_t Actor::get_ppid()
+aid_t Actor::get_ppid() const
 {
   return this->pimpl_->ppid;
 }
@@ -168,17 +169,18 @@ void Actor::resume()
     simgrid::instr::Container::byName(instr_pid(this))->getState("ACTOR_STATE")->popEvent();
 }
 
-int Actor::isSuspended()
+int Actor::is_suspended()
 {
   return simgrid::simix::kernelImmediate([this] { return pimpl_->suspended; });
 }
 
-void Actor::setKillTime(double time) {
+void Actor::set_kill_time(double time)
+{
   simcall_process_set_kill_time(pimpl_,time);
 }
 
 /** \brief Get the kill time of an actor(or 0 if unset). */
-double Actor::getKillTime()
+double Actor::get_kill_time()
 {
   return SIMIX_timer_get_date(pimpl_->kill_timer);
 }
@@ -202,14 +204,14 @@ void Actor::kill() {
       [this, process] { SIMIX_process_kill(pimpl_, (pimpl_ == simix_global->maestro_process) ? pimpl_ : process); });
 }
 
-smx_actor_t Actor::getImpl()
+smx_actor_t Actor::get_impl()
 {
   return pimpl_;
 }
 
 // ***** Static functions *****
 
-ActorPtr Actor::byPid(aid_t pid)
+ActorPtr Actor::by_pid(aid_t pid)
 {
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if (process != nullptr)
@@ -218,23 +220,23 @@ ActorPtr Actor::byPid(aid_t pid)
     return ActorPtr();
 }
 
-void Actor::killAll()
+void Actor::kill_all()
 {
   simcall_process_killall();
 }
 
-std::map<std::string, std::string>* Actor::getProperties()
+std::map<std::string, std::string>* Actor::get_properties()
 {
   return simgrid::simix::kernelImmediate([this] { return this->pimpl_->getProperties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Actor::getProperty(const char* key)
+const char* Actor::get_property(const char* key)
 {
   return simgrid::simix::kernelImmediate([this, key] { return pimpl_->getProperty(key); });
 }
 
-void Actor::setProperty(const char* key, const char* value)
+void Actor::set_property(const char* key, const char* value)
 {
   simgrid::simix::kernelImmediate([this, key, value] { pimpl_->setProperty(key, value); });
 }
@@ -406,7 +408,7 @@ int sg_actor_get_PID(sg_actor_t actor)
 {
   /* Do not raise an exception here: this function is called by the logs
    * and the exceptions, so it would be called back again and again */
-  if (actor == nullptr || actor->getImpl() == nullptr)
+  if (actor == nullptr || actor->get_impl() == nullptr)
     return 0;
   return actor->get_pid();
 }
@@ -444,7 +446,7 @@ sg_host_t sg_actor_get_host(sg_actor_t actor)
  */
 const char* sg_actor_get_property_value(sg_actor_t actor, const char* name)
 {
-  return actor->getProperty(name);
+  return actor->get_property(name);
 }
 
 /** \ingroup m_actor_management
@@ -456,7 +458,7 @@ xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
 {
   xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
   xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
-  std::map<std::string, std::string>* props = actor->getProperties();
+  std::map<std::string, std::string>* props = actor->get_properties();
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
@@ -494,7 +496,7 @@ void sg_actor_resume(sg_actor_t actor)
  */
 int sg_actor_is_suspended(sg_actor_t actor)
 {
-  return actor->isSuspended();
+  return actor->is_suspended();
 }
 
 /**
@@ -548,5 +550,5 @@ void sg_actor_kill(sg_actor_t actor)
  */
 void sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
 {
-  actor->setKillTime(kill_time);
+  actor->set_kill_time(kill_time);
 }

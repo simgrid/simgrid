@@ -343,7 +343,7 @@ void Request::start()
   if ((flags_ & RECV) != 0) {
     this->print_request("New recv");
 
-    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::byPid(dst_));
+    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
 
     int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
@@ -388,14 +388,14 @@ void Request::start()
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     real_size_=size_;
     action_   = simcall_comm_irecv(
-        process->process()->getImpl(), mailbox, buf_, &real_size_, &match_recv,
+        process->process()->get_impl(), mailbox, buf_, &real_size_, &match_recv,
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this, -1.0);
     XBT_DEBUG("recv simcall posted");
 
     if (async_small_thresh != 0 || (flags_ & RMA) != 0 )
       xbt_mutex_release(mut);
   } else { /* the RECV flag was not set, so this is a send */
-    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::byPid(dst_));
+    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     int rank = src_;
     if (TRACE_smpi_view_internals()) {
       TRACE_smpi_send(rank, rank, dst_, tag_, size_);
@@ -416,7 +416,7 @@ void Request::start()
               (static_cast<char*>(buf_) >= smpi_data_exe_start) &&
               (static_cast<char*>(buf_) < smpi_data_exe_start + smpi_data_exe_size)) {
             XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
-            smpi_switch_data_segment(simgrid::s4u::Actor::byPid(src_));
+            smpi_switch_data_segment(simgrid::s4u::Actor::by_pid(src_));
           }
           buf = xbt_malloc(size_);
           memcpy(buf,oldbuf,size_);
@@ -476,7 +476,7 @@ void Request::start()
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     real_size_=size_;
     action_   = simcall_comm_isend(
-        simgrid::s4u::Actor::byPid(src_)->getImpl(), mailbox, size_, -1.0, buf, real_size_, &match_send,
+        simgrid::s4u::Actor::by_pid(src_)->get_impl(), mailbox, size_, -1.0, buf, real_size_, &match_send,
         &xbt_free_f, // how to free the userdata if a detached send fails
         not process->replaying() ? smpi_comm_copy_data_callback : &smpi_comm_null_copy_buffer_callback, this,
         // detach if msg size < eager/rdv switch limit
@@ -644,7 +644,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   if (smpi_iprobe_sleep > 0) {
     smx_activity_t iprobe_sleep = simcall_execution_start(
         "iprobe", /* flops to executek*/ nsleeps * smpi_iprobe_sleep * speed * maxrate, /* priority */ 1.0,
-        /* performance bound */ maxrate * speed, smpi_process()->process()->getImpl()->host);
+        /* performance bound */ maxrate * speed, smpi_process()->process()->get_impl()->host);
     simcall_execution_wait(iprobe_sleep);
   }
   // behave like a receive, but don't do it

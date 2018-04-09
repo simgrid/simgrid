@@ -279,7 +279,8 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 
   /* Try to receive it by calling SIMIX network layer */
   try {
-    simcall_comm_recv(MSG_process_self()->getImpl(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
+    simcall_comm_recv(MSG_process_self()->get_impl(), mailbox->get_impl(), task, nullptr, nullptr, nullptr, nullptr,
+                      timeout, rate);
     XBT_DEBUG("Got task %s from %s", (*task)->name, mailbox->get_cname());
     (*task)->simdata->setNotUsed();
   }
@@ -325,7 +326,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
 
   /* Send it by calling SIMIX network layer */
   smx_activity_t act =
-      simcall_comm_isend(myself->getImpl(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate, task,
+      simcall_comm_isend(myself->get_impl(), mailbox->get_impl(), t_simdata->bytes_amount, t_simdata->rate, task,
                          sizeof(void*), nullptr, cleanup, nullptr, nullptr, detached);
   t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(act);
 
@@ -461,9 +462,9 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
     XBT_CRITICAL("MSG_task_irecv() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
-  msg_comm_t comm =
-      new simgrid::msg::Comm(nullptr, task, simcall_comm_irecv(SIMIX_process_self(), mbox->getImpl(), task, nullptr,
-                                                               nullptr, nullptr, nullptr, rate));
+  msg_comm_t comm = new simgrid::msg::Comm(
+      nullptr, task,
+      simcall_comm_irecv(SIMIX_process_self(), mbox->get_impl(), task, nullptr, nullptr, nullptr, nullptr, rate));
 
   return comm;
 }
@@ -794,7 +795,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Try to send it by calling SIMIX network layer */
   try {
     smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
-    comm = simcall_comm_isend(SIMIX_process_self(), mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate, task,
+    comm = simcall_comm_isend(SIMIX_process_self(), mailbox->get_impl(), t_simdata->bytes_amount, t_simdata->rate, task,
                               sizeof(void*), nullptr, nullptr, nullptr, nullptr, 0);
     if (TRACE_is_enabled())
       simcall_set_category(comm, task->category);
