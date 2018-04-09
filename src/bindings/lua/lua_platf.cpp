@@ -45,6 +45,20 @@ static const luaL_Reg platf_functions[] = {
     {nullptr, nullptr}
 };
 
+static simgrid::s4u::Link::SharingPolicy link_policy_get_by_name(const char* policy)
+{
+  if (policy && not strcmp(policy, "FULLDUPLEX")) {
+    XBT_WARN("Please update your platform to use SPLITDUPLEX instead of FULLDUPLEX");
+    return simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+  } else if (policy && not strcmp(policy, "SPLITDUPLEX")) {
+    return simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+  } else if (policy && not strcmp(policy, "FATPIPE")) {
+    return simgrid::s4u::Link::SharingPolicy::FATPIPE;
+  } else {
+    return simgrid::s4u::Link::SharingPolicy::SHARED;
+  }
+}
+
 int console_open(lua_State *L) {
   sg_platf_init();
   sg_platf_begin();
@@ -91,16 +105,7 @@ int console_add_backbone(lua_State *L) {
   lua_gettable(L, -2);
   const char* policy = lua_tostring(L, -1);
   lua_pop(L, 1);
-  if (policy && not strcmp(policy, "FULLDUPLEX")) {
-    XBT_WARN("Please update your platform to use SPLITDUPLEX instead of FULLDUPLEX");
-    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-  } else if (policy && not strcmp(policy, "SPLITDUPLEX")) {
-    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-  } else if (policy && not strcmp(policy, "FATPIPE")) {
-    link.policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-  } else {
-    link.policy = simgrid::s4u::Link::SharingPolicy::SHARED;
-  }
+  link.policy = link_policy_get_by_name(policy);
 
   sg_platf_new_link(&link);
   routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl::byName(link.id));
@@ -267,16 +272,7 @@ int  console_add_link(lua_State *L) {
   lua_gettable(L, -2);
   policy = lua_tostring(L, -1);
   lua_pop(L, 1);
-  if (policy && not strcmp(policy, "FULLDUPLEX")) {
-    XBT_WARN("Please update your platform to use SPLITDUPLEX instead of FULLDUPLEX");
-    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-  } else if (policy && not strcmp(policy, "SPLITDUPLEX")) {
-    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-  } else if (policy && not strcmp(policy, "FATPIPE")) {
-    link.policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-  } else {
-    link.policy = simgrid::s4u::Link::SharingPolicy::SHARED;
-  }
+  link.policy = link_policy_get_by_name(policy);
 
   sg_platf_new_link(&link);
 
