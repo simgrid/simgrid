@@ -29,18 +29,19 @@ static MPI_Datatype MPI_DEFAULT_TYPE;
 
 #define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                               \
   {                                                                                                                    \
-    if (action.size() < static_cast<unsigned long>(mandatory + 2)) {                                                     \
-      std::stringstream ss; \
-      for (const auto& elem : action) { \
-        ss << elem << " "; \
-      } \
+    if (action.size() < static_cast<unsigned long>(mandatory + 2)) {                                                   \
+      std::stringstream ss;                                                                                            \
+      for (const auto& elem : action) {                                                                                \
+        ss << elem << " ";                                                                                             \
+      }                                                                                                                \
       THROWF(arg_error, 0, "%s replay failed.\n"                                                                       \
                            "%zu items were given on the line. First two should be process_id and action.  "            \
                            "This action needs after them %lu mandatory arguments, and accepts %lu optional ones. \n"   \
-                           "The full line that was given is:\n   %s\n" \
+                           "The full line that was given is:\n   %s\n"                                                 \
                            "Please contact the Simgrid team if support is needed",                                     \
-             __func__, action.size(), static_cast<unsigned long>(mandatory), static_cast<unsigned long>(optional), ss.str().c_str());    \
-    }\
+             __func__, action.size(), static_cast<unsigned long>(mandatory), static_cast<unsigned long>(optional),     \
+             ss.str().c_str());                                                                                        \
+    }                                                                                                                  \
   }
 
 static void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
