@@ -18,7 +18,7 @@ namespace simgrid {
 namespace simix {
 
 class Global {
-  friend XBT_PUBLIC bool simgrid::s4u::this_actor::isMaestro();
+  friend XBT_PUBLIC bool simgrid::s4u::this_actor::is_maestro();
 
 public:
   smx_context_factory_t context_factory = nullptr;

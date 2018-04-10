@@ -41,12 +41,12 @@ static void worker_busy_loop(const char* name, double speed)
     if (speed > 0) {
       double new_bound = (speed / 10) * i;
       XBT_INFO("set bound of VM1 to %f", new_bound);
-      static_cast<simgrid::s4u::VirtualMachine*>(simgrid::s4u::this_actor::getHost())->setBound(new_bound);
+      static_cast<simgrid::s4u::VirtualMachine*>(simgrid::s4u::this_actor::get_host())->setBound(new_bound);
     }
     simgrid::s4u::this_actor::sleep_for(100);
     double exec_remain_now = exec->get_remaining();
     double flops_per_sec   = exec_remain_prev - exec_remain_now;
-    XBT_INFO("%s@%s: %.0f flops/s", name, simgrid::s4u::this_actor::getHost()->get_cname(), flops_per_sec / 100);
+    XBT_INFO("%s@%s: %.0f flops/s", name, simgrid::s4u::this_actor::get_host()->get_cname(), flops_per_sec / 100);
     exec_remain_prev = exec_remain_now;
     simgrid::s4u::this_actor::sleep_for(1);
   }

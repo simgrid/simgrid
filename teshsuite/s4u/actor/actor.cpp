@@ -10,10 +10,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static void worker()
 {
   simgrid::s4u::this_actor::sleep_for(.5);
-  XBT_INFO("Worker started (PID:%ld, PPID:%ld)", simgrid::s4u::this_actor::getPid(),
-           simgrid::s4u::this_actor::getPpid());
+  XBT_INFO("Worker started (PID:%ld, PPID:%ld)", simgrid::s4u::this_actor::get_pid(),
+           simgrid::s4u::this_actor::get_ppid());
   while (1) {
-    XBT_INFO("Plop i am %ssuspended", simgrid::s4u::this_actor::isSuspended() ? "" : "not ");
+    XBT_INFO("Plop i am %ssuspended", simgrid::s4u::this_actor::is_suspended() ? "" : "not ");
     simgrid::s4u::this_actor::sleep_for(1);
   }
   XBT_INFO("I'm done. See you!");
@@ -23,16 +23,16 @@ static void master()
 {
   simgrid::s4u::this_actor::sleep_for(1);
   std::vector<simgrid::s4u::ActorPtr>* actor_list = new std::vector<simgrid::s4u::ActorPtr>();
-  simgrid::s4u::this_actor::getHost()->actorList(actor_list);
+  simgrid::s4u::this_actor::get_host()->actorList(actor_list);
 
   for (auto const& actor : *actor_list) {
     XBT_INFO("Actor (pid=%ld, ppid=%ld, name=%s)", actor->get_pid(), actor->get_ppid(), actor->get_cname());
-    if (simgrid::s4u::this_actor::getPid() != actor->get_pid())
+    if (simgrid::s4u::this_actor::get_pid() != actor->get_pid())
       actor->kill();
   }
 
   simgrid::s4u::ActorPtr actor =
-      simgrid::s4u::Actor::create("worker from master", simgrid::s4u::this_actor::getHost(), worker);
+      simgrid::s4u::Actor::create("worker from master", simgrid::s4u::this_actor::get_host(), worker);
   simgrid::s4u::this_actor::sleep_for(2);
 
   XBT_INFO("Suspend Actor (pid=%ld)", actor->get_pid());

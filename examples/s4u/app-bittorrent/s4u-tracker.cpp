@@ -22,7 +22,7 @@ Tracker::Tracker(std::vector<std::string> args)
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
-  stream = simgrid::s4u::this_actor::getHost()->extension<HostBittorrent>()->getStream();
+  stream = simgrid::s4u::this_actor::get_host()->extension<HostBittorrent>()->getStream();
 
   mailbox = simgrid::s4u::Mailbox::byName(TRACKER_MAILBOX);
 

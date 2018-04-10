@@ -24,7 +24,7 @@ public:
   explicit sleeper(std::vector<std::string> /*args*/)
   {
     XBT_INFO("Hello! I go to sleep.");
-    simgrid::s4u::this_actor::onExit(my_onexit, NULL);
+    simgrid::s4u::this_actor::on_exit(my_onexit, NULL);
 
     simgrid::s4u::this_actor::sleep_for(10);
   }

@@ -130,8 +130,8 @@ static void client()
 
 static void server()
 {
-  storage_info(simgrid::s4u::this_actor::getHost());
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::getHost()->get_cname());
+  storage_info(simgrid::s4u::this_actor::get_host());
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::get_host()->get_cname());
 
   XBT_INFO("Server waiting for transfers ...");
   while (1) {
@@ -148,7 +148,7 @@ static void server()
     }
   }
 
-  storage_info(simgrid::s4u::this_actor::getHost());
+  storage_info(simgrid::s4u::this_actor::get_host());
   dump_platform_storages();
 }
 

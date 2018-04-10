@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 static int dvfs()
 {
   double workload = 100E6;
-  simgrid::s4u::Host* host = simgrid::s4u::this_actor::getHost();
+  simgrid::s4u::Host* host = simgrid::s4u::this_actor::get_host();
 
   int nb = host->getPstatesCount();
   XBT_INFO("Count of Processor states=%d", nb);

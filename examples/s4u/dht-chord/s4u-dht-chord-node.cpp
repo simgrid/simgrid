@@ -52,7 +52,7 @@ Node::Node(std::vector<std::string> args)
 
   // initialize my node
   id_                = std::stoi(args[1]);
-  stream             = simgrid::s4u::this_actor::getHost()->extension<HostChord>()->getStream();
+  stream             = simgrid::s4u::this_actor::get_host()->extension<HostChord>()->getStream();
   mailbox_           = simgrid::s4u::Mailbox::byName(std::to_string(id_));
   next_finger_to_fix = 0;
   fingers_           = new int[nb_bits];

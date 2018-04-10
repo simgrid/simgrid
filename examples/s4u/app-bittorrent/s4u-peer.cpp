@@ -45,7 +45,7 @@ Peer::Peer(std::vector<std::string> args)
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
-  stream = simgrid::s4u::this_actor::getHost()->extension<HostBittorrent>()->getStream();
+  stream = simgrid::s4u::this_actor::get_host()->extension<HostBittorrent>()->getStream();
 
   if (args.size() == 4 && args[3] == "1") {
     bitfield_       = (1U << FILE_PIECES) - 1U;

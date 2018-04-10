@@ -259,7 +259,7 @@ namespace this_actor {
  * In SimGrid, the actor in charge of doing the stuff in kernel mode is called Maestro,
  * because it is the one scheduling when the others should move or wait.
  */
-bool isMaestro()
+bool is_maestro()
 {
   smx_actor_t process = SIMIX_process_self();
   return process == nullptr || process == simix_global->maestro_process;
@@ -285,13 +285,13 @@ XBT_PUBLIC void sleep_until(double timeout)
 
 void execute(double flops)
 {
-  smx_activity_t s = simcall_execution_start(nullptr, flops, 1.0 /*priority*/, 0. /*bound*/, getHost());
+  smx_activity_t s = simcall_execution_start(nullptr, flops, 1.0 /*priority*/, 0. /*bound*/, get_host());
   simcall_execution_wait(s);
 }
 
 void execute(double flops, double priority)
 {
-  smx_activity_t s = simcall_execution_start(nullptr, flops, 1 / priority /*priority*/, 0. /*bound*/, getHost());
+  smx_activity_t s = simcall_execution_start(nullptr, flops, 1 / priority /*priority*/, 0. /*bound*/, get_host());
   simcall_execution_wait(s);
 }
 
@@ -311,7 +311,7 @@ void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, d
 ExecPtr exec_init(double flops_amount)
 {
   ExecPtr res        = ExecPtr(new Exec());
-  res->host_         = getHost();
+  res->host_         = get_host();
   res->flops_amount_ = flops_amount;
   res->set_remaining(flops_amount);
   return res;
@@ -324,12 +324,12 @@ ExecPtr exec_async(double flops)
   return res;
 }
 
-aid_t getPid()
+aid_t get_pid()
 {
   return SIMIX_process_self()->pid;
 }
 
-aid_t getPpid()
+aid_t get_ppid()
 {
   return SIMIX_process_self()->ppid;
 }
@@ -344,7 +344,7 @@ const char* get_cname()
   return SIMIX_process_self()->get_cname();
 }
 
-Host* getHost()
+Host* get_host()
 {
   return SIMIX_process_self()->host;
 }
@@ -352,7 +352,7 @@ Host* getHost()
 void suspend()
 {
   if (TRACE_actor_is_enabled())
-    instr::Container::byName(get_name() + "-" + std::to_string(getPid()))
+    instr::Container::byName(get_name() + "-" + std::to_string(get_pid()))
         ->getState("ACTOR_STATE")
         ->pushEvent("suspend");
   simcall_process_suspend(SIMIX_process_self());
@@ -364,10 +364,10 @@ void resume()
   simgrid::simix::kernelImmediate([process] { process->resume(); });
 
   if (TRACE_actor_is_enabled())
-    instr::Container::byName(get_name() + "-" + std::to_string(getPid()))->getState("ACTOR_STATE")->popEvent();
+    instr::Container::byName(get_name() + "-" + std::to_string(get_pid()))->getState("ACTOR_STATE")->popEvent();
 }
 
-bool isSuspended()
+bool is_suspended()
 {
   smx_actor_t process = SIMIX_process_self();
   return simgrid::simix::kernelImmediate([process] { return process->suspended; });
@@ -379,7 +379,7 @@ void kill()
   simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
 }
 
-void onExit(int_f_pvoid_pvoid_t fun, void* data)
+void on_exit(int_f_pvoid_pvoid_t fun, void* data)
 {
   simcall_process_on_exit(SIMIX_process_self(), fun, data);
 }
@@ -391,6 +391,39 @@ void onExit(int_f_pvoid_pvoid_t fun, void* data)
 void migrate(Host* new_host)
 {
   SIMIX_process_self()->iface()->migrate(new_host);
+}
+
+std::string getName() /* deprecated */
+{
+  return get_name();
+}
+const char* getCname() /* deprecated */
+{
+  return get_cname();
+}
+bool isMaestro() /* deprecated */
+{
+  return is_maestro();
+}
+aid_t getPid() /* deprecated */
+{
+  return get_pid();
+}
+aid_t getPpid() /* deprecated */
+{
+  return get_ppid();
+}
+Host* getHost() /* deprecated */
+{
+  return get_host();
+}
+bool isSuspended() /* deprecated */
+{
+  return is_suspended();
+}
+void onExit /* deprecated */ (int_f_pvoid_pvoid_t fun, void* data)
+{
+  on_exit(fun, data);
 }
 
 } // namespace this_actor

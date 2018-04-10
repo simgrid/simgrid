@@ -46,7 +46,7 @@ int PMPI_Group_rank(MPI_Group group, int *rank)
   } else if (rank == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *rank = group->rank(simgrid::s4u::this_actor::getPid());
+    *rank = group->rank(simgrid::s4u::this_actor::get_pid());
     return MPI_SUCCESS;
   }
 }

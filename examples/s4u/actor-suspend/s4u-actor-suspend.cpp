@@ -32,7 +32,7 @@ static void lazy_guy()
 static void dream_master()
 {
   XBT_INFO("Let's create a lazy guy."); /* - Create a lazy_guy process */
-  simgrid::s4u::ActorPtr lazy = simgrid::s4u::Actor::create("Lazy", simgrid::s4u::this_actor::getHost(), lazy_guy);
+  simgrid::s4u::ActorPtr lazy = simgrid::s4u::Actor::create("Lazy", simgrid::s4u::this_actor::get_host(), lazy_guy);
   XBT_INFO("Let's wait a little bit...");
   simgrid::s4u::this_actor::sleep_for(10); /* - Wait for 10 seconds */
   XBT_INFO("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");

@@ -31,11 +31,11 @@ static void worker(simgrid::s4u::Host* first, simgrid::s4u::Host* second)
   simgrid::s4u::this_actor::migrate(first);
   simgrid::s4u::this_actor::execute(flopAmount);
 
-  XBT_INFO("I wake up on %s. Let's suspend a bit", simgrid::s4u::this_actor::getHost()->get_cname());
+  XBT_INFO("I wake up on %s. Let's suspend a bit", simgrid::s4u::this_actor::get_host()->get_cname());
 
   simgrid::s4u::this_actor::suspend();
 
-  XBT_INFO("I wake up on %s", simgrid::s4u::this_actor::getHost()->get_cname());
+  XBT_INFO("I wake up on %s", simgrid::s4u::this_actor::get_host()->get_cname());
   XBT_INFO("Done");
 }
 

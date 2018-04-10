@@ -59,7 +59,7 @@ void smpi_execute(double duration)
   if (duration >= smpi_cpu_threshold) {
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
     double flops = duration * smpi_host_speed;
-    int rank     = simgrid::s4u::this_actor::getPid();
+    int rank     = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_computing_in(rank, flops);
 
     smpi_execute_flops(flops);
@@ -161,7 +161,7 @@ void smpi_bench_end()
 #if HAVE_PAPI
   if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
     container_t container =
-        new simgrid::instr::Container(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::getPid));
+        new simgrid::instr::Container(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
@@ -277,7 +277,7 @@ public:
   SampleLocation(bool global, const char* file, int line) : std::string(std::string(file) + ":" + std::to_string(line))
   {
     if (not global)
-      this->append(":" + std::to_string(simgrid::s4u::this_actor::getPid()));
+      this->append(":" + std::to_string(simgrid::s4u::this_actor::get_pid()));
   }
 };
 

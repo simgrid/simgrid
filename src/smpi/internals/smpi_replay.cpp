@@ -53,12 +53,12 @@ static void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
 
 static std::vector<MPI_Request>* get_reqq_self()
 {
-  return reqq.at(simgrid::s4u::this_actor::getPid());
+  return reqq.at(simgrid::s4u::this_actor::get_pid());
 }
 
 static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
 {
-  reqq.insert({simgrid::s4u::this_actor::getPid(), mpi_request});
+  reqq.insert({simgrid::s4u::this_actor::get_pid(), mpi_request});
 }
 
 /* Helper function */
@@ -406,7 +406,7 @@ protected:
   T args;
 
 public:
-  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::getPid()) {}
+  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
   virtual ~ReplayAction() = default;
 
   virtual void execute(simgrid::xbt::ReplayAction& action)
@@ -818,7 +818,7 @@ void smpi_replay_init(int* argc, char*** argv)
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);
 
-  int my_proc_id = simgrid::s4u::this_actor::getPid();
+  int my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_init(my_proc_id);
   TRACE_smpi_computing_init(my_proc_id);
   TRACE_smpi_comm_in(my_proc_id, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
@@ -894,13 +894,13 @@ void smpi_replay_main(int* argc, char*** argv)
     smpi_free_replay_tmp_buffers();
   }
 
-  TRACE_smpi_comm_in(simgrid::s4u::this_actor::getPid(), "smpi_replay_run_finalize",
+  TRACE_smpi_comm_in(simgrid::s4u::this_actor::get_pid(), "smpi_replay_run_finalize",
                      new simgrid::instr::NoOpTIData("finalize"));
 
   smpi_process()->finalize();
 
-  TRACE_smpi_comm_out(simgrid::s4u::this_actor::getPid());
-  TRACE_smpi_finalize(simgrid::s4u::this_actor::getPid());
+  TRACE_smpi_comm_out(simgrid::s4u::this_actor::get_pid());
+  TRACE_smpi_finalize(simgrid::s4u::this_actor::get_pid());
 }
 
 /** @brief chain a replay initialization and a replay start */

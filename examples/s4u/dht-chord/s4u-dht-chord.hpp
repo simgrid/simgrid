@@ -64,7 +64,7 @@ public:
   simgrid::s4u::MailboxPtr answer_to; // mailbox to send an answer to (if any)
 
   explicit ChordMessage(e_message_type_t type)
-      : type(type), issuer_host_name(simgrid::s4u::this_actor::getHost()->get_name())
+      : type(type), issuer_host_name(simgrid::s4u::this_actor::get_host()->get_name())
   {
   }
 

@@ -346,7 +346,7 @@ public:
  *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
 namespace this_actor {
 
-XBT_PUBLIC bool isMaestro();
+XBT_PUBLIC bool is_maestro();
 
 /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
 XBT_PUBLIC void sleep_for(double duration);
@@ -379,21 +379,18 @@ XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
 
 /** @brief Returns the actor ID of the current actor). */
-XBT_PUBLIC aid_t getPid();
+XBT_PUBLIC aid_t get_pid();
 
 /** @brief Returns the ancestor's actor ID of the current actor. */
-XBT_PUBLIC aid_t getPpid();
+XBT_PUBLIC aid_t get_ppid();
 
 /** @brief Returns the name of the current actor. */
 XBT_PUBLIC std::string get_name();
 /** @brief Returns the name of the current actor as a C string. */
 XBT_PUBLIC const char* get_cname();
 
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_cname()") XBT_PUBLIC const char* getCname();
-
 /** @brief Returns the name of the host on which the actor is running. */
-XBT_PUBLIC Host* getHost();
+XBT_PUBLIC Host* get_host();
 
 /** @brief Suspend the actor. */
 XBT_PUBLIC void suspend();
@@ -404,16 +401,26 @@ XBT_PUBLIC void yield();
 /** @brief Resume the actor. */
 XBT_PUBLIC void resume();
 
-XBT_PUBLIC bool isSuspended();
+XBT_PUBLIC bool is_suspended();
 
 /** @brief kill the actor. */
 XBT_PUBLIC void kill();
 
 /** @brief Add a function to the list of "on_exit" functions. */
-XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_PUBLIC void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
+
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_cname()") XBT_PUBLIC const char* getCname();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_maestro()") XBT_PUBLIC bool isMaestro();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_pid()") XBT_PUBLIC aid_t getPid();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_ppid()") XBT_PUBLIC aid_t getPpid();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_host()") XBT_PUBLIC Host* getHost();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_suspended()") XBT_PUBLIC bool isSuspended();
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC
+    void onExit(int_f_pvoid_pvoid_t fun, void* data);
 }
 
 /** @} */

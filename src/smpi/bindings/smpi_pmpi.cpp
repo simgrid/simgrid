@@ -36,7 +36,7 @@ int PMPI_Init(int *argc, char ***argv)
   if(already_init == 0){
     simgrid::smpi::Process::init(argc, argv);
     smpi_process()->mark_as_initialized();
-    int rank = simgrid::s4u::this_actor::getPid();
+    int rank = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_init(rank);
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("init"));
     TRACE_smpi_comm_out(rank);
@@ -52,7 +52,7 @@ int PMPI_Init(int *argc, char ***argv)
 int PMPI_Finalize()
 {
   smpi_bench_end();
-  int rank = simgrid::s4u::this_actor::getPid();
+  int rank = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("finalize"));
 
   smpi_process()->finalize();
@@ -108,7 +108,7 @@ int PMPI_Is_thread_main(int *flag)
   if (flag == nullptr) {
     return MPI_ERR_ARG;
   } else {
-    *flag = simgrid::s4u::this_actor::getPid() ==
+    *flag = simgrid::s4u::this_actor::get_pid() ==
             1; // FIXME: I don't think this is correct: This just returns true if the process ID is 1,
                // regardless of whether this process called MPI_Thread_Init() or not.
     return MPI_SUCCESS;

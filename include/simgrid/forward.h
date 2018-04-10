@@ -9,9 +9,6 @@
 #ifdef __cplusplus
 
 #include <simgrid/s4u/forward.hpp>
-#include <xbt/base.h>
-
-#include <boost/intrusive_ptr.hpp>
 
 namespace simgrid {
 namespace config {

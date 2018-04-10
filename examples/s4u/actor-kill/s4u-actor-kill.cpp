@@ -15,7 +15,7 @@ static int on_exit(void*, void*)
 
 static void victimA_fun()
 {
-  simgrid::s4u::this_actor::onExit(on_exit, nullptr);
+  simgrid::s4u::this_actor::on_exit(on_exit, nullptr);
   XBT_INFO("Hello!");
   XBT_INFO("Suspending myself");
   simgrid::s4u::this_actor::suspend(); /* - Start by suspending itself */
