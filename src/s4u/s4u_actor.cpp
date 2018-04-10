@@ -84,7 +84,8 @@ void Actor::migrate(Host* new_host)
 {
   std::string key;
   simgrid::instr::LinkType* link = nullptr;
-  if (TRACE_actor_is_enabled()) {
+  bool tracing                   = TRACE_actor_is_enabled();
+  if (tracing) {
     static long long int counter = 0;
 
     key = std::to_string(counter);
@@ -111,7 +112,7 @@ void Actor::migrate(Host* new_host)
     SIMIX_process_change_host(this->pimpl_, new_host);
   });
 
-  if (TRACE_actor_is_enabled()) {
+  if (tracing) {
     // create new container on the new_host location
     simgrid::instr::Container::byName(new_host->get_name())->createChild(instr_pid(this), "ACTOR");
     // end link
