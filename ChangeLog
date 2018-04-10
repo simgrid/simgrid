@@ -4,6 +4,10 @@ TRACE
  - Change --cfg=tracing/msg/vm to --cfg=tracing/vm as virtual machine
    behavior tracing is no longer limited to MSG
 
+ S4U:
+ - Introduced new function simgrid::s4u::Host::get_actor_count. This function
+   returns the number of actors running on a specific host.
+
  Fixed bugs:
  - #258: daemonized actors hang after all non-daemonized actors have completed
 

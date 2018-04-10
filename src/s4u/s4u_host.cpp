@@ -186,6 +186,13 @@ void Host::getProcesses(std::vector<ActorPtr>* list)
   }
 }
 
+/** @brief Returns how many actors have been launched on this host */
+// FIXME: Specify whether the user should expect only non-daemon actors here!
+int Host::get_actor_count() const
+{
+  return this->extension<simgrid::simix::Host>()->process_list.size();
+}
+
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::getPstateSpeed(int pstate_index)
 {
@@ -194,7 +201,7 @@ double Host::getPstateSpeed(int pstate_index)
   });
 }
 
-/** @brief Get the peak processor speed (in flops/s), at the current pstate */
+/** @brief Get the peak processor speed (under full load (=1.0), in flops/s), at the current pstate */
 double Host::getSpeed()
 {
   return pimpl_cpu->getSpeed(1.0);

@@ -97,6 +97,7 @@ public:
   const char* getProperty(const char* key);
   void setProperty(std::string key, std::string value);
   void getProcesses(std::vector<ActorPtr> * list);
+  int get_actor_count() const;
   double getPstateSpeed(int pstate_index);
   int getPstatesCount() const;
   void setPstate(int pstate_index);
