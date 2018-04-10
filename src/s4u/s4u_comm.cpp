@@ -25,27 +25,27 @@ Comm::~Comm()
   }
 }
 
-Activity* Comm::setRate(double rate)
+Activity* Comm::set_rate(double rate)
 {
   xbt_assert(state_ == State::inited);
   rate_ = rate;
   return this;
 }
 
-Activity* Comm::setSrcData(void* buff)
+Activity* Comm::set_src_data(void* buff)
 {
   xbt_assert(state_ == State::inited);
   xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
   return this;
 }
-Activity* Comm::setSrcDataSize(size_t size)
+Activity* Comm::set_src_data_size(size_t size)
 {
   xbt_assert(state_ == State::inited);
   srcBuffSize_ = size;
   return this;
 }
-Activity* Comm::setSrcData(void* buff, size_t size)
+Activity* Comm::set_src_data(void* buff, size_t size)
 {
   xbt_assert(state_ == State::inited);
 
@@ -54,18 +54,19 @@ Activity* Comm::setSrcData(void* buff, size_t size)
   srcBuffSize_ = size;
   return this;
 }
-Activity* Comm::setDstData(void** buff)
+Activity* Comm::set_dst_data(void** buff)
 {
   xbt_assert(state_ == State::inited);
   xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
   return this;
 }
-size_t Comm::getDstDataSize(){
+size_t Comm::get_dst_data_size()
+{
   xbt_assert(state_ == State::finished);
   return dstBuffSize_;
 }
-Activity* Comm::setDstData(void** buff, size_t size)
+Activity* Comm::set_dst_data(void** buff, size_t size)
 {
   xbt_assert(state_ == State::inited);
 
@@ -177,7 +178,7 @@ bool Comm::test()
   return false;
 }
 
-MailboxPtr Comm::getMailbox()
+MailboxPtr Comm::get_mailbox()
 {
   return mailbox_;
 }

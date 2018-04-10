@@ -98,7 +98,7 @@ void Mailbox::put(void* payload, uint64_t simulatedSize)
 
   CommPtr c = put_init();
   c->set_remaining(simulatedSize);
-  c->setSrcData(payload);
+  c->set_src_data(payload);
   c->wait();
 }
 /** Blocking send with timeout */
@@ -108,7 +108,7 @@ void Mailbox::put(void* payload, uint64_t simulatedSize, double timeout)
 
   CommPtr c = put_init();
   c->set_remaining(simulatedSize);
-  c->setSrcData(payload);
+  c->set_src_data(payload);
   // c->start() is optional.
   c->wait(timeout);
 }
@@ -123,7 +123,7 @@ s4u::CommPtr Mailbox::get_init()
 s4u::CommPtr Mailbox::get_async(void** data)
 {
   s4u::CommPtr res = get_init();
-  res->setDstData(data, sizeof(*data));
+  res->set_dst_data(data, sizeof(*data));
   res->start();
   return res;
 }
@@ -132,7 +132,7 @@ void* Mailbox::get()
 {
   void* res = nullptr;
   CommPtr c = get_init();
-  c->setDstData(&res, sizeof(res));
+  c->set_dst_data(&res, sizeof(res));
   c->wait();
   return res;
 }
@@ -140,7 +140,7 @@ void* Mailbox::get(double timeout)
 {
   void* res = nullptr;
   CommPtr c = get_init();
-  c->setDstData(&res, sizeof(res));
+  c->set_dst_data(&res, sizeof(res));
   c->wait(timeout);
   return res;
 }

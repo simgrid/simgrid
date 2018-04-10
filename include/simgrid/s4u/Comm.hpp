@@ -83,27 +83,54 @@ public:
   }
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
-  Activity* setRate(double rate);
+  Activity* set_rate(double rate);
 
   /** Specify the data to send */
-  Activity* setSrcData(void* buff);
+  Activity* set_src_data(void* buff);
   /** Specify the size of the data to send */
-  Activity* setSrcDataSize(size_t size);
+  Activity* set_src_data_size(size_t size);
   /** Specify the data to send and its size */
-  Activity* setSrcData(void* buff, size_t size);
+  Activity* set_src_data(void* buff, size_t size);
 
   /** Specify where to receive the data */
-  Activity* setDstData(void** buff);
+  Activity* set_dst_data(void** buff);
   /** Specify the buffer in which the data should be received */
-  Activity* setDstData(void** buff, size_t size);
+  Activity* set_dst_data(void** buff, size_t size);
   /** Retrieve the size of the received data */
-  size_t getDstDataSize();
+  size_t get_dst_data_size();
 
   bool test();
   Activity* cancel();
 
   /** Retrieve the mailbox on which this comm acts */
-  MailboxPtr getMailbox();
+  MailboxPtr get_mailbox();
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_rate()") Activity* setRate(double rate) { return set_rate(rate); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff)
+  {
+    return set_src_data(buff);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data()") Activity* setSrcData(void* buff, size_t size)
+  {
+    return set_src_data(buff, size);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_src_data_size()") Activity* setSrcDataSize(size_t size)
+  {
+    return set_src_data_size(size);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff)
+  {
+    return set_dst_data(buff);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::set_dst_data()") Activity* setDstData(void** buff, size_t size)
+  {
+    return set_dst_data(buff, size);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_dst_data_size()") size_t getDstDataSize()
+  {
+    return get_dst_data_size();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") MailboxPtr getMailbox() { return get_mailbox(); }
 
 private:
   double rate_        = -1;
