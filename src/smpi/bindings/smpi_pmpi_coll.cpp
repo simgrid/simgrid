@@ -122,7 +122,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
     retval = MPI_ERR_TYPE;
   } else if (( sendbuf != MPI_IN_PLACE) && (sendcount <0)){
     retval = MPI_ERR_COUNT;
-  } else if (recvcounts == nullptr || displs == nullptr) {
+  } else if ((comm->rank() == root) && (recvcounts == nullptr || displs == nullptr)) {
     retval = MPI_ERR_ARG;
   } else {
     char* sendtmpbuf = static_cast<char*>(sendbuf);
