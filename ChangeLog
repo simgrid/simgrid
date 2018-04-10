@@ -8,6 +8,11 @@ TRACE
  - Introduced new function simgrid::s4u::Host::get_actor_count. This function
    returns the number of actors running on a specific host.
 
+ SMPI:
+ - Replay: The replay file has been re-written in C++.
+ - Replay: Tags used for messages sent via MPI_Send / MPI_Recv are now
+   supported. They are stored in the trace and used when replayed.
+
  Fixed bugs:
  - #258: daemonized actors hang after all non-daemonized actors have completed
 
