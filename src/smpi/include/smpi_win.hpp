@@ -90,6 +90,7 @@ public:
   int flush_local_all();
   int finish_comms();
   int finish_comms(int rank);
+  int shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr);
 };
 
 

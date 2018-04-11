@@ -491,6 +491,17 @@ void Comm::finish_rma_calls(){
   }
 }
 
+MPI_Comm Comm::split_type(int type, int key, MPI_Info info)
+{
+  if(type != MPI_COMM_TYPE_SHARED){
+    return MPI_COMM_NULL;
+  }
+  this->init_smp();
+  this->ref();
+  this->get_intra_comm()->ref();
+  return this->get_intra_comm();
+}
+
 }
 }
 

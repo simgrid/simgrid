@@ -49,6 +49,33 @@ int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm com
   return retval;
 }
 
+int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *base, MPI_Win *win){
+  int retval = 0;
+  smpi_bench_end();
+  if (comm == MPI_COMM_NULL) {
+    retval= MPI_ERR_COMM;
+  }else if (disp_unit <= 0 || size < 0 ){
+    retval= MPI_ERR_OTHER;
+  }else{
+    void* ptr = nullptr;
+    int rank = comm->rank();
+    if(rank==0){
+       ptr = xbt_malloc(size*comm->size());
+       if(ptr==nullptr)
+         return MPI_ERR_NO_MEM;
+    }
+    
+    simgrid::smpi::Colls::bcast(&ptr, sizeof(void*), MPI_BYTE, 0, comm);
+    simgrid::smpi::Colls::barrier(comm);
+    
+    *static_cast<void**>(base) = (char*)ptr+rank*size;
+    *win = new simgrid::smpi::Win( ptr, size, disp_unit, info, comm,rank==0);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Win_create_dynamic( MPI_Info info, MPI_Comm comm, MPI_Win *win){
   int retval = 0;
   smpi_bench_end();
@@ -746,6 +773,13 @@ int PMPI_Win_flush_local_all(MPI_Win win){
   return retval;
 }
 
+int PMPI_Win_shared_query (MPI_Win win, int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
+{
+  if (win==MPI_WIN_NULL)
+    return MPI_ERR_TYPE;
+  else
+    return win->shared_query(rank, size, disp_unit, baseptr);
+}
 
 int PMPI_Win_get_attr (MPI_Win win, int keyval, void *attribute_val, int* flag)
 {

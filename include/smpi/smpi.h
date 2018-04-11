@@ -198,6 +198,8 @@ SG_BEGIN_DECL()
 #define MPI_WIN_BASE -1
 #define MPI_WIN_SIZE -2
 #define MPI_WIN_DISP_UNIT -3
+#define MPI_WIN_CREATE_FLAVOR -4
+#define MPI_WIN_MODEL -5
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
@@ -307,6 +309,11 @@ XBT_PUBLIC_DATA const MPI_Datatype MPI_INTEGER16;
 #define MPI_CHARACTER MPI_CHAR
 #define MPI_DOUBLE_PRECISION MPI_DOUBLE
 #define MPI_2DOUBLE_PRECISION MPI_2DOUBLE
+
+#define MPI_WIN_FLAVOR_CREATE 0
+#define MPI_WIN_FLAVOR_ALLOCATE 1
+#define MPI_WIN_FLAVOR_DYNAMIC 2
+#define MPI_WIN_FLAVOR_SHARED 3
 
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 typedef SMPI_Op *MPI_Op;
@@ -589,6 +596,8 @@ MPI_CALL(XBT_PUBLIC int, MPI_Win_create,
          (void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win* win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_allocate,
          (MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void* base, MPI_Win* win));
+MPI_CALL(XBT_PUBLIC int, MPI_Win_allocate_shared,
+         (MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void* base, MPI_Win* win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_create_dynamic, (MPI_Info info, MPI_Comm comm, MPI_Win* win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_attach, (MPI_Win win, void* base, MPI_Aint size));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_detach, (MPI_Win win, void* base));
@@ -617,6 +626,8 @@ MPI_CALL(XBT_PUBLIC int, MPI_Win_flush, (int rank, MPI_Win win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_flush_local, (int rank, MPI_Win win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_flush_all, (MPI_Win win));
 MPI_CALL(XBT_PUBLIC int, MPI_Win_flush_local_all, (MPI_Win win));
+MPI_CALL(XBT_PUBLIC int, MPI_Win_shared_query, (MPI_Win win, int rank, MPI_Aint* size, int* disp_unit, void* baseptr));
+MPI_CALL(XBT_PUBLIC int, MPI_Win_sync, (MPI_Win win));
 MPI_CALL(XBT_PUBLIC MPI_Win, MPI_Win_f2c, (MPI_Fint win));
 MPI_CALL(XBT_PUBLIC MPI_Fint, MPI_Win_c2f, (MPI_Win win));
 

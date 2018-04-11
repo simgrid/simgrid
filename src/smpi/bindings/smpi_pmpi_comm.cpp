@@ -156,6 +156,24 @@ int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
   return retval;
 }
 
+int PMPI_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, MPI_Comm *newcomm)
+{
+  int retval = 0;
+  smpi_bench_end();
+
+  if (newcomm == nullptr) {
+    retval = MPI_ERR_ARG;
+  } else if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else {
+    *newcomm = comm->split_type(split_type, key, info);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+
+  return retval;
+}
+
 int PMPI_Comm_create_group(MPI_Comm comm, MPI_Group group, int, MPI_Comm* comm_out)
 {
   int retval = 0;

@@ -44,6 +44,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   mode_=0;
 
   comm->add_rma_win(this);
+  comm->ref();
 
   Colls::allgather(&(connected_wins_[rank_]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
                          MPI_BYTE, comm);
@@ -72,6 +73,8 @@ Win::~Win(){
   comm_->remove_rma_win(this);
 
   Colls::barrier(comm_);
+  Comm::unref(comm_);
+  
   if (rank_ == 0)
     MSG_barrier_destroy(bar_);
   xbt_mutex_destroy(mut_);
@@ -719,5 +722,27 @@ int Win::finish_comms(int rank){
 }
 
 
+int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr){
+
+  if(rank!=MPI_PROC_NULL){
+    MPI_Win target_win = connected_wins_[rank];
+    *size=target_win->size_;
+    *disp_unit=target_win->disp_unit_;
+    *static_cast<void**>(baseptr)=target_win->base_;
+  }else{
+    for(int i=0; i<comm_->size();i++){
+      MPI_Win target_win = connected_wins_[i];
+      if(target_win->size_>0){
+        *size=target_win->size_;
+        *disp_unit=target_win->disp_unit_;
+        *static_cast<void**>(baseptr)=target_win->base_;
+        return MPI_SUCCESS;
+      }
+    }
+    *size=0;
+    *static_cast<void**>(baseptr)=xbt_malloc(0);
+  }
+  return MPI_SUCCESS;
+  }
 }
 }
