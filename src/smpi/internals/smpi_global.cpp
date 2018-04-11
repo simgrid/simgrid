@@ -556,7 +556,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
     smpi_entry_point_type entry_point = smpi_resolve_function(handle);
     if (not entry_point)
       xbt_die("main not found in %s", executable);
-    // TODO, register the executable for SMPI privatization
+    if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
+      smpi_backup_global_memory_segment();
 
     // Execute the same entry point for each simulated process:
     simix_global->default_function = [entry_point](std::vector<std::string> args) {
@@ -624,8 +625,6 @@ void SMPI_init(){
   smpi_check_options();
   TRACE_smpi_alloc();
   simgrid::s4u::onSimulationEnd.connect(TRACE_smpi_release);
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
-    smpi_backup_global_memory_segment();
 }
 
 void SMPI_finalize(){
