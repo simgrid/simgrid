@@ -549,6 +549,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
     };
   }
   else {
+    if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
+      smpi_prepare_global_memory_segment();
     // Load the dynamic library and resolve the entry point:
     void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
     if (handle == nullptr)

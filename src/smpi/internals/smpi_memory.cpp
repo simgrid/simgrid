@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
 #include <cerrno>
 #include <climits>
 #include <cstdint>
@@ -33,6 +34,9 @@ int smpi_data_exe_size    = 0;
 SmpiPrivStrategies smpi_privatize_global_variables;
 static void* smpi_data_exe_copy;
 
+// Initialized by smpi_prepare_global_memory_segment().
+static std::vector<simgrid::xbt::VmMap> initial_vm_map;
+
 // We keep a copy of all the privatization regions: We can then delete everything easily by iterating over this
 // collection and nothing can be leaked. We could also iterate over all actors but we would have to be diligent when two
 // actors use the same privatization region (so, smart pointers would have to be used etc.)
@@ -41,6 +45,13 @@ static std::deque<s_smpi_privatization_region_t> smpi_privatization_regions;
 
 static constexpr int PROT_RWX = PROT_READ | PROT_WRITE | PROT_EXEC;
 static constexpr int PROT_RW  = PROT_READ | PROT_WRITE;
+
+/** Take a snapshot of the process' memory map.
+ */
+void smpi_prepare_global_memory_segment()
+{
+  initial_vm_map = simgrid::xbt::get_memory_map(getpid());
+}
 
 static void smpi_get_executable_global_size()
 {
@@ -58,13 +69,17 @@ static void smpi_get_executable_global_size()
     if (i->pathname == full_name && (i->prot & PROT_RWX) == PROT_RW) {
       smpi_data_exe_start = (char*)i->start_addr;
       smpi_data_exe_size  = i->end_addr - i->start_addr;
-      ++i;
       /* Here we are making the assumption that a suitable empty region
          following the rw- area is the end of the data segment. It would
          be better to check with the size of the data segment. */
+      ++i;
       if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW &&
           (char*)i->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
-        smpi_data_exe_size = (char*)i->end_addr - smpi_data_exe_start;
+        // Only count this region if it was not already present in the initial map.
+        auto found = std::find_if(begin(initial_vm_map), end(initial_vm_map),
+                                  [&i](const simgrid::xbt::VmMap& m) { return m.start_addr == i->start_addr; });
+        if (found == end(initial_vm_map))
+          smpi_data_exe_size = (char*)i->end_addr - smpi_data_exe_start;
       }
       return;
     }
@@ -142,6 +157,8 @@ void smpi_backup_global_memory_segment()
 {
   xbt_assert(HAVE_PRIVATIZATION, "You are trying to use privatization on a system that does not support it. Don't.");
   smpi_get_executable_global_size();
+  initial_vm_map.clear();
+  initial_vm_map.shrink_to_fit();
 
   XBT_DEBUG("bss+data segment found : size %d starting at %p", smpi_data_exe_size, smpi_data_exe_start);
 
