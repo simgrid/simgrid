@@ -39,9 +39,8 @@ static void* smpi_data_exe_copy;
 // Use a std::deque so that pointers remain valid after push_back().
 static std::deque<s_smpi_privatization_region_t> smpi_privatization_regions;
 
-static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
-static const int PROT_RW  = (PROT_READ | PROT_WRITE );
-XBT_ATTRIB_UNUSED static const int PROT_RX  = (PROT_READ | PROT_EXEC );
+static constexpr int PROT_RWX = PROT_READ | PROT_WRITE | PROT_EXEC;
+static constexpr int PROT_RW  = PROT_READ | PROT_WRITE;
 
 static void smpi_get_executable_global_size()
 {
@@ -121,8 +120,7 @@ void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor)
   XBT_DEBUG("Switching data frame to the one of process %ld", actor->get_pid());
   simgrid::smpi::Process* process = smpi_process_remote(actor);
   int current                     = process->privatized_region()->file_descriptor;
-  void* tmp =
-      mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
+  void* tmp = mmap(TOPAGE(smpi_data_exe_start), smpi_data_exe_size, PROT_RW, MAP_FIXED | MAP_SHARED, current, 0);
   if (tmp != TOPAGE(smpi_data_exe_start))
     xbt_die("Couldn't map the new region (errno %d): %s", errno, strerror(errno));
   smpi_loaded_page = actor->get_pid();
@@ -194,7 +192,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
     xbt_die("Impossible to set the size of the temporary file for memory mapping");
 
   /* Ask for a free region */
-  address = mmap(nullptr, smpi_data_exe_size, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
+  address = mmap(nullptr, smpi_data_exe_size, PROT_RW, MAP_SHARED, file_descriptor, 0);
   if (address == MAP_FAILED)
     xbt_die("Couldn't find a free region for memory mapping");
 
