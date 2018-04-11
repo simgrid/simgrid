@@ -97,7 +97,6 @@ XBT_PRIVATE void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE void smpi_really_switch_data_segment(simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE int smpi_is_privatization_file(char* file);
 
-XBT_PRIVATE void smpi_get_executable_global_size();
 XBT_PRIVATE void smpi_backup_global_memory_segment();
 XBT_PRIVATE void smpi_destroy_global_memory_segments();
 XBT_PRIVATE void smpi_bench_destroy();
