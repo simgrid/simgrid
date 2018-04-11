@@ -142,7 +142,7 @@ int smpi_is_privatization_file(char* file)
  */
 void smpi_backup_global_memory_segment()
 {
-#if HAVE_PRIVATIZATION
+  xbt_assert(HAVE_PRIVATIZATION, "You are trying to use privatization on a system that does not support it. Don't.");
   smpi_get_executable_global_size();
 
   XBT_DEBUG("bss+data segment found : size %d starting at %p", smpi_data_exe_size, smpi_data_exe_start);
@@ -156,11 +156,6 @@ void smpi_backup_global_memory_segment()
   // Make a copy of the data segment. This clean copy is retained over the whole runtime
   // of the simulation and can be used to initialize a dynamically added, new process.
   asan_safe_memcpy(smpi_data_exe_copy, TOPAGE(smpi_data_exe_start), smpi_data_exe_size);
-#else /* ! HAVE_PRIVATIZATION */
-  smpi_privatize_global_variables = SmpiPrivStrategies::None;
-  xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
-  return;
-#endif
 }
 
 // Initializes the memory mapping for a single process and returns the privatization region
