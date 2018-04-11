@@ -10,7 +10,6 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <string>
 
 /** @addtogroup SURF_plugin_energy
 

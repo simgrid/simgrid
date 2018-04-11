@@ -11,13 +11,8 @@
 #include <functional>
 #include <vector>
 
-#include <simgrid/simix.hpp>
 #include <xbt/parmap.hpp>
 #include <xbt/xbt_os_thread.h>
-
-#include "Context.hpp"
-#include "src/internal_config.h"
-#include "src/simix/smx_private.hpp"
 
 namespace simgrid {
 namespace kernel {

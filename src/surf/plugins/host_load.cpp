@@ -4,17 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/load.h"
-#include "simgrid/simix.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/surf/cpu_interface.hpp"
-
-#include "simgrid/s4u/Engine.hpp"
-
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <string>
-#include <utility>
-#include <vector>
 
 /** @addtogroup plugin_load
 

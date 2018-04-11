@@ -8,11 +8,12 @@
 #ifndef XBT_OS_THREAD_H
 #define XBT_OS_THREAD_H
 
-SG_BEGIN_DECL()
-
 #include <xbt/base.h>
+#include <xbt/function_types.h>
 
 #include <pthread.h>
+
+SG_BEGIN_DECL()
 
 typedef pthread_key_t xbt_os_thread_key_t;
 

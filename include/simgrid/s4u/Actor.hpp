@@ -6,23 +6,11 @@
 #ifndef SIMGRID_S4U_ACTOR_HPP
 #define SIMGRID_S4U_ACTOR_HPP
 
-#include <atomic>
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <type_traits>
-#include <utility>
-#include <vector>
-
+#include <simgrid/chrono.hpp>
 #include <xbt/Extendable.hpp>
 #include <xbt/functional.hpp>
-#include <xbt/string.hpp>
 #include <xbt/signal.hpp>
-
-#include <simgrid/chrono.hpp>
-#include <simgrid/s4u/forward.hpp>
+#include <xbt/string.hpp>
 
 namespace simgrid {
 namespace s4u {

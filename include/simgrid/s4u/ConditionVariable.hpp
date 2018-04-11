@@ -6,19 +6,10 @@
 #ifndef SIMGRID_S4U_COND_VARIABLE_HPP
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
-#include <chrono>
-#include <condition_variable>
-#include <future>
-#include <mutex>
-#include <utility> // std::swap
-
-#include <boost/intrusive_ptr.hpp>
-
-#include <xbt/base.h>
-
 #include <simgrid/chrono.hpp>
 #include <simgrid/s4u/Mutex.hpp>
-#include <simgrid/simix.h>
+
+#include <future>
 
 namespace simgrid {
 namespace s4u {

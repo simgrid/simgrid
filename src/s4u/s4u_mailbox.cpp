@@ -80,8 +80,8 @@ s4u::CommPtr Mailbox::put_init(void* data, uint64_t simulatedSize)
 {
   s4u::CommPtr res = put_init();
   res->set_remaining(simulatedSize);
-  res->srcBuff_     = data;
-  res->srcBuffSize_ = sizeof(void*);
+  res->src_buff_      = data;
+  res->src_buff_size_ = sizeof(void*);
   return res;
 }
 s4u::CommPtr Mailbox::put_async(void* payload, uint64_t simulatedSize)

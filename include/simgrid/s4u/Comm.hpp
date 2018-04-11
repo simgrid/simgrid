@@ -6,14 +6,8 @@
 #ifndef SIMGRID_S4U_COMM_HPP
 #define SIMGRID_S4U_COMM_HPP
 
-#include <xbt/asserts.h>
-#include <xbt/base.h>
-#include <xbt/dynar.h>
-
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
-#include <simgrid/s4u/forward.hpp>
-#include <simgrid/simix.h>
 
 #include <atomic>
 #include <vector>
@@ -37,35 +31,10 @@ public:
    * The return value is the rank of the first finished CommPtr. */
   static int wait_any(std::vector<CommPtr> * comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  static int wait_any_for(std::vector<CommPtr> * comms_in, double timeout)
-  {
-    // Map to dynar<Synchro*>:
-    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), [](void*ptr){
-      intrusive_ptr_release(*(simgrid::kernel::activity::ActivityImpl**)ptr);
-    });
-    for (auto const& comm : *comms_in) {
-      if (comm->state_ == Activity::State::inited)
-        comm->start();
-      xbt_assert(comm->state_ == Activity::State::started);
-      simgrid::kernel::activity::ActivityImpl* ptr = comm->pimpl_.get();
-      intrusive_ptr_add_ref(ptr);
-      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, ptr);
-    }
-    // Call the underlying simcall:
-    int idx = simcall_comm_waitany(comms, timeout);
-    xbt_dynar_free(&comms);
-    return idx;
-  }
+  static int wait_any_for(std::vector<CommPtr>* comms_in, double timeout);
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
-  static void wait_all(std::vector<CommPtr> * comms)
-  {
-    // TODO: this should be a simcall or something
-    // TODO: we are missing a version with timeout
-    for (CommPtr comm : *comms) {
-      comm->wait();
-    }
-  }
+  static void wait_all(std::vector<CommPtr>* comms);
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
   static int test_any(std::vector<CommPtr> * comms);
 
@@ -78,7 +47,7 @@ public:
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
   Activity* detach(void (*cleanFunction)(void*))
   {
-    cleanFunction_ = cleanFunction;
+    clean_fun_ = cleanFunction;
     return detach();
   }
 
@@ -134,16 +103,16 @@ public:
 
 private:
   double rate_        = -1;
-  void* dstBuff_      = nullptr;
-  size_t dstBuffSize_ = 0;
-  void* srcBuff_      = nullptr;
-  size_t srcBuffSize_ = sizeof(void*);
+  void* dst_buff_       = nullptr;
+  size_t dst_buff_size_ = 0;
+  void* src_buff_       = nullptr;
+  size_t src_buff_size_ = sizeof(void*);
 
   /* FIXME: expose these elements in the API */
   int detached_ = 0;
-  int (*matchFunction_)(void*, void*, simgrid::kernel::activity::CommImpl*) = nullptr;
-  void (*cleanFunction_)(void*) = nullptr;
-  void (*copyDataFunction_)(smx_activity_t, void*, size_t) = nullptr;
+  int (*match_fun_)(void*, void*, simgrid::kernel::activity::CommImpl*) = nullptr;
+  void (*clean_fun_)(void*)                                             = nullptr;
+  void (*copy_data_function_)(smx_activity_t, void*, size_t)            = nullptr;
 
   smx_actor_t sender_   = nullptr;
   smx_actor_t receiver_ = nullptr;
@@ -151,7 +120,7 @@ private:
 
   std::atomic_int_fast32_t refcount_{0};
 };
-}
-} // namespace simgrid::s4u
+} // namespace s4u
+} // namespace simgrid
 
 #endif /* SIMGRID_S4U_COMM_HPP */

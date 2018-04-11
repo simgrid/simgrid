@@ -40,5 +40,16 @@ MutexPtr Mutex::createMutex()
   return MutexPtr(&mutex->mutex(), false);
 }
 
+/* refcounting of the intrusive_ptr is delegated to the implementation object */
+void intrusive_ptr_add_ref(Mutex* mutex)
+{
+  xbt_assert(mutex);
+  SIMIX_mutex_ref(mutex->mutex_);
+}
+void intrusive_ptr_release(Mutex* mutex)
+{
+  xbt_assert(mutex);
+  SIMIX_mutex_unref(mutex->mutex_);
+}
 }
 }

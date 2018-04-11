@@ -8,7 +8,6 @@
 
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Activity.hpp>
-#include <simgrid/s4u/forward.hpp>
 
 #include <atomic>
 

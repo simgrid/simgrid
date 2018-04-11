@@ -6,13 +6,8 @@
 #ifndef SIMGRID_S4U_MUTEX_HPP
 #define SIMGRID_S4U_MUTEX_HPP
 
-#include <mutex>
-#include <utility>
-
-#include <boost/intrusive_ptr.hpp>
-
-#include <simgrid/simix.h>
-#include <xbt/base.h>
+#include <simgrid/forward.h>
+#include <xbt/asserts.h>
 
 namespace simgrid {
 namespace s4u {
@@ -39,17 +34,10 @@ class XBT_PUBLIC Mutex {
   simgrid::kernel::activity::MutexImpl* mutex_;
   explicit Mutex(simgrid::kernel::activity::MutexImpl * mutex) : mutex_(mutex) {}
 
-  /* refcounting of the intrusive_ptr is delegated to the implementation object */
-  friend void intrusive_ptr_add_ref(Mutex* mutex)
-  {
-    xbt_assert(mutex);
-    SIMIX_mutex_ref(mutex->mutex_);
-  }
-  friend void intrusive_ptr_release(Mutex* mutex)
-  {
-    xbt_assert(mutex);
-    SIMIX_mutex_unref(mutex->mutex_);
-  }
+  /* refcounting */
+  friend void intrusive_ptr_add_ref(Mutex* mutex);
+  friend void intrusive_ptr_release(Mutex* mutex);
+
 public:
   using Ptr = boost::intrusive_ptr<Mutex>;
 

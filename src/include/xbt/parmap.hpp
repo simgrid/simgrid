@@ -1,7 +1,6 @@
 /* A thread pool (C++ version).                                             */
 
-/* Copyright (c) 2004-2018 The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2018 The SimGrid Team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,16 +10,10 @@
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
 #include "src/kernel/context/Context.hpp"
-#include <atomic>
+
 #include <boost/optional.hpp>
-#include <simgrid/simix.h>
-#include <vector>
-#include <xbt/log.h>
-#include <xbt/parmap.h>
-#include <xbt/xbt_os_thread.h>
 
 #if HAVE_FUTEX_H
-#include <limits>
 #include <linux/futex.h>
 #include <sys/syscall.h>
 #endif

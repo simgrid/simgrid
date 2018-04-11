@@ -24,7 +24,6 @@
 
 #include "Context.hpp"
 #include "src/internal_config.h"
-#include "src/simix/smx_private.hpp"
 
 namespace simgrid {
 namespace kernel {
