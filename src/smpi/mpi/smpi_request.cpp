@@ -107,7 +107,10 @@ void Request::unref(MPI_Request* request)
 {
   if((*request) != MPI_REQUEST_NULL){
     (*request)->refcount_--;
-    if((*request)->refcount_<0) xbt_die("wrong refcount");
+    if((*request)->refcount_ < 0) {
+      (*request)->print_request("wrong refcount");
+      xbt_die("Whoops, wrong refcount");
+    }
     if((*request)->refcount_==0){
         Datatype::unref((*request)->old_type_);
         Comm::unref((*request)->comm_);
