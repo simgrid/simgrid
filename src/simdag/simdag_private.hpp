@@ -51,7 +51,7 @@ struct s_SD_task_t {
   simgrid::kernel::resource::Action* surf_action;
   unsigned short watch_points;  /* bit field xor()ed with masks */
 
-  int marked;                   /* used to check if the task DAG has some cycle*/
+  bool marked = false; /* used to check if the task DAG has some cycle*/
 
   /* dependencies */
   std::set<SD_task_t> *inputs;

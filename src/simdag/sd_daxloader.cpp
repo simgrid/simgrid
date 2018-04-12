@@ -9,6 +9,7 @@
 #include "xbt/file.hpp"
 #include "xbt/log.h"
 #include "xbt/misc.h"
+#include <algorithm>
 #include <map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
@@ -29,23 +30,16 @@ void uniq_transfer_task_name(SD_task_t task)
 }
 
 static bool children_are_marked(SD_task_t task){
-  for (SD_task_t const& it : *task->successors)
-    if (it->marked == 0)
-      return false;
-  for (SD_task_t const& it : *task->outputs)
-    if (it->marked == 0)
-      return false;
-  return true;
+  return std::none_of(task->successors->begin(), task->successors->end(),
+                      [](const SD_task_t& elm) { return not elm->marked; }) &&
+         std::none_of(task->outputs->begin(), task->outputs->end(),
+                      [](const SD_task_t& elm) { return not elm->marked; });
 }
 
 static bool parents_are_marked(SD_task_t task){
-  for (SD_task_t const& it : *task->predecessors)
-    if (it->marked == 0)
-      return false;
-  for (SD_task_t const& it : *task->inputs)
-    if (it->marked == 0)
-      return false;
-  return true;
+  return std::none_of(task->predecessors->begin(), task->predecessors->end(),
+                      [](const SD_task_t& elm) { return not elm->marked; }) &&
+         std::none_of(task->inputs->begin(), task->inputs->end(), [](const SD_task_t& elm) { return not elm->marked; });
 }
 
 bool acyclic_graph_detail(xbt_dynar_t dag){
@@ -55,7 +49,6 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   std::vector<SD_task_t> current;
   xbt_dynar_foreach(dag,count,task){
     if(task->kind != SD_TASK_COMM_E2E){
-      task->marked = 0;
       if(task->successors->empty() && task->outputs->empty())
         current.push_back(task);
     }
@@ -64,9 +57,9 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     std::vector<SD_task_t> next;
     for (auto const& t : current) {
       //Mark task
-      t->marked = 1;
+      t->marked = true;
       for (SD_task_t const& input : *t->inputs) {
-        input->marked=1;
+        input->marked = true;
         // Inputs are communication, hence they can have only one predecessor
         SD_task_t input_pred = *(input->predecessors->begin());
         if (children_are_marked(input_pred))
@@ -84,7 +77,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   all_marked = true;
   //test if all tasks are marked
   xbt_dynar_foreach(dag,count,task){
-    if(task->kind != SD_TASK_COMM_E2E && task->marked == 0){
+    if (task->kind != SD_TASK_COMM_E2E && not task->marked) {
       XBT_WARN("the task %s is not marked",task->name);
       all_marked = false;
       break;
@@ -95,7 +88,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     XBT_VERB("there is at least one cycle in your task graph");
     xbt_dynar_foreach(dag,count,task){
       if(task->kind != SD_TASK_COMM_E2E && task->predecessors->empty() && task->inputs->empty()){
-        task->marked = 1;
+        task->marked = true;
         current.push_back(task);
       }
     }
@@ -104,9 +97,9 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
       std::vector<SD_task_t> next;
       //test if the current iteration is done
       for (auto const& t : current) {
-        t->marked = 1;
+        t->marked = true;
         for (SD_task_t const& output : *t->outputs) {
-          output->marked = 1;
+          output->marked = true;
           // outputs are communication, hence they can have only one successor
           SD_task_t output_succ = *(output->successors->begin());
           if (parents_are_marked(output_succ))
@@ -123,7 +116,7 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
 
     all_marked = true;
     xbt_dynar_foreach(dag,count,task){
-      if(task->kind != SD_TASK_COMM_E2E && task->marked == 0){
+      if (task->kind != SD_TASK_COMM_E2E && not task->marked) {
         XBT_WARN("the task %s is in a cycle",task->name);
         all_marked = false;
       }
@@ -138,13 +131,6 @@ static xbt_dynar_t result;
 static std::map<std::string, SD_task_t> jobs;
 static std::map<std::string, SD_task_t> files;
 static SD_task_t current_job;
-static SD_task_t root_task;
-static SD_task_t end_task;
-
-static void dax_task_free(void *task)
-{
-  SD_task_destroy(static_cast<SD_task_t>(task));
-}
 
 /** @brief loads a DAX file describing a DAG
  *
@@ -159,13 +145,13 @@ xbt_dynar_t SD_daxload(const char *filename)
   dax__switch_to_buffer(input_buffer);
   dax_lineno = 1;
 
-  result = xbt_dynar_new(sizeof(SD_task_t), dax_task_free);
-  root_task = SD_task_create_comp_seq("root", nullptr, 0);
+  result              = xbt_dynar_new(sizeof(SD_task_t), nullptr);
+  SD_task_t root_task = SD_task_create_comp_seq("root", nullptr, 0);
   /* by design the root task is always SCHEDULABLE */
   SD_task_set_state(root_task, SD_SCHEDULABLE);
 
   xbt_dynar_push(result, &root_task);
-  end_task = SD_task_create_comp_seq("end", nullptr, 0);
+  SD_task_t end_task = SD_task_create_comp_seq("end", nullptr, 0);
 
   int res = dax_lex();
   if (res != 0)
@@ -190,35 +176,35 @@ xbt_dynar_t SD_daxload(const char *filename)
         SD_task_dependency_add(newfile, it);
         xbt_dynar_push(result, &newfile);
       }
-    } else if (file->successors->empty()) {
+    }
+    if (file->successors->empty()) {
       for (SD_task_t const& it : *file->predecessors) {
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
         SD_task_dependency_add(it, newfile);
         SD_task_dependency_add(newfile, end_task);
         xbt_dynar_push(result, &newfile);
       }
-    } else {
-      for (SD_task_t const& it : *file->predecessors) {
-        for (SD_task_t const& it2 : *file->successors) {
-          if (it == it2) {
-            XBT_WARN ("File %s is produced and consumed by task %s."
-                      "This loop dependency will prevent the execution of the task.", file->name, it->name);
-          }
-          newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
-          SD_task_dependency_add(it, newfile);
-          SD_task_dependency_add(newfile, it2);
-          xbt_dynar_push(result, &newfile);
+    }
+    for (SD_task_t const& it : *file->predecessors) {
+      for (SD_task_t const& it2 : *file->successors) {
+        if (it == it2) {
+          XBT_WARN("File %s is produced and consumed by task %s."
+                   "This loop dependency will prevent the execution of the task.",
+                   file->name, it->name);
         }
+        newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
+        SD_task_dependency_add(it, newfile);
+        SD_task_dependency_add(newfile, it2);
+        xbt_dynar_push(result, &newfile);
       }
     }
+    /* Free previous copy of the files */
+    SD_task_destroy(file);
   }
 
   /* Push end task last */
   xbt_dynar_push(result, &end_task);
 
-  /* Free previous copy of the files */
-  for (auto const& elm : files)
-    SD_task_destroy(elm.second);
   unsigned int cpt;
   xbt_dynar_foreach(result, cpt, file) {
     if (SD_task_get_kind(file) == SD_TASK_COMM_E2E) {
@@ -239,8 +225,8 @@ xbt_dynar_t SD_daxload(const char *filename)
   }
 
   if (not acyclic_graph_detail(result)) {
-    std::string base = simgrid::xbt::Path(filename).getBasename();
-    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", base.c_str());
+    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.",
+              simgrid::xbt::Path(filename).getBasename().c_str());
     xbt_dynar_foreach(result, cpt, file)
       SD_task_destroy(file);
     xbt_dynar_free_container(&result);
