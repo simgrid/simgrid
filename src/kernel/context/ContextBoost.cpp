@@ -4,9 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ContextBoost.hpp"
-
-#include <utility>
-#include <xbt/log.h>
+#include "src/simix/smx_private.hpp"
 
 #if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
 #include <sanitizer/asan_interface.h>
