@@ -25,15 +25,6 @@
 namespace simgrid {
 namespace config {
 
-class XBT_PUBLIC missing_key_error : public std::runtime_error {
-public:
-  explicit missing_key_error(const std::string& what)
-    : std::runtime_error(what) {}
-  explicit missing_key_error(const char* what)
-    : std::runtime_error(what) {}
-  ~missing_key_error() override;
-};
-
 template<class T> inline
 std::string to_string(T&& value)
 {
