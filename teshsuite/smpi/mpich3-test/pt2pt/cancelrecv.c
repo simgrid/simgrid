@@ -100,11 +100,11 @@ int main(int argc, char *argv[])
              * may be changed */
             if ((s[0].MPI_ERROR) != -3) {
                 errs++;
-                printf("Send request status 0 modified. s[0].MPI_ERROR = %x\n", s[0].MPI_ERROR);
+                printf("Send request status 0 modified. s[0].MPI_ERROR = %d\n", s[0].MPI_ERROR);
             }
             if ((s[1].MPI_ERROR) != -3) {
                 errs++;
-                printf("Send request status 1 modified. s[1].MPI_ERROR = %x\n", s[1].MPI_ERROR);
+                printf("Send request status 1 modified. s[1].MPI_ERROR = %d\n", s[1].MPI_ERROR);
             }
         }
         MPI_Barrier(comm);

@@ -15,7 +15,7 @@ static char MTEST_Descrip[] = "Test of various send cancel calls";
 int main(int argc, char *argv[])
 {
     int errs = 0;
-    int rank, size, source, dest;
+    int rank, size, dest;
     MPI_Comm comm;
     MPI_Status status;
     MPI_Request req;
@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(comm, &rank);
     MPI_Comm_size(comm, &size);
 
-    source = 0;
     dest = size - 1;
 
     MTestPrintfMsg(1, "Starting scancel test\n");
@@ -83,7 +82,7 @@ int main(int argc, char *argv[])
             }
         }
         MPI_Barrier(comm);
-
+#ifdef TEST_IRSEND
         if (rank == 0) {
             char *bsendbuf;
             int bsendbufsize;
@@ -143,7 +142,7 @@ int main(int argc, char *argv[])
 
         /* Because this test is erroneous, we do not perform it unless
          * TEST_IRSEND is defined.  */
-#ifdef TEST_IRSEND
+
         /* We avoid ready send to self because an implementation
          * is free to detect the error in delivering a message to
          * itself without a pending receive; we could also check

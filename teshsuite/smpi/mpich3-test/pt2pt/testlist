@@ -33,13 +33,11 @@ isendirecv 10
 probe-unexp 4
 probenull 1
 # For testing, scancel will run with 1 process as well
-#needs MPI_Cancel, MPI_Test_cancelled, MPI_Ibsend
-#scancel 2 xfail=ticket287
-#needs MPI_Cancel, MPI_Test_cancelled
-#scancel2 2
+scancel 2 xfail=ticket287
+scancel2 2
+#Needs MPI_Buffer_attach
 #pscancel 2 xfail=ticket287
-#needs MPI_Cancel
-#rcancel 2
+rcancel 2
 #cancelrecv 2 xfail=ticket287
 isendselfprobe 1
 inactivereq 1
