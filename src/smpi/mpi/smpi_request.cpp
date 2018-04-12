@@ -16,6 +16,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "xbt/config.hpp"
+#include <xbt/ex.hpp>
 
 #include <algorithm>
 
@@ -67,6 +68,7 @@ Request::Request(void* buf, int count, MPI_Datatype datatype, int src, int dst, 
   else
     refcount_ = 0;
   op_   = MPI_REPLACE;
+  cancelled_ = 0;
 }
 
 MPI_Comm Request::comm(){
@@ -139,6 +141,8 @@ int Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl* i
       ref->truncated_ = 1;
     if(req->detached_==1)
       ref->detached_sender_=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
+    if(req->cancelled_==0)
+      req->cancelled_=-1;//mark as uncancellable
     XBT_DEBUG("match succeeded");
     return 1;
   }else return 0;
@@ -162,6 +166,8 @@ int Request::match_send(void* a, void* b, simgrid::kernel::activity::CommImpl* i
       req->truncated_ = 1;
     if(ref->detached_==1)
       req->detached_sender_=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
+    if(req->cancelled_==0)
+      req->cancelled_=-1;//mark as uncancellable
     XBT_DEBUG("match succeeded");
     return 1;
   } else
@@ -501,6 +507,14 @@ void Request::startall(int count, MPI_Request * requests)
   }
 }
 
+void Request::cancel()
+{
+  if(cancelled_!=-1)
+    cancelled_=1;
+  if (this->action_ != nullptr)
+    (boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(this->action_))->cancel();
+}
+
 int Request::test(MPI_Request * request, MPI_Status * status) {
   //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or testall before)
   // to avoid deadlocks if used as a break condition, such as
@@ -514,8 +528,13 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
   Status::empty(status);
   int flag = 1;
   if (((*request)->flags_ & PREPARED) == 0) {
-    if ((*request)->action_ != nullptr)
-      flag = simcall_comm_test((*request)->action_);
+    if ((*request)->action_ != nullptr){
+      try{
+        flag = simcall_comm_test((*request)->action_);
+      }catch (xbt_ex& e) {
+        return 0;
+      }
+    }
     if (flag) {
       finish_wait(request,status);
       nsleeps=1;//reset the number of sleeps we will do next time
@@ -576,8 +595,12 @@ int Request::testany(int count, MPI_Request requests[], int *index, MPI_Status *
     static int nsleeps = 1;
     if(smpi_test_sleep > 0)
       simcall_process_sleep(nsleeps*smpi_test_sleep);
-
-    i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
+    try{
+      i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
+    }catch (xbt_ex& e) {
+      return 0;
+    }
+    
     if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
       *index = map[i];
       finish_wait(&requests[*index],status);
@@ -689,6 +712,12 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
 {
   MPI_Request req = *request;
   Status::empty(status);
+  
+  if (req->cancelled_==1){
+    if (status!=MPI_STATUS_IGNORE)
+      status->cancelled=1;
+    return;
+  }
 
   if (not((req->detached_ != 0) && ((req->flags_ & SEND) != 0)) && ((req->flags_ & PREPARED) == 0)) {
     if(status != MPI_STATUS_IGNORE) {
@@ -758,9 +787,15 @@ void Request::wait(MPI_Request * request, MPI_Status * status)
     return;
   }
 
-  if ((*request)->action_ != nullptr)
-    // this is not a detached send
-    simcall_comm_wait((*request)->action_, -1.0);
+  if ((*request)->action_ != nullptr){
+      try{
+        // this is not a detached send
+        simcall_comm_wait((*request)->action_, -1.0);
+      }catch (xbt_ex& e) {
+        XBT_VERB("Request cancelled");
+      }
+  }
+
 
   finish_wait(request,status);
   if (*request != MPI_REQUEST_NULL && (((*request)->flags_ & NON_PERSISTENT)!=0))
@@ -802,7 +837,14 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
     }
     if (size > 0) {
       XBT_DEBUG("Enter waitany for %lu comms", xbt_dynar_length(&comms));
-      int i = simcall_comm_waitany(&comms, -1);
+      int i=MPI_UNDEFINED;
+      try{
+        // this is not a detached send
+        i = simcall_comm_waitany(&comms, -1);
+      }catch (xbt_ex& e) {
+      XBT_INFO("request %d cancelled ",i);
+        return i;
+      }
 
       // not MPI_UNDEFINED, as this is a simix return code
       if (i != -1) {
@@ -856,6 +898,7 @@ int Request::waitall(int count, MPI_Request requests[], MPI_Status status[])
       index = c;
     } else {
       index = waitany(count, (MPI_Request*)requests, pstat);
+      
       if (index == MPI_UNDEFINED)
         break;
 

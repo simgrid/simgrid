@@ -215,6 +215,7 @@ typedef struct {
   int MPI_TAG;
   int MPI_ERROR;
   int count;
+  int cancelled;
 } MPI_Status;
 
 typedef SMPI_Win* MPI_Win;

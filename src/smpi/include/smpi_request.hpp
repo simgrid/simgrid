@@ -38,6 +38,7 @@ class Request : public F2C {
     MPI_Request detached_sender_;
     int refcount_;
     MPI_Op op_;
+    int cancelled_;
   public:
     Request()=default;
     Request(void *buf, int count, MPI_Datatype datatype, int src, int dst, int tag, MPI_Comm comm, unsigned flags);
@@ -51,6 +52,7 @@ class Request : public F2C {
     int detached();
     void print_request(const char *message);
     void start();
+    void cancel();
 
     static void finish_wait(MPI_Request* request, MPI_Status * status);
     static void unref(MPI_Request* request);

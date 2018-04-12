@@ -259,8 +259,8 @@ WRAPPED_PMPI_CALL(MPI_Info, MPI_Info_f2c,(MPI_Fint info),(info))
 WRAPPED_PMPI_CALL(MPI_Op, MPI_Op_f2c,(MPI_Fint op),(op))
 WRAPPED_PMPI_CALL(MPI_Request, MPI_Request_f2c,(MPI_Fint request),(request))
 WRAPPED_PMPI_CALL(MPI_Win, MPI_Win_f2c,(MPI_Fint win),(win))
-
-
+WRAPPED_PMPI_CALL(int,MPI_Cancel,(MPI_Request* request) ,(request))
+WRAPPED_PMPI_CALL(int, MPI_Test_cancelled,(MPI_Status* status, int* flag) ,(status, flag))
 /*
   Unimplemented Calls - both PMPI and MPI calls are generated.
   When implementing, please move ahead, swap UNIMPLEMENTED_WRAPPED_PMPI_CALL for WRAPPED_PMPI_CALL,
@@ -276,7 +276,6 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Bsend_init,(void* buf, int count, MPI_Da
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Bsend,(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) ,(buf, count, datatype, dest, tag, comm))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Buffer_attach,(void* buffer, int size) ,(buffer, size))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Buffer_detach,(void* buffer, int* size) ,(buffer, size))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Cancel,(MPI_Request* request) ,(request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Cart_map,(MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank) ,(comm_old, ndims, dims, periods, newrank))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Close_port,( char *port_name),( port_name))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_accept,( char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm),( port_name, info, root, comm, newcomm))
@@ -387,7 +386,6 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Rsend_init,(void* buf, int count, MPI_Da
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Rsend,(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) ,(buf, count, datatype, dest, tag, comm))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Status_set_cancelled,(MPI_Status *status,int flag),(status,flag))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Status_set_elements,( MPI_Status *status, MPI_Datatype datatype, int count),( status, datatype, count))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_Test_cancelled,(MPI_Status* status, int* flag) ,(status, flag))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Topo_test,(MPI_Comm comm, int* top_type) ,(comm, top_type))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Type_create_darray,(int size, int rank, int ndims, int* array_of_gsizes, int* array_of_distribs, int* array_of_dargs, int* array_of_psizes,int order, MPI_Datatype oldtype, MPI_Datatype *newtype) ,(size, rank, ndims, array_of_gsizes,array_of_distribs, array_of_dargs, array_of_psizes,order,oldtype, newtype))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Type_get_contents,(MPI_Datatype datatype, int max_integers, int max_addresses, int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses, MPI_Datatype *array_of_datatypes),(datatype, max_integers, max_addresses,max_datatypes, array_of_integers, array_of_addresses, array_of_datatypes))

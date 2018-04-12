@@ -680,6 +680,30 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indic
   return retval;
 }
 
+int PMPI_Cancel(MPI_Request* request)
+{
+  int retval = 0;
+
+  smpi_bench_end();
+  if (*request == MPI_REQUEST_NULL) {
+    retval = MPI_ERR_REQUEST;
+  } else {
+    (*request)->cancel();
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Test_cancelled(MPI_Status* status, int* flag){
+  if(status==MPI_STATUS_IGNORE){
+    *flag=0;
+    return MPI_ERR_ARG;
+  }
+  *flag=simgrid::smpi::Status::cancelled(status);
+  return MPI_SUCCESS;  
+}
+
 MPI_Request PMPI_Request_f2c(MPI_Fint request){
   return static_cast<MPI_Request>(simgrid::smpi::Request::f2c(request));
 }

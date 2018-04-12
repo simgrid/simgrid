@@ -18,7 +18,13 @@ void Status::empty(MPI_Status * status)
     status->MPI_TAG = MPI_ANY_TAG;
     status->MPI_ERROR = MPI_SUCCESS;
     status->count=0;
+    status->cancelled=0;
   }
+}
+
+int Status::cancelled(MPI_Status * status)
+{
+  return status->cancelled!=0;
 }
 
 int Status::get_count(MPI_Status * status, MPI_Datatype datatype)

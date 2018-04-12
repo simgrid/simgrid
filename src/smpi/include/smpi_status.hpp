@@ -17,6 +17,7 @@ namespace smpi{
 class Status{
 public:
 static void empty(MPI_Status * status);
+static int cancelled (MPI_Status * status);
 static int get_count(MPI_Status * status, MPI_Datatype datatype);
 };
 
