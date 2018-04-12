@@ -260,4 +260,16 @@ xbt_dynar_foreach (dyn,cpt,str) {
 /** @} */
 SG_END_DECL()
 
+#ifdef __cplusplus
+namespace simgrid {
+namespace xbt {
+/** Dynar of `T*` which `delete` its values */
+template <class T> inline xbt_dynar_t newDeleteDynar()
+{
+  return xbt_dynar_new(sizeof(T*), [](void* p) { delete *(T**)p; });
+}
+}
+}
+#endif
+
 #endif /* XBT_DYNAR_H */

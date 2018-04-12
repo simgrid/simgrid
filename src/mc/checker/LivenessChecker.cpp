@@ -15,7 +15,6 @@
 
 #include <xbt/automaton.h>
 #include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 

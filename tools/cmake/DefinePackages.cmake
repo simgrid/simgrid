@@ -732,7 +732,6 @@ set(headers_to_install
   include/xbt/cunit.h
   include/xbt/dict.h
   include/xbt/dynar.h
-  include/xbt/dynar.hpp
   include/xbt/ex.h
   include/xbt/ex.hpp
   include/xbt/exception.hpp
