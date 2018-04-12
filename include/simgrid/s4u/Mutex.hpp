@@ -35,8 +35,8 @@ class XBT_PUBLIC Mutex {
   explicit Mutex(simgrid::kernel::activity::MutexImpl * mutex) : mutex_(mutex) {}
 
   /* refcounting */
-  friend void intrusive_ptr_add_ref(Mutex* mutex);
-  friend void intrusive_ptr_release(Mutex* mutex);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* mutex);
+  friend XBT_PUBLIC void intrusive_ptr_release(Mutex* mutex);
 
 public:
   using Ptr = boost::intrusive_ptr<Mutex>;

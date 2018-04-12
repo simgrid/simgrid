@@ -36,6 +36,8 @@ using MailboxPtr = boost::intrusive_ptr<Mailbox>;
 XBT_PUBLIC void intrusive_ptr_release(Mailbox* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(Mailbox* m);
 class Mutex;
+XBT_PUBLIC void intrusive_ptr_release(Mutex* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* m);
 class NetZone;
 class VirtualMachine;
 class File;
