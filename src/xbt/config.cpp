@@ -322,7 +322,7 @@ inline ConfigurationElement* Config::getDictElement(const char* name)
         XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->getKey().c_str());
       return res;
     } else {
-      throw simgrid::config::missing_key_error(std::string("Bad config key: ") + name);
+      THROWF(not_found_error, 0, "Bad config key: %s", name);
     }
   }
 }
@@ -519,30 +519,9 @@ void xbt_cfg_set_parse(const char *options)
     if (name.compare(0, path.length(), path) != 0)
       XBT_INFO("Configuration change: Set '%s' to '%s'", name.c_str(), val.c_str());
 
-    try {
-      (*simgrid_config)[name.c_str()].setStringValue(val.c_str());
-    }
-    catch (simgrid::config::missing_key_error& e) {
-      goto on_missing_key;
-    }
-    catch (...) {
-      goto on_exception;
-    }
+    (*simgrid_config)[name.c_str()].setStringValue(val.c_str());
   }
-  return;
-
-  /* Do not THROWF from a C++ exception catching context, or some cleanups will be missing */
-on_missing_key:
-  THROWF(not_found_error, 0, "Could not set variables %s", options);
-on_exception:
-  THROWF(unknown_error, 0, "Could not set variables %s", options);
 }
-
-// Horrible mess to translate C++ exceptions to C exceptions:
-// Exit from the catch block (and do the correct exception cleaning) before attempting to THROWF.
-#define TRANSLATE_EXCEPTIONS(...) \
-  catch(simgrid::config::missing_key_error& e) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); } \
-  catch(...) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); }
 
 /** @brief Set the value of a variable, using the string representation of that value
  *
@@ -552,11 +531,7 @@ on_exception:
 
 void xbt_cfg_set_as_string(const char *key, const char *value)
 {
-  try {
-    (*simgrid_config)[key].setStringValue(value);
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s as string %s", key, value);
+  (*simgrid_config)[key].setStringValue(value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
@@ -566,11 +541,7 @@ void xbt_cfg_set_as_string(const char *key, const char *value)
  */
 void xbt_cfg_setdefault_int(const char *key, int value)
 {
-  try {
-    (*simgrid_config)[key].setDefaultValue<int>(value);
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default integer %i", key, value);
+  (*simgrid_config)[key].setDefaultValue<int>(value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
@@ -580,11 +551,7 @@ void xbt_cfg_setdefault_int(const char *key, int value)
  */
 void xbt_cfg_setdefault_double(const char *key, double value)
 {
-  try {
-    (*simgrid_config)[key].setDefaultValue<double>(value);
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default double %f", key, value);
+  (*simgrid_config)[key].setDefaultValue<double>(value);
 }
 
 /** @brief Set a string value to \a name within \a cfg if it wasn't changed yet
@@ -594,11 +561,7 @@ void xbt_cfg_setdefault_double(const char *key, double value)
  */
 void xbt_cfg_setdefault_string(const char *key, const char *value)
 {
-  try {
-    (*simgrid_config)[key].setDefaultValue<std::string>(value ? value : "");
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default string %s", key, value);
+  (*simgrid_config)[key].setDefaultValue<std::string>(value ? value : "");
 }
 
 /** @brief Set an boolean value to \a name within \a cfg if it wasn't changed yet
@@ -608,11 +571,7 @@ void xbt_cfg_setdefault_string(const char *key, const char *value)
  */
 void xbt_cfg_setdefault_boolean(const char *key, const char *value)
 {
-  try {
-    (*simgrid_config)[key].setDefaultValue<bool>(simgrid::config::parseBool(value));
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to default boolean %s", key, value);
+  (*simgrid_config)[key].setDefaultValue<bool>(simgrid::config::parseBool(value));
 }
 
 /** @brief Set an integer value to \a name within \a cfg
@@ -622,11 +581,7 @@ void xbt_cfg_setdefault_boolean(const char *key, const char *value)
  */
 void xbt_cfg_set_int(const char *key, int value)
 {
-  try {
-    (*simgrid_config)[key].setValue<int>(value);
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to integer %i", key, value);
+  (*simgrid_config)[key].setValue<int>(value);
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
@@ -636,11 +591,7 @@ void xbt_cfg_set_int(const char *key, int value)
  */
 void xbt_cfg_set_double(const char *key, double value)
 {
-  try {
-    (*simgrid_config)[key].setValue<double>(value);
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to double %f", key, value);
+  (*simgrid_config)[key].setValue<double>(value);
 }
 
 /** @brief Set or add a string value to \a name within \a cfg
@@ -651,11 +602,7 @@ void xbt_cfg_set_double(const char *key, double value)
  */
 void xbt_cfg_set_string(const char* key, const char* value)
 {
-  try {
-    (*simgrid_config)[key].setValue<std::string>(value);
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to string %s", key, value);
+  (*simgrid_config)[key].setValue<std::string>(value);
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
@@ -665,21 +612,14 @@ void xbt_cfg_set_string(const char* key, const char* value)
  */
 void xbt_cfg_set_boolean(const char *key, const char *value)
 {
-  try {
-    (*simgrid_config)[key].setValue<bool>(simgrid::config::parseBool(value));
-    return;
-  }
-  TRANSLATE_EXCEPTIONS("Could not set variable %s to boolean %s", key, value);
+  (*simgrid_config)[key].setValue<bool>(simgrid::config::parseBool(value));
 }
 
 
 /* Say if the value is the default value */
 int xbt_cfg_is_default_value(const char *key)
 {
-  try {
-    return (*simgrid_config)[key].isDefault() ? 1 : 0;
-  }
-  TRANSLATE_EXCEPTIONS("Could not get variable %s", key);
+  return (*simgrid_config)[key].isDefault() ? 1 : 0;
 }
 
 /*----[ Getting ]---------------------------------------------------------*/
@@ -691,10 +631,7 @@ int xbt_cfg_is_default_value(const char *key)
  */
 int xbt_cfg_get_int(const char *key)
 {
-  try {
-    return (*simgrid_config)[key].getValue<int>();
-  }
-  TRANSLATE_EXCEPTIONS("Could not get variable %s", key);
+  return (*simgrid_config)[key].getValue<int>();
 }
 
 /** @brief Retrieve a double value of a variable (get a warning if not uniq)
@@ -705,10 +642,7 @@ int xbt_cfg_get_int(const char *key)
  */
 double xbt_cfg_get_double(const char *key)
 {
-  try {
-    return (*simgrid_config)[key].getValue<double>();
-  }
-  TRANSLATE_EXCEPTIONS("Could not get variable %s", key);
+  return (*simgrid_config)[key].getValue<double>();
 }
 
 /** @brief Retrieve a string value of a variable (get a warning if not uniq)
@@ -723,10 +657,7 @@ double xbt_cfg_get_double(const char *key)
  */
 std::string xbt_cfg_get_string(const char* key)
 {
-  try {
-    return (*simgrid_config)[key].getValue<std::string>();
-  }
-  TRANSLATE_EXCEPTIONS("Could not get variable %s", key);
+  return (*simgrid_config)[key].getValue<std::string>();
 }
 
 /** @brief Retrieve a boolean value of a variable (get a warning if not uniq)
@@ -738,10 +669,7 @@ std::string xbt_cfg_get_string(const char* key)
  */
 int xbt_cfg_get_boolean(const char *key)
 {
-  try {
-    return (*simgrid_config)[key].getValue<bool>() ? 1 : 0;
-  }
-  TRANSLATE_EXCEPTIONS("Could not get variable %s", key);
+  return (*simgrid_config)[key].getValue<bool>() ? 1 : 0;
 }
 
 #ifdef SIMGRID_TEST
