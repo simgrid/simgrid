@@ -567,9 +567,9 @@ public:
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     std::string s = boost::algorithm::join(action, " ");
-    xbt_assert(get_reqq_self()->size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
-    MPI_Request request = get_reqq_self()->back();
-    get_reqq_self()->pop_back();
+    xbt_assert(req_storage->size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
+    MPI_Request request = req_storage->find(args.src, args.dst, args.tag);
+    req_storage->remove(request);
 
     if (request == MPI_REQUEST_NULL) {
       /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just
