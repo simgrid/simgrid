@@ -611,7 +611,7 @@ public:
       Request::send(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
     } else if (name == "Isend") {
       MPI_Request request = Request::isend(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
-      get_reqq_self()->push_back(request);
+      req_storage->add(request);
     } else {
       xbt_die("Don't know this action, %s", name.c_str());
     }
@@ -642,7 +642,7 @@ public:
       Request::recv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);
     } else if (name == "Irecv") {
       MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
-      get_reqq_self()->push_back(request);
+      req_storage->add(request);
     }
 
     TRACE_smpi_comm_out(my_proc_id);
