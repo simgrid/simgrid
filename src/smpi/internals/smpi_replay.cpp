@@ -552,7 +552,7 @@ public:
 
 class WaitAction : public ReplayAction<WaitTestParser> {
 public:
-  WaitAction(RequestStorage& storage) : ReplayAction("Wait", storage) {}
+  explicit WaitAction(RequestStorage& storage) : ReplayAction("Wait", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     std::string s = boost::algorithm::join(action, " ");
@@ -655,7 +655,7 @@ public:
 
 class TestAction : public ReplayAction<WaitTestParser> {
 public:
-  TestAction(RequestStorage& storage) : ReplayAction("Test", storage) {}
+  explicit TestAction(RequestStorage& storage) : ReplayAction("Test", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     MPI_Request request = req_storage->find(args.src, args.dst, args.tag);
@@ -704,7 +704,7 @@ public:
 
 class WaitAllAction : public ReplayAction<ActionArgParser> {
 public:
-  WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll", storage) {}
+  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     const unsigned int count_requests = req_storage->size();
