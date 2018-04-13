@@ -149,7 +149,7 @@ public:
     {
       for (auto& pair : store) {
         auto& req = pair.second;
-        auto my_proc_id = simgrid::s4u::this_actor::getPid();
+        auto my_proc_id = simgrid::s4u::this_actor::get_pid();
         if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
           vec.push_back(pair.second);
           pair.second->print_request("MM");
@@ -529,11 +529,13 @@ public:
 template <class T> class ReplayAction {
 protected:
   const std::string name;
+  RequestStorage* req_storage; // Points to the right storage for this process, nullptr except for Send/Recv/Wait/Test actions.
   const int my_proc_id;
   T args;
 
 public:
-  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
+  explicit ReplayAction(std::string name, RequestStorage& storage) : name(name), req_storage(&storage), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
+  explicit ReplayAction(std::string name) : name(name), req_storage(nullptr), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
   virtual ~ReplayAction() = default;
 
   virtual void execute(simgrid::xbt::ReplayAction& action)
@@ -561,7 +563,7 @@ public:
 
 class WaitAction : public ReplayAction<WaitTestParser> {
 public:
-  WaitAction() : ReplayAction("Wait") {}
+  WaitAction(RequestStorage& storage) : ReplayAction("Wait", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     std::string s = boost::algorithm::join(action, " ");
@@ -595,7 +597,7 @@ public:
 class SendAction : public ReplayAction<SendRecvParser> {
 public:
   SendAction() = delete;
-  explicit SendAction(std::string name) : ReplayAction(name) {}
+  explicit SendAction(std::string name, RequestStorage& storage) : ReplayAction(name, storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
@@ -621,7 +623,7 @@ public:
 class RecvAction : public ReplayAction<SendRecvParser> {
 public:
   RecvAction() = delete;
-  explicit RecvAction(std::string name) : ReplayAction(name) {}
+  explicit RecvAction(std::string name, RequestStorage& storage) : ReplayAction(name, storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
@@ -664,7 +666,7 @@ public:
 
 class TestAction : public ReplayAction<WaitTestParser> {
 public:
-  TestAction() : ReplayAction("Test") {}
+  TestAction(RequestStorage& storage) : ReplayAction("Test", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     MPI_Request request = get_reqq_self()->back();
@@ -711,7 +713,7 @@ public:
 
 class WaitAllAction : public ReplayAction<ActionArgParser> {
 public:
-  WaitAllAction() : ReplayAction("waitAll") {}
+  WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     const unsigned int count_requests = get_reqq_self()->size();
@@ -944,6 +946,8 @@ void smpi_replay_init(int* argc, char*** argv)
   smpi_process()->set_replaying(true);
 
   int my_proc_id = simgrid::s4u::this_actor::get_pid();
+  storage.resize(smpi_process_count());
+
   TRACE_smpi_init(my_proc_id);
   TRACE_smpi_computing_init(my_proc_id);
   TRACE_smpi_comm_in(my_proc_id, "smpi_replay_run_init", new simgrid::instr::NoOpTIData("init"));
@@ -954,13 +958,13 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("comm_split",[](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
   xbt_replay_action_register("comm_dup",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
 
-  xbt_replay_action_register("send",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SendAction("send").execute(action); });
-  xbt_replay_action_register("Isend", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SendAction("Isend").execute(action); });
-  xbt_replay_action_register("recv",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::RecvAction("recv").execute(action); });
-  xbt_replay_action_register("Irecv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::RecvAction("Irecv").execute(action); });
-  xbt_replay_action_register("test",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::TestAction().execute(action); });
-  xbt_replay_action_register("wait",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::WaitAction().execute(action); });
-  xbt_replay_action_register("waitAll", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::WaitAllAction().execute(action); });
+  xbt_replay_action_register("send",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SendAction("send", storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
+  xbt_replay_action_register("Isend", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SendAction("Isend", storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
+  xbt_replay_action_register("recv",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::RecvAction("recv", storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
+  xbt_replay_action_register("Irecv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::RecvAction("Irecv", storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
+  xbt_replay_action_register("test",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::TestAction(storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
+  xbt_replay_action_register("wait",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::WaitAction(storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
+  xbt_replay_action_register("waitAll", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::WaitAllAction(storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
   xbt_replay_action_register("barrier", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::BarrierAction().execute(action); });
   xbt_replay_action_register("bcast",   [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::BcastAction().execute(action); });
   xbt_replay_action_register("reduce",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ReduceAction().execute(action); });
