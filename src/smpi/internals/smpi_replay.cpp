@@ -132,6 +132,21 @@ public:
   virtual void parse(simgrid::xbt::ReplayAction& action, std::string name) { CHECK_ACTION_PARAMS(action, 0, 0) }
 };
 
+class WaitTestParser : public ActionArgParser {
+public:
+  int src;
+  int dst;
+  int tag;
+
+  void parse(simgrid::xbt::ReplayAction& action, std::string name) override
+  {
+    CHECK_ACTION_PARAMS(action, 3, 0)
+    src = std::stoi(action[2]);
+    dst = std::stoi(action[3]);
+    tag = std::stoi(action[4]);
+  }
+};
+
 class SendRecvParser : public ActionArgParser {
 public:
   /* communication partner; if we send, this is the receiver and vice versa */
@@ -487,7 +502,7 @@ public:
   }
 };
 
-class WaitAction : public ReplayAction<ActionArgParser> {
+class WaitAction : public ReplayAction<WaitTestParser> {
 public:
   WaitAction() : ReplayAction("Wait") {}
   void kernel(simgrid::xbt::ReplayAction& action) override
@@ -497,7 +512,7 @@ public:
     MPI_Request request = get_reqq_self()->back();
     get_reqq_self()->pop_back();
 
-    if (request == nullptr) {
+    if (request == MPI_REQUEST_NULL) {
       /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just
        * return.*/
       return;
@@ -507,9 +522,6 @@ public:
 
     // Must be taken before Request::wait() since the request may be set to
     // MPI_REQUEST_NULL by Request::wait!
-    int src                  = request->comm()->group()->rank(request->src());
-    int dst                  = request->comm()->group()->rank(request->dst());
-    int tag                  = request->tag();
     bool is_wait_for_receive = (request->flags() & RECV);
     // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("wait"));
@@ -519,7 +531,7 @@ public:
 
     TRACE_smpi_comm_out(rank);
     if (is_wait_for_receive)
-      TRACE_smpi_recv(src, dst, tag);
+      TRACE_smpi_recv(args.src, args.dst, args.tag);
   }
 };
 
@@ -593,7 +605,7 @@ public:
   }
 };
 
-class TestAction : public ReplayAction<ActionArgParser> {
+class TestAction : public ReplayAction<WaitTestParser> {
 public:
   TestAction() : ReplayAction("Test") {}
   void kernel(simgrid::xbt::ReplayAction& action) override
