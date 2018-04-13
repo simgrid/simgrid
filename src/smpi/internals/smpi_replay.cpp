@@ -126,6 +126,61 @@ namespace simgrid {
 namespace smpi {
 
 namespace replay {
+
+class RequestStorage {
+private:
+    req_storage_t store;
+
+public:
+    RequestStorage() {}
+    int size()
+    {
+      return store.size();
+    }
+
+    req_storage_t& get_store()
+    {
+      return store;
+    }
+
+    void get_requests(std::vector<MPI_Request>& vec)
+    {
+      for (auto& pair : store) {
+        auto& req = pair.second;
+        auto my_proc_id = simgrid::s4u::this_actor::getPid();
+        if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
+          vec.push_back(pair.second);
+          pair.second->print_request("MM");
+        }
+      }
+    }
+
+    MPI_Request find(int src, int dst, int tag)
+    {
+      req_storage_t::iterator it = store.find(req_key_t(src, dst, tag));
+      return (it == store.end()) ? MPI_REQUEST_NULL : it->second;
+    }
+
+    void remove(MPI_Request req)
+    {
+      if (req == MPI_REQUEST_NULL) return;
+
+      store.erase(req_key_t(req->src()-1, req->dst()-1, req->tag()));
+    }
+
+    void add(MPI_Request req)
+    {
+      if (req != MPI_REQUEST_NULL) // Can and does happen in the case of TestAction
+        store.insert({req_key_t(req->src()-1, req->dst()-1, req->tag()), req});
+    }
+
+    /* Sometimes we need to re-insert MPI_REQUEST_NULL but we still need src,dst and tag */
+    void addNullRequest(int src, int dst, int tag)
+    {
+      store.insert({req_key_t(src, dst, tag), MPI_REQUEST_NULL});
+    }
+};
+
 class ActionArgParser {
 public:
   virtual ~ActionArgParser() = default;
@@ -878,6 +933,7 @@ public:
 } // Replay Namespace
 }} // namespace simgrid::smpi
 
+std::vector<simgrid::smpi::replay::RequestStorage> storage;
 /** @brief Only initialize the replay, don't do it for real */
 void smpi_replay_init(int* argc, char*** argv)
 {
