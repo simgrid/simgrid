@@ -19,8 +19,6 @@
 #include <sstream>
 #include <vector>
 
-using simgrid::s4u::Actor;
-
 #include <tuple>
 // From https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set
 // This is all just to make std::unordered_map work with std::tuple. If we need this in other places,
