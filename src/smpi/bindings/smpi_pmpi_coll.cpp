@@ -415,14 +415,19 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
     retval = MPI_ERR_OP;
   } else {
     int rank = simgrid::s4u::this_actor::get_pid();
-
+    if (sendbuf == MPI_IN_PLACE) {
+      sendtmpbuf = static_cast<void*>(xbt_malloc(count * datatype->size()));
+      memcpy(sendtmpbuf, recvbuf, count * datatype->size());
+    }
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::Pt2PtTIData(
                                            "scan", -1, datatype->is_replayable() ? count : count * datatype->size(),
                                            simgrid::smpi::Datatype::encode(datatype)));
 
-    retval = simgrid::smpi::Colls::scan(sendbuf, recvbuf, count, datatype, op, comm);
+    retval = simgrid::smpi::Colls::scan(sendtmpbuf, recvbuf, count, datatype, op, comm);
 
     TRACE_smpi_comm_out(rank);
+    if (sendbuf == MPI_IN_PLACE)
+      xbt_free(sendtmpbuf);
   }
 
   smpi_bench_begin();
