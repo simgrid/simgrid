@@ -25,8 +25,9 @@
 // this could go into a header file.
 namespace hash_tuple{
     template <typename TT>
-    struct hash
+    class hash
     {
+    public:
         size_t
         operator()(TT const& tt) const
         {
@@ -42,8 +43,9 @@ namespace hash_tuple{
 
     // Recursive template code derived from Matthieu M.
     template <class Tuple, size_t Index = std::tuple_size<Tuple>::value - 1>
-    struct HashValueImpl
+    class HashValueImpl
     {
+    public:
       static void apply(size_t& seed, Tuple const& tuple)
       {
         HashValueImpl<Tuple, Index-1>::apply(seed, tuple);
@@ -52,8 +54,9 @@ namespace hash_tuple{
     };
 
     template <class Tuple>
-    struct HashValueImpl<Tuple,0>
+    class HashValueImpl<Tuple,0>
     {
+    public:
       static void apply(size_t& seed, Tuple const& tuple)
       {
         hash_combine(seed, std::get<0>(tuple));
@@ -61,8 +64,9 @@ namespace hash_tuple{
     };
 
     template <typename ... TT>
-    struct hash<std::tuple<TT...>>
+    class hash<std::tuple<TT...>>
     {
+    public:
         size_t
         operator()(std::tuple<TT...> const& tt) const
         {
