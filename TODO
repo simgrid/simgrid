@@ -24,6 +24,3 @@
      to get the list of files to pack.
 
 * Replace XBT with the C++ standard library
-
-* Some XBT datacontainers seem to overlap. Kill some/all of them.
-    - replace set with SWAG
