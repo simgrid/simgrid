@@ -719,18 +719,20 @@ public:
   WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    const unsigned int count_requests = get_reqq_self()->size();
+    const unsigned int count_requests = req_storage->size();
 
     if (count_requests > 0) {
       TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
       std::vector<std::pair</*sender*/int,/*recv*/int>> sender_receiver;
-      for (const auto& req : (*get_reqq_self())) {
+      std::vector<MPI_Request> reqs;
+      req_storage->get_requests(reqs);
+      for (const auto& req : reqs) {
         if (req && (req->flags() & RECV)) {
           sender_receiver.push_back({req->src(), req->dst()});
         }
       }
       MPI_Status status[count_requests];
-      Request::waitall(count_requests, &(*get_reqq_self())[0], status);
+      Request::waitall(count_requests, &(reqs.data())[0], status);
 
       for (auto& pair : sender_receiver) {
         TRACE_smpi_recv(pair.first, pair.second, 0);
