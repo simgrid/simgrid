@@ -415,6 +415,7 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MP
     retval = MPI_ERR_OP;
   } else {
     int rank = simgrid::s4u::this_actor::get_pid();
+    void* sendtmpbuf = sendbuf;
     if (sendbuf == MPI_IN_PLACE) {
       sendtmpbuf = static_cast<void*>(xbt_malloc(count * datatype->size()));
       memcpy(sendtmpbuf, recvbuf, count * datatype->size());
