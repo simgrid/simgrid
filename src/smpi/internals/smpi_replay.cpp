@@ -670,7 +670,7 @@ public:
     // if request is null here, this may mean that a previous test has succeeded
     // Different times in traced application and replayed version may lead to this
     // In this case, ignore the extra calls.
-    if (request != nullptr) {
+    if (request != MPI_REQUEST_NULL) {
       TRACE_smpi_testing_in(my_proc_id);
 
       MPI_Status status;
