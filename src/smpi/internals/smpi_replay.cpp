@@ -721,6 +721,7 @@ public:
       }
       MPI_Status status[count_requests];
       Request::waitall(count_requests, &(reqs.data())[0], status);
+      req_storage->get_store().clear();
 
       for (auto& pair : sender_receiver) {
         TRACE_smpi_recv(pair.first, pair.second, 0);
