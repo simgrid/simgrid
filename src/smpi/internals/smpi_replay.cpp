@@ -78,6 +78,8 @@ namespace hash_tuple{
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
+typedef std::tuple</*sender*/ int, /* reciever */ int, /* tag */int> req_key_t;
+typedef std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int,int,int>>> req_storage_t;
 
 static MPI_Datatype MPI_DEFAULT_TYPE;
 
