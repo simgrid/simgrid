@@ -4,9 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
-#include "simgrid/forward.h"
-#include "simgrid/s4u/VirtualMachine.hpp"
-#include "simgrid/s4u/forward.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 

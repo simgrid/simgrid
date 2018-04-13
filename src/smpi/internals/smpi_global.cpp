@@ -5,26 +5,17 @@
 
 #include "SmpiHost.hpp"
 #include "mc/mc.h"
-#include "private.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/Mailbox.hpp"
-#include "simgrid/s4u/forward.hpp"
 #include "smpi_coll.hpp"
-#include "smpi_comm.hpp"
-#include "smpi_group.hpp"
-#include "smpi_info.hpp"
 #include "smpi_process.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "xbt/config.hpp"
 
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <fstream>
-#include <sys/stat.h>
 
 #if HAVE_SENDFILE
 #include <sys/sendfile.h>
@@ -50,8 +41,8 @@ struct papi_process_data {
   papi_counter_t counter_data;
   int event_set;
 };
-
 #endif
+
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 std::unordered_map<std::string, double> location2speedup;

@@ -6,8 +6,7 @@
 #ifndef INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
-#include <simgrid/s4u/forward.hpp>
-#include <simgrid/simix.h>
+#include <simgrid/forward.h>
 #include <xbt/Extendable.hpp>
 #include <xbt/base.h>
 

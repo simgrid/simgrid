@@ -6,13 +6,10 @@
 #ifndef SIMGRID_S4U_MAILBOX_HPP
 #define SIMGRID_S4U_MAILBOX_HPP
 
-#include <string>
-
-#include <xbt/base.h>
 #include <xbt/string.hpp>
-
-#include <simgrid/s4u/forward.hpp>
 #include <simgrid/s4u/Actor.hpp>
+
+#include <string>
 
 namespace simgrid {
 namespace s4u {

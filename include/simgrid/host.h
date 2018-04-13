@@ -6,11 +6,8 @@
 #ifndef SIMGRID_HOST_H_
 #define SIMGRID_HOST_H_
 
-#include <stddef.h>
-
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
-
 #include <simgrid/forward.h>
 
 SG_BEGIN_DECL()

@@ -6,20 +6,15 @@
 #ifndef SIMGRID_S4U_NETZONE_HPP
 #define SIMGRID_S4U_NETZONE_HPP
 
+#include <simgrid/forward.h>
+#include <xbt/signal.hpp>
+
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include <xbt/base.h>
-#include <xbt/graph.h>
-#include <xbt/signal.hpp>
-
-#include <simgrid/forward.h>
-#include <simgrid/s4u/forward.hpp>
-
 namespace simgrid {
-
 namespace s4u {
 
 /** @brief Networking Zones

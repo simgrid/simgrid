@@ -14,9 +14,7 @@
 #include <simgrid/storage.h>
 #include <simgrid/vm.h>
 #include <simgrid/zone.h>
-#include <xbt/base.h>
-#include <xbt/dict.h>
-#include <xbt/dynar.h>
+#include <xbt.h>
 
 #ifdef __cplusplus
 #include <map>

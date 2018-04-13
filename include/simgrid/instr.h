@@ -7,7 +7,6 @@
 #define INSTR_H_
 
 #include <simgrid/msg.h>
-#include <xbt.h>
 
 SG_BEGIN_DECL()
 

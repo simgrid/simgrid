@@ -6,7 +6,6 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
-#include <simgrid/s4u/forward.hpp>
 #include <simgrid/forward.h>
 
 namespace simgrid {

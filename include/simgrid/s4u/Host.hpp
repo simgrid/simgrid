@@ -7,13 +7,11 @@
 #define SIMGRID_S4U_HOST_HPP
 
 #include <simgrid/forward.h>
-#include <simgrid/s4u/forward.hpp>
 #include <xbt/Extendable.hpp>
 #include <xbt/signal.hpp>
 #include <xbt/string.hpp>
 
 #include <map>
-#include <string>
 #include <unordered_map>
 
 namespace simgrid {

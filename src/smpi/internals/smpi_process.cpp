@@ -5,10 +5,7 @@
 
 #include "smpi_process.hpp"
 #include "mc/mc.h"
-#include "private.hpp"
-#include "simgrid/s4u/forward.hpp"
 #include "smpi_comm.hpp"
-#include "smpi_group.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
