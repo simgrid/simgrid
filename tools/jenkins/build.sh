@@ -126,8 +126,12 @@ echo "XX Configure and build SimGrid"
 echo "XX   pwd: "$(pwd)
 echo "XX"
 set -x
-cmake -G"$GENERATOR"\
-  -DCMAKE_INSTALL_PREFIX=/builds/simgrid_install \
+if [ "$build_mode" = "ModelChecker" ] ;
+   INSTALL="-DCMAKE_INSTALL_PREFIX=/builds/mc_simgrid_install"
+elif [ "$build_mode" = "Debug" ] ;
+   INSTALL="-DCMAKE_INSTALL_PREFIX=/builds/simgrid_install"
+fi
+cmake -G"$GENERATOR" $INSTALL \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_smpi_ISP_testsuite=$(onoff test "$build_mode" = "ModelChecker") \
@@ -159,12 +163,14 @@ if [ -f Testing/TAG ] ; then
    mv CTestResults.xml $WORKSPACE
 fi
 
-if test "$(uname)" != "Msys" -a "${build_mode}" = "Debug" ; then
+if test "$(uname)" != "Msys" && test "${build_mode}" = "Debug" -o "${build_mode}" = "ModelChecker" ; then
   echo "XX"
-  echo "XX Test done. Install everything since it's a regular build + not on a Windows."
+  echo "XX Test done. Install everything since it's a regular build, not on a Windows."
   echo "XX"
 
-  rm -rf /builds/simgrid_install
+  test "${build_mode}" = "Debug"        && rm -rf /builds/simgrid_install
+  test "${build_mode}" = "ModelChecker" && rm -rf /builds/mc_simgrid_install
+
   make install
 fi
 
