@@ -669,8 +669,8 @@ public:
   TestAction(RequestStorage& storage) : ReplayAction("Test", storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    MPI_Request request = get_reqq_self()->back();
-    get_reqq_self()->pop_back();
+    MPI_Request request = req_storage->find(args.src, args.dst, args.tag);
+    req_storage->remove(request);
     // if request is null here, this may mean that a previous test has succeeded
     // Different times in traced application and replayed version may lead to this
     // In this case, ignore the extra calls.
@@ -683,7 +683,10 @@ public:
       XBT_DEBUG("MPI_Test result: %d", flag);
       /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now
        * nullptr.*/
-      get_reqq_self()->push_back(request);
+      if (request == MPI_REQUEST_NULL)
+        req_storage->addNullRequest(args.src, args.dst, args.tag);
+      else
+        req_storage->add(request);
 
       TRACE_smpi_testing_out(my_proc_id);
     }
