@@ -704,7 +704,6 @@ public:
 
     /* start a simulated timer */
     smpi_process()->simulated_start();
-    set_reqq_self(new std::vector<MPI_Request>);
   }
 };
 
@@ -1006,20 +1005,19 @@ void smpi_replay_main(int* argc, char*** argv)
 
   /* and now, finalize everything */
   /* One active process will stop. Decrease the counter*/
-  XBT_DEBUG("There are %zu elements in reqq[*]", get_reqq_self()->size());
-  if (not get_reqq_self()->empty()) {
-    unsigned int count_requests=get_reqq_self()->size();
+  unsigned int count_requests = storage[simgrid::s4u::this_actor::get_pid() - 1].size();
+  XBT_DEBUG("There are %ud elements in reqq[*]", count_requests);
+  if (count_requests > 0) {
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
     unsigned int i=0;
 
-    for (auto const& req : *get_reqq_self()) {
-      requests[i] = req;
+    for (auto const& pair : storage[simgrid::s4u::this_actor::get_pid() - 1].get_store()) {
+      requests[i] = pair.second;
       i++;
     }
     simgrid::smpi::Request::waitall(count_requests, requests, status);
   }
-  delete get_reqq_self();
   active_processes--;
 
   if(active_processes==0){
