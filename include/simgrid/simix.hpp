@@ -83,7 +83,7 @@ XBT_PUBLIC void registerFunction(const char* name, ActorCodeFactory factory);
  *
  * If these functions manage to unlock some of the processes, then the deadlock will be avoided.
  */
-extern simgrid::xbt::signal<void()> onDeadlock;
+XBT_PUBLIC_DATA simgrid::xbt::signal<void()> onDeadlock;
 }
 }
 
