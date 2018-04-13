@@ -77,7 +77,6 @@ namespace hash_tuple{
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
-static std::unordered_map<int, std::vector<MPI_Request>*> reqq;
 typedef std::tuple</*sender*/ int, /* reciever */ int, /* tag */int> req_key_t;
 typedef std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int,int,int>>> req_storage_t;
 
@@ -106,16 +105,6 @@ static void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
     std::string s = boost::algorithm::join(action, " ");
     XBT_VERB("%s %f", s.c_str(), smpi_process()->simulated_elapsed() - clock);
   }
-}
-
-static std::vector<MPI_Request>* get_reqq_self()
-{
-  return reqq.at(simgrid::s4u::this_actor::get_pid());
-}
-
-static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
-{
-  reqq.insert({simgrid::s4u::this_actor::get_pid(), mpi_request});
 }
 
 /* Helper function */
