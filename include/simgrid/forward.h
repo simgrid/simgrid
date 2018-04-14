@@ -6,11 +6,44 @@
 #ifndef SIMGRID_TYPES_H
 #define SIMGRID_TYPES_H
 
+#include <xbt/base.h>
+
 #ifdef __cplusplus
 
-#include <simgrid/s4u/forward.hpp>
+#include <boost/intrusive_ptr.hpp>
 
 namespace simgrid {
+
+namespace s4u {
+class Activity;
+class Actor;
+using ActorPtr = boost::intrusive_ptr<Actor>;
+XBT_PUBLIC void intrusive_ptr_release(Actor* actor);
+XBT_PUBLIC void intrusive_ptr_add_ref(Actor* actor);
+class Comm;
+using CommPtr = boost::intrusive_ptr<Comm>;
+XBT_PUBLIC void intrusive_ptr_release(Comm* c);
+XBT_PUBLIC void intrusive_ptr_add_ref(Comm* c);
+class Engine;
+class Exec;
+using ExecPtr = boost::intrusive_ptr<Exec>;
+XBT_PUBLIC void intrusive_ptr_release(Exec* e);
+XBT_PUBLIC void intrusive_ptr_add_ref(Exec* e);
+class Host;
+class Link;
+class Mailbox;
+using MailboxPtr = boost::intrusive_ptr<Mailbox>;
+XBT_PUBLIC void intrusive_ptr_release(Mailbox* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(Mailbox* m);
+class Mutex;
+XBT_PUBLIC void intrusive_ptr_release(Mutex* m);
+XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* m);
+class NetZone;
+class VirtualMachine;
+class File;
+class Storage;
+} // namespace s4u
+
 namespace config {
 template <class T> class Flag;
 }
@@ -21,6 +54,7 @@ namespace actor {
 class ActorImpl;
 using ActorImplPtr = boost::intrusive_ptr<ActorImpl>;
 } // namespace actor
+
 namespace activity {
   class ActivityImpl;
   using ActivityImplPtr = boost::intrusive_ptr<ActivityImpl>;
