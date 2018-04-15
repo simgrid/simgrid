@@ -503,13 +503,11 @@ public:
 template <class T> class ReplayAction {
 protected:
   const std::string name;
-  RequestStorage* req_storage; // Points to the right storage for this process, nullptr except for Send/Recv/Wait/Test actions.
   const int my_proc_id;
   T args;
 
 public:
-  explicit ReplayAction(std::string name, RequestStorage& storage) : name(name), req_storage(&storage), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
-  explicit ReplayAction(std::string name) : name(name), req_storage(nullptr), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
+  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
   virtual ~ReplayAction() = default;
 
   virtual void execute(simgrid::xbt::ReplayAction& action)
@@ -536,14 +534,17 @@ public:
 };
 
 class WaitAction : public ReplayAction<WaitTestParser> {
+private:
+  RequestStorage& req_storage;
+
 public:
-  explicit WaitAction(RequestStorage& storage) : ReplayAction("Wait", storage) {}
+  explicit WaitAction(RequestStorage& storage) : ReplayAction("Wait"), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     std::string s = boost::algorithm::join(action, " ");
-    xbt_assert(req_storage->size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
-    MPI_Request request = req_storage->find(args.src, args.dst, args.tag);
-    req_storage->remove(request);
+    xbt_assert(req_storage.size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
+    MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
+    req_storage.remove(request);
 
     if (request == MPI_REQUEST_NULL) {
       /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just
@@ -569,9 +570,11 @@ public:
 };
 
 class SendAction : public ReplayAction<SendRecvParser> {
+private:
+  RequestStorage& req_storage;
+
 public:
-  SendAction() = delete;
-  explicit SendAction(std::string name, RequestStorage& storage) : ReplayAction(name, storage) {}
+  explicit SendAction(std::string name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
@@ -585,7 +588,7 @@ public:
       Request::send(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
     } else if (name == "Isend") {
       MPI_Request request = Request::isend(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
-      req_storage->add(request);
+      req_storage.add(request);
     } else {
       xbt_die("Don't know this action, %s", name.c_str());
     }
@@ -595,9 +598,11 @@ public:
 };
 
 class RecvAction : public ReplayAction<SendRecvParser> {
+private:
+  RequestStorage& req_storage;
+
 public:
-  RecvAction() = delete;
-  explicit RecvAction(std::string name, RequestStorage& storage) : ReplayAction(name, storage) {}
+  explicit RecvAction(std::string name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
     int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
@@ -616,7 +621,7 @@ public:
       Request::recv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD, &status);
     } else if (name == "Irecv") {
       MPI_Request request = Request::irecv(nullptr, args.size, args.datatype1, args.partner, args.tag, MPI_COMM_WORLD);
-      req_storage->add(request);
+      req_storage.add(request);
     }
 
     TRACE_smpi_comm_out(my_proc_id);
@@ -639,12 +644,15 @@ public:
 };
 
 class TestAction : public ReplayAction<WaitTestParser> {
+private:
+  RequestStorage& req_storage;
+
 public:
-  explicit TestAction(RequestStorage& storage) : ReplayAction("Test", storage) {}
+  explicit TestAction(RequestStorage& storage) : ReplayAction("Test"), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    MPI_Request request = req_storage->find(args.src, args.dst, args.tag);
-    req_storage->remove(request);
+    MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
+    req_storage.remove(request);
     // if request is null here, this may mean that a previous test has succeeded
     // Different times in traced application and replayed version may lead to this
     // In this case, ignore the extra calls.
@@ -658,9 +666,9 @@ public:
       /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now
        * nullptr.*/
       if (request == MPI_REQUEST_NULL)
-        req_storage->addNullRequest(args.src, args.dst, args.tag);
+        req_storage.addNullRequest(args.src, args.dst, args.tag);
       else
-        req_storage->add(request);
+        req_storage.add(request);
 
       TRACE_smpi_testing_out(my_proc_id);
     }
@@ -688,17 +696,20 @@ public:
 };
 
 class WaitAllAction : public ReplayAction<ActionArgParser> {
+private:
+  RequestStorage& req_storage;
+
 public:
-  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll", storage) {}
+  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll"), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override
   {
-    const unsigned int count_requests = req_storage->size();
+    const unsigned int count_requests = req_storage.size();
 
     if (count_requests > 0) {
       TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::Pt2PtTIData("waitAll", -1, count_requests, ""));
       std::vector<std::pair</*sender*/int,/*recv*/int>> sender_receiver;
       std::vector<MPI_Request> reqs;
-      req_storage->get_requests(reqs);
+      req_storage.get_requests(reqs);
       for (const auto& req : reqs) {
         if (req && (req->flags() & RECV)) {
           sender_receiver.push_back({req->src(), req->dst()});
@@ -706,7 +717,7 @@ public:
       }
       MPI_Status status[count_requests];
       Request::waitall(count_requests, &(reqs.data())[0], status);
-      req_storage->get_store().clear();
+      req_storage.get_store().clear();
 
       for (auto& pair : sender_receiver) {
         TRACE_smpi_recv(pair.first, pair.second, 0);
