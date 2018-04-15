@@ -126,9 +126,9 @@ echo "XX Configure and build SimGrid"
 echo "XX   pwd: "$(pwd)
 echo "XX"
 set -x
-if [ "$build_mode" = "ModelChecker" ] ;
+if [ "$build_mode" = "ModelChecker" ] ; then
    INSTALL="-DCMAKE_INSTALL_PREFIX=/builds/mc_simgrid_install"
-elif [ "$build_mode" = "Debug" ] ;
+elif [ "$build_mode" = "Debug" ] ; then
    INSTALL="-DCMAKE_INSTALL_PREFIX=/builds/simgrid_install"
 fi
 cmake -G"$GENERATOR" $INSTALL \
