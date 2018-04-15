@@ -11,12 +11,12 @@
 
 #include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/simix.h"
-#include "src/simix/smx_synchro_private.hpp"
+#include "src/kernel/activity/ConditionVariableImpl.hpp"
 
 namespace simgrid {
 namespace s4u {
 
-ConditionVariablePtr ConditionVariable::createConditionVariable()
+ConditionVariablePtr ConditionVariable::create()
 {
   smx_cond_t cond = simcall_cond_init();
   return ConditionVariablePtr(&cond->cond_, false);

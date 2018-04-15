@@ -311,6 +311,7 @@ if __name__ == '__main__':
     fd.write('#if SIMGRID_HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#endif\n')
+    fd.write('#include "src/kernel/activity/ConditionVariableImpl.hpp"\n')
     fd.write('#include "src/simix/smx_synchro_private.hpp"\n')
     fd.write('#include "src/simix/smx_host_private.hpp"\n')
 

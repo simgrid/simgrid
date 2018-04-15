@@ -34,7 +34,9 @@ public:
   friend XBT_PUBLIC void intrusive_ptr_release(ConditionVariable * cond);
   using Ptr = boost::intrusive_ptr<ConditionVariable>;
 
-  static Ptr createConditionVariable();
+  static Ptr create();
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") Ptr createConditionVariable() { return create(); }
 
   //  Wait functions without time:
 

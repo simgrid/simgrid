@@ -20,6 +20,7 @@
 #include "simgrid/simix/blocking_simcall.hpp"
 #include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.hpp"

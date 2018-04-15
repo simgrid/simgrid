@@ -387,6 +387,8 @@ set(SIMIX_SRC
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
   src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/ConditionVariableImpl.cpp
+  src/kernel/activity/ConditionVariableImpl.hpp
   src/kernel/activity/CommImpl.cpp
   src/kernel/activity/CommImpl.hpp
   src/kernel/activity/ExecImpl.cpp
