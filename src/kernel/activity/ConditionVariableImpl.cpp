@@ -26,7 +26,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
 smx_cond_t SIMIX_cond_init()
 {
   XBT_IN("()");
-  smx_cond_t cond = new s_smx_cond_t();
+  smx_cond_t cond = new simgrid::kernel::activity::ConditionVariableImpl();
   XBT_OUT();
   return cond;
 }
@@ -79,6 +79,13 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
   XBT_OUT();
 }
 
+namespace simgrid {
+namespace kernel {
+namespace activity {
+
+ConditionVariableImpl::ConditionVariableImpl() : cond_(this) {}
+ConditionVariableImpl::~ConditionVariableImpl() = default;
+
 /**
  * \brief Signalizes a condition.
  *
@@ -86,16 +93,15 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
  * If there are no process sleeping, no action is done.
  * \param cond A condition
  */
-void SIMIX_cond_signal(smx_cond_t cond)
+void ConditionVariableImpl::signal()
 {
-  XBT_IN("(%p)", cond);
-  XBT_DEBUG("Signal condition %p", cond);
+  XBT_DEBUG("Signal condition %p", this);
 
   /* If there are processes waiting for the condition choose one and try
      to make it acquire the mutex */
-  if (not cond->sleeping.empty()) {
-    auto& proc = cond->sleeping.front();
-    cond->sleeping.pop_front();
+  if (not sleeping.empty()) {
+    auto& proc = sleeping.front();
+    sleeping.pop_front();
 
     /* Destroy waiter's synchronization */
     proc.waiting_synchro = nullptr;
@@ -119,47 +125,40 @@ void SIMIX_cond_signal(smx_cond_t cond)
  *
  * Signal ALL processes waiting on a condition.
  * If there are no process waiting, no action is done.
- * \param cond A condition
  */
-void SIMIX_cond_broadcast(smx_cond_t cond)
+void ConditionVariableImpl::broadcast()
 {
-  XBT_IN("(%p)", cond);
-  XBT_DEBUG("Broadcast condition %p", cond);
+  XBT_DEBUG("Broadcast condition %p", this);
 
   /* Signal the condition until nobody is waiting on it */
-  while (not cond->sleeping.empty()) {
-    SIMIX_cond_signal(cond);
-  }
-  XBT_OUT();
+  while (not sleeping.empty())
+    signal();
 }
 
-smx_cond_t SIMIX_cond_ref(smx_cond_t cond)
+// boost::intrusive_ptr<ConditionVariableImpl> support:
+void intrusive_ptr_add_ref(simgrid::kernel::activity::ConditionVariableImpl* cond)
 {
-  if (cond != nullptr)
-    intrusive_ptr_add_ref(cond);
-  return cond;
+  cond->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
 
-void SIMIX_cond_unref(smx_cond_t cond)
+void intrusive_ptr_release(simgrid::kernel::activity::ConditionVariableImpl* cond)
 {
-  XBT_IN("(%p)", cond);
-  XBT_DEBUG("Destroy condition %p", cond);
-  if (cond != nullptr) {
-    intrusive_ptr_release(cond);
-  }
-  XBT_OUT();
-}
-
-void intrusive_ptr_add_ref(s_smx_cond_t* cond)
-{
-  auto previous = cond->refcount_.fetch_add(1);
-  xbt_assert(previous != 0);
-}
-
-void intrusive_ptr_release(s_smx_cond_t* cond)
-{
-  if (cond->refcount_.fetch_sub(1) == 1) {
+  if (cond->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
+    std::atomic_thread_fence(std::memory_order_acquire);
     xbt_assert(cond->sleeping.empty(), "Cannot destroy conditional since someone is still using it");
     delete cond;
   }
+}
+} // namespace activity
+} // namespace kernel
+}
+
+XBT_PRIVATE void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond)
+{
+  cond->signal();
+}
+
+XBT_PRIVATE void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond)
+{
+  cond->broadcast();
 }

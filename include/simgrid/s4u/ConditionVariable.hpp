@@ -23,7 +23,7 @@ namespace s4u {
  */
 class XBT_PUBLIC ConditionVariable {
 private:
-  friend s_smx_cond_t;
+  friend kernel::activity::ConditionVariableImpl;
   smx_cond_t cond_;
   explicit ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:

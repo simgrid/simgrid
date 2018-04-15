@@ -8,6 +8,7 @@
 #ifndef XBT_THREAD_H
 #define XBT_THREAD_H
 
+#include "simgrid/forward.h"
 #include <xbt/function_types.h>
 #include <xbt/misc.h> /* SG_BEGIN_DECL */
 
@@ -51,7 +52,11 @@ XBT_PUBLIC void xbt_mutex_destroy(xbt_mutex_t mutex);
 /** @brief Thread condition data type (opaque object)
  *  @hideinitializer
  */
+#ifdef __cplusplus
+typedef simgrid::kernel::activity::ConditionVariableImpl* xbt_cond_t;
+#else
 typedef struct s_smx_cond_* xbt_cond_t;
+#endif
 
 /** @brief Creates a condition variable */
 XBT_PUBLIC xbt_cond_t xbt_cond_init(void);

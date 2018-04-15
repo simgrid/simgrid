@@ -6,10 +6,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/simix.h" /* used implementation */
+#include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "xbt/ex.hpp"
 #include "xbt/synchro.h"
-
-#include "simgrid/simix.h" /* used implementation */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt, "Synchronization mechanism");
 
@@ -76,5 +76,5 @@ void xbt_cond_broadcast(xbt_cond_t cond)
 
 void xbt_cond_destroy(xbt_cond_t cond)
 {
-  SIMIX_cond_unref((smx_cond_t)cond);
+  delete cond;
 }

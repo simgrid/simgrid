@@ -203,7 +203,7 @@ inline static smx_cond_t simcall_BODY_cond_init()
 inline static void simcall_BODY_cond_signal(smx_cond_t cond)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_cond_signal(cond);
+    simcall_HANDLER_cond_signal(&SIMIX_process_self()->simcall, cond);
   return simcall<void, smx_cond_t>(SIMCALL_COND_SIGNAL, cond);
 }
 
@@ -224,7 +224,7 @@ inline static void simcall_BODY_cond_wait_timeout(smx_cond_t cond, smx_mutex_t m
 inline static void simcall_BODY_cond_broadcast(smx_cond_t cond)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_cond_broadcast(cond);
+    simcall_HANDLER_cond_broadcast(&SIMIX_process_self()->simcall, cond);
   return simcall<void, smx_cond_t>(SIMCALL_COND_BROADCAST, cond);
 }
 

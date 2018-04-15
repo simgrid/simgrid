@@ -187,7 +187,7 @@ case SIMCALL_COND_INIT:
   break;
 
 case SIMCALL_COND_SIGNAL:
-  SIMIX_cond_signal(simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]));
+  simcall_HANDLER_cond_signal(simcall, simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]));
   SIMIX_simcall_answer(simcall);
   break;
 
@@ -200,7 +200,7 @@ case SIMCALL_COND_WAIT_TIMEOUT:
   break;
 
 case SIMCALL_COND_BROADCAST:
-  SIMIX_cond_broadcast(simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]));
+  simcall_HANDLER_cond_broadcast(simcall, simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]));
   SIMIX_simcall_answer(simcall);
   break;
 

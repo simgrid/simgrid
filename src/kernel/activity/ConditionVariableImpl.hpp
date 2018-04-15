@@ -10,19 +10,34 @@
 #include "src/simix/ActorImpl.hpp"
 #include <boost/intrusive/list.hpp>
 
-struct s_smx_cond_t {
-  s_smx_cond_t() : cond_(this) {}
+namespace simgrid {
+namespace kernel {
+namespace activity {
 
-  std::atomic_int_fast32_t refcount_{1};
-  smx_mutex_t mutex = nullptr;
+class XBT_PUBLIC ConditionVariableImpl {
+public:
+  ConditionVariableImpl();
+  ~ConditionVariableImpl();
+
   simgrid::kernel::actor::SynchroList sleeping; /* list of sleeping processes */
+  smx_mutex_t mutex = nullptr;
   simgrid::s4u::ConditionVariable cond_;
-};
 
+  void broadcast();
+  void signal();
+
+private:
+  std::atomic_int_fast32_t refcount_{1};
+  friend void intrusive_ptr_add_ref(ConditionVariableImpl* cond);
+  friend void intrusive_ptr_release(ConditionVariableImpl* cond);
+};
+} // namespace activity
+} // namespace kernel
+} // namespace simgrid
 XBT_PRIVATE smx_cond_t SIMIX_cond_init();
-XBT_PRIVATE void SIMIX_cond_broadcast(smx_cond_t cond);
-XBT_PRIVATE void SIMIX_cond_signal(smx_cond_t cond);
-XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t* cond);
-XBT_PRIVATE void intrusive_ptr_release(s_smx_cond_t* cond);
+
+// simcall handlers
+XBT_PRIVATE void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond);
+XBT_PRIVATE void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond);
 
 #endif

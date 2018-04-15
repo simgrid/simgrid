@@ -1406,8 +1406,10 @@ XBT_PRIVATE void simcall_HANDLER_comm_testany(smx_simcall_t simcall, boost::intr
 XBT_PRIVATE void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex);
+XBT_PRIVATE void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond);
 XBT_PRIVATE void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex);
 XBT_PRIVATE void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout);
+XBT_PRIVATE void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
 XBT_PRIVATE void simcall_HANDLER_storage_read(smx_simcall_t simcall, surf_storage_t st, sg_size_t size);

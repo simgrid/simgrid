@@ -48,10 +48,6 @@ typedef enum {
 /**
  * \ingroup simix_synchro_management
  */
-typedef struct s_smx_cond_t* smx_cond_t;
-/**
- * \ingroup simix_synchro_management
- */
 typedef struct s_smx_sem_t* smx_sem_t;
 
 /* ****************************** Process *********************************** */
@@ -261,8 +257,6 @@ XBT_PUBLIC int simcall_mutex_trylock(smx_mutex_t mutex);
 XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
 
 XBT_PUBLIC smx_cond_t simcall_cond_init();
-XBT_PUBLIC void SIMIX_cond_unref(smx_cond_t cond);
-XBT_PUBLIC smx_cond_t SIMIX_cond_ref(smx_cond_t cond);
 XBT_PUBLIC void simcall_cond_signal(smx_cond_t cond);
 XBT_PUBLIC void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_PUBLIC void simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
