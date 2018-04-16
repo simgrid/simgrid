@@ -152,12 +152,7 @@ void Container::logCreation()
 
   if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
-    /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
-    if (timestamp < 1e-12)
-      stream << 0;
-    else
-      stream << timestamp;
-    stream << " " << id_ << " " << type_->get_id() << " " << father_->id_ << " \"" << name_ << "\"";
+    stream << timestamp << " " << id_ << " " << type_->get_id() << " " << father_->id_ << " \"" << name_ << "\"";
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
   } else if (instr_fmt_type == instr_fmt_TI) {
@@ -196,11 +191,7 @@ void Container::logDestruction()
 
   if (instr_fmt_type == instr_fmt_paje) {
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";
-    /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
-    if (timestamp < 1e-12)
-      stream << 0 << " " << type_->get_id() << " " << id_;
-    else
-      stream << timestamp << " " << type_->get_id() << " " << id_;
+    stream << timestamp << " " << type_->get_id() << " " << id_;
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
   } else if (instr_fmt_type == instr_fmt_TI) {
