@@ -47,12 +47,10 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   bool all_marked = true;
   SD_task_t task = nullptr;
   std::vector<SD_task_t> current;
-  xbt_dynar_foreach(dag,count,task){
-    if(task->kind != SD_TASK_COMM_E2E){
-      if(task->successors->empty() && task->outputs->empty())
-        current.push_back(task);
-    }
-  }
+  xbt_dynar_foreach (dag, count, task)
+    if (task->kind != SD_TASK_COMM_E2E && task->successors->empty() && task->outputs->empty())
+      current.push_back(task);
+
   while (not current.empty()) {
     std::vector<SD_task_t> next;
     for (auto const& t : current) {
@@ -209,7 +207,7 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_foreach(result, cpt, file) {
     if (SD_task_get_kind(file) == SD_TASK_COMM_E2E) {
       uniq_transfer_task_name(file);
-    } else if (SD_task_get_kind(file) == SD_TASK_COMP_SEQ){
+    } else {
       /* If some tasks do not take files as input, connect them to the root
        * if they don't produce files, connect them to the end node.
        */
@@ -219,8 +217,6 @@ xbt_dynar_t SD_daxload(const char *filename)
         if (file->outputs->empty())
           SD_task_dependency_add(file, end_task);
       }
-    } else {
-      THROW_IMPOSSIBLE;
     }
   }
 
@@ -230,10 +226,10 @@ xbt_dynar_t SD_daxload(const char *filename)
     xbt_dynar_foreach(result, cpt, file)
       SD_task_destroy(file);
     xbt_dynar_free_container(&result);
-    return nullptr;
-  } else {
-    return result;
+    result = nullptr;
   }
+
+  return result;
 }
 
 void STag_dax__adag()
