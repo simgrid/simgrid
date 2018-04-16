@@ -24,11 +24,9 @@ public:
 };
 
 XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
-extern "C" {
 XBT_PUBLIC void ns3_simulator(double maxSeconds);
 XBT_PUBLIC void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat);
 XBT_PUBLIC void ns3_add_cluster(const char* id, double bw, double lat);
-}
 
 class XBT_PRIVATE SgFlow {
 public:

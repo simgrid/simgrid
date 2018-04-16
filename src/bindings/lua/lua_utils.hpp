@@ -8,8 +8,6 @@
 #ifndef LUA_UTILS_HPP
 #define LUA_UTILS_HPP
 
-extern "C" {
-
 #include <lua.h>
 
 /**
@@ -31,6 +29,5 @@ static int sglua_dump_table(lua_State* L);
 void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname);
 const char* sglua_get_spaces(int length);
 int sglua_memory_writer(lua_State* L, const void* source, size_t size, void* userdata);
-}
 
 #endif

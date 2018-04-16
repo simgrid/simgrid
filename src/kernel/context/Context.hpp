@@ -108,8 +108,6 @@ XBT_PRIVATE ContextFactory* boost_factory();
 
 typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
 
-extern "C" {
-
 XBT_PRIVATE void SIMIX_context_mod_init();
 XBT_PRIVATE void SIMIX_context_mod_exit();
 
@@ -144,7 +142,6 @@ XBT_PRIVATE smx_context_t SIMIX_context_get_current();
 XBT_PUBLIC int SIMIX_process_get_maxpid();
 
 XBT_PRIVATE void SIMIX_post_create_environment();
-}
 
 XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name);
 

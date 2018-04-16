@@ -28,8 +28,6 @@
  * MCed code.
  */
 
-extern "C" {
-
 /** Get the issuer of  a simcall (`req->issuer`)
  *
  *  In split-process mode, it does the black magic necessary to get an address
@@ -47,6 +45,5 @@ XBT_PRIVATE const char* MC_smx_actor_get_host_name(smx_actor_t p);
 XBT_PRIVATE int MC_smpi_process_count(void);
 
 XBT_PRIVATE unsigned long MC_smx_get_maxpid(void);
-}
 
 #endif

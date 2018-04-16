@@ -32,9 +32,7 @@ public:
 }
 }
 
-extern "C" {
 typedef simgrid::jedule::Jedule *jedule_t;
-}
 #endif
 
 #endif /* JEDULE_HPP_ */

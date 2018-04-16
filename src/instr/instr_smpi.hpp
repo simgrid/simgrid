@@ -12,8 +12,6 @@
 
 XBT_PRIVATE container_t smpi_container(int rank);
 
-extern "C" {
-
 XBT_PRIVATE void TRACE_internal_smpi_set_category(const char* category);
 XBT_PRIVATE const char* TRACE_internal_smpi_get_category();
 XBT_PRIVATE void TRACE_smpi_computing_init(int rank);
@@ -46,6 +44,5 @@ public:
            std::to_string(linenumber);
   }
 };
-}
 
 #endif

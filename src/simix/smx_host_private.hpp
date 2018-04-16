@@ -38,7 +38,6 @@ public:
 }
 }
 
-extern "C" {
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::function<void()> code,
                                                      void* data, double kill_time,
                                                      std::map<std::string, std::string>* properties, int auto_restart);
@@ -48,7 +47,6 @@ XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 XBT_PRIVATE void SIMIX_execution_finish(smx_activity_t synchro);
 
 XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char* category);
-}
 
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 SIMIX_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host);

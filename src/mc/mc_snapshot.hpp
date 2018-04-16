@@ -16,8 +16,6 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_unw.hpp"
 
-extern "C" {
-
 // ***** Snapshot region
 
 XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::RemoteClient* process, mc_mem_region_t reg);
@@ -53,7 +51,6 @@ static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, mc_me
 
 XBT_PRIVATE mc_mem_region_t mc_get_snapshot_region(const void* addr, const simgrid::mc::Snapshot* snapshot,
                                                    int process_index);
-}
 
 // ***** MC Snapshot
 
@@ -131,8 +128,6 @@ public:
 }
 }
 
-extern "C" {
-
 static XBT_ALWAYS_INLINE mc_mem_region_t mc_get_region_hinted(void* addr, simgrid::mc::Snapshot* snapshot,
                                                               int process_index, mc_mem_region_t region)
 {
@@ -143,7 +138,6 @@ static XBT_ALWAYS_INLINE mc_mem_region_t mc_get_region_hinted(void* addr, simgri
 }
 
 static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
-}
 
 namespace simgrid {
 namespace mc {
@@ -152,8 +146,6 @@ XBT_PRIVATE std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state);
 XBT_PRIVATE void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot);
 }
 }
-
-extern "C" {
 
 XBT_PRIVATE void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* start_addr,
                                                  simgrid::mc::ChunkedData const& pagenos);
@@ -213,7 +205,6 @@ static XBT_ALWAYS_INLINE void* MC_region_read_pointer(mc_mem_region_t region, co
 {
   void* res;
   return *(void**)MC_region_read(region, &res, addr, sizeof(void*));
-}
 }
 
 #endif

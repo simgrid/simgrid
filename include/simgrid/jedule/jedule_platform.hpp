@@ -51,11 +51,9 @@ public:
 
 }
 }
-extern "C" {
 typedef simgrid::jedule::Container * jed_container_t;
 typedef simgrid::jedule::Subset * jed_subset_t;
 void get_resource_selection_by_hosts(std::vector<jed_subset_t>* subset_list, std::vector<sg_host_t> *host_list);
-}
 
 #endif
 

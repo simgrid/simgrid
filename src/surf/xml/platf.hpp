@@ -8,8 +8,6 @@
 
 #include <xbt/signal.hpp>
 
-extern "C" {
-
 /* Module management functions */
 XBT_PUBLIC void sg_platf_init();
 XBT_PUBLIC void sg_platf_exit();
@@ -28,6 +26,5 @@ XBT_PUBLIC double surf_parse_get_bandwidth(const char* string, const char* entit
 XBT_PUBLIC double surf_parse_get_speed(const char* string, const char* entity_kind, std::string name);
 
 XBT_PUBLIC int surf_parse(); /* Entry-point to the parser */
-}
 
 #endif
