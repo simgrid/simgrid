@@ -120,9 +120,9 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
    * Arrays that hold the coordinates of the current node andthe target; comparing the values at the i-th position of
    * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
-  unsigned int myCoords[4];
+  unsigned int myCoords[dimensions_.size()];
   rankId_to_coords(src->id(), dimensions_, myCoords);
-  unsigned int targetCoords[4];
+  unsigned int targetCoords[dimensions_.size()];
   rankId_to_coords(dst->id(), dimensions_, targetCoords);
   /*
    * linkOffset describes the offset where the link we want to use is stored(+1 is added because each node has a link
