@@ -51,10 +51,8 @@ const char* simcall_names[] = {
     "SIMCALL_MUTEX_TRYLOCK",
     "SIMCALL_MUTEX_UNLOCK",
     "SIMCALL_COND_INIT",
-    "SIMCALL_COND_SIGNAL",
     "SIMCALL_COND_WAIT",
     "SIMCALL_COND_WAIT_TIMEOUT",
-    "SIMCALL_COND_BROADCAST",
     "SIMCALL_SEM_ACQUIRE",
     "SIMCALL_SEM_ACQUIRE_TIMEOUT",
     "SIMCALL_STORAGE_READ",
@@ -186,22 +184,12 @@ case SIMCALL_COND_INIT:
   SIMIX_simcall_answer(simcall);
   break;
 
-case SIMCALL_COND_SIGNAL:
-  simcall_HANDLER_cond_signal(simcall, simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]));
-  SIMIX_simcall_answer(simcall);
-  break;
-
 case SIMCALL_COND_WAIT:
   simcall_HANDLER_cond_wait(simcall, simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_mutex_t>(simcall->args[1]));
   break;
 
 case SIMCALL_COND_WAIT_TIMEOUT:
   simcall_HANDLER_cond_wait_timeout(simcall, simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]), simgrid::simix::unmarshal<smx_mutex_t>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]));
-  break;
-
-case SIMCALL_COND_BROADCAST:
-  simcall_HANDLER_cond_broadcast(simcall, simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]));
-  SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_SEM_ACQUIRE:

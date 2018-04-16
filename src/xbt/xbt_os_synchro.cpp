@@ -66,12 +66,14 @@ int xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
 
 void xbt_cond_signal(xbt_cond_t cond)
 {
-  simcall_cond_signal((smx_cond_t)cond);
+  // FIXME: this should use s4u
+  simgrid::simix::kernelImmediate([cond]() { cond->signal(); });
 }
 
 void xbt_cond_broadcast(xbt_cond_t cond)
 {
-  simcall_cond_broadcast((smx_cond_t)cond);
+  // FIXME: this should use s4u
+  simgrid::simix::kernelImmediate([cond]() { cond->broadcast(); });
 }
 
 void xbt_cond_destroy(xbt_cond_t cond)

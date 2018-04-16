@@ -494,15 +494,6 @@ smx_cond_t simcall_cond_init()
  * \ingroup simix_synchro_management
  *
  */
-void simcall_cond_signal(smx_cond_t cond)
-{
-  simcall_BODY_cond_signal(cond);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
 void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 {
   simcall_BODY_cond_wait(cond, mutex);
@@ -516,15 +507,6 @@ void simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeou
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-void simcall_cond_broadcast(smx_cond_t cond)
-{
-  simcall_BODY_cond_broadcast(cond);
 }
 
 /**

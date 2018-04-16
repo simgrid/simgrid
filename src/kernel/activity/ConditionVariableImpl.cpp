@@ -152,13 +152,3 @@ void intrusive_ptr_release(simgrid::kernel::activity::ConditionVariableImpl* con
 } // namespace activity
 } // namespace kernel
 }
-
-XBT_PRIVATE void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond)
-{
-  cond->signal();
-}
-
-XBT_PRIVATE void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond)
-{
-  cond->broadcast();
-}

@@ -1096,19 +1096,6 @@ static inline void simcall_cond_init__set__result(smx_simcall_t simcall, smx_con
   simgrid::simix::marshal<smx_cond_t>(simcall->result, result);
 }
 
-static inline smx_cond_t simcall_cond_signal__get__cond(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]);
-}
-static inline smx_cond_t simcall_cond_signal__getraw__cond(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_cond_t>(simcall->args[0]);
-}
-static inline void simcall_cond_signal__set__cond(smx_simcall_t simcall, smx_cond_t arg)
-{
-  simgrid::simix::marshal<smx_cond_t>(simcall->args[0], arg);
-}
-
 static inline smx_cond_t simcall_cond_wait__get__cond(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]);
@@ -1169,19 +1156,6 @@ static inline double simcall_cond_wait_timeout__getraw__timeout(smx_simcall_t si
 static inline void simcall_cond_wait_timeout__set__timeout(smx_simcall_t simcall, double arg)
 {
   simgrid::simix::marshal<double>(simcall->args[2], arg);
-}
-
-static inline smx_cond_t simcall_cond_broadcast__get__cond(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]);
-}
-static inline smx_cond_t simcall_cond_broadcast__getraw__cond(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_cond_t>(simcall->args[0]);
-}
-static inline void simcall_cond_broadcast__set__cond(smx_simcall_t simcall, smx_cond_t arg)
-{
-  simgrid::simix::marshal<smx_cond_t>(simcall->args[0], arg);
 }
 
 static inline smx_sem_t simcall_sem_acquire__get__sem(smx_simcall_t simcall)
@@ -1406,10 +1380,8 @@ XBT_PRIVATE void simcall_HANDLER_comm_testany(smx_simcall_t simcall, boost::intr
 XBT_PRIVATE void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex);
-XBT_PRIVATE void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond);
 XBT_PRIVATE void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex);
 XBT_PRIVATE void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout);
-XBT_PRIVATE void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 XBT_PRIVATE void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
 XBT_PRIVATE void simcall_HANDLER_storage_read(smx_simcall_t simcall, surf_storage_t st, sg_size_t size);

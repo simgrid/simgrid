@@ -36,8 +36,4 @@ private:
 } // namespace simgrid
 XBT_PRIVATE smx_cond_t SIMIX_cond_init();
 
-// simcall handlers
-XBT_PRIVATE void simcall_HANDLER_cond_signal(smx_simcall_t simcall, smx_cond_t cond);
-XBT_PRIVATE void simcall_HANDLER_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond);
-
 #endif
