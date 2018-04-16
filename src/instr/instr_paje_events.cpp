@@ -6,6 +6,7 @@
 #include "src/instr/instr_private.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include "src/smpi/include/private.hpp"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_events, instr, "Paje tracing event system (events)");
 extern FILE* tracing_file;
@@ -77,10 +78,7 @@ void NewEvent::print()
   if (instr_fmt_type != instr_fmt_paje)
     return;
 
-  if (timestamp_ < 1e-12)
-    stream << eventType_ << " " << 0 << " ";
-  else
-    stream << eventType_ << " " << timestamp_ << " ";
+  stream << eventType_ << " " << timestamp_ << " ";
   stream << getType()->get_id() << " " << getContainer()->get_id() << " " << val->getId();
   XBT_DEBUG("Dump %s", stream.str().c_str());
   fprintf(tracing_file, "%s\n", stream.str().c_str());
@@ -93,10 +91,7 @@ void LinkEvent::print()
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type != instr_fmt_paje)
     return;
-  if (timestamp_ < 1e-12) // FIXME: Why is this hardcoded? What does it stand for? Use a constant variable!
-    stream << eventType_ << " " << 0 << " " << getType()->get_id() << " " << getContainer()->get_id();
-  else
-    stream << eventType_ << " " << timestamp_ << " " << getType()->get_id() << " " << getContainer()->get_id();
+  stream << eventType_ << " " << timestamp_ << " " << getType()->get_id() << " " << getContainer()->get_id();
 
   stream << " " << value_ << " " << endpoint_->get_id() << " " << key_;
 
@@ -115,10 +110,7 @@ void VariableEvent::print()
   if (instr_fmt_type != instr_fmt_paje)
     return;
 
-  if (timestamp_ < 1e-12)
-    stream << eventType_ << " " << 0 << " ";
-  else
-    stream << eventType_ << " " << timestamp_ << " ";
+  stream << eventType_ << " " << timestamp_ << " ";
   stream << getType()->get_id() << " " << getContainer()->get_id() << " " << value;
   XBT_DEBUG("Dump %s", stream.str().c_str());
   fprintf(tracing_file, "%s\n", stream.str().c_str());
@@ -130,10 +122,7 @@ void StateEvent::print()
   stream << std::fixed << std::setprecision(TRACE_precision());
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
   if (instr_fmt_type == instr_fmt_paje) {
-    if (timestamp_ < 1e-12)
-      stream << eventType_ << " " << 0 << " " << getType()->get_id() << " " << getContainer()->get_id();
-    else
-      stream << eventType_ << " " << timestamp_ << " " << getType()->get_id() << " " << getContainer()->get_id();
+    stream << eventType_ << " " << timestamp_ << " " << getType()->get_id() << " " << getContainer()->get_id();
 
     if (value != nullptr) // PAJE_PopState Event does not need to have a value
       stream << " " << value->getId();
