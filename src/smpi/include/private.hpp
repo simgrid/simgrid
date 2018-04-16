@@ -422,8 +422,6 @@ struct option;
 XBT_PUBLIC int smpi_getopt_long (int argc,  char *const *argv,  const char *options,  const struct option *long_options, int *opt_index);
 XBT_PUBLIC int smpi_getopt (int argc,  char *const *argv,  const char *options);
 
-// TODO, make this static and expose it more cleanly
-
 struct s_smpi_privatization_region_t {
   void* address;
   int file_descriptor;
