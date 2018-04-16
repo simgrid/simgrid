@@ -192,8 +192,6 @@ public:
 
 XBT_PRIVATE std::string instr_pid(s4u_Actor* proc);
 
-extern "C" {
-
 extern XBT_PRIVATE std::set<std::string> created_categories;
 extern XBT_PRIVATE std::set<std::string> declared_marks;
 extern XBT_PRIVATE std::set<std::string> user_host_variables;
@@ -264,7 +262,6 @@ XBT_PRIVATE void dump_comment(std::string comment);
  */
 enum instr_fmt_type_t { instr_fmt_paje, instr_fmt_TI };
 extern instr_fmt_type_t instr_fmt_type;
-}
 XBT_PRIVATE std::string TRACE_get_comment();
 XBT_PRIVATE std::string TRACE_get_comment_file();
 XBT_PRIVATE std::string TRACE_get_filename();
