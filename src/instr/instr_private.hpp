@@ -8,7 +8,7 @@
 
 #include <xbt/base.h>
 
-#include "instr/instr_interface.h"
+#include "instr/instr_interface.hpp"
 #include "simgrid/instr.h"
 #include "simgrid_config.h"
 #include "src/instr/instr_paje_containers.hpp"

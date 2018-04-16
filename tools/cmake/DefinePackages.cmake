@@ -2,7 +2,7 @@
 
 set(EXTRA_DIST
   src/bindings/java/MANIFEST.in
-  src/include/instr/instr_interface.h
+  src/include/instr/instr_interface.hpp
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.hpp
@@ -634,7 +634,7 @@ set(MC_SRC
   src/mc/mc_dwarf_tagnames.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
-  src/mc/mc_ignore.h
+  src/mc/mc_ignore.hpp
   src/mc/LocationList.hpp
   src/mc/LocationList.cpp
   src/mc/mc_record.cpp

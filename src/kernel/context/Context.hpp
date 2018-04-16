@@ -6,7 +6,7 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 
-#include "instr/instr_interface.h"
+#include "instr/instr_interface.hpp"
 #include "src/internal_config.h"
 #include "src/simix/smx_network_private.hpp"
 
