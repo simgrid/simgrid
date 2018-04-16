@@ -31,15 +31,15 @@ DragonflyZone::~DragonflyZone()
   }
 }
 
-void DragonflyZone::rankId_to_coords(int rankId, unsigned int (*coords)[4])
+void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4])
 {
   // coords : group, chassis, blade, node
-  (*coords)[0] = rankId / (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
-  rankId       = rankId % (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
-  (*coords)[1] = rankId / (num_blades_per_chassis_ * num_nodes_per_blade_);
-  rankId       = rankId % (num_blades_per_chassis_ * num_nodes_per_blade_);
-  (*coords)[2] = rankId / num_nodes_per_blade_;
-  (*coords)[3] = rankId % num_nodes_per_blade_;
+  coords[0] = rankId / (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
+  rankId    = rankId % (num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_);
+  coords[1] = rankId / (num_blades_per_chassis_ * num_nodes_per_blade_);
+  rankId    = rankId % (num_blades_per_chassis_ * num_nodes_per_blade_);
+  coords[2] = rankId / num_nodes_per_blade_;
+  coords[3] = rankId % num_nodes_per_blade_;
 }
 
 void DragonflyZone::parse_specific_arguments(ClusterCreationArgs* cluster)
@@ -285,9 +285,9 @@ void DragonflyZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationA
   }
 
   unsigned int myCoords[4];
-  rankId_to_coords(src->id(), &myCoords);
+  rankId_to_coords(src->id(), myCoords);
   unsigned int targetCoords[4];
-  rankId_to_coords(dst->id(), &targetCoords);
+  rankId_to_coords(dst->id(), targetCoords);
   XBT_DEBUG("src : %u group, %u chassis, %u blade, %u node", myCoords[0], myCoords[1], myCoords[2], myCoords[3]);
   XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords[0], targetCoords[1], targetCoords[2],
             targetCoords[3]);

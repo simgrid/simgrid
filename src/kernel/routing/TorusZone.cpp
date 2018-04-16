@@ -15,12 +15,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 
-inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, unsigned int (*coords)[4])
+inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, unsigned int coords[4])
 {
   unsigned int dim_size_product = 1;
   unsigned int i = 0;
   for (auto const& cur_dim_size : dimensions) {
-    (*coords)[i] = (rankId / dim_size_product) % cur_dim_size;
+    coords[i] = (rankId / dim_size_product) % cur_dim_size;
     dim_size_product *= cur_dim_size;
     i++;
   }
@@ -121,9 +121,9 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
    * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
   unsigned int myCoords[4];
-  rankId_to_coords(src->id(), dimensions_, &myCoords);
+  rankId_to_coords(src->id(), dimensions_, myCoords);
   unsigned int targetCoords[4];
-  rankId_to_coords(dst->id(), dimensions_, &targetCoords);
+  rankId_to_coords(dst->id(), dimensions_, targetCoords);
   /*
    * linkOffset describes the offset where the link we want to use is stored(+1 is added because each node has a link
    * from itself to itself, which can only be the case if src->m_id == dst->m_id -- see above for this special case)

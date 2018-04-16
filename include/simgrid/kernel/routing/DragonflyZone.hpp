@@ -71,7 +71,7 @@ public:
   void generateLinks();
   void createLink(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
 
-  void rankId_to_coords(int rankId, unsigned int (*coords)[4]);
+  void rankId_to_coords(int rankId, unsigned int coords[4]);
 
 private:
   simgrid::s4u::Link::SharingPolicy sharing_policy_;
