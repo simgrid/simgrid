@@ -126,7 +126,7 @@ void LinkType::endEvent(container_t endContainer, std::string value, std::string
 
 void Type::logDefinition(e_event_type event_type)
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, TRACE_precision(), 0.);
@@ -141,7 +141,7 @@ void Type::logDefinition(e_event_type event_type)
 
 void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest)
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, TRACE_precision(), 0.);

@@ -19,7 +19,7 @@ PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event
     : container_(container), type_(type), timestamp_(timestamp), eventType_(eventType)
 {
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, eventType_, TRACE_precision(), timestamp_);
-  if (instr_fmt_type == instr_fmt_paje) {
+  if (trace_format == simgrid::instr::TraceFormat::Paje) {
     stream_ << std::fixed << std::setprecision(TRACE_precision());
     stream_ << eventType_ << " " << timestamp_ << " " << type_->get_id() << " " << container_->get_id();
   }
@@ -40,7 +40,7 @@ StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type
 
 void NewEvent::print()
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
 
   stream_ << " " << value->getId();
@@ -51,7 +51,7 @@ void NewEvent::print()
 
 void LinkEvent::print()
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
 
   stream_ << " " << value_ << " " << endpoint_->get_id() << " " << key_;
@@ -65,7 +65,7 @@ void LinkEvent::print()
 
 void VariableEvent::print()
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
 
   stream_ << " " << value;
@@ -76,7 +76,7 @@ void VariableEvent::print()
 
 void StateEvent::print()
 {
-  if (instr_fmt_type == instr_fmt_paje) {
+  if (trace_format == simgrid::instr::TraceFormat::Paje) {
 
     if (value != nullptr) // PAJE_PopState Event does not need to have a value
       stream_ << " " << value->getId();
@@ -91,7 +91,7 @@ void StateEvent::print()
 #endif
     XBT_DEBUG("Dump %s", stream_.str().c_str());
     fprintf(tracing_file, "%s\n", stream_.str().c_str());
-  } else if (instr_fmt_type == instr_fmt_TI) {
+  } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     if (extra_ == nullptr)
       return;
 

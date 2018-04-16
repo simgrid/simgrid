@@ -150,12 +150,12 @@ void Container::logCreation()
 
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_CreateContainer, timestamp);
 
-  if (instr_fmt_type == instr_fmt_paje) {
+  if (trace_format == simgrid::instr::TraceFormat::Paje) {
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
     stream << timestamp << " " << id_ << " " << type_->get_id() << " " << father_->id_ << " \"" << name_ << "\"";
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
-  } else if (instr_fmt_type == instr_fmt_TI) {
+  } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     // if we are in the mode with only one file
     static FILE* ti_unique_file = nullptr;
 
@@ -189,12 +189,12 @@ void Container::logDestruction()
 
   XBT_DEBUG("%s: event_type=%u, timestamp=%f", __func__, PAJE_DestroyContainer, timestamp);
 
-  if (instr_fmt_type == instr_fmt_paje) {
+  if (trace_format == simgrid::instr::TraceFormat::Paje) {
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";
     stream << timestamp << " " << type_->get_id() << " " << id_;
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
-  } else if (instr_fmt_type == instr_fmt_TI) {
+  } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
       fclose(tracing_files.at(this));
     }

@@ -37,6 +37,15 @@ typedef simgrid::instr::Container* container_t;
 namespace simgrid {
 namespace instr {
 
+/* Format of TRACING output.
+ *   - paje is the regular format, that we all know
+ *   - TI is a trick to reuse the tracing functions to generate a time independent trace during the execution. Such
+ *     trace can easily be replayed with smpi_replay afterward. This trick should be removed and replaced by some code
+ *     using the signal that we will create to cleanup the TRACING
+ */
+enum class TraceFormat { Paje, /*TimeIndependent*/ Ti };
+extern TraceFormat trace_format;
+
 class TIData {
   std::string name_;
   double amount_ = 0;
@@ -254,14 +263,6 @@ XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(std::string filename);
 XBT_PRIVATE void dump_comment(std::string comment);
 
-/* Format of TRACING output.
- *   - paje is the regular format, that we all know
- *   - TI is a trick to reuse the tracing functions to generate a time independent trace during the execution. Such
- *     trace can easily be replayed with smpi_replay afterward. This trick should be removed and replaced by some code
- *     using the signal that we will create to cleanup the TRACING
- */
-enum instr_fmt_type_t { instr_fmt_paje, instr_fmt_TI };
-extern instr_fmt_type_t instr_fmt_type;
 XBT_PRIVATE std::string TRACE_get_comment();
 XBT_PRIVATE std::string TRACE_get_comment_file();
 XBT_PRIVATE std::string TRACE_get_filename();

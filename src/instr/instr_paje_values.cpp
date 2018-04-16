@@ -17,7 +17,7 @@ EntityValue::EntityValue(std::string name, std::string color, Type* father)
 
 void EntityValue::print()
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u", __func__, PAJE_DefineEntityValue);
