@@ -91,17 +91,6 @@
 #  define XBT_THREAD_LOCAL No thread local on this architecture
 #endif
 
-/* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */
-#ifdef MIN
-#  undef MIN
-#endif
-#define MIN(a,b) ((a)<(b)?(a):(b))
-
-#ifdef MAX
-#  undef MAX
-#endif
-#define MAX(a,b) ((a)>(b)?(a):(b))
-
 /*
  * Expands to `one' if there is only one argument for the variadic part.
  * Otherwise, expands to `more'.

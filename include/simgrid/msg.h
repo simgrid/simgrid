@@ -16,6 +16,16 @@
 #include <simgrid/zone.h>
 #include <xbt.h>
 
+#ifdef MIN
+#undef MIN
+#endif
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+#ifdef MAX
+#undef MAX
+#endif
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 #ifdef __cplusplus
 #include <map>
 #include <simgrid/simix.h>
