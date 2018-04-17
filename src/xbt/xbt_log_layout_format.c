@@ -11,8 +11,12 @@
 #include "xbt/sysdep.h"
 #include <stdio.h>
 
+#ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 extern const char *xbt_log_priority_names[8];
 

@@ -13,8 +13,12 @@
 #include "xbt/asserts.h"
 #include "xbt/sysdep.h"
 
+#ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
 

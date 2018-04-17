@@ -24,8 +24,12 @@
 #include "xbt/sysdep.h"
 #include "xbt/xbt_os_thread.h"
 
+#ifndef MIN
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static xbt_os_mutex_t log_cat_init_mutex = NULL;
