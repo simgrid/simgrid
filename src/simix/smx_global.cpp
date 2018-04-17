@@ -53,7 +53,7 @@ public:
 
 void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
 
-int _sg_do_verbose_exit = 1;
+bool _sg_do_verbose_exit = true;
 static void inthandler(int)
 {
   if ( _sg_do_verbose_exit ) {

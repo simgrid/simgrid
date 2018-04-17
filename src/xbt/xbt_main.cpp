@@ -39,7 +39,7 @@ char *xbt_binary_name = NULL;   /* Name of the system process containing us (man
 xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
 int xbt_initialized = 0;
-int _sg_do_clean_atexit = 1;
+bool _sg_do_clean_atexit = true;
 
 int xbt_pagesize;
 int xbt_pagebits = 0;

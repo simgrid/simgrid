@@ -8,7 +8,7 @@
  *  This file contains the MC replay/record functionnality.
  *  A MC path may be recorded by using ``-cfg=model-check/record:1`'`.
  *  The path is written in the log output and an be replayed with MC disabled
- *  (even with an non-LC build) with `--cfg=model-check/replay:$replayPath`.
+ *  (even with an non-MC build) with `--cfg=model-check/replay:$replayPath`.
  *
  *  The same version of Simgrid should be used and the same arguments should be
  *  passed to the application (without the MC specific arguments).

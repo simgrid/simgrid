@@ -9,6 +9,7 @@
 #include "instr/instr_interface.hpp"
 #include "mc/mc.h"
 #include "src/msg/msg_private.hpp"
+#include <xbt/config.hpp>
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
@@ -17,11 +18,6 @@ MSG_Global_t msg_global = nullptr;
 static void MSG_exit();
 
 /********************************* MSG **************************************/
-
-static void _sg_cfg_cb_msg_debug_multiple_use(const char *name)
-{
-  msg_global->debug_multiple_use = xbt_cfg_get_boolean(name);
-}
 
 /**
  * \ingroup msg_simulation
@@ -36,8 +32,9 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     msg_global = new s_MSG_Global_t();
 
-    xbt_cfg_register_boolean("msg/debug-multiple-use", "no", _sg_cfg_cb_msg_debug_multiple_use,
-        "Print backtraces of both processes when there is a conflict of multiple use of a task");
+    msg_global->debug_multiple_use = false;
+    simgrid::config::bindFlag(msg_global->debug_multiple_use, "msg/debug-multiple-use",
+                              "Print backtraces of both processes when there is a conflict of multiple use of a task");
 
     SIMIX_global_init(argc, argv);
 

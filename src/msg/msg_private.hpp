@@ -74,7 +74,7 @@ public:
 
 /************************** Global variables ********************************/
 struct s_MSG_Global_t {
-  int debug_multiple_use;            /* whether we want an error message when reusing the same Task for 2 things */
+  bool debug_multiple_use;           /* whether we want an error message when reusing the same Task for 2 things */
   std::atomic_int_fast32_t sent_msg; /* Total amount of messages sent during the simulation */
   void (*task_copy_callback)(msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;

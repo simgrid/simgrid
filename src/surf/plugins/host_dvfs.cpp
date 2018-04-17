@@ -304,8 +304,8 @@ void sg_host_dvfs_plugin_init()
   sg_host_load_plugin_init();
 
   simgrid::s4u::Host::onCreation.connect(&on_host_added);
-  xbt_cfg_register_double(property_sampling_rate, 0.1, nullptr,
-                          "How often should the dvfs plugin check whether the frequency needs to be changed?");
-  xbt_cfg_register_string(property_governor, "performance", nullptr,
-                          "Which Governor should be used that adapts the CPU frequency?");
+  simgrid::config::declareFlag<double>(
+      property_sampling_rate, "How often should the dvfs plugin check whether the frequency needs to be changed?", 0.1);
+  simgrid::config::declareFlag<std::string>(
+      property_governor, "Which Governor should be used that adapts the CPU frequency?", "performance");
 }
