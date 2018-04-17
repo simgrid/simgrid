@@ -40,10 +40,7 @@ private:
 }
 }
 
-extern "C" {
 typedef simgrid::jedule::Event* jed_event_t;
-}
-
 #endif
 
 #endif /* JEDULE_EVENTS_H_ */

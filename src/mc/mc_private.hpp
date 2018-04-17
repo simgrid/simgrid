@@ -24,8 +24,6 @@ struct DerefAndCompareByActorsCountAndUsedHeap {
 }
 }
 
-extern "C" {
-
 /********************************* MC Global **********************************/
 
 XBT_PRIVATE void MC_init_dot_output();
@@ -40,8 +38,6 @@ XBT_PRIVATE void MC_show_deadlock(void);
 #define MC_VERBOSE 1
 
 /********************************** Miscellaneous **********************************/
-}
-
 namespace simgrid {
 namespace mc {
 

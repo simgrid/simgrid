@@ -10,14 +10,11 @@
 #include <string>
 #include <vector>
 
-extern "C" {
-
 // Methods used to parse and store the values for timing injections in smpi
 struct s_smpi_factor_t {
   size_t factor = 0;
   std::vector<double> values;
 };
-}
 
 XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(std::string smpi_coef_string);
 

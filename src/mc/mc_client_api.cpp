@@ -9,7 +9,7 @@
 #include <simgrid/modelchecker.h>
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_ignore.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/Client.hpp"

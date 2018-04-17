@@ -63,8 +63,6 @@ public:
 }
 }
 
-extern "C" {
-
 XBT_PUBLIC_DATA std::unique_ptr<simgrid::simix::Global> simix_global;
 
 XBT_PUBLIC void SIMIX_clean();
@@ -80,6 +78,5 @@ XBT_PUBLIC void SIMIX_clean();
     _smx_throw_issuer->exception = std::make_exception_ptr(e);                                                         \
   } else                                                                                                               \
     ((void)0)
-}
 
 #endif

@@ -83,7 +83,7 @@ XBT_PUBLIC void registerFunction(const char* name, ActorCodeFactory factory);
  *
  * If these functions manage to unlock some of the processes, then the deadlock will be avoided.
  */
-extern simgrid::xbt::signal<void()> onDeadlock;
+XBT_PUBLIC_DATA simgrid::xbt::signal<void()> onDeadlock;
 }
 }
 
@@ -105,7 +105,7 @@ typedef smx_actor_t (*smx_creation_func_t)(
     /* props */ std::map<std::string, std::string>*,
     /* parent_process */ smx_actor_t);
 
-extern "C" XBT_PUBLIC void SIMIX_function_register_process_create(smx_creation_func_t function);
+XBT_PUBLIC void SIMIX_function_register_process_create(smx_creation_func_t function);
 
 XBT_PUBLIC smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
                                               std::map<std::string, std::string>* properties);

@@ -62,7 +62,7 @@ StateType::~StateType()
 
 void StateType::setEvent(std::string value_name)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, getEntityValue(value_name)));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, getEntityValue(value_name), nullptr));
 }
 
 void StateType::pushEvent(std::string value_name, TIData* extra)
@@ -72,12 +72,12 @@ void StateType::pushEvent(std::string value_name, TIData* extra)
 
 void StateType::pushEvent(std::string value_name)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, getEntityValue(value_name)));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, getEntityValue(value_name), nullptr));
 }
 
 void StateType::popEvent()
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, nullptr));
 }
 
 VariableType::VariableType(std::string name, std::string color, Type* father) : Type(name, name, color, father)
@@ -121,12 +121,12 @@ void LinkType::startEvent(container_t startContainer, std::string value, std::st
 
 void LinkType::endEvent(container_t endContainer, std::string value, std::string key)
 {
-  new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, key);
+  new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, key, -1);
 }
 
 void Type::logDefinition(e_event_type event_type)
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, TRACE_precision(), 0.);
@@ -141,7 +141,7 @@ void Type::logDefinition(e_event_type event_type)
 
 void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest)
 {
-  if (instr_fmt_type != instr_fmt_paje)
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, TRACE_precision(), 0.);

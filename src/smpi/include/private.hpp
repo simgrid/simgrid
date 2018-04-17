@@ -17,8 +17,6 @@
 #include <time.h>
 #endif
 
-extern "C" {
-
 #define PERSISTENT 0x1
 #define NON_PERSISTENT 0x2
 #define SEND 0x4
@@ -110,7 +108,9 @@ XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
 XBT_PRIVATE void smpi_free_tmp_buffer(void* buf);
 XBT_PRIVATE void smpi_free_replay_tmp_buffers();
 
+extern "C" {
 // f77 wrappers
+
 void mpi_init_(int* ierr);
 void mpi_finalize_(int* ierr);
 void mpi_abort_(int* comm, int* errorcode, int* ierr);
@@ -422,7 +422,7 @@ struct option;
 XBT_PUBLIC int smpi_getopt_long (int argc,  char *const *argv,  const char *options,  const struct option *long_options, int *opt_index);
 XBT_PUBLIC int smpi_getopt (int argc,  char *const *argv,  const char *options);
 
-// TODO, make this static and expose it more cleanly
+} // extern "C"
 
 struct s_smpi_privatization_region_t {
   void* address;
@@ -433,7 +433,6 @@ typedef s_smpi_privatization_region_t* smpi_privatization_region_t;
 extern XBT_PRIVATE int smpi_loaded_page;
 extern XBT_PRIVATE int smpi_universe_size;
 XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process();
-}
 
 /**
  * Get the address of the beginning of the memory page where addr is located.
@@ -450,9 +449,7 @@ typedef std::vector<std::pair</* counter name */ std::string, /* counter value *
 extern std::unordered_map<std::string, double> location2speedup;
 
 /** @brief Returns the last call location (filename, linenumber). Process-specific. */
-extern "C" {
 XBT_PUBLIC smpi_trace_call_location_t* smpi_trace_get_call_location();
-}
 
 enum class SmpiPrivStrategies { None = 0, Mmap = 1, Dlopen = 2, Default = Dlopen };
 

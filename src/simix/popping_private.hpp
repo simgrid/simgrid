@@ -15,8 +15,6 @@
 
 #include <boost/intrusive_ptr.hpp>
 
-extern "C" {
-
 /********************************* Simcalls *********************************/
 XBT_PUBLIC_DATA const char* simcall_names[]; /* Name of each simcall */
 
@@ -67,7 +65,6 @@ XBT_PRIVATE void SIMIX_simcall_exit(smx_activity_t synchro);
 XBT_PRIVATE const char* SIMIX_simcall_name(e_smx_simcall_t kind);
 XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);
-}
 
 /* Defines the marshal/unmarshal functions for each type of parameters.
  *

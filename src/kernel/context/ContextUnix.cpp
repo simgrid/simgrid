@@ -8,7 +8,7 @@
 #include "ContextUnix.hpp"
 
 #include "mc/mc.h"
-#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_ignore.hpp"
 #include "src/simix/ActorImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);

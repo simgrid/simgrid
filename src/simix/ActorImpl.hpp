@@ -135,8 +135,6 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
-extern "C" {
-
 XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
                                              std::map<std::string, std::string>* properties,
                                              smx_actor_t parent_process);
@@ -152,7 +150,6 @@ XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
-}
 
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
 XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);

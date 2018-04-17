@@ -59,7 +59,7 @@ static bool trace_disable_power;
 static bool trace_configured = false;
 static bool trace_active     = false;
 
-instr_fmt_type_t instr_fmt_type = instr_fmt_paje;
+simgrid::instr::TraceFormat simgrid::instr::trace_format = simgrid::instr::TraceFormat::Paje;
 
 static void TRACE_getopts()
 {
@@ -102,7 +102,7 @@ int TRACE_start()
     if (format == "Paje") {
       TRACE_paje_start();
     } else if (format == "TI") {
-      instr_fmt_type = instr_fmt_TI;
+      simgrid::instr::trace_format = simgrid::instr::TraceFormat::Ti;
       TRACE_TI_start();
     }else{
       xbt_die("Unknown trace format :%s ", format.c_str());

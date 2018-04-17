@@ -9,8 +9,6 @@
 #include "simgrid/forward.h"
 #include "xbt/sysdep.h"
 
-extern "C" {
-
 /* Generic functions common to all models */
 
 XBT_PRIVATE FILE* surf_fopen(const char* name, const char* mode);
@@ -30,6 +28,5 @@ XBT_PRIVATE void parse_after_config();
 /* from surf_instr.c */
 void TRACE_surf_host_set_speed(double date, const char* resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char* resource, double bandwidth);
-}
 
 #endif

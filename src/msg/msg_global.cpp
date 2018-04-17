@@ -6,7 +6,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 
-#include "instr/instr_interface.h"
+#include "instr/instr_interface.hpp"
 #include "mc/mc.h"
 #include "src/msg/msg_private.hpp"
 

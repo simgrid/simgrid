@@ -181,8 +181,6 @@ public:
 };
 }}}
 
-extern "C" {
-
 /********** Routing **********/
 void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
 /*** END of the parsing cruft ***/
@@ -227,7 +225,6 @@ XBT_PUBLIC void surf_parse_set_out(FILE* out_str);
 XBT_PUBLIC int surf_parse_get_debug();
 XBT_PUBLIC void surf_parse_set_debug(int bdebug);
 XBT_PUBLIC int surf_parse_lex_destroy();
-}
 
 namespace simgrid {
 namespace surf {

@@ -23,8 +23,6 @@ struct PatternCommunicationList {
 }
 }
 
-extern "C" {
-
 /**
  *  Type: `xbt_dynar_t<mc_list_comm_pattern_t>`
  */
@@ -77,6 +75,5 @@ XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
 XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);
 XBT_PRIVATE void MC_state_copy_index_communications_pattern(simgrid::mc::State* state);
-}
 
 #endif
