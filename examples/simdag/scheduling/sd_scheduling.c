@@ -5,8 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* simple test to schedule a DAX file with the Min-Min algorithm.           */
-#include <string.h>
 #include "simgrid/simdag.h"
+#include <math.h>
+#include <string.h>
 
 #if SIMGRID_HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
@@ -101,7 +102,7 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
 
     xbt_dynar_free_container(&parents);
 
-    result = MAX(sg_host_get_available_at(host), last_data_available) + SD_task_get_amount(task)/sg_host_speed(host);
+    result = fmax(sg_host_get_available_at(host), last_data_available) + SD_task_get_amount(task) / sg_host_speed(host);
   } else {
     xbt_dynar_free_container(&parents);
 
