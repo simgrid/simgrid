@@ -213,11 +213,6 @@ const char *TRACE_internal_smpi_get_category ()
   return (it == process_category.end()) ? nullptr : it->second.c_str();
 }
 
-void TRACE_smpi_alloc()
-{
-  // for symmetry
-}
-
 void TRACE_smpi_release()
 {
   for (auto const& elm : keys)

@@ -21,7 +21,6 @@ XBT_PRIVATE void TRACE_smpi_sleeping_out(int rank);
 XBT_PRIVATE void TRACE_smpi_sleeping_in(int rank, double duration);
 XBT_PRIVATE void TRACE_smpi_testing_out(int rank);
 XBT_PRIVATE void TRACE_smpi_testing_in(int rank);
-XBT_PRIVATE void TRACE_smpi_alloc();
 XBT_PRIVATE void TRACE_smpi_release();
 XBT_PRIVATE void TRACE_smpi_comm_in(int rank, const char* operation, simgrid::instr::TIData* extra);
 XBT_PRIVATE void TRACE_smpi_comm_out(int rank);

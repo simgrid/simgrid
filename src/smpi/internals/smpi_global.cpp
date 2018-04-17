@@ -616,7 +616,6 @@ void SMPI_init(){
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();
-  TRACE_smpi_alloc();
   simgrid::s4u::onSimulationEnd.connect(TRACE_smpi_release);
 }
 
