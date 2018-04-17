@@ -392,9 +392,10 @@ template XBT_PUBLIC std::string const& getConfig<std::string>(const char* name);
 
 // ***** alias *****
 
-void alias(const char* realname, const char* aliasname)
+void alias(const char* realname, std::initializer_list<const char*> aliases)
 {
-  simgrid_config->alias(realname, aliasname);
+  for (auto const& aliasname : aliases)
+    simgrid_config->alias(realname, aliasname);
 }
 
 // ***** declareFlag *****

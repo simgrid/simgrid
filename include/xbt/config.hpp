@@ -76,15 +76,7 @@ extern template XBT_PUBLIC void declareFlag(const char* name, const char* descri
 
 // ***** alias *****
 
-XBT_PUBLIC void alias(const char* realname, const char* aliasname);
-
-inline
-void alias(std::initializer_list<const char*> names)
-{
-  auto i = names.begin();
-  for (++i; i != names.end(); ++i)
-    alias(*names.begin(), *i);
-}
+XBT_PUBLIC void alias(const char* realname, std::initializer_list<const char*> aliases);
 
 /** Bind a variable to configuration flag
  *
@@ -100,11 +92,11 @@ void bindFlag(T& value, const char* name, const char* description)
   });
 }
 
-template<class T>
-void bindFlag(T& value, std::initializer_list<const char*> names, const char* description)
+template <class T>
+void bindFlag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description)
 {
-  bindFlag(value, *names.begin(), description);
-  alias(names);
+  bindFlag(value, name, description);
+  alias(name, std::move(aliases));
 }
 
 /** Bind a variable to configuration flag
@@ -130,10 +122,10 @@ bindFlag(T& value, const char* name, const char* description, F callback)
 
 template <class T, class F>
 typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
-bindFlag(T& value, std::initializer_list<const char*> names, const char* description, F callback)
+bindFlag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description, F callback)
 {
-  bindFlag(value, *names.begin(), description, std::move(callback));
-  alias(names);
+  bindFlag(value, name, description, std::move(callback));
+  alias(name, std::move(aliases));
 }
 
 template <class T, class F>
@@ -209,10 +201,10 @@ public:
     simgrid::config::bindFlag(value_, name, desc);
   }
 
-  /** Constructor taking an array of aliases as name */
-  Flag(std::initializer_list<const char*> names, const char* desc, T value) : value_(value)
+  /** Constructor taking also an array of aliases for name */
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value) : value_(value)
   {
-    simgrid::config::bindFlag(value_, names, desc);
+    simgrid::config::bindFlag(value_, name, std::move(aliases), desc);
   }
 
   /* A constructor accepting a callback that will be passed the parameter.
