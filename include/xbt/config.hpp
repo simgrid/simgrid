@@ -118,33 +118,24 @@ void bindFlag(T& value, std::initializer_list<const char*> names, const char* de
  *  </code></pre>
  */
 // F is a checker, F : T& -> ()
-template<class T, class F>
-typename std::enable_if<std::is_same<
-  void,
-  decltype( std::declval<F>()(std::declval<const T&>()) )
->::value, void>::type
-bindFlag(T& value, std::initializer_list<const char*> names, const char* description,
-  F callback)
+template <class T, class F>
+typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
+bindFlag(T& value, const char* name, const char* description, F callback)
+{
+  declareFlag(name, description, value, std::function<void(const T&)>([&value, callback](const T& val) {
+                callback(val);
+                value = std::move(val);
+              }));
+}
+
+template <class T, class F>
+typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
+bindFlag(T& value, std::initializer_list<const char*> names, const char* description, F callback)
 {
   bindFlag(value, *names.begin(), description);
   alias(names);
 }
 
-template<class T, class F>
-typename std::enable_if<std::is_same<
-  void,
-  decltype( std::declval<F>()(std::declval<const T&>()) )
->::value, void>::type
-bindFlag(T& value, const char* name, const char* description,
-  F callback)
-{
-  declareFlag(name, description, value,
-    std::function<void(const T&)>([&value,callback](const T& val) {
-      callback(val);
-      value = std::move(val);
-    }
-  ));
-}
 template <class T, class F>
 typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
 bindFlag(T& value, const char* name, const char* description, std::map<T, std::string> valid_values, F callback)
