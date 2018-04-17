@@ -310,10 +310,9 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
                             "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
-  simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency-limit",
+  simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency-limit", {"maxmin/concurrency_limit"},
                             "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
                             "processes on each host, at higher level. (default: -1 means no such limitation)");
-  xbt_cfg_register_alias("maxmin/concurrency-limit", "maxmin/concurrency_limit");
 
   /* The parameters of network models */
 
@@ -342,11 +341,11 @@ void sg_config_init(int *argc, char **argv)
   xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", nullptr, "Update the constraint set propagating "
                                                                          "recursively to others constraints (off by "
                                                                          "default unless optim is set to lazy)");
-  xbt_cfg_register_alias("cpu/maxmin-selective-update", "cpu/maxmin_selective_update");
+  simgrid::config::alias("cpu/maxmin-selective-update", {"cpu/maxmin_selective_update"});
   xbt_cfg_register_boolean("network/maxmin-selective-update", "no", nullptr, "Update the constraint set propagating "
                                                                              "recursively to others constraints (off "
                                                                              "by default unless optim is set to lazy)");
-  xbt_cfg_register_alias("network/maxmin-selective-update", "network/maxmin_selective_update");
+  simgrid::config::alias("network/maxmin-selective-update", {"network/maxmin_selective_update"});
   /* Replay (this part is enabled even if MC it disabled) */
   xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
                           "Model-check path to replay (as reported by SimGrid when a violation is reported)");
@@ -370,11 +369,11 @@ void sg_config_init(int *argc, char **argv)
                           "Name of the file containing the property, as formatted by the ltl2ba program.");
   xbt_cfg_register_boolean("model-check/communications-determinism", "no", _mc_cfg_cb_comms_determinism,
                            "Whether to enable the detection of communication determinism");
-  xbt_cfg_register_alias("model-check/communications-determinism", "model-check/communications_determinism");
+  simgrid::config::alias("model-check/communications-determinism", {"model-check/communications_determinism"});
 
   xbt_cfg_register_boolean("model-check/send-determinism", "no", _mc_cfg_cb_send_determinism,
                            "Enable/disable the detection of send-determinism in the communications schemes");
-  xbt_cfg_register_alias("model-check/send-determinism", "model-check/send_determinism");
+  simgrid::config::alias("model-check/send-determinism", {"model-check/send_determinism"});
 
   /* Specify the kind of model-checking reduction */
   xbt_cfg_register_string("model-check/reduction", "dpor", _mc_cfg_cb_reduce,
@@ -386,17 +385,17 @@ void sg_config_init(int *argc, char **argv)
                            "Whether to enable state hash for state comparison (experimental)");
   xbt_cfg_register_boolean("model-check/snapshot-fds", "no", _mc_cfg_cb_snapshot_fds,
                            "Whether file descriptors must be snapshoted (currently unusable)");
-  xbt_cfg_register_alias("model-check/snapshot-fds", "model-check/snapshot_fds");
+  simgrid::config::alias("model-check/snapshot-fds", {"model-check/snapshot_fds"});
   xbt_cfg_register_int("model-check/max-depth", 1000, _mc_cfg_cb_max_depth,
                        "Maximal exploration depth (default: 1000)");
-  xbt_cfg_register_alias("model-check/max-depth", "model-check/max_depth");
+  simgrid::config::alias("model-check/max-depth", {"model-check/max_depth"});
   xbt_cfg_register_int("model-check/visited", 0, _mc_cfg_cb_visited,
                        "Specify the number of visited state stored for state comparison reduction. If value=5, the "
                        "last 5 visited states are stored. If value=0 (the default), all states are stored.");
 
   xbt_cfg_register_string("model-check/dot-output", "", _mc_cfg_cb_dot_output,
                           "Name of dot output file corresponding to graph state");
-  xbt_cfg_register_alias("model-check/dot-output", "model-check/dot_output");
+  simgrid::config::alias("model-check/dot-output", {"model-check/dot_output"});
   xbt_cfg_register_boolean("model-check/termination", "no", _mc_cfg_cb_termination,
                            "Whether to enable non progressive cycle detection");
 #endif
@@ -407,7 +406,7 @@ void sg_config_init(int *argc, char **argv)
   xbt_cfg_register_int("contexts/stack-size", 8 * 1024, _sg_cfg_cb_context_stack_size, "Stack size of contexts in KiB");
   /* (FIXME: this is unpleasant) Reset this static variable that was altered when setting the default value. */
   smx_context_stack_size_was_set = 0;
-  xbt_cfg_register_alias("contexts/stack-size", "contexts/stack_size");
+  simgrid::config::alias("contexts/stack-size", {"contexts/stack_size"});
 
   /* guard size for contexts stacks in memory pages */
   xbt_cfg_register_int("contexts/guard-size",
@@ -419,13 +418,13 @@ void sg_config_init(int *argc, char **argv)
                        _sg_cfg_cb_context_guard_size, "Guard size for contexts stacks in memory pages");
   /* No, it was not set yet (the above setdefault() changed this to 1). */
   smx_context_guard_size_was_set = 0;
-  xbt_cfg_register_alias("contexts/guard-size", "contexts/guard_size");
+  simgrid::config::alias("contexts/guard-size", {"contexts/guard_size"});
   xbt_cfg_register_int("contexts/nthreads", 1, _sg_cfg_cb_contexts_nthreads,
                        "Number of parallel threads used to execute user contexts");
 
   xbt_cfg_register_int("contexts/parallel-threshold", 2, _sg_cfg_cb_contexts_parallel_threshold,
                        "Minimal number of user contexts to be run in parallel (raw contexts only)");
-  xbt_cfg_register_alias("contexts/parallel-threshold", "contexts/parallel_threshold");
+  simgrid::config::alias("contexts/parallel-threshold", {"contexts/parallel_threshold"});
 
   /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
@@ -445,38 +444,35 @@ void sg_config_init(int *argc, char **argv)
                           nullptr, "Bandwidth factors for smpi. Format: "
                                    "'threshold0:value0;threshold1:value1;...;thresholdN:valueN', meaning if(size "
                                    ">=thresholdN ) return valueN.");
-  xbt_cfg_register_alias("smpi/bw-factor", "smpi/bw_factor");
+  simgrid::config::alias("smpi/bw-factor", {"smpi/bw_factor"});
 
   xbt_cfg_register_string("smpi/lat-factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:"
                                              "1.61075;732:1.9503;257:1.95341;0:2.01467",
                           nullptr, "Latency factors for smpi.");
-  xbt_cfg_register_alias("smpi/lat-factor", "smpi/lat_factor");
-
+  simgrid::config::alias("smpi/lat-factor", {"smpi/lat_factor"});
   xbt_cfg_register_string("smpi/IB-penalty-factors", "0.965;0.925;1.35", nullptr,
                           "Correction factor to communications using Infiniband model with contention (default value "
                           "based on Stampede cluster profiling)");
-  xbt_cfg_register_alias("smpi/IB-penalty-factors", "smpi/IB_penalty_factors");
+  simgrid::config::alias("smpi/IB-penalty-factors", {"smpi/IB_penalty_factors"});
 
 #if HAVE_SMPI
   xbt_cfg_register_double("smpi/host-speed", 20000.0, nullptr,
                           "Speed of the host running the simulation (in flop/s). Used to bench the operations.");
-  xbt_cfg_register_alias("smpi/host-speed", "smpi/running_power");
-  xbt_cfg_register_alias("smpi/host-speed", "smpi/running-power");
+  simgrid::config::alias("smpi/host-speed", {"smpi/running_power", "smpi/running-power"});
 
   xbt_cfg_register_boolean("smpi/keep-temps", "no", nullptr, "Whether we should keep the generated temporary files.");
 
   xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr,
                            "Whether we should display the timing after simulation.");
-  xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");
+  simgrid::config::alias("smpi/display-timing", {"smpi/display_timing"});
 
   xbt_cfg_register_boolean("smpi/simulate-computation", "yes", nullptr,
                            "Whether the computational part of the simulated application should be simulated.");
-  xbt_cfg_register_alias("smpi/simulate-computation", "smpi/simulate_computation");
+  simgrid::config::alias("smpi/simulate-computation", {"smpi/simulate_computation"});
 
   xbt_cfg_register_string("smpi/shared-malloc", "global", nullptr,
                           "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
-  xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use-shared-malloc");
-  xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use_shared_malloc");
+  simgrid::config::alias("smpi/shared-malloc", {"smpi/use_shared_malloc", "smpi/use-shared-malloc"});
   xbt_cfg_register_double("smpi/shared-malloc-blocksize", 1UL << 20, nullptr,
                           "Size of the bogus file which will be created for global shared allocations");
   xbt_cfg_register_string("smpi/shared-malloc-hugepage", "", nullptr,
@@ -484,20 +480,19 @@ void sg_config_init(int *argc, char **argv)
 
   xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr,
                           "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
-  xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
+  simgrid::config::alias("smpi/cpu-threshold", {"smpi/cpu_threshold"});
 
   xbt_cfg_register_int("smpi/async-small-thresh", 0, nullptr,
                        "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
-  xbt_cfg_register_alias("smpi/async-small-thresh", "smpi/async_small_thresh");
-  xbt_cfg_register_alias("smpi/async-small-thresh", "smpi/async_small_thres");
+  simgrid::config::alias("smpi/async-small-thresh", {"smpi/async_small_thres", "smpi/async_small_thresh"});
 
   xbt_cfg_register_boolean("smpi/trace-call-location", "no", nullptr,
                            "Should filename and linenumber of MPI calls be traced?");
 
   xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, nullptr,
                        "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
-  xbt_cfg_register_alias("smpi/send-is-detached-thresh", "smpi/send_is_detached_thresh");
-  xbt_cfg_register_alias("smpi/send-is-detached-thresh", "smpi/send_is_detached_thres");
+  simgrid::config::alias("smpi/send-is-detached-thresh",
+                         {"smpi/send_is_detached_thres", "smpi/send_is_detached_thresh"});
 
   const char* default_privatization = std::getenv("SMPI_PRIVATIZATION");
   if (default_privatization == nullptr)
@@ -506,8 +501,7 @@ void sg_config_init(int *argc, char **argv)
   xbt_cfg_register_string("smpi/privatization", default_privatization, nullptr,
                           "How we should privatize global variable at runtime (no, yes, mmap, dlopen).");
 
-  xbt_cfg_register_alias("smpi/privatization", "smpi/privatize-global-variables");
-  xbt_cfg_register_alias("smpi/privatization", "smpi/privatize_global_variables");
+  simgrid::config::alias("smpi/privatization", {"smpi/privatize_global_variables", "smpi/privatize-global-variables"});
 
   xbt_cfg_register_boolean("smpi/grow-injected-times", "yes", nullptr,
                            "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to allow faster "
@@ -532,12 +526,12 @@ void sg_config_init(int *argc, char **argv)
                                                                "value is then (Iprobe_Usage/Max_Application_Usage).");
 
   xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
-  xbt_cfg_register_alias("smpi/coll-selector", "smpi/coll_selector");
+  simgrid::config::alias("smpi/coll-selector", {"smpi/coll_selector"});
   xbt_cfg_register_string("smpi/gather", nullptr, nullptr, "Which collective to use for gather");
   xbt_cfg_register_string("smpi/allgather", nullptr, nullptr, "Which collective to use for allgather");
   xbt_cfg_register_string("smpi/barrier", nullptr, nullptr, "Which collective to use for barrier");
   xbt_cfg_register_string("smpi/reduce_scatter", nullptr, nullptr, "Which collective to use for reduce_scatter");
-  xbt_cfg_register_alias("smpi/reduce_scatter", "smpi/reduce-scatter");
+  simgrid::config::alias("smpi/reduce_scatter", {"smpi/reduce-scatter"});
   xbt_cfg_register_string("smpi/scatter", nullptr, nullptr, "Which collective to use for scatter");
   xbt_cfg_register_string("smpi/allgatherv", nullptr, nullptr, "Which collective to use for allgatherv");
   xbt_cfg_register_string("smpi/allreduce", nullptr, nullptr, "Which collective to use for allreduce");
@@ -560,7 +554,7 @@ void sg_config_init(int *argc, char **argv)
 
   xbt_cfg_register_boolean("clean-atexit", "yes", _sg_cfg_cb_clean_atexit,
                            "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
-  xbt_cfg_register_alias("clean-atexit", "clean_atexit");
+  simgrid::config::alias("clean-atexit", {"clean_atexit"});
 
   if (surf_path.empty())
     xbt_cfg_setdefault_string("path", "./");

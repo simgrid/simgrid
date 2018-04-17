@@ -312,12 +312,12 @@ void TRACE_global_init()
   xbt_cfg_register_int(OPT_TRACING_PRECISION, 6, nullptr, "Numerical precision used when timestamping events "
       "(expressed in number of digits after decimal point)");
 
-  xbt_cfg_register_alias(OPT_TRACING_COMMENT_FILE,"tracing/comment_file");
-  xbt_cfg_register_alias(OPT_TRACING_DISABLE_DESTROY, "tracing/disable_destroy");
-  xbt_cfg_register_alias(OPT_TRACING_DISABLE_LINK, "tracing/disable_link");
-  xbt_cfg_register_alias(OPT_TRACING_DISABLE_POWER, "tracing/disable_power");
-  xbt_cfg_register_alias(OPT_TRACING_DISPLAY_SIZES, "tracing/smpi/display_sizes");
-  xbt_cfg_register_alias(OPT_TRACING_FORMAT_TI_ONEFILE, "tracing/smpi/format/ti_one_file");
+  simgrid::config::alias(OPT_TRACING_COMMENT_FILE, {"tracing/comment_file"});
+  simgrid::config::alias(OPT_TRACING_DISABLE_DESTROY, {"tracing/disable_destroy"});
+  simgrid::config::alias(OPT_TRACING_DISABLE_LINK, {"tracing/disable_link"});
+  simgrid::config::alias(OPT_TRACING_DISABLE_POWER, {"tracing/disable_power"});
+  simgrid::config::alias(OPT_TRACING_DISPLAY_SIZES, {"tracing/smpi/display_sizes"});
+  simgrid::config::alias(OPT_TRACING_FORMAT_TI_ONEFILE, {"tracing/smpi/format/ti_one_file"});
 
   /* instrumentation can be considered configured now */
   trace_configured = true;
