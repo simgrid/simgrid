@@ -15,7 +15,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 
-inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, unsigned int coords[4])
+inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, unsigned int* coords)
 {
   unsigned int dim_size_product = 1;
   unsigned int i = 0;
