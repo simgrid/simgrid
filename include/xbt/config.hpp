@@ -132,7 +132,7 @@ template <class T, class F>
 typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
 bindFlag(T& value, std::initializer_list<const char*> names, const char* description, F callback)
 {
-  bindFlag(value, *names.begin(), description);
+  bindFlag(value, *names.begin(), description, std::move(callback));
   alias(names);
 }
 
