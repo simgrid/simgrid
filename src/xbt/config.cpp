@@ -357,14 +357,11 @@ void Config::dump(const char *name, const char *indent)
   fflush(stdout);
 }
 
-/** @brief Displays the declared aliases and their description */
+/** @brief Displays the declared aliases and their replacement */
 void Config::showAliases()
 {
-  bool old_warn_for_aliases = false;
-  std::swap(warn_for_aliases, old_warn_for_aliases);
   for (auto const& elm : aliases)
-    printf("   %s: %s\n", elm.first.c_str(), (*this)[elm.first.c_str()].getDescription().c_str());
-  std::swap(warn_for_aliases, old_warn_for_aliases);
+    printf("   %-40s %s\n", elm.first.c_str(), elm.second->getKey().c_str());
 }
 
 /** @brief Displays the declared options and their description */
