@@ -26,7 +26,13 @@
 #include <pthread.h>
 #include <stdint.h>
 
+#ifdef MIN
+#undef MIN
+#endif
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
+#ifdef MAX
+#undef MAX
+#endif
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #ifdef HAVE_LIMITS_H
