@@ -216,6 +216,13 @@ public:
     simgrid::config::bindFlag(value_, name, desc, std::move(callback));
   }
 
+  template <class F>
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value, F callback)
+      : value_(value)
+  {
+    simgrid::config::bindFlag(value_, name, std::move(aliases), desc, std::move(callback));
+  }
+
   /* A constructor accepting a map of valid values -> their description,
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
