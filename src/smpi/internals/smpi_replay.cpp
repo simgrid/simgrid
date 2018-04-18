@@ -157,6 +157,9 @@ public:
     }
 };
 
+/**
+ * Base class for all parsers.
+ */
 class ActionArgParser {
 public:
   virtual ~ActionArgParser() = default;
@@ -500,6 +503,12 @@ public:
   }
 };
 
+/**
+ * Base class for all ReplayActions.
+ * Note that this class actually implements the behavior of each action
+ * while the parsing of the replay arguments is done in the @ActionArgParser class.
+ * In other words: The logic goes here, the setup is done by the ActionArgParser.
+ */
 template <class T> class ReplayAction {
 protected:
   const std::string name;
@@ -947,7 +956,6 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("comm_size", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
   xbt_replay_action_register("comm_split",[](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
   xbt_replay_action_register("comm_dup",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::CommunicatorAction().execute(action); });
-
   xbt_replay_action_register("send",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SendAction("send", storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
   xbt_replay_action_register("Isend", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SendAction("Isend", storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
   xbt_replay_action_register("recv",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::RecvAction("recv", storage[simgrid::s4u::this_actor::get_pid()-1]).execute(action); });
