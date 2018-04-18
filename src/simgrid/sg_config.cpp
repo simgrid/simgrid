@@ -352,191 +352,224 @@ void sg_config_init(int *argc, char **argv)
                           "Model-check path to replay (as reported by SimGrid when a violation is reported)");
 
 #if SIMGRID_HAVE_MC
-    /* do model-checking-record */
-    xbt_cfg_register_boolean("model-check/record", "no", _sg_cfg_cb_model_check_record, "Record the model-checking paths");
+  /* do model-checking-record */
+  xbt_cfg_register_boolean("model-check/record", "no", _sg_cfg_cb_model_check_record,
+                           "Record the model-checking paths");
 
-    xbt_cfg_register_int("model-check/checkpoint", 0, _mc_cfg_cb_checkpoint,
-        "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
-        "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.");
+  xbt_cfg_register_int("model-check/checkpoint", 0, _mc_cfg_cb_checkpoint,
+                       "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => "
+                       "stateless verification). "
+                       "If value=1, one checkpoint is saved for each step => faster verification, but huge memory "
+                       "consumption; higher values are good compromises between speed and memory consumption.");
 
-    xbt_cfg_register_boolean("model-check/sparse-checkpoint", "no", _mc_cfg_cb_sparse_checkpoint, "Use sparse per-page snapshots.");
-    xbt_cfg_register_boolean("model-check/ksm", "no", _mc_cfg_cb_ksm, "Kernel same-page merging");
+  xbt_cfg_register_boolean("model-check/sparse-checkpoint", "no", _mc_cfg_cb_sparse_checkpoint,
+                           "Use sparse per-page snapshots.");
+  xbt_cfg_register_boolean("model-check/ksm", "no", _mc_cfg_cb_ksm, "Kernel same-page merging");
 
-    xbt_cfg_register_string("model-check/property", "", _mc_cfg_cb_property,
-                            "Name of the file containing the property, as formatted by the ltl2ba program.");
-    xbt_cfg_register_boolean("model-check/communications-determinism", "no", _mc_cfg_cb_comms_determinism,
-        "Whether to enable the detection of communication determinism");
-    xbt_cfg_register_alias("model-check/communications-determinism","model-check/communications_determinism");
+  xbt_cfg_register_string("model-check/property", "", _mc_cfg_cb_property,
+                          "Name of the file containing the property, as formatted by the ltl2ba program.");
+  xbt_cfg_register_boolean("model-check/communications-determinism", "no", _mc_cfg_cb_comms_determinism,
+                           "Whether to enable the detection of communication determinism");
+  xbt_cfg_register_alias("model-check/communications-determinism", "model-check/communications_determinism");
 
-    xbt_cfg_register_boolean("model-check/send-determinism", "no", _mc_cfg_cb_send_determinism,
-        "Enable/disable the detection of send-determinism in the communications schemes");
-    xbt_cfg_register_alias("model-check/send-determinism","model-check/send_determinism");
+  xbt_cfg_register_boolean("model-check/send-determinism", "no", _mc_cfg_cb_send_determinism,
+                           "Enable/disable the detection of send-determinism in the communications schemes");
+  xbt_cfg_register_alias("model-check/send-determinism", "model-check/send_determinism");
 
-    /* Specify the kind of model-checking reduction */
-    xbt_cfg_register_string("model-check/reduction", "dpor", _mc_cfg_cb_reduce,
-        "Specify the kind of exploration reduction (either none or DPOR)");
-    xbt_cfg_register_boolean("model-check/timeout", "no",  _mc_cfg_cb_timeout,
-        "Whether to enable timeouts for wait requests");
+  /* Specify the kind of model-checking reduction */
+  xbt_cfg_register_string("model-check/reduction", "dpor", _mc_cfg_cb_reduce,
+                          "Specify the kind of exploration reduction (either none or DPOR)");
+  xbt_cfg_register_boolean("model-check/timeout", "no", _mc_cfg_cb_timeout,
+                           "Whether to enable timeouts for wait requests");
 
-    xbt_cfg_register_boolean("model-check/hash", "no", _mc_cfg_cb_hash, "Whether to enable state hash for state comparison (experimental)");
-    xbt_cfg_register_boolean("model-check/snapshot-fds", "no",  _mc_cfg_cb_snapshot_fds,
-        "Whether file descriptors must be snapshoted (currently unusable)");
-    xbt_cfg_register_alias("model-check/snapshot-fds","model-check/snapshot_fds");
-    xbt_cfg_register_int("model-check/max-depth", 1000, _mc_cfg_cb_max_depth, "Maximal exploration depth (default: 1000)");
-    xbt_cfg_register_alias("model-check/max-depth","model-check/max_depth");
-    xbt_cfg_register_int("model-check/visited", 0, _mc_cfg_cb_visited,
-        "Specify the number of visited state stored for state comparison reduction. If value=5, the last 5 visited states are stored. If value=0 (the default), all states are stored.");
+  xbt_cfg_register_boolean("model-check/hash", "no", _mc_cfg_cb_hash,
+                           "Whether to enable state hash for state comparison (experimental)");
+  xbt_cfg_register_boolean("model-check/snapshot-fds", "no", _mc_cfg_cb_snapshot_fds,
+                           "Whether file descriptors must be snapshoted (currently unusable)");
+  xbt_cfg_register_alias("model-check/snapshot-fds", "model-check/snapshot_fds");
+  xbt_cfg_register_int("model-check/max-depth", 1000, _mc_cfg_cb_max_depth,
+                       "Maximal exploration depth (default: 1000)");
+  xbt_cfg_register_alias("model-check/max-depth", "model-check/max_depth");
+  xbt_cfg_register_int("model-check/visited", 0, _mc_cfg_cb_visited,
+                       "Specify the number of visited state stored for state comparison reduction. If value=5, the "
+                       "last 5 visited states are stored. If value=0 (the default), all states are stored.");
 
-    xbt_cfg_register_string("model-check/dot-output", "", _mc_cfg_cb_dot_output, "Name of dot output file corresponding to graph state");
-    xbt_cfg_register_alias("model-check/dot-output","model-check/dot_output");
-    xbt_cfg_register_boolean("model-check/termination", "no", _mc_cfg_cb_termination, "Whether to enable non progressive cycle detection");
+  xbt_cfg_register_string("model-check/dot-output", "", _mc_cfg_cb_dot_output,
+                          "Name of dot output file corresponding to graph state");
+  xbt_cfg_register_alias("model-check/dot-output", "model-check/dot_output");
+  xbt_cfg_register_boolean("model-check/termination", "no", _mc_cfg_cb_termination,
+                           "Whether to enable non progressive cycle detection");
 #endif
 
-    xbt_cfg_register_boolean("verbose-exit", "yes", _sg_cfg_cb_verbose_exit, "Activate the \"do nothing\" mode in Ctrl-C");
+  xbt_cfg_register_boolean("verbose-exit", "yes", _sg_cfg_cb_verbose_exit,
+                           "Activate the \"do nothing\" mode in Ctrl-C");
 
-    xbt_cfg_register_int("contexts/stack-size", 8*1024, _sg_cfg_cb_context_stack_size, "Stack size of contexts in KiB");
-    /* (FIXME: this is unpleasant) Reset this static variable that was altered when setting the default value. */
-    smx_context_stack_size_was_set = 0;
-    xbt_cfg_register_alias("contexts/stack-size","contexts/stack_size");
+  xbt_cfg_register_int("contexts/stack-size", 8 * 1024, _sg_cfg_cb_context_stack_size, "Stack size of contexts in KiB");
+  /* (FIXME: this is unpleasant) Reset this static variable that was altered when setting the default value. */
+  smx_context_stack_size_was_set = 0;
+  xbt_cfg_register_alias("contexts/stack-size", "contexts/stack_size");
 
-    /* guard size for contexts stacks in memory pages */
-    xbt_cfg_register_int("contexts/guard-size",
+  /* guard size for contexts stacks in memory pages */
+  xbt_cfg_register_int("contexts/guard-size",
 #if defined(_WIN32) || (PTH_STACKGROWTH != -1)
-        0,
+                       0,
 #else
-        1,
+                       1,
 #endif
-    _sg_cfg_cb_context_guard_size, "Guard size for contexts stacks in memory pages");
-    /* No, it was not set yet (the above setdefault() changed this to 1). */
-    smx_context_guard_size_was_set = 0;
-    xbt_cfg_register_alias("contexts/guard-size","contexts/guard_size");
-    xbt_cfg_register_int("contexts/nthreads", 1, _sg_cfg_cb_contexts_nthreads, "Number of parallel threads used to execute user contexts");
+                       _sg_cfg_cb_context_guard_size, "Guard size for contexts stacks in memory pages");
+  /* No, it was not set yet (the above setdefault() changed this to 1). */
+  smx_context_guard_size_was_set = 0;
+  xbt_cfg_register_alias("contexts/guard-size", "contexts/guard_size");
+  xbt_cfg_register_int("contexts/nthreads", 1, _sg_cfg_cb_contexts_nthreads,
+                       "Number of parallel threads used to execute user contexts");
 
-    xbt_cfg_register_int("contexts/parallel-threshold", 2, _sg_cfg_cb_contexts_parallel_threshold,
-        "Minimal number of user contexts to be run in parallel (raw contexts only)");
-    xbt_cfg_register_alias("contexts/parallel-threshold","contexts/parallel_threshold");
+  xbt_cfg_register_int("contexts/parallel-threshold", 2, _sg_cfg_cb_contexts_parallel_threshold,
+                       "Minimal number of user contexts to be run in parallel (raw contexts only)");
+  xbt_cfg_register_alias("contexts/parallel-threshold", "contexts/parallel_threshold");
 
-    /* synchronization mode for parallel user contexts */
+  /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
-    xbt_cfg_register_string("contexts/synchro", "futex",     _sg_cfg_cb_contexts_parallel_mode,
-        "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
+  xbt_cfg_register_string(
+      "contexts/synchro", "futex", _sg_cfg_cb_contexts_parallel_mode,
+      "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
 #else //No futex on mac and posix is unimplememted yet
-    xbt_cfg_register_string("contexts/synchro", "busy_wait", _sg_cfg_cb_contexts_parallel_mode,
-        "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
+  xbt_cfg_register_string(
+      "contexts/synchro", "busy_wait", _sg_cfg_cb_contexts_parallel_mode,
+      "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
 #endif
 
-    // For smpi/bw-factor and smpi/lat-factor
-    // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
-    xbt_cfg_register_string("smpi/bw-factor",
-        "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", nullptr,
-        "Bandwidth factors for smpi. Format: 'threshold0:value0;threshold1:value1;...;thresholdN:valueN', meaning if(size >=thresholdN ) return valueN.");
-    xbt_cfg_register_alias("smpi/bw-factor","smpi/bw_factor");
+  // For smpi/bw-factor and smpi/lat-factor
+  // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
+  xbt_cfg_register_string("smpi/bw-factor", "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:"
+                                            "0.608902;732:0.341987;257:0.338112;0:0.812084",
+                          nullptr, "Bandwidth factors for smpi. Format: "
+                                   "'threshold0:value0;threshold1:value1;...;thresholdN:valueN', meaning if(size "
+                                   ">=thresholdN ) return valueN.");
+  xbt_cfg_register_alias("smpi/bw-factor", "smpi/bw_factor");
 
-    xbt_cfg_register_string("smpi/lat-factor",
-        "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467", nullptr, "Latency factors for smpi.");
-    xbt_cfg_register_alias("smpi/lat-factor","smpi/lat_factor");
+  xbt_cfg_register_string("smpi/lat-factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:"
+                                             "1.61075;732:1.9503;257:1.95341;0:2.01467",
+                          nullptr, "Latency factors for smpi.");
+  xbt_cfg_register_alias("smpi/lat-factor", "smpi/lat_factor");
 
-    xbt_cfg_register_string("smpi/IB-penalty-factors", "0.965;0.925;1.35", nullptr,
-        "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)");
-    xbt_cfg_register_alias("smpi/IB-penalty-factors","smpi/IB_penalty_factors");
+  xbt_cfg_register_string("smpi/IB-penalty-factors", "0.965;0.925;1.35", nullptr,
+                          "Correction factor to communications using Infiniband model with contention (default value "
+                          "based on Stampede cluster profiling)");
+  xbt_cfg_register_alias("smpi/IB-penalty-factors", "smpi/IB_penalty_factors");
 
 #if HAVE_SMPI
-    xbt_cfg_register_double("smpi/host-speed", 20000.0, nullptr, "Speed of the host running the simulation (in flop/s). Used to bench the operations.");
-    xbt_cfg_register_alias("smpi/host-speed","smpi/running_power");
-    xbt_cfg_register_alias("smpi/host-speed","smpi/running-power");
+  xbt_cfg_register_double("smpi/host-speed", 20000.0, nullptr,
+                          "Speed of the host running the simulation (in flop/s). Used to bench the operations.");
+  xbt_cfg_register_alias("smpi/host-speed", "smpi/running_power");
+  xbt_cfg_register_alias("smpi/host-speed", "smpi/running-power");
 
-    xbt_cfg_register_boolean("smpi/keep-temps", "no", nullptr, "Whether we should keep the generated temporary files.");
+  xbt_cfg_register_boolean("smpi/keep-temps", "no", nullptr, "Whether we should keep the generated temporary files.");
 
-    xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr, "Whether we should display the timing after simulation.");
-    xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");
+  xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr,
+                           "Whether we should display the timing after simulation.");
+  xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");
 
-    xbt_cfg_register_boolean("smpi/simulate-computation", "yes", nullptr, "Whether the computational part of the simulated application should be simulated.");
-    xbt_cfg_register_alias("smpi/simulate-computation","smpi/simulate_computation");
+  xbt_cfg_register_boolean("smpi/simulate-computation", "yes", nullptr,
+                           "Whether the computational part of the simulated application should be simulated.");
+  xbt_cfg_register_alias("smpi/simulate-computation", "smpi/simulate_computation");
 
-    xbt_cfg_register_string("smpi/shared-malloc", "global", nullptr,
-                            "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
-    xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use-shared-malloc");
-    xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use_shared_malloc");
-    xbt_cfg_register_double("smpi/shared-malloc-blocksize", 1UL << 20, nullptr, "Size of the bogus file which will be created for global shared allocations");
-    xbt_cfg_register_string("smpi/shared-malloc-hugepage", "", nullptr,
-                            "Path to a mounted hugetlbfs, to use huge pages with shared malloc.");
+  xbt_cfg_register_string("smpi/shared-malloc", "global", nullptr,
+                          "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
+  xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use-shared-malloc");
+  xbt_cfg_register_alias("smpi/shared-malloc", "smpi/use_shared_malloc");
+  xbt_cfg_register_double("smpi/shared-malloc-blocksize", 1UL << 20, nullptr,
+                          "Size of the bogus file which will be created for global shared allocations");
+  xbt_cfg_register_string("smpi/shared-malloc-hugepage", "", nullptr,
+                          "Path to a mounted hugetlbfs, to use huge pages with shared malloc.");
 
-    xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
-    xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
+  xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr,
+                          "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
+  xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
 
-    xbt_cfg_register_int("smpi/async-small-thresh", 0, nullptr,
-        "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
-    xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thresh");
-    xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thres");
+  xbt_cfg_register_int("smpi/async-small-thresh", 0, nullptr,
+                       "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
+  xbt_cfg_register_alias("smpi/async-small-thresh", "smpi/async_small_thresh");
+  xbt_cfg_register_alias("smpi/async-small-thresh", "smpi/async_small_thres");
 
-    xbt_cfg_register_boolean("smpi/trace-call-location", "no", nullptr, "Should filename and linenumber of MPI calls be traced?");
+  xbt_cfg_register_boolean("smpi/trace-call-location", "no", nullptr,
+                           "Should filename and linenumber of MPI calls be traced?");
 
-    xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, nullptr,
-        "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
-    xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thresh");
-    xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thres");
+  xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, nullptr,
+                       "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
+  xbt_cfg_register_alias("smpi/send-is-detached-thresh", "smpi/send_is_detached_thresh");
+  xbt_cfg_register_alias("smpi/send-is-detached-thresh", "smpi/send_is_detached_thres");
 
-    const char* default_privatization = std::getenv("SMPI_PRIVATIZATION");
-    if (default_privatization == nullptr)
-      default_privatization = "no";
+  const char* default_privatization = std::getenv("SMPI_PRIVATIZATION");
+  if (default_privatization == nullptr)
+    default_privatization = "no";
 
-    xbt_cfg_register_string("smpi/privatization", default_privatization, nullptr,
-                            "How we should privatize global variable at runtime (no, yes, mmap, dlopen).");
+  xbt_cfg_register_string("smpi/privatization", default_privatization, nullptr,
+                          "How we should privatize global variable at runtime (no, yes, mmap, dlopen).");
 
-    xbt_cfg_register_alias("smpi/privatization", "smpi/privatize-global-variables");
-    xbt_cfg_register_alias("smpi/privatization", "smpi/privatize_global_variables");
+  xbt_cfg_register_alias("smpi/privatization", "smpi/privatize-global-variables");
+  xbt_cfg_register_alias("smpi/privatization", "smpi/privatize_global_variables");
 
-    xbt_cfg_register_boolean("smpi/grow-injected-times", "yes", nullptr, "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to allow faster simulation. This can make simulation less precise, though.");
+  xbt_cfg_register_boolean("smpi/grow-injected-times", "yes", nullptr,
+                           "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to allow faster "
+                           "simulation. This can make simulation less precise, though.");
 
 #if HAVE_PAPI
-    xbt_cfg_register_string("smpi/papi-events", nullptr, nullptr, "This switch enables tracking the specified counters with PAPI");
+  xbt_cfg_register_string("smpi/papi-events", nullptr, nullptr,
+                          "This switch enables tracking the specified counters with PAPI");
 #endif
-    xbt_cfg_register_string("smpi/comp-adjustment-file", nullptr, nullptr, "A file containing speedups or slowdowns for some parts of the code.");
-    xbt_cfg_register_string("smpi/os", "0:0:0:0:0", nullptr,  "Small messages timings (MPI_Send minimum time for small messages)");
-    xbt_cfg_register_string("smpi/ois", "0:0:0:0:0", nullptr, "Small messages timings (MPI_Isend minimum time for small messages)");
-    xbt_cfg_register_string("smpi/or", "0:0:0:0:0", nullptr,  "Small messages timings (MPI_Recv minimum time for small messages)");
+  xbt_cfg_register_string("smpi/comp-adjustment-file", nullptr, nullptr,
+                          "A file containing speedups or slowdowns for some parts of the code.");
+  xbt_cfg_register_string("smpi/os", "0:0:0:0:0", nullptr,
+                          "Small messages timings (MPI_Send minimum time for small messages)");
+  xbt_cfg_register_string("smpi/ois", "0:0:0:0:0", nullptr,
+                          "Small messages timings (MPI_Isend minimum time for small messages)");
+  xbt_cfg_register_string("smpi/or", "0:0:0:0:0", nullptr,
+                          "Small messages timings (MPI_Recv minimum time for small messages)");
 
-    xbt_cfg_register_double("smpi/iprobe-cpu-usage", 1, nullptr, "Maximum usage of CPUs by MPI_Iprobe() calls. We've observed that MPI_Iprobes consume significantly less power than the maximum of a specific application. This value is then (Iprobe_Usage/Max_Application_Usage).");
+  xbt_cfg_register_double("smpi/iprobe-cpu-usage", 1, nullptr, "Maximum usage of CPUs by MPI_Iprobe() calls. We've "
+                                                               "observed that MPI_Iprobes consume significantly less "
+                                                               "power than the maximum of a specific application. This "
+                                                               "value is then (Iprobe_Usage/Max_Application_Usage).");
 
-    xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
-    xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");
-    xbt_cfg_register_string("smpi/gather",        nullptr, nullptr, "Which collective to use for gather");
-    xbt_cfg_register_string("smpi/allgather",     nullptr, nullptr, "Which collective to use for allgather");
-    xbt_cfg_register_string("smpi/barrier",       nullptr, nullptr, "Which collective to use for barrier");
-    xbt_cfg_register_string("smpi/reduce_scatter",nullptr, nullptr, "Which collective to use for reduce_scatter");
-    xbt_cfg_register_alias("smpi/reduce_scatter","smpi/reduce-scatter");
-    xbt_cfg_register_string("smpi/scatter",       nullptr, nullptr, "Which collective to use for scatter");
-    xbt_cfg_register_string("smpi/allgatherv",    nullptr, nullptr, "Which collective to use for allgatherv");
-    xbt_cfg_register_string("smpi/allreduce",     nullptr, nullptr, "Which collective to use for allreduce");
-    xbt_cfg_register_string("smpi/alltoall",      nullptr, nullptr, "Which collective to use for alltoall");
-    xbt_cfg_register_string("smpi/alltoallv",     nullptr, nullptr,"Which collective to use for alltoallv");
-    xbt_cfg_register_string("smpi/bcast",         nullptr, nullptr, "Which collective to use for bcast");
-    xbt_cfg_register_string("smpi/reduce",        nullptr, nullptr, "Which collective to use for reduce");
+  xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
+  xbt_cfg_register_alias("smpi/coll-selector", "smpi/coll_selector");
+  xbt_cfg_register_string("smpi/gather", nullptr, nullptr, "Which collective to use for gather");
+  xbt_cfg_register_string("smpi/allgather", nullptr, nullptr, "Which collective to use for allgather");
+  xbt_cfg_register_string("smpi/barrier", nullptr, nullptr, "Which collective to use for barrier");
+  xbt_cfg_register_string("smpi/reduce_scatter", nullptr, nullptr, "Which collective to use for reduce_scatter");
+  xbt_cfg_register_alias("smpi/reduce_scatter", "smpi/reduce-scatter");
+  xbt_cfg_register_string("smpi/scatter", nullptr, nullptr, "Which collective to use for scatter");
+  xbt_cfg_register_string("smpi/allgatherv", nullptr, nullptr, "Which collective to use for allgatherv");
+  xbt_cfg_register_string("smpi/allreduce", nullptr, nullptr, "Which collective to use for allreduce");
+  xbt_cfg_register_string("smpi/alltoall", nullptr, nullptr, "Which collective to use for alltoall");
+  xbt_cfg_register_string("smpi/alltoallv", nullptr, nullptr, "Which collective to use for alltoallv");
+  xbt_cfg_register_string("smpi/bcast", nullptr, nullptr, "Which collective to use for bcast");
+  xbt_cfg_register_string("smpi/reduce", nullptr, nullptr, "Which collective to use for reduce");
 #endif // HAVE_SMPI
 
-    /* Storage */
+  /* Storage */
 
-    sg_storage_max_file_descriptors = 1024;
-    simgrid::config::bindFlag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
-      "Maximum number of concurrently opened files per host. Default is 1024");
+  sg_storage_max_file_descriptors = 1024;
+  simgrid::config::bindFlag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
+                            "Maximum number of concurrently opened files per host. Default is 1024");
 
-    /* Others */
+  /* Others */
 
-    xbt_cfg_register_boolean("exception/cutpath", "no", nullptr,
-        "Whether to cut all path information from call traces, used e.g. in exceptions.");
+  xbt_cfg_register_boolean("exception/cutpath", "no", nullptr,
+                           "Whether to cut all path information from call traces, used e.g. in exceptions.");
 
-    xbt_cfg_register_boolean("clean-atexit", "yes", _sg_cfg_cb_clean_atexit,
-        "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
-    xbt_cfg_register_alias("clean-atexit","clean_atexit");
+  xbt_cfg_register_boolean("clean-atexit", "yes", _sg_cfg_cb_clean_atexit,
+                           "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
+  xbt_cfg_register_alias("clean-atexit", "clean_atexit");
 
-    if (surf_path.empty())
-      xbt_cfg_setdefault_string("path", "./");
+  if (surf_path.empty())
+    xbt_cfg_setdefault_string("path", "./");
 
-    _sg_cfg_init_status = 1;
+  _sg_cfg_init_status = 1;
 
-    sg_config_cmd_line(argc, argv);
+  sg_config_cmd_line(argc, argv);
 
-    xbt_mallocator_initialization_is_done(SIMIX_context_is_parallel());
+  xbt_mallocator_initialization_is_done(SIMIX_context_is_parallel());
 }
 
 void sg_config_finalize()
