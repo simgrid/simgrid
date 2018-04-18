@@ -162,6 +162,9 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
       if (not TRACE_smpi_is_grouped())
         mpi->getOrCreateStateType("MPI_STATE");
       root->type_->getOrCreateLinkType("MPI_LINK", mpi, mpi);
+      // TODO See if we can move this to the LoadBalancer plugin
+      root->type_->getOrCreateLinkType("MIGRATE_LINK", mpi, mpi);
+      mpi->getOrCreateStateType("MIGRATE_STATE");
     }
 
     if (TRACE_needs_platform()){
@@ -219,8 +222,13 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   if (TRACE_uncategorized())
     container->type_->getOrCreateVariableType("power_used", "0.5 0.5 0.5");
 
-  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped())
-    container->type_->getOrCreateContainerType("MPI")->getOrCreateStateType("MPI_STATE");
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
+    simgrid::instr::ContainerType* mpi = container->type_->getOrCreateContainerType("MPI");
+    mpi->getOrCreateStateType("MPI_STATE");
+    // TODO See if we can move this to the LoadBalancer plugin
+    root->type_->getOrCreateLinkType("MIGRATE_LINK", mpi, mpi);
+    mpi->getOrCreateStateType("MIGRATE_STATE");
+  }
 
   if (TRACE_actor_is_enabled()) {
     simgrid::instr::ContainerType* actor = container->type_->getOrCreateContainerType("ACTOR");
