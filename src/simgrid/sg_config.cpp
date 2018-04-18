@@ -357,12 +357,8 @@ void sg_config_init(int *argc, char **argv)
   extern bool _sg_do_verbose_exit;
   simgrid::config::bindFlag(_sg_do_verbose_exit, "verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C");
 
-  simgrid::config::declareFlag<int>("contexts/stack-size", "Stack size of contexts in KiB", 8 * 1024, [](int value) {
-    smx_context_stack_size_was_set = 1;
-    smx_context_stack_size         = value * 1024;
-  });
-  /* (FIXME: this is unpleasant) Reset this static variable that was altered when setting the default value. */
-  smx_context_stack_size_was_set = 0;
+  simgrid::config::declareFlag<int>("contexts/stack-size", "Stack size of contexts in KiB", 8 * 1024,
+                                    [](int value) { smx_context_stack_size = value * 1024; });
   simgrid::config::alias("contexts/stack-size", {"contexts/stack_size"});
 
   /* guard size for contexts stacks in memory pages */
@@ -372,12 +368,8 @@ void sg_config_init(int *argc, char **argv)
   int default_guard_size = 1;
 #endif
   simgrid::config::declareFlag<int>("contexts/guard-size", "Guard size for contexts stacks in memory pages",
-                                    default_guard_size, [](int value) {
-                                      smx_context_guard_size_was_set = 1;
-                                      smx_context_guard_size         = value * xbt_pagesize;
-                                    });
-  /* No, it was not set yet (the above setdefault() changed this to 1). */
-  smx_context_guard_size_was_set = 0;
+                                    default_guard_size,
+                                    [](int value) { smx_context_guard_size = value * xbt_pagesize; });
   simgrid::config::alias("contexts/guard-size", {"contexts/guard_size"});
   simgrid::config::declareFlag<int>("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
                                     &SIMIX_context_set_nthreads);
