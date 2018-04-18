@@ -688,9 +688,9 @@ static void make_set()
 {
   simgrid_config = nullptr;
   xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg), xbt_log_priority_critical);
-  xbt_cfg_register_int("speed", 0, nullptr, "");
-  xbt_cfg_register_string("peername", "", nullptr, "");
-  xbt_cfg_register_string("user", "", nullptr, "");
+  simgrid::config::declareFlag<int>("speed", "description", 0);
+  simgrid::config::declareFlag<std::string>("peername", "description", "");
+  simgrid::config::declareFlag<std::string>("user", "description", "");
 }                               /* end_of_make_set */
 
 XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")
