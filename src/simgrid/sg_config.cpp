@@ -188,7 +188,6 @@ static void _sg_cfg_cb__network_model(const std::string& value)
 }
 
 #if SIMGRID_HAVE_MC
-extern int _sg_do_model_check_record;
 static void _sg_cfg_cb_model_check_record(const char *name) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(name);
 }

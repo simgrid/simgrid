@@ -47,8 +47,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
-extern std::string _sg_mc_dot_output_file;
-
 namespace simgrid {
 namespace mc {
 

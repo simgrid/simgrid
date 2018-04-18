@@ -23,7 +23,6 @@
 #include "src/smpi/include/private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
-extern std::string _sg_mc_dot_output_file;
 
 namespace simgrid {
 namespace mc {

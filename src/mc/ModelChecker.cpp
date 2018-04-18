@@ -34,7 +34,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 ::simgrid::mc::ModelChecker* mc_model_checker = nullptr;
-extern std::string _sg_mc_dot_output_file;
 
 using simgrid::mc::remote;
 

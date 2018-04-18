@@ -29,7 +29,6 @@
 #include "src/mc/remote/mc_protocol.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
-extern std::string _sg_mc_property_file;
 
 static inline
 char** argvdup(int argc, char** argv)

@@ -31,7 +31,6 @@
 #include "src/mc/remote/Client.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
-extern std::string _sg_mc_property_file;
 
 /********* Static functions *********/
 

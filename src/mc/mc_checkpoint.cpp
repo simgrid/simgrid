@@ -52,8 +52,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc, "Logging specific to mc_check
 #define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
 #define PROT_RW (PROT_READ | PROT_WRITE)
 #define PROT_RX (PROT_READ | PROT_EXEC)
-extern std::string _sg_mc_property_file;
-extern std::string _sg_mc_dot_output_file;
 
 namespace simgrid {
 namespace mc {

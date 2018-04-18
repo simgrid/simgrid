@@ -6,16 +6,20 @@
 #ifndef MC_CONFIG_HPP
 #define MC_CONFIG_HPP
 
+#include <string>
+
 /********************************** Configuration of MC **************************************/
 extern "C" XBT_PUBLIC int _sg_do_model_check;
 extern XBT_PRIVATE int _sg_do_model_check_record;
 extern XBT_PRIVATE int _sg_mc_checkpoint;
 extern XBT_PUBLIC int _sg_mc_sparse_checkpoint;
 extern XBT_PUBLIC int _sg_mc_ksm;
+extern XBT_PUBLIC std::string _sg_mc_property_file;
 extern XBT_PRIVATE int _sg_mc_timeout;
 extern XBT_PRIVATE int _sg_mc_hash;
 extern XBT_PRIVATE int _sg_mc_max_depth;
 extern "C" XBT_PUBLIC int _sg_mc_max_visited_states;
+extern XBT_PRIVATE std::string _sg_mc_dot_output_file;
 extern XBT_PUBLIC int _sg_mc_comms_determinism;
 extern XBT_PUBLIC int _sg_mc_send_determinism;
 extern XBT_PRIVATE int _sg_mc_snapshot_fds;
