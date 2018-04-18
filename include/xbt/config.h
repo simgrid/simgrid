@@ -118,7 +118,8 @@ XBT_PUBLIC void xbt_cfg_register_string(const char* name, const char* default_va
                                         const char* desc);
 XBT_PUBLIC void xbt_cfg_register_boolean(const char* name, const char* default_val, xbt_cfg_cb_t cb_set,
                                          const char* desc);
-XBT_PUBLIC void xbt_cfg_register_alias(const char* newname, const char* oldname);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::alias") XBT_PUBLIC
+    void xbt_cfg_register_alias(const char* newname, const char* oldname);
 
 XBT_PUBLIC void xbt_cfg_aliases();
 XBT_PUBLIC void xbt_cfg_help();
