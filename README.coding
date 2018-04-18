@@ -24,8 +24,15 @@ SimGrid4 will follow the these rules:
     (because of a bug in Sonar coverage computation)
   C++
   - fields, methods and variables are in snake_case()
-  - Classes and Enum are in CamelCase
-  - filenames: Class.cpp and Class.hpp
+  - Classes and Enum are in UpperCamelCase
+  - public filenames: api_Class.cpp and api/Class.hpp.
+    - Example: src/s4u/s4u_ConditionVariable.cpp and
+               include/simgrid/s4u/ConditionVariable.hpp
+    - If you prefer api_class.cpp, that's OK, too. Breath and relax.
+      Example: src/s4u/s4u_actor.cpp and include/simgrid/s4u/Actor.hpp
+  - internal/kernel filenames: Class.cpp and Class.hpp
+    - Example: src/kernel/activity/Activity.cpp
+               include/simgrid/activity/Activity.hpp
   C
   - variables and functions are in snake_case()
   - typedefs do not hide the pointers, ie * must be explicit
