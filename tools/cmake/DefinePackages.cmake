@@ -576,6 +576,7 @@ set(MC_SRC_BASE
   src/mc/mc_replay.hpp
   src/mc/mc_record.cpp
   src/mc/mc_config.cpp
+  src/mc/mc_config.hpp
   src/mc/mc_global.cpp
   )
 

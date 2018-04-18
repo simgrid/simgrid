@@ -7,10 +7,10 @@
 
 #include "simgrid/sg_config.hpp"
 #include "instr/instr_interface.hpp"
-#include "mc/mc.h"
 #include "simgrid/instr.h"
 #include "src/internal_config.h"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"

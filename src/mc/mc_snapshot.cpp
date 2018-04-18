@@ -182,6 +182,7 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 
 #include <sys/mman.h>
 
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_mmu.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_snapshot.hpp"

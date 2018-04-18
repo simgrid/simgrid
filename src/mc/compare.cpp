@@ -32,6 +32,7 @@
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Type.hpp"
 #include "src/mc/Variable.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"

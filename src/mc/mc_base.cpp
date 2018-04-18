@@ -7,6 +7,7 @@
 
 #include "mc/mc.h"
 #include "src/mc/mc_base.h"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 

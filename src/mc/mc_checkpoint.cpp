@@ -32,6 +32,7 @@
 #include "src/mc/mc_private.hpp"
 #include <mc/mc.h>
 
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_hash.hpp"
 #include "src/mc/mc_mmu.hpp"
 #include "src/mc/mc_smx.hpp"
