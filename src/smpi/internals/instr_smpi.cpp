@@ -6,12 +6,15 @@
 
 #include "private.hpp"
 #include <boost/algorithm/string.hpp>
+#include <simgrid/s4u/Actor.hpp>
 #include <cctype>
 #include <cstdarg>
 #include <cwchar>
 #include <deque>
 #include <simgrid/sg_config.hpp>
+#include <simgrid/s4u/Host.hpp>
 #include <string>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
@@ -83,6 +86,8 @@ static const char* smpi_colors[] = {"recv",
                                     "0 1 0.3",
                                     "accumulate",
                                     "1 0.3 0",
+                                    "migration",
+                                    "0.2 0.5 0.2",
                                     "rput",
                                     "0.3 1 0",
                                     "rget",
@@ -358,4 +363,45 @@ void TRACE_smpi_recv(int src, int dst, int tag)
 
   XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key.c_str());
   simgrid::instr::Container::getRoot()->getLink("MPI_LINK")->endEvent(smpi_container(dst), "PTP", key);
+}
+
+/**************** Functions to trace the migration of tasks. *****************/
+void TRACE_smpi_send_process_data_in(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+
+  smpi_container(rank)->getState("MIGRATE_STATE")->addEntityValue("migration", instr_find_color("migration"));
+  smpi_container(rank)->getState("MIGRATE_STATE")->pushEvent("migration");
+}
+
+void TRACE_smpi_send_process_data_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) return; 
+
+  /* Clean the process state. */
+  smpi_container(rank)->getState("MIGRATE_STATE")->popEvent();
+}
+
+void TRACE_smpi_process_change_host(int rank, sg_host_t new_host)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+
+  /** The key is (most likely) used to match the events in the trace */
+  static long long int counter = 0;
+  std::string key              = std::to_string(counter);
+  counter++;
+
+  // start link (= tell the trace that this rank moves from A to B)
+  container_t cont = smpi_container(rank);
+  simgrid::instr::Container::getRoot()->getLink("MIGRATE_LINK")->startEvent(cont, "M", key);
+
+  // Destroy container of this rank on this host
+  cont->removeFromParent();
+
+  // Setup container on new host
+  TRACE_smpi_setup_container(rank, new_host);
+
+  // end link
+  cont = smpi_container(rank); // This points to the newly created container
+  simgrid::instr::Container::getRoot()->getLink("MIGRATE_LINK")->endEvent(cont, "M", key);
 }
