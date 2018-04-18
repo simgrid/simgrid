@@ -10,7 +10,10 @@
 #include "src/instr/instr_private.hpp"
 #include <string>
 
+/* Helper functions */
+XBT_PRIVATE std::string smpi_container_key(int rank);
 XBT_PRIVATE container_t smpi_container(int rank);
+XBT_PRIVATE void TRACE_smpi_setup_container(int rank, sg_host_t host);
 
 XBT_PRIVATE void TRACE_internal_smpi_set_category(const char* category);
 XBT_PRIVATE const char* TRACE_internal_smpi_get_category();

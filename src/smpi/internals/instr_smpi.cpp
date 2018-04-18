@@ -143,9 +143,14 @@ static const char* instr_find_color(const char* state)
   return ret;
 }
 
+XBT_PRIVATE std::string smpi_container_key(int rank)
+{
+  return std::string("rank-") + std::to_string(rank);
+}
+
 XBT_PRIVATE container_t smpi_container(int rank)
 {
-  return simgrid::instr::Container::byName(std::string("rank-") + std::to_string(rank));
+  return simgrid::instr::Container::byName(smpi_container_key(rank));
 }
 
 static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
@@ -219,21 +224,26 @@ void TRACE_smpi_release()
     delete elm.second;
 }
 
+void TRACE_smpi_setup_container(int rank, sg_host_t host)
+{
+  std::string str = smpi_container_key(rank);
+
+  container_t father;
+  if (TRACE_smpi_is_grouped()){
+    father = simgrid::instr::Container::byNameOrNull(host->get_name());
+  }else{
+    father = simgrid::instr::Container::getRoot();
+  }
+  xbt_assert(father != nullptr, "Could not find a parent for mpi rank %s at function %s", str.c_str(), __func__);
+  father->createChild(str, "MPI"); // This container is of type MPI
+}
+
 void TRACE_smpi_init(int rank)
 {
   if (not TRACE_smpi_is_enabled())
     return;
 
-  std::string str = std::string("rank-") + std::to_string(rank);
-
-  container_t father;
-  if (TRACE_smpi_is_grouped()){
-    father = simgrid::instr::Container::byNameOrNull(sg_host_self_get_name());
-  }else{
-    father = simgrid::instr::Container::getRoot();
-  }
-  xbt_assert(father != nullptr, "Could not find a parent for mpi rank %s at function %s", str.c_str(), __func__);
-  father->createChild(str, "MPI");
+  TRACE_smpi_setup_container(rank, sg_host_self());
 #if HAVE_PAPI
   container_t container   = simgrid::instr::Container::byName(str);
   papi_counter_t counters = smpi_process()->papi_counters();
