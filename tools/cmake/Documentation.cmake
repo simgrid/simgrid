@@ -42,7 +42,7 @@ if(enable_documentation)
     add_dependencies(documentation error_doxygen)
   endif()
 
-  configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_BINARY_DIR}/doc/Doxyfile @ONLY)
 
   foreach(file ${DOC_FIGS})
     string(REPLACE ".fig" ".png" tmp_file ${file})
