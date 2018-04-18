@@ -187,12 +187,6 @@ static void _sg_cfg_cb__network_model(const std::string& value)
   find_model_description(surf_network_model_description, value);
 }
 
-#if SIMGRID_HAVE_MC
-static void _sg_cfg_cb_model_check_record(const char *name) {
-  _sg_do_model_check_record = xbt_cfg_get_boolean(name);
-}
-#endif
-
 static void _sg_cfg_cb_contexts_parallel_mode(const std::string& mode_name)
 {
   if (mode_name == "posix") {
@@ -299,59 +293,6 @@ void sg_config_init(int *argc, char **argv)
                                                                         "default unless optim is set to lazy)",
                                      "no");
   simgrid::config::alias("network/maxmin-selective-update", {"network/maxmin_selective_update"});
-  /* Replay (this part is enabled even if MC it disabled) */
-  simgrid::config::bindFlag(MC_record_path, "model-check/replay",
-                            "Model-check path to replay (as reported by SimGrid when a violation is reported)");
-
-#if SIMGRID_HAVE_MC
-  /* do model-checking-record */
-  xbt_cfg_register_boolean("model-check/record", "no", _sg_cfg_cb_model_check_record,
-                           "Record the model-checking paths");
-
-  xbt_cfg_register_int("model-check/checkpoint", 0, _mc_cfg_cb_checkpoint,
-                       "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => "
-                       "stateless verification). "
-                       "If value=1, one checkpoint is saved for each step => faster verification, but huge memory "
-                       "consumption; higher values are good compromises between speed and memory consumption.");
-
-  xbt_cfg_register_boolean("model-check/sparse-checkpoint", "no", _mc_cfg_cb_sparse_checkpoint,
-                           "Use sparse per-page snapshots.");
-  xbt_cfg_register_boolean("model-check/ksm", "no", _mc_cfg_cb_ksm, "Kernel same-page merging");
-
-  xbt_cfg_register_string("model-check/property", "", _mc_cfg_cb_property,
-                          "Name of the file containing the property, as formatted by the ltl2ba program.");
-  xbt_cfg_register_boolean("model-check/communications-determinism", "no", _mc_cfg_cb_comms_determinism,
-                           "Whether to enable the detection of communication determinism");
-  simgrid::config::alias("model-check/communications-determinism", {"model-check/communications_determinism"});
-
-  xbt_cfg_register_boolean("model-check/send-determinism", "no", _mc_cfg_cb_send_determinism,
-                           "Enable/disable the detection of send-determinism in the communications schemes");
-  simgrid::config::alias("model-check/send-determinism", {"model-check/send_determinism"});
-
-  /* Specify the kind of model-checking reduction */
-  xbt_cfg_register_string("model-check/reduction", "dpor", _mc_cfg_cb_reduce,
-                          "Specify the kind of exploration reduction (either none or DPOR)");
-  xbt_cfg_register_boolean("model-check/timeout", "no", _mc_cfg_cb_timeout,
-                           "Whether to enable timeouts for wait requests");
-
-  xbt_cfg_register_boolean("model-check/hash", "no", _mc_cfg_cb_hash,
-                           "Whether to enable state hash for state comparison (experimental)");
-  xbt_cfg_register_boolean("model-check/snapshot-fds", "no", _mc_cfg_cb_snapshot_fds,
-                           "Whether file descriptors must be snapshoted (currently unusable)");
-  simgrid::config::alias("model-check/snapshot-fds", {"model-check/snapshot_fds"});
-  xbt_cfg_register_int("model-check/max-depth", 1000, _mc_cfg_cb_max_depth,
-                       "Maximal exploration depth (default: 1000)");
-  simgrid::config::alias("model-check/max-depth", {"model-check/max_depth"});
-  xbt_cfg_register_int("model-check/visited", 0, _mc_cfg_cb_visited,
-                       "Specify the number of visited state stored for state comparison reduction. If value=5, the "
-                       "last 5 visited states are stored. If value=0 (the default), all states are stored.");
-
-  xbt_cfg_register_string("model-check/dot-output", "", _mc_cfg_cb_dot_output,
-                          "Name of dot output file corresponding to graph state");
-  simgrid::config::alias("model-check/dot-output", {"model-check/dot_output"});
-  xbt_cfg_register_boolean("model-check/termination", "no", _mc_cfg_cb_termination,
-                           "Whether to enable non progressive cycle detection");
-#endif
 
   extern bool _sg_do_verbose_exit;
   simgrid::config::bindFlag(_sg_do_verbose_exit, "verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C");

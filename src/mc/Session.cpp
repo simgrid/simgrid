@@ -122,7 +122,7 @@ void Session::logState()
 {
   mc_model_checker->getChecker()->logState();
 
-  if (not _sg_mc_dot_output_file.empty()) {
+  if (not _sg_mc_dot_output_file.get().empty()) {
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }

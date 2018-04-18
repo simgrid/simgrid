@@ -76,7 +76,7 @@ FILE *dot_output = nullptr;
 
 void MC_init_dot_output()
 {
-  dot_output = fopen(_sg_mc_dot_output_file.c_str(), "w");
+  dot_output = fopen(_sg_mc_dot_output_file.get().c_str(), "w");
 
   if (dot_output == nullptr) {
     perror("Error open dot output file");

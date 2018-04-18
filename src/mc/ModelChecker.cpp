@@ -96,7 +96,7 @@ void ModelChecker::start()
 
   process_->init();
 
-  if (not _sg_mc_dot_output_file.empty())
+  if (not _sg_mc_dot_output_file.get().empty())
     MC_init_dot_output();
 
   setup_ignore();

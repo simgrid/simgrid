@@ -519,7 +519,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
     // If dot_output enabled, do not handle the corresponding file
     if (dot_output != nullptr) {
       std::string link_basename = simgrid::xbt::Path(link).getBasename();
-      if (link_basename == _sg_mc_dot_output_file)
+      if (link_basename == _sg_mc_dot_output_file.get())
         continue;
     }
 
@@ -561,7 +561,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 
   snapshot->to_ignore = mc_model_checker->process().ignored_heap();
 
-  if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.empty()) {
+  if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.get().empty()) {
     snapshot->stacks = take_snapshot_stacks(snapshot.get());
     if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);

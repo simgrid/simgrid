@@ -43,7 +43,7 @@ static std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session&
 {
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createCommunicationDeterminismChecker(session));
-  else if (_sg_mc_property_file.empty())
+  else if (_sg_mc_property_file.get().empty())
     return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createSafetyChecker(session));
   else
     return std::unique_ptr<simgrid::mc::Checker>(simgrid::mc::createLivenessChecker(session));
