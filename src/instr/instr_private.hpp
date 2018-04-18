@@ -220,7 +220,6 @@ XBT_PRIVATE bool TRACE_needs_platform();
 XBT_PRIVATE bool TRACE_is_enabled();
 XBT_PRIVATE bool TRACE_platform();
 XBT_PRIVATE bool TRACE_platform_topology();
-XBT_PRIVATE bool TRACE_is_configured();
 XBT_PRIVATE bool TRACE_categorized();
 XBT_PRIVATE bool TRACE_uncategorized();
 XBT_PRIVATE bool TRACE_actor_is_enabled();

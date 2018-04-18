@@ -37,57 +37,46 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING                      "tracing"
 #define OPT_TRACING_UNCATEGORIZED        "tracing/uncategorized"
 
-static bool trace_enabled = false;
-static bool trace_platform;
-static bool trace_platform_topology;
-static bool trace_smpi_enabled;
-static bool trace_smpi_grouped;
-static bool trace_smpi_computing;
-static bool trace_smpi_sleeping;
-static bool trace_view_internals;
-static bool trace_categorized;
-static bool trace_uncategorized;
-static bool trace_actor_enabled;
-static bool trace_vm_enabled;
-static bool trace_buffer;
-static bool trace_disable_destroy;
-static bool trace_basic;
-static bool trace_display_sizes = false;
-static bool trace_disable_link;
-static bool trace_disable_power;
+static simgrid::config::Flag<bool> trace_enabled{OPT_TRACING, "Enable Tracing.", false};
+static simgrid::config::Flag<bool> trace_platform{OPT_TRACING_PLATFORM,
+                                                  "Register the platform in the trace as a hierarchy.", false};
+static simgrid::config::Flag<bool> trace_platform_topology{
+    OPT_TRACING_TOPOLOGY, "Register the platform topology in the trace as a graph.", true};
+static simgrid::config::Flag<bool> trace_smpi_enabled{OPT_TRACING_SMPI, "Tracing of the SMPI interface.", false};
+static simgrid::config::Flag<bool> trace_smpi_grouped{OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.", false};
+static simgrid::config::Flag<bool> trace_smpi_computing{
+    OPT_TRACING_SMPI_COMPUTING, "Generate states for timing out of SMPI parts of the application", false};
+static simgrid::config::Flag<bool> trace_smpi_sleeping{
+    OPT_TRACING_SMPI_SLEEPING, "Generate states for timing out of SMPI parts of the application", false};
+static simgrid::config::Flag<bool> trace_view_internals{
+    OPT_TRACING_SMPI_INTERNALS, "View internal messages sent by Collective communications in SMPI", false};
+static simgrid::config::Flag<bool> trace_categorized{
+    OPT_TRACING_CATEGORIZED, "Tracing categorized resource utilization of hosts and links.", false};
+static simgrid::config::Flag<bool> trace_uncategorized{
+    OPT_TRACING_UNCATEGORIZED, "Tracing uncategorized resource utilization of hosts and links.", false};
+static simgrid::config::Flag<bool> trace_actor_enabled{OPT_TRACING_ACTOR, "Tracing of actor behavior.", false};
+static simgrid::config::Flag<bool> trace_vm_enabled{OPT_TRACING_VM, "Tracing of virtual machine behavior.", false};
+static simgrid::config::Flag<bool> trace_buffer{OPT_TRACING_BUFFER,
+                                                "Buffer trace events to put them in temporal order.", true};
+static simgrid::config::Flag<bool> trace_disable_destroy{
+    OPT_TRACING_DISABLE_DESTROY, {"tracing/disable_destroy"}, "Disable platform containers destruction.", false};
+static simgrid::config::Flag<bool> trace_basic{OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
+                                               false};
+static simgrid::config::Flag<bool> trace_display_sizes{OPT_TRACING_DISPLAY_SIZES,
+                                                       {"tracing/smpi/display_sizes"},
+                                                       "(smpi only) Extended events with message size information",
+                                                       false};
+static simgrid::config::Flag<bool> trace_disable_link{
+    OPT_TRACING_DISABLE_LINK, {"tracing/disable_link"}, "Do not trace link bandwidth and latency.", false};
+static simgrid::config::Flag<bool> trace_disable_power{
+    OPT_TRACING_DISABLE_POWER, {"tracing/disable_power"}, "Do not trace host power.", false};
 
-static bool trace_configured = false;
 static bool trace_active     = false;
 
 simgrid::instr::TraceFormat simgrid::instr::trace_format = simgrid::instr::TraceFormat::Paje;
 
-static void TRACE_getopts()
-{
-  trace_enabled             = xbt_cfg_get_boolean(OPT_TRACING);
-  trace_platform            = xbt_cfg_get_boolean(OPT_TRACING_PLATFORM);
-  trace_platform_topology   = xbt_cfg_get_boolean(OPT_TRACING_TOPOLOGY);
-  trace_smpi_enabled        = xbt_cfg_get_boolean(OPT_TRACING_SMPI);
-  trace_smpi_grouped        = xbt_cfg_get_boolean(OPT_TRACING_SMPI_GROUP);
-  trace_smpi_computing      = xbt_cfg_get_boolean(OPT_TRACING_SMPI_COMPUTING);
-  trace_smpi_sleeping       = xbt_cfg_get_boolean(OPT_TRACING_SMPI_SLEEPING);
-  trace_view_internals      = xbt_cfg_get_boolean(OPT_TRACING_SMPI_INTERNALS);
-  trace_categorized         = xbt_cfg_get_boolean(OPT_TRACING_CATEGORIZED);
-  trace_uncategorized       = xbt_cfg_get_boolean(OPT_TRACING_UNCATEGORIZED);
-  trace_actor_enabled       = trace_enabled && xbt_cfg_get_boolean(OPT_TRACING_ACTOR);
-  trace_vm_enabled          = xbt_cfg_get_boolean(OPT_TRACING_VM);
-  trace_buffer              = xbt_cfg_get_boolean(OPT_TRACING_BUFFER);
-  trace_disable_destroy     = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_DESTROY);
-  trace_basic               = xbt_cfg_get_boolean(OPT_TRACING_BASIC);
-  trace_display_sizes       = xbt_cfg_get_boolean(OPT_TRACING_DISPLAY_SIZES);
-  trace_disable_link        = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_LINK);
-  trace_disable_power       = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_POWER);
-}
-
 int TRACE_start()
 {
-  if (TRACE_is_configured())
-    TRACE_getopts();
-
   // tracing system must be:
   //    - enabled (with --cfg=tracing:yes)
   //    - already configured (TRACE_global_init already called)
@@ -175,11 +164,6 @@ bool TRACE_platform_topology()
   return trace_platform_topology;
 }
 
-bool TRACE_is_configured()
-{
-  return trace_configured;
-}
-
 bool TRACE_smpi_is_enabled()
 {
   return (trace_smpi_enabled || TRACE_smpi_is_grouped()) && TRACE_is_enabled();
@@ -217,7 +201,7 @@ bool TRACE_uncategorized ()
 
 bool TRACE_actor_is_enabled()
 {
-  return trace_actor_enabled;
+  return trace_actor_enabled && TRACE_is_enabled();
 }
 
 bool TRACE_vm_is_enabled()
@@ -283,44 +267,21 @@ void TRACE_global_init()
 
   is_initialised = true;
   /* name of the tracefile */
-  xbt_cfg_register_string (OPT_TRACING_FILENAME, "simgrid.trace", nullptr, "Trace file created by the instrumented SimGrid.");
-  xbt_cfg_register_boolean(OPT_TRACING, "no", nullptr, "Enable Tracing.");
-  xbt_cfg_register_boolean(OPT_TRACING_PLATFORM, "no", nullptr, "Register the platform in the trace as a hierarchy.");
-  xbt_cfg_register_boolean(OPT_TRACING_TOPOLOGY, "yes", nullptr, "Register the platform topology in the trace as a graph.");
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI, "no", nullptr, "Tracing of the SMPI interface.");
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_GROUP,"no", nullptr, "Group MPI processes by host.");
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_COMPUTING, "no", nullptr, "Generate states for timing out of SMPI parts of the application");
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_SLEEPING, "no", nullptr, "Generate states for timing out of SMPI parts of the application");
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_INTERNALS, "no", nullptr, "View internal messages sent by Collective communications in SMPI");
-  xbt_cfg_register_boolean(OPT_TRACING_CATEGORIZED, "no", nullptr, "Tracing categorized resource utilization of hosts and links.");
-  xbt_cfg_register_boolean(OPT_TRACING_UNCATEGORIZED, "no", nullptr, "Tracing uncategorized resource utilization of hosts and links.");
-
-  xbt_cfg_register_boolean(OPT_TRACING_ACTOR, "no", nullptr, "Tracing of actor behavior.");
-  xbt_cfg_register_boolean(OPT_TRACING_VM, "no", nullptr, "Tracing of virtual machine behavior.");
-  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_LINK, "no", nullptr, "Do not trace link bandwidth and latency.");
-  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_POWER, "no", nullptr, "Do not trace host power.");
-  xbt_cfg_register_boolean(OPT_TRACING_BUFFER, "yes", nullptr, "Buffer trace events to put them in temporal order.");
-
-  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_DESTROY, "no", nullptr, "Disable platform containers destruction.");
-  xbt_cfg_register_boolean(OPT_TRACING_BASIC, "no", nullptr, "Avoid extended events (impoverished trace file).");
-  xbt_cfg_register_boolean(OPT_TRACING_DISPLAY_SIZES, "no", nullptr, "(smpi only) Extended events with message size information");
-  xbt_cfg_register_string(OPT_TRACING_FORMAT, "Paje", nullptr, "(smpi only) Switch the output format of Tracing");
-  xbt_cfg_register_boolean(OPT_TRACING_FORMAT_TI_ONEFILE, "no", nullptr, "(smpi only) For replay format only : output to one file only");
-  xbt_cfg_register_string(OPT_TRACING_COMMENT, "", nullptr, "Comment to be added on the top of the trace file.");
-  xbt_cfg_register_string(OPT_TRACING_COMMENT_FILE, "", nullptr,
-      "The contents of the file are added to the top of the trace file as comment.");
-  xbt_cfg_register_int(OPT_TRACING_PRECISION, 6, nullptr, "Numerical precision used when timestamping events "
-      "(expressed in number of digits after decimal point)");
-
-  simgrid::config::alias(OPT_TRACING_COMMENT_FILE, {"tracing/comment_file"});
-  simgrid::config::alias(OPT_TRACING_DISABLE_DESTROY, {"tracing/disable_destroy"});
-  simgrid::config::alias(OPT_TRACING_DISABLE_LINK, {"tracing/disable_link"});
-  simgrid::config::alias(OPT_TRACING_DISABLE_POWER, {"tracing/disable_power"});
-  simgrid::config::alias(OPT_TRACING_DISPLAY_SIZES, {"tracing/smpi/display_sizes"});
+  simgrid::config::declareFlag<std::string>(OPT_TRACING_FILENAME, "Trace file created by the instrumented SimGrid.",
+                                            "simgrid.trace");
+  simgrid::config::declareFlag<std::string>(OPT_TRACING_FORMAT, "(smpi only) Switch the output format of Tracing",
+                                            "Paje");
+  simgrid::config::declareFlag<bool>(OPT_TRACING_FORMAT_TI_ONEFILE,
+                                     "(smpi only) For replay format only : output to one file only", false);
   simgrid::config::alias(OPT_TRACING_FORMAT_TI_ONEFILE, {"tracing/smpi/format/ti_one_file"});
-
-  /* instrumentation can be considered configured now */
-  trace_configured = true;
+  simgrid::config::declareFlag<std::string>(OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
+                                            "");
+  simgrid::config::declareFlag<std::string>(
+      OPT_TRACING_COMMENT_FILE, "The contents of the file are added to the top of the trace file as comment.", "");
+  simgrid::config::alias(OPT_TRACING_COMMENT_FILE, {"tracing/comment_file"});
+  simgrid::config::declareFlag<int>(OPT_TRACING_PRECISION, "Numerical precision used when timestamping events "
+                                                           "(expressed in number of digits after decimal point)",
+                                    6);
 }
 
 static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
