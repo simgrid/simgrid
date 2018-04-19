@@ -29,6 +29,7 @@
 #endif
 
 #include <boost/heap/fibonacci_heap.hpp>
+#include <csignal>
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
@@ -95,7 +96,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
     }
 #endif /* HAVE_SMPI */
   }
-  raise(signum);
+  std::raise(signum);
 }
 
 char sigsegv_stack[SIGSTKSZ];   /* alternate stack for SIGSEGV handler */
@@ -200,7 +201,7 @@ void SIMIX_global_init(int *argc, char **argv)
     simgrid::kernel::actor::create_maestro(maestro_code);
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
-    signal(SIGINT, inthandler);
+    std::signal(SIGINT, inthandler);
 
 #ifndef _WIN32
     install_segvhandler();
@@ -400,7 +401,11 @@ void SIMIX_run()
     if (simgrid::simix::breakpoint >= 0.0 && time >= simgrid::simix::breakpoint) {
       XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::breakpoint.get());
       simgrid::simix::breakpoint = -1.0;
-      raise(SIGTRAP);
+#ifdef SIGTRAP
+      std::raise(SIGTRAP);
+#else
+      std::raise(SIGABRT);
+#endif
     }
 
     SIMIX_execute_tasks();

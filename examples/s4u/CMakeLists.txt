@@ -105,7 +105,7 @@ foreach (example trace-platform)
                           ${CMAKE_HOME_DIRECTORY}/examples/s4u/${example}/s4u-${example}.tesh)
 endforeach()
 
-if (NOT enable_memcheck)
+if (NOT enable_memcheck AND NOT WIN32)
   ADD_TESH(simix-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/app-pingpong
                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                             ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh)
