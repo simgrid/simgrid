@@ -63,6 +63,8 @@ extern template XBT_PUBLIC void set_value<double>(const char* name, double value
 extern template XBT_PUBLIC void set_value<bool>(const char* name, bool value);
 extern template XBT_PUBLIC void set_value<std::string>(const char* name, std::string value);
 
+XBT_PUBLIC void set_as_string(const char* name, const std::string& value);
+
 // Get config
 
 template <class T> XBT_PUBLIC T const& get_value(const char* name);

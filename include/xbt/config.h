@@ -78,7 +78,8 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_value<bool>") XBT_PU
     void xbt_cfg_set_boolean(const char* name, const char* val);
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_value<std::string>") XBT_PUBLIC
     void xbt_cfg_set_string(const char* name, const char* val);
-XBT_PUBLIC void xbt_cfg_set_as_string(const char* name, const char* val);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_as_string") XBT_PUBLIC
+    void xbt_cfg_set_as_string(const char* name, const char* val);
 
 /*
   Set the default value of the cell \a name in \a cfg with the provided value.

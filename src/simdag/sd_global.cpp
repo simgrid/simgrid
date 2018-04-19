@@ -178,7 +178,7 @@ void SD_init_nocheck(int *argc, char **argv)
  */
 void SD_config(const char *key, const char *value){
   xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
-  xbt_cfg_set_as_string(key, value);
+  simgrid::config::set_as_string(key, value);
 }
 
 /**
