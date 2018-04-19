@@ -33,8 +33,8 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global = new s_MSG_Global_t();
 
     msg_global->debug_multiple_use = false;
-    simgrid::config::bindFlag(msg_global->debug_multiple_use, "msg/debug-multiple-use",
-                              "Print backtraces of both processes when there is a conflict of multiple use of a task");
+    simgrid::config::bind_flag(msg_global->debug_multiple_use, "msg/debug-multiple-use",
+                               "Print backtraces of both processes when there is a conflict of multiple use of a task");
 
     SIMIX_global_init(argc, argv);
 

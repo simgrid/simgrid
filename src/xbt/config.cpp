@@ -386,24 +386,24 @@ void alias(const char* realname, std::initializer_list<const char*> aliases)
     simgrid_config->alias(realname, aliasname);
 }
 
-// ***** declareFlag *****
+// ***** declare_flag *****
 
 template <class T>
-XBT_PUBLIC void declareFlag(const char* name, const char* description, T value, std::function<void(const T&)> callback)
+XBT_PUBLIC void declare_flag(const char* name, const char* description, T value, std::function<void(const T&)> callback)
 {
   if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
   simgrid_config->register_option<T>(name, description, std::move(value), std::move(callback));
 }
 
-template XBT_PUBLIC void declareFlag(const char* name, const char* description, int value,
-                                     std::function<void(int const&)> callback);
-template XBT_PUBLIC void declareFlag(const char* name, const char* description, double value,
-                                     std::function<void(double const&)> callback);
-template XBT_PUBLIC void declareFlag(const char* name, const char* description, bool value,
-                                     std::function<void(bool const&)> callback);
-template XBT_PUBLIC void declareFlag(const char* name, const char* description, std::string value,
-                                     std::function<void(std::string const&)> callback);
+template XBT_PUBLIC void declare_flag(const char* name, const char* description, int value,
+                                      std::function<void(int const&)> callback);
+template XBT_PUBLIC void declare_flag(const char* name, const char* description, double value,
+                                      std::function<void(double const&)> callback);
+template XBT_PUBLIC void declare_flag(const char* name, const char* description, bool value,
+                                      std::function<void(bool const&)> callback);
+template XBT_PUBLIC void declare_flag(const char* name, const char* description, std::string value,
+                                      std::function<void(std::string const&)> callback);
 }
 }
 
@@ -684,9 +684,9 @@ static void make_set()
 {
   simgrid_config = nullptr;
   xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg), xbt_log_priority_critical);
-  simgrid::config::declareFlag<int>("speed", "description", 0);
-  simgrid::config::declareFlag<std::string>("peername", "description", "");
-  simgrid::config::declareFlag<std::string>("user", "description", "");
+  simgrid::config::declare_flag<int>("speed", "description", 0);
+  simgrid::config::declare_flag<std::string>("peername", "description", "");
+  simgrid::config::declare_flag<std::string>("user", "description", "");
 }                               /* end_of_make_set */
 
 XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")

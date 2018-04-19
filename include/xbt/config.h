@@ -112,13 +112,13 @@ XBT_PUBLIC void xbt_cfg_dump(const char* name, const char* indent, xbt_cfg_t cfg
  *
  *  @{
  */
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declareFlag<>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<double>") XBT_PUBLIC
     void xbt_cfg_register_double(const char* name, double default_val, xbt_cfg_cb_t cb_set, const char* desc);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declareFlag<>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<int>") XBT_PUBLIC
     void xbt_cfg_register_int(const char* name, int default_val, xbt_cfg_cb_t cb_set, const char* desc);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declareFlag<>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<std::string>") XBT_PUBLIC
     void xbt_cfg_register_string(const char* name, const char* default_val, xbt_cfg_cb_t cb_set, const char* desc);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declareFlag<>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<bool>") XBT_PUBLIC
     void xbt_cfg_register_boolean(const char* name, const char* default_val, xbt_cfg_cb_t cb_set, const char* desc);
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::alias") XBT_PUBLIC
     void xbt_cfg_register_alias(const char* newname, const char* oldname);

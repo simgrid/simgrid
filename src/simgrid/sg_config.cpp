@@ -231,73 +231,73 @@ void sg_config_init(int *argc, char **argv)
 
   /* Plugins configuration */
   describe_model(description, descsize, surf_plugin_description, "plugin", "The plugins");
-  simgrid::config::declareFlag<std::string>("plugin", description, "", &_sg_cfg_cb__plugin);
+  simgrid::config::declare_flag<std::string>("plugin", description, "", &_sg_cfg_cb__plugin);
 
   describe_model(description, descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
-  simgrid::config::declareFlag<std::string>("cpu/model", description, "Cas01", &_sg_cfg_cb__cpu_model);
+  simgrid::config::declare_flag<std::string>("cpu/model", description, "Cas01", &_sg_cfg_cb__cpu_model);
 
   describe_model(description, descsize, surf_storage_model_description, "model", "The model to use for the storage");
-  simgrid::config::declareFlag<std::string>("storage/model", description, "default", &_sg_cfg_cb__storage_mode);
+  simgrid::config::declare_flag<std::string>("storage/model", description, "default", &_sg_cfg_cb__storage_mode);
 
   describe_model(description, descsize, surf_network_model_description, "model", "The model to use for the network");
-  simgrid::config::declareFlag<std::string>("network/model", description, "LV08", &_sg_cfg_cb__network_model);
+  simgrid::config::declare_flag<std::string>("network/model", description, "LV08", &_sg_cfg_cb__network_model);
 
   describe_model(description, descsize, surf_optimization_mode_description, "optimization mode",
                  "The optimization modes to use for the network");
-  simgrid::config::declareFlag<std::string>("network/optim", description, "Lazy", &_sg_cfg_cb__optimization_mode);
+  simgrid::config::declare_flag<std::string>("network/optim", description, "Lazy", &_sg_cfg_cb__optimization_mode);
 
   describe_model(description, descsize, surf_host_model_description, "model", "The model to use for the host");
-  simgrid::config::declareFlag<std::string>("host/model", description, "default", &_sg_cfg_cb__host_model);
+  simgrid::config::declare_flag<std::string>("host/model", description, "default", &_sg_cfg_cb__host_model);
 
-  simgrid::config::bindFlag(sg_surf_precision, "surf/precision",
-                            "Numerical precision used when updating simulation times (in seconds)");
+  simgrid::config::bind_flag(sg_surf_precision, "surf/precision",
+                             "Numerical precision used when updating simulation times (in seconds)");
 
-  simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
-                            "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
+  simgrid::config::bind_flag(sg_maxmin_precision, "maxmin/precision",
+                             "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
-  simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency-limit", {"maxmin/concurrency_limit"},
-                            "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
-                            "processes on each host, at higher level. (default: -1 means no such limitation)");
+  simgrid::config::bind_flag(sg_concurrency_limit, "maxmin/concurrency-limit", {"maxmin/concurrency_limit"},
+                             "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
+                             "processes on each host, at higher level. (default: -1 means no such limitation)");
 
   /* The parameters of network models */
 
   sg_latency_factor = 13.01; // comes from the default LV08 network model
-  simgrid::config::bindFlag(sg_latency_factor, "network/latency-factor", {"network/latency_factor"},
-                            "Correction factor to apply to the provided latency (default value set by network model)");
+  simgrid::config::bind_flag(sg_latency_factor, "network/latency-factor", {"network/latency_factor"},
+                             "Correction factor to apply to the provided latency (default value set by network model)");
 
   sg_bandwidth_factor = 0.97; // comes from the default LV08 network model
-  simgrid::config::bindFlag(
+  simgrid::config::bind_flag(
       sg_bandwidth_factor, "network/bandwidth-factor", {"network/bandwidth_factor"},
       "Correction factor to apply to the provided bandwidth (default value set by network model)");
 
   sg_weight_S_parameter = 20537; // comes from the default LV08 network model
-  simgrid::config::bindFlag(
+  simgrid::config::bind_flag(
       sg_weight_S_parameter, "network/weight-S", {"network/weight_S"},
       "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
   /* Inclusion path */
-  simgrid::config::declareFlag<std::string>("path", "Lookup path for inclusions in platform and deployment XML files",
-                                            "", [](std::string const& path) {
-                                              if (not path.empty())
-                                                surf_path.push_back(path);
-                                            });
+  simgrid::config::declare_flag<std::string>("path", "Lookup path for inclusions in platform and deployment XML files",
+                                             "", [](std::string const& path) {
+                                               if (not path.empty())
+                                                 surf_path.push_back(path);
+                                             });
 
-  simgrid::config::declareFlag<bool>("cpu/maxmin-selective-update", "Update the constraint set propagating recursively "
-                                                                    "to others constraints (off by default unless "
-                                                                    "optim is set to lazy)",
-                                     "no");
+  simgrid::config::declare_flag<bool>("cpu/maxmin-selective-update",
+                                      "Update the constraint set propagating recursively to others constraints "
+                                      "(off by default unless optim is set to lazy)",
+                                      "no");
   simgrid::config::alias("cpu/maxmin-selective-update", {"cpu/maxmin_selective_update"});
-  simgrid::config::declareFlag<bool>("network/maxmin-selective-update", "Update the constraint set propagating "
-                                                                        "recursively to others constraints (off by "
-                                                                        "default unless optim is set to lazy)",
-                                     "no");
+  simgrid::config::declare_flag<bool>("network/maxmin-selective-update", "Update the constraint set propagating "
+                                                                         "recursively to others constraints (off by "
+                                                                         "default unless optim is set to lazy)",
+                                      "no");
   simgrid::config::alias("network/maxmin-selective-update", {"network/maxmin_selective_update"});
 
   extern bool _sg_do_verbose_exit;
-  simgrid::config::bindFlag(_sg_do_verbose_exit, "verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C");
+  simgrid::config::bind_flag(_sg_do_verbose_exit, "verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C");
 
-  simgrid::config::declareFlag<int>("contexts/stack-size", "Stack size of contexts in KiB", 8 * 1024,
-                                    [](int value) { smx_context_stack_size = value * 1024; });
+  simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB", 8 * 1024,
+                                     [](int value) { smx_context_stack_size = value * 1024; });
   simgrid::config::alias("contexts/stack-size", {"contexts/stack_size"});
 
   /* guard size for contexts stacks in memory pages */
@@ -306,16 +306,16 @@ void sg_config_init(int *argc, char **argv)
 #else
   int default_guard_size = 1;
 #endif
-  simgrid::config::declareFlag<int>("contexts/guard-size", "Guard size for contexts stacks in memory pages",
-                                    default_guard_size,
-                                    [](int value) { smx_context_guard_size = value * xbt_pagesize; });
+  simgrid::config::declare_flag<int>("contexts/guard-size", "Guard size for contexts stacks in memory pages",
+                                     default_guard_size,
+                                     [](int value) { smx_context_guard_size = value * xbt_pagesize; });
   simgrid::config::alias("contexts/guard-size", {"contexts/guard_size"});
-  simgrid::config::declareFlag<int>("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
-                                    &SIMIX_context_set_nthreads);
+  simgrid::config::declare_flag<int>("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
+                                     &SIMIX_context_set_nthreads);
 
-  simgrid::config::declareFlag<int>("contexts/parallel-threshold",
-                                    "Minimal number of user contexts to be run in parallel (raw contexts only)", 2,
-                                    &SIMIX_context_set_parallel_threshold);
+  simgrid::config::declare_flag<int>("contexts/parallel-threshold",
+                                     "Minimal number of user contexts to be run in parallel (raw contexts only)", 2,
+                                     &SIMIX_context_set_parallel_threshold);
   simgrid::config::alias("contexts/parallel-threshold", {"contexts/parallel_threshold"});
 
   /* synchronization mode for parallel user contexts */
@@ -324,69 +324,70 @@ void sg_config_init(int *argc, char **argv)
 #else //No futex on mac and posix is unimplememted yet
   std::string default_synchro_mode = "busy_wait";
 #endif
-  simgrid::config::declareFlag<std::string>("contexts/synchro", "Synchronization mode to use when running contexts in "
-                                                                "parallel (either futex, posix or busy_wait)",
-                                            default_synchro_mode, &_sg_cfg_cb_contexts_parallel_mode);
+  simgrid::config::declare_flag<std::string>("contexts/synchro", "Synchronization mode to use when running contexts in "
+                                                                 "parallel (either futex, posix or busy_wait)",
+                                             default_synchro_mode, &_sg_cfg_cb_contexts_parallel_mode);
 
   // For smpi/bw-factor and smpi/lat-factor
   // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
-  simgrid::config::declareFlag<std::string>("smpi/bw-factor",
-                                            "Bandwidth factors for smpi. Format: "
-                                            "'threshold0:value0;threshold1:value1;...;thresholdN:valueN', "
-                                            "meaning if(size >=thresholdN ) return valueN.",
-                                            "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;"
-                                            "1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
+  simgrid::config::declare_flag<std::string>("smpi/bw-factor",
+                                             "Bandwidth factors for smpi. Format: "
+                                             "'threshold0:value0;threshold1:value1;...;thresholdN:valueN', "
+                                             "meaning if(size >=thresholdN ) return valueN.",
+                                             "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;"
+                                             "1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
   simgrid::config::alias("smpi/bw-factor", {"smpi/bw_factor"});
 
-  simgrid::config::declareFlag<std::string>("smpi/lat-factor", "Latency factors for smpi.",
-                                            "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
-                                            "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
+  simgrid::config::declare_flag<std::string>("smpi/lat-factor", "Latency factors for smpi.",
+                                             "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
+                                             "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
   simgrid::config::alias("smpi/lat-factor", {"smpi/lat_factor"});
-  simgrid::config::declareFlag<std::string>("smpi/IB-penalty-factors",
-                                            "Correction factor to communications using Infiniband model with "
-                                            "contention (default value based on Stampede cluster profiling)",
-                                            "0.965;0.925;1.35");
+  simgrid::config::declare_flag<std::string>("smpi/IB-penalty-factors",
+                                             "Correction factor to communications using Infiniband model with "
+                                             "contention (default value based on Stampede cluster profiling)",
+                                             "0.965;0.925;1.35");
   simgrid::config::alias("smpi/IB-penalty-factors", {"smpi/IB_penalty_factors"});
 
 #if HAVE_SMPI
-  simgrid::config::declareFlag<double>("smpi/host-speed", "Speed of the host running the simulation (in flop/s). "
-                                                          "Used to bench the operations.",
-                                       20000.0);
+  simgrid::config::declare_flag<double>("smpi/host-speed", "Speed of the host running the simulation (in flop/s). "
+                                                           "Used to bench the operations.",
+                                        20000.0);
   simgrid::config::alias("smpi/host-speed", {"smpi/running_power", "smpi/running-power"});
 
-  simgrid::config::declareFlag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.", false);
+  simgrid::config::declare_flag<bool>("smpi/keep-temps", "Whether we should keep the generated temporary files.",
+                                      false);
 
-  simgrid::config::declareFlag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.",
-                                     false);
+  simgrid::config::declare_flag<bool>("smpi/display-timing", "Whether we should display the timing after simulation.",
+                                      false);
   simgrid::config::alias("smpi/display-timing", {"smpi/display_timing"});
 
-  simgrid::config::declareFlag<bool>("smpi/simulate-computation",
-                                     "Whether the computational part of the simulated application should be simulated.",
-                                     true);
+  simgrid::config::declare_flag<bool>(
+      "smpi/simulate-computation", "Whether the computational part of the simulated application should be simulated.",
+      true);
   simgrid::config::alias("smpi/simulate-computation", {"smpi/simulate_computation"});
 
-  simgrid::config::declareFlag<std::string>(
+  simgrid::config::declare_flag<std::string>(
       "smpi/shared-malloc", "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.", "global");
   simgrid::config::alias("smpi/shared-malloc", {"smpi/use_shared_malloc", "smpi/use-shared-malloc"});
-  simgrid::config::declareFlag<double>("smpi/shared-malloc-blocksize",
-                                       "Size of the bogus file which will be created for global shared allocations",
-                                       1UL << 20);
-  simgrid::config::declareFlag<std::string>("smpi/shared-malloc-hugepage",
-                                            "Path to a mounted hugetlbfs, to use huge pages with shared malloc.", "");
+  simgrid::config::declare_flag<double>("smpi/shared-malloc-blocksize",
+                                        "Size of the bogus file which will be created for global shared allocations",
+                                        1UL << 20);
+  simgrid::config::declare_flag<std::string>("smpi/shared-malloc-hugepage",
+                                             "Path to a mounted hugetlbfs, to use huge pages with shared malloc.", "");
 
-  simgrid::config::declareFlag<double>(
+  simgrid::config::declare_flag<double>(
       "smpi/cpu-threshold", "Minimal computation time (in seconds) not discarded, or -1 for infinity.", 1e-6);
   simgrid::config::alias("smpi/cpu-threshold", {"smpi/cpu_threshold"});
 
-  simgrid::config::declareFlag<int>(
+  simgrid::config::declare_flag<int>(
       "smpi/async-small-thresh",
       "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver", 0);
   simgrid::config::alias("smpi/async-small-thresh", {"smpi/async_small_thres", "smpi/async_small_thresh"});
 
-  simgrid::config::declareFlag<bool>("smpi/trace-call-location",
-                                     "Should filename and linenumber of MPI calls be traced?", false);
+  simgrid::config::declare_flag<bool>("smpi/trace-call-location",
+                                      "Should filename and linenumber of MPI calls be traced?", false);
 
-  simgrid::config::declareFlag<int>(
+  simgrid::config::declare_flag<int>(
       "smpi/send-is-detached-thresh",
       "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend", 65536);
   simgrid::config::alias("smpi/send-is-detached-thresh",
@@ -396,65 +397,65 @@ void sg_config_init(int *argc, char **argv)
   if (default_privatization == nullptr)
     default_privatization = "no";
 
-  simgrid::config::declareFlag<std::string>(
+  simgrid::config::declare_flag<std::string>(
       "smpi/privatization", "How we should privatize global variable at runtime (no, yes, mmap, dlopen).",
       default_privatization);
   simgrid::config::alias("smpi/privatization", {"smpi/privatize_global_variables", "smpi/privatize-global-variables"});
 
-  simgrid::config::declareFlag<bool>("smpi/grow-injected-times",
-                                     "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to "
-                                     "allow faster simulation. This can make simulation less precise, though.",
-                                     true);
+  simgrid::config::declare_flag<bool>("smpi/grow-injected-times",
+                                      "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to "
+                                      "allow faster simulation. This can make simulation less precise, though.",
+                                      true);
 
 #if HAVE_PAPI
-  simgrid::config::declareFlag<std::string>("smpi/papi-events",
-                                            "This switch enables tracking the specified counters with PAPI", "");
+  simgrid::config::declare_flag<std::string>("smpi/papi-events",
+                                             "This switch enables tracking the specified counters with PAPI", "");
 #endif
-  simgrid::config::declareFlag<std::string>("smpi/comp-adjustment-file",
-                                            "A file containing speedups or slowdowns for some parts of the code.", "");
-  simgrid::config::declareFlag<std::string>(
+  simgrid::config::declare_flag<std::string>("smpi/comp-adjustment-file",
+                                             "A file containing speedups or slowdowns for some parts of the code.", "");
+  simgrid::config::declare_flag<std::string>(
       "smpi/os", "Small messages timings (MPI_Send minimum time for small messages)", "0:0:0:0:0");
-  simgrid::config::declareFlag<std::string>(
+  simgrid::config::declare_flag<std::string>(
       "smpi/ois", "Small messages timings (MPI_Isend minimum time for small messages)", "0:0:0:0:0");
-  simgrid::config::declareFlag<std::string>(
+  simgrid::config::declare_flag<std::string>(
       "smpi/or", "Small messages timings (MPI_Recv minimum time for small messages)", "0:0:0:0:0");
 
-  simgrid::config::declareFlag<double>("smpi/iprobe-cpu-usage",
-                                       "Maximum usage of CPUs by MPI_Iprobe() calls. We've observed that MPI_Iprobes "
-                                       "consume significantly less power than the maximum of a specific application. "
-                                       "This value is then (Iprobe_Usage/Max_Application_Usage).",
-                                       1.0);
+  simgrid::config::declare_flag<double>("smpi/iprobe-cpu-usage",
+                                        "Maximum usage of CPUs by MPI_Iprobe() calls. We've observed that MPI_Iprobes "
+                                        "consume significantly less power than the maximum of a specific application. "
+                                        "This value is then (Iprobe_Usage/Max_Application_Usage).",
+                                        1.0);
 
-  simgrid::config::declareFlag<std::string>("smpi/coll-selector", "Which collective selector to use", "default");
+  simgrid::config::declare_flag<std::string>("smpi/coll-selector", "Which collective selector to use", "default");
   simgrid::config::alias("smpi/coll-selector", {"smpi/coll_selector"});
-  simgrid::config::declareFlag<std::string>("smpi/gather", "Which collective to use for gather", "");
-  simgrid::config::declareFlag<std::string>("smpi/allgather", "Which collective to use for allgather", "");
-  simgrid::config::declareFlag<std::string>("smpi/barrier", "Which collective to use for barrier", "");
-  simgrid::config::declareFlag<std::string>("smpi/reduce_scatter", "Which collective to use for reduce_scatter", "");
+  simgrid::config::declare_flag<std::string>("smpi/gather", "Which collective to use for gather", "");
+  simgrid::config::declare_flag<std::string>("smpi/allgather", "Which collective to use for allgather", "");
+  simgrid::config::declare_flag<std::string>("smpi/barrier", "Which collective to use for barrier", "");
+  simgrid::config::declare_flag<std::string>("smpi/reduce_scatter", "Which collective to use for reduce_scatter", "");
   simgrid::config::alias("smpi/reduce_scatter", {"smpi/reduce-scatter"});
-  simgrid::config::declareFlag<std::string>("smpi/scatter", "Which collective to use for scatter", "");
-  simgrid::config::declareFlag<std::string>("smpi/allgatherv", "Which collective to use for allgatherv", "");
-  simgrid::config::declareFlag<std::string>("smpi/allreduce", "Which collective to use for allreduce", "");
-  simgrid::config::declareFlag<std::string>("smpi/alltoall", "Which collective to use for alltoall", "");
-  simgrid::config::declareFlag<std::string>("smpi/alltoallv", "Which collective to use for alltoallv", "");
-  simgrid::config::declareFlag<std::string>("smpi/bcast", "Which collective to use for bcast", "");
-  simgrid::config::declareFlag<std::string>("smpi/reduce", "Which collective to use for reduce", "");
+  simgrid::config::declare_flag<std::string>("smpi/scatter", "Which collective to use for scatter", "");
+  simgrid::config::declare_flag<std::string>("smpi/allgatherv", "Which collective to use for allgatherv", "");
+  simgrid::config::declare_flag<std::string>("smpi/allreduce", "Which collective to use for allreduce", "");
+  simgrid::config::declare_flag<std::string>("smpi/alltoall", "Which collective to use for alltoall", "");
+  simgrid::config::declare_flag<std::string>("smpi/alltoallv", "Which collective to use for alltoallv", "");
+  simgrid::config::declare_flag<std::string>("smpi/bcast", "Which collective to use for bcast", "");
+  simgrid::config::declare_flag<std::string>("smpi/reduce", "Which collective to use for reduce", "");
 #endif // HAVE_SMPI
 
   /* Storage */
 
   sg_storage_max_file_descriptors = 1024;
-  simgrid::config::bindFlag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
-                            "Maximum number of concurrently opened files per host. Default is 1024");
+  simgrid::config::bind_flag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
+                             "Maximum number of concurrently opened files per host. Default is 1024");
 
   /* Others */
 
-  simgrid::config::declareFlag<bool>(
+  simgrid::config::declare_flag<bool>(
       "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false);
 
   extern bool _sg_do_clean_atexit;
-  simgrid::config::bindFlag(_sg_do_clean_atexit, "clean-atexit", {"clean_atexit"},
-                            "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
+  simgrid::config::bind_flag(_sg_do_clean_atexit, "clean-atexit", {"clean_atexit"},
+                             "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
 
   if (surf_path.empty())
     xbt_cfg_setdefault_string("path", "./");

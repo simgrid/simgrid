@@ -267,21 +267,21 @@ void TRACE_global_init()
 
   is_initialised = true;
   /* name of the tracefile */
-  simgrid::config::declareFlag<std::string>(OPT_TRACING_FILENAME, "Trace file created by the instrumented SimGrid.",
-                                            "simgrid.trace");
-  simgrid::config::declareFlag<std::string>(OPT_TRACING_FORMAT, "(smpi only) Switch the output format of Tracing",
-                                            "Paje");
-  simgrid::config::declareFlag<bool>(OPT_TRACING_FORMAT_TI_ONEFILE,
-                                     "(smpi only) For replay format only : output to one file only", false);
+  simgrid::config::declare_flag<std::string>(OPT_TRACING_FILENAME, "Trace file created by the instrumented SimGrid.",
+                                             "simgrid.trace");
+  simgrid::config::declare_flag<std::string>(OPT_TRACING_FORMAT, "(smpi only) Switch the output format of Tracing",
+                                             "Paje");
+  simgrid::config::declare_flag<bool>(OPT_TRACING_FORMAT_TI_ONEFILE,
+                                      "(smpi only) For replay format only : output to one file only", false);
   simgrid::config::alias(OPT_TRACING_FORMAT_TI_ONEFILE, {"tracing/smpi/format/ti_one_file"});
-  simgrid::config::declareFlag<std::string>(OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
-                                            "");
-  simgrid::config::declareFlag<std::string>(
+  simgrid::config::declare_flag<std::string>(OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
+                                             "");
+  simgrid::config::declare_flag<std::string>(
       OPT_TRACING_COMMENT_FILE, "The contents of the file are added to the top of the trace file as comment.", "");
   simgrid::config::alias(OPT_TRACING_COMMENT_FILE, {"tracing/comment_file"});
-  simgrid::config::declareFlag<int>(OPT_TRACING_PRECISION, "Numerical precision used when timestamping events "
-                                                           "(expressed in number of digits after decimal point)",
-                                    6);
+  simgrid::config::declare_flag<int>(OPT_TRACING_PRECISION, "Numerical precision used when timestamping events "
+                                                            "(expressed in number of digits after decimal point)",
+                                     6);
 }
 
 static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
