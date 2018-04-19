@@ -13,6 +13,10 @@ TRACE
  - Replay: Tags used for messages sent via MPI_Send / MPI_Recv are now
    supported. They are stored in the trace and used when replayed.
 
+ XBT:
+ - Config: the C API is now deprecated (will be removed in 3.23), and
+           the C++ API has been slightly improved.
+
  Fixed bugs:
  - #258: daemonized actors hang after all non-daemonized actors have completed
 
