@@ -54,13 +54,6 @@ set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-pingpong/simix-breakpoint.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/s4u-async-wait.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitany/s4u-async-waitany.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/async-waitall/s4u-async-waitall.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-basic/s4u-exec-basic.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-dvfs/s4u-exec-dvfs.tesh
                   PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
