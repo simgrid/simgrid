@@ -270,8 +270,6 @@ public:
   Config& operator=(Config const&) = delete;
 
   ConfigurationElement& operator[](const char* name);
-  template<class T>
-  TypedConfigurationElement<T>& getTyped(const char* name);
   void alias(const char* realname, const char* aliasname);
 
   template<class T, class... A>
