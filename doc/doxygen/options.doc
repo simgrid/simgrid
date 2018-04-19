@@ -130,6 +130,8 @@ int main(int argc, char *argv[]) {
 - \c path: \ref options_generic_path
 - \c plugin: \ref options_generic_plugin
 
+- \c simix/breakpoint: \ref options_generic_breakpoint
+
 - \c storage/max_file_descriptors: \ref option_model_storage_maxfd
 
 - \c surf/precision: \ref options_model_precision
@@ -1262,6 +1264,23 @@ trace files (see @ref pf_trace) by using the \b path configuration
 item. To add several directory to the path, set the configuration
 item several times, as in \verbatim
 --cfg=path:toto --cfg=path:tutu
+\endverbatim
+
+\subsection options_generic_breakpoint Set a breakpoint
+
+\verbatim
+--cfg=simix/breakpoint:3.1416
+\endverbatim
+
+This configuration option sets a breakpoint: when the simulated clock reaches
+the given time, a SIGTRAP is raised.  This can be used to stop the execution and
+get a backtrace with a debugger.
+
+It is also possible to set the breakpoint from inside the debugger, by writing
+in global variable simgrid::simix::breakpoint. For example, with gdb:
+
+\verbatim
+set variable simgrid::simix::breakpoint = 3.1416
 \endverbatim
 
 \subsection options_generic_exit Behavior on Ctrl-C

@@ -158,6 +158,8 @@ namespace simix {
 
 simgrid::xbt::signal<void()> onDeadlock;
 
+simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
+                                         "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 }
 }
 
@@ -394,6 +396,12 @@ void SIMIX_run()
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", simix_global->process_to_run.size());
+
+    if (simgrid::simix::breakpoint >= 0.0 && time >= simgrid::simix::breakpoint) {
+      XBT_DEBUG("Breakpoint reached (%g)", simgrid::simix::breakpoint.get());
+      simgrid::simix::breakpoint = -1.0;
+      raise(SIGTRAP);
+    }
 
     SIMIX_execute_tasks();
 
