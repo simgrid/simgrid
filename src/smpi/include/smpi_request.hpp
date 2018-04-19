@@ -50,6 +50,7 @@ class Request : public F2C {
     int tag();
     int flags();
     int detached();
+    MPI_Datatype type();
     void print_request(const char *message);
     void start();
     void cancel();

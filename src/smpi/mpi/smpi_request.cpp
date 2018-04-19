@@ -95,6 +95,10 @@ int Request::detached(){
   return detached_;
 }
 
+MPI_Datatype Request::type(){
+  return old_type_;
+}
+
 size_t Request::size(){
   return size_;
 }
