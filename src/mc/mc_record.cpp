@@ -36,8 +36,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
 
-std::string MC_record_path;
-
 namespace simgrid {
 namespace mc {
 

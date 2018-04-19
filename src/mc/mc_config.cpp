@@ -43,9 +43,8 @@ static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 }
 
 /* Replay (this part is enabled even if MC it disabled) */
-static simgrid::config::Flag<std::string> _sg_mc_record_path{
-    "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", "",
-    [](const std::string& value) { MC_record_path = value; }};
+simgrid::config::Flag<std::string> _sg_mc_record_path{
+    "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", ""};
 
 simgrid::config::Flag<bool> _sg_mc_timeout{
     "model-check/timeout", "Whether to enable timeouts for wait requests", false,
