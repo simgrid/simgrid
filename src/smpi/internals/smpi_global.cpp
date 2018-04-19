@@ -228,7 +228,7 @@ static void smpi_check_options()
              "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
   }
 
-  xbt_assert(xbt_cfg_get_double("smpi/cpu-threshold") >= 0,
+  xbt_assert(simgrid::config::get_config<double>("smpi/cpu-threshold") >= 0,
              "The 'smpi/cpu-threshold' option cannot have negative values [anymore]. If you want to discard "
              "the simulation of any computation, please use 'smpi/simulate-computation:no' instead.");
 }
@@ -360,8 +360,8 @@ static void smpi_init_options(){
     return;
   simgrid::smpi::Colls::set_collectives();
   simgrid::smpi::Colls::smpi_coll_cleanup_callback = nullptr;
-  smpi_cpu_threshold                               = xbt_cfg_get_double("smpi/cpu-threshold");
-  smpi_host_speed                                  = xbt_cfg_get_double("smpi/host-speed");
+  smpi_cpu_threshold                               = simgrid::config::get_config<double>("smpi/cpu-threshold");
+  smpi_host_speed                                  = simgrid::config::get_config<double>("smpi/host-speed");
   xbt_assert(smpi_host_speed >= 0, "You're trying to set the host_speed to a negative value (%f)", smpi_host_speed);
   std::string smpi_privatize_option                = xbt_cfg_get_string("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")

@@ -668,7 +668,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   // This can speed up the execution of certain applications by an order of magnitude, such as HPL
   static int nsleeps = 1;
   double speed        = simgrid::s4u::Actor::self()->get_host()->getSpeed();
-  double maxrate = xbt_cfg_get_double("smpi/iprobe-cpu-usage");
+  double maxrate      = simgrid::config::get_config<double>("smpi/iprobe-cpu-usage");
   MPI_Request request = new Request(nullptr, 0, MPI_CHAR,
                                     source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
                                     simgrid::s4u::this_actor::get_pid(), tag, comm, PERSISTENT | RECV);

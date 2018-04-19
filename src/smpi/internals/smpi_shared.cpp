@@ -199,7 +199,8 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
   xbt_assert(not use_huge_page,
              "Huge pages are not available on your system, you cannot use the smpi/shared-malloc-hugepage option.");
 #endif
-  smpi_shared_malloc_blocksize = static_cast<unsigned long>(xbt_cfg_get_double("smpi/shared-malloc-blocksize"));
+  smpi_shared_malloc_blocksize =
+      static_cast<unsigned long>(simgrid::config::get_config<double>("smpi/shared-malloc-blocksize"));
   void* mem;
   size_t allocated_size;
   if(use_huge_page) {
