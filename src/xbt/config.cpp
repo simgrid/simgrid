@@ -400,6 +400,39 @@ void set_as_string(const char* name, const std::string& value)
   (*simgrid_config)[name].set_string_value(value.c_str());
 }
 
+void set_parse(std::string options)
+{
+  XBT_DEBUG("List to parse and set:'%s'", options.c_str());
+  while (not options.empty()) {
+    XBT_DEBUG("Still to parse and set: '%s'", options.c_str());
+
+    // skip separators
+    size_t pos = options.find_first_not_of(" \t\n,");
+    options.erase(0, pos);
+    // find option
+    pos              = options.find_first_of(" \t\n,");
+    std::string name = options.substr(0, pos);
+    options.erase(0, pos);
+    XBT_DEBUG("parse now:'%s'; parse later:'%s'", name.c_str(), options.c_str());
+
+    if (name.empty())
+      continue;
+
+    pos = name.find(':');
+    xbt_assert(pos != std::string::npos, "Option '%s' badly formatted. Should be of the form 'name:value'",
+               name.c_str());
+
+    std::string val = name.substr(pos + 1);
+    name.erase(pos);
+
+    const std::string path("path");
+    if (name.compare(0, path.length(), path) != 0)
+      XBT_INFO("Configuration change: Set '%s' to '%s'", name.c_str(), val.c_str());
+
+    set_as_string(name.c_str(), val);
+  }
+}
+
 // ***** get_value *****
 
 template <class T> XBT_PUBLIC T const& get_value(const char* name)
@@ -513,40 +546,8 @@ void xbt_cfg_help()
  */
 void xbt_cfg_set_parse(const char *options)
 {
-  if (not options || not strlen(options)) { /* nothing to do */
-    return;
-  }
-
-  XBT_DEBUG("List to parse and set:'%s'", options);
-  std::string optionlist(options);
-  while (not optionlist.empty()) {
-    XBT_DEBUG("Still to parse and set: '%s'", optionlist.c_str());
-
-    // skip separators
-    size_t pos = optionlist.find_first_not_of(" \t\n,");
-    optionlist.erase(0, pos);
-    // find option
-    pos              = optionlist.find_first_of(" \t\n,");
-    std::string name = optionlist.substr(0, pos);
-    optionlist.erase(0, pos);
-    XBT_DEBUG("parse now:'%s'; parse later:'%s'", name.c_str(), optionlist.c_str());
-
-    if (name.empty())
-      continue;
-
-    pos = name.find(':');
-    xbt_assert(pos != std::string::npos, "Option '%s' badly formatted. Should be of the form 'name:value'",
-               name.c_str());
-
-    std::string val = name.substr(pos + 1);
-    name.erase(pos);
-
-    const std::string path("path");
-    if (name.compare(0, path.length(), path) != 0)
-      XBT_INFO("Configuration change: Set '%s' to '%s'", name.c_str(), val.c_str());
-
-    (*simgrid_config)[name.c_str()].set_string_value(val.c_str());
-  }
+  if (options && strlen(options) > 0)
+    simgrid::config::set_parse(std::string(options));
 }
 
 /** @brief Set the value of a variable, using the string representation of that value
@@ -728,7 +729,7 @@ XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")
   auto temp = simgrid_config;
   make_set();
   xbt_test_add("Alloc and free a config set");
-  xbt_cfg_set_parse("peername:veloce user:bidule");
+  simgrid::config::set_parse("peername:veloce user:bidule");
   xbt_cfg_free(&simgrid_config);
   simgrid_config = temp;
 }
@@ -740,7 +741,7 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
   xbt_test_add("Get a single value");
   {
     /* get_single_value */
-    xbt_cfg_set_parse("peername:toto:42 speed:42");
+    simgrid::config::set_parse("peername:toto:42 speed:42");
     int ival = simgrid::config::get_value<int>("speed");
     if (ival != 42)
       xbt_test_fail("Speed value = %d, I expected 42", ival);
@@ -749,7 +750,7 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
   xbt_test_add("Access to a non-existant entry");
   {
     try {
-      xbt_cfg_set_parse("color:blue");
+      simgrid::config::set_parse("color:blue");
     } catch(xbt_ex& e) {
       if (e.category != not_found_error)
         xbt_test_exception(e);
@@ -772,7 +773,7 @@ XBT_TEST_UNIT("c++flags", test_config_cxx_flags, "C++ flags")
   simgrid::config::Flag<bool> bool_flag2("bool2", "", true);
 
   xbt_test_add("Parse values");
-  xbt_cfg_set_parse("int:42 string:bar double:8.0 bool1:true bool2:false");
+  simgrid::config::set_parse("int:42 string:bar double:8.0 bool1:true bool2:false");
   xbt_test_assert(int_flag == 42, "Check int flag");
   xbt_test_assert(string_flag == "bar", "Check string flag");
   xbt_test_assert(double_flag == 8.0, "Check double flag");

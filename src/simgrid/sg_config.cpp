@@ -44,7 +44,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       char *opt = strchr(argv[i], '=');
       opt++;
 
-      xbt_cfg_set_parse(opt);
+      simgrid::config::set_parse(opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
     } else if (not strcmp(argv[i], "--version")) {
       printf("%s\n", SIMGRID_VERSION_STRING);

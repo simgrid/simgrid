@@ -867,7 +867,7 @@ void ETag_surfxml_config()
   for (auto const& elm : *current_property_set) {
     if (simgrid::config::is_default(elm.first.c_str())) {
       std::string cfg = elm.first + ":" + elm.second;
-      xbt_cfg_set_parse(cfg.c_str());
+      simgrid::config::set_parse(std::move(cfg));
     } else
       XBT_INFO("The custom configuration '%s' is already defined by user!", elm.first.c_str());
   }

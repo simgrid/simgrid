@@ -67,7 +67,8 @@ typedef void* xbt_cfg_t;
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC void xbt_cfg_set_parse(const char* options);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_parse") XBT_PUBLIC
+    void xbt_cfg_set_parse(const char* options);
 
 /* Set the value of the cell \a name in \a cfg with the provided value.*/
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_value<int>") XBT_PUBLIC

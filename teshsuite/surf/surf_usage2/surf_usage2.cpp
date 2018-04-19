@@ -10,7 +10,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
-#include "xbt/config.h"
+#include "xbt/config.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
@@ -20,8 +20,8 @@ int main(int argc, char **argv)
 
   surf_init(&argc, argv);       /* Initialize some common structures */
 
-  xbt_cfg_set_parse("network/model:CM02");
-  xbt_cfg_set_parse("cpu/model:Cas01");
+  simgrid::config::set_parse("network/model:CM02");
+  simgrid::config::set_parse("cpu/model:Cas01");
 
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   parse_platform_file(argv[1]);

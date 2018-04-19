@@ -18,6 +18,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
+#include "xbt/config.hpp"
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 
@@ -246,7 +247,7 @@ bool Engine::isInitialized()
 }
 void Engine::setConfig(std::string str)
 {
-  xbt_cfg_set_parse(str.c_str());
+  simgrid::config::set_parse(std::move(str));
 }
 }
 } // namespace

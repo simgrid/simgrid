@@ -64,6 +64,7 @@ extern template XBT_PUBLIC void set_value<bool>(const char* name, bool value);
 extern template XBT_PUBLIC void set_value<std::string>(const char* name, std::string value);
 
 XBT_PUBLIC void set_as_string(const char* name, const std::string& value);
+XBT_PUBLIC void set_parse(std::string options);
 
 // Get config
 
