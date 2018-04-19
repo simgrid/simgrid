@@ -27,8 +27,7 @@ simgrid::xbt::signal<void(Host&)> Host::onDestruction;
 simgrid::xbt::signal<void(Host&)> Host::onStateChange;
 simgrid::xbt::signal<void(Host&)> Host::onSpeedChange;
 
-Host::Host(const char* name)
-  : name_(name)
+Host::Host(const char* name) : name_(name)
 {
   xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
   Engine::getInstance()->addHost(std::string(name_), this);
@@ -81,14 +80,16 @@ Host* Host::by_name_or_null(std::string name)
   return Engine::getInstance()->hostByNameOrNull(name);
 }
 
-Host *Host::current(){
+Host* Host::current()
+{
   smx_actor_t smx_proc = SIMIX_process_self();
   if (smx_proc == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
   return smx_proc->host;
 }
 
-void Host::turnOn() {
+void Host::turnOn()
+{
   if (isOff()) {
     simgrid::simix::kernelImmediate([this] {
       this->extension<simgrid::simix::Host>()->turnOn();
@@ -98,7 +99,8 @@ void Host::turnOn() {
   }
 }
 
-void Host::turnOff() {
+void Host::turnOff()
+{
   if (isOn()) {
     smx_actor_t self = SIMIX_process_self();
     simgrid::simix::kernelImmediate([this, self] {
@@ -108,7 +110,8 @@ void Host::turnOff() {
   }
 }
 
-bool Host::isOn() {
+bool Host::isOn()
+{
   return this->pimpl_cpu->is_on();
 }
 
@@ -196,9 +199,8 @@ int Host::get_actor_count()
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::getPstateSpeed(int pstate_index)
 {
-  return simgrid::simix::kernelImmediate([this, pstate_index] {
-    return this->pimpl_cpu->getPstateSpeed(pstate_index);
-  });
+  return simgrid::simix::kernelImmediate(
+      [this, pstate_index] { return this->pimpl_cpu->getPstateSpeed(pstate_index); });
 }
 
 /** @brief Get the peak processor speed (under full load (=1.0), in flops/s), at the current pstate */
@@ -216,9 +218,7 @@ int Host::getCoreCount()
 /** @brief Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::kernelImmediate([this, pstate_index] {
-      this->pimpl_cpu->setPState(pstate_index);
-  });
+  simgrid::simix::kernelImmediate([this, pstate_index] { this->pimpl_cpu->setPState(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::getPstate()
@@ -269,5 +269,5 @@ double Host::getLoad()
   return this->pimpl_cpu->get_load();
 }
 
-} // namespace simgrid
 } // namespace s4u
+} // namespace simgrid

@@ -36,7 +36,7 @@ ActorPtr Actor::create(const char* name, s4u::Host* host, std::function<void()> 
 ActorPtr Actor::create(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
-  simgrid::simix::ActorCode code = factory(std::move(args));
+  simgrid::simix::ActorCode code            = factory(std::move(args));
   simgrid::kernel::actor::ActorImpl* actor  = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
   return actor->iface();
 }
@@ -52,7 +52,8 @@ void intrusive_ptr_release(Actor* actor)
 
 // ***** Actor methods *****
 
-void Actor::join() {
+void Actor::join()
+{
   simcall_process_join(this->pimpl_, -1);
 }
 
@@ -177,7 +178,7 @@ int Actor::is_suspended()
 
 void Actor::set_kill_time(double time)
 {
-  simcall_process_set_kill_time(pimpl_,time);
+  simcall_process_set_kill_time(pimpl_, time);
 }
 
 /** \brief Get the kill time of an actor(or 0 if unset). */
@@ -190,7 +191,7 @@ void Actor::kill(aid_t pid)
 {
   smx_actor_t killer  = SIMIX_process_self();
   smx_actor_t process = SIMIX_process_from_PID(pid);
-  if(process != nullptr) {
+  if (process != nullptr) {
     simgrid::simix::kernelImmediate([killer, process] { SIMIX_process_kill(process, killer); });
   } else {
     std::ostringstream oss;
@@ -199,7 +200,8 @@ void Actor::kill(aid_t pid)
   }
 }
 
-void Actor::kill() {
+void Actor::kill()
+{
   smx_actor_t process = SIMIX_process_self();
   simgrid::simix::kernelImmediate(
       [this, process] { SIMIX_process_kill(pimpl_, (pimpl_ == simix_global->maestro_process) ? pimpl_ : process); });
@@ -491,7 +493,7 @@ const char* sg_actor_get_property_value(sg_actor_t actor, const char* name)
 xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
 {
   xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
-  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
   std::map<std::string, std::string>* props = actor->get_properties();
   if (props == nullptr)
     return nullptr;
@@ -561,11 +563,11 @@ void sg_actor_migrate(sg_actor_t process, sg_host_t host)
 }
 
 /** \ingroup m_actor_management
-* \brief Wait for the completion of a #sg_actor_t.
-*
-* \param actor the actor to wait for
-* \param timeout wait until the actor is over, or the timeout expires
-*/
+ * \brief Wait for the completion of a #sg_actor_t.
+ *
+ * \param actor the actor to wait for
+ * \param timeout wait until the actor is over, or the timeout expires
+ */
 void sg_actor_join(sg_actor_t actor, double timeout)
 {
   actor->join(timeout);

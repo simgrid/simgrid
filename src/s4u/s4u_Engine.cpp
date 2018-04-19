@@ -19,7 +19,7 @@
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 
-XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
+XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
 
 namespace simgrid {
 namespace s4u {
@@ -28,10 +28,12 @@ xbt::signal<void()> onSimulationEnd;
 xbt::signal<void(double)> onTimeAdvance;
 xbt::signal<void(void)> onDeadlock;
 
-Engine *Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
+Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
-Engine::Engine(int *argc, char **argv) {
-  xbt_assert(s4u::Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
+Engine::Engine(int* argc, char** argv)
+{
+  xbt_assert(s4u::Engine::instance_ == nullptr,
+             "It is currently forbidden to create more than one instance of s4u::Engine");
   TRACE_global_init();
   SIMIX_global_init(argc, argv);
 
@@ -53,7 +55,8 @@ Engine* Engine::getInstance()
     return s4u::Engine::instance_;
 }
 
-void Engine::shutdown() {
+void Engine::shutdown()
+{
   delete s4u::Engine::instance_;
   s4u::Engine::instance_ = nullptr;
 }
@@ -63,20 +66,20 @@ double Engine::getClock()
   return SIMIX_get_clock();
 }
 
-void Engine::loadPlatform(const char *platf)
+void Engine::loadPlatform(const char* platf)
 {
   SIMIX_create_environment(platf);
 }
 
-void Engine::registerFunction(const char*name, int (*code)(int,char**))
+void Engine::registerFunction(const char* name, int (*code)(int, char**))
 {
-  SIMIX_function_register(name,code);
+  SIMIX_function_register(name, code);
 }
-void Engine::registerDefault(int (*code)(int,char**))
+void Engine::registerDefault(int (*code)(int, char**))
 {
   SIMIX_function_register_default(code);
 }
-void Engine::loadDeployment(const char *deploy)
+void Engine::loadDeployment(const char* deploy)
 {
   SIMIX_launch_application(deploy);
 }
@@ -88,8 +91,9 @@ size_t Engine::getHostCount()
 /** @brief Fills the passed list with all hosts found in the platform
  *  @deprecated Please prefer Engine::getAllHosts()
  */
-void XBT_ATTRIB_DEPRECATED_v322("Engine::getHostList() is deprecated in favor of Engine::getAllHosts(). Please switch before v3.22")
-Engine::getHostList(std::vector<Host*>* list)
+void XBT_ATTRIB_DEPRECATED_v322(
+    "Engine::getHostList() is deprecated in favor of Engine::getAllHosts(). Please switch before v3.22")
+    Engine::getHostList(std::vector<Host*>* list)
 {
   for (auto const& kv : pimpl->hosts_)
     list->push_back(kv.second);
@@ -164,8 +168,9 @@ size_t Engine::getLinkCount()
 /** @brief Fills the passed list with all links found in the platform
  *
  *  @deprecated. Prefer Engine::getAllLinks() */
-void XBT_ATTRIB_DEPRECATED_v322("Engine::getLinkList() is deprecated in favor of Engine::getAllLinks(). Please switch before v3.22")
-Engine::getLinkList(std::vector<Link*>* list)
+void XBT_ATTRIB_DEPRECATED_v322(
+    "Engine::getLinkList() is deprecated in favor of Engine::getAllLinks(). Please switch before v3.22")
+    Engine::getLinkList(std::vector<Link*>* list)
 {
   kernel::resource::LinkImpl::linksList(list);
 }
@@ -178,7 +183,8 @@ std::vector<Link*> Engine::getAllLinks()
   return res;
 }
 
-void Engine::run() {
+void Engine::run()
+{
   if (MC_is_active()) {
     MC_run();
   } else {
@@ -248,5 +254,5 @@ void Engine::setConfig(std::string str)
 {
   simgrid::config::set_parse(std::move(str));
 }
-}
-} // namespace
+} // namespace s4u
+} // namespace simgrid

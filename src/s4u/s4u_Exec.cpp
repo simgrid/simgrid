@@ -99,5 +99,5 @@ void intrusive_ptr_add_ref(simgrid::s4u::Exec* e)
 {
   e->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
-}
-}
+} // namespace s4u
+} // namespace simgrid

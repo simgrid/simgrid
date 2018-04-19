@@ -11,7 +11,7 @@
 #include "xbt/log.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel, s4u, "S4U Communication Mailboxes");
 
 namespace simgrid {
 namespace s4u {
@@ -26,13 +26,11 @@ const char* Mailbox::get_cname() const
   return pimpl_->get_cname();
 }
 
-MailboxPtr Mailbox::byName(const char*name)
+MailboxPtr Mailbox::byName(const char* name)
 {
   kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::byNameOrNull(name);
   if (mbox == nullptr) {
-    mbox = simix::kernelImmediate([name] {
-      return kernel::activity::MailboxImpl::byNameOrCreate(name);
-    });
+    mbox = simix::kernelImmediate([name] { return kernel::activity::MailboxImpl::byNameOrCreate(name); });
   }
   return MailboxPtr(&mbox->piface_, true);
 }
@@ -57,7 +55,8 @@ smx_activity_t Mailbox::front()
   return pimpl_->comm_queue.empty() ? nullptr : pimpl_->comm_queue.front();
 }
 
-void Mailbox::setReceiver(ActorPtr actor) {
+void Mailbox::setReceiver(ActorPtr actor)
+{
   simix::kernelImmediate([this, actor]() { this->pimpl_->setReceiver(actor); });
 }
 
@@ -144,5 +143,5 @@ void* Mailbox::get(double timeout)
   c->wait(timeout);
   return res;
 }
-}
-}
+} // namespace s4u
+} // namespace simgrid

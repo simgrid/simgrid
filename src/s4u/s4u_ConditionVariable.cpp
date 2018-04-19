@@ -30,11 +30,13 @@ void ConditionVariable::wait(MutexPtr lock)
   simcall_cond_wait(cond_, lock->mutex_);
 }
 
-void ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
+void ConditionVariable::wait(std::unique_lock<Mutex>& lock)
+{
   simcall_cond_wait(cond_, lock.mutex()->mutex_);
 }
 
-std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout) {
+std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout)
+{
   // The simcall uses -1 for "any timeout" but we don't want this:
   if (timeout < 0)
     timeout = 0.0;
@@ -42,24 +44,21 @@ std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, d
   try {
     simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
     return std::cv_status::no_timeout;
-  }
-  catch (xbt_ex& e) {
+  } catch (xbt_ex& e) {
 
     // If the exception was a timeout, we have to take the lock again:
     if (e.category == timeout_error) {
       try {
         lock.mutex()->lock();
         return std::cv_status::timeout;
-      }
-      catch (...) {
+      } catch (...) {
         std::terminate();
       }
     }
 
     // Another exception: should we reaquire the lock?
     std::terminate();
-  }
-  catch (...) {
+  } catch (...) {
     std::terminate();
   }
 }
@@ -78,11 +77,13 @@ std::cv_status ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, doub
 /**
  * Notify functions
  */
-void ConditionVariable::notify_one() {
+void ConditionVariable::notify_one()
+{
   simgrid::simix::kernelImmediate([this]() { cond_->signal(); });
 }
 
-void ConditionVariable::notify_all() {
+void ConditionVariable::notify_all()
+{
   simgrid::simix::kernelImmediate([this]() { cond_->broadcast(); });
 }
 
@@ -96,5 +97,5 @@ void intrusive_ptr_release(ConditionVariable* cond)
   intrusive_ptr_release(cond->cond_);
 }
 
-}
-}
+} // namespace s4u
+} // namespace simgrid

@@ -54,7 +54,7 @@ int sg_link_count()
 sg_link_t* sg_link_list()
 {
   simgrid::kernel::resource::LinkImpl** list = simgrid::kernel::resource::LinkImpl::linksList();
-  sg_link_t* res                 = (sg_link_t*)list; // Use the same memory area
+  sg_link_t* res                             = (sg_link_t*)list; // Use the same memory area
 
   int size = sg_link_count();
   for (int i = 0; i < size; i++)
@@ -132,28 +132,20 @@ void* Link::getData()
 }
 void Link::setData(void* d)
 {
-  simgrid::simix::kernelImmediate([this, d]() {
-    this->pimpl_->setData(d);
-  });
+  simgrid::simix::kernelImmediate([this, d]() { this->pimpl_->setData(d); });
 }
 
 void Link::setStateTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([this, trace]() {
-    this->pimpl_->setStateTrace(trace);
-  });
+  simgrid::simix::kernelImmediate([this, trace]() { this->pimpl_->setStateTrace(trace); });
 }
 void Link::setBandwidthTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([this, trace]() {
-    this->pimpl_->setBandwidthTrace(trace);
-  });
+  simgrid::simix::kernelImmediate([this, trace]() { this->pimpl_->setBandwidthTrace(trace); });
 }
 void Link::setLatencyTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([this, trace]() {
-    this->pimpl_->setLatencyTrace(trace);
-  });
+  simgrid::simix::kernelImmediate([this, trace]() { this->pimpl_->setLatencyTrace(trace); });
 }
 
 const char* Link::getProperty(const char* key)
@@ -173,5 +165,5 @@ simgrid::xbt::signal<void(s4u::Link&)> Link::onDestruction;
 simgrid::xbt::signal<void(s4u::Link&)> Link::onStateChange;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::onCommunicationStateChange;
-}
-}
+} // namespace s4u
+} // namespace simgrid

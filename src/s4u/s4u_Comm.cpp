@@ -9,7 +9,7 @@
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_activity,"S4U asynchronous communications");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous communications");
 
 namespace simgrid {
 namespace s4u {
@@ -200,7 +200,7 @@ bool Comm::test()
   if (state_ == State::inited)
     this->start();
 
-  if(simcall_comm_test(pimpl_)){
+  if (simcall_comm_test(pimpl_)) {
     state_ = State::finished;
     return true;
   }
@@ -223,5 +223,5 @@ void intrusive_ptr_add_ref(simgrid::s4u::Comm* c)
 {
   c->refcount_.fetch_add(1, std::memory_order_relaxed);
 }
-}
-} // namespaces
+} // namespace s4u
+} // namespace simgrid

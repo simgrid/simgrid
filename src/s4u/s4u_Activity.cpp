@@ -10,7 +10,7 @@
 #include "simgrid/s4u/Activity.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity,s4u,"S4U activities");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity, s4u, "S4U activities");
 
 namespace simgrid {
 namespace s4u {
@@ -27,5 +27,5 @@ Activity* Activity::set_remaining(double remains)
   return this;
 }
 
-}
-}
+} // namespace s4u
+} // namespace simgrid

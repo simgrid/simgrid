@@ -123,7 +123,7 @@ const char* sg_storage_get_host(sg_storage_t storage)
 xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
-  xbt_dict_t as_dict = xbt_dict_new_homogeneous(xbt_free_f);
+  xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
   std::map<std::string, std::string>* props = storage->getProperties();
   if (props == nullptr)
     return nullptr;
@@ -173,7 +173,7 @@ sg_storage_t sg_storage_get_by_name(const char* name)
 xbt_dynar_t sg_storages_as_dynar()
 {
   std::vector<simgrid::s4u::Storage*> storage_list = simgrid::s4u::Engine::getInstance()->getAllStorages();
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_storage_t), nullptr);
+  xbt_dynar_t res                                  = xbt_dynar_new(sizeof(sg_storage_t), nullptr);
   for (auto const& s : storage_list)
     xbt_dynar_push(res, &s);
   return res;

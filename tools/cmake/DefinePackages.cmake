@@ -422,18 +422,18 @@ else()
 endif()
 
 set(S4U_SRC
-  src/s4u/s4u_actor.cpp
-  src/s4u/s4u_activity.cpp
-  src/s4u/s4u_conditionVariable.cpp
-  src/s4u/s4u_comm.cpp
-  src/s4u/s4u_engine.cpp
-  src/s4u/s4u_exec.cpp
-  src/s4u/s4u_host.cpp
-  src/s4u/s4u_link.cpp
-  src/s4u/s4u_mailbox.cpp
-  src/s4u/s4u_mutex.cpp
-  src/s4u/s4u_netzone.cpp
-  src/s4u/s4u_storage.cpp
+  src/s4u/s4u_Actor.cpp
+  src/s4u/s4u_Activity.cpp
+  src/s4u/s4u_ConditionVariable.cpp
+  src/s4u/s4u_Comm.cpp
+  src/s4u/s4u_Engine.cpp
+  src/s4u/s4u_Exec.cpp
+  src/s4u/s4u_Host.cpp
+  src/s4u/s4u_Link.cpp
+  src/s4u/s4u_Mailbox.cpp
+  src/s4u/s4u_Mutex.cpp
+  src/s4u/s4u_Netzone.cpp
+  src/s4u/s4u_Storage.cpp
 )
 
 set(SIMGRID_SRC

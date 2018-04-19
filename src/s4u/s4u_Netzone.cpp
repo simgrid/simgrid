@@ -40,9 +40,7 @@ NetZone::~NetZone()
 
 std::unordered_map<std::string, std::string>* NetZone::getProperties()
 {
-  return simgrid::simix::kernelImmediate([this] {
-      return &properties_;
-  });
+  return simgrid::simix::kernelImmediate([this] { return &properties_; });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -52,9 +50,7 @@ const char* NetZone::getProperty(const char* key)
 }
 void NetZone::setProperty(const char* key, const char* value)
 {
-  simgrid::simix::kernelImmediate([this,key,value] {
-    properties_[key] = value;
-  });
+  simgrid::simix::kernelImmediate([this, key, value] { properties_[key] = value; });
 }
 
 /** @brief Returns the list of direct children (no grand-children)

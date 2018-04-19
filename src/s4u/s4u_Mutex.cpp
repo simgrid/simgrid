@@ -51,5 +51,5 @@ void intrusive_ptr_release(Mutex* mutex)
   xbt_assert(mutex);
   SIMIX_mutex_unref(mutex->mutex_);
 }
-}
-}
+} // namespace s4u
+} // namespace simgrid
