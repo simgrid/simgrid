@@ -141,7 +141,8 @@ cmake -G"$GENERATOR" $INSTALL \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
-  -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF $SRCFOLDER
+  -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF -DCMAKE_DISABLE_SOURCE_CHANGES=ON \
+  $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
 
