@@ -527,7 +527,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
         // Load the copy and resolve the entry point:
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
         int saved_errno = errno;
-        if (xbt_cfg_get_boolean("smpi/keep-temps") == false)
+        if (simgrid::config::get_config<bool>("smpi/keep-temps") == false)
           unlink(target_executable.c_str());
         if (handle == nullptr)
           xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno, strerror(saved_errno));
@@ -579,7 +579,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);
-    if (xbt_cfg_get_boolean("smpi/display-timing")){
+    if (simgrid::config::get_config<bool>("smpi/display-timing")) {
       double global_time = xbt_os_timer_elapsed(global_timer);
       XBT_INFO("Simulated time: %g seconds. \n\n"
           "The simulation took %g seconds (after parsing and platform setup)\n"

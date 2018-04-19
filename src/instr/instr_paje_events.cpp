@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/config.hpp>
+
 #include "src/instr/instr_private.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include "src/smpi/include/private.hpp"
@@ -30,7 +32,7 @@ StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type
     : PajeEvent::PajeEvent(container, type, SIMIX_get_clock(), event_type), value(value), extra_(extra)
 {
 #if HAVE_SMPI
-  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+  if (simgrid::config::get_config<bool>("smpi/trace-call-location")) {
     smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
     filename                        = loc->filename;
     linenumber                      = loc->linenumber;
@@ -85,7 +87,7 @@ void StateEvent::print()
       stream_ << " " << ((extra_ != nullptr) ? extra_->display_size() : 0);
 
 #if HAVE_SMPI
-    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+    if (simgrid::config::get_config<bool>("smpi/trace-call-location")) {
       stream_ << " \"" << filename << "\" " << linenumber;
     }
 #endif

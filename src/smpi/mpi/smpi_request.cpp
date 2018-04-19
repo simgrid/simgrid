@@ -547,7 +547,7 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
       nsleeps=1;//reset the number of sleeps we will do next time
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & PERSISTENT) == 0)
         *request = MPI_REQUEST_NULL;
-    } else if (xbt_cfg_get_boolean("smpi/grow-injected-times")){
+    } else if (simgrid::config::get_config<bool>("smpi/grow-injected-times")) {
       nsleeps++;
     }
   }
@@ -709,7 +709,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   }
   else {
     *flag = 0;
-    if (xbt_cfg_get_boolean("smpi/grow-injected-times"))
+    if (simgrid::config::get_config<bool>("smpi/grow-injected-times"))
       nsleeps++;
   }
   unref(&request);

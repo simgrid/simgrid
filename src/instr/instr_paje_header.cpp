@@ -164,7 +164,7 @@ static void TRACE_header_PajePushState(int size)
   fprintf(tracing_file, "%%       Value string\n");
   if (size) fprintf(tracing_file, "%%       Size int\n");
 #if HAVE_SMPI
-  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+  if (simgrid::config::get_config<bool>("smpi/trace-call-location")) {
     /**
      * paje currently (May 2016) uses "Filename" and "Linenumber" as
      * reserved words. We cannot use them...

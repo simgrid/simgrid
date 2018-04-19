@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/config.hpp>
+
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
@@ -164,7 +166,7 @@ void Container::logCreation()
       prefix = xbt_os_time();
     }
 
-    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
+    if (not simgrid::config::get_config<bool>("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
       std::string folder_name = TRACE_get_filename() + "_files";
       std::string filename    = folder_name + "/" + std::to_string(prefix) + "_" + name_ + ".txt";
 #ifdef WIN32
@@ -195,7 +197,7 @@ void Container::logDestruction()
     XBT_DEBUG("Dump %s", stream.str().c_str());
     fprintf(tracing_file, "%s\n", stream.str().c_str());
   } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
-    if (not xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
+    if (not simgrid::config::get_config<bool>("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
       fclose(tracing_files.at(this));
     }
     tracing_files.erase(this);

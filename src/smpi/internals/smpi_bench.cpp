@@ -154,7 +154,7 @@ void smpi_bench_end()
   }
 
   // Simulate the benchmarked computation unless disabled via command-line argument
-  if (xbt_cfg_get_boolean("smpi/simulate-computation")) {
+  if (simgrid::config::get_config<bool>("smpi/simulate-computation")) {
     smpi_execute(xbt_os_timer_elapsed(timer)/speedup);
   }
 

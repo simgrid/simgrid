@@ -45,7 +45,7 @@ void logException(
       XBT_LOG(prio, "%s %s: %s", context, name.get(), exception.what());
 
     // Do we have a backtrace?
-    if (with_context != nullptr && not xbt_cfg_get_boolean("exception/cutpath")) {
+    if (with_context != nullptr && not simgrid::config::get_config<bool>("exception/cutpath")) {
       auto backtrace = simgrid::xbt::resolveBacktrace(
         with_context->backtrace().data(), with_context->backtrace().size());
       for (std::string const& s : backtrace)
@@ -74,7 +74,7 @@ void logException(
 
 static void showBacktrace(std::vector<xbt_backtrace_location_t>& bt)
 {
-  if (xbt_cfg_get_boolean("exception/cutpath")) {
+  if (simgrid::config::get_config<bool>("exception/cutpath")) {
     XBT_LOG(xbt_log_priority_critical, "Display of current backtrace disabled by --cfg=exception/cutpath.");
     return;
   }

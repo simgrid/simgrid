@@ -60,7 +60,7 @@ namespace surf {
 
 CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : simgrid::surf::CpuModel(algo)
 {
-  bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
+  bool select = simgrid::config::get_config<bool>("cpu/maxmin-selective-update");
 
   if (algo == Model::UpdateAlgo::Lazy) {
     xbt_assert(select || xbt_cfg_is_default_value("cpu/maxmin-selective-update"),
