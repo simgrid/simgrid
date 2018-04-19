@@ -18,8 +18,8 @@ class Request : public F2C {
     /* in the case of non-contiguous memory the user address should be keep
      * to unserialize the data inside the user memory*/
     void *old_buf_;
-    /* this let us know how to unserialize at the end of
-     * the communication*/
+    /* this is especially for derived datatypes that we need to serialize/unserialize.
+     * It let us know how to unserialize at the end of the communication */
     MPI_Datatype old_type_;
     size_t size_;
     int src_;

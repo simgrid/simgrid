@@ -89,6 +89,11 @@ int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int ta
   return retval;
 }
 
+/*
+ * This function starts a request returned by init functions such as
+ * MPI_Send_init(), MPI_Ssend_init (see above), and friends.
+ * They should already have performed sanity checks.
+ */
 int PMPI_Start(MPI_Request * request)
 {
   int retval = 0;
