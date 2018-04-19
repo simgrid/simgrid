@@ -44,7 +44,7 @@ const char* false_values[] = {
   "no", "off", "false", "0"
 };
 
-static bool parseBool(const char* value)
+static bool parse_bool(const char* value)
 {
   for (const char* const& true_value : true_values)
     if (std::strcmp(true_value, value) == 0)
@@ -55,7 +55,7 @@ static bool parseBool(const char* value)
   throw std::range_error("not a boolean");
 }
 
-static double parseDouble(const char* value)
+static double parse_double(const char* value)
 {
   char* end;
   errno = 0;
@@ -70,7 +70,7 @@ static double parseDouble(const char* value)
     return res;
 }
 
-static long int parseLong(const char* value)
+static long int parse_long(const char* value)
 {
   char* end;
   errno = 0;
@@ -98,7 +98,7 @@ public:
   static constexpr const char* type_name = "int";
   static inline double parse(const char* value)
   {
-    return parseLong(value);
+    return parse_long(value);
   }
 };
 template <> class ConfigType<double> {
@@ -106,7 +106,7 @@ public:
   static constexpr const char* type_name = "double";
   static inline double parse(const char* value)
   {
-    return parseDouble(value);
+    return parse_double(value);
   }
 };
 template <> class ConfigType<std::string> {
@@ -122,7 +122,7 @@ public:
   static constexpr const char* type_name = "boolean";
   static inline bool parse(const char* value)
   {
-    return parseBool(value);
+    return parse_bool(value);
   }
 };
 
@@ -147,32 +147,29 @@ public:
   ConfigurationElement(const char* key, const char* desc, xbt_cfg_cb_t cb)
     : key(key ? key : ""), desc(desc ? desc : ""), old_callback(cb) {}
 
-  virtual ~ConfigurationElement()=default;
+  virtual ~ConfigurationElement() = default;
 
-  virtual std::string getStringValue() = 0;
-  virtual void setStringValue(const char* value) = 0;
-  virtual const char* getTypeName() = 0;
+  virtual std::string get_string_value()           = 0;
+  virtual void set_string_value(const char* value) = 0;
+  virtual const char* get_type_name()              = 0;
 
-  template<class T>
-  T const& getValue() const
+  template <class T> T const& get_value() const
   {
-    return dynamic_cast<const TypedConfigurationElement<T>&>(*this).getValue();
+    return dynamic_cast<const TypedConfigurationElement<T>&>(*this).get_value();
   }
-  template<class T>
-  void setValue(T value)
+  template <class T> void set_value(T value)
   {
-    dynamic_cast<TypedConfigurationElement<T>&>(*this).setValue(std::move(value));
+    dynamic_cast<TypedConfigurationElement<T>&>(*this).set_value(std::move(value));
   }
-  template<class T>
-  void setDefaultValue(T value)
+  template <class T> void set_default_value(T value)
   {
-    dynamic_cast<TypedConfigurationElement<T>&>(*this).setDefaultValue(std::move(value));
+    dynamic_cast<TypedConfigurationElement<T>&>(*this).set_default_value(std::move(value));
   }
-  void unsetDefault() { isdefault = false; }
-  bool isDefault() const { return isdefault; }
+  void unset_default() { isdefault = false; }
+  bool is_default() const { return isdefault; }
 
-  std::string const& getDescription() const { return desc; }
-  std::string const& getKey() const { return key; }
+  std::string const& get_description() const { return desc; }
+  std::string const& get_key() const { return key; }
 };
 
 // **** TypedConfigurationElement<T> ****
@@ -196,55 +193,52 @@ public:
   {}
   ~TypedConfigurationElement() = default;
 
-  std::string getStringValue() override;
-  const char* getTypeName() override;
-  void setStringValue(const char* value) override;
+  std::string get_string_value() override;
+  const char* get_type_name() override;
+  void set_string_value(const char* value) override;
 
   void update()
   {
     if (old_callback)
-      this->old_callback(getKey().c_str());
+      this->old_callback(get_key().c_str());
     if (this->callback)
       this->callback(this->content);
   }
 
-  T const& getValue() const { return content; }
+  T const& get_value() const { return content; }
 
-  void setValue(T value)
+  void set_value(T value)
   {
     this->content = std::move(value);
     this->update();
-    this->unsetDefault();
+    this->unset_default();
   }
 
-  void setDefaultValue(T value)
+  void set_default_value(T value)
   {
-    if (this->isDefault()) {
+    if (this->is_default()) {
       this->content = std::move(value);
       this->update();
     } else {
       XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.",
-                getKey().c_str(), to_string(value).c_str());
+                get_key().c_str(), to_string(value).c_str());
     }
   }
 };
 
-template<class T>
-std::string TypedConfigurationElement<T>::getStringValue() // override
+template <class T> std::string TypedConfigurationElement<T>::get_string_value() // override
 {
   return to_string(content);
 }
 
-template<class T>
-void TypedConfigurationElement<T>::setStringValue(const char* value) // override
+template <class T> void TypedConfigurationElement<T>::set_string_value(const char* value) // override
 {
   this->content = ConfigType<T>::parse(value);
-  this->unsetDefault();
+  this->unset_default();
   this->update();
 }
 
-template<class T>
-const char* TypedConfigurationElement<T>::getTypeName() // override
+template <class T> const char* TypedConfigurationElement<T>::get_type_name() // override
 {
   return ConfigType<T>::type_name;
 }
@@ -272,14 +266,13 @@ public:
   ConfigurationElement& operator[](const char* name);
   void alias(const char* realname, const char* aliasname);
 
-  template<class T, class... A>
-  simgrid::config::TypedConfigurationElement<T>*
-    registerOption(const char* name, A&&... a)
+  template <class T, class... A>
+  simgrid::config::TypedConfigurationElement<T>* register_option(const char* name, A&&... a)
   {
     xbt_assert(options.find(name) == options.end(), "Refusing to register the config element '%s' twice.", name);
     TypedConfigurationElement<T>* variable = new TypedConfigurationElement<T>(name, std::forward<A>(a)...);
-    XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name, variable->getDescription().c_str(),
-              variable->getTypeName(), variable, this);
+    XBT_DEBUG("Register cfg elm %s (%s) of type %s @%p in set %p)", name, variable->get_description().c_str(),
+              variable->get_type_name(), variable, this);
     options.insert({name, variable});
     variable->update();
     return variable;
@@ -287,11 +280,11 @@ public:
 
   // Debug:
   void dump(const char *name, const char *indent);
-  void showAliases();
+  void show_aliases();
   void help();
 
 protected:
-  ConfigurationElement* getDictElement(const char* name);
+  ConfigurationElement* get_dict_element(const char* name);
 };
 
 Config::Config()
@@ -305,7 +298,7 @@ Config::~Config()
     delete elm.second;
 }
 
-inline ConfigurationElement* Config::getDictElement(const char* name)
+inline ConfigurationElement* Config::get_dict_element(const char* name)
 {
   auto opt = options.find(name);
   if (opt != options.end()) {
@@ -315,7 +308,7 @@ inline ConfigurationElement* Config::getDictElement(const char* name)
     if (als != aliases.end()) {
       ConfigurationElement* res = als->second;
       if (warn_for_aliases)
-        XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->getKey().c_str());
+        XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, res->get_key().c_str());
       return res;
     } else {
       THROWF(not_found_error, 0, "Bad config key: %s", name);
@@ -325,13 +318,13 @@ inline ConfigurationElement* Config::getDictElement(const char* name)
 
 inline ConfigurationElement& Config::operator[](const char* name)
 {
-  return *(getDictElement(name));
+  return *(get_dict_element(name));
 }
 
 void Config::alias(const char* realname, const char* aliasname)
 {
   xbt_assert(aliases.find(aliasname) == aliases.end(), "Alias '%s' already.", aliasname);
-  ConfigurationElement* element = this->getDictElement(realname);
+  ConfigurationElement* element = this->get_dict_element(realname);
   xbt_assert(element, "Cannot define an alias to the non-existing option '%s'.", realname);
   this->aliases.insert({aliasname, element});
 }
@@ -347,8 +340,8 @@ void Config::dump(const char *name, const char *indent)
     printf("%s>> Dumping of the config set '%s':\n", indent, name);
 
   for (auto const& elm : options)
-    printf("%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->getTypeName(),
-           elm.second->getStringValue().c_str());
+    printf("%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->get_type_name(),
+           elm.second->get_string_value().c_str());
 
   if (name)
     printf("%s<< End of the config set '%s'\n", indent, name);
@@ -356,10 +349,10 @@ void Config::dump(const char *name, const char *indent)
 }
 
 /** @brief Displays the declared aliases and their replacement */
-void Config::showAliases()
+void Config::show_aliases()
 {
   for (auto const& elm : aliases)
-    printf("   %-40s %s\n", elm.first.c_str(), elm.second->getKey().c_str());
+    printf("   %-40s %s\n", elm.first.c_str(), elm.second->get_key().c_str());
 }
 
 /** @brief Displays the declared options and their description */
@@ -367,23 +360,23 @@ void Config::help()
 {
   for (auto const& elm : options) {
     simgrid::config::ConfigurationElement* variable = this->options.at(elm.first);
-    printf("   %s: %s\n", elm.first.c_str(), variable->getDescription().c_str());
-    printf("       Type: %s; ", variable->getTypeName());
-    printf("Current value: %s\n", variable->getStringValue().c_str());
+    printf("   %s: %s\n", elm.first.c_str(), variable->get_description().c_str());
+    printf("       Type: %s; ", variable->get_type_name());
+    printf("Current value: %s\n", variable->get_string_value().c_str());
   }
 }
 
-// ***** getConfig *****
+// ***** get_config *****
 
-template <class T> XBT_PUBLIC T const& getConfig(const char* name)
+template <class T> XBT_PUBLIC T const& get_config(const char* name)
 {
-  return (*simgrid_config)[name].getValue<T>();
+  return (*simgrid_config)[name].get_value<T>();
 }
 
-template XBT_PUBLIC int const& getConfig<int>(const char* name);
-template XBT_PUBLIC double const& getConfig<double>(const char* name);
-template XBT_PUBLIC bool const& getConfig<bool>(const char* name);
-template XBT_PUBLIC std::string const& getConfig<std::string>(const char* name);
+template XBT_PUBLIC int const& get_config<int>(const char* name);
+template XBT_PUBLIC double const& get_config<double>(const char* name);
+template XBT_PUBLIC bool const& get_config<bool>(const char* name);
+template XBT_PUBLIC std::string const& get_config<std::string>(const char* name);
 
 // ***** alias *****
 
@@ -400,8 +393,7 @@ XBT_PUBLIC void declareFlag(const char* name, const char* description, T value, 
 {
   if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-  simgrid_config->registerOption<T>(
-    name, description, std::move(value), std::move(callback));
+  simgrid_config->register_option<T>(name, description, std::move(value), std::move(callback));
 }
 
 template XBT_PUBLIC void declareFlag(const char* name, const char* description, int value,
@@ -435,28 +427,28 @@ void xbt_cfg_register_double(const char *name, double default_value,
 {
   if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-  simgrid_config->registerOption<double>(name, desc, default_value, cb_set);
+  simgrid_config->register_option<double>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
   if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-  simgrid_config->registerOption<int>(name, desc, default_value, cb_set);
+  simgrid_config->register_option<int>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc)
 {
   if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-  simgrid_config->registerOption<std::string>(name, desc, default_value ? default_value : "", cb_set);
+  simgrid_config->register_option<std::string>(name, desc, default_value ? default_value : "", cb_set);
 }
 
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
   if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
-  simgrid_config->registerOption<bool>(name, desc, simgrid::config::parseBool(default_value), cb_set);
+  simgrid_config->register_option<bool>(name, desc, simgrid::config::parse_bool(default_value), cb_set);
 }
 
 void xbt_cfg_register_alias(const char *realname, const char *aliasname)
@@ -466,8 +458,14 @@ void xbt_cfg_register_alias(const char *realname, const char *aliasname)
   simgrid_config->alias(realname, aliasname);
 }
 
-void xbt_cfg_aliases() { simgrid_config->showAliases(); }
-void xbt_cfg_help()    { simgrid_config->help(); }
+void xbt_cfg_aliases()
+{
+  simgrid_config->show_aliases();
+}
+void xbt_cfg_help()
+{
+  simgrid_config->help();
+}
 
 /*----[ Setting ]---------------------------------------------------------*/
 
@@ -513,7 +511,7 @@ void xbt_cfg_set_parse(const char *options)
     if (name.compare(0, path.length(), path) != 0)
       XBT_INFO("Configuration change: Set '%s' to '%s'", name.c_str(), val.c_str());
 
-    (*simgrid_config)[name.c_str()].setStringValue(val.c_str());
+    (*simgrid_config)[name.c_str()].set_string_value(val.c_str());
   }
 }
 
@@ -525,7 +523,7 @@ void xbt_cfg_set_parse(const char *options)
 
 void xbt_cfg_set_as_string(const char *key, const char *value)
 {
-  (*simgrid_config)[key].setStringValue(value);
+  (*simgrid_config)[key].set_string_value(value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
@@ -535,7 +533,7 @@ void xbt_cfg_set_as_string(const char *key, const char *value)
  */
 void xbt_cfg_setdefault_int(const char *key, int value)
 {
-  (*simgrid_config)[key].setDefaultValue<int>(value);
+  (*simgrid_config)[key].set_default_value<int>(value);
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
@@ -545,7 +543,7 @@ void xbt_cfg_setdefault_int(const char *key, int value)
  */
 void xbt_cfg_setdefault_double(const char *key, double value)
 {
-  (*simgrid_config)[key].setDefaultValue<double>(value);
+  (*simgrid_config)[key].set_default_value<double>(value);
 }
 
 /** @brief Set a string value to \a name within \a cfg if it wasn't changed yet
@@ -555,7 +553,7 @@ void xbt_cfg_setdefault_double(const char *key, double value)
  */
 void xbt_cfg_setdefault_string(const char *key, const char *value)
 {
-  (*simgrid_config)[key].setDefaultValue<std::string>(value ? value : "");
+  (*simgrid_config)[key].set_default_value<std::string>(value ? value : "");
 }
 
 /** @brief Set an boolean value to \a name within \a cfg if it wasn't changed yet
@@ -565,7 +563,7 @@ void xbt_cfg_setdefault_string(const char *key, const char *value)
  */
 void xbt_cfg_setdefault_boolean(const char *key, const char *value)
 {
-  (*simgrid_config)[key].setDefaultValue<bool>(simgrid::config::parseBool(value));
+  (*simgrid_config)[key].set_default_value<bool>(simgrid::config::parse_bool(value));
 }
 
 /** @brief Set an integer value to \a name within \a cfg
@@ -575,7 +573,7 @@ void xbt_cfg_setdefault_boolean(const char *key, const char *value)
  */
 void xbt_cfg_set_int(const char *key, int value)
 {
-  (*simgrid_config)[key].setValue<int>(value);
+  (*simgrid_config)[key].set_value<int>(value);
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
@@ -585,7 +583,7 @@ void xbt_cfg_set_int(const char *key, int value)
  */
 void xbt_cfg_set_double(const char *key, double value)
 {
-  (*simgrid_config)[key].setValue<double>(value);
+  (*simgrid_config)[key].set_value<double>(value);
 }
 
 /** @brief Set or add a string value to \a name within \a cfg
@@ -596,7 +594,7 @@ void xbt_cfg_set_double(const char *key, double value)
  */
 void xbt_cfg_set_string(const char* key, const char* value)
 {
-  (*simgrid_config)[key].setValue<std::string>(value);
+  (*simgrid_config)[key].set_value<std::string>(value);
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
@@ -606,14 +604,14 @@ void xbt_cfg_set_string(const char* key, const char* value)
  */
 void xbt_cfg_set_boolean(const char *key, const char *value)
 {
-  (*simgrid_config)[key].setValue<bool>(simgrid::config::parseBool(value));
+  (*simgrid_config)[key].set_value<bool>(simgrid::config::parse_bool(value));
 }
 
 
 /* Say if the value is the default value */
 int xbt_cfg_is_default_value(const char *key)
 {
-  return (*simgrid_config)[key].isDefault() ? 1 : 0;
+  return (*simgrid_config)[key].is_default() ? 1 : 0;
 }
 
 /*----[ Getting ]---------------------------------------------------------*/
@@ -625,7 +623,7 @@ int xbt_cfg_is_default_value(const char *key)
  */
 int xbt_cfg_get_int(const char *key)
 {
-  return (*simgrid_config)[key].getValue<int>();
+  return (*simgrid_config)[key].get_value<int>();
 }
 
 /** @brief Retrieve a double value of a variable (get a warning if not uniq)
@@ -636,7 +634,7 @@ int xbt_cfg_get_int(const char *key)
  */
 double xbt_cfg_get_double(const char *key)
 {
-  return (*simgrid_config)[key].getValue<double>();
+  return (*simgrid_config)[key].get_value<double>();
 }
 
 /** @brief Retrieve a string value of a variable (get a warning if not uniq)
@@ -651,7 +649,7 @@ double xbt_cfg_get_double(const char *key)
  */
 std::string xbt_cfg_get_string(const char* key)
 {
-  return (*simgrid_config)[key].getValue<std::string>();
+  return (*simgrid_config)[key].get_value<std::string>();
 }
 
 /** @brief Retrieve a boolean value of a variable (get a warning if not uniq)
@@ -663,7 +661,7 @@ std::string xbt_cfg_get_string(const char* key)
  */
 int xbt_cfg_get_boolean(const char *key)
 {
-  return (*simgrid_config)[key].getValue<bool>() ? 1 : 0;
+  return (*simgrid_config)[key].get_value<bool>() ? 1 : 0;
 }
 
 #ifdef SIMGRID_TEST
