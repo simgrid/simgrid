@@ -19,11 +19,12 @@
 #include <utility>
 
 #include <xbt/base.h>
-#include <xbt/config.h>
 #include <xbt/sysdep.h>
 
 namespace simgrid {
 namespace config {
+
+class Config;
 
 template<class T> inline
 std::string to_string(T&& value)
@@ -279,6 +280,9 @@ public:
   bool operator>=(U const& that) const { return value_ >= that; }
 };
 
+XBT_PUBLIC void finalize();
+XBT_PUBLIC void show_aliases();
+XBT_PUBLIC void help();
 }
 }
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_value<std::string>") XBT_PUBLIC std::string

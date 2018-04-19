@@ -14,7 +14,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
-#include "xbt/config.h"
 #include "xbt/config.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
@@ -51,7 +50,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       shall_exit = 1;
     } else if (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help")) {
       printf("Description of the configuration accepted by this simulator:\n");
-      xbt_cfg_help();
+      simgrid::config::help();
       printf(
           "\n"
           "Each of these configurations can be used by adding\n"
@@ -69,7 +68,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       shall_exit = 1;
     } else if (not strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
-      xbt_cfg_aliases();
+      simgrid::config::show_aliases();
       printf("Please consider using the recent names\n");
       shall_exit = 1;
     } else if (not strcmp(argv[i], "--help-models")) {
@@ -472,6 +471,6 @@ void sg_config_finalize()
   if (not _sg_cfg_init_status)
     return;                     /* Not initialized yet. Nothing to do */
 
-  xbt_cfg_free(&simgrid_config);
+  simgrid::config::finalize();
   _sg_cfg_init_status = 0;
 }

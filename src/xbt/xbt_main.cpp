@@ -8,7 +8,7 @@
 #define XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL /* MSVC don't want it to be declared extern in headers and local here */
 
 #include "simgrid_config.h"
-#include "xbt/config.h"
+#include "xbt/config.hpp"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
 #include "xbt/log.hpp"

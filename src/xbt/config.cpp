@@ -459,7 +459,7 @@ template <class T>
 XBT_PUBLIC void declare_flag(const char* name, const char* description, T value, std::function<void(const T&)> callback)
 {
   if (simgrid_config == nullptr)
-    simgrid_config = xbt_cfg_new();
+    simgrid_config = new simgrid::config::Config();
   simgrid_config->register_option<T>(name, description, std::move(value), std::move(callback));
 }
 
@@ -471,6 +471,22 @@ template XBT_PUBLIC void declare_flag(const char* name, const char* description,
                                       std::function<void(bool const&)> callback);
 template XBT_PUBLIC void declare_flag(const char* name, const char* description, std::string value,
                                       std::function<void(std::string const&)> callback);
+
+void finalize()
+{
+  delete simgrid_config;
+  simgrid_config = nullptr;
+}
+
+void show_aliases()
+{
+  simgrid_config->show_aliases();
+}
+
+void help()
+{
+  simgrid_config->help();
+}
 }
 }
 
@@ -493,35 +509,35 @@ void xbt_cfg_register_double(const char *name, double default_value,
   xbt_cfg_cb_t cb_set, const char *desc)
 {
   if (simgrid_config == nullptr)
-    simgrid_config = xbt_cfg_new();
+    simgrid_config = new simgrid::config::Config();
   simgrid_config->register_option<double>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
   if (simgrid_config == nullptr)
-    simgrid_config = xbt_cfg_new();
+    simgrid_config = new simgrid::config::Config();
   simgrid_config->register_option<int>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc)
 {
   if (simgrid_config == nullptr)
-    simgrid_config = xbt_cfg_new();
+    simgrid_config = new simgrid::config::Config();
   simgrid_config->register_option<std::string>(name, desc, default_value ? default_value : "", cb_set);
 }
 
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
   if (simgrid_config == nullptr)
-    simgrid_config = xbt_cfg_new();
+    simgrid_config = new simgrid::config::Config();
   simgrid_config->register_option<bool>(name, desc, simgrid::config::parse_bool(default_value), cb_set);
 }
 
 void xbt_cfg_register_alias(const char *realname, const char *aliasname)
 {
   if (simgrid_config == nullptr)
-    simgrid_config = xbt_cfg_new();
+    simgrid_config = new simgrid::config::Config();
   simgrid_config->alias(realname, aliasname);
 }
 
@@ -713,7 +729,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
 XBT_TEST_SUITE("config", "Configuration support");
 
-XBT_PUBLIC_DATA xbt_cfg_t simgrid_config;
+XBT_PUBLIC_DATA simgrid::config::Config* simgrid_config;
 
 static void make_set()
 {
@@ -730,7 +746,7 @@ XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")
   make_set();
   xbt_test_add("Alloc and free a config set");
   simgrid::config::set_parse("peername:veloce user:bidule");
-  xbt_cfg_free(&simgrid_config);
+  simgrid::config::finalize();
   simgrid_config = temp;
 }
 
@@ -756,7 +772,7 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
         xbt_test_exception(e);
     }
   }
-  xbt_cfg_free(&simgrid_config);
+  simgrid::config::finalize();
   simgrid_config = temp;
 }
 
@@ -780,7 +796,7 @@ XBT_TEST_UNIT("c++flags", test_config_cxx_flags, "C++ flags")
   xbt_test_assert(bool_flag1, "Check bool1 flag");
   xbt_test_assert(not bool_flag2, "Check bool2 flag");
 
-  xbt_cfg_free(&simgrid_config);
+  simgrid::config::finalize();
   simgrid_config = temp;
 }
 

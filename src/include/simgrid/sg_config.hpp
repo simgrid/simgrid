@@ -6,12 +6,10 @@
 #ifndef SIMGRID_CONFIG_HPP
 #define SIMGRID_CONFIG_HPP
 
-#include "xbt/config.h"
 #include "xbt/config.hpp"
 
 /** Config Globals */
 
-XBT_PUBLIC_DATA xbt_cfg_t simgrid_config;
 XBT_PUBLIC_DATA int _sg_cfg_init_status;
 XBT_PUBLIC_DATA int _sg_cfg_exit_asap;
 

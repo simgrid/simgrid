@@ -110,9 +110,10 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::is_default") XBT_PUBLIC
 /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
 typedef void (*xbt_cfg_cb_t)(const char* name);
 
-XBT_PUBLIC xbt_cfg_t xbt_cfg_new();
-XBT_PUBLIC void xbt_cfg_free(xbt_cfg_t* cfg);
-XBT_PUBLIC void xbt_cfg_dump(const char* name, const char* indent, xbt_cfg_t cfg);
+XBT_ATTRIB_DEPRECATED_v323("Please don't use it") XBT_PUBLIC xbt_cfg_t xbt_cfg_new();
+XBT_ATTRIB_DEPRECATED_v323("Please don't use it") XBT_PUBLIC void xbt_cfg_free(xbt_cfg_t* cfg);
+XBT_ATTRIB_DEPRECATED_v323("Please don't use it") XBT_PUBLIC
+    void xbt_cfg_dump(const char* name, const char* indent, xbt_cfg_t cfg);
 
 /** @} */
 
@@ -134,8 +135,8 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::declare_flag<bool>") XBT
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::alias") XBT_PUBLIC
     void xbt_cfg_register_alias(const char* newname, const char* oldname);
 
-XBT_PUBLIC void xbt_cfg_aliases();
-XBT_PUBLIC void xbt_cfg_help();
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::show_aliases") XBT_PUBLIC void xbt_cfg_aliases();
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::help") XBT_PUBLIC void xbt_cfg_help();
 
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
