@@ -20,7 +20,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 void surf_host_model_init_current_default()
 {
   surf_host_model = new simgrid::surf::HostCLM03Model();
-  xbt_cfg_setdefault_boolean("network/crosstraffic", "yes");
+  simgrid::config::set_default<bool>("network/crosstraffic", true);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 

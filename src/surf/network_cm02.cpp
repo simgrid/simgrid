@@ -38,9 +38,9 @@ void surf_network_model_init_LegrandVelho()
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
   all_existing_models->push_back(surf_network_model);
 
-  xbt_cfg_setdefault_double("network/latency-factor",      13.01);
-  xbt_cfg_setdefault_double("network/bandwidth-factor",     0.97);
-  xbt_cfg_setdefault_double("network/weight-S",         20537);
+  simgrid::config::set_default<double>("network/latency-factor", 13.01);
+  simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
+  simgrid::config::set_default<double>("network/weight-S", 20537);
 }
 
 /***************************************************************************/
@@ -60,9 +60,9 @@ void surf_network_model_init_CM02()
   if (surf_network_model)
     return;
 
-  xbt_cfg_setdefault_double("network/latency-factor",   1.0);
-  xbt_cfg_setdefault_double("network/bandwidth-factor", 1.0);
-  xbt_cfg_setdefault_double("network/weight-S",         0.0);
+  simgrid::config::set_default<double>("network/latency-factor", 1.0);
+  simgrid::config::set_default<double>("network/bandwidth-factor", 1.0);
+  simgrid::config::set_default<double>("network/weight-S", 0.0);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
   all_existing_models->push_back(surf_network_model);
@@ -86,9 +86,9 @@ void surf_network_model_init_Reno()
   using namespace simgrid::kernel;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
-  xbt_cfg_setdefault_double("network/latency-factor", 13.01);
-  xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
-  xbt_cfg_setdefault_double("network/weight-S", 20537);
+  simgrid::config::set_default<double>("network/latency-factor", 13.01);
+  simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
+  simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
@@ -103,9 +103,9 @@ void surf_network_model_init_Reno2()
   using namespace simgrid::kernel;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno2_f, lmm::func_reno2_fp, lmm::func_reno2_fpi);
 
-  xbt_cfg_setdefault_double("network/latency-factor", 13.01);
-  xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
-  xbt_cfg_setdefault_double("network/weight-S", 20537);
+  simgrid::config::set_default<double>("network/latency-factor", 13.01);
+  simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
+  simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);
@@ -119,9 +119,9 @@ void surf_network_model_init_Vegas()
   using namespace simgrid::kernel;
   lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
 
-  xbt_cfg_setdefault_double("network/latency-factor", 13.01);
-  xbt_cfg_setdefault_double("network/bandwidth-factor", 0.97);
-  xbt_cfg_setdefault_double("network/weight-S", 20537);
+  simgrid::config::set_default<double>("network/latency-factor", 13.01);
+  simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
+  simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
   all_existing_models->push_back(surf_network_model);

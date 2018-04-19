@@ -458,7 +458,7 @@ void sg_config_init(int *argc, char **argv)
                              "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
 
   if (surf_path.empty())
-    xbt_cfg_setdefault_string("path", "./");
+    simgrid::config::set_default<std::string>("path", "./");
 
   _sg_cfg_init_status = 1;
 

@@ -36,7 +36,7 @@ void surf_network_model_init_SMPI()
   surf_network_model = new simgrid::kernel::resource::NetworkSmpiModel();
   all_existing_models->push_back(surf_network_model);
 
-  xbt_cfg_setdefault_double("network/weight-S", 8775);
+  simgrid::config::set_default<double>("network/weight-S", 8775);
 }
 
 namespace simgrid {
