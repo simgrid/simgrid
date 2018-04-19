@@ -84,10 +84,14 @@ XBT_PUBLIC void xbt_cfg_set_as_string(const char* name, const char* val);
   Set the default value of the cell \a name in \a cfg with the provided value.
   If it was already set to something (possibly from the command line), do nothing.
  */
-XBT_PUBLIC void xbt_cfg_setdefault_int(const char* name, int val);
-XBT_PUBLIC void xbt_cfg_setdefault_double(const char* name, double val);
-XBT_PUBLIC void xbt_cfg_setdefault_string(const char* name, const char* val);
-XBT_PUBLIC void xbt_cfg_setdefault_boolean(const char* name, const char* val);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<int>") XBT_PUBLIC
+    void xbt_cfg_setdefault_int(const char* name, int val);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<double>") XBT_PUBLIC
+    void xbt_cfg_setdefault_double(const char* name, double val);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<bool>") XBT_PUBLIC
+    void xbt_cfg_setdefault_boolean(const char* name, const char* val);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<std::string>") XBT_PUBLIC
+    void xbt_cfg_setdefault_string(const char* name, const char* val);
 
 /** @brief Return if configuration is set by default*/
 XBT_PUBLIC int xbt_cfg_is_default_value(const char* name);
