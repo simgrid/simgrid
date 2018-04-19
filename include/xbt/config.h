@@ -55,11 +55,7 @@
  */
 /** @brief Configuration set's data type is opaque. */
 #ifdef __cplusplus
-namespace simgrid {
-namespace config {
-class Config;
-}
-}
+#include <xbt/config.hpp>
 typedef simgrid::config::Config* xbt_cfg_t;
 #else
 typedef void* xbt_cfg_t;
