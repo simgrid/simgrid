@@ -52,7 +52,7 @@ NetworkSmpiModel::~NetworkSmpiModel() = default;
 double NetworkSmpiModel::bandwidthFactor(double size)
 {
   if (smpi_bw_factor.empty())
-    smpi_bw_factor = parse_factor(simgrid::config::get_config<std::string>("smpi/bw-factor"));
+    smpi_bw_factor = parse_factor(simgrid::config::get_value<std::string>("smpi/bw-factor"));
 
   double current = 1.0;
   for (auto const& fact : smpi_bw_factor) {
@@ -70,7 +70,7 @@ double NetworkSmpiModel::bandwidthFactor(double size)
 double NetworkSmpiModel::latencyFactor(double size)
 {
   if (smpi_lat_factor.empty())
-    smpi_lat_factor = parse_factor(simgrid::config::get_config<std::string>("smpi/lat-factor"));
+    smpi_lat_factor = parse_factor(simgrid::config::get_value<std::string>("smpi/lat-factor"));
 
   double current = 1.0;
   for (auto const& fact : smpi_lat_factor) {

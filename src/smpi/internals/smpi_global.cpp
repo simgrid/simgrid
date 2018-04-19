@@ -218,8 +218,8 @@ static void smpi_check_options()
 {
   //check correctness of MPI parameters
 
-  xbt_assert(simgrid::config::get_config<int>("smpi/async-small-thresh") <=
-             simgrid::config::get_config<int>("smpi/send-is-detached-thresh"));
+  xbt_assert(simgrid::config::get_value<int>("smpi/async-small-thresh") <=
+             simgrid::config::get_value<int>("smpi/send-is-detached-thresh"));
 
   if (xbt_cfg_is_default_value("smpi/host-speed")) {
     XBT_INFO("You did not set the power of the host running the simulation.  "
@@ -228,7 +228,7 @@ static void smpi_check_options()
              "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
   }
 
-  xbt_assert(simgrid::config::get_config<double>("smpi/cpu-threshold") >= 0,
+  xbt_assert(simgrid::config::get_value<double>("smpi/cpu-threshold") >= 0,
              "The 'smpi/cpu-threshold' option cannot have negative values [anymore]. If you want to discard "
              "the simulation of any computation, please use 'smpi/simulate-computation:no' instead.");
 }
@@ -244,7 +244,7 @@ void smpi_global_init()
     xbt_os_walltimer_start(global_timer);
   }
 
-  std::string filename = simgrid::config::get_config<std::string>("smpi/comp-adjustment-file");
+  std::string filename = simgrid::config::get_value<std::string>("smpi/comp-adjustment-file");
   if (not filename.empty()) {
     std::ifstream fstream(filename);
     if (not fstream.is_open()) {
@@ -271,7 +271,7 @@ void smpi_global_init()
   // and the (computed) event_set.
   std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 
-  if (not simgrid::config::get_config<std::string>("smpi/papi-events").empty()) {
+  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
     if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
       XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
                 " Expected version is %i",
@@ -279,7 +279,7 @@ void smpi_global_init()
 
     typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
     boost::char_separator<char> separator_units(";");
-    std::string str = simgrid::config::get_config<std::string>("smpi/papi-events");
+    std::string str = simgrid::config::get_value<std::string>("smpi/papi-events");
     Tokenizer tokens(str, separator_units);
 
     // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
@@ -360,10 +360,10 @@ static void smpi_init_options(){
     return;
   simgrid::smpi::Colls::set_collectives();
   simgrid::smpi::Colls::smpi_coll_cleanup_callback = nullptr;
-  smpi_cpu_threshold                               = simgrid::config::get_config<double>("smpi/cpu-threshold");
-  smpi_host_speed                                  = simgrid::config::get_config<double>("smpi/host-speed");
+  smpi_cpu_threshold                               = simgrid::config::get_value<double>("smpi/cpu-threshold");
+  smpi_host_speed                                  = simgrid::config::get_value<double>("smpi/host-speed");
   xbt_assert(smpi_host_speed >= 0, "You're trying to set the host_speed to a negative value (%f)", smpi_host_speed);
-  std::string smpi_privatize_option = simgrid::config::get_config<std::string>("smpi/privatization");
+  std::string smpi_privatize_option = simgrid::config::get_value<std::string>("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
     smpi_privatize_global_variables = SmpiPrivStrategies::None;
   else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
@@ -389,7 +389,7 @@ static void smpi_init_options(){
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
-    std::string val = simgrid::config::get_config<std::string>("smpi/shared-malloc");
+    std::string val = simgrid::config::get_value<std::string>("smpi/shared-malloc");
     if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
       smpi_cfg_shared_malloc = shmalloc_global;
     } else if (val == "local") {
@@ -529,7 +529,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
         // Load the copy and resolve the entry point:
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
         int saved_errno = errno;
-        if (simgrid::config::get_config<bool>("smpi/keep-temps") == false)
+        if (simgrid::config::get_value<bool>("smpi/keep-temps") == false)
           unlink(target_executable.c_str());
         if (handle == nullptr)
           xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno, strerror(saved_errno));
@@ -581,7 +581,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);
-    if (simgrid::config::get_config<bool>("smpi/display-timing")) {
+    if (simgrid::config::get_value<bool>("smpi/display-timing")) {
       double global_time = xbt_os_timer_elapsed(global_timer);
       XBT_INFO("Simulated time: %g seconds. \n\n"
           "The simulation took %g seconds (after parsing and platform setup)\n"

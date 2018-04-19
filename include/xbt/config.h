@@ -140,11 +140,11 @@ XBT_PUBLIC void xbt_cfg_help();
  *  @{
  */
 
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_config<int>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_value<int>") XBT_PUBLIC
     int xbt_cfg_get_int(const char* name);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_config<double>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_value<double>") XBT_PUBLIC
     double xbt_cfg_get_double(const char* name);
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_config<bool>") XBT_PUBLIC
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_value<bool>") XBT_PUBLIC
     int xbt_cfg_get_boolean(const char* name);
 
 /** @} */

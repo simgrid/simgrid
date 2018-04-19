@@ -86,7 +86,7 @@ int TRACE_start()
     /* init the tracing module to generate the right output */
 
     /* open the trace file(s) */
-    std::string format = simgrid::config::get_config<std::string>(OPT_TRACING_FORMAT);
+    std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format.c_str());
     if (format == "Paje") {
       TRACE_paje_start();
@@ -125,7 +125,7 @@ int TRACE_end()
     delete root_type;
 
     /* close the trace files */
-    std::string format = simgrid::config::get_config<std::string>(OPT_TRACING_FORMAT);
+    std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format.c_str());
     if (format == "Paje") {
       TRACE_paje_end();
@@ -241,22 +241,22 @@ bool TRACE_display_sizes ()
 
 std::string TRACE_get_comment()
 {
-  return simgrid::config::get_config<std::string>(OPT_TRACING_COMMENT);
+  return simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT);
 }
 
 std::string TRACE_get_comment_file()
 {
-  return simgrid::config::get_config<std::string>(OPT_TRACING_COMMENT_FILE);
+  return simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT_FILE);
 }
 
 int TRACE_precision ()
 {
-  return simgrid::config::get_config<int>(OPT_TRACING_PRECISION);
+  return simgrid::config::get_value<int>(OPT_TRACING_PRECISION);
 }
 
 std::string TRACE_get_filename()
 {
-  return simgrid::config::get_config<std::string>(OPT_TRACING_FILENAME);
+  return simgrid::config::get_value<std::string>(OPT_TRACING_FILENAME);
 }
 
 void TRACE_global_init()

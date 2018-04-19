@@ -366,17 +366,17 @@ void Config::help()
   }
 }
 
-// ***** get_config *****
+// ***** get_value *****
 
-template <class T> XBT_PUBLIC T const& get_config(const char* name)
+template <class T> XBT_PUBLIC T const& get_value(const char* name)
 {
   return (*simgrid_config)[name].get_value<T>();
 }
 
-template XBT_PUBLIC int const& get_config<int>(const char* name);
-template XBT_PUBLIC double const& get_config<double>(const char* name);
-template XBT_PUBLIC bool const& get_config<bool>(const char* name);
-template XBT_PUBLIC std::string const& get_config<std::string>(const char* name);
+template XBT_PUBLIC int const& get_value<int>(const char* name);
+template XBT_PUBLIC double const& get_value<double>(const char* name);
+template XBT_PUBLIC bool const& get_value<bool>(const char* name);
+template XBT_PUBLIC std::string const& get_value<std::string>(const char* name);
 
 // ***** alias *****
 
@@ -707,7 +707,7 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
   {
     /* get_single_value */
     xbt_cfg_set_parse("peername:toto:42 speed:42");
-    int ival = simgrid::config::get_config<int>("speed");
+    int ival = simgrid::config::get_value<int>("speed");
     if (ival != 42)
       xbt_test_fail("Speed value = %d, I expected 42", ival);
   }

@@ -103,7 +103,7 @@ namespace resource {
 
 NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
-  std::string IB_factors_string = simgrid::config::get_config<std::string>("smpi/IB-penalty-factors");
+  std::string IB_factors_string = simgrid::config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
 

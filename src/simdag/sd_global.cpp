@@ -162,7 +162,7 @@ void SD_init_nocheck(int *argc, char **argv)
   surf_init(argc, argv);
 
   xbt_cfg_setdefault_string("host/model", "ptask_L07");
-  if (simgrid::config::get_config<bool>("clean-atexit"))
+  if (simgrid::config::get_value<bool>("clean-atexit"))
     atexit(SD_exit);
   if (_sg_cfg_exit_asap) {
     exit(0);

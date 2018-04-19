@@ -358,7 +358,7 @@ void Request::start()
 
     simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
 
-    int async_small_thresh = simgrid::config::get_config<int>("smpi/async-small-thresh");
+    int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
 
     xbt_mutex_t mut = process->mailboxes_mutex();
     if (async_small_thresh != 0 || (flags_ & RMA) != 0)
@@ -418,7 +418,7 @@ void Request::start()
     void* buf = buf_;
     if ((flags_ & SSEND) == 0 &&
         ((flags_ & RMA) != 0 ||
-         static_cast<int>(size_) < simgrid::config::get_config<int>("smpi/send-is-detached-thresh"))) {
+         static_cast<int>(size_) < simgrid::config::get_value<int>("smpi/send-is-detached-thresh"))) {
       void *oldbuf = nullptr;
       detached_ = 1;
       XBT_DEBUG("Send request %p is detached", this);
@@ -453,7 +453,7 @@ void Request::start()
       XBT_DEBUG("sending size of %zu : sleep %f ", size_, sleeptime);
     }
 
-    int async_small_thresh = simgrid::config::get_config<int>("smpi/async-small-thresh");
+    int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
 
     xbt_mutex_t mut=process->mailboxes_mutex();
 
@@ -548,7 +548,7 @@ int Request::test(MPI_Request * request, MPI_Status * status) {
       nsleeps=1;//reset the number of sleeps we will do next time
       if (*request != MPI_REQUEST_NULL && ((*request)->flags_ & PERSISTENT) == 0)
         *request = MPI_REQUEST_NULL;
-    } else if (simgrid::config::get_config<bool>("smpi/grow-injected-times")) {
+    } else if (simgrid::config::get_value<bool>("smpi/grow-injected-times")) {
       nsleeps++;
     }
   }
@@ -668,7 +668,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   // This can speed up the execution of certain applications by an order of magnitude, such as HPL
   static int nsleeps = 1;
   double speed        = simgrid::s4u::Actor::self()->get_host()->getSpeed();
-  double maxrate      = simgrid::config::get_config<double>("smpi/iprobe-cpu-usage");
+  double maxrate      = simgrid::config::get_value<double>("smpi/iprobe-cpu-usage");
   MPI_Request request = new Request(nullptr, 0, MPI_CHAR,
                                     source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),
                                     simgrid::s4u::this_actor::get_pid(), tag, comm, PERSISTENT | RECV);
@@ -683,7 +683,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   request->print_request("New iprobe");
   // We have to test both mailboxes as we don't know if we will receive one one or another
-  if (simgrid::config::get_config<int>("smpi/async-small-thresh") > 0) {
+  if (simgrid::config::get_value<int>("smpi/async-small-thresh") > 0) {
     mailbox = smpi_process()->mailbox_small();
     XBT_DEBUG("Trying to probe the perm recv mailbox");
     request->action_ = simcall_comm_iprobe(mailbox, 0, &match_recv, static_cast<void*>(request));
@@ -710,7 +710,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   }
   else {
     *flag = 0;
-    if (simgrid::config::get_config<bool>("smpi/grow-injected-times"))
+    if (simgrid::config::get_value<bool>("smpi/grow-injected-times"))
       nsleeps++;
   }
   unref(&request);

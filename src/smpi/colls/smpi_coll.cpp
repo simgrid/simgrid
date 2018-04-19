@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll
   }
 
 #define SET_COLL(coll)                                                                                                 \
-  name = simgrid::config::get_config<std::string>("smpi/" #coll);                                                      \
+  name = simgrid::config::get_value<std::string>("smpi/" #coll);                                                       \
   if (name.empty())                                                                                                    \
     name = selector_name;                                                                                              \
   set_##coll(name);
@@ -101,7 +101,7 @@ COLL_APPLY(COLL_SETTER,COLL_ALLTOALLV_SIG,"");
 
 
 void Colls::set_collectives(){
-  std::string selector_name = simgrid::config::get_config<std::string>("smpi/coll-selector");
+  std::string selector_name = simgrid::config::get_value<std::string>("smpi/coll-selector");
   if (selector_name.empty())
     selector_name = "default";
 

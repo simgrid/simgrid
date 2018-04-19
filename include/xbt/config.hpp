@@ -45,12 +45,12 @@ inline std::string to_string(std::string&& value)
 
 // Get config
 
-template <class T> XBT_PUBLIC T const& get_config(const char* name);
+template <class T> XBT_PUBLIC T const& get_value(const char* name);
 
-extern template XBT_PUBLIC int const& get_config<int>(const char* name);
-extern template XBT_PUBLIC double const& get_config<double>(const char* name);
-extern template XBT_PUBLIC bool const& get_config<bool>(const char* name);
-extern template XBT_PUBLIC std::string const& get_config<std::string>(const char* name);
+extern template XBT_PUBLIC int const& get_value<int>(const char* name);
+extern template XBT_PUBLIC double const& get_value<double>(const char* name);
+extern template XBT_PUBLIC bool const& get_value<bool>(const char* name);
+extern template XBT_PUBLIC std::string const& get_value<std::string>(const char* name);
 
 // Register:
 
@@ -258,7 +258,7 @@ public:
 
 }
 }
-XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_config<std::string>") XBT_PUBLIC std::string
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::get_value<std::string>") XBT_PUBLIC std::string
     xbt_cfg_get_string(const char* name);
 
 #endif

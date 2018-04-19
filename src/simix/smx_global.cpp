@@ -217,7 +217,7 @@ void SIMIX_global_init(int *argc, char **argv)
     });
   }
 
-  if (simgrid::config::get_config<bool>("clean-atexit"))
+  if (simgrid::config::get_value<bool>("clean-atexit"))
     atexit(SIMIX_clean);
 
   if (_sg_cfg_exit_asap)
