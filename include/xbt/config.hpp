@@ -52,6 +52,8 @@ extern template XBT_PUBLIC void set_default<double>(const char* name, double val
 extern template XBT_PUBLIC void set_default<bool>(const char* name, bool value);
 extern template XBT_PUBLIC void set_default<std::string>(const char* name, std::string value);
 
+XBT_PUBLIC bool is_default(const char* name);
+
 // Set config
 
 template <class T> XBT_PUBLIC void set_value(const char* name, T value);

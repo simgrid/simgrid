@@ -221,7 +221,7 @@ static void smpi_check_options()
   xbt_assert(simgrid::config::get_value<int>("smpi/async-small-thresh") <=
              simgrid::config::get_value<int>("smpi/send-is-detached-thresh"));
 
-  if (xbt_cfg_is_default_value("smpi/host-speed")) {
+  if (simgrid::config::is_default("smpi/host-speed")) {
     XBT_INFO("You did not set the power of the host running the simulation.  "
              "The timings will certainly not be accurate.  "
              "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value."

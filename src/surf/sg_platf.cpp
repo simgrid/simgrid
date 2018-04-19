@@ -506,8 +506,8 @@ static void surf_config_models_setup()
   std::string storage_model_name = simgrid::config::get_value<std::string>("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
-  if ((not xbt_cfg_is_default_value("network/model") || not xbt_cfg_is_default_value("cpu/model")) &&
-      xbt_cfg_is_default_value("host/model")) {
+  if ((not simgrid::config::is_default("network/model") || not simgrid::config::is_default("cpu/model")) &&
+      simgrid::config::is_default("host/model")) {
     host_model_name = "compound";
     simgrid::config::set_value("host/model", host_model_name);
   }

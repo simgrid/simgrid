@@ -139,7 +139,7 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
   bool select       = simgrid::config::get_value<bool>("network/maxmin-selective-update");
 
   if (optim == "Lazy") {
-    xbt_assert(select || xbt_cfg_is_default_value("network/maxmin-selective-update"),
+    xbt_assert(select || simgrid::config::is_default("network/maxmin-selective-update"),
                "You cannot disable network selective update when using the lazy update mechanism");
     select = true;
   }

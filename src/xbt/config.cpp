@@ -378,6 +378,11 @@ template XBT_PUBLIC void set_default<double>(const char* name, double value);
 template XBT_PUBLIC void set_default<bool>(const char* name, bool value);
 template XBT_PUBLIC void set_default<std::string>(const char* name, std::string value);
 
+bool is_default(const char* name)
+{
+  return (*simgrid_config)[name].is_default();
+}
+
 // ***** set_value *****
 
 template <class T> XBT_PUBLIC void set_value(const char* name, T value)

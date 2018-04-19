@@ -94,7 +94,8 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<std::string>
     void xbt_cfg_setdefault_string(const char* name, const char* val);
 
 /** @brief Return if configuration is set by default*/
-XBT_PUBLIC int xbt_cfg_is_default_value(const char* name);
+XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::is_default") XBT_PUBLIC
+    int xbt_cfg_is_default_value(const char* name);
 
 /* @} */
 

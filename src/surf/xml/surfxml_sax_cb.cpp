@@ -865,7 +865,7 @@ void STag_surfxml_config()
 void ETag_surfxml_config()
 {
   for (auto const& elm : *current_property_set) {
-    if (xbt_cfg_is_default_value(elm.first.c_str())) {
+    if (simgrid::config::is_default(elm.first.c_str())) {
       std::string cfg = elm.first + ":" + elm.second;
       xbt_cfg_set_parse(cfg.c_str());
     } else

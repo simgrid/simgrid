@@ -63,7 +63,7 @@ CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : simgrid
   bool select = simgrid::config::get_value<bool>("cpu/maxmin-selective-update");
 
   if (algo == Model::UpdateAlgo::Lazy) {
-    xbt_assert(select || xbt_cfg_is_default_value("cpu/maxmin-selective-update"),
+    xbt_assert(select || simgrid::config::is_default("cpu/maxmin-selective-update"),
                "You cannot disable cpu selective update when using the lazy update mechanism");
     select = true;
   }

@@ -97,8 +97,8 @@ void SIMIX_context_mod_init()
 {
   xbt_assert(simix_global->context_factory == nullptr);
 
-  smx_context_stack_size_was_set = not xbt_cfg_is_default_value("contexts/stack-size");
-  smx_context_guard_size_was_set = not xbt_cfg_is_default_value("contexts/guard-size");
+  smx_context_stack_size_was_set = not simgrid::config::is_default("contexts/stack-size");
+  smx_context_guard_size_was_set = not simgrid::config::is_default("contexts/guard-size");
 
 #if HAVE_THREAD_CONTEXTS && not HAVE_THREAD_LOCAL_STORAGE
   /* the __thread storage class is not available on this platform:
