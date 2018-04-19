@@ -32,4 +32,4 @@
 #include <xbt/xbt_os_thread.h>
 #include <xbt/xbt_os_time.h>
 
-#endif                          /* xbt_H */
+#endif /* XBT_H */
