@@ -214,21 +214,23 @@ void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t
   /* nothing done in this version */
 }
 
-static void smpi_check_options(){
+static void smpi_check_options()
+{
   //check correctness of MPI parameters
 
-   xbt_assert(xbt_cfg_get_int("smpi/async-small-thresh") <= xbt_cfg_get_int("smpi/send-is-detached-thresh"));
+  xbt_assert(simgrid::config::get_config<int>("smpi/async-small-thresh") <=
+             simgrid::config::get_config<int>("smpi/send-is-detached-thresh"));
 
-   if (xbt_cfg_is_default_value("smpi/host-speed")) {
-     XBT_INFO("You did not set the power of the host running the simulation.  "
-              "The timings will certainly not be accurate.  "
-              "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value."
-              "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
-   }
+  if (xbt_cfg_is_default_value("smpi/host-speed")) {
+    XBT_INFO("You did not set the power of the host running the simulation.  "
+             "The timings will certainly not be accurate.  "
+             "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value."
+             "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
+  }
 
-   xbt_assert(xbt_cfg_get_double("smpi/cpu-threshold") >=0,
-       "The 'smpi/cpu-threshold' option cannot have negative values [anymore]. If you want to discard "
-       "the simulation of any computation, please use 'smpi/simulate-computation:no' instead.");
+  xbt_assert(xbt_cfg_get_double("smpi/cpu-threshold") >= 0,
+             "The 'smpi/cpu-threshold' option cannot have negative values [anymore]. If you want to discard "
+             "the simulation of any computation, please use 'smpi/simulate-computation:no' instead.");
 }
 
 int smpi_enabled() {

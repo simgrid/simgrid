@@ -251,7 +251,7 @@ std::string TRACE_get_comment_file()
 
 int TRACE_precision ()
 {
-  return xbt_cfg_get_int(OPT_TRACING_PRECISION);
+  return simgrid::config::get_config<int>(OPT_TRACING_PRECISION);
 }
 
 std::string TRACE_get_filename()

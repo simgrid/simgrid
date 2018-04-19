@@ -707,7 +707,7 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
   {
     /* get_single_value */
     xbt_cfg_set_parse("peername:toto:42 speed:42");
-    int ival = xbt_cfg_get_int("speed");
+    int ival = simgrid::config::get_config<int>("speed");
     if (ival != 42)
       xbt_test_fail("Speed value = %d, I expected 42", ival);
   }

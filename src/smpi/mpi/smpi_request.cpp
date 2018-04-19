@@ -358,7 +358,7 @@ void Request::start()
 
     simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
 
-    int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
+    int async_small_thresh = simgrid::config::get_config<int>("smpi/async-small-thresh");
 
     xbt_mutex_t mut = process->mailboxes_mutex();
     if (async_small_thresh != 0 || (flags_ & RMA) != 0)
@@ -416,8 +416,9 @@ void Request::start()
     this->print_request("New send");
 
     void* buf = buf_;
-    if ((flags_ & SSEND) == 0 && ( (flags_ & RMA) != 0
-        || static_cast<int>(size_) < xbt_cfg_get_int("smpi/send-is-detached-thresh") ) ) {
+    if ((flags_ & SSEND) == 0 &&
+        ((flags_ & RMA) != 0 ||
+         static_cast<int>(size_) < simgrid::config::get_config<int>("smpi/send-is-detached-thresh"))) {
       void *oldbuf = nullptr;
       detached_ = 1;
       XBT_DEBUG("Send request %p is detached", this);
@@ -452,7 +453,7 @@ void Request::start()
       XBT_DEBUG("sending size of %zu : sleep %f ", size_, sleeptime);
     }
 
-    int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
+    int async_small_thresh = simgrid::config::get_config<int>("smpi/async-small-thresh");
 
     xbt_mutex_t mut=process->mailboxes_mutex();
 
@@ -682,10 +683,10 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   request->print_request("New iprobe");
   // We have to test both mailboxes as we don't know if we will receive one one or another
-  if (xbt_cfg_get_int("smpi/async-small-thresh") > 0){
-      mailbox = smpi_process()->mailbox_small();
-      XBT_DEBUG("Trying to probe the perm recv mailbox");
-      request->action_ = simcall_comm_iprobe(mailbox, 0, &match_recv, static_cast<void*>(request));
+  if (simgrid::config::get_config<int>("smpi/async-small-thresh") > 0) {
+    mailbox = smpi_process()->mailbox_small();
+    XBT_DEBUG("Trying to probe the perm recv mailbox");
+    request->action_ = simcall_comm_iprobe(mailbox, 0, &match_recv, static_cast<void*>(request));
   }
 
   if (request->action_ == nullptr){
