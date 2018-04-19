@@ -19,9 +19,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
-
-/* 0: beginning of time (config cannot be changed yet);
- * 1: initialized: cfg_set created (config can now be changed);
+/* 0: beginning of time (config cannot be changed yet)
+ * 1: initialized: cfg_set created (config can now be changed)
  * 2: configured: command line parsed and config part of platform file was
  *    integrated also, platform construction ongoing or done.
  *    (Config cannot be changed anymore!)
