@@ -366,6 +366,18 @@ void Config::help()
   }
 }
 
+// ***** set_default *****
+
+template <class T> XBT_PUBLIC void set_default(const char* name, T value)
+{
+  (*simgrid_config)[name].set_default_value<T>(std::move(value));
+}
+
+template XBT_PUBLIC void set_default<int>(const char* name, int value);
+template XBT_PUBLIC void set_default<double>(const char* name, double value);
+template XBT_PUBLIC void set_default<bool>(const char* name, bool value);
+template XBT_PUBLIC void set_default<std::string>(const char* name, std::string value);
+
 // ***** set_value *****
 
 template <class T> XBT_PUBLIC void set_value(const char* name, T value)

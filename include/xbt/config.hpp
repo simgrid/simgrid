@@ -43,6 +43,15 @@ inline std::string to_string(std::string&& value)
   return std::move(value);
 }
 
+// Set default
+
+template <class T> XBT_PUBLIC void set_default(const char* name, T value);
+
+extern template XBT_PUBLIC void set_default<int>(const char* name, int value);
+extern template XBT_PUBLIC void set_default<double>(const char* name, double value);
+extern template XBT_PUBLIC void set_default<bool>(const char* name, bool value);
+extern template XBT_PUBLIC void set_default<std::string>(const char* name, std::string value);
+
 // Set config
 
 template <class T> XBT_PUBLIC void set_value(const char* name, T value);
