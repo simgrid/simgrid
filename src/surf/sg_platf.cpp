@@ -500,10 +500,10 @@ void sg_platf_end() {
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
 {
-  std::string host_model_name    = xbt_cfg_get_string("host/model");
-  std::string network_model_name = xbt_cfg_get_string("network/model");
-  std::string cpu_model_name     = xbt_cfg_get_string("cpu/model");
-  std::string storage_model_name = xbt_cfg_get_string("storage/model");
+  std::string host_model_name    = simgrid::config::get_config<std::string>("host/model");
+  std::string network_model_name = simgrid::config::get_config<std::string>("network/model");
+  std::string cpu_model_name     = simgrid::config::get_config<std::string>("cpu/model");
+  std::string storage_model_name = simgrid::config::get_config<std::string>("storage/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
   if ((not xbt_cfg_is_default_value("network/model") || not xbt_cfg_is_default_value("cpu/model")) &&

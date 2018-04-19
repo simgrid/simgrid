@@ -193,7 +193,7 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 
 void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int nb_shared_blocks)
 {
-  std::string huge_page_mount_point = xbt_cfg_get_string("smpi/shared-malloc-hugepage");
+  std::string huge_page_mount_point = simgrid::config::get_config<std::string>("smpi/shared-malloc-hugepage");
   bool use_huge_page                = not huge_page_mount_point.empty();
 #ifndef MAP_HUGETLB /* If the system header don't define that mmap flag */
   xbt_assert(not use_huge_page,

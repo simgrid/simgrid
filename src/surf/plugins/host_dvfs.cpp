@@ -245,7 +245,7 @@ static void on_host_added(simgrid::s4u::Host& host)
       dvfs_governor = std::string(daemon_proc->get_host()->getProperty(property_governor));
       boost::algorithm::to_lower(dvfs_governor);
     } else {
-      dvfs_governor = xbt_cfg_get_string(property_governor);
+      dvfs_governor = simgrid::config::get_config<std::string>(property_governor);
       boost::algorithm::to_lower(dvfs_governor);
     }
 

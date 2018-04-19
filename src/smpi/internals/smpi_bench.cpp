@@ -90,7 +90,7 @@ void smpi_bench_begin()
     return;
 
 #if HAVE_PAPI
-  if (not xbt_cfg_get_string("smpi/papi-events").empty()) {
+  if (not simgrid::config::get_config<std::string>("smpi/papi-events").empty()) {
     int event_set = smpi_process()->papi_event_set();
     // PAPI_start sets everything to 0! See man(3) PAPI_start
     if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized()) {
@@ -119,7 +119,7 @@ void smpi_bench_end()
    * An MPI function has been called and now is the right time to update
    * our PAPI counters for this process.
    */
-  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+  if (simgrid::config::get_config<std::string>("smpi/papi-events")[0] != '\0') {
     papi_counter_t& counter_data        = smpi_process()->papi_counters();
     int event_set                       = smpi_process()->papi_event_set();
     std::vector<long long> event_values = std::vector<long long>(counter_data.size());
@@ -142,8 +142,8 @@ void smpi_bench_end()
     xbt_die("Aborting.");
   }
 
-  if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { // Maybe we need to artificially speed up or slow
-    // down our computation based on our statistical analysis.
+  // Maybe we need to artificially speed up or slow down our computation based on our statistical analysis.
+  if (simgrid::config::get_config<std::string>("smpi/comp-adjustment-file")[0] != '\0') {
 
     smpi_trace_call_location_t* loc                            = smpi_process()->call_location();
     std::string key                                            = loc->get_composed_key();
@@ -159,7 +159,7 @@ void smpi_bench_end()
   }
 
 #if HAVE_PAPI
-  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
+  if (simgrid::config::get_config<std::string>("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
     container_t container =
         new simgrid::instr::Container(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();

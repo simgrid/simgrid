@@ -244,7 +244,7 @@ void smpi_global_init()
     xbt_os_walltimer_start(global_timer);
   }
 
-  std::string filename = xbt_cfg_get_string("smpi/comp-adjustment-file");
+  std::string filename = simgrid::config::get_config<std::string>("smpi/comp-adjustment-file");
   if (not filename.empty()) {
     std::ifstream fstream(filename);
     if (not fstream.is_open()) {
@@ -271,7 +271,7 @@ void smpi_global_init()
   // and the (computed) event_set.
   std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 
-  if (not xbt_cfg_get_string("smpi/papi-events").empty()) {
+  if (not simgrid::config::get_config<std::string>("smpi/papi-events").empty()) {
     if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
       XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
                 " Expected version is %i",
@@ -279,7 +279,7 @@ void smpi_global_init()
 
     typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
     boost::char_separator<char> separator_units(";");
-    std::string str = xbt_cfg_get_string("smpi/papi-events");
+    std::string str = simgrid::config::get_config<std::string>("smpi/papi-events");
     Tokenizer tokens(str, separator_units);
 
     // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
@@ -363,7 +363,7 @@ static void smpi_init_options(){
   smpi_cpu_threshold                               = simgrid::config::get_config<double>("smpi/cpu-threshold");
   smpi_host_speed                                  = simgrid::config::get_config<double>("smpi/host-speed");
   xbt_assert(smpi_host_speed >= 0, "You're trying to set the host_speed to a negative value (%f)", smpi_host_speed);
-  std::string smpi_privatize_option                = xbt_cfg_get_string("smpi/privatization");
+  std::string smpi_privatize_option = simgrid::config::get_config<std::string>("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
     smpi_privatize_global_variables = SmpiPrivStrategies::None;
   else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
@@ -389,7 +389,7 @@ static void smpi_init_options(){
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 
-    std::string val = xbt_cfg_get_string("smpi/shared-malloc");
+    std::string val = simgrid::config::get_config<std::string>("smpi/shared-malloc");
     if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
       smpi_cfg_shared_malloc = shmalloc_global;
     } else if (val == "local") {

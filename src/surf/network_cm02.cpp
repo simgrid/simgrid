@@ -132,9 +132,10 @@ namespace kernel {
 namespace resource {
 
 NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool))
-    : NetworkModel(xbt_cfg_get_string("network/optim") == "Full" ? Model::UpdateAlgo::Full : Model::UpdateAlgo::Lazy)
+    : NetworkModel(simgrid::config::get_config<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::Full
+                                                                                       : Model::UpdateAlgo::Lazy)
 {
-  std::string optim = xbt_cfg_get_string("network/optim");
+  std::string optim = simgrid::config::get_config<std::string>("network/optim");
   bool select       = simgrid::config::get_config<bool>("network/maxmin-selective-update");
 
   if (optim == "Lazy") {

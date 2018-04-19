@@ -30,7 +30,7 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
 #if HAVE_PAPI
-  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+  if (simgrid::config::get_config<std::string>("smpi/papi-events")[0] != '\0') {
     // TODO: Implement host/process/thread based counters. This implementation
     // just always takes the values passed via "default", like this:
     // "default:COUNTER1:COUNTER2:COUNTER3;".

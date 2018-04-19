@@ -97,21 +97,21 @@ SmpiHost::SmpiHost(simgrid::s4u::Host *ptr) : host(ptr)
   if (orecv_string != nullptr) {
     orecv_parsed_values = parse_factor(orecv_string);
   } else {
-    orecv_parsed_values = parse_factor(xbt_cfg_get_string("smpi/or"));
+    orecv_parsed_values = parse_factor(simgrid::config::get_config<std::string>("smpi/or"));
   }
 
   const char* osend_string = host->getProperty("smpi/os");
   if (osend_string != nullptr) {
     osend_parsed_values = parse_factor(osend_string);
   } else {
-    osend_parsed_values = parse_factor(xbt_cfg_get_string("smpi/os"));
+    osend_parsed_values = parse_factor(simgrid::config::get_config<std::string>("smpi/os"));
   }
 
   const char* oisend_string = host->getProperty("smpi/ois");
   if (oisend_string != nullptr) {
     oisend_parsed_values = parse_factor(oisend_string);
   } else {
-    oisend_parsed_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
+    oisend_parsed_values = parse_factor(simgrid::config::get_config<std::string>("smpi/ois"));
   }
 }
 
