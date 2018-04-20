@@ -386,20 +386,20 @@ static void smpi_init_options(){
   }
 #endif
 
-    if (smpi_cpu_threshold < 0)
-      smpi_cpu_threshold = DBL_MAX;
+  if (smpi_cpu_threshold < 0)
+    smpi_cpu_threshold = DBL_MAX;
 
-    std::string val = simgrid::config::get_value<std::string>("smpi/shared-malloc");
-    if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
-      smpi_cfg_shared_malloc = shmalloc_global;
-    } else if (val == "local") {
-      smpi_cfg_shared_malloc = shmalloc_local;
-    } else if ((val == "no") || (val == "0") || (val == "off")) {
-      smpi_cfg_shared_malloc = shmalloc_none;
-    } else {
-      xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
-              val.c_str());
-    }
+  std::string val = simgrid::config::get_value<std::string>("smpi/shared-malloc");
+  if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
+    smpi_cfg_shared_malloc = shmalloc_global;
+  } else if (val == "local") {
+    smpi_cfg_shared_malloc = shmalloc_local;
+  } else if ((val == "no") || (val == "0") || (val == "off")) {
+    smpi_cfg_shared_malloc = shmalloc_none;
+  } else {
+    xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
+            val.c_str());
+  }
 }
 
 typedef std::function<int(int argc, char *argv[])> smpi_entry_point_type;
