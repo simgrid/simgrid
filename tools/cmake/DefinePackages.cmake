@@ -253,6 +253,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_status.hpp
   src/smpi/include/smpi_win.hpp
   src/smpi/include/smpi_topo.hpp
+  src/smpi/plugins/sampi_loadbalancer.cpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   )
@@ -669,6 +670,7 @@ set(headers_to_install
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
+  include/simgrid/smpi/replay.hpp
   include/simgrid/instr.h
   include/simgrid/msg.h
   include/simgrid/simdag.h
