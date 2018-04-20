@@ -17,7 +17,7 @@ CMAKE_LINKARGS="-L@libdir@"
 @SMPITOOLS_SH@
 
 list_set CFLAGS
-list_set LINKARGS
+list_set LINKARGS "-lm"
 if [ "x@WIN32@" = "x1" ]; then
     list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
     list_add LINKARGS "@libdir@\libsimgrid.dll"
@@ -38,7 +38,7 @@ else
     else
        echo "Warning: smpicc pretends to be a regular compiler (SMPI_PRETEND_CC is set). Produced binaries will not be usable in SimGrid."
     fi
-    list_add LINKARGS "-lsimgrid" "-lm" "-Wl,-z,defs"
+    list_add LINKARGS "-lsimgrid" "-Wl,-z,defs"
 fi
 
 
