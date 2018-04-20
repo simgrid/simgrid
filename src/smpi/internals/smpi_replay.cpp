@@ -140,261 +140,261 @@ public:
     }
 };
 
-  void WaitTestParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    CHECK_ACTION_PARAMS(action, 3, 0)
-    src = std::stoi(action[2]);
-    dst = std::stoi(action[3]);
-    tag = std::stoi(action[4]);
-  }
+void WaitTestParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  CHECK_ACTION_PARAMS(action, 3, 0)
+  src = std::stoi(action[2]);
+  dst = std::stoi(action[3]);
+  tag = std::stoi(action[4]);
+}
 
-  void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    CHECK_ACTION_PARAMS(action, 3, 1)
-    partner = std::stoi(action[2]);
-    tag     = std::stoi(action[3]);
-    size    = parse_double(action[4]);
-    if (action.size() > 5)
-      datatype1 = simgrid::smpi::Datatype::decode(action[5]);
-  }
+void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  CHECK_ACTION_PARAMS(action, 3, 1)
+  partner = std::stoi(action[2]);
+  tag     = std::stoi(action[3]);
+  size    = parse_double(action[4]);
+  if (action.size() > 5)
+    datatype1 = simgrid::smpi::Datatype::decode(action[5]);
+}
 
 
-  void ComputeParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    CHECK_ACTION_PARAMS(action, 1, 0)
-    flops = parse_double(action[2]);
-  }
+void ComputeParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  CHECK_ACTION_PARAMS(action, 1, 0)
+  flops = parse_double(action[2]);
+}
 
-  void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    CHECK_ACTION_PARAMS(action, 1, 2)
-    size = parse_double(action[2]);
-    root = (action.size() > 3) ? std::stoi(action[3]) : 0;
-    if (action.size() > 4)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
-  }
+void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  CHECK_ACTION_PARAMS(action, 1, 2)
+  size = parse_double(action[2]);
+  root = (action.size() > 3) ? std::stoi(action[3]) : 0;
+  if (action.size() > 4)
+    datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+}
 
-  void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    CHECK_ACTION_PARAMS(action, 2, 2)
-    comm_size = parse_double(action[2]);
-    comp_size = parse_double(action[3]);
+void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  CHECK_ACTION_PARAMS(action, 2, 2)
+  comm_size = parse_double(action[2]);
+  comp_size = parse_double(action[3]);
+  root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
+  if (action.size() > 5)
+    datatype1 = simgrid::smpi::Datatype::decode(action[5]);
+}
+
+void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  CHECK_ACTION_PARAMS(action, 2, 1)
+  comm_size = parse_double(action[2]);
+  comp_size = parse_double(action[3]);
+  if (action.size() > 4)
+    datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+}
+
+void AllToAllArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  CHECK_ACTION_PARAMS(action, 2, 1)
+  comm_size = MPI_COMM_WORLD->size();
+  send_size = parse_double(action[2]);
+  recv_size = parse_double(action[3]);
+
+  if (action.size() > 4)
+    datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+  if (action.size() > 5)
+    datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+}
+
+void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  /* The structure of the gather action for the rank 0 (total 4 processes) is the following:
+        0 gather 68 68 0 0 0
+      where:
+        1) 68 is the sendcounts
+        2) 68 is the recvcounts
+        3) 0 is the root node
+        4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+        5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
+  */
+  CHECK_ACTION_PARAMS(action, 2, 3)
+  comm_size = MPI_COMM_WORLD->size();
+  send_size = parse_double(action[2]);
+  recv_size = parse_double(action[3]);
+
+  if (name == "gather") {
     root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
-    if (action.size() > 5)
-      datatype1 = simgrid::smpi::Datatype::decode(action[5]);
-  }
-
-  void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    CHECK_ACTION_PARAMS(action, 2, 1)
-    comm_size = parse_double(action[2]);
-    comp_size = parse_double(action[3]);
-    if (action.size() > 4)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
-  }
-
-  void AllToAllArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    CHECK_ACTION_PARAMS(action, 2, 1)
-    comm_size = MPI_COMM_WORLD->size();
-    send_size = parse_double(action[2]);
-    recv_size = parse_double(action[3]);
-
-    if (action.size() > 4)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
-    if (action.size() > 5)
-      datatype2 = simgrid::smpi::Datatype::decode(action[5]);
-  }
-
-  void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    /* The structure of the gather action for the rank 0 (total 4 processes) is the following:
-          0 gather 68 68 0 0 0
-        where:
-          1) 68 is the sendcounts
-          2) 68 is the recvcounts
-          3) 0 is the root node
-          4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
-          5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
-    */
-    CHECK_ACTION_PARAMS(action, 2, 3)
-    comm_size = MPI_COMM_WORLD->size();
-    send_size = parse_double(action[2]);
-    recv_size = parse_double(action[3]);
-
-    if (name == "gather") {
-      root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
-      if (action.size() > 5)
-        datatype1 = simgrid::smpi::Datatype::decode(action[5]);
-      if (action.size() > 6)
-        datatype2 = simgrid::smpi::Datatype::decode(action[6]);
-    }
-    else {
-      if (action.size() > 4)
-        datatype1 = simgrid::smpi::Datatype::decode(action[4]);
-      if (action.size() > 5)
-        datatype2 = simgrid::smpi::Datatype::decode(action[5]);
-    }
-  }
-
-  void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
-         0 gather 68 68 10 10 10 0 0 0
-       where:
-         1) 68 is the sendcount
-         2) 68 10 10 10 is the recvcounts
-         3) 0 is the root node
-         4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
-         5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
-    */
-    comm_size = MPI_COMM_WORLD->size();
-    CHECK_ACTION_PARAMS(action, comm_size+1, 2)
-    send_size = parse_double(action[2]);
-    disps     = std::vector<int>(comm_size, 0);
-    recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
-
-    if (name == "gatherV") {
-      root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
-      if (action.size() > 4 + comm_size)
-        datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
-      if (action.size() > 5 + comm_size)
-        datatype2 = simgrid::smpi::Datatype::decode(action[5 + comm_size]);
-    }
-    else {
-      int datatype_index = 0;
-      int disp_index     = 0;
-      /* The 3 comes from "0 gather <sendcount>", which must always be present.
-       * The + comm_size is the recvcounts array, which must also be present
-       */
-      if (action.size() > 3 + comm_size + comm_size) { /* datatype + disp are specified */
-        datatype_index = 3 + comm_size;
-        disp_index     = datatype_index + 1;
-        datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-        datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-      } else if (action.size() > 3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
-        disp_index     = 3 + comm_size;
-      } else if (action.size() > 3 + comm_size)  { /* only datatype, no disp specified */
-        datatype_index = 3 + comm_size;
-        datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-        datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-      }
-
-      if (disp_index != 0) {
-        for (unsigned int i = 0; i < comm_size; i++)
-          disps[i]          = std::stoi(action[disp_index + i]);
-      }
-    }
-
-    for (unsigned int i = 0; i < comm_size; i++) {
-      (*recvcounts)[i] = std::stoi(action[i + 3]);
-    }
-    recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
-  }
-
-  void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    /* The structure of the scatter action for the rank 0 (total 4 processes) is the following:
-          0 gather 68 68 0 0 0
-        where:
-          1) 68 is the sendcounts
-          2) 68 is the recvcounts
-          3) 0 is the root node
-          4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
-          5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
-    */
-    CHECK_ACTION_PARAMS(action, 2, 3)
-    comm_size   = MPI_COMM_WORLD->size();
-    send_size   = parse_double(action[2]);
-    recv_size   = parse_double(action[3]);
-    root   = (action.size() > 4) ? std::stoi(action[4]) : 0;
     if (action.size() > 5)
       datatype1 = simgrid::smpi::Datatype::decode(action[5]);
     if (action.size() > 6)
       datatype2 = simgrid::smpi::Datatype::decode(action[6]);
   }
+  else {
+    if (action.size() > 4)
+      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+    if (action.size() > 5)
+      datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+  }
+}
 
-  void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    /* The structure of the scatterv action for the rank 0 (total 4 processes) is the following:
-       0 gather 68 10 10 10 68 0 0 0
-        where:
-        1) 68 10 10 10 is the sendcounts
-        2) 68 is the recvcount
+void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  /* The structure of the gatherv action for the rank 0 (total 4 processes) is the following:
+       0 gather 68 68 10 10 10 0 0 0
+     where:
+       1) 68 is the sendcount
+       2) 68 10 10 10 is the recvcounts
+       3) 0 is the root node
+       4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+       5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
+  */
+  comm_size = MPI_COMM_WORLD->size();
+  CHECK_ACTION_PARAMS(action, comm_size+1, 2)
+  send_size = parse_double(action[2]);
+  disps     = std::vector<int>(comm_size, 0);
+  recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+
+  if (name == "gatherV") {
+    root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
+    if (action.size() > 4 + comm_size)
+      datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
+    if (action.size() > 5 + comm_size)
+      datatype2 = simgrid::smpi::Datatype::decode(action[5 + comm_size]);
+  }
+  else {
+    int datatype_index = 0;
+    int disp_index     = 0;
+    /* The 3 comes from "0 gather <sendcount>", which must always be present.
+     * The + comm_size is the recvcounts array, which must also be present
+     */
+    if (action.size() > 3 + comm_size + comm_size) { /* datatype + disp are specified */
+      datatype_index = 3 + comm_size;
+      disp_index     = datatype_index + 1;
+      datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
+      datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
+    } else if (action.size() > 3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
+      disp_index     = 3 + comm_size;
+    } else if (action.size() > 3 + comm_size)  { /* only datatype, no disp specified */
+      datatype_index = 3 + comm_size;
+      datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
+      datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
+    }
+
+    if (disp_index != 0) {
+      for (unsigned int i = 0; i < comm_size; i++)
+        disps[i]          = std::stoi(action[disp_index + i]);
+    }
+  }
+
+  for (unsigned int i = 0; i < comm_size; i++) {
+    (*recvcounts)[i] = std::stoi(action[i + 3]);
+  }
+  recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+}
+
+void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  /* The structure of the scatter action for the rank 0 (total 4 processes) is the following:
+        0 gather 68 68 0 0 0
+      where:
+        1) 68 is the sendcounts
+        2) 68 is the recvcounts
         3) 0 is the root node
         4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
         5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
-    */
-    CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
-    recv_size  = parse_double(action[2 + comm_size]);
-    disps      = std::vector<int>(comm_size, 0);
-    sendcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  */
+  CHECK_ACTION_PARAMS(action, 2, 3)
+  comm_size   = MPI_COMM_WORLD->size();
+  send_size   = parse_double(action[2]);
+  recv_size   = parse_double(action[3]);
+  root   = (action.size() > 4) ? std::stoi(action[4]) : 0;
+  if (action.size() > 5)
+    datatype1 = simgrid::smpi::Datatype::decode(action[5]);
+  if (action.size() > 6)
+    datatype2 = simgrid::smpi::Datatype::decode(action[6]);
+}
 
-    if (action.size() > 5 + comm_size)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
-    if (action.size() > 5 + comm_size)
-      datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  /* The structure of the scatterv action for the rank 0 (total 4 processes) is the following:
+     0 gather 68 10 10 10 68 0 0 0
+      where:
+      1) 68 10 10 10 is the sendcounts
+      2) 68 is the recvcount
+      3) 0 is the root node
+      4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
+      5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
+  */
+  CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
+  recv_size  = parse_double(action[2 + comm_size]);
+  disps      = std::vector<int>(comm_size, 0);
+  sendcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
 
-    for (unsigned int i = 0; i < comm_size; i++) {
-      (*sendcounts)[i] = std::stoi(action[i + 2]);
-    }
-    send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
-    root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
+  if (action.size() > 5 + comm_size)
+    datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
+  if (action.size() > 5 + comm_size)
+    datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+
+  for (unsigned int i = 0; i < comm_size; i++) {
+    (*sendcounts)[i] = std::stoi(action[i + 2]);
   }
+  send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
+  root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
+}
 
-  void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
-         0 reduceScatter 275427 275427 275427 204020 11346849 0
-       where:
-         1) The first four values after the name of the action declare the recvcounts array
-         2) The value 11346849 is the amount of instructions
-         3) The last value corresponds to the datatype, see simgrid::smpi::Datatype::decode().
-    */
-    comm_size = MPI_COMM_WORLD->size();
-    CHECK_ACTION_PARAMS(action, comm_size+1, 1)
-    comp_size = parse_double(action[2+comm_size]);
-    recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
-    if (action.size() > 3 + comm_size)
-      datatype1 = simgrid::smpi::Datatype::decode(action[3 + comm_size]);
+void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
+       0 reduceScatter 275427 275427 275427 204020 11346849 0
+     where:
+       1) The first four values after the name of the action declare the recvcounts array
+       2) The value 11346849 is the amount of instructions
+       3) The last value corresponds to the datatype, see simgrid::smpi::Datatype::decode().
+  */
+  comm_size = MPI_COMM_WORLD->size();
+  CHECK_ACTION_PARAMS(action, comm_size+1, 1)
+  comp_size = parse_double(action[2+comm_size]);
+  recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  if (action.size() > 3 + comm_size)
+    datatype1 = simgrid::smpi::Datatype::decode(action[3 + comm_size]);
 
-    for (unsigned int i = 0; i < comm_size; i++) {
-      recvcounts->push_back(std::stoi(action[i + 2]));
-    }
-    recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+  for (unsigned int i = 0; i < comm_size; i++) {
+    recvcounts->push_back(std::stoi(action[i + 2]));
   }
+  recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+}
 
-  void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
-  {
-    /* The structure of the allToAllV action for the rank 0 (total 4 processes) is the following:
-          0 allToAllV 100 1 7 10 12 100 1 70 10 5
-       where:
-        1) 100 is the size of the send buffer *sizeof(int),
-        2) 1 7 10 12 is the sendcounts array
-        3) 100*sizeof(int) is the size of the receiver buffer
-        4)  1 70 10 5 is the recvcounts array
-    */
-    comm_size = MPI_COMM_WORLD->size();
-    CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
-    sendcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
-    recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
-    senddisps  = std::vector<int>(comm_size, 0);
-    recvdisps  = std::vector<int>(comm_size, 0);
+void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
+{
+  /* The structure of the allToAllV action for the rank 0 (total 4 processes) is the following:
+        0 allToAllV 100 1 7 10 12 100 1 70 10 5
+     where:
+      1) 100 is the size of the send buffer *sizeof(int),
+      2) 1 7 10 12 is the sendcounts array
+      3) 100*sizeof(int) is the size of the receiver buffer
+      4)  1 70 10 5 is the recvcounts array
+  */
+  comm_size = MPI_COMM_WORLD->size();
+  CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
+  sendcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
+  senddisps  = std::vector<int>(comm_size, 0);
+  recvdisps  = std::vector<int>(comm_size, 0);
 
-    if (action.size() > 5 + 2 * comm_size)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4 + 2 * comm_size]);
-    if (action.size() > 5 + 2 * comm_size)
-      datatype2 = simgrid::smpi::Datatype::decode(action[5 + 2 * comm_size]);
+  if (action.size() > 5 + 2 * comm_size)
+    datatype1 = simgrid::smpi::Datatype::decode(action[4 + 2 * comm_size]);
+  if (action.size() > 5 + 2 * comm_size)
+    datatype2 = simgrid::smpi::Datatype::decode(action[5 + 2 * comm_size]);
 
-    send_buf_size=parse_double(action[2]);
-    recv_buf_size=parse_double(action[3+comm_size]);
-    for (unsigned int i = 0; i < comm_size; i++) {
-      (*sendcounts)[i] = std::stoi(action[3 + i]);
-      (*recvcounts)[i] = std::stoi(action[4 + comm_size + i]);
-    }
-    send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
-    recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+  send_buf_size=parse_double(action[2]);
+  recv_buf_size=parse_double(action[3+comm_size]);
+  for (unsigned int i = 0; i < comm_size; i++) {
+    (*sendcounts)[i] = std::stoi(action[3 + i]);
+    (*recvcounts)[i] = std::stoi(action[4 + comm_size + i]);
   }
+  send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
+  recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+}
 
 template<class T>
 void ReplayAction<T>::execute(simgrid::xbt::ReplayAction& action)
