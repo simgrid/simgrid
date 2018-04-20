@@ -721,28 +721,22 @@ int Win::finish_comms(int rank){
   return size;
 }
 
-
-int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr){
-
-  if(rank!=MPI_PROC_NULL){
-    MPI_Win target_win = connected_wins_[rank];
-    *size=target_win->size_;
-    *disp_unit=target_win->disp_unit_;
-    *static_cast<void**>(baseptr)=target_win->base_;
-  }else{
-    for(int i=0; i<comm_->size();i++){
-      MPI_Win target_win = connected_wins_[i];
-      if(target_win->size_>0){
-        *size=target_win->size_;
-        *disp_unit=target_win->disp_unit_;
-        *static_cast<void**>(baseptr)=target_win->base_;
-        return MPI_SUCCESS;
-      }
-    }
-    *size=0;
-    *static_cast<void**>(baseptr)=xbt_malloc(0);
+int Win::shared_query(int rank, MPI_Aint* size, int* disp_unit, void* baseptr)
+{
+  MPI_Win target_win = rank != MPI_PROC_NULL ? connected_wins_[rank] : nullptr;
+  for (int i = 0; not target_win && i < comm_->size(); i++) {
+    if (connected_wins_[i]->size_ > 0)
+      target_win = connected_wins_[i];
+  }
+  if (target_win) {
+    *size                         = target_win->size_;
+    *disp_unit                    = target_win->disp_unit_;
+    *static_cast<void**>(baseptr) = target_win->base_;
+  } else {
+    *size                         = 0;
+    *static_cast<void**>(baseptr) = xbt_malloc(0);
   }
   return MPI_SUCCESS;
-  }
+}
 }
 }
