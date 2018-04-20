@@ -150,6 +150,155 @@ public:
   void parse(simgrid::xbt::ReplayAction& action, std::string name) override;
 };
 
+/**
+ * Base class for all ReplayActions.
+ * Note that this class actually implements the behavior of each action
+ * while the parsing of the replay arguments is done in the @ActionArgParser class.
+ * In other words: The logic goes here, the setup is done by the ActionArgParser.
+ */
+template <class T> class ReplayAction {
+protected:
+  const std::string name;
+  const int my_proc_id;
+  T args;
+
+public:
+  explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
+  virtual ~ReplayAction() = default;
+
+  virtual void execute(simgrid::xbt::ReplayAction& action);
+  virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
+  void* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
+  void* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }
+};
+
+class WaitAction : public ReplayAction<WaitTestParser> {
+private:
+  RequestStorage& req_storage;
+
+public:
+  explicit WaitAction(RequestStorage& storage) : ReplayAction("Wait"), req_storage(storage) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class SendAction : public ReplayAction<SendRecvParser> {
+private:
+  RequestStorage& req_storage;
+
+public:
+  explicit SendAction(std::string name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class RecvAction : public ReplayAction<SendRecvParser> {
+private:
+  RequestStorage& req_storage;
+
+public:
+  explicit RecvAction(std::string name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class ComputeAction : public ReplayAction<ComputeParser> {
+public:
+  explicit ComputeAction() : ReplayAction("compute") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class TestAction : public ReplayAction<WaitTestParser> {
+private:
+  RequestStorage& req_storage;
+public:
+  explicit TestAction(RequestStorage& storage) : ReplayAction("Test"), req_storage(storage) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class InitAction : public ReplayAction<ActionArgParser> {
+public:
+  explicit InitAction() : ReplayAction("Init") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class CommunicatorAction : public ReplayAction<ActionArgParser> {
+public:
+  explicit CommunicatorAction() : ReplayAction("Comm") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class WaitAllAction : public ReplayAction<ActionArgParser> {
+private:
+  RequestStorage& req_storage;
+
+public:
+  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll"), req_storage(storage) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class BarrierAction : public ReplayAction<ActionArgParser> {
+public:
+  explicit BarrierAction() : ReplayAction("barrier") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class BcastAction : public ReplayAction<BcastArgParser> {
+public:
+  explicit BcastAction() : ReplayAction("bcast") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class ReduceAction : public ReplayAction<ReduceArgParser> {
+public:
+  explicit ReduceAction() : ReplayAction("reduce") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class AllReduceAction : public ReplayAction<AllReduceArgParser> {
+public:
+  explicit AllReduceAction() : ReplayAction("allReduce") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class AllToAllAction : public ReplayAction<AllToAllArgParser> {
+public:
+  explicit AllToAllAction() : ReplayAction("allToAll") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class GatherAction : public ReplayAction<GatherArgParser> {
+public:
+  explicit GatherAction(std::string name) : ReplayAction(name) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class GatherVAction : public ReplayAction<GatherVArgParser> {
+public:
+  explicit GatherVAction(std::string name) : ReplayAction(name) {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class ScatterAction : public ReplayAction<ScatterArgParser> {
+public:
+  explicit ScatterAction() : ReplayAction("scatter") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class ScatterVAction : public ReplayAction<ScatterVArgParser> {
+public:
+  explicit ScatterVAction() : ReplayAction("scatterV") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class ReduceScatterAction : public ReplayAction<ReduceScatterArgParser> {
+public:
+  explicit ReduceScatterAction() : ReplayAction("reduceScatter") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
+
+class AllToAllVAction : public ReplayAction<AllToAllVArgParser> {
+public:
+  explicit AllToAllVAction() : ReplayAction("allToAllV") {}
+  void kernel(simgrid::xbt::ReplayAction& action) override;
+};
 
 }
 }

@@ -405,13 +405,7 @@ void ReplayAction<T>::execute(simgrid::xbt::ReplayAction& action)
     log_timed_action(action, start_time);
 }
 
-class WaitAction : public ReplayAction<WaitTestParser> {
-private:
-  RequestStorage& req_storage;
-
-public:
-  explicit WaitAction(RequestStorage& storage) : ReplayAction("Wait"), req_storage(storage) {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     std::string s = boost::algorithm::join(action, " ");
     xbt_assert(req_storage.size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
@@ -439,15 +433,8 @@ public:
     if (is_wait_for_receive)
       TRACE_smpi_recv(args.src, args.dst, args.tag);
   }
-};
 
-class SendAction : public ReplayAction<SendRecvParser> {
-private:
-  RequestStorage& req_storage;
-
-public:
-  explicit SendAction(std::string name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void SendAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     int dst_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
 
@@ -467,15 +454,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class RecvAction : public ReplayAction<SendRecvParser> {
-private:
-  RequestStorage& req_storage;
-
-public:
-  explicit RecvAction(std::string name, RequestStorage& storage) : ReplayAction(name), req_storage(storage) {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void RecvAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     int src_traced = MPI_COMM_WORLD->group()->actor(args.partner)->get_pid();
 
@@ -502,26 +482,15 @@ public:
       TRACE_smpi_recv(src_traced, my_proc_id, args.tag);
     }
   }
-};
 
-class ComputeAction : public ReplayAction<ComputeParser> {
-public:
-  ComputeAction() : ReplayAction("compute") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void ComputeAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_computing_in(my_proc_id, args.flops);
     smpi_execute_flops(args.flops);
     TRACE_smpi_computing_out(my_proc_id);
   }
-};
 
-class TestAction : public ReplayAction<WaitTestParser> {
-private:
-  RequestStorage& req_storage;
-
-public:
-  explicit TestAction(RequestStorage& storage) : ReplayAction("Test"), req_storage(storage) {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void TestAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
     req_storage.remove(request);
@@ -545,12 +514,8 @@ public:
       TRACE_smpi_testing_out(my_proc_id);
     }
   }
-};
 
-class InitAction : public ReplayAction<ActionArgParser> {
-public:
-  InitAction() : ReplayAction("Init") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void InitAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     CHECK_ACTION_PARAMS(action, 0, 1)
     MPI_DEFAULT_TYPE = (action.size() > 2) ? MPI_DOUBLE // default MPE datatype
@@ -559,21 +524,13 @@ public:
     /* start a simulated timer */
     smpi_process()->simulated_start();
   }
-};
 
-class CommunicatorAction : public ReplayAction<ActionArgParser> {
-public:
-  CommunicatorAction() : ReplayAction("Comm") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override { /* nothing to do */}
-};
+  void CommunicatorAction::kernel(simgrid::xbt::ReplayAction& action)
+  { 
+    /* nothing to do */
+  }
 
-class WaitAllAction : public ReplayAction<ActionArgParser> {
-private:
-  RequestStorage& req_storage;
-
-public:
-  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll"), req_storage(storage) {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void WaitAllAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     const unsigned int count_requests = req_storage.size();
 
@@ -597,23 +554,15 @@ public:
       TRACE_smpi_comm_out(my_proc_id);
     }
   }
-};
 
-class BarrierAction : public ReplayAction<ActionArgParser> {
-public:
-  BarrierAction() : ReplayAction("barrier") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void BarrierAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("barrier"));
     Colls::barrier(MPI_COMM_WORLD);
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class BcastAction : public ReplayAction<BcastArgParser> {
-public:
-  BcastAction() : ReplayAction("bcast") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void BcastAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, "action_bcast",
                        new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
@@ -623,12 +572,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class ReduceAction : public ReplayAction<ReduceArgParser> {
-public:
-  ReduceAction() : ReplayAction("reduce") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void ReduceAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, "action_reduce",
                        new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root)->get_pid(),
@@ -641,12 +586,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class AllReduceAction : public ReplayAction<AllReduceArgParser> {
-public:
-  AllReduceAction() : ReplayAction("allReduce") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void AllReduceAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, "action_allReduce", new simgrid::instr::CollTIData("allReduce", -1, args.comp_size, args.comm_size, -1,
                                                                                 Datatype::encode(args.datatype1), ""));
@@ -657,12 +598,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class AllToAllAction : public ReplayAction<AllToAllArgParser> {
-public:
-  AllToAllAction() : ReplayAction("allToAll") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void AllToAllAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, "action_allToAll",
                      new simgrid::instr::CollTIData("allToAll", -1, -1.0, args.send_size, args.recv_size,
@@ -675,12 +612,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class GatherAction : public ReplayAction<GatherArgParser> {
-public:
-  explicit GatherAction(std::string name) : ReplayAction(name) {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void GatherAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, name.c_str(), new simgrid::instr::CollTIData(name, (name == "gather") ? args.root : -1, -1.0, args.send_size, args.recv_size,
                                                                           Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
@@ -696,12 +629,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class GatherVAction : public ReplayAction<GatherVArgParser> {
-public:
-  explicit GatherVAction(std::string name) : ReplayAction(name) {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void GatherVAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     int rank = MPI_COMM_WORLD->rank();
 
@@ -722,12 +651,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class ScatterAction : public ReplayAction<ScatterArgParser> {
-public:
-  ScatterAction() : ReplayAction("scatter") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void ScatterAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     int rank = MPI_COMM_WORLD->rank();
     TRACE_smpi_comm_in(my_proc_id, "action_scatter", new simgrid::instr::CollTIData(name, args.root, -1.0, args.send_size, args.recv_size,
@@ -739,13 +664,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-
-class ScatterVAction : public ReplayAction<ScatterVArgParser> {
-public:
-  ScatterVAction() : ReplayAction("scatterV") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void ScatterVAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     int rank = MPI_COMM_WORLD->rank();
     TRACE_smpi_comm_in(my_proc_id, "action_scatterv", new simgrid::instr::VarCollTIData(name, args.root, -1, args.sendcounts, args.recv_size,
@@ -759,12 +679,8 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class ReduceScatterAction : public ReplayAction<ReduceScatterArgParser> {
-public:
-  ReduceScatterAction() : ReplayAction("reduceScatter") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, "action_reducescatter",
                        new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, args.recvcounts,
@@ -778,12 +694,8 @@ public:
     smpi_execute_flops(args.comp_size);
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 
-class AllToAllVAction : public ReplayAction<AllToAllVArgParser> {
-public:
-  AllToAllVAction() : ReplayAction("allToAllV") {}
-  void kernel(simgrid::xbt::ReplayAction& action) override
+  void AllToAllVAction::kernel(simgrid::xbt::ReplayAction& action)
   {
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::VarCollTIData(
@@ -795,7 +707,6 @@ public:
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-};
 } // Replay Namespace
 }} // namespace simgrid::smpi
 
