@@ -405,33 +405,33 @@ void ReplayAction<T>::execute(simgrid::xbt::ReplayAction& action)
     log_timed_action(action, start_time);
 }
 
-  void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
-  {
-    std::string s = boost::algorithm::join(action, " ");
-    xbt_assert(req_storage.size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
-    MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
-    req_storage.remove(request);
+void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
+{
+  std::string s = boost::algorithm::join(action, " ");
+  xbt_assert(req_storage.size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
+  MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
+  req_storage.remove(request);
 
-    if (request == MPI_REQUEST_NULL) {
-      /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just
-       * return.*/
-      return;
-    }
+  if (request == MPI_REQUEST_NULL) {
+    /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just
+     * return.*/
+    return;
+  }
 
-    int rank = request->comm() != MPI_COMM_NULL ? request->comm()->rank() : -1;
+  int rank = request->comm() != MPI_COMM_NULL ? request->comm()->rank() : -1;
 
-    // Must be taken before Request::wait() since the request may be set to
-    // MPI_REQUEST_NULL by Request::wait!
-    bool is_wait_for_receive = (request->flags() & RECV);
-    // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
-    TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("wait"));
+  // Must be taken before Request::wait() since the request may be set to
+  // MPI_REQUEST_NULL by Request::wait!
+  bool is_wait_for_receive = (request->flags() & RECV);
+  // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
+  TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("wait"));
 
-    MPI_Status status;
-    Request::wait(&request, &status);
+  MPI_Status status;
+  Request::wait(&request, &status);
 
-    TRACE_smpi_comm_out(rank);
-    if (is_wait_for_receive)
-      TRACE_smpi_recv(args.src, args.dst, args.tag);
+  TRACE_smpi_comm_out(rank);
+  if (is_wait_for_receive)
+    TRACE_smpi_recv(args.src, args.dst, args.tag);
   }
 
   void SendAction::kernel(simgrid::xbt::ReplayAction& action)
@@ -526,7 +526,7 @@ void ReplayAction<T>::execute(simgrid::xbt::ReplayAction& action)
   }
 
   void CommunicatorAction::kernel(simgrid::xbt::ReplayAction& action)
-  { 
+  {
     /* nothing to do */
   }
 

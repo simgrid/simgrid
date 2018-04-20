@@ -208,6 +208,7 @@ public:
 class TestAction : public ReplayAction<WaitTestParser> {
 private:
   RequestStorage& req_storage;
+
 public:
   explicit TestAction(RequestStorage& storage) : ReplayAction("Test"), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
@@ -299,7 +300,6 @@ public:
   explicit AllToAllVAction() : ReplayAction("allToAllV") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
-
 }
 }
 }
