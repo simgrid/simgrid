@@ -158,7 +158,6 @@ void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
     datatype1 = simgrid::smpi::Datatype::decode(action[5]);
 }
 
-
 void ComputeParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
 {
   CHECK_ACTION_PARAMS(action, 1, 0)
@@ -228,8 +227,7 @@ void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name
       datatype1 = simgrid::smpi::Datatype::decode(action[5]);
     if (action.size() > 6)
       datatype2 = simgrid::smpi::Datatype::decode(action[6]);
-  }
-  else {
+  } else {
     if (action.size() > 4)
       datatype1 = simgrid::smpi::Datatype::decode(action[4]);
     if (action.size() > 5)
@@ -249,9 +247,9 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string nam
        5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
   comm_size = MPI_COMM_WORLD->size();
-  CHECK_ACTION_PARAMS(action, comm_size+1, 2)
-  send_size = parse_double(action[2]);
-  disps     = std::vector<int>(comm_size, 0);
+  CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
+  send_size  = parse_double(action[2]);
+  disps      = std::vector<int>(comm_size, 0);
   recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
 
   if (name == "gatherV") {
@@ -260,8 +258,7 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string nam
       datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
     if (action.size() > 5 + comm_size)
       datatype2 = simgrid::smpi::Datatype::decode(action[5 + comm_size]);
-  }
-  else {
+  } else {
     int datatype_index = 0;
     int disp_index     = 0;
     /* The 3 comes from "0 gather <sendcount>", which must always be present.
@@ -272,9 +269,10 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string nam
       disp_index     = datatype_index + 1;
       datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
       datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-    } else if (action.size() > 3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
-      disp_index     = 3 + comm_size;
-    } else if (action.size() > 3 + comm_size)  { /* only datatype, no disp specified */
+    } else if (action.size() >
+               3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
+      disp_index = 3 + comm_size;
+    } else if (action.size() > 3 + comm_size) { /* only datatype, no disp specified */
       datatype_index = 3 + comm_size;
       datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
       datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
@@ -304,10 +302,10 @@ void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string nam
         5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
   CHECK_ACTION_PARAMS(action, 2, 3)
-  comm_size   = MPI_COMM_WORLD->size();
-  send_size   = parse_double(action[2]);
-  recv_size   = parse_double(action[3]);
-  root   = (action.size() > 4) ? std::stoi(action[4]) : 0;
+  comm_size = MPI_COMM_WORLD->size();
+  send_size = parse_double(action[2]);
+  recv_size = parse_double(action[3]);
+  root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
   if (action.size() > 5)
     datatype1 = simgrid::smpi::Datatype::decode(action[5]);
   if (action.size() > 6)
@@ -339,7 +337,7 @@ void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string na
     (*sendcounts)[i] = std::stoi(action[i + 2]);
   }
   send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
-  root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
+  root          = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
 }
 
 void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
@@ -352,8 +350,8 @@ void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::stri
        3) The last value corresponds to the datatype, see simgrid::smpi::Datatype::decode().
   */
   comm_size = MPI_COMM_WORLD->size();
-  CHECK_ACTION_PARAMS(action, comm_size+1, 1)
-  comp_size = parse_double(action[2+comm_size]);
+  CHECK_ACTION_PARAMS(action, comm_size + 1, 1)
+  comp_size  = parse_double(action[2 + comm_size]);
   recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
   if (action.size() > 3 + comm_size)
     datatype1 = simgrid::smpi::Datatype::decode(action[3 + comm_size]);
@@ -375,7 +373,7 @@ void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string n
       4)  1 70 10 5 is the recvcounts array
   */
   comm_size = MPI_COMM_WORLD->size();
-  CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
+  CHECK_ACTION_PARAMS(action, 2 * comm_size + 2, 2)
   sendcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
   recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
   senddisps  = std::vector<int>(comm_size, 0);
@@ -386,8 +384,8 @@ void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string n
   if (action.size() > 5 + 2 * comm_size)
     datatype2 = simgrid::smpi::Datatype::decode(action[5 + 2 * comm_size]);
 
-  send_buf_size=parse_double(action[2]);
-  recv_buf_size=parse_double(action[3+comm_size]);
+  send_buf_size = parse_double(action[2]);
+  recv_buf_size = parse_double(action[3 + comm_size]);
   for (unsigned int i = 0; i < comm_size; i++) {
     (*sendcounts)[i] = std::stoi(action[3 + i]);
     (*recvcounts)[i] = std::stoi(action[4 + comm_size + i]);
