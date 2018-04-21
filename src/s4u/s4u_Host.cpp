@@ -30,7 +30,7 @@ simgrid::xbt::signal<void(Host&)> Host::onSpeedChange;
 Host::Host(const char* name) : name_(name)
 {
   xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
-  Engine::getInstance()->addHost(std::string(name_), this);
+  Engine::getInstance()->add_host(std::string(name_), this);
   new simgrid::surf::HostImpl(this);
 }
 
@@ -58,26 +58,26 @@ void Host::destroy()
   if (not currentlyDestroying_) {
     currentlyDestroying_ = true;
     onDestruction(*this);
-    Engine::getInstance()->delHost(std::string(name_));
+    Engine::getInstance()->del_host(std::string(name_));
     delete this;
   }
 }
 
 Host* Host::by_name(std::string name)
 {
-  return Engine::getInstance()->hostByName(name);
+  return Engine::getInstance()->host_by_name(name);
 }
 Host* Host::by_name(const char* name)
 {
-  return Engine::getInstance()->hostByName(std::string(name));
+  return Engine::getInstance()->host_by_name(std::string(name));
 }
 Host* Host::by_name_or_null(const char* name)
 {
-  return Engine::getInstance()->hostByNameOrNull(std::string(name));
+  return Engine::getInstance()->host_by_name_or_null(std::string(name));
 }
 Host* Host::by_name_or_null(std::string name)
 {
-  return Engine::getInstance()->hostByNameOrNull(name);
+  return Engine::getInstance()->host_by_name_or_null(name);
 }
 
 Host* Host::current()

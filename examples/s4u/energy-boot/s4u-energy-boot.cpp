@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
   simgrid::s4u::Actor::create("Boot Monitor", simgrid::s4u::Host::by_name("MyHost2"), monitor);
 
   e.run();

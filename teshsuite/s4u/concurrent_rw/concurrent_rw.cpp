@@ -30,7 +30,7 @@ static void host()
 int main(int argc, char** argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   for (int i = 0; i < 5; i++)
     simgrid::s4u::Actor::create("host", simgrid::s4u::Host::by_name("bob"), host);

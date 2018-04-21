@@ -17,17 +17,17 @@ int main(int argc, char* argv[])
   /* Check the arguments */
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
 
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   HostBittorrent::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostBittorrent>();
 
-  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
+  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
   for (auto const& host : list)
     host->extension_set(new HostBittorrent(host));
 
-  e.registerFunction<Tracker>("tracker");
-  e.registerFunction<Peer>("peer");
-  e.loadDeployment(argv[2]);
+  e.register_function<Tracker>("tracker");
+  e.register_function<Peer>("peer");
+  e.load_deployment(argv[2]);
 
   e.run();
 

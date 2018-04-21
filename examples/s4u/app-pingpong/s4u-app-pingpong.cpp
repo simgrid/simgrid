@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
 
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
   std::vector<std::string> args;
   args.push_back("Jupiter");
   simgrid::s4u::Actor::create("pinger", simgrid::s4u::Host::by_name("Tremblay"), pinger, args);

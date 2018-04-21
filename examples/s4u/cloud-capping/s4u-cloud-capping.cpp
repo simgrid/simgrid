@@ -249,7 +249,7 @@ int main(int argc, char* argv[])
   /* load the platform file */
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::create("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);
 

@@ -51,9 +51,9 @@ int main(int argc, char** argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
   sg_storage_file_system_init();
-  e.loadPlatform(argv[1]);
-  e.registerFunction("host", host);
-  e.loadDeployment(argv[2]);
+  e.load_platform(argv[1]);
+  e.register_function("host", host);
+  e.load_deployment(argv[2]);
   std::vector<simgrid::s4u::Storage*> allStorages = e.getAllStorages();
 
   for (auto const& s : allStorages) {

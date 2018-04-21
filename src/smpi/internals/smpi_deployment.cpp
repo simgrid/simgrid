@@ -58,7 +58,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   static int already_called = 0;
   if (not already_called) {
     already_called = 1;
-    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
+    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
     for (auto const& host : list) {
       host->extension_set(new simgrid::smpi::SmpiHost(host));
     }

@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   sg_storage_file_system_init();
   xbt_assert(argc == 2, "Usage: %s platform_file\n", argv[0]);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::create("server", simgrid::s4u::Host::by_name("alice"), server);
   simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("bob"), client);

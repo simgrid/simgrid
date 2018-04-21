@@ -89,10 +89,10 @@ int main(int argc, char* argv[])
                        "\tExample: %s msg_platform.xml msg_deployment.xml\n",
              argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]); /** - Load the platform description */
-  e.registerFunction<Master>("master");
-  e.registerFunction<Worker>("worker"); /** - Register the function to be executed by the processes */
-  e.loadDeployment(argv[2]);            /** - Deploy the application */
+  e.load_platform(argv[1]); /** - Load the platform description */
+  e.register_function<Master>("master");
+  e.register_function<Worker>("worker"); /** - Register the function to be executed by the processes */
+  e.load_deployment(argv[2]);            /** - Deploy the application */
 
   e.run(); /** - Run the simulation */
 

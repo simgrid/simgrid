@@ -96,21 +96,21 @@ static int bob(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
-  e.registerFunction("alice", alice);
-  e.registerFunction("bob", bob);
-  e.registerFunction("carole", carole);
-  e.registerFunction("david", david);
+  e.register_function("alice", alice);
+  e.register_function("bob", bob);
+  e.register_function("carole", carole);
+  e.register_function("david", david);
 
   size_t totalHosts = sg_host_count();
 
   XBT_INFO("There are %zu hosts in the environment", totalHosts);
-  std::vector<simgrid::s4u::Host*> hosts = e.getAllHosts();
+  std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
   for (unsigned int i = 0; i < hosts.size(); i++)
     XBT_INFO("Host '%s' runs at %.0f flops/s", hosts[i]->get_cname(), hosts[i]->getSpeed());
 
-  e.loadDeployment(argv[2]);
+  e.load_deployment(argv[2]);
   e.run();
 
   return 0;

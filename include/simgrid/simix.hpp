@@ -77,7 +77,7 @@ typedef std::function<void()> ActorCode;
 // Create ActorCode based on argv:
 typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
-XBT_PUBLIC void registerFunction(const char* name, ActorCodeFactory factory);
+XBT_PUBLIC void register_function(const char* name, ActorCodeFactory factory);
 
 /** These functions will be called when we detect a deadlock: any remaining process is locked on an action
  *

@@ -115,11 +115,11 @@ int main(int argc, char *argv[])
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
   simgrid::s4u::Engine e(&argc, argv);
-  e.registerFunction<Sender>("sender");
-  e.registerFunction<Receiver>("receiver");
+  e.register_function<Sender>("sender");
+  e.register_function<Receiver>("receiver");
 
-  e.loadPlatform(argv[1]);
-  e.loadDeployment(argv[2]);
+  e.load_platform(argv[1]);
+  e.load_deployment(argv[2]);
   e.run();
 
   return 0;

@@ -391,7 +391,7 @@ void sg_platf_new_mount(simgrid::kernel::routing::MountCreationArgs* mount)
 
   if (mount_list.empty())
     XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.insert({mount->name, simgrid::s4u::Engine::getInstance()->storageByName(mount->storageId)->getImpl()});
+  mount_list.insert({mount->name, simgrid::s4u::Engine::getInstance()->storage_by_name(mount->storageId)->getImpl()});
 }
 
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
@@ -414,7 +414,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     std::string msg = std::string("Cannot create actor '") + actor->function + "': host '" + actor->host +
                       "' does not exist\nExisting hosts: '";
 
-    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
+    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
 
     for (auto const& host : list) {
       msg += host->get_name();

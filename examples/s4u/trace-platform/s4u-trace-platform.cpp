@@ -13,7 +13,7 @@
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
   e.run();
   return 0;
 }

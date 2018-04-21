@@ -66,25 +66,25 @@ double Engine::getClock()
   return SIMIX_get_clock();
 }
 
-void Engine::loadPlatform(const char* platf)
+void Engine::load_platform(const char* platf)
 {
   SIMIX_create_environment(platf);
 }
 
-void Engine::registerFunction(const char* name, int (*code)(int, char**))
+void Engine::register_function(const char* name, int (*code)(int, char**))
 {
   SIMIX_function_register(name, code);
 }
-void Engine::registerDefault(int (*code)(int, char**))
+void Engine::register_default(int (*code)(int, char**))
 {
   SIMIX_function_register_default(code);
 }
-void Engine::loadDeployment(const char* deploy)
+void Engine::load_deployment(const char* deploy)
 {
   SIMIX_launch_application(deploy);
 }
 /** @brief Returns the amount of hosts in the platform */
-size_t Engine::getHostCount()
+size_t Engine::get_host_count()
 {
   return pimpl->hosts_.size();
 }
@@ -92,15 +92,15 @@ size_t Engine::getHostCount()
  *  @deprecated Please prefer Engine::getAllHosts()
  */
 void XBT_ATTRIB_DEPRECATED_v322(
-    "Engine::getHostList() is deprecated in favor of Engine::getAllHosts(). Please switch before v3.22")
-    Engine::getHostList(std::vector<Host*>* list)
+    "Engine::getHostList() is deprecated in favor of Engine::get_all_hosts(). Please switch before v3.22")
+    Engine::get_host_list(std::vector<Host*>* list)
 {
   for (auto const& kv : pimpl->hosts_)
     list->push_back(kv.second);
 }
 
 /** @brief Returns the list of all hosts found in the platform */
-std::vector<Host*> Engine::getAllHosts()
+std::vector<Host*> Engine::get_all_hosts()
 {
   std::vector<Host*> res;
   for (auto const& kv : pimpl->hosts_)
@@ -108,22 +108,22 @@ std::vector<Host*> Engine::getAllHosts()
   return res;
 }
 
-void Engine::addHost(std::string name, simgrid::s4u::Host* host)
+void Engine::add_host(std::string name, simgrid::s4u::Host* host)
 {
   pimpl->hosts_[name] = host;
 }
 
-void Engine::delHost(std::string name)
+void Engine::del_host(std::string name)
 {
   pimpl->hosts_.erase(name);
 }
 
-simgrid::s4u::Host* Engine::hostByName(std::string name)
+simgrid::s4u::Host* Engine::host_by_name(std::string name)
 {
   return pimpl->hosts_.at(name); // Will raise a std::out_of_range if the host does not exist
 }
 
-simgrid::s4u::Host* Engine::hostByNameOrNull(std::string name)
+simgrid::s4u::Host* Engine::host_by_name_or_null(std::string name)
 {
   auto host = pimpl->hosts_.find(name);
   return host == pimpl->hosts_.end() ? nullptr : host->second;
@@ -138,23 +138,23 @@ std::vector<Storage*> Engine::getAllStorages()
   return res;
 }
 
-simgrid::s4u::Storage* Engine::storageByName(std::string name)
+simgrid::s4u::Storage* Engine::storage_by_name(std::string name)
 {
   return pimpl->storages_.at(name); // Will raise a std::out_of_range if the host does not exist
 }
 
-simgrid::s4u::Storage* Engine::storageByNameOrNull(std::string name)
+simgrid::s4u::Storage* Engine::storage_by_name_or_null(std::string name)
 {
   auto storage = pimpl->storages_.find(name);
   return storage == pimpl->storages_.end() ? nullptr : storage->second;
 }
 
-void Engine::addStorage(std::string name, simgrid::s4u::Storage* storage)
+void Engine::add_storage(std::string name, simgrid::s4u::Storage* storage)
 {
   pimpl->storages_[name] = storage;
 }
 
-void Engine::delStorage(std::string name)
+void Engine::del_storage(std::string name)
 {
   pimpl->storages_.erase(name);
 }

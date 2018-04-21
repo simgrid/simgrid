@@ -28,7 +28,7 @@ static void chord_init()
 
   HostChord::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostChord>();
 
-  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
+  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
   for (auto const& host : list)
     host->extension_set(new HostChord(host));
 }
@@ -62,12 +62,12 @@ int main(int argc, char* argv[])
     options++;
   }
 
-  e.loadPlatform(options[0]);
+  e.load_platform(options[0]);
 
   chord_init();
 
-  e.registerFunction<Node>("node");
-  e.loadDeployment(options[1]);
+  e.register_function<Node>("node");
+  e.load_deployment(options[1]);
 
   e.run();
 

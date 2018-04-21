@@ -90,9 +90,9 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n\tExample: %s cluster.xml dht-kademlia_d.xml\n",
              argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]);
-  e.registerFunction("node", node);
-  e.loadDeployment(argv[2]);
+  e.load_platform(argv[1]);
+  e.register_function("node", node);
+  e.load_deployment(argv[2]);
 
   e.run();
 

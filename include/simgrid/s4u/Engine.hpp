@@ -38,38 +38,38 @@ public:
    * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
    * Some examples can be found in the directory examples/platforms.
    */
-  void loadPlatform(const char* platf);
+  void load_platform(const char* platf);
 
   /** Registers the main function of an actor that will be launched from the deployment file */
-  void registerFunction(const char* name, int (*code)(int, char**));
+  void register_function(const char* name, int (*code)(int, char**));
 
   /** Registers a function as the default main function of actors
    *
    * It will be used as fallback when the function requested from the deployment file was not registered.
    * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
    */
-  void registerDefault(int (*code)(int, char**));
+  void register_default(int (*code)(int, char**));
 
   /** @brief Load a deployment file and launch the actors that it contains */
-  void loadDeployment(const char* deploy);
+  void load_deployment(const char* deploy);
 
 protected:
   friend s4u::Host;
   friend s4u::Storage;
-  void addHost(std::string name, simgrid::s4u::Host * host);
-  void delHost(std::string name);
-  void addStorage(std::string name, simgrid::s4u::Storage * storage);
-  void delStorage(std::string name);
+  void add_host(std::string name, simgrid::s4u::Host* host);
+  void del_host(std::string name);
+  void add_storage(std::string name, simgrid::s4u::Storage* storage);
+  void del_storage(std::string name);
 
 public:
-  simgrid::s4u::Host* hostByName(std::string name);
-  simgrid::s4u::Host* hostByNameOrNull(std::string name);
-  simgrid::s4u::Storage* storageByName(std::string name);
-  simgrid::s4u::Storage* storageByNameOrNull(std::string name);
+  simgrid::s4u::Host* host_by_name(std::string name);
+  simgrid::s4u::Host* host_by_name_or_null(std::string name);
+  simgrid::s4u::Storage* storage_by_name(std::string name);
+  simgrid::s4u::Storage* storage_by_name_or_null(std::string name);
 
-  size_t getHostCount();
-  void getHostList(std::vector<Host*> * whereTo);
-  std::vector<Host*> getAllHosts();
+  size_t get_host_count();
+  void get_host_list(std::vector<Host*>* whereTo);
+  std::vector<Host*> get_all_hosts();
 
   size_t getLinkCount();
   void getLinkList(std::vector<Link*> * list);
@@ -100,9 +100,9 @@ public:
   void netpointRegister(simgrid::kernel::routing::NetPoint * card);
   void netpointUnregister(simgrid::kernel::routing::NetPoint * card);
 
-  template <class F> void registerFunction(const char* name)
+  template <class F> void register_actor(const char* name)
   {
-    simgrid::simix::registerFunction(name, [](std::vector<std::string> args) {
+    simgrid::simix::register_function(name, [](std::vector<std::string> args) {
       return simgrid::simix::ActorCode([args] {
         F code(std::move(args));
         code();
@@ -110,9 +110,9 @@ public:
     });
   }
 
-  template <class F> void registerFunction(const char* name, F code)
+  template <class F> void register_actor(const char* name, F code)
   {
-    simgrid::simix::registerFunction(name, [code](std::vector<std::string> args) {
+    simgrid::simix::register_function(name, [code](std::vector<std::string> args) {
       return simgrid::simix::ActorCode([code, args] { code(std::move(args)); });
     });
   }
@@ -128,6 +128,53 @@ public:
    * e->setConfig("host/model","ptask_L07");
    */
   void setConfig(std::string str);
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(const char* platf)
+  {
+    load_platform(platf);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_function()") void registerFunction(const char* name,
+                                                                                             int (*code)(int, char**))
+  {
+    register_function(name, code);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_default()") void registerDefault(int (*code)(int, char**))
+  {
+    register_default(code);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_deployment()") void loadDeployment(const char* deploy)
+  {
+    load_deployment(deploy);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::host_by_name()") simgrid::s4u::Host* hostByName(std::string name)
+  {
+    return host_by_name(name);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::host_by_name_or_null()") simgrid::s4u::Host* hostByNameOrNull(
+      std::string name)
+  {
+    return host_by_name_or_null(name);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::storage_by_name()") simgrid::s4u::Storage* storageByName(
+      std::string name)
+  {
+    return storage_by_name(name);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::storage_by_name_or_null()") simgrid::s4u::Storage* storageByNameOrNull(
+      std::string name)
+  {
+    return storage_by_name_or_null(name);
+  }
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_host_count()") size_t getHostCount() { return get_host_count(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_host_list()") void getHostList(std::vector<Host*>* whereTo)
+  {
+    get_host_list(whereTo);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_hosts()") std::vector<Host*> getAllHosts()
+  {
+    return get_all_hosts();
+  }
 
   simgrid::kernel::EngineImpl* pimpl;
 

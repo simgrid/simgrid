@@ -46,7 +46,7 @@ static void server()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("Tremblay"), server);
 

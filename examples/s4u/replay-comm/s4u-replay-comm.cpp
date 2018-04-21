@@ -95,11 +95,11 @@ int main(int argc, char* argv[])
                        "\tExample: %s msg_platform.xml msg_deployment.xml ",
              argv[0], argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]);
-  e.registerDefault(&simgrid::xbt::replay_runner);
+  e.load_platform(argv[1]);
+  e.register_default(&simgrid::xbt::replay_runner);
   e.registerFunction<Replayer>("p0");
   e.registerFunction<Replayer>("p1");
-  e.loadDeployment(argv[2]);
+  e.load_deployment(argv[2]);
 
   /*   Action registration */
   xbt_replay_action_register("compute", Replayer::compute);

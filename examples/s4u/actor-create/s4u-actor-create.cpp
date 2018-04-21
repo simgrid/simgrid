@@ -91,7 +91,7 @@ int main(int argc, char** argv)
   simgrid::s4u::Engine e(&argc, argv);
 
   /* Then you should load a platform file, describing your simulated platform */
-  e.loadPlatform("../../platforms/small_platform.xml");
+  e.load_platform("../../platforms/small_platform.xml");
 
   /* And now you have to ask SimGrid to actually start your actors.
    *
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 
   /* The third way to start your actors is to use a deployment file. */
   e.registerFunction<Receiver>("receiver");   // You first have to register the actor as with the second approach
-  e.loadDeployment("s4u-actor-create_d.xml"); // And then, you load the deployment file
+  e.load_deployment("s4u-actor-create_d.xml"); // And then, you load the deployment file
 
   /* Once every actors are started in the engine, the simulation can start */
   e.run();

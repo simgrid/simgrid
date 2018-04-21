@@ -28,7 +28,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_energyptask, "Messages specific for this s4u ex
 static void runner()
 {
   /* Retrieve the list of all hosts as an array of hosts */
-  std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::getInstance()->getAllHosts();
+  std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::getInstance()->get_all_hosts();
   int hosts_count = hosts.size();
 
   XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
   if (argc == 3 && argv[2][2] == 'e')
     sg_host_energy_plugin_init();
 
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   /* Pick a process, no matter which, from the platform file */
   simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("MyHost1"), runner);

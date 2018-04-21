@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
   sg_vm_live_migration_plugin_init();
 
   /* load the platform file */
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::create("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);
 

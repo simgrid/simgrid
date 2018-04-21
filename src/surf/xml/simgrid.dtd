@@ -201,21 +201,21 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ELEMENT route (link_ctn*)>
 <!ATTLIST route src CDATA #REQUIRED>
 <!ATTLIST route dst CDATA #REQUIRED>
-<!ATTLIST route symmetrical (YES|NO) "YES">
+<!ATTLIST route symmetrical (YES|NO|yes|no) "YES">
 
 <!ELEMENT ASroute (link_ctn*)>
 <!ATTLIST ASroute src CDATA #REQUIRED>
 <!ATTLIST ASroute dst CDATA #REQUIRED>
 <!ATTLIST ASroute gw_src CDATA #REQUIRED>
 <!ATTLIST ASroute gw_dst CDATA #REQUIRED>
-<!ATTLIST ASroute symmetrical (YES|NO) "YES">
+<!ATTLIST ASroute symmetrical (YES|NO|yes|no) "YES">
 
 <!ELEMENT zoneRoute (link_ctn*)>
 <!ATTLIST zoneRoute src CDATA #REQUIRED>
 <!ATTLIST zoneRoute dst CDATA #REQUIRED>
 <!ATTLIST zoneRoute gw_src CDATA #REQUIRED>
 <!ATTLIST zoneRoute gw_dst CDATA #REQUIRED>
-<!ATTLIST zoneRoute symmetrical (YES|NO) "YES">
+<!ATTLIST zoneRoute symmetrical (YES|NO|yes|no) "YES">
 
 <!ELEMENT link_ctn EMPTY>
 <!ATTLIST link_ctn id CDATA #REQUIRED>

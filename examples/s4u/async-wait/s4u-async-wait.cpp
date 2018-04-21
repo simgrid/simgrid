@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
   e.registerFunction<Sender>("sender");
   e.registerFunction<Receiver>("receiver");
 
-  e.loadPlatform(argv[1]);
-  e.loadDeployment(argv[2]);
+  e.load_platform(argv[1]);
+  e.load_deployment(argv[2]);
   e.run();
 
   return 0;

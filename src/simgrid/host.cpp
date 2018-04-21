@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
 size_t sg_host_count()
 {
-  return simgrid::s4u::Engine::getInstance()->getHostCount();
+  return simgrid::s4u::Engine::getInstance()->get_host_count();
 }
 /** @brief Returns the host list
  *
@@ -35,7 +35,7 @@ size_t sg_host_count()
  */
 sg_host_t *sg_host_list() {
   xbt_assert(sg_host_count() > 0, "There is no host!");
-  std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::getInstance()->getAllHosts();
+  std::vector<simgrid::s4u::Host*> hosts = simgrid::s4u::Engine::getInstance()->get_all_hosts();
 
   sg_host_t* res = (sg_host_t*)malloc(sizeof(sg_host_t) * hosts.size());
   memcpy(res, hosts.data(), sizeof(sg_host_t) * hosts.size());
@@ -73,7 +73,7 @@ xbt_dynar_t sg_hosts_as_dynar()
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
-  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->getAllHosts();
+  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
 
   for (auto const& host : list) {
     if (host && host->pimpl_netpoint && host->pimpl_netpoint->is_host())

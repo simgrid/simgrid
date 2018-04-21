@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc > 1, "\nUsage: %s platform_file [flowCount [datasize]]\n"
                        "\tExample: %s s4uplatform.xml \n",
              argv[0], argv[0]);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   /* prepare to launch the actors */
   std::vector<std::string> argSender;

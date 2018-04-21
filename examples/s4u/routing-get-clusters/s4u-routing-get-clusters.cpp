@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   std::vector<simgrid::kernel::routing::ClusterZone*>* clusters =
       new std::vector<simgrid::kernel::routing::ClusterZone*>;

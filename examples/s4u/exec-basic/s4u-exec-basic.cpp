@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   std::vector<std::string> args;
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::create("executor", simgrid::s4u::Host::by_name("Tremblay"), executor, args);
   simgrid::s4u::Actor::create("privileged", simgrid::s4u::Host::by_name("Tremblay"), privileged, args);

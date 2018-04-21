@@ -29,7 +29,7 @@ public:
                                   ia.what());
     }
     my_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank));
-    if (rank + 1 == simgrid::s4u::Engine::getInstance()->getHostCount())
+    if (rank + 1 == simgrid::s4u::Engine::getInstance()->get_host_count())
       /* The last process, which sends the token back to rank 0 */
       neighbor_mailbox = simgrid::s4u::Mailbox::byName("0");
     else
@@ -56,11 +56,11 @@ int main(int argc, char** argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
-  XBT_INFO("Number of hosts '%zu'", e.getHostCount());
+  XBT_INFO("Number of hosts '%zu'", e.get_host_count());
   int id = 0;
-  std::vector<simgrid::s4u::Host*> list = e.getAllHosts();
+  std::vector<simgrid::s4u::Host*> list = e.get_all_hosts();
   for (auto const& host : list) {
     /* - Give a unique rank to each host and create a @ref relay_runner process on each */
     simgrid::s4u::Actor::create((std::to_string(id)).c_str(), host, RelayRunner());

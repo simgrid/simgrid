@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
   if (argc < 2)
     usage(argv[0], specSend.c_str(), specRecv.c_str());
 
-  e.loadPlatform(argv[1]);
+  e.load_platform(argv[1]);
 
   if (argc >= 3) {
     argSend.clear();

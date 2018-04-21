@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]); /* - Load the platform description */
-  std::vector<simgrid::s4u::Host*> list = e.getAllHosts();
+  e.load_platform(argv[1]); /* - Load the platform description */
+  std::vector<simgrid::s4u::Host*> list = e.get_all_hosts();
   simgrid::s4u::Actor::create("dream_master", list.front(), dream_master);
 
   e.run(); /* - Run the simulation */

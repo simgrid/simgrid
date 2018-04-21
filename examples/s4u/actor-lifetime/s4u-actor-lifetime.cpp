@@ -39,9 +39,9 @@ int main(int argc, char* argv[])
                        "\tExample: %s msg_platform.xml msg_deployment.xml\n",
              argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]); /* - Load the platform description */
+  e.load_platform(argv[1]); /* - Load the platform description */
   e.registerFunction<sleeper>("sleeper");
-  e.loadDeployment(argv[2]); /* - Deploy the sleeper processes with explicit start/kill times */
+  e.load_deployment(argv[2]); /* - Deploy the sleeper processes with explicit start/kill times */
 
   e.run(); /* - Run the simulation */
 

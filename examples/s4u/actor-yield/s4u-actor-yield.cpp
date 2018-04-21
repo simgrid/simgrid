@@ -36,10 +36,10 @@ int main(int argc, char* argv[])
                        "\tExample: %s platform.xml deployment.xml\n",
              argv[0], argv[0]);
 
-  e.loadPlatform(argv[1]); /* - Load the platform description */
-  e.registerFunction<yielder>("yielder");
+  e.load_platform(argv[1]); /* - Load the platform description */
+  e.register_function<yielder>("yielder");
 
-  e.loadDeployment(argv[2]);
+  e.load_deployment(argv[2]);
 
   e.run(); /* - Run the simulation */
 
