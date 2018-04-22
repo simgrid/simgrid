@@ -8,8 +8,12 @@
     -  Instead, you want to start all your actors from the deployment file.
     -->
    
-  <actor host="Fafard" function="receiver">
-    <!-- Pass the right mailbox name to the actor -->
-    <argument value="mb42" />
+  <actor host="Fafard" function="sender">
+    <argument value="PopPop!"/> <!-- msg as argv[1] -->
+    <argument value="other mb"/> <!-- mbox as argv[2] -->
+  </actor>
+  <actor host="Ginette" function="forwarder">
+    <argument value="other mb"/>
+    <argument value="mb42"/>
   </actor>
 </platform>
