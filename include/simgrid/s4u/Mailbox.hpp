@@ -176,7 +176,7 @@ public:
   CommPtr get_async(void** data);
 
   /** Blocking data reception */
-  void* get();
+  void* get(); // FIXME: make a typed template version
   /** Blocking data reception with timeout */
   void* get(double timeout);
 };

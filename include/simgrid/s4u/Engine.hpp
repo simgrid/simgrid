@@ -42,6 +42,8 @@ public:
 
   /** Registers the main function of an actor that will be launched from the deployment file */
   void register_function(const char* name, int (*code)(int, char**));
+  // FIXME: provide a register_function(std::string, void (*code)(int, char**)) and deprecate the int returning one
+  // FIXME: provide a register_function(std::string, std::vector<std::string>)
 
   /** Registers a function as the default main function of actors
    *
@@ -49,6 +51,23 @@ public:
    * It is used for trace-based simulations (see examples/s4u/replay-comms and similar).
    */
   void register_default(int (*code)(int, char**));
+
+  template <class F> void register_actor(const char* name)
+  {
+    simgrid::simix::register_function(name, [](std::vector<std::string> args) {
+      return simgrid::simix::ActorCode([args] {
+        F code(std::move(args));
+        code();
+      });
+    });
+  }
+
+  template <class F> void register_actor(const char* name, F code)
+  {
+    simgrid::simix::register_function(name, [code](std::vector<std::string> args) {
+      return simgrid::simix::ActorCode([code, args] { code(std::move(args)); });
+    });
+  }
 
   /** @brief Load a deployment file and launch the actors that it contains */
   void load_deployment(const char* deploy);
@@ -100,23 +119,6 @@ public:
   void netpointRegister(simgrid::kernel::routing::NetPoint * card);
   void netpointUnregister(simgrid::kernel::routing::NetPoint * card);
 
-  template <class F> void register_actor(const char* name)
-  {
-    simgrid::simix::register_function(name, [](std::vector<std::string> args) {
-      return simgrid::simix::ActorCode([args] {
-        F code(std::move(args));
-        code();
-      });
-    });
-  }
-
-  template <class F> void register_actor(const char* name, F code)
-  {
-    simgrid::simix::register_function(name, [code](std::vector<std::string> args) {
-      return simgrid::simix::ActorCode([code, args] { code(std::move(args)); });
-    });
-  }
-
   /** Returns whether SimGrid was initialized yet -- mostly for internal use */
   static bool isInitialized();
 
@@ -142,6 +144,17 @@ public:
   {
     register_default(code);
   }
+  template <class F>
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const char* name)
+  {
+    register_actor<F>(name);
+  }
+  template <class F>
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const char* name, F code)
+  {
+    register_actor<F>(name, code);
+  }
+
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_deployment()") void loadDeployment(const char* deploy)
   {
     load_deployment(deploy);

@@ -64,9 +64,9 @@ int main(int argc, char* argv[])
 
   e.load_platform(options[0]);
 
-  chord_init();
+  chord_init(); // FIXME: inline me
 
-  e.register_function<Node>("node");
+  e.register_actor<Node>("node");
   e.load_deployment(options[1]);
 
   e.run();

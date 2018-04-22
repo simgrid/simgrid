@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
   e.register_default(&simgrid::xbt::replay_runner);
-  e.registerFunction<Replayer>("p0");
+  e.register_actor<Replayer>("p0");
   e.load_deployment(argv[2]);
 
   /*   Action registration */

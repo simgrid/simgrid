@@ -19,14 +19,14 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
+  /* Install our extension on all existing hosts */
   HostBittorrent::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostBittorrent>();
-
   std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
   for (auto const& host : list)
     host->extension_set(new HostBittorrent(host));
 
-  e.register_function<Tracker>("tracker");
-  e.register_function<Peer>("peer");
+  e.register_actor<Tracker>("tracker");
+  e.register_actor<Peer>("peer");
   e.load_deployment(argv[2]);
 
   e.run();
