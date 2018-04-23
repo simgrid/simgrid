@@ -105,9 +105,8 @@ echo "XX Open the resulting archive"
 echo "XX"
 gunzip ${SIMGRID_VERSION}.tar.gz
 tar xf ${SIMGRID_VERSION}.tar
-cd ${SIMGRID_VERSION}
-mkdir build
-cd build
+mkdir ${WORKSPACE}/build/${SIMGRID_VERSION}/build
+cd ${WORKSPACE}/build/${SIMGRID_VERSION}/build
 SRCFOLDER="${WORKSPACE}/build/${SIMGRID_VERSION}"
 
 echo "XX"
@@ -120,6 +119,15 @@ if [ "$build_mode" = "ModelChecker" ] ; then
 elif [ "$build_mode" = "Debug" ] ; then
    INSTALL="-DCMAKE_INSTALL_PREFIX=/builds/simgrid_install"
 fi
+
+if cmake --version | grep -q 3\.11 ; then
+  # -DCMAKE_DISABLE_SOURCE_CHANGES=ON is broken with java on CMake 3.11
+  # https://gitlab.kitware.com/cmake/cmake/issues/17933
+  MAY_DISABLE_SOURCE_CHANGE=""
+else 
+  MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
+fi
+
 cmake -G"$GENERATOR" $INSTALL \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
@@ -130,7 +138,7 @@ cmake -G"$GENERATOR" $INSTALL \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
-  -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF -DCMAKE_DISABLE_SOURCE_CHANGES=ON \
+  -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF ${MAY_DISABLE_SOURCE_CHANGE} \
   $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 set +x
