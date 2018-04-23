@@ -27,7 +27,7 @@ sub cleanup_ctn {
     my $ctn = shift;        # cleanup the content of a macro call
     $ctn =~ s/^\s*(.*)\s*$/$1/gs;
     my @elms;
-    print "ctn=$ctn\n" if $debug > 1;
+    print STDERR "ctn=$ctn\n" if $debug > 1;
     if ($ctn =~ m/^(\w+)\s*,\s*(\w+)\s*,\s*"?([^"]*)"?$/s) {
 	# Perfect, we got 0->name; 1->anc; 2->desc
 	$elms[0] = $1;
@@ -50,7 +50,7 @@ sub parse_file {
 
     my $data = "";
 
-    print "Parse $filename\n" if $debug;
+    print STDERR "Parse $filename\n" if $debug;
     open IN, "$filename" || die "Cannot read $filename: $!\n";
     while (<IN>) {
 	$data .= $_;
@@ -72,7 +72,7 @@ sub parse_file {
        $ancestor{$name}=$anc;
        $desc{$name}=$desc;
 
-       print " $name -> $anc\n" if $debug;
+       print STDERR " $name -> $anc\n" if $debug;
    }
 }
 # Retrieve all the file names, and add their content to $data
