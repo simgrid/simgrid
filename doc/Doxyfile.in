@@ -131,7 +131,8 @@ FULL_PATH_NAMES        = YES
 # If left blank the directory from which doxygen is run is used as the
 # path to strip.
 
-STRIP_FROM_PATH        = @CMAKE_HOME_DIRECTORY@
+STRIP_FROM_PATH        = @CMAKE_HOME_DIRECTORY@ \
+                         @CMAKE_BINARY_DIR@
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of
 # the path mentioned in the documentation of a class, which tells
@@ -570,7 +571,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            = Layout.xml
+LAYOUT_FILE            = @CMAKE_HOME_DIRECTORY@/doc/Layout.xml
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -642,48 +643,48 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = doxygen/index.doc \
-                         doxygen/getting_started.doc \
-                           doxygen/install.doc \
-			   doxygen/install_yours.doc \
-			 doxygen/application.doc \
-                           doxygen/java.doc \
-                         doxygen/platform.doc \
-			   doxygen/models.doc \
-                           doxygen/ns3.doc \
-			   doxygen/platform_lua.doc \
-			 doxygen/scenario.doc \
-                           doxygen/deployment.doc \
-                           doxygen/options.doc \
-			 doxygen/outcomes.doc \
-			   doxygen/outcomes_logs.doc \
-			   doxygen/outcomes_vizu.doc \
-			   doxygen/outcomes_MC.doc \
-                         tuto-msg/tuto-msg.doc \
-                         doxygen/tutorial_smpi.doc \
-                         doxygen/examples.doc \
-			 doxygen/howtos.doc \
- 			 doxygen/uhood.doc \
- 			   doxygen/uhood_arch.doc \
- 			   doxygen/uhood_switch.doc \
-			   doxygen/inside.doc \
-			     doxygen/inside_doxygen.doc \
-			     doxygen/inside_extending.doc \
-			     doxygen/inside_cmake.doc \
-			     doxygen/inside_tests.doc \
-			     doxygen/inside_release.doc \
-			 doxygen/community.doc \
-			 doxygen/FAQ.doc \
-			 doxygen/module-msg.doc \
-			 doxygen/module-sd.doc \
-			 doxygen/module-index.doc \
-                           doxygen/module-xbt.doc \
-                           doxygen/module-s4u.doc \
-                           doxygen/module-surf.doc \
-                           doxygen/module-simix.doc \
-                           doxygen/module-smpi.doc \
-                           doxygen/module-trace.doc \
-                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/logcategories.doc \
+INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/getting_started.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/install.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/install_yours.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/application.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/java.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/platform.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/models.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/ns3.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/platform_lua.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/scenario.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/deployment.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/options.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/outcomes.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/outcomes_logs.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/outcomes_vizu.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/outcomes_MC.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/tuto-msg/tuto-msg.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/tutorial_smpi.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/examples.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/howtos.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/uhood.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/uhood_arch.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/uhood_switch.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/inside.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/inside_doxygen.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/inside_extending.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/inside_cmake.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/inside_tests.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/inside_release.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/community.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/FAQ.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-msg.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-sd.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-index.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-xbt.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-s4u.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-surf.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-simix.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-smpi.doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-trace.doc \
+                         @CMAKE_BINARY_DIR@/doc/doxygen/logcategories.doc \
                          @CMAKE_HOME_DIRECTORY@/include/ \
                          @CMAKE_HOME_DIRECTORY@/include/xbt \
                          @CMAKE_HOME_DIRECTORY@/include/simgrid \
@@ -767,12 +768,13 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
+                         @CMAKE_HOME_DIRECTORY@/doc/ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/xml/ \
                          @CMAKE_HOME_DIRECTORY@/src/xbt/ \
                          @CMAKE_HOME_DIRECTORY@/include \
                          @CMAKE_HOME_DIRECTORY@/examples \
-                         @CMAKE_HOME_DIRECTORY@/doc/example_lists \
+                         @CMAKE_BINARY_DIR@/doc/example_lists \
                          @CMAKE_HOME_DIRECTORY@/doc/tuto-msg
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
@@ -943,13 +945,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            = doxygen/header.html 
+HTML_HEADER            = @CMAKE_HOME_DIRECTORY@/doc/doxygen/header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = doxygen/footer.html
+HTML_FOOTER            = @CMAKE_HOME_DIRECTORY@/doc/doxygen/footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -958,7 +960,7 @@ HTML_FOOTER            = doxygen/footer.html
 # the style sheet file to the HTML output directory, so don't put your own
 # style sheet in the HTML output directory as well, or it will be erased!
 
-HTML_STYLESHEET        = doxygen/stylesheet.css
+HTML_STYLESHEET        = @CMAKE_HOME_DIRECTORY@/doc/doxygen/stylesheet.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
