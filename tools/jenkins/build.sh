@@ -66,15 +66,8 @@ case "$build_mode" in
   ;;
 esac
 
-if test "$(uname)" = "Msys"; then
-  if [ -z "$NUMBER_OF_PROCESSORS" ]; then
-    NUMBER_OF_PROCESSORS=1
-  fi
-  GENERATOR="MSYS Makefiles"
-else
-  NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
-  GENERATOR="Unix Makefiles"
-fi
+NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
+GENERATOR="Unix Makefiles"
 
 ulimit -c 0 || true
 
@@ -98,28 +91,23 @@ echo "XX have_NS3: ${have_NS3}"
 # This is for Windows:
 PATH="$WORKSPACE/build/lib:$PATH"
 
-if test "$(uname)" != "Msys"; then
-  echo "XX"
-  echo "XX Build the archive out of the tree"
-  echo "XX   pwd: "$(pwd)
-  echo "XX"
+echo "XX"
+echo "XX Build the archive out of the tree"
+echo "XX   pwd: "$(pwd)
+echo "XX"
 
-  cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
-  make dist -j$NUMBER_OF_PROCESSORS
+cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
+make dist -j$NUMBER_OF_PROCESSORS
 
-  echo "XX"
-  echo "XX Open the resulting archive"
-  echo "XX"
-  gunzip $(cat VERSION).tar.gz
-  tar xf $(cat VERSION).tar
-  cd $(cat VERSION)
-  mkdir build
-  cd build
-  SRCFOLDER=".."
-else
-#for windows we don't make dist, but we still want to build out of source
-  SRCFOLDER=$WORKSPACE
-fi
+echo "XX"
+echo "XX Open the resulting archive"
+echo "XX"
+gunzip $(cat VERSION).tar.gz
+tar xf $(cat VERSION).tar
+cd $(cat VERSION)
+mkdir build
+cd build
+SRCFOLDER=".."
 
 echo "XX"
 echo "XX Configure and build SimGrid"
@@ -148,10 +136,7 @@ set +x
 
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
-if test "$(uname)" != "Msys"; then
-  cd $WORKSPACE/build
-  cd $(cat VERSION)/build
-fi
+cd $WORKSPACE/build/$(cat VERSION)/build
 
 echo "XX"
 echo "XX Run the tests"
