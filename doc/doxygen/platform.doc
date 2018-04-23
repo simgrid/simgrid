@@ -616,7 +616,7 @@ that include storage facilities:
 Entity name     | Description
 --------------- | -----------
 \ref pf_storage_entity_storage_type "storage_type"    | Defines a template for a particular kind of storage (such as a hard-drive) and specifies important features of the storage, such as capacity, performance (read/write), contents, ... Different models of hard-drives use different storage_types (because the difference between an SSD and an HDD does matter), as they differ in some specifications (e.g., different sizes or read/write performance).
-\ref pf_storage_entity_storage "storage"        | Defines an actual instance of a storage type (disk, RAM, ...); uses a ``storage_type`` template (see line above) so that you don't need to re-specify the same details over and over again.
+\ref pf_tag_storage "storage"        | Defines an actual instance of a storage type (disk, RAM, ...); uses a ``storage_type`` template (see line above) so that you don't need to re-specify the same details over and over again.
 \ref pf_tag_mount "mount"          | Must be wrapped by a \ref pf_tag_host tag; declares which storage(s) this host has mounted and where (i.e., the mountpoint).
 
 
@@ -751,7 +751,7 @@ called alice (which is again not defined here).
 
 | Attribute   | Mandatory   | Values   | Description                                                                                               |
 | ----------- | ----------- | -------- | -------------                                                                                             |
-| id          | yes         | string   | Refers to a \ref pf_storage_entity_storage "&lt;storage&gt;" entity that will be mounted on that computer |
+| id          | yes         | string   | Refers to a \ref pf_tag_storage "&lt;storage&gt;" entity that will be mounted on that computer |
 | name        | yes         | string   | Path/location to/of the logical reference (mount point) of this disk
 
 This tag must be enclosed by a \ref pf_tag_host tag. It then specifies where the mountpoint of a given storage device (defined by the ``id`` attribute)
@@ -784,7 +784,7 @@ Here is a simple example, taken from the file ``examples/platform/storage.xml``:
 
 This example is quite interesting, as the same device, called "Disk2", is mounted by
 two hosts at the same time! Note, however, that the host called ``alice`` is actually
-attached to this storage, as can be seen in the \ref pf_storage_entity_storage "&lt;storage&gt;"
+attached to this storage, as can be seen in the \ref pf_tag_storage "&lt;storage&gt;"
 tag. This means that ``denise`` must access this storage through the network, but SimGrid automatically takes
 care of that for you.
 
@@ -836,7 +836,7 @@ RAM -- Host B
 \endverbatim
 
 An easy way to model this scenario is to setup and define the RAM via the
-\ref pf_storage_entity_storage "storage" and \ref pf_storage_entity_storage_type "storage type"
+\ref pf_tag_storage "storage" and \ref pf_storage_entity_storage_type "storage type"
 entities and attach it to a remote dummy host; then, every host can have their own links
 to this host (modelling for instance certain scenarios, such as PCIe ...)
 

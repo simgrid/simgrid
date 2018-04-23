@@ -795,11 +795,9 @@ void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
  * be nullptr.
  * It can be retrieved with the function \ref simcall_process_get_data.
  * \param host where the new agent is executed.
- * \param kill_time time when the process is killed
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties the properties of the process
- * \param auto_restart either it is autorestarting or not.
  */
 smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
                                    char** argv, std::map<std::string, std::string>* properties)

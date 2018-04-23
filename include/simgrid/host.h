@@ -95,7 +95,6 @@ XBT_PUBLIC int sg_host_core_count(sg_host_t host);
 
 /** \ingroup m_process_management
  * \brief Return the location on which a process is running.
- * \param process a process (nullptr means the current one)
  * \return the sg_host_t corresponding to the location on which \a process is running.
  */
 XBT_PUBLIC sg_host_t sg_host_self();

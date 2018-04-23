@@ -158,7 +158,7 @@ int replay_runner(int argc, char* argv[])
  * \brief Registers a function to handle a kind of action
  *
  * Registers a function to handle a kind of action
- * This table is then used by \ref xbt_replay_action_runner
+ * This table is then used by \ref simgrid::xbt::replay_runner
  *
  * The argument of the function is the line describing the action, fields separated by spaces.
  *

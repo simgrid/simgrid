@@ -1460,7 +1460,10 @@ PREDEFINED             = XBT_PUBLIC= \
                          XBT_IMPORT_NO_EXPORT= \
                          XBT_PUBLIC_DATA=extern \
                          XBT_INLINE= \
-			 XBT_PRIVATE=
+			 XBT_PRIVATE= \
+                         XBT_ATTRIB_DEPRECATED_v321(m)= \
+                         XBT_ATTRIB_DEPRECATED_v322(m)= \
+                         XBT_ATTRIB_DEPRECATED_v323(m)=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.

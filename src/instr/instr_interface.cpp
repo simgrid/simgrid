@@ -948,8 +948,8 @@ void TRACE_host_set_state(const char* host, const char* state_name, const char* 
  *  Change a user state previously declared by pushing the new value to the state.
  *
  *  \param host The name of the host to be considered.
- *  \param state The name of the state previously declared.
- *  \param value The value to be pushed.
+ *  \param state_name The name of the state previously declared.
+ *  \param value_name The value to be pushed.
  *
  *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state, TRACE_host_reset_state
  */
@@ -964,7 +964,7 @@ void TRACE_host_push_state(const char* host, const char* state_name, const char*
  *  Change a user state previously declared by removing the last value of the state.
  *
  *  \param host The name of the host to be considered.
- *  \param state The name of the state to be popped.
+ *  \param state_name The name of the state to be popped.
  *
  *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state, TRACE_host_reset_state
  */

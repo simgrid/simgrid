@@ -78,7 +78,6 @@ smx_activity_t simcall_execution_start(const char* name, double flops_amount, do
  * \param flops_amount Array (of size host_nb) of computation amount of hosts (in bytes)
  * \param bytes_amount Array (of size host_nb * host_nb) representing the communication
  * amount between each pair of hosts
- * \param amount the SURF action amount
  * \param rate the SURF action rate
  * \param timeout timeout
  * \return A new SIMIX execution synchronization
