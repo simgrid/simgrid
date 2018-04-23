@@ -75,14 +75,14 @@ sub parse_file {
        print STDERR " $name -> $anc\n" if $debug;
    }
 }
-# Retrieve all the file names, and add their content to $data
-my $data;
-open FILES, "find ../src/ ../tools/ ../include/ -name '*.c' -o -name '*.cpp' |" || die "Cannot search for the source file names: $!\n";
+# Retrieve all the file names
+my $path = $ARGV[0] // "..";
+open FILES, "find $path/src/ $path/tools/ $path/include/ -name '*.c' -o -name '*.cpp' |" || die "Cannot search for the source file names: $!\n";
 while (my $file=<FILES>) {
     chomp $file;
     parse_file($file); 	
 }
-parse_file("../include/xbt/sysdep.h");	
+parse_file("$path/include/xbt/sysdep.h");
 close FILES;
 
 # Display the tree, looking for disconnected elems
