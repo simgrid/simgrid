@@ -98,16 +98,17 @@ echo "XX"
 
 cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
 make dist -j$NUMBER_OF_PROCESSORS
+SIMGRID_VERSION=$(cat VERSION)
 
 echo "XX"
 echo "XX Open the resulting archive"
 echo "XX"
-gunzip $(cat VERSION).tar.gz
-tar xf $(cat VERSION).tar
-cd $(cat VERSION)
+gunzip ${SIMGRID_VERSION}.tar.gz
+tar xf ${SIMGRID_VERSION}.tar
+cd ${SIMGRID_VERSION}
 mkdir build
 cd build
-SRCFOLDER=".."
+SRCFOLDER="${WORKSPACE}/build/${SIMGRID_VERSION}"
 
 echo "XX"
 echo "XX Configure and build SimGrid"
@@ -135,8 +136,6 @@ cmake -G"$GENERATOR" $INSTALL \
 set +x
 
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
-
-cd $WORKSPACE/build/$(cat VERSION)/build
 
 echo "XX"
 echo "XX Run the tests"
