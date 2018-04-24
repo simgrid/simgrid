@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
+
 #include "network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
@@ -239,7 +241,7 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
 
 Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
-  int failed = 0;
+  bool failed    = false;
   double latency = 0.0;
   std::vector<LinkImpl*> back_route;
   std::vector<LinkImpl*> route;
@@ -251,15 +253,11 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->get_cname(), dst->get_cname());
 
-  for (auto const& link : route)
-    if (link->is_off())
-      failed = 1;
+  failed = std::any_of(route.begin(), route.end(), [](LinkImpl* link) { return link->is_off(); });
 
-  if (cfg_crosstraffic == 1) {
+  if (cfg_crosstraffic) {
     dst->routeTo(src, back_route, nullptr);
-    for (auto const& link : back_route)
-      if (link->is_off())
-        failed = 1;
+    failed = std::any_of(back_route.begin(), back_route.end(), [](LinkImpl* const& link) { return link->is_off(); });
   }
 
   NetworkCm02Action *action = new NetworkCm02Action(this, size, failed);
@@ -270,15 +268,17 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     action->set_last_update();
   }
 
-  double bandwidth_bound = -1.0;
-  if (sg_weight_S_parameter > 0)
-    for (auto const& link : route)
-      action->weight_ += sg_weight_S_parameter / link->bandwidth();
-
-  for (auto const& link : route) {
-    double bb       = bandwidthFactor(size) * link->bandwidth();
-    bandwidth_bound = (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
+  if (sg_weight_S_parameter > 0) {
+    action->weight_ =
+        std::accumulate(route.begin(), route.end(), action->weight_, [](double total, LinkImpl* const& link) {
+          return total + sg_weight_S_parameter / link->bandwidth();
+        });
   }
+
+  double bandwidth_bound = route.empty() ? -1.0 : bandwidthFactor(size) * route.front()->bandwidth();
+
+  for (auto const& link : route)
+    bandwidth_bound = std::min(bandwidth_bound, bandwidthFactor(size) * link->bandwidth());
 
   action->lat_current_ = action->latency_;
   action->latency_ *= latencyFactor(size);
@@ -292,11 +292,8 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
     if (get_update_algorithm() == Model::UpdateAlgo::Lazy) {
       // add to the heap the event when the latency is payed
       double date = action->latency_ + action->get_last_update();
-      ActionHeap::Type type;
-      if (route.empty())
-        type = ActionHeap::Type::normal;
-      else
-        type = ActionHeap::Type::latency;
+
+      ActionHeap::Type type = route.empty() ? ActionHeap::Type::normal : ActionHeap::Type::latency;
 
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, date);
       get_action_heap().insert(action, date, type);
@@ -317,8 +314,8 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   for (auto const& link : route)
     get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), 1.0);
 
-  if (not back_route.empty()) { //  cfg_crosstraffic was activated
-    XBT_DEBUG("Crosstraffic active adding backward flow using 5%%");
+  if (cfg_crosstraffic) {
+    XBT_DEBUG("Crosstraffic active: adding backward flow using 5%% of the available bandwidth");
     for (auto const& link : back_route)
       get_maxmin_system()->expand(link->get_constraint(), action->get_variable(), .05);
 
