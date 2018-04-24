@@ -29,7 +29,7 @@ void XBT_ATTRIB_DEPRECATED_v322(
 
 Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
 {
-  simgrid::s4u::Engine::getInstance()->add_storage(name, this);
+  simgrid::s4u::Engine::getInstance()->storage_register(name, this);
 }
 
 Storage* Storage::byName(std::string name)

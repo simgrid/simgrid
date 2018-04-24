@@ -75,10 +75,14 @@ public:
 protected:
   friend s4u::Host;
   friend s4u::Storage;
-  void add_host(std::string name, simgrid::s4u::Host* host);
-  void del_host(std::string name);
-  void add_storage(std::string name, simgrid::s4u::Storage* storage);
-  void del_storage(std::string name);
+  friend kernel::routing::NetPoint;
+  friend kernel::routing::NetZoneImpl;
+  void host_register(std::string name, simgrid::s4u::Host* host);
+  void host_unregister(std::string name);
+  void storage_register(std::string name, simgrid::s4u::Storage* storage);
+  void storage_unregister(std::string name);
+  void netpoint_register(simgrid::kernel::routing::NetPoint* card);
+  void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
 
 public:
   size_t get_host_count();
@@ -114,8 +118,6 @@ public:
   /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
   simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name);
   void getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);
-  void netpointRegister(simgrid::kernel::routing::NetPoint * card);
-  void netpointUnregister(simgrid::kernel::routing::NetPoint * card);
 
   /** Returns whether SimGrid was initialized yet -- mostly for internal use */
   static bool isInitialized();

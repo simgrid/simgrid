@@ -106,12 +106,12 @@ std::vector<Host*> Engine::get_all_hosts()
   return res;
 }
 
-void Engine::add_host(std::string name, simgrid::s4u::Host* host)
+void Engine::host_register(std::string name, simgrid::s4u::Host* host)
 {
   pimpl->hosts_[name] = host;
 }
 
-void Engine::del_host(std::string name)
+void Engine::host_unregister(std::string name)
 {
   pimpl->hosts_.erase(name);
 }
@@ -153,12 +153,12 @@ simgrid::s4u::Storage* Engine::storage_by_name_or_null(std::string name)
   return storage == pimpl->storages_.end() ? nullptr : storage->second;
 }
 
-void Engine::add_storage(std::string name, simgrid::s4u::Storage* storage)
+void Engine::storage_register(std::string name, simgrid::s4u::Storage* storage)
 {
   pimpl->storages_[name] = storage;
 }
 
-void Engine::del_storage(std::string name)
+void Engine::storage_unregister(std::string name)
 {
   pimpl->storages_.erase(name);
 }
@@ -225,14 +225,14 @@ void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* l
     list->push_back(kv.second);
 }
 /** @brief Register a new netpoint to the system */
-void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
+void Engine::netpoint_register(simgrid::kernel::routing::NetPoint* point)
 {
   // simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
   pimpl->netpoints_[point->get_name()] = point;
   // });
 }
 /** @brief Unregister a given netpoint */
-void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
+void Engine::netpoint_unregister(simgrid::kernel::routing::NetPoint* point)
 {
   simgrid::simix::kernelImmediate([this, point] {
     pimpl->netpoints_.erase(point->get_name());
