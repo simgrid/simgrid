@@ -12,9 +12,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_cloud_interrupt_migration, "Messages specific f
 static void vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
   simgrid::s4u::Host* src_pm = vm->getPm();
-  double mig_sta             = simgrid::s4u::Engine::getClock();
+  double mig_sta             = simgrid::s4u::Engine::get_clock();
   sg_vm_migrate(vm, dst_pm);
-  double mig_end = simgrid::s4u::Engine::getClock();
+  double mig_end = simgrid::s4u::Engine::get_clock();
 
   XBT_INFO("%s migrated: %s->%s in %g s", vm->get_cname(), src_pm->get_cname(), dst_pm->get_cname(), mig_end - mig_sta);
 }
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Bye (simulation time %g)", simgrid::s4u::Engine::getClock());
+  XBT_INFO("Bye (simulation time %g)", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulated time: %g", e.getClock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
 
   chord_exit();
 

@@ -33,7 +33,7 @@ void Tracker::operator()()
 {
   simgrid::s4u::CommPtr comm = nullptr;
   void* received             = nullptr;
-  while (simgrid::s4u::Engine::getClock() < deadline) {
+  while (simgrid::s4u::Engine::get_clock() < deadline) {
     if (comm == nullptr)
       comm = mailbox->get_async(&received);
     if (comm->test()) {

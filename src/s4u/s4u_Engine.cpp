@@ -61,7 +61,7 @@ void Engine::shutdown()
   s4u::Engine::instance_ = nullptr;
 }
 
-double Engine::getClock()
+double Engine::get_clock()
 {
   return SIMIX_get_clock();
 }
@@ -91,9 +91,7 @@ size_t Engine::get_host_count()
 /** @brief Fills the passed list with all hosts found in the platform
  *  @deprecated Please prefer Engine::getAllHosts()
  */
-void XBT_ATTRIB_DEPRECATED_v322(
-    "Engine::getHostList() is deprecated in favor of Engine::get_all_hosts(). Please switch before v3.22")
-    Engine::get_host_list(std::vector<Host*>* list)
+void Engine::getHostList(std::vector<Host*>* list)
 {
   for (auto const& kv : pimpl->hosts_)
     list->push_back(kv.second);
@@ -108,12 +106,12 @@ std::vector<Host*> Engine::get_all_hosts()
   return res;
 }
 
-void Engine::add_host(std::string name, simgrid::s4u::Host* host)
+void Engine::host_register(std::string name, simgrid::s4u::Host* host)
 {
   pimpl->hosts_[name] = host;
 }
 
-void Engine::del_host(std::string name)
+void Engine::host_unregister(std::string name)
 {
   pimpl->hosts_.erase(name);
 }
@@ -129,8 +127,14 @@ simgrid::s4u::Host* Engine::host_by_name_or_null(std::string name)
   return host == pimpl->hosts_.end() ? nullptr : host->second;
 }
 
+/** @brief Returns the amount of storages in the platform */
+size_t Engine::get_storage_count()
+{
+  return pimpl->storages_.size();
+}
+
 /** @brief Returns the list of all storages found in the platform */
-std::vector<Storage*> Engine::getAllStorages()
+std::vector<Storage*> Engine::get_all_storages()
 {
   std::vector<Storage*> res;
   for (auto const& kv : pimpl->storages_)
@@ -149,34 +153,24 @@ simgrid::s4u::Storage* Engine::storage_by_name_or_null(std::string name)
   return storage == pimpl->storages_.end() ? nullptr : storage->second;
 }
 
-void Engine::add_storage(std::string name, simgrid::s4u::Storage* storage)
+void Engine::storage_register(std::string name, simgrid::s4u::Storage* storage)
 {
   pimpl->storages_[name] = storage;
 }
 
-void Engine::del_storage(std::string name)
+void Engine::storage_unregister(std::string name)
 {
   pimpl->storages_.erase(name);
 }
 
 /** @brief Returns the amount of links in the platform */
-size_t Engine::getLinkCount()
+size_t Engine::get_link_count()
 {
   return kernel::resource::LinkImpl::linksCount();
 }
 
-/** @brief Fills the passed list with all links found in the platform
- *
- *  @deprecated. Prefer Engine::getAllLinks() */
-void XBT_ATTRIB_DEPRECATED_v322(
-    "Engine::getLinkList() is deprecated in favor of Engine::getAllLinks(). Please switch before v3.22")
-    Engine::getLinkList(std::vector<Link*>* list)
-{
-  kernel::resource::LinkImpl::linksList(list);
-}
-
 /** @brief Returns the list of all links found in the platform */
-std::vector<Link*> Engine::getAllLinks()
+std::vector<Link*> Engine::get_all_links()
 {
   std::vector<Link*> res;
   kernel::resource::LinkImpl::linksList(&res);
@@ -231,14 +225,14 @@ void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* l
     list->push_back(kv.second);
 }
 /** @brief Register a new netpoint to the system */
-void Engine::netpointRegister(simgrid::kernel::routing::NetPoint* point)
+void Engine::netpoint_register(simgrid::kernel::routing::NetPoint* point)
 {
   // simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
   pimpl->netpoints_[point->get_name()] = point;
   // });
 }
 /** @brief Unregister a given netpoint */
-void Engine::netpointUnregister(simgrid::kernel::routing::NetPoint* point)
+void Engine::netpoint_unregister(simgrid::kernel::routing::NetPoint* point)
 {
   simgrid::simix::kernelImmediate([this, point] {
     pimpl->netpoints_.erase(point->get_name());

@@ -183,7 +183,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
   unsigned int answers;
   bool destination_found   = false;
   unsigned int nodes_added = 0;
-  double global_timeout    = simgrid::s4u::Engine::getClock() + find_node_global_timeout;
+  double global_timeout    = simgrid::s4u::Engine::get_clock() + find_node_global_timeout;
   unsigned int steps       = 0;
 
   /* First we build a list of who we already know */
@@ -196,9 +196,9 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
     answers        = 0;
     queries        = sendFindNodeToBest(node_list);
     nodes_added    = 0;
-    double timeout = simgrid::s4u::Engine::getClock() + find_node_timeout;
+    double timeout = simgrid::s4u::Engine::get_clock() + find_node_timeout;
     steps++;
-    double time_beginreceive = simgrid::s4u::Engine::getClock();
+    double time_beginreceive = simgrid::s4u::Engine::get_clock();
 
     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(id_));
     do {
@@ -226,8 +226,8 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
             handleFindNode(msg);
           }
           // Update the timeout if we didn't have our answer
-          timeout += simgrid::s4u::Engine::getClock() - time_beginreceive;
-          time_beginreceive = simgrid::s4u::Engine::getClock();
+          timeout += simgrid::s4u::Engine::get_clock() - time_beginreceive;
+          time_beginreceive = simgrid::s4u::Engine::get_clock();
         }
         delete msg->answer_;
         delete msg;
@@ -235,10 +235,10 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
       } else {
         simgrid::s4u::this_actor::sleep_for(1);
       }
-    } while (simgrid::s4u::Engine::getClock() < timeout && answers < queries);
+    } while (simgrid::s4u::Engine::get_clock() < timeout && answers < queries);
     destination_found = node_list->destinationFound();
   } while (not destination_found && (nodes_added > 0 || answers == 0) &&
-           simgrid::s4u::Engine::getClock() < global_timeout && steps < MAX_STEPS);
+           simgrid::s4u::Engine::get_clock() < global_timeout && steps < MAX_STEPS);
 
   if (destination_found) {
     if (count_in_stats)

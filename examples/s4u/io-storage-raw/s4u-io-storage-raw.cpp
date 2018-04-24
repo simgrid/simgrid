@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   simgrid::s4u::Actor::create("", simgrid::s4u::Host::by_name("denise"), host);
 
   e.run();
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::getClock());
+  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

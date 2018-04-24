@@ -69,7 +69,7 @@ void Peer::operator()()
   // Getting peer data from the tracker.
   if (getPeersFromTracker()) {
     XBT_DEBUG("Got %zu peers from the tracker. Current status is: %s", connected_peers.size(), getStatus().c_str());
-    begin_receive_time = simgrid::s4u::Engine::getClock();
+    begin_receive_time = simgrid::s4u::Engine::get_clock();
     mailbox_->setReceiver(simgrid::s4u::Actor::self());
     if (hasFinished()) {
       sendHandshakeToAllPeers();
@@ -229,7 +229,7 @@ int Peer::nbInterestedPeers()
 
 void Peer::leech()
 {
-  double next_choked_update = simgrid::s4u::Engine::getClock() + UPDATE_CHOKED_INTERVAL;
+  double next_choked_update = simgrid::s4u::Engine::get_clock() + UPDATE_CHOKED_INTERVAL;
   XBT_DEBUG("Start downloading.");
 
   /* Send a "handshake" message to all the peers it got (since it couldn't have gotten more than 50 peers) */
@@ -237,7 +237,7 @@ void Peer::leech()
   XBT_DEBUG("Starting main leech loop listening on mailbox: %s", mailbox_->get_cname());
 
   void* data = nullptr;
-  while (simgrid::s4u::Engine::getClock() < deadline && countPieces(bitfield_) < FILE_PIECES) {
+  while (simgrid::s4u::Engine::get_clock() < deadline && countPieces(bitfield_) < FILE_PIECES) {
     if (comm_received == nullptr) {
       comm_received = mailbox_->get_async(&data);
     }
@@ -248,7 +248,7 @@ void Peer::leech()
       comm_received = nullptr;
     } else {
       // We don't execute the choke algorithm if we don't already have a piece
-      if (simgrid::s4u::Engine::getClock() >= next_choked_update && countPieces(bitfield_) > 0) {
+      if (simgrid::s4u::Engine::get_clock() >= next_choked_update && countPieces(bitfield_) > 0) {
         updateChokedPeers();
         next_choked_update += UPDATE_CHOKED_INTERVAL;
       } else {
@@ -262,11 +262,11 @@ void Peer::leech()
 
 void Peer::seed()
 {
-  double next_choked_update = simgrid::s4u::Engine::getClock() + UPDATE_CHOKED_INTERVAL;
+  double next_choked_update = simgrid::s4u::Engine::get_clock() + UPDATE_CHOKED_INTERVAL;
   XBT_DEBUG("Start seeding.");
   // start the main seed loop
   void* data = nullptr;
-  while (simgrid::s4u::Engine::getClock() < deadline) {
+  while (simgrid::s4u::Engine::get_clock() < deadline) {
     if (comm_received == nullptr) {
       comm_received = mailbox_->get_async(&data);
     }
@@ -276,7 +276,7 @@ void Peer::seed()
       delete message;
       comm_received = nullptr;
     } else {
-      if (simgrid::s4u::Engine::getClock() >= next_choked_update) {
+      if (simgrid::s4u::Engine::get_clock() >= next_choked_update) {
         updateChokedPeers();
         // TODO: Change the choked peer algorithm when seeding.
         next_choked_update += UPDATE_CHOKED_INTERVAL;
@@ -419,9 +419,9 @@ void Peer::handleMessage()
   }
   // Update the peer speed.
   if (remote_peer) {
-    remote_peer->addSpeedValue(1.0 / (simgrid::s4u::Engine::getClock() - begin_receive_time));
+    remote_peer->addSpeedValue(1.0 / (simgrid::s4u::Engine::get_clock() - begin_receive_time));
   }
-  begin_receive_time = simgrid::s4u::Engine::getClock();
+  begin_receive_time = simgrid::s4u::Engine::get_clock();
 }
 
 /** Selects the appropriate piece to download and requests it to the remote_peer */
@@ -558,7 +558,7 @@ void Peer::updateChokedPeers()
   /**If we are currently seeding, we unchoke the peer which has been unchoked the last time.*/
   if (hasFinished()) {
     Connection* remote_peer;
-    double unchoke_time = simgrid::s4u::Engine::getClock() + 1;
+    double unchoke_time = simgrid::s4u::Engine::get_clock() + 1;
     for (auto const& kv : connected_peers) {
       remote_peer = kv.second;
       if (remote_peer->last_unchoke < unchoke_time && remote_peer->interested && remote_peer->choked_upload) {
@@ -612,7 +612,7 @@ void Peer::updateChokedPeers()
       xbt_assert((chosen_peer->choked_upload), "Tries to unchoked an unchoked peer");
       chosen_peer->choked_upload = false;
       active_peers.insert(chosen_peer);
-      chosen_peer->last_unchoke = simgrid::s4u::Engine::getClock();
+      chosen_peer->last_unchoke = simgrid::s4u::Engine::get_clock();
       XBT_DEBUG("(%d) Sending a UNCHOKE to %d", id, chosen_peer->id);
       updateActivePeersSet(chosen_peer);
       sendMessage(chosen_peer->mailbox_, MESSAGE_UNCHOKE, MESSAGE_UNCHOKE_SIZE);

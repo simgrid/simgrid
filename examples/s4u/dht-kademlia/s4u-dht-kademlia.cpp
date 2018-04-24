@@ -40,13 +40,13 @@ static int node(int argc, char* argv[])
   if (join_success) {
     XBT_VERB("Ok, I'm joining the network with id %u", node->getId());
     // We start the main loop
-    double next_lookup_time = simgrid::s4u::Engine::getClock() + random_lookup_interval;
+    double next_lookup_time = simgrid::s4u::Engine::get_clock() + random_lookup_interval;
 
     XBT_VERB("Main loop start");
 
     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(node->getId()));
 
-    while (simgrid::s4u::Engine::getClock() < deadline) {
+    while (simgrid::s4u::Engine::get_clock() < deadline) {
       if (node->receive_comm == nullptr)
         node->receive_comm = mailbox->get_async(&node->received_msg);
 
@@ -62,7 +62,7 @@ static int node(int argc, char* argv[])
           simgrid::s4u::this_actor::sleep_for(1);
       } else {
         /* We search for a pseudo random node */
-        if (simgrid::s4u::Engine::getClock() >= next_lookup_time) {
+        if (simgrid::s4u::Engine::get_clock() >= next_lookup_time) {
           node->randomLookup();
           next_lookup_time += random_lookup_interval;
         } else {
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::getClock());
+  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }
