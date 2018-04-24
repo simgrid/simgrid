@@ -2,8 +2,8 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#ifndef SMPI_REPLAY_HPP
-#define SMPI_REPLAY_HPP
+#ifndef SMPI_REPLAY_HPP_
+#define SMPI_REPLAY_HPP_
 
 #include "smpi/smpi.h"
 #include <simgrid/s4u/Actor.hpp>
