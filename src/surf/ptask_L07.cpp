@@ -349,6 +349,8 @@ void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 void LinkL07::setBandwidth(double value)
 {
   bandwidth_.peak = value;
+  LinkImpl::on_bandwidth_change();
+
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), bandwidth_.peak * bandwidth_.scale);
 }
 

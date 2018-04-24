@@ -145,6 +145,8 @@ public:
   void turn_on() override;
   void turn_off() override;
 
+  void on_bandwidth_change();
+
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF).
                                                           Trace must contain boolean values. */
   virtual void setBandwidthTrace(

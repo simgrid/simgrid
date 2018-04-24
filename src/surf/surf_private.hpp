@@ -24,9 +24,4 @@ XBT_PUBLIC void storage_register_callbacks();
 
 XBT_PRIVATE void parse_after_config();
 
-/********** Tracing **********/
-/* from surf_instr.c */
-void TRACE_surf_host_set_speed(double date, const char* resource, double power);
-void TRACE_surf_link_set_bandwidth(double date, const char* resource, double bandwidth);
-
 #endif

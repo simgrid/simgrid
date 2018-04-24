@@ -163,6 +163,7 @@ void Link::setProperty(std::string key, std::string value)
 simgrid::xbt::signal<void(s4u::Link&)> Link::onCreation;
 simgrid::xbt::signal<void(s4u::Link&)> Link::onDestruction;
 simgrid::xbt::signal<void(s4u::Link&)> Link::onStateChange;
+simgrid::xbt::signal<void(s4u::Link&)> Link::on_bandwidth_change;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::onCommunicationStateChange;
 } // namespace s4u

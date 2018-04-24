@@ -86,6 +86,9 @@ public:
   /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
   static simgrid::xbt::signal<void(s4u::Link&)> onStateChange;
 
+  /** @brief Callback signal fired when the bandwidth of a Link changes */
+  static simgrid::xbt::signal<void(s4u::Link&)> on_bandwidth_change;
+
   /** @brief Callback signal fired when a communication starts */
   static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
 

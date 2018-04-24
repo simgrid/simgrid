@@ -393,8 +393,8 @@ void NetworkCm02Link::setBandwidth(double value)
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
-  TRACE_surf_link_set_bandwidth(surf_get_clock(), get_cname(),
-                                sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
+
+  LinkImpl::on_bandwidth_change();
 
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
