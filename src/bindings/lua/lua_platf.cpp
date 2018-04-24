@@ -63,8 +63,6 @@ int console_open(lua_State *L) {
   sg_platf_init();
   sg_platf_begin();
 
-  storage_register_callbacks();
-
   return 0;
 }
 

@@ -20,8 +20,7 @@ XBT_PRIVATE std::ifstream* surf_ifsopen(std::string name);
  */
 XBT_PRIVATE int __surf_is_absolute_file_path(const char* file_path);
 
-XBT_PUBLIC void storage_register_callbacks();
-
+XBT_PRIVATE void check_disk_attachment();
 XBT_PRIVATE void parse_after_config();
 
 #endif

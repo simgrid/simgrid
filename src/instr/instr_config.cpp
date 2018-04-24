@@ -81,6 +81,7 @@ int TRACE_start()
   //    - enabled (with --cfg=tracing:yes)
   //    - already configured (TRACE_global_init already called)
   if (TRACE_is_enabled()) {
+    instr_routing_define_callbacks();
 
     XBT_DEBUG("Tracing starts");
     /* init the tracing module to generate the right output */
@@ -201,42 +202,42 @@ bool TRACE_uncategorized ()
 
 bool TRACE_actor_is_enabled()
 {
-  return trace_actor_enabled && TRACE_is_enabled();
+  return trace_actor_enabled && trace_enabled;
 }
 
 bool TRACE_vm_is_enabled()
 {
-  return trace_vm_enabled && TRACE_is_enabled();
+  return trace_vm_enabled && trace_enabled;
 }
 
 bool TRACE_disable_link()
 {
-  return trace_disable_link && TRACE_is_enabled();
+  return trace_disable_link && trace_enabled;
 }
 
 bool TRACE_disable_speed()
 {
-  return trace_disable_power && TRACE_is_enabled();
+  return trace_disable_power && trace_enabled;
 }
 
 bool TRACE_buffer ()
 {
-  return trace_buffer && TRACE_is_enabled();
+  return trace_buffer && trace_enabled;
 }
 
 bool TRACE_disable_destroy ()
 {
-  return trace_disable_destroy && TRACE_is_enabled();
+  return trace_disable_destroy && trace_enabled;
 }
 
 bool TRACE_basic ()
 {
-  return trace_basic && TRACE_is_enabled();
+  return trace_basic && trace_enabled;
 }
 
 bool TRACE_display_sizes ()
 {
-   return trace_display_sizes && trace_smpi_enabled && TRACE_is_enabled();
+  return trace_display_sizes && trace_smpi_enabled && trace_enabled;
 }
 
 std::string TRACE_get_comment()

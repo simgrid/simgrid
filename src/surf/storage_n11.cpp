@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
  *************/
 extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
-static void check_disk_attachment()
+void check_disk_attachment()
 {
   for (auto const& s : simgrid::s4u::Engine::getInstance()->getAllStorages()) {
     simgrid::kernel::routing::NetPoint* host_elm = sg_netpoint_by_name_or_null(s->getImpl()->getHost().c_str());
@@ -27,12 +27,6 @@ static void check_disk_attachment()
     else
       s->attached_to_ = sg_host_by_name(s->getImpl()->getHost().c_str());
   }
-}
-
-void storage_register_callbacks()
-{
-  simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
-  instr_routing_define_callbacks();
 }
 
 /*********

@@ -150,7 +150,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
 /*
  * Callbacks
  */
-static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
+static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
 {
   std::string id = netzone.get_name();
 
@@ -180,14 +180,14 @@ static void sg_instr_AS_begin(simgrid::s4u::NetZone& netzone)
   }
 }
 
-static void sg_instr_AS_end(simgrid::s4u::NetZone& /*netzone*/)
+static void instr_netzone_on_seal(simgrid::s4u::NetZone& /*netzone*/)
 {
   if (TRACE_needs_platform()){
     currentContainer.pop_back();
   }
 }
 
-static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
+static void instr_link_on_creation(simgrid::s4u::Link& link)
 {
   if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
     return;
@@ -208,7 +208,7 @@ static void instr_routing_parse_start_link(simgrid::s4u::Link& link)
   }
 }
 
-static void sg_instr_new_host(simgrid::s4u::Host& host)
+static void instr_host_on_creation(simgrid::s4u::Host& host)
 {
   container_t container = new simgrid::instr::HostContainer(host, currentContainer.back());
   container_t root      = simgrid::instr::Container::getRoot();
@@ -255,13 +255,13 @@ static void sg_instr_new_host(simgrid::s4u::Host& host)
   }
 }
 
-static void sg_instr_new_router(simgrid::kernel::routing::NetPoint * netpoint)
+static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
 {
   if (netpoint->is_router() && TRACE_is_enabled() && TRACE_needs_platform())
     new simgrid::instr::RouterContainer(netpoint->get_cname(), currentContainer.back());
 }
 
-static void instr_routing_parse_end_platform ()
+static void instr_on_platform_created()
 {
   currentContainer.clear();
   std::set<std::string>* filter = new std::set<std::string>;
@@ -273,19 +273,18 @@ static void instr_routing_parse_end_platform ()
   TRACE_paje_dump_buffer(true);
 }
 
-void instr_routing_define_callbacks ()
+void instr_routing_define_callbacks()
 {
-  // always need the callbacks to ASes (we need only the root AS), to create the rootContainer and the rootType properly
-  if (not TRACE_is_enabled())
-    return;
+  // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
+  // properly
   if (TRACE_needs_platform()) {
-    simgrid::s4u::Link::onCreation.connect(instr_routing_parse_start_link);
-    simgrid::s4u::onPlatformCreated.connect(instr_routing_parse_end_platform);
-    simgrid::s4u::Host::onCreation.connect(sg_instr_new_host);
+    simgrid::s4u::Host::onCreation.connect(instr_host_on_creation);
+    simgrid::s4u::Link::onCreation.connect(instr_link_on_creation);
+    simgrid::s4u::onPlatformCreated.connect(instr_on_platform_created);
   }
-  simgrid::s4u::NetZone::onCreation.connect(sg_instr_AS_begin);
-  simgrid::s4u::NetZone::onSeal.connect(sg_instr_AS_end);
-  simgrid::kernel::routing::NetPoint::onCreation.connect(sg_instr_new_router);
+  simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
+  simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);
+  simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
 }
 /*
  * user categories support
