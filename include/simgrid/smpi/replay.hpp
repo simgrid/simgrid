@@ -78,8 +78,6 @@ public:
   int root = 0;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
   MPI_Datatype datatype2 = MPI_DEFAULT_TYPE;
-
-  virtual void parse(simgrid::xbt::ReplayAction& action, std::string name) = 0;
 };
 
 class BcastArgParser : public CollCommParser {
