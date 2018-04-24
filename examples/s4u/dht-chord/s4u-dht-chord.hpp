@@ -21,7 +21,6 @@
 extern int nb_bits;
 extern int nb_keys;
 extern int timeout;
-extern int* powers2;
 
 class HostChord {
   RngStream stream_;

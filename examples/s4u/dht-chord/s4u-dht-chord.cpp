@@ -11,32 +11,6 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostChord> HostChord::EXTENSION_ID;
 int nb_bits  = 24;
 int nb_keys  = 0;
 int timeout  = 50;
-int* powers2 = nullptr;
-
-/* Global initialization of the Chord simulation. */
-static void chord_init()
-{
-  // compute the powers of 2 once for all
-  powers2 = new int[nb_bits];
-  int pow = 1;
-  for (int i = 0; i < nb_bits; i++) {
-    powers2[i] = pow;
-    pow        = pow << 1;
-  }
-  nb_keys = pow;
-  XBT_DEBUG("Sets nb_keys to %d", nb_keys);
-
-  HostChord::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostChord>();
-
-  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
-  for (auto const& host : list)
-    host->extension_set(new HostChord(host));
-}
-
-static void chord_exit()
-{
-  delete[] powers2;
-}
 
 int main(int argc, char* argv[])
 {
@@ -64,7 +38,13 @@ int main(int argc, char* argv[])
 
   e.load_platform(options[0]);
 
-  chord_init(); // FIXME: inline me
+  /* Global initialization of the Chord simulation. */
+  nb_keys = 1U << nb_bits;
+  XBT_DEBUG("Sets nb_keys to %d", nb_keys);
+
+  HostChord::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostChord>();
+  for (auto const& host : simgrid::s4u::Engine::getInstance()->get_all_hosts())
+    host->extension_set(new HostChord(host));
 
   e.register_actor<Node>("node");
   e.load_deployment(options[1]);
@@ -72,8 +52,5 @@ int main(int argc, char* argv[])
   e.run();
 
   XBT_INFO("Simulated time: %g", e.get_clock());
-
-  chord_exit();
-
   return 0;
 }
