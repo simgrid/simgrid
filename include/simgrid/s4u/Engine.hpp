@@ -81,26 +81,24 @@ protected:
   void del_storage(std::string name);
 
 public:
+  size_t get_host_count();
+  std::vector<Host*> get_all_hosts();
   simgrid::s4u::Host* host_by_name(std::string name);
   simgrid::s4u::Host* host_by_name_or_null(std::string name);
+
+  size_t get_link_count();
+  std::vector<Link*> get_all_links();
+
+  size_t get_storage_count();
+  std::vector<Storage*> get_all_storages();
   simgrid::s4u::Storage* storage_by_name(std::string name);
   simgrid::s4u::Storage* storage_by_name_or_null(std::string name);
-
-  size_t get_host_count();
-  void get_host_list(std::vector<Host*>* whereTo);
-  std::vector<Host*> get_all_hosts();
-
-  size_t getLinkCount();
-  void getLinkList(std::vector<Link*> * list);
-  std::vector<Link*> getAllLinks();
-
-  std::vector<Storage*> getAllStorages();
 
   /** @brief Run the simulation */
   void run();
 
   /** @brief Retrieve the simulation time */
-  static double getClock();
+  static double get_clock();
 
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* getInstance();
@@ -180,14 +178,25 @@ public:
   }
 
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_host_count()") size_t getHostCount() { return get_host_count(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_host_list()") void getHostList(std::vector<Host*>* whereTo)
-  {
-    get_host_list(whereTo);
-  }
+  XBT_ATTRIB_DEPRECATED_v322("Engine::getHostList() is deprecated in favor of Engine::get_all_hosts(). Please switch "
+                             "before v3.22") void getHostList(std::vector<Host*>* whereTo);
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_hosts()") std::vector<Host*> getAllHosts()
   {
     return get_all_hosts();
   }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_count()") size_t getLinkCount() { return get_link_count(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_list()")
+      XBT_ATTRIB_DEPRECATED_v322("Engine::getLinkList() is deprecated in favor of Engine::get_all_links(). Please "
+                                 "switch before v3.22") void getLinkList(std::vector<Link*>* list);
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_list()") std::vector<Link*> getAllLinks()
+  {
+    return get_all_links();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_storages()") std::vector<Storage*> getAllStorages()
+  {
+    return get_all_storages();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_clock()") static double getClock() { return get_clock(); }
 
   simgrid::kernel::EngineImpl* pimpl;
 

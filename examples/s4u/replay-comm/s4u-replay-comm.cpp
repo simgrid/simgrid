@@ -51,36 +51,36 @@ public:
   static void compute(simgrid::xbt::ReplayAction& action)
   {
     double amount = std::stod(action[2]);
-    double clock  = simgrid::s4u::Engine::getClock();
+    double clock  = simgrid::s4u::Engine::get_clock();
     ACT_DEBUG("Entering %s", NAME.c_str());
     simgrid::s4u::this_actor::execute(amount);
-    log_action(action, simgrid::s4u::Engine::getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 
   static void send(simgrid::xbt::ReplayAction& action)
   {
     double size                 = std::stod(action[3]);
     std::string* payload        = new std::string(action[3]);
-    double clock                = simgrid::s4u::Engine::getClock();
+    double clock                = simgrid::s4u::Engine::get_clock();
     simgrid::s4u::MailboxPtr to = simgrid::s4u::Mailbox::byName(simgrid::s4u::this_actor::get_name() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %g) -- Actor %s on mailbox %s", NAME.c_str(), size,
               simgrid::s4u::this_actor::get_cname(), to->get_cname());
     to->put(payload, size);
     delete payload;
 
-    log_action(action, simgrid::s4u::Engine::getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 
   static void recv(simgrid::xbt::ReplayAction& action)
   {
-    double clock = simgrid::s4u::Engine::getClock();
+    double clock = simgrid::s4u::Engine::get_clock();
     simgrid::s4u::MailboxPtr from =
         simgrid::s4u::Mailbox::byName(std::string(action[2]) + "_" + simgrid::s4u::this_actor::get_name());
 
     ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::get_cname(),
               from->get_cname());
     from->get();
-    log_action(action, simgrid::s4u::Engine::getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 };
 
@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
     simgrid::xbt::action_fs = nullptr;
   }
 
-  XBT_INFO("Simulation time %g", e.getClock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulation time %g", e.getClock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

@@ -99,7 +99,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
   *msg             = *msg + std::to_string(stage) + ":" + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" +
          dst_pm_->get_cname() + ")";
 
-  double clock_sta = s4u::Engine::getClock();
+  double clock_sta = s4u::Engine::get_clock();
 
   s4u::Activity* comm = nullptr;
   try {
@@ -116,7 +116,7 @@ sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_r
     delete msg;
   }
 
-  double clock_end    = s4u::Engine::getClock();
+  double clock_end    = s4u::Engine::get_clock();
   double duration     = clock_end - clock_sta;
   double actual_speed = size / duration;
 
@@ -162,7 +162,7 @@ void MigrationTx::operator()()
   sg_vm_start_dirty_page_tracking(vm_);
 
   double computed_during_stage1 = 0;
-  double clock_prev_send        = s4u::Engine::getClock();
+  double clock_prev_send        = s4u::Engine::get_clock();
 
   try {
     /* At stage 1, we do not need timeout. We have to send all the memory pages even though the duration of this
@@ -185,7 +185,7 @@ void MigrationTx::operator()()
     return;
   }
 
-  double clock_post_send = s4u::Engine::getClock();
+  double clock_post_send = s4u::Engine::get_clock();
   mig_timeout -= (clock_post_send - clock_prev_send);
   if (mig_timeout < 0) {
     XBT_VERB("The duration of stage 1 exceeds the timeout value, skip stage 2");
@@ -222,7 +222,7 @@ void MigrationTx::operator()()
         break;
 
       sg_size_t sent         = 0;
-      double clock_prev_send = s4u::Engine::getClock();
+      double clock_prev_send = s4u::Engine::get_clock();
       try {
         XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
         sent = sendMigrationData(updated_size, 2, stage2_round, mig_speed, mig_timeout);
@@ -233,7 +233,7 @@ void MigrationTx::operator()()
         sg_vm_stop_dirty_page_tracking(vm_);
         return;
       }
-      double clock_post_send = s4u::Engine::getClock();
+      double clock_post_send = s4u::Engine::get_clock();
 
       if (sent == updated_size) {
         /* timeout did not happen */

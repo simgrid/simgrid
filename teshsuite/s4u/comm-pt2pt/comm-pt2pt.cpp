@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::create("recver", hosts[1], receiver, argRecv);
 
   e.run();
-  XBT_INFO("Simulation time %g", e.getClock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

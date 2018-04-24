@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void worker(double computation_amount, bool use_bound, double bound)
 {
-  double clock_start = simgrid::s4u::Engine::getClock();
+  double clock_start = simgrid::s4u::Engine::get_clock();
 
   simgrid::s4u::ExecPtr exec = simgrid::s4u::this_actor::exec_init(computation_amount);
 
@@ -22,7 +22,7 @@ static void worker(double computation_amount, bool use_bound, double bound)
   }
   exec->start();
   exec->wait();
-  double clock_end     = simgrid::s4u::Engine::getClock();
+  double clock_end     = simgrid::s4u::Engine::get_clock();
   double duration      = clock_end - clock_start;
   double flops_per_sec = computation_amount / duration;
 
@@ -254,7 +254,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::create("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);
 
   e.run();
-  XBT_INFO("Bye (simulation time %g)", simgrid::s4u::Engine::getClock());
+  XBT_INFO("Bye (simulation time %g)", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

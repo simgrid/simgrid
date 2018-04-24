@@ -11,9 +11,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void computation_fun()
 {
-  double clock_sta = simgrid::s4u::Engine::getClock();
+  double clock_sta = simgrid::s4u::Engine::get_clock();
   simgrid::s4u::this_actor::execute(1000000);
-  double clock_end = simgrid::s4u::Engine::getClock();
+  double clock_end = simgrid::s4u::Engine::get_clock();
 
   XBT_INFO("%s:%s task executed %g", simgrid::s4u::this_actor::get_host()->get_cname(),
            simgrid::s4u::this_actor::get_cname(), clock_end - clock_sta);
@@ -36,7 +36,7 @@ static void communication_tx_fun(std::vector<std::string> args)
   s_payload* payload            = new s_payload;
   payload->tx_actor_name        = simgrid::s4u::Actor::self()->get_cname();
   payload->tx_host              = simgrid::s4u::this_actor::get_host();
-  payload->clock_sta            = simgrid::s4u::Engine::getClock();
+  payload->clock_sta            = simgrid::s4u::Engine::get_clock();
 
   mbox->put(payload, 1000000);
 }
@@ -48,7 +48,7 @@ static void communication_rx_fun(std::vector<std::string> args)
   simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(args.at(0));
 
   struct s_payload* payload = static_cast<struct s_payload*>(mbox->get());
-  double clock_end          = simgrid::s4u::Engine::getClock();
+  double clock_end          = simgrid::s4u::Engine::get_clock();
 
   XBT_INFO("%s:%s to %s:%s => %g sec", payload->tx_host->get_cname(), payload->tx_actor_name, host_name, actor_name,
            clock_end - payload->clock_sta);
@@ -216,7 +216,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulation time %g", e.getClock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

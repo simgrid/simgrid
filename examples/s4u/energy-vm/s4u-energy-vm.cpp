@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
   XBT_INFO("Total simulation time: %.2f; Host2 and Host3 must have the exact same energy consumption; Host1 is "
            "multi-core and will differ.",
-           simgrid::s4u::Engine::getClock());
+           simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

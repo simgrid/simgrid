@@ -54,7 +54,7 @@ int main(int argc, char** argv)
   e.load_platform(argv[1]);
   e.register_function("host", host);
   e.load_deployment(argv[2]);
-  std::vector<simgrid::s4u::Storage*> allStorages = e.getAllStorages();
+  std::vector<simgrid::s4u::Storage*> allStorages = e.get_all_storages();
 
   for (auto const& s : allStorages) {
     XBT_INFO("Init: %llu/%llu MiB used/free on '%s'", sg_storage_get_size_used(s) / INMEGA,
@@ -68,6 +68,6 @@ int main(int argc, char** argv)
              sg_storage_get_size_free(s) / INMEGA, s->get_cname());
   }
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::getClock());
+  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
   return 0;
 }

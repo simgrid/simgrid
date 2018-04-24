@@ -125,7 +125,7 @@ public:
     if (not joined)
       return;
     void* data                         = nullptr;
-    double now                         = simgrid::s4u::Engine::getClock();
+    double now                         = simgrid::s4u::Engine::get_clock();
     double next_stabilize_date         = start_time_ + PERIODIC_STABILIZE_DELAY;
     double next_fix_fingers_date       = start_time_ + PERIODIC_FIX_FINGERS_DELAY;
     double next_check_predecessor_date = start_time_ + PERIODIC_CHECK_PREDECESSOR_DELAY;
@@ -138,21 +138,21 @@ public:
         // no task was received: make some periodic calls
         if (now >= next_stabilize_date) {
           stabilize();
-          next_stabilize_date = simgrid::s4u::Engine::getClock() + PERIODIC_STABILIZE_DELAY;
+          next_stabilize_date = simgrid::s4u::Engine::get_clock() + PERIODIC_STABILIZE_DELAY;
         } else if (now >= next_fix_fingers_date) {
           fixFingers();
-          next_fix_fingers_date = simgrid::s4u::Engine::getClock() + PERIODIC_FIX_FINGERS_DELAY;
+          next_fix_fingers_date = simgrid::s4u::Engine::get_clock() + PERIODIC_FIX_FINGERS_DELAY;
         } else if (now >= next_check_predecessor_date) {
           checkPredecessor();
-          next_check_predecessor_date = simgrid::s4u::Engine::getClock() + PERIODIC_CHECK_PREDECESSOR_DELAY;
+          next_check_predecessor_date = simgrid::s4u::Engine::get_clock() + PERIODIC_CHECK_PREDECESSOR_DELAY;
         } else if (now >= next_lookup_date) {
           randomLookup();
-          next_lookup_date = simgrid::s4u::Engine::getClock() + PERIODIC_LOOKUP_DELAY;
+          next_lookup_date = simgrid::s4u::Engine::get_clock() + PERIODIC_LOOKUP_DELAY;
         } else {
           // nothing to do: sleep for a while
           simgrid::s4u::this_actor::sleep_for(SLEEP_DELAY);
         }
-        now = simgrid::s4u::Engine::getClock();
+        now = simgrid::s4u::Engine::get_clock();
       }
 
       if (data != nullptr) {
@@ -161,7 +161,7 @@ public:
         comm_receive = nullptr;
         data         = nullptr;
       }
-      now = simgrid::s4u::Engine::getClock();
+      now = simgrid::s4u::Engine::get_clock();
     }
     if (comm_receive != nullptr) {
       if (comm_receive->test())

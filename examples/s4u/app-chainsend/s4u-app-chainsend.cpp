@@ -159,12 +159,12 @@ static void peer()
 
   Peer* p = new Peer();
 
-  double start_time = simgrid::s4u::Engine::getClock();
+  double start_time = simgrid::s4u::Engine::get_clock();
   p->joinChain();
   p->forwardFile();
 
   simgrid::s4u::Comm::wait_all(&p->pending_sends);
-  double end_time = simgrid::s4u::Engine::getClock();
+  double end_time = simgrid::s4u::Engine::get_clock();
 
   XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", end_time - start_time, p->received_bytes,
            p->received_bytes / 1024.0 / 1024.0 / (end_time - start_time));
@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::create("peer", simgrid::s4u::Host::by_name("node-8.acme.org"), peer);
 
   e.run();
-  XBT_INFO("Total simulation time: %e", simgrid::s4u::Engine::getClock());
+  XBT_INFO("Total simulation time: %e", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

@@ -17,20 +17,20 @@ static void dvfs()
   XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", host1->getSpeed(),
            sg_host_get_consumed_energy(host1));
 
-  double start = simgrid::s4u::Engine::getClock();
+  double start = simgrid::s4u::Engine::get_clock();
   XBT_INFO("Sleep for 10 seconds");
   simgrid::s4u::this_actor::sleep_for(10);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E; Energy dissipated=%.2f J",
-           simgrid::s4u::Engine::getClock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
+           simgrid::s4u::Engine::get_clock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
 
   // Execute something
-  start             = simgrid::s4u::Engine::getClock();
+  start             = simgrid::s4u::Engine::get_clock();
   double flopAmount = 100E6;
   XBT_INFO("Run a task of %.0E flops", flopAmount);
   simgrid::s4u::this_actor::execute(flopAmount);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
            " depending on load; Energy dissipated=%.0f J",
-           simgrid::s4u::Engine::getClock() - start, host1->getSpeed(),
+           simgrid::s4u::Engine::get_clock() - start, host1->getSpeed(),
            sg_host_get_wattmin_at(host1, host1->getPstate()), sg_host_get_wattmax_at(host1, host1->getPstate()),
            sg_host_get_consumed_energy(host1));
 
@@ -41,26 +41,26 @@ static void dvfs()
            host1->getPstateSpeed(pstate), host1->getSpeed());
 
   // Run another task
-  start = simgrid::s4u::Engine::getClock();
+  start = simgrid::s4u::Engine::get_clock();
   XBT_INFO("Run a task of %.0E flops", flopAmount);
   simgrid::s4u::this_actor::execute(flopAmount);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-           simgrid::s4u::Engine::getClock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
+           simgrid::s4u::Engine::get_clock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
 
-  start = simgrid::s4u::Engine::getClock();
+  start = simgrid::s4u::Engine::get_clock();
   XBT_INFO("Sleep for 4 seconds");
   simgrid::s4u::this_actor::sleep_for(4);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-           simgrid::s4u::Engine::getClock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
+           simgrid::s4u::Engine::get_clock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
 
   // =========== Turn the other host off ==========
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated %.0f J so far.",
            sg_host_get_consumed_energy(host2));
   host2->turnOff();
-  start = simgrid::s4u::Engine::getClock();
+  start = simgrid::s4u::Engine::get_clock();
   simgrid::s4u::this_actor::sleep_for(10);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-           simgrid::s4u::Engine::getClock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
+           simgrid::s4u::Engine::get_clock() - start, host1->getSpeed(), sg_host_get_consumed_energy(host1));
 }
 
 int main(int argc, char* argv[])

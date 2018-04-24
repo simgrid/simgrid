@@ -61,7 +61,7 @@ public:
   static void open(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
-    double clock          = simgrid::s4u::Engine::getClock();
+    double clock          = simgrid::s4u::Engine::get_clock();
     std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
@@ -69,34 +69,34 @@ public:
 
     opened_files.insert({full_name, file});
 
-    log_action(action, simgrid::s4u::Engine::getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 
   static void read(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
     sg_size_t size        = std::stoul(action[3]);
-    double clock          = simgrid::s4u::Engine::getClock();
+    double clock          = simgrid::s4u::Engine::get_clock();
 
     simgrid::s4u::File* file = get_file_descriptor(file_name);
 
     ACT_DEBUG("Entering Read: %s (size: %llu)", NAME.c_str(), size);
     file->read(size);
 
-    log_action(action, simgrid::s4u::Engine::getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 
   static void close(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
-    double clock          = simgrid::s4u::Engine::getClock();
+    double clock          = simgrid::s4u::Engine::get_clock();
 
     simgrid::s4u::File* file = get_file_descriptor(file_name);
 
     ACT_DEBUG("Entering Close: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     delete file;
 
-    log_action(action, simgrid::s4u::Engine::getClock() - clock);
+    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
   }
 };
 
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
     simgrid::xbt::action_fs = nullptr;
   }
 
-  XBT_INFO("Simulation time %g", e.getClock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }
