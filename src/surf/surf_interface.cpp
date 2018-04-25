@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_interface.hpp"
-#include "instr/instr_interface.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/instr/instr_private.hpp" // TRACE_end(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/internal_config.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"

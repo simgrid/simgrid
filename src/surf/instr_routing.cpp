@@ -153,7 +153,6 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
 static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
 {
   std::string id = netzone.get_name();
-
   if (simgrid::instr::Container::getRoot() == nullptr) {
     simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
 
@@ -257,7 +256,7 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
 
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
 {
-  if (netpoint->is_router() && TRACE_is_enabled() && TRACE_needs_platform())
+  if (netpoint->is_router() && TRACE_needs_platform() && TRACE_is_enabled())
     new simgrid::instr::RouterContainer(netpoint->get_cname(), currentContainer.back());
 }
 
@@ -273,14 +272,14 @@ static void instr_on_platform_created()
   TRACE_paje_dump_buffer(true);
 }
 
-void instr_routing_define_callbacks()
+void instr_define_callbacks()
 {
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
   // properly
   if (TRACE_needs_platform()) {
+    simgrid::s4u::on_platform_created.connect(instr_on_platform_created);
     simgrid::s4u::Host::onCreation.connect(instr_host_on_creation);
     simgrid::s4u::Link::onCreation.connect(instr_link_on_creation);
-    simgrid::s4u::onPlatformCreated.connect(instr_on_platform_created);
   }
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
   simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);

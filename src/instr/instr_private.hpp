@@ -8,7 +8,6 @@
 
 #include <xbt/base.h>
 
-#include "instr/instr_interface.hpp"
 #include "simgrid/instr.h"
 #include "simgrid_config.h"
 #include "src/instr/instr_paje_containers.hpp"
@@ -249,15 +248,19 @@ XBT_PRIVATE void TRACE_surf_link_set_utilization(const char* resource, const cha
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
 extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
-XBT_PRIVATE void instr_routing_define_callbacks();
+XBT_PRIVATE void instr_define_callbacks();
 void instr_new_variable_type(std::string new_typename, std::string color);
 void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color);
 void instr_new_user_state_type(std::string father_type, std::string new_typename);
 void instr_new_value_for_user_state_type(std::string new_typename, const char* value, std::string color);
 
 /* instr_config.c */
+XBT_PRIVATE void TRACE_start();
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
+XBT_PRIVATE void TRACE_end();
+XBT_PRIVATE void TRACE_global_init();
+XBT_PRIVATE void TRACE_help(int detailed);
 
 XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(std::string filename);

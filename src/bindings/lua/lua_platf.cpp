@@ -61,13 +61,13 @@ static simgrid::s4u::Link::SharingPolicy link_policy_get_by_name(const char* pol
 
 int console_open(lua_State *L) {
   sg_platf_init();
-  sg_platf_begin();
+  simgrid::s4u::on_platform_creation();
 
   return 0;
 }
 
 int console_close(lua_State *L) {
-  sg_platf_end();
+  simgrid::s4u::on_platform_created();
   sg_platf_exit();
   return 0;
 }

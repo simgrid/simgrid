@@ -6,6 +6,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/instr/instr_private.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
@@ -390,10 +391,10 @@ void STag_surfxml_platform() {
                              "Please update your code, or use another, more adapted, file.",
              surf_parsed_filename, version);
 
-  sg_platf_begin();
+  simgrid::s4u::on_platform_creation();
 }
 void ETag_surfxml_platform(){
-  sg_platf_end();
+  simgrid::s4u::on_platform_created();
 }
 
 void STag_surfxml_host(){
@@ -530,12 +531,10 @@ void ETag_surfxml_cluster(){
 
 void STag_surfxml_cluster(){
   ZONE_TAG = 0;
-  parse_after_config();
   xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
 void STag_surfxml_cabinet(){
-  parse_after_config();
   simgrid::kernel::routing::CabinetCreationArgs cabinet;
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
@@ -549,7 +548,6 @@ void STag_surfxml_cabinet(){
 }
 
 void STag_surfxml_peer(){
-  parse_after_config();
   simgrid::kernel::routing::PeerCreationArgs peer;
 
   peer.id          = std::string(A_surfxml_peer_id);
@@ -792,7 +790,6 @@ void ETag_surfxml_trace(){
 
 void STag_surfxml_trace___connect()
 {
-  parse_after_config();
   simgrid::kernel::routing::TraceConnectCreationArgs trace_connect;
 
   trace_connect.element = A_surfxml_trace___connect_element;
@@ -836,7 +833,6 @@ void ETag_surfxml_AS()
 
 void STag_surfxml_zone()
 {
-  parse_after_config();
   ZONE_TAG                 = 1;
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
@@ -872,6 +868,8 @@ void ETag_surfxml_config()
       XBT_INFO("The custom configuration '%s' is already defined by user!", elm.first.c_str());
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
+  if (TRACE_is_enabled())
+    TRACE_start();
 
   delete current_property_set;
   current_property_set = nullptr;
@@ -946,7 +944,7 @@ void ETag_surfxml_prop(){/* Nothing to do */}
 void STag_surfxml_random(){/* Nothing to do */}
 void ETag_surfxml_random(){/* Nothing to do */}
 void ETag_surfxml_trace___connect(){/* Nothing to do */}
-void STag_surfxml_trace(){parse_after_config();}
+void STag_surfxml_trace(){/* Nothing to do */}
 void ETag_surfxml_router(){/*Nothing to do*/}
 void ETag_surfxml_host___link(){/* Nothing to do */}
 void ETag_surfxml_cabinet(){/* Nothing to do */}
