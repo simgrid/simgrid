@@ -29,7 +29,7 @@ public:
                                   ia.what());
     }
     my_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank));
-    if (rank + 1 == simgrid::s4u::Engine::getInstance()->get_host_count())
+    if (rank + 1 == simgrid::s4u::Engine::get_instance()->get_host_count())
       /* The last process, which sends the token back to rank 0 */
       neighbor_mailbox = simgrid::s4u::Mailbox::byName("0");
     else

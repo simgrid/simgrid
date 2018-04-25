@@ -97,16 +97,16 @@ static void dump_links()
 
 static void dump_routers()
 {
-  std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
-  simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
-  std::sort(netcardList.begin(), netcardList.end(),
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
+      simgrid::s4u::Engine::get_instance()->get_all_netpoints();
+  std::sort(netpoints.begin(), netpoints.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
             });
 
-  for (auto const& srcCard : netcardList)
-    if (srcCard->is_router())
-      std::printf("  <router id=\"%s\"/>\n", srcCard->get_cname());
+  for (auto const& src : netpoints)
+    if (src->is_router())
+      std::printf("  <router id=\"%s\"/>\n", src->get_cname());
 }
 
 static void dump_routes()
@@ -115,21 +115,21 @@ static void dump_routes()
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
             [](sg_host_t a, sg_host_t b) { return strcmp(sg_host_get_name(a), sg_host_get_name(b)) < 0; });
-  std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
-  simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
-  std::sort(netcardList.begin(), netcardList.end(),
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
+      simgrid::s4u::Engine::get_instance()->get_all_netpoints();
+  std::sort(netpoints.begin(), netpoints.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
             });
 
   for (unsigned int it_src = 0; it_src < totalHosts; it_src++) { // Routes from host
-    simgrid::s4u::Host* host1                      = hosts[it_src];
-    simgrid::kernel::routing::NetPoint* netcardSrc = host1->pimpl_netpoint;
+    simgrid::s4u::Host* host1               = hosts[it_src];
+    simgrid::kernel::routing::NetPoint* src = host1->pimpl_netpoint;
     for (unsigned int it_dst = 0; it_dst < totalHosts; it_dst++) { // Routes to host
       simgrid::s4u::Host* host2 = hosts[it_dst];
       std::vector<simgrid::kernel::resource::LinkImpl*> route;
-      simgrid::kernel::routing::NetPoint* netcardDst = host2->pimpl_netpoint;
-      simgrid::kernel::routing::NetZoneImpl::get_global_route(netcardSrc, netcardDst, route, nullptr);
+      simgrid::kernel::routing::NetPoint* dst = host2->pimpl_netpoint;
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
       if (not route.empty()) {
         std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), host2->get_cname());
         for (auto const& link : route)
@@ -138,11 +138,11 @@ static void dump_routes()
       }
     }
 
-    for (auto const& netcardDst : netcardList) { // to router
-      if (netcardDst->is_router()) {
-        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), netcardDst->get_cname());
+    for (auto const& dst : netpoints) { // to router
+      if (dst->is_router()) {
+        std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", host1->get_cname(), dst->get_cname());
         std::vector<simgrid::kernel::resource::LinkImpl*> route;
-        simgrid::kernel::routing::NetZoneImpl::get_global_route(netcardSrc, netcardDst, route, nullptr);
+        simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
         for (auto const& link : route)
           std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
         std::printf("\n  </route>\n");
@@ -150,9 +150,9 @@ static void dump_routes()
     }
   }
 
-  for (auto const& value1 : netcardList) { // Routes from router
+  for (auto const& value1 : netpoints) { // Routes from router
     if (value1->is_router()) {
-      for (auto const& value2 : netcardList) { // to router
+      for (auto const& value2 : netpoints) { // to router
         if (value2->is_router()) {
           std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), value2->get_cname());
           std::vector<simgrid::kernel::resource::LinkImpl*> route;

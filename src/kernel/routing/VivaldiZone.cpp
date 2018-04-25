@@ -84,8 +84,8 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   if (src->is_netzone()) {
     std::string srcName = "router_" + src->get_name();
     std::string dstName = "router_" + dst->get_name();
-    route->gw_src       = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(srcName.c_str());
-    route->gw_dst       = simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(dstName.c_str());
+    route->gw_src       = simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(srcName.c_str());
+    route->gw_dst       = simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(dstName.c_str());
   }
 
   /* Retrieve the private links */

@@ -71,7 +71,7 @@ static int david(int argc, char* argv[])
 static int bob(int argc, char* argv[])
 {
   /* this host also tests the properties of the AS*/
-  simgrid::s4u::NetZone* root = simgrid::s4u::Engine::getInstance()->getNetRoot();
+  simgrid::s4u::NetZone* root = simgrid::s4u::Engine::get_instance()->getNetRoot();
   XBT_INFO("== Print the properties of the zone");
   XBT_INFO("   Zone property: filename -> %s", root->getProperty("filename"));
   XBT_INFO("   Zone property: date -> %s", root->getProperty("date"));

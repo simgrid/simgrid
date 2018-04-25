@@ -34,7 +34,7 @@ EngineImpl::~EngineImpl()
     hosts_.at(name)->destroy();
 
   /* Also delete the other data */
-  delete netRoot_;
+  delete netzone_root_;
   for (auto const& kv : netpoints_)
     delete kv.second;
 

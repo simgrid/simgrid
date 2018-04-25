@@ -33,6 +33,14 @@ public:
   /** Finalize the default engine and all its dependencies */
   static void shutdown();
 
+  /** @brief Run the simulation */
+  void run();
+
+  /** @brief Retrieve the simulation time */
+  static double get_clock();
+  /** @brief Retrieve the engine singleton */
+  static s4u::Engine* get_instance();
+
   /** @brief Load a platform file describing the environment
    *
    * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
@@ -98,39 +106,38 @@ public:
   simgrid::s4u::Storage* storage_by_name(std::string name);
   simgrid::s4u::Storage* storage_by_name_or_null(std::string name);
 
-  /** @brief Run the simulation */
-  void run();
-
-  /** @brief Retrieve the simulation time */
-  static double get_clock();
-
-  /** @brief Retrieve the engine singleton */
-  static s4u::Engine* getInstance();
+  std::vector<simgrid::kernel::routing::NetPoint*> get_all_netpoints();
 
   /** @brief Retrieve the root netzone, containing all others */
   simgrid::s4u::NetZone* getNetRoot();
 
-  /** @brief Retrieve the netzone of the given name (or nullptr if not found) */
   simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name);
 
   /** @brief Retrieves all netzones of the same type than the subtype of the whereto vector */
   template <class T> void getNetzoneByType(std::vector<T*> * whereto) { netzoneByTypeRecursive(getNetRoot(), whereto); }
+
   /** @brief Retrieve the netcard of the given name (or nullptr if not found) */
   simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name);
-  void getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*> * list);
 
   /** Returns whether SimGrid was initialized yet -- mostly for internal use */
-  static bool isInitialized();
-
+  static bool is_initialized();
   /** @brief set a configuration variable
    *
-   * Do --help on any simgrid binary to see the list of currently existing configuration variables (see @ref options).
+   * Do --help on any simgrid binary to see the list of currently existing configuration variables (see also @ref
+   * options).
    *
    * Example:
-   * e->setConfig("host/model","ptask_L07");
+   * e->set_config("host/model:ptask_L07");
    */
-  void setConfig(std::string str);
+  void set_config(std::string str);
 
+  simgrid::kernel::EngineImpl* pimpl;
+
+private:
+  static s4u::Engine* instance_;
+
+  //////////////// Deprecated functions
+public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(const char* platf)
   {
     load_platform(platf);
@@ -199,11 +206,17 @@ public:
     return get_all_storages();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_clock()") static double getClock() { return get_clock(); }
-
-  simgrid::kernel::EngineImpl* pimpl;
-
-private:
-  static s4u::Engine* instance_;
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_netpoints()") void getNetpointList(
+      std::vector<simgrid::kernel::routing::NetPoint*>* list);
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_instance()") static s4u::Engine* getInstance()
+  {
+    return get_instance();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::is_initialized()") static bool isInitialized()
+  {
+    return is_initialized();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::set_config()") void setConfig(std::string str) { set_config(str); }
 };
 
 /** Callback fired when the platform is created (ie, the xml file parsed),

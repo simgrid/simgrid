@@ -16,7 +16,7 @@ class EngineImpl {
 public:
   EngineImpl();
   virtual ~EngineImpl();
-  kernel::routing::NetZoneImpl* netRoot_ = nullptr;
+  kernel::routing::NetZoneImpl* netzone_root_ = nullptr;
 
 private:
   std::map<std::string, simgrid::s4u::Host*> hosts_;

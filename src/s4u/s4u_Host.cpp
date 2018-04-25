@@ -30,7 +30,7 @@ simgrid::xbt::signal<void(Host&)> Host::onSpeedChange;
 Host::Host(const char* name) : name_(name)
 {
   xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
-  Engine::getInstance()->host_register(std::string(name_), this);
+  Engine::get_instance()->host_register(std::string(name_), this);
   new simgrid::surf::HostImpl(this);
 }
 
@@ -40,7 +40,7 @@ Host::~Host()
 
   delete pimpl_;
   if (pimpl_netpoint != nullptr) // not removed yet by a children class
-    simgrid::s4u::Engine::getInstance()->netpoint_unregister(pimpl_netpoint);
+    simgrid::s4u::Engine::get_instance()->netpoint_unregister(pimpl_netpoint);
   delete pimpl_cpu;
   delete mounts;
 }
@@ -58,26 +58,26 @@ void Host::destroy()
   if (not currentlyDestroying_) {
     currentlyDestroying_ = true;
     onDestruction(*this);
-    Engine::getInstance()->host_unregister(std::string(name_));
+    Engine::get_instance()->host_unregister(std::string(name_));
     delete this;
   }
 }
 
 Host* Host::by_name(std::string name)
 {
-  return Engine::getInstance()->host_by_name(name);
+  return Engine::get_instance()->host_by_name(name);
 }
 Host* Host::by_name(const char* name)
 {
-  return Engine::getInstance()->host_by_name(std::string(name));
+  return Engine::get_instance()->host_by_name(std::string(name));
 }
 Host* Host::by_name_or_null(const char* name)
 {
-  return Engine::getInstance()->host_by_name_or_null(std::string(name));
+  return Engine::get_instance()->host_by_name_or_null(std::string(name));
 }
 Host* Host::by_name_or_null(std::string name)
 {
-  return Engine::getInstance()->host_by_name_or_null(name);
+  return Engine::get_instance()->host_by_name_or_null(name);
 }
 
 Host* Host::current()

@@ -22,7 +22,7 @@ NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* 
     id_ = netzone_p->addComponent(this);
   else
     id_ = static_cast<decltype(id_)>(-1);
-  simgrid::s4u::Engine::getInstance()->netpoint_register(this);
+  simgrid::s4u::Engine::get_instance()->netpoint_register(this);
   simgrid::kernel::routing::NetPoint::onCreation(this);
 }
 }
@@ -35,5 +35,5 @@ NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* 
  */
 simgrid::kernel::routing::NetPoint* sg_netpoint_by_name_or_null(const char* name)
 {
-  return simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name);
+  return simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(name);
 }

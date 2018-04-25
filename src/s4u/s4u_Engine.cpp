@@ -47,7 +47,8 @@ Engine::~Engine()
   s4u::Engine::instance_ = nullptr;
 }
 
-Engine* Engine::getInstance()
+/** @brief Retrieve the engine singleton */
+Engine* Engine::get_instance()
 {
   if (s4u::Engine::instance_ == nullptr)
     return new Engine(0, nullptr);
@@ -188,16 +189,16 @@ void Engine::run()
 
 s4u::NetZone* Engine::getNetRoot()
 {
-  return pimpl->netRoot_;
+  return pimpl->netzone_root_;
 }
 
-static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* name)
+static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char* name)
 {
   if (not strcmp(current->get_cname(), name))
     return current;
 
   for (auto const& elem : *(current->getChildren())) {
-    simgrid::s4u::NetZone* tmp = netzoneByNameRecursive(elem, name);
+    simgrid::s4u::NetZone* tmp = netzone_by_name_recursive(elem, name);
     if (tmp != nullptr) {
       return tmp;
     }
@@ -208,7 +209,7 @@ static s4u::NetZone* netzoneByNameRecursive(s4u::NetZone* current, const char* n
 /** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
 NetZone* Engine::getNetzoneByNameOrNull(const char* name)
 {
-  return netzoneByNameRecursive(getNetRoot(), name);
+  return netzone_by_name_recursive(getNetRoot(), name);
 }
 
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
@@ -224,6 +225,14 @@ void Engine::getNetpointList(std::vector<simgrid::kernel::routing::NetPoint*>* l
   for (auto const& kv : pimpl->netpoints_)
     list->push_back(kv.second);
 }
+std::vector<simgrid::kernel::routing::NetPoint*> Engine::get_all_netpoints()
+{
+  std::vector<simgrid::kernel::routing::NetPoint*> res;
+  for (auto const& kv : pimpl->netpoints_)
+    res.push_back(kv.second);
+  return res;
+}
+
 /** @brief Register a new netpoint to the system */
 void Engine::netpoint_register(simgrid::kernel::routing::NetPoint* point)
 {
@@ -240,11 +249,11 @@ void Engine::netpoint_unregister(simgrid::kernel::routing::NetPoint* point)
   });
 }
 
-bool Engine::isInitialized()
+bool Engine::is_initialized()
 {
   return Engine::instance_ != nullptr;
 }
-void Engine::setConfig(std::string str)
+void Engine::set_config(std::string str)
 {
   simgrid::config::set_parse(std::move(str));
 }

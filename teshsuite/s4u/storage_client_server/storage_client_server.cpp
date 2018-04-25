@@ -91,7 +91,7 @@ static void get_set_storage_data(const std::string& storage_name)
 
 static void dump_platform_storages()
 {
-  std::vector<simgrid::s4u::Storage*> storages = simgrid::s4u::Engine::getInstance()->get_all_storages();
+  std::vector<simgrid::s4u::Storage*> storages = simgrid::s4u::Engine::get_instance()->get_all_storages();
 
   for (auto const& s : storages) {
     XBT_INFO("Storage %s is attached to %s", s->get_cname(), s->getHost()->get_cname());

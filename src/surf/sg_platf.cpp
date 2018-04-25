@@ -95,7 +95,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(std::string name, const 
 
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
-  xbt_assert(nullptr == simgrid::s4u::Engine::getInstance()->getNetpointByNameOrNull(name),
+  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
   simgrid::kernel::routing::NetPoint* netpoint =
@@ -391,7 +391,7 @@ void sg_platf_new_mount(simgrid::kernel::routing::MountCreationArgs* mount)
 
   if (mount_list.empty())
     XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.insert({mount->name, simgrid::s4u::Engine::getInstance()->storage_by_name(mount->storageId)->getImpl()});
+  mount_list.insert({mount->name, simgrid::s4u::Engine::get_instance()->storage_by_name(mount->storageId)->getImpl()});
 }
 
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
@@ -414,7 +414,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     std::string msg = std::string("Cannot create actor '") + actor->function + "': host '" + actor->host +
                       "' does not exist\nExisting hosts: '";
 
-    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::getInstance()->get_all_hosts();
+    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
 
     for (auto const& host : list) {
       msg += host->get_name();
@@ -602,9 +602,9 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCre
   }
 
   if (current_routing == nullptr) { /* it is the first one */
-    xbt_assert(simgrid::s4u::Engine::getInstance()->pimpl->netRoot_ == nullptr,
+    xbt_assert(simgrid::s4u::Engine::get_instance()->pimpl->netzone_root_ == nullptr,
                "All defined components must belong to a networking zone.");
-    simgrid::s4u::Engine::getInstance()->pimpl->netRoot_ = new_zone;
+    simgrid::s4u::Engine::get_instance()->pimpl->netzone_root_ = new_zone;
 
   } else {
     /* set the father behavior */

@@ -23,18 +23,18 @@ void XBT_ATTRIB_DEPRECATED_v322(
     "simgrid::s4u::getStorageList() is deprecated in favor of Engine::getAllStorages(). Please switch before v3.22")
     getStorageList(std::map<std::string, Storage*>* whereTo)
 {
-  for (auto const& s : simgrid::s4u::Engine::getInstance()->get_all_storages())
+  for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages())
     whereTo->insert({s->get_name(), s});
 }
 
 Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
 {
-  simgrid::s4u::Engine::getInstance()->storage_register(name, this);
+  simgrid::s4u::Engine::get_instance()->storage_register(name, this);
 }
 
 Storage* Storage::byName(std::string name)
 {
-  return Engine::getInstance()->storage_by_name_or_null(name);
+  return Engine::get_instance()->storage_by_name_or_null(name);
 }
 
 const std::string& Storage::get_name() const
@@ -172,7 +172,7 @@ sg_storage_t sg_storage_get_by_name(const char* name)
  */
 xbt_dynar_t sg_storages_as_dynar()
 {
-  std::vector<simgrid::s4u::Storage*> storage_list = simgrid::s4u::Engine::getInstance()->get_all_storages();
+  std::vector<simgrid::s4u::Storage*> storage_list = simgrid::s4u::Engine::get_instance()->get_all_storages();
   xbt_dynar_t res                                  = xbt_dynar_new(sizeof(sg_storage_t), nullptr);
   for (auto const& s : storage_list)
     xbt_dynar_push(res, &s);

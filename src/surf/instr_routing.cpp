@@ -266,7 +266,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer.clear();
   std::set<std::string>* filter = new std::set<std::string>;
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), simgrid::instr::Container::getRoot(),
+  recursiveGraphExtraction(simgrid::s4u::Engine::get_instance()->getNetRoot(), simgrid::instr::Container::getRoot(),
                            filter);
   XBT_DEBUG ("Graph extraction finished.");
   delete filter;
@@ -374,7 +374,7 @@ xbt_graph_t instr_routing_platform_graph ()
   xbt_graph_t ret = xbt_graph_new_graph (0, nullptr);
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
-  recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::getInstance()->getNetRoot(),
+  recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::get_instance()->getNetRoot(),
                               simgrid::instr::Container::getRoot());
   delete nodes;
   delete edges;

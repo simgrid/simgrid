@@ -19,9 +19,9 @@ int main(int argc, char **argv)
   xbt_dynar_t hosts = sg_hosts_as_dynar();
   std::printf("Host count: %zu, link number: %d\n", sg_host_count(), sg_link_count());
 
-  std::vector<simgrid::kernel::routing::NetPoint*> netcardList;
-  simgrid::s4u::Engine::getInstance()->getNetpointList(&netcardList);
-  std::sort(netcardList.begin(), netcardList.end(),
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
+      simgrid::s4u::Engine::get_instance()->get_all_netpoints();
+  std::sort(netpoints.begin(), netpoints.end(),
             [](simgrid::kernel::routing::NetPoint* a, simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
             });
@@ -41,8 +41,8 @@ int main(int argc, char **argv)
   }
   xbt_dynar_free(&hosts);
 
-  std::printf("NetCards count: %zu\n", netcardList.size());
-  for (auto const& nc : netcardList)
+  std::printf("NetCards count: %zu\n", netpoints.size());
+  for (auto const& nc : netpoints)
     std::printf("   - Seen: \"%s\". Type: %s\n", nc->get_cname(),
                 nc->is_router() ? "router" : (nc->is_netzone() ? "netzone" : (nc->is_host() ? "host" : "buggy")));
 
