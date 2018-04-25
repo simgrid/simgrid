@@ -7,7 +7,7 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/include/instr/instr_interface.hpp"
+#include "src/instr/instr_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");

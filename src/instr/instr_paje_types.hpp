@@ -95,6 +95,7 @@ public:
   void pushEvent(std::string value_name);
   void pushEvent(std::string value_name, TIData* extra);
   void popEvent();
+  void popEvent(TIData* extra);
 };
 }
 }

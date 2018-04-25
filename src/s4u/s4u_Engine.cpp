@@ -5,7 +5,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "instr/instr_interface.hpp"
 #include "mc/mc.h"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
@@ -15,6 +14,7 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.h"
+#include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
@@ -23,7 +23,8 @@ XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface")
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void()> onPlatformCreated;
+xbt::signal<void()> on_platform_creation;
+xbt::signal<void()> on_platform_created;
 xbt::signal<void()> onSimulationEnd;
 xbt::signal<void(double)> onTimeAdvance;
 xbt::signal<void(void)> onDeadlock;

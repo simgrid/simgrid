@@ -2,7 +2,6 @@
 
 set(EXTRA_DIST
   src/bindings/java/MANIFEST.in
-  src/include/instr/instr_interface.hpp
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.hpp
@@ -328,7 +327,6 @@ set(SURF_SRC
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
-  src/surf/instr_routing.cpp
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
@@ -553,6 +551,7 @@ set(TRACING_SRC
   src/instr/instr_paje_types.hpp
   src/instr/instr_paje_values.cpp
   src/instr/instr_paje_values.hpp
+  src/instr/instr_platform.cpp
   src/instr/instr_private.hpp
   src/instr/instr_smpi.hpp
   src/instr/instr_resource_utilization.cpp

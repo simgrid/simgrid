@@ -185,9 +185,6 @@ public:
 void routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl* bb);
 /*** END of the parsing cruft ***/
 
-XBT_PUBLIC void sg_platf_begin(); // Start a new platform
-XBT_PUBLIC void sg_platf_end();   // Finish the creation of the platform
-
 XBT_PUBLIC simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone); // Begin description of new Zone
 XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
 

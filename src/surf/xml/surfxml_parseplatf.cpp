@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf/surf.hpp"
-#include "instr/instr_interface.hpp" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -60,15 +59,6 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
   }
 }
 
-static int after_config_done;
-void parse_after_config() {
-  if (not after_config_done) {
-    TRACE_start();
-
-    after_config_done = 1;
-  }
-}
-
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const char *file)
 {
@@ -105,7 +95,6 @@ void parse_platform_file(const char *file)
   int parse_status;
 
   /* init the flex parser */
-  after_config_done = 0;
   surf_parse_open(file);
 
   /* Do the actual parsing */

@@ -16,6 +16,7 @@
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/simgrid/sg_config.hpp"
+#include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
@@ -49,13 +50,14 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 /** Module management function: creates all internal data structures */
 void sg_platf_init()
 {
-  simgrid::s4u::onPlatformCreated.connect(check_disk_attachment);
+  simgrid::s4u::on_platform_creation.connect(TRACE_start);
+  simgrid::s4u::on_platform_created.connect(check_disk_attachment);
 }
 
 /** Module management function: frees all internal data structures */
 void sg_platf_exit() {
   simgrid::surf::on_cluster.disconnectSlots();
-  simgrid::s4u::onPlatformCreated.disconnectSlots();
+  simgrid::s4u::on_platform_created.disconnectSlots();
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -492,12 +494,6 @@ void sg_platf_new_peer(simgrid::kernel::routing::PeerCreationArgs* peer)
     host->pimpl_cpu->set_speed_trace(peer->speed_trace);
 }
 
-void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
-
-void sg_platf_end() {
-  simgrid::s4u::onPlatformCreated();
-}
-
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
 {
@@ -617,7 +613,6 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCre
 
   /* set the new current component of the tree */
   current_routing = new_zone;
-
   simgrid::s4u::NetZone::onCreation(*new_zone); // notify the signal
 
   return new_zone;

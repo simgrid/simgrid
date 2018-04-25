@@ -10,6 +10,7 @@
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
 #include "src/kernel/context/Context.hpp"
+#include "xbt/xbt_os_thread.h"
 
 #include <boost/optional.hpp>
 
