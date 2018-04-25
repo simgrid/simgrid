@@ -92,8 +92,8 @@ add_custom_target(gforge-sync
   COMMAND ${RSYNC_CMD} doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png
   doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 
-  COMMAND ${RSYNC_CMD} src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/
-  COMMAND ${RSYNC_CMD} src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
+  COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/
+  COMMAND ${RSYNC_CMD} ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
 
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
   )
