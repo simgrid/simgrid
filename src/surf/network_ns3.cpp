@@ -165,7 +165,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::Full)
   });
   simgrid::surf::on_cluster.connect(&clusterCreation_cb);
 
-  simgrid::s4u::onPlatformCreated.connect(&postparse_cb);
+  simgrid::s4u::on_platform_created.connect(&postparse_cb);
   simgrid::s4u::NetZone::onRouteCreation.connect(&routeCreation_cb);
 }
 

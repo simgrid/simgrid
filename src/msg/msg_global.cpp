@@ -6,8 +6,8 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 
-#include "instr/instr_interface.hpp"
 #include "mc/mc.h"
+#include "src/instr/instr_private.hpp"
 #include "src/msg/msg_private.hpp"
 #include <xbt/config.hpp>
 

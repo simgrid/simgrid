@@ -75,20 +75,23 @@ static bool trace_active     = false;
 
 simgrid::instr::TraceFormat simgrid::instr::trace_format = simgrid::instr::TraceFormat::Paje;
 
-int TRACE_start()
+void TRACE_start()
 {
+  if (trace_active)
+    return;
+
   // tracing system must be:
   //    - enabled (with --cfg=tracing:yes)
   //    - already configured (TRACE_global_init already called)
   if (TRACE_is_enabled()) {
-    instr_routing_define_callbacks();
+    instr_define_callbacks();
 
     XBT_DEBUG("Tracing starts");
     /* init the tracing module to generate the right output */
 
     /* open the trace file(s) */
     std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
-    XBT_DEBUG("Tracing format %s\n", format.c_str());
+    XBT_DEBUG("Tracing format %s", format.c_str());
     if (format == "Paje") {
       TRACE_paje_start();
     } else if (format == "TI") {
@@ -98,50 +101,40 @@ int TRACE_start()
       xbt_die("Unknown trace format :%s ", format.c_str());
     }
 
-    /* activate trace */
-    if (trace_active) {
-      THROWF(tracing_error, 0, "Tracing is already active");
-    }
     trace_active = true;
     XBT_DEBUG("Tracing is on");
   }
-  return 0;
 }
 
-int TRACE_end()
+void TRACE_end()
 {
-  int retval;
-  if (not trace_active) {
-    retval = 1;
+  if (not trace_active)
+    return;
+
+  /* dump trace buffer */
+  TRACE_last_timestamp_to_dump = surf_get_clock();
+  TRACE_paje_dump_buffer(true);
+
+  simgrid::instr::Type* root_type = simgrid::instr::Container::getRoot()->type_;
+  /* destroy all data structures of tracing (and free) */
+  delete simgrid::instr::Container::getRoot();
+  delete root_type;
+
+  /* close the trace files */
+  std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
+  XBT_DEBUG("Tracing format %s\n", format.c_str());
+  if (format == "Paje") {
+    TRACE_paje_end();
+  } else if (format == "TI") {
+    TRACE_TI_end();
   } else {
-    retval = 0;
-
-    /* dump trace buffer */
-    TRACE_last_timestamp_to_dump = surf_get_clock();
-    TRACE_paje_dump_buffer(true);
-
-    simgrid::instr::Type* root_type = simgrid::instr::Container::getRoot()->type_;
-    /* destroy all data structures of tracing (and free) */
-    delete simgrid::instr::Container::getRoot();
-    delete root_type;
-
-    /* close the trace files */
-    std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
-    XBT_DEBUG("Tracing format %s\n", format.c_str());
-    if (format == "Paje") {
-      TRACE_paje_end();
-    } else if (format == "TI") {
-      TRACE_TI_end();
-    }else{
-      xbt_die("Unknown trace format :%s ", format.c_str());
-    }
-
-    /* de-activate trace */
-    trace_active = false;
-    XBT_DEBUG("Tracing is off");
-    XBT_DEBUG("Tracing system is shutdown");
+    xbt_die("Unknown trace format :%s ", format.c_str());
   }
-  return retval;
+
+  /* de-activate trace */
+  trace_active = false;
+  XBT_DEBUG("Tracing is off");
+  XBT_DEBUG("Tracing system is shutdown");
 }
 
 bool TRACE_needs_platform ()

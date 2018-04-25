@@ -6,8 +6,8 @@
 /* sg_config: configuration infrastructure for the simulation world         */
 
 #include "simgrid/sg_config.hpp"
-#include "instr/instr_interface.hpp"
 #include "simgrid/instr.h"
+#include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/mc/mc_config.hpp"

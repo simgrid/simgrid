@@ -208,7 +208,10 @@ private:
 
 /** Callback fired when the platform is created (ie, the xml file parsed),
  * right before the actual simulation starts. */
-extern XBT_PUBLIC xbt::signal<void()> onPlatformCreated;
+extern XBT_PUBLIC xbt::signal<void()> on_platform_created;
+
+/** Callback fired when the platform is about to be created (ie, just before the xml file is parsed) */
+extern XBT_PUBLIC xbt::signal<void()> on_platform_creation;
 
 /** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
 extern XBT_PUBLIC xbt::signal<void()> onSimulationEnd;

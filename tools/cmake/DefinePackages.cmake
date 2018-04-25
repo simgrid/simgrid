@@ -2,7 +2,6 @@
 
 set(EXTRA_DIST
   src/bindings/java/MANIFEST.in
-  src/include/instr/instr_interface.hpp
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.hpp
