@@ -80,6 +80,11 @@ void StateType::popEvent()
   events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, nullptr));
 }
 
+void StateType::popEvent(TIData* extra)
+{
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, extra));
+}
+
 VariableType::VariableType(std::string name, std::string color, Type* father) : Type(name, name, color, father)
 {
   XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
