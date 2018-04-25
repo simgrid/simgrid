@@ -255,7 +255,7 @@ void create_maestro(std::function<void()> code)
   maestro           = new simgrid::kernel::actor::ActorImpl();
   maestro->pid = simix_process_maxpid++;
   maestro->name = "";
-  maestro->userdata = nullptr;
+  maestro->setUserData(nullptr);
 
   if (not code) {
     maestro->context = SIMIX_context_new(std::function<void()>(), nullptr, maestro);
@@ -306,7 +306,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   process->pid            = simix_process_maxpid++;
   process->name           = simgrid::xbt::string(name);
   process->host           = host;
-  process->userdata       = data;
+  process->setUserData(data);
   process->simcall.issuer = process;
 
   if (parent_process != nullptr) {
@@ -366,7 +366,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   process->pid = simix_process_maxpid++;
   process->name = std::string(name);
   process->host = host;
-  process->userdata       = data;
+  process->setUserData(data);
   process->simcall.issuer = process;
 
   if (parent_process != nullptr) {
@@ -716,7 +716,7 @@ void SIMIX_process_yield(smx_actor_t self)
     SIMIX_process_on_exit_runall(self);
     /* Add the process to the list of process to restart, only if the host is down */
     if (self->auto_restart && self->host->isOff()) {
-      SIMIX_host_add_auto_restart_process(self->host, self->get_cname(), self->code, self->userdata,
+      SIMIX_host_add_auto_restart_process(self->host, self->get_cname(), self->code, self->getUserData(),
                                           SIMIX_timer_get_date(self->kill_timer), self->getProperties(),
                                           self->auto_restart);
     }

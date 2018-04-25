@@ -87,7 +87,7 @@ simgrid::smpi::Process* smpi_process()
   ActorPtr me = Actor::self();
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
-  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->get_impl()->userdata);
+  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->get_impl()->getUserData());
   return static_cast<simgrid::smpi::Process*>(msgExt->data);
 }
 

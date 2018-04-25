@@ -66,7 +66,7 @@ void Process::set_data(int* argc, char*** argv)
     finalization_barrier_ = barrier;
 
   process_                                                                  = simgrid::s4u::Actor::self();
-  static_cast<simgrid::msg::ActorExt*>(process_->get_impl()->userdata)->data = this;
+  static_cast<simgrid::msg::ActorExt*>(process_->get_impl()->getUserData())->data = this;
 
   if (*argc > 3) {
     memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));

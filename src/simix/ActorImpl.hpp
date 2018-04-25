@@ -71,14 +71,14 @@ public:
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
-  void* userdata = nullptr;                      /* kept for compatibility, it should be replaced with moddata */
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
 
-  /* Refcounting */
 private:
+  void* userdata = nullptr; /* kept for compatibility, it should be replaced with moddata */
+  /* Refcounting */
   std::atomic_int_fast32_t refcount_{0};
 
 public:
