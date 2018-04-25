@@ -14,48 +14,47 @@
 #include "surf/surf.hpp"
 #include "xbt/graph.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_routing, instr, "Tracing platform hierarchy");
 
 static std::vector<simgrid::instr::NetZoneContainer*> currentContainer; /* push and pop, used only in creation */
 
-static const char *instr_node_name (xbt_node_t node)
+static const char* instr_node_name(xbt_node_t node)
 {
-  void *data = xbt_graph_node_get_data(node);
-  return static_cast<char*>(data);
+  return static_cast<char*>(xbt_graph_node_get_data(node));
 }
 
-static container_t lowestCommonAncestor (container_t a1, container_t a2)
+static container_t lowestCommonAncestor(container_t a1, container_t a2)
 {
-  //this is only an optimization (since most of a1 and a2 share the same parent)
+  // this is only an optimization (since most of a1 and a2 share the same parent)
   if (a1->father_ == a2->father_)
     return a1->father_;
 
-  //create an array with all ancestors of a1
+  // create an array with all ancestors of a1
   std::vector<container_t> ancestors_a1;
   container_t p = a1->father_;
-  while (p){
+  while (p) {
     ancestors_a1.push_back(p);
     p = p->father_;
   }
 
-  //create an array with all ancestors of a2
+  // create an array with all ancestors of a2
   std::vector<container_t> ancestors_a2;
   p = a2->father_;
-  while (p){
+  while (p) {
     ancestors_a2.push_back(p);
     p = p->father_;
   }
 
-  //find the lowest ancestor
-  p = nullptr;
+  // find the lowest ancestor
+  p     = nullptr;
   int i = ancestors_a1.size() - 1;
   int j = ancestors_a2.size() - 1;
-  while (i >= 0 && j >= 0){
+  while (i >= 0 && j >= 0) {
     container_t a1p = ancestors_a1.at(i);
     container_t a2p = ancestors_a2.at(j);
-    if (a1p == a2p){
+    if (a1p == a2p) {
       p = a1p;
-    }else{
+    } else {
       break;
     }
     i--;
@@ -66,16 +65,16 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
 
 static void linkContainers(container_t src, container_t dst, std::set<std::string>* filter)
 {
-  //ignore loopback
+  // ignore loopback
   if (src->get_name() == "__loopback__" || dst->get_name() == "__loopback__") {
-    XBT_DEBUG ("  linkContainers: ignoring loopback link");
+    XBT_DEBUG("  linkContainers: ignoring loopback link");
     return;
   }
 
-  //find common father
-  container_t father = lowestCommonAncestor (src, dst);
+  // find common father
+  container_t father = lowestCommonAncestor(src, dst);
   if (not father) {
-    xbt_die ("common father unknown, this is a tracing problem");
+    xbt_die("common father unknown, this is a tracing problem");
   }
 
   // check if we already register this pair (we only need one direction)
@@ -94,17 +93,17 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   filter->insert(aux1);
   filter->insert(aux2);
 
-  //declare type
+  // declare type
   std::string link_typename = father->type_->get_name() + "-" + src->type_->get_name() +
                               std::to_string(src->type_->get_id()) + "-" + dst->type_->get_name() +
                               std::to_string(dst->type_->get_id());
   simgrid::instr::LinkType* link = father->type_->getOrCreateLinkType(link_typename, src->type_, dst->type_);
   link->setCallingContainer(father);
 
-  //register EDGE types for triva configuration
+  // register EDGE types for triva configuration
   trivaEdgeTypes.insert(link->get_name());
 
-  //create the link
+  // create the link
   static long long counter = 0;
 
   std::string key = std::to_string(counter);
@@ -125,14 +124,14 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->get_cname());
   if (not netzone->getChildren()->empty()) {
-    //bottom-up recursion
+    // bottom-up recursion
     for (auto const& nz_son : *netzone->getChildren()) {
       container_t child_container = container->children_.at(nz_son->get_cname());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
   }
 
-  xbt_graph_t graph = xbt_graph_new_graph (0, nullptr);
+  xbt_graph_t graph = xbt_graph_new_graph(0, nullptr);
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
 
@@ -166,13 +165,13 @@ static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
       mpi->getOrCreateStateType("MIGRATE_STATE");
     }
 
-    if (TRACE_needs_platform()){
+    if (TRACE_needs_platform()) {
       currentContainer.push_back(root);
     }
     return;
   }
 
-  if (TRACE_needs_platform()){
+  if (TRACE_needs_platform()) {
     simgrid::instr::NetZoneContainer* container =
         new simgrid::instr::NetZoneContainer(id, currentContainer.size(), currentContainer.back());
     currentContainer.push_back(container);
@@ -181,7 +180,7 @@ static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
 
 static void instr_netzone_on_seal(simgrid::s4u::NetZone& /*netzone*/)
 {
-  if (TRACE_needs_platform()){
+  if (TRACE_needs_platform()) {
     currentContainer.pop_back();
   }
 }
@@ -264,10 +263,10 @@ static void instr_on_platform_created()
 {
   currentContainer.clear();
   std::set<std::string>* filter = new std::set<std::string>;
-  XBT_DEBUG ("Starting graph extraction.");
+  XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(simgrid::s4u::Engine::getInstance()->getNetRoot(), simgrid::instr::Container::getRoot(),
                            filter);
-  XBT_DEBUG ("Graph extraction finished.");
+  XBT_DEBUG("Graph extraction finished.");
   delete filter;
   TRACE_paje_dump_buffer(true);
 }
@@ -357,7 +356,7 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
                                         container_t container)
 {
   if (not netzone->getChildren()->empty()) {
-    //bottom-up recursion
+    // bottom-up recursion
     for (auto const& netzone_child : *netzone->getChildren()) {
       container_t child_container = container->children_.at(netzone_child->get_cname());
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
@@ -367,9 +366,9 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
   static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->get_graph(graph, nodes, edges);
 }
 
-xbt_graph_t instr_routing_platform_graph ()
+xbt_graph_t instr_routing_platform_graph()
 {
-  xbt_graph_t ret = xbt_graph_new_graph (0, nullptr);
+  xbt_graph_t ret = xbt_graph_new_graph(0, nullptr);
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
   recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::getInstance()->getNetRoot(),
@@ -379,13 +378,13 @@ xbt_graph_t instr_routing_platform_graph ()
   return ret;
 }
 
-void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
+void instr_routing_platform_graph_export_graphviz(xbt_graph_t g, const char* filename)
 {
   unsigned int cursor = 0;
-  xbt_node_t node = nullptr;
-  xbt_edge_t edge = nullptr;
+  xbt_node_t node     = nullptr;
+  xbt_edge_t edge     = nullptr;
 
-  FILE *file = fopen(filename, "w");
+  FILE* file = fopen(filename, "w");
   xbt_assert(file, "Failed to open %s \n", filename);
 
   if (g->directed)
@@ -398,12 +397,12 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
   fprintf(file, "  node [shape=box, style=filled]\n");
   fprintf(file, "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
 
-  xbt_dynar_foreach(g->nodes, cursor, node) {
+  xbt_dynar_foreach (g->nodes, cursor, node) {
     fprintf(file, "  \"%s\";\n", instr_node_name(node));
   }
-  xbt_dynar_foreach(g->edges, cursor, edge) {
-    const char *src_s = instr_node_name (edge->src);
-    const char *dst_s = instr_node_name (edge->dst);
+  xbt_dynar_foreach (g->edges, cursor, edge) {
+    const char* src_s = instr_node_name(edge->src);
+    const char* dst_s = instr_node_name(edge->dst);
     if (g->directed)
       fprintf(file, "  \"%s\" -> \"%s\";\n", src_s, dst_s);
     else
