@@ -242,7 +242,6 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
 
 Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
-  bool failed    = false;
   double latency = 0.0;
   std::vector<LinkImpl*> back_route;
   std::vector<LinkImpl*> route;
@@ -254,11 +253,12 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->get_cname(), dst->get_cname());
 
-  failed = std::any_of(route.begin(), route.end(), [](LinkImpl* link) { return link->is_off(); });
+  bool failed = std::any_of(route.begin(), route.end(), [](LinkImpl* link) { return link->is_off(); });
 
   if (cfg_crosstraffic) {
     dst->routeTo(src, back_route, nullptr);
-    failed = std::any_of(back_route.begin(), back_route.end(), [](LinkImpl* const& link) { return link->is_off(); });
+    if (not failed)
+      failed = std::any_of(back_route.begin(), back_route.end(), [](LinkImpl* const& link) { return link->is_off(); });
   }
 
   NetworkCm02Action *action = new NetworkCm02Action(this, size, failed);

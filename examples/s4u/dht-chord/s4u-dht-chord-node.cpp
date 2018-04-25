@@ -184,7 +184,7 @@ void Node::setPredecessor(int predecessor_id)
 void Node::fixFingers()
 {
   XBT_DEBUG("Fixing fingers");
-  int id = findSuccessor(id_ + powers2[next_finger_to_fix]);
+  int id = findSuccessor(id_ + (1U << next_finger_to_fix));
   if (id != -1) {
     if (id != fingers_[next_finger_to_fix]) {
       setFinger(next_finger_to_fix, id);
@@ -201,7 +201,7 @@ void Node::printFingerTable()
     XBT_VERB("My finger table:");
     XBT_VERB("Start | Succ");
     for (int i = 0; i < nb_bits; i++) {
-      XBT_VERB(" %3d  | %3d", (id_ + powers2[i]) % nb_keys, fingers_[i]);
+      XBT_VERB(" %3u  | %3d", (id_ + (1U << i)) % nb_keys, fingers_[i]);
     }
 
     XBT_VERB("Predecessor: %d", pred_id_);

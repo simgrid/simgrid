@@ -19,9 +19,7 @@ template class Extendable<simgrid::s4u::Storage>;
 
 namespace s4u {
 
-void XBT_ATTRIB_DEPRECATED_v322(
-    "simgrid::s4u::getStorageList() is deprecated in favor of Engine::getAllStorages(). Please switch before v3.22")
-    getStorageList(std::map<std::string, Storage*>* whereTo)
+void getStorageList(std::map<std::string, Storage*>* whereTo)
 {
   for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages())
     whereTo->insert({s->get_name(), s});

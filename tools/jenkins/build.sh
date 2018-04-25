@@ -53,12 +53,15 @@ build_mode="$1"
 echo "Build mode $build_mode on $(uname -np)" >&2
 case "$build_mode" in
   "Debug")
+      INSTALL="/builds/simgrid_install"
   ;;
 
   "ModelChecker")
+      INSTALL="/builds/mc_simgrid_install"
   ;;
 
   "DynamicAnalysis")
+      INSTALL=""
   ;;
 
   *)
@@ -114,11 +117,6 @@ echo "XX Configure and build SimGrid"
 echo "XX   pwd: "$(pwd)
 echo "XX"
 set -x
-if [ "$build_mode" = "ModelChecker" ] ; then
-   INSTALL="-DCMAKE_INSTALL_PREFIX=/builds/mc_simgrid_install"
-elif [ "$build_mode" = "Debug" ] ; then
-   INSTALL="-DCMAKE_INSTALL_PREFIX=/builds/simgrid_install"
-fi
 
 if cmake --version | grep -q 3\.11 ; then
   # -DCMAKE_DISABLE_SOURCE_CHANGES=ON is broken with java on CMake 3.11
@@ -128,7 +126,7 @@ else
   MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
 fi
 
-cmake -G"$GENERATOR" $INSTALL \
+cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_smpi_ISP_testsuite=$(onoff test "$build_mode" = "ModelChecker") \
@@ -156,13 +154,12 @@ if [ -f Testing/TAG ] ; then
    mv CTestResults.xml $WORKSPACE
 fi
 
-if test "$(uname)" != "Msys" && test "${build_mode}" = "Debug" -o "${build_mode}" = "ModelChecker" ; then
+if test -n "$INSTALL"; then
   echo "XX"
   echo "XX Test done. Install everything since it's a regular build, not on a Windows."
   echo "XX"
 
-  test "${build_mode}" = "Debug"        && rm -rf /builds/simgrid_install
-  test "${build_mode}" = "ModelChecker" && rm -rf /builds/mc_simgrid_install
+  rm -rf "$INSTALL"
 
   make install
 fi

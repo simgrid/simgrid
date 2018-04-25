@@ -65,7 +65,7 @@ public:
   std::string mbox  = "mb42";
   std::string msg = "GaBuZoMeu";
   explicit Sender() = default; /* Sending the default message */
-  explicit Sender(std::string arg) { /* Sending the specified message */ msg= arg; }
+  explicit Sender(std::string arg) : msg(arg) { /* Sending the specified message */}
   explicit Sender(std::vector<std::string> args)
   {
     /* This constructor is used when we start the actor from the deployment file */

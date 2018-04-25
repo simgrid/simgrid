@@ -249,6 +249,7 @@ XBT_PRIVATE void TRACE_surf_link_set_utilization(const char* resource, const cha
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
 extern XBT_PRIVATE std::set<std::string> trivaEdgeTypes;
 XBT_PRIVATE long long int instr_new_paje_id();
+XBT_PRIVATE void instr_routing_define_callbacks();
 void instr_new_variable_type(std::string new_typename, std::string color);
 void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color);
 void instr_new_user_state_type(std::string father_type, std::string new_typename);

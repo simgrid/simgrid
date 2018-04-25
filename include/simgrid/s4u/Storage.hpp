@@ -20,7 +20,9 @@ extern template class XBT_PUBLIC Extendable<simgrid::s4u::Storage>;
 }
 namespace s4u {
 
-XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
+XBT_ATTRIB_DEPRECATED_v322(
+    "simgrid::s4u::getStorageList() is deprecated in favor of Engine::getAllStorages(). Please switch before v3.22")
+    XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
 
 class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
   friend s4u::Engine;

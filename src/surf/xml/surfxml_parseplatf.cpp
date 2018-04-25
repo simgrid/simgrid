@@ -65,9 +65,6 @@ void parse_after_config() {
   if (not after_config_done) {
     TRACE_start();
 
-    /* Register classical callbacks */
-    storage_register_callbacks();
-
     after_config_done = 1;
   }
 }
