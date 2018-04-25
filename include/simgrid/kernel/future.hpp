@@ -137,7 +137,7 @@ private:
  *  You are not expected to use them directly but to create them
  *  implicitely through a @ref simgrid::kernel::Promise.
  *  Alternatively kernel operations could inherit or contain FutureState
- *  if they are managed with @ref std::shared_ptr.
+ *  if they are managed with std::shared_ptr.
  **/
 template<class T>
 class FutureState : public FutureStateBase {
@@ -261,7 +261,7 @@ template<class T> Future<T> unwrapFuture(Future<Future<T>> future);
  *  );
  *  </pre>
  *
- *  This is based on C++1z @ref std::future but with some differences:
+ *  This is based on C++1z std::future but with some differences:
  *
  *  * there is no thread synchronization (atomic, mutex, condition variable,
  *    etc.) because everything happens in the SimGrid event loop;
@@ -390,7 +390,7 @@ public:
   /** Get the value from the future
    *
    *  The future must be valid and ready in order to make this call.
-   *  @ref std::future blocks when the future is not ready but we are
+   *  std::future blocks when the future is not ready but we are
    *  completely single-threaded so blocking would be a deadlock.
    *  After the call, the future becomes invalid.
    *
@@ -424,7 +424,7 @@ Future<T> unwrapFuture(Future<Future<T>> future)
  *  A @ref Promise is connected to some `Future` and can be used to
  *  set its result.
  *
- *  Similar to @ref std::promise
+ *  Similar to std::promise
  *
  *  <code>
  *  // Create a promise and a future:

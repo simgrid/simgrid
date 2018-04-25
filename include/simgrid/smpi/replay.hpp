@@ -151,7 +151,7 @@ public:
 /**
  * Base class for all ReplayActions.
  * Note that this class actually implements the behavior of each action
- * while the parsing of the replay arguments is done in the @ActionArgParser class.
+ * while the parsing of the replay arguments is done in the ActionArgParser class.
  * In other words: The logic goes here, the setup is done by the ActionArgParser.
  */
 template <class T> class ReplayAction {

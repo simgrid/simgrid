@@ -114,17 +114,17 @@ void VariableType::subEvent(double timestamp, double value)
 LinkType::LinkType(std::string name, std::string alias, Type* father) : ValueType(name, alias, father)
 {
 }
-void LinkType::startEvent(container_t startContainer, std::string value, std::string key)
+void LinkType::startEvent(Container* startContainer, std::string value, std::string key)
 {
   startEvent(startContainer, value, key, -1);
 }
 
-void LinkType::startEvent(container_t startContainer, std::string value, std::string key, int size)
+void LinkType::startEvent(Container* startContainer, std::string value, std::string key, int size)
 {
   new LinkEvent(issuer_, this, PAJE_StartLink, startContainer, value, key, size);
 }
 
-void LinkType::endEvent(container_t endContainer, std::string value, std::string key)
+void LinkType::endEvent(Container* endContainer, std::string value, std::string key)
 {
   new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, key, -1);
 }

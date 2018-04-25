@@ -45,7 +45,7 @@ AllCores is 200 Watts.
 This is enough to compute the consumption as a function of the amount of loaded cores:
 
 <table>
-<tr><th>#Cores loaded</th><th>Consumption</th><th>Explanation</th></tr>
+<tr><th>\#Cores loaded</th><th>Consumption</th><th>Explanation</th></tr>
 <tr><td>0</td><td> 100 Watts</td><td>Idle value</td></tr>
 <tr><td>1</td><td> 120 Watts</td><td>OneCore value</td></tr>
 <tr><td>2</td><td> 147 Watts</td><td>linear extrapolation between OneCore and AllCores</td></tr>

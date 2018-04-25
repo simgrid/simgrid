@@ -156,7 +156,7 @@ For a more "fancy" output, you can use simgrid-colorizer.
 If you installed SimGrid to a non-standard path, you may have to
 specify the full path to simgrid-colorizer on the above line, such as
 \c /opt/simgrid/bin/simgrid-colorizer. If you did not install it at all,
-you can find it in <simgrid_root_directory>/bin/colorize.
+you can find it in \<simgrid_root_directory\>/bin/colorize.
 
 For a classical Gantt-Chart visualization, you can produce a [Paje][fn:5] trace:
 

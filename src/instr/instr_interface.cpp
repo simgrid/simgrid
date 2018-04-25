@@ -930,8 +930,8 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  *  Change a user state previously declared to the given value.
  *
  *  \param host The name of the host to be considered.
- *  \param state The name of the state previously declared.
- *  \param value The new value of the state.
+ *  \param state_name The name of the state previously declared.
+ *  \param value_name The new value of the state.
  *
  *  \see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state, TRACE_host_reset_state
  */

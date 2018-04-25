@@ -30,7 +30,7 @@ Group::Group(int n) : size_(n), rank_to_actor_map_(size_, nullptr), rank_to_inde
   refcount_ = 1;
 }
 
-Group::Group(MPI_Group origin)
+Group::Group(Group* origin)
 {
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();

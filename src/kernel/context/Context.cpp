@@ -12,6 +12,7 @@
  * @brief creates a new context for a user level process
  * @param code a main function
  * @param cleanup_func the function to call when the context stops
+ * @param simix_process
  */
 smx_context_t SIMIX_context_new(
   std::function<void()> code,

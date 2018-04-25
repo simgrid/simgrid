@@ -340,7 +340,7 @@ The hosts generated in the above example are named host-1.cluster, host-2.cluste
 etc.
 
 
-\subsubsection pf_peer \<peer\> (Vivaldi netzones only)
+\subsubsection pf_peer &lt;peer&gt; (Vivaldi netzones only)
 
 This tag represents a peer, as in Peer-to-Peer (P2P) networks. This
 can only be used in Vivaldi NetZones. It creates the following

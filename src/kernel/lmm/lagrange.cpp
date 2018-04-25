@@ -403,6 +403,8 @@ double Lagrange::partial_diff_lambda(double lambda, const Constraint& cnst)
 
 /** \brief Attribute the value bound to var->bound.
  *
+ *  \param func_f    function (f)
+ *  \param func_fp   partial differential of f (f prime, (f'))
  *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
  *
  *  Set default functions to the ones passed as parameters.

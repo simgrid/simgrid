@@ -55,6 +55,7 @@ void simcall_call(smx_actor_t actor)
  * \param flops_amount amount Computation amount (in flops)
  * \param priority computation priority
  * \param bound
+ * \param host host where the synchro will be executed
  * \return A new SIMIX execution synchronization
  */
 smx_activity_t simcall_execution_start(const char* name, double flops_amount, double priority, double bound,

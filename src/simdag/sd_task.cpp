@@ -667,7 +667,6 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  * The estimation is very approximative because the value returned is the time the task would take if it was executed
  * now and if it was the only task.
  *
- * \param task the task to evaluate
  * \param host_count number of hosts on which the task would be executed
  * \param host_list the hosts on which the task would be executed
  * \param flops_amount computation amount for each host(i.e., an array of host_count doubles)

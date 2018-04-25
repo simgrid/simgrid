@@ -793,7 +793,7 @@ void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
  * \param code the main function of the process
  * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can
  * be nullptr.
- * It can be retrieved with the function \ref simcall_process_get_data.
+ * It can be retrieved with the method ActorImpl::getUserData().
  * \param host where the new agent is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code

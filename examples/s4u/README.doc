@@ -58,12 +58,8 @@ TODO: document here the examples about plugins
   - <b>Kill actors</b>.
     @ref examples/s4u/actor-kill/s4u-actor-kill.cpp \n
     Actors can forcefully stop other actors with the @ref
-    simgrid::s4u::Actor::kill(void) method.
-
-  - <b>Kill actors (other function)</b>.
-    @ref examples/s4u/actor-kill-pid/s4u-actor-kill-pid.cpp \n
-    Actors can forcefully stop other actors with the @ref
-    simgrid::s4u::Actor::kill(aid_t) method.
+    simgrid::s4u::Actor::kill(void) or the @ref
+    simgrid::s4u::Actor::kill(aid_t) methods.
 
   - <b>Controling the actor life cycle from the XML</b>.
     @ref examples/s4u/actor-lifetime/s4u-actor-lifetime.cpp 

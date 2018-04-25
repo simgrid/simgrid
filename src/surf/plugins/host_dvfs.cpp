@@ -187,20 +187,20 @@ public:
 
 /**
  *  Add this to your host tag:
- *    - <prop id="plugin/dvfs/governor" value="performance" />
+ *    - \<prop id="plugin/dvfs/governor" value="performance" /\>
  *
  *  Valid values as of now are: performance, powersave, ondemand, conservative
  *  It doesn't matter if you use uppercase or lowercase.
  *
  *  For the sampling rate, use this:
  *
- *    - <prop id="plugin/dvfs/sampling_rate" value="2" />
+ *    - \<prop id="plugin/dvfs/sampling_rate" value="2" /\>
  *
  *  This will run the update() method of the specified governor every 2 seconds
  *  on that host.
  *
- *  These properties can also be used within the <config> tag to configure
- *  these values globally. Using them within the <host> will overwrite this
+ *  These properties can also be used within the \<config\> tag to configure
+ *  these values globally. Using them within the \<host\> will overwrite this
  *  global configuration
  */
 class HostDvfs {

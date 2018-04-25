@@ -144,7 +144,7 @@ double simgrid::trace_mgr::future_evt_set::next_date() const
   return heap_.empty() ? -1.0 : heap_.top().first;
 }
 
-/** @brief Retrieves the next occurring event, or nullptr if none happens before #date */
+/** @brief Retrieves the next occurring event, or nullptr if none happens before date */
 tmgr_trace_event_t simgrid::trace_mgr::future_evt_set::pop_leq(double date, double* value,
                                                                kernel::resource::Resource** resource)
 {

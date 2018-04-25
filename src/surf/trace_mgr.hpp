@@ -48,12 +48,12 @@ namespace simgrid {
 /** @brief Modeling of the availability profile (due to an external load) or the churn
  *
  * There is 4 main concepts in this module:
- * - #DatedValue: a pair <timestamp, value> (both are of type double)
- * - #trace: a list of dated values
- * - #trace_event: links a given trace to a given SimGrid resource.
+ * - #simgrid::trace_mgr::DatedValue: a pair <timestamp, value> (both are of type double)
+ * - #simgrid::trace_mgr::trace: a list of dated values
+ * - #simgrid::trace_mgr::trace_event: links a given trace to a given SimGrid resource.
  *   A Cpu for example has 2 kinds of events: state (ie, is it ON/OFF) and speed,
  *   while a link has 3 iterators: state, bandwidth and latency.
- * - #future_evt_set: makes it easy to find the next occuring event of all traces
+ * - #simgrid::trace_mgr::future_evt_set: makes it easy to find the next occuring event of all traces
  */
 namespace trace_mgr {
 class XBT_PUBLIC DatedValue {

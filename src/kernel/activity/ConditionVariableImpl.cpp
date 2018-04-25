@@ -33,7 +33,6 @@ smx_cond_t SIMIX_cond_init()
 
 /**
  * \brief Handle a condition waiting simcall without timeouts
- * \param simcall the simcall
  */
 void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
 {
@@ -46,7 +45,6 @@ void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex
 
 /**
  * \brief Handle a condition waiting simcall with timeouts
- * \param simcall the simcall
  */
 void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
@@ -91,7 +89,6 @@ ConditionVariableImpl::~ConditionVariableImpl() = default;
  *
  * Signalizes a condition and wakes up a sleeping process.
  * If there are no process sleeping, no action is done.
- * \param cond A condition
  */
 void ConditionVariableImpl::signal()
 {
