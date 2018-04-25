@@ -103,25 +103,27 @@ public final class NativeLib {
 		     "lib"+name+".dylib"             /* mac osx */}) {
 						
 			File fileOut = new File(tempDir.toFile().getAbsolutePath() + File.separator + filename);
+			boolean done = false;
 			try ( // Try-with-resources. These stream will be autoclosed when needed.
 				InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
 				OutputStream out = new FileOutputStream(fileOut);
 			) {
-				if (in == null)
-					continue; // Try the next name: no such file found
-				
-				/* copy the library in position */
-				byte[] buffer = new byte[4096];
-				int bytesRead;
-				while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
-					out.write(buffer, 0, bytesRead);
+				if (in != null) {
+					/* copy the library in position */
+					byte[] buffer = new byte[4096];
+					int bytesRead;
+					while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
+						out.write(buffer, 0, bytesRead);
+					done = true;
+				}
 			}
+			if (done) {
+				/* load that library */
+				System.load(fileOut.getAbsolutePath());
 
-			/* load that library */
-			System.load(fileOut.getAbsolutePath());
-
-			/* It loaded! we're good */
-			return true;
+				/* It loaded! we're good */
+				return true;
+			}
 		}
 		
 		/* No suitable name found */
