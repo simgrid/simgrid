@@ -178,16 +178,15 @@ public class Peer extends Process {
 
   private boolean getPeersData() {
     boolean success = false;
-    boolean sendSuccess = false;
     double timeout = Msg.getClock() + Common.GET_PEERS_TIMEOUT;
     //Build the task to send to the tracker
     TrackerTask taskSend = new TrackerTask(hostname, mailboxTracker, id);
 
-    while (!sendSuccess && Msg.getClock() < timeout) {
+    while (Msg.getClock() < timeout) {
       try {
         Msg.debug("Sending a peer request to the tracker.");
         taskSend.send(Common.TRACKER_MAILBOX,Common.GET_PEERS_TIMEOUT);
-        sendSuccess = true;
+        break;
       }
       catch (MsgException e) {
         e.printStackTrace();
@@ -212,7 +211,6 @@ public class Peer extends Process {
       }
       commReceived = null;
     }
-    commReceived = null;
     return success;
   }
 
