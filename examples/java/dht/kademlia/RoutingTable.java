@@ -95,9 +95,8 @@ public class RoutingTable {
     //We sort the list
     Collections.sort(answer.getNodes());
     //We trim the list
-    while (answer.size() > Common.BUCKET_SIZE) {
-      answer.remove(answer.size() - 1); //TODO: Not the best thing.
-    }
+    answer.trim();
+
     return answer;
   }
 

@@ -31,8 +31,9 @@ public class Answer {
     return nodes.size();
   }
 
-  public void remove(int index) {
-    nodes.remove(index);
+  public void trim() {
+    if (nodes.size() > Common.BUCKET_SIZE)
+      nodes.subList(nodes.size() - Common.BUCKET_SIZE, nodes.size()).clear();
   }
 
   public void add(Contact contact) {
@@ -51,9 +52,8 @@ public class Answer {
     }
     Collections.sort(nodes);
     //Trim the list
-    while (answer.size() > Common.BUCKET_SIZE) {
-      answer.remove(answer.size() - 1);
-    }
+    answer.trim();
+
     return nbAdded;
   }
 
