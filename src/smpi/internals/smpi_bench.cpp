@@ -294,9 +294,6 @@ public:
 
   bool need_more_benchs() const;
 };
-}
-
-std::unordered_map<SampleLocation, LocalData, std::hash<std::string>> samples;
 
 bool LocalData::need_more_benchs() const
 {
@@ -306,6 +303,9 @@ bool LocalData::need_more_benchs() const
   XBT_DEBUG("%s (count:%d iter:%d stderr:%f thres:%f mean:%fs)",
             (res ? "need more data" : "enough benchs"), count, iters, relstderr, threshold, mean);
   return res;
+}
+
+std::unordered_map<SampleLocation, LocalData, std::hash<std::string>> samples;
 }
 
 void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
