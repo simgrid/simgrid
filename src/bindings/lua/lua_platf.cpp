@@ -17,6 +17,7 @@
 #include "src/surf/surf_private.hpp"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 #include <string>
 #include <vector>
