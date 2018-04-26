@@ -82,7 +82,7 @@ void StateType::push_event(std::string value_name)
 
 void StateType::pop_event()
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, nullptr));
+  pop_event(nullptr);
 }
 
 void StateType::pop_event(TIData* extra)
