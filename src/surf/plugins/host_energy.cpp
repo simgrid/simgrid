@@ -461,7 +461,7 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::onStateChange.connect(&onHostChange);
   simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
   simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
-  simgrid::s4u::onSimulationEnd.connect(&onSimulationEnd);
+  simgrid::s4u::on_simulation_end.connect(&onSimulationEnd);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }
 

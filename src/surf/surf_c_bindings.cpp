@@ -140,7 +140,7 @@ double surf_solve(double max_date)
   for (auto const& model : *all_existing_models)
     model->update_actions_state(NOW, time_delta);
 
-  simgrid::s4u::onTimeAdvance(time_delta);
+  simgrid::s4u::on_time_advance(time_delta);
 
   TRACE_paje_dump_buffer(false);
 

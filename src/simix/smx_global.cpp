@@ -544,10 +544,10 @@ void SIMIX_run()
       XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
     }
     SIMIX_display_process_status();
-    simgrid::s4u::onDeadlock();
+    simgrid::s4u::on_deadlock();
     xbt_abort();
   }
-  simgrid::s4u::onSimulationEnd();
+  simgrid::s4u::on_simulation_end();
 }
 
 /**

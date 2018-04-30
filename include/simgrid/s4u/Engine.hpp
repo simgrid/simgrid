@@ -227,13 +227,13 @@ extern XBT_PUBLIC xbt::signal<void()> on_platform_created;
 extern XBT_PUBLIC xbt::signal<void()> on_platform_creation;
 
 /** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
-extern XBT_PUBLIC xbt::signal<void()> onSimulationEnd;
+extern XBT_PUBLIC xbt::signal<void()> on_simulation_end;
 
 /** Callback fired when the time jumps into the future */
-extern XBT_PUBLIC xbt::signal<void(double)> onTimeAdvance;
+extern XBT_PUBLIC xbt::signal<void(double)> on_time_advance;
 
 /** Callback fired when the time cannot jump because of inter-actors deadlock */
-extern XBT_PUBLIC xbt::signal<void(void)> onDeadlock;
+extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
 template <class T> XBT_PRIVATE void netzoneByTypeRecursive(s4u::NetZone* current, std::vector<T*>* whereto)
 {

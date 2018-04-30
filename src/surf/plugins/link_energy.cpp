@@ -214,7 +214,7 @@ void sg_link_energy_plugin_init()
   });
 
   simgrid::s4u::Link::onCommunicate.connect(&onCommunicate);
-  simgrid::s4u::onSimulationEnd.connect(&onSimulationEnd);
+  simgrid::s4u::on_simulation_end.connect(&onSimulationEnd);
 }
 
 /** @ingroup plugin_energy

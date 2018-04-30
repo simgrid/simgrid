@@ -25,9 +25,9 @@ namespace simgrid {
 namespace s4u {
 xbt::signal<void()> on_platform_creation;
 xbt::signal<void()> on_platform_created;
-xbt::signal<void()> onSimulationEnd;
-xbt::signal<void(double)> onTimeAdvance;
-xbt::signal<void(void)> onDeadlock;
+xbt::signal<void()> on_simulation_end;
+xbt::signal<void(double)> on_time_advance;
+xbt::signal<void(void)> on_deadlock;
 
 Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
 
