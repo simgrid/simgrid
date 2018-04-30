@@ -869,7 +869,6 @@ void ETag_surfxml_config()
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
-  simgrid::s4u::on_config_in_platform_done();
   delete current_property_set;
   current_property_set = nullptr;
 }

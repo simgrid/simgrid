@@ -557,6 +557,7 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCre
 
   _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
                             * any further config now that we created some real content */
+  simgrid::s4u::on_config_in_platform_done();
 
   /* search the routing model */
   simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
