@@ -7,7 +7,6 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/instr/instr_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
@@ -248,7 +247,6 @@ double SD_get_clock() {
  */
 void SD_exit()
 {
-  TRACE_end();
 #if SIMGRID_HAVE_JEDULE
   jedule_sd_exit();
 #endif
