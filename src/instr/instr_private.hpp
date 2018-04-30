@@ -258,7 +258,6 @@ void instr_new_value_for_user_state_type(std::string new_typename, const char* v
 XBT_PRIVATE void TRACE_start();
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
-XBT_PRIVATE void TRACE_end();
 XBT_PRIVATE void TRACE_global_init();
 XBT_PRIVATE void TRACE_help(int detailed);
 

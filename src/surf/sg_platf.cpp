@@ -16,7 +16,6 @@
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/simgrid/sg_config.hpp"
-#include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
@@ -50,7 +49,6 @@ static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
 /** Module management function: creates all internal data structures */
 void sg_platf_init()
 {
-  simgrid::s4u::on_platform_creation.connect(TRACE_start);
   simgrid::s4u::on_platform_created.connect(check_disk_attachment);
 }
 

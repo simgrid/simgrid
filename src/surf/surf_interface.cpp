@@ -7,11 +7,11 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/instr/instr_private.hpp" // TRACE_end(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/internal_config.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"
+#include "xbt/module.h"
 
 #include <fstream>
 #include <string>
@@ -311,8 +311,6 @@ void surf_init(int *argc, char **argv)
 
 void surf_exit()
 {
-  TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
-
   simgrid::s4u::Engine::shutdown();
   sg_link_exit();
   for (auto const& e : storage_types) {

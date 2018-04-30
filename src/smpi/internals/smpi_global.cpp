@@ -595,8 +595,6 @@ int smpi_main(const char* executable, int argc, char *argv[])
   }
   smpi_global_destroy();
 
-  TRACE_end();
-
   return smpi_exit_status;
 }
 

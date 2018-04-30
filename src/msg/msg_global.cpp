@@ -100,7 +100,6 @@ static void MSG_exit() {
   if (msg_global==nullptr)
     return;
 
-  TRACE_end();
   delete msg_global;
   msg_global = nullptr;
 }

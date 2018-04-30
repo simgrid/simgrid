@@ -537,8 +537,6 @@ void SIMIX_run()
 
   if (not simix_global->process_list.empty()) {
 
-    TRACE_end();
-
     if (simix_global->process_list.size() <= simix_global->daemons.size()) {
       XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
                    "once the simulation is over. Please fix your on_exit() functions.");

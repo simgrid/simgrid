@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "include/xbt/config.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
 #include <string>
@@ -106,7 +107,7 @@ void TRACE_start()
   }
 }
 
-void TRACE_end()
+static void TRACE_end()
 {
   if (not trace_active)
     return;
@@ -260,6 +261,7 @@ void TRACE_global_init()
     return;
 
   is_initialised = true;
+
   /* name of the tracefile */
   simgrid::config::declare_flag<std::string>(OPT_TRACING_FILENAME, "Trace file created by the instrumented SimGrid.",
                                              "simgrid.trace");
@@ -276,6 +278,11 @@ void TRACE_global_init()
   simgrid::config::declare_flag<int>(OPT_TRACING_PRECISION, "Numerical precision used when timestamping events "
                                                             "(expressed in number of digits after decimal point)",
                                      6);
+
+  /* Connect callbacks */
+  simgrid::s4u::on_platform_creation.connect(TRACE_start);
+  simgrid::s4u::onDeadlock.connect(TRACE_end);
+  simgrid::s4u::onSimulationEnd.connect(TRACE_end);
 }
 
 static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
