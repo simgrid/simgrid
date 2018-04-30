@@ -255,7 +255,6 @@ void instr_new_user_state_type(std::string father_type, std::string new_typename
 void instr_new_value_for_user_state_type(std::string new_typename, const char* value, std::string color);
 
 /* instr_config.c */
-XBT_PRIVATE void TRACE_start();
 XBT_PRIVATE void TRACE_TI_start();
 XBT_PRIVATE void TRACE_TI_end();
 XBT_PRIVATE void TRACE_global_init();

@@ -869,9 +869,8 @@ void ETag_surfxml_config()
       XBT_INFO("The custom configuration '%s' is already defined by user!", elm.first.c_str());
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
-  if (TRACE_is_enabled())
-    TRACE_start();
 
+  simgrid::s4u::on_config_in_platform_done();
   delete current_property_set;
   current_property_set = nullptr;
 }

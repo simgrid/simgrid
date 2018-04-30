@@ -226,6 +226,9 @@ extern XBT_PUBLIC xbt::signal<void()> on_platform_created;
 /** Callback fired when the platform is about to be created (ie, just before the xml file is parsed) */
 extern XBT_PUBLIC xbt::signal<void()> on_platform_creation;
 
+/** Callback fired when some configuration has be done directly in the XML file */
+extern XBT_PUBLIC xbt::signal<void()> on_config_in_platform_done;
+
 /** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
 extern XBT_PUBLIC xbt::signal<void()> on_simulation_end;
 

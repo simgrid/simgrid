@@ -25,6 +25,7 @@ namespace simgrid {
 namespace s4u {
 xbt::signal<void()> on_platform_creation;
 xbt::signal<void()> on_platform_created;
+xbt::signal<void()> on_config_in_platform_done;
 xbt::signal<void()> on_simulation_end;
 xbt::signal<void(double)> on_time_advance;
 xbt::signal<void(void)> on_deadlock;
