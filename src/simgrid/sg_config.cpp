@@ -27,9 +27,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of S
 int _sg_cfg_init_status = 0;
 
 /* instruct the upper layer (simix or simdag) to exit as soon as possible */
-int _sg_cfg_exit_asap = 0;
+bool _sg_cfg_exit_asap = false;
 
-#define sg_cfg_exit_early() do { _sg_cfg_exit_asap = 1; return; } while (0)
+#define sg_cfg_exit_early()                                                                                            \
+  do {                                                                                                                 \
+    _sg_cfg_exit_asap = true;                                                                                          \
+    return;                                                                                                            \
+  } while (0)
 
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
