@@ -7,6 +7,7 @@
 #define INSTR_PAJE_TYPES_HPP
 
 #include "src/instr/instr_private.hpp"
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,7 @@ class Type {
 public:
   std::map<std::string, Type*> children_;
   Container* issuer_ = nullptr;
+  std::stringstream stream_;
 
   Type(std::string name, std::string alias, std::string color, Type* father);
   virtual ~Type();

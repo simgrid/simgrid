@@ -23,6 +23,9 @@ Type::Type(std::string name, std::string alias, std::string color, Type* father)
     father->children_.insert({alias, this});
     XBT_DEBUG("new type %s, child of %s", name_.c_str(), father->get_cname());
   }
+  if (trace_format == simgrid::instr::TraceFormat::Paje) {
+    stream_ << std::fixed << std::setprecision(TRACE_precision());
+  }
 }
 
 Type::~Type()
@@ -133,28 +136,23 @@ void Type::logDefinition(e_event_type event_type)
 {
   if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
-  std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, TRACE_precision(), 0.);
-  stream << std::fixed << std::setprecision(TRACE_precision()) << event_type << " " << get_id();
-  stream << " " << father_->get_id() << " " << get_name();
+  stream_ << event_type << " " << get_id() << " " << father_->get_id() << " " << get_name();
   if (isColored())
-    stream << " \"" << color_ << "\"";
-  XBT_DEBUG("Dump %s", stream.str().c_str());
-  stream << std::endl;
-  fprintf(tracing_file, "%s", stream.str().c_str());
+    stream_ << " \"" << color_ << "\"";
+  XBT_DEBUG("Dump %s", stream_.str().c_str());
+  fprintf(tracing_file, "%s\n", stream_.str().c_str());
 }
 
 void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest)
 {
   if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
-  std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, PAJE_DefineLinkType, TRACE_precision(), 0.);
-  stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DefineLinkType << " " << get_id();
-  stream << " " << father_->get_id() << " " << source->get_id() << " " << dest->get_id() << " " << get_name();
-  XBT_DEBUG("Dump %s", stream.str().c_str());
-  stream << std::endl;
-  fprintf(tracing_file, "%s", stream.str().c_str());
+  stream_ << PAJE_DefineLinkType << " " << get_id() << " " << father_->get_id() << " " << source->get_id();
+  stream_ << " " << dest->get_id() << " " << get_name();
+  XBT_DEBUG("Dump %s", stream_.str().c_str());
+  fprintf(tracing_file, "%s\n", stream_.str().c_str());
 }
 
 Type* Type::byName(std::string name)
