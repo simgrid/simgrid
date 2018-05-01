@@ -13,11 +13,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
-static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
-                             smx_actor_t issuer, smx_simcall_t simcall);
-static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
-                            smx_simcall_t simcall);
-
 /***************************** Raw synchronization *********************************/
 
 smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
