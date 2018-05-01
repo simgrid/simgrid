@@ -223,7 +223,8 @@ public:
  * right before the actual simulation starts. */
 extern XBT_PUBLIC xbt::signal<void()> on_platform_created;
 
-/** Callback fired when the platform is about to be created (ie, just before the xml file is parsed) */
+/** Callback fired when the platform is about to be created
+ * (ie, after any configuration change and just before the resource creation) */
 extern XBT_PUBLIC xbt::signal<void()> on_platform_creation;
 
 /** Callback fired when some configuration has be done directly in the XML file */

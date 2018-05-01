@@ -544,6 +544,8 @@ static void surf_config_models_setup()
 simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   if (not surf_parse_models_setup_already_called) {
+    simgrid::s4u::on_platform_creation();
+
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
      * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
      *

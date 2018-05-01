@@ -390,8 +390,6 @@ void STag_surfxml_platform() {
                              "The most recent formalism that this version of SimGrid understands is v4.1.\n"
                              "Please update your code, or use another, more adapted, file.",
              surf_parsed_filename, version);
-
-  simgrid::s4u::on_platform_creation();
 }
 void ETag_surfxml_platform(){
   simgrid::s4u::on_platform_created();
