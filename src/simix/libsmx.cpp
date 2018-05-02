@@ -217,17 +217,6 @@ void simcall_process_suspend(smx_actor_t process)
 
 /**
  * \ingroup simix_process_management
- * \brief Returns the amount of SIMIX processes in the system
- *
- * Maestro internal process is not counted, only user code processes are
- */
-int simcall_process_count()
-{
-  return simgrid::simix::kernelImmediate(SIMIX_process_count);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Set the user data of a #smx_actor_t.
  *
  * This functions sets the user data associated to \a process.

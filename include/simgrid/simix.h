@@ -197,7 +197,6 @@ XBT_PUBLIC void simcall_process_cleanup(smx_actor_t process);
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
 
 /* Getters and Setters */
-XBT_PUBLIC int simcall_process_count();
 XBT_PUBLIC void simcall_process_set_data(smx_actor_t process, void* data);
 XBT_PUBLIC void simcall_process_set_kill_time(smx_actor_t process, double kill_time);
 XBT_PUBLIC void simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data);
