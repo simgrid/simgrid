@@ -281,7 +281,6 @@ void TRACE_global_init()
 
   /* Connect callbacks */
   simgrid::s4u::on_platform_creation.connect(TRACE_start);
-  simgrid::s4u::on_config_in_platform_done.connect(TRACE_start);
   simgrid::s4u::on_deadlock.connect(TRACE_end);
   simgrid::s4u::on_simulation_end.connect(TRACE_end);
 }
