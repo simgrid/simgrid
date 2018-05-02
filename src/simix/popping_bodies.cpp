@@ -44,13 +44,6 @@ inline static void simcall_BODY_process_killall()
   return simcall<void>(SIMCALL_PROCESS_KILLALL);
 }
 
-inline static void simcall_BODY_process_cleanup(smx_actor_t process)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_process_cleanup(process);
-  return simcall<void, smx_actor_t>(SIMCALL_PROCESS_CLEANUP, process);
-}
-
 inline static void simcall_BODY_process_suspend(smx_actor_t process)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */

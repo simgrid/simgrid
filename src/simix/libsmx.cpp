@@ -186,16 +186,6 @@ void simcall_process_killall()
   simcall_BODY_process_killall();
 }
 
-/**
- * \ingroup simix_process_management
- * \brief Cleans up a SIMIX process.
- * \param process poor victim (must have already been killed)
- */
-void simcall_process_cleanup(smx_actor_t process)
-{
-  simcall_BODY_process_cleanup(process);
-}
-
 void simcall_process_join(smx_actor_t process, double timeout)
 {
   simcall_BODY_process_join(process, timeout);

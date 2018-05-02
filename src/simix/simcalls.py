@@ -340,7 +340,7 @@ if __name__ == '__main__':
         '  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));\n')
     fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n')
     fd.write(
-        '  if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)\n')
+        '  if (simcall->issuer->context->iwannadie)\n')
     fd.write('    return;\n')
     fd.write('  switch (simcall->call) {\n')
 

@@ -193,7 +193,6 @@ XBT_PUBLIC void simcall_process_killall();
 XBT_PUBLIC void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);
 
 /* Process handling */
-XBT_PUBLIC void simcall_process_cleanup(smx_actor_t process);
 XBT_PUBLIC void simcall_process_suspend(smx_actor_t process);
 
 /* Getters and Setters */

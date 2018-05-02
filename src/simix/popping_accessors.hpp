@@ -15,19 +15,6 @@
  */
 
 #include "src/simix/popping_private.hpp"
-static inline smx_actor_t simcall_process_cleanup__get__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
-}
-static inline smx_actor_t simcall_process_cleanup__getraw__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->args[0]);
-}
-static inline void simcall_process_cleanup__set__process(smx_simcall_t simcall, smx_actor_t arg)
-{
-  simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
-}
-
 static inline smx_actor_t simcall_process_suspend__get__process(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
