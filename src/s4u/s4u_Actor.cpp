@@ -225,7 +225,8 @@ ActorPtr Actor::by_pid(aid_t pid)
 
 void Actor::kill_all()
 {
-  simcall_process_killall();
+  smx_actor_t self = SIMIX_process_self();
+  simgrid::simix::kernelImmediate([&self] { SIMIX_process_killall(self); });
 }
 
 std::map<std::string, std::string>* Actor::get_properties()

@@ -565,10 +565,6 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
 
 }
 
-void simcall_HANDLER_process_killall(smx_simcall_t simcall)
-{
-  SIMIX_process_killall(simcall->issuer);
-}
 /**
  * \brief Kills all running processes.
  * \param issuer this one will not be killed
