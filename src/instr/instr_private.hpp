@@ -27,7 +27,6 @@
 #ifdef WIN32
 #include <direct.h> // _mkdir
 /* Need to define function drand48 for Windows */
-/* FIXME: use _drand48() defined in src/surf/random_mgr.c instead */
 #define drand48() (rand() / (RAND_MAX + 1.0))
 #endif
 
