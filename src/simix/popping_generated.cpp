@@ -31,8 +31,6 @@ const char* simcall_names[] = {
     "SIMCALL_PROCESS_SUSPEND",
     "SIMCALL_PROCESS_JOIN",
     "SIMCALL_PROCESS_SLEEP",
-    "SIMCALL_EXECUTION_START",
-    "SIMCALL_EXECUTION_PARALLEL_START",
     "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_EXECUTION_TEST",
     "SIMCALL_COMM_IPROBE",
@@ -80,21 +78,6 @@ case SIMCALL_PROCESS_JOIN:
 
 case SIMCALL_PROCESS_SLEEP:
   simcall_HANDLER_process_sleep(simcall, simgrid::simix::unmarshal<double>(simcall->args[0]));
-  break;
-
-case SIMCALL_EXECUTION_START:
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>>(
-      simcall->result, SIMIX_execution_start(simgrid::simix::unmarshal<const char*>(simcall->args[0]),
-                                             simgrid::simix::unmarshal<double>(simcall->args[1]),
-                                             simgrid::simix::unmarshal<double>(simcall->args[2]),
-                                             simgrid::simix::unmarshal<double>(simcall->args[3]),
-                                             simgrid::simix::unmarshal<sg_host_t>(simcall->args[4])));
-  SIMIX_simcall_answer(simcall);
-  break;
-
-case SIMCALL_EXECUTION_PARALLEL_START:
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>>(simcall->result, SIMIX_execution_parallel_start(simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]), simgrid::simix::unmarshal<sg_host_t*>(simcall->args[2]), simgrid::simix::unmarshal<double*>(simcall->args[3]), simgrid::simix::unmarshal<double*>(simcall->args[4]), simgrid::simix::unmarshal<double>(simcall->args[5]), simgrid::simix::unmarshal<double>(simcall->args[6])));
-  SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_EXECUTION_WAIT:

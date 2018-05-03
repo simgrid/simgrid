@@ -65,7 +65,9 @@ smx_activity_t simcall_execution_start(const char* name, double flops_amount, do
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(std::isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_execution_start(name, flops_amount, priority, bound, host);
+  return simgrid::simix::kernelImmediate([name, flops_amount, priority, bound, host] {
+    return SIMIX_execution_start(name, flops_amount, priority, bound, host);
+  });
 }
 
 /**
@@ -99,7 +101,9 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
 
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  return simcall_BODY_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
+  return simgrid::simix::kernelImmediate([name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout] {
+    return SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
+  });
 }
 
 /**
