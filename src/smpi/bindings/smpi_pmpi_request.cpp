@@ -511,8 +511,10 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   if (request == nullptr || flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
-    *flag= true;
-    simgrid::smpi::Status::empty(status);
+    if (status != MPI_STATUS_IGNORE){
+      *flag= true;
+      simgrid::smpi::Status::empty(status);
+    }
     retval = MPI_SUCCESS;
   } else {
     int my_proc_id = ((*request)->comm() != MPI_COMM_NULL) ? simgrid::s4u::this_actor::get_pid() : -1;
@@ -567,8 +569,10 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
-    simgrid::smpi::Status::empty(status);
-    status->MPI_SOURCE = MPI_PROC_NULL;
+    if (status != MPI_STATUS_IGNORE){
+      simgrid::smpi::Status::empty(status);
+      status->MPI_SOURCE = MPI_PROC_NULL;
+    }
     retval = MPI_SUCCESS;
   } else {
     simgrid::smpi::Request::probe(source, tag, comm, status);
@@ -588,8 +592,10 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
     *flag=true;
-    simgrid::smpi::Status::empty(status);
-    status->MPI_SOURCE = MPI_PROC_NULL;
+    if (status != MPI_STATUS_IGNORE){
+      simgrid::smpi::Status::empty(status);
+      status->MPI_SOURCE = MPI_PROC_NULL;
+    }
     retval = MPI_SUCCESS;
   } else {
     simgrid::smpi::Request::iprobe(source, tag, comm, flag, status);
