@@ -63,7 +63,6 @@ typename std::result_of<F()>::type kernelImmediate(F&& code)
   typedef typename std::result_of<F()>::type R;
   simgrid::xbt::Result<R> result;
   simcall_run_kernel([&]{
-    xbt_assert(SIMIX_is_maestro(), "Not in maestro");
     simgrid::xbt::fulfillPromise(result, std::forward<F>(code));
   });
   return result.get();
