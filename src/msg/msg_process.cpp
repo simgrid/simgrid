@@ -154,7 +154,7 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
     return nullptr;
   }
 
-  simcall_process_on_exit(process, (int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
+  process->ciface()->on_exit((int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
   return process->ciface();
 }
 
@@ -181,7 +181,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
       SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->get_cname(), &props, nullptr);
   if (not process)
     xbt_die("Could not attach");
-  simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
+  process->ciface()->on_exit((int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
   return process->ciface();
 }
 
@@ -320,7 +320,7 @@ smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- 
  * You should use them to free the data used by your process.
  */
 void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
-  simcall_process_on_exit(SIMIX_process_self(), fun, data);
+  simgrid::s4u::this_actor::on_exit(fun, data);
 }
 /**
  * \ingroup m_process_management

@@ -35,7 +35,6 @@ const char* simcall_names[] = {
     "SIMCALL_EXECUTION_PARALLEL_START",
     "SIMCALL_EXECUTION_WAIT",
     "SIMCALL_EXECUTION_TEST",
-    "SIMCALL_PROCESS_ON_EXIT",
     "SIMCALL_COMM_IPROBE",
     "SIMCALL_COMM_SEND",
     "SIMCALL_COMM_ISEND",
@@ -107,11 +106,6 @@ case SIMCALL_EXECUTION_TEST:
   simcall_HANDLER_execution_test(
       simcall,
       simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]));
-  break;
-
-case SIMCALL_PROCESS_ON_EXIT:
-  SIMIX_process_on_exit(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<int_f_pvoid_pvoid_t>(simcall->args[1]), simgrid::simix::unmarshal<void*>(simcall->args[2]));
-  SIMIX_simcall_answer(simcall);
   break;
 
 case SIMCALL_COMM_IPROBE:

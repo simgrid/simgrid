@@ -88,13 +88,6 @@ inline static int simcall_BODY_execution_test(boost::intrusive_ptr<simgrid::kern
   return simcall<int, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(SIMCALL_EXECUTION_TEST, execution);
 }
 
-inline static void simcall_BODY_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_process_on_exit(process, fun, data);
-  return simcall<void, smx_actor_t, int_f_pvoid_pvoid_t, void*>(SIMCALL_PROCESS_ON_EXIT, process, fun, data);
-}
-
 inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_BODY_comm_iprobe(smx_mailbox_t mbox, int type, simix_match_func_t match_fun, void* data)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */

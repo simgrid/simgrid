@@ -227,16 +227,6 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 
 /**
  * \ingroup simix_process_management
- * \brief Add an on_exit function
- * Add an on_exit function which will be executed when the process exits/is killed.
- */
-XBT_PUBLIC void simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data)
-{
-  simcall_BODY_process_on_exit(process, fun, data);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Creates a new sleep SIMIX synchro.
  *
  * This function creates a SURF action and allocates the data necessary

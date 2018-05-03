@@ -313,43 +313,6 @@ static inline void simcall_execution_test__set__result(smx_simcall_t simcall, in
   simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline smx_actor_t simcall_process_on_exit__get__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
-}
-static inline smx_actor_t simcall_process_on_exit__getraw__process(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_actor_t>(simcall->args[0]);
-}
-static inline void simcall_process_on_exit__set__process(smx_simcall_t simcall, smx_actor_t arg)
-{
-  simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
-}
-static inline int_f_pvoid_pvoid_t simcall_process_on_exit__get__fun(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<int_f_pvoid_pvoid_t>(simcall->args[1]);
-}
-static inline int_f_pvoid_pvoid_t simcall_process_on_exit__getraw__fun(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<int_f_pvoid_pvoid_t>(simcall->args[1]);
-}
-static inline void simcall_process_on_exit__set__fun(smx_simcall_t simcall, int_f_pvoid_pvoid_t arg)
-{
-  simgrid::simix::marshal<int_f_pvoid_pvoid_t>(simcall->args[1], arg);
-}
-static inline void* simcall_process_on_exit__get__data(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<void*>(simcall->args[2]);
-}
-static inline void* simcall_process_on_exit__getraw__data(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<void*>(simcall->args[2]);
-}
-static inline void simcall_process_on_exit__set__data(smx_simcall_t simcall, void* arg)
-{
-  simgrid::simix::marshal<void*>(simcall->args[2], arg);
-}
-
 static inline smx_mailbox_t simcall_comm_iprobe__get__mbox(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[0]);

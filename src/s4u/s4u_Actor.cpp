@@ -69,7 +69,7 @@ void Actor::set_auto_restart(bool autorestart)
 
 void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data)
 {
-  simcall_process_on_exit(pimpl_, fun, data);
+  simgrid::simix::kernelImmediate([&] { SIMIX_process_on_exit(pimpl_, fun, data); });
 }
 
 /** @brief Moves the actor to another host
@@ -385,7 +385,7 @@ void kill()
 
 void on_exit(int_f_pvoid_pvoid_t fun, void* data)
 {
-  simcall_process_on_exit(SIMIX_process_self(), fun, data);
+  SIMIX_process_self()->iface()->on_exit(fun, data);
 }
 
 /** @brief Moves the current actor to another host
