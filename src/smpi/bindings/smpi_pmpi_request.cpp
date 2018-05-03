@@ -311,8 +311,10 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (src == MPI_PROC_NULL) {
-    simgrid::smpi::Status::empty(status);
-    status->MPI_SOURCE = MPI_PROC_NULL;
+    if(status != MPI_STATUS_IGNORE){
+      simgrid::smpi::Status::empty(status);
+      status->MPI_SOURCE = MPI_PROC_NULL;
+    }
     retval = MPI_SUCCESS;
   } else if (src!=MPI_ANY_SOURCE && (src >= comm->group()->size() || src <0)){
     retval = MPI_ERR_RANK;
