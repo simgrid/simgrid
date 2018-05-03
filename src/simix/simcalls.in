@@ -69,7 +69,6 @@ sg_size_t   storage_read(surf_storage_t st, sg_size_t size) [[block]];
 sg_size_t   storage_write(surf_storage_t st, sg_size_t size) [[block]];
 
 int        mc_random(int min, int max);
-void       set_category(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> synchro, const char* category) [[nohandler]];
 
 void       run_kernel(std::function<void()> const* code) [[nohandler]];
 void       run_blocking(std::function<void()> const* code) [[block,nohandler]];

@@ -1257,31 +1257,6 @@ static inline void simcall_mc_random__set__result(smx_simcall_t simcall, int res
   simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simcall_set_category__get__synchro(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]);
-}
-static inline simgrid::kernel::activity::ActivityImpl* simcall_set_category__getraw__synchro(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::ActivityImpl*>(simcall->args[0]);
-}
-static inline void simcall_set_category__set__synchro(smx_simcall_t simcall, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> arg)
-{
-  simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0], arg);
-}
-static inline const char* simcall_set_category__get__category(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<const char*>(simcall->args[1]);
-}
-static inline const char* simcall_set_category__getraw__category(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<const char*>(simcall->args[1]);
-}
-static inline void simcall_set_category__set__category(smx_simcall_t simcall, const char* arg)
-{
-  simgrid::simix::marshal<const char*>(simcall->args[1], arg);
-}
-
 static inline std::function<void()> const* simcall_run_kernel__get__code(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args[0]);

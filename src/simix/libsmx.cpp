@@ -389,7 +389,7 @@ void simcall_set_category(smx_activity_t synchro, const char *category)
   if (category == nullptr) {
     return;
   }
-  simcall_BODY_set_category(synchro, category);
+  simgrid::simix::kernelImmediate([synchro, category] { SIMIX_set_category(synchro, category); });
 }
 
 /**

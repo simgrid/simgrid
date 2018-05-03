@@ -55,7 +55,6 @@ const char* simcall_names[] = {
     "SIMCALL_STORAGE_READ",
     "SIMCALL_STORAGE_WRITE",
     "SIMCALL_MC_RANDOM",
-    "SIMCALL_SET_CATEGORY",
     "SIMCALL_RUN_KERNEL",
     "SIMCALL_RUN_BLOCKING",
 };
@@ -194,11 +193,6 @@ case SIMCALL_STORAGE_WRITE:
 
 case SIMCALL_MC_RANDOM:
   simgrid::simix::marshal<int>(simcall->result, simcall_HANDLER_mc_random(simcall, simgrid::simix::unmarshal<int>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1])));
-  SIMIX_simcall_answer(simcall);
-  break;
-
-case SIMCALL_SET_CATEGORY:
-  SIMIX_set_category(simgrid::simix::unmarshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall->args[0]), simgrid::simix::unmarshal<const char*>(simcall->args[1]));
   SIMIX_simcall_answer(simcall);
   break;
 

@@ -228,13 +228,6 @@ inline static int simcall_BODY_mc_random(int min, int max)
   return simcall<int, int, int>(SIMCALL_MC_RANDOM, min, max);
 }
 
-inline static void simcall_BODY_set_category(boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> synchro, const char* category)
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_set_category(synchro, category);
-  return simcall<void, boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, const char*>(SIMCALL_SET_CATEGORY, synchro, category);
-}
-
 inline static void simcall_BODY_run_kernel(std::function<void()> const* code)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */
