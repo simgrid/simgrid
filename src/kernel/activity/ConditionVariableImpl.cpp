@@ -54,7 +54,7 @@ void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, s
 {
   XBT_IN("(%p)", simcall);
   smx_actor_t issuer = simcall->issuer;
-
+  simcall_cond_wait_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
   _SIMIX_cond_wait(cond, mutex, timeout, issuer, simcall);
   XBT_OUT();
 }

@@ -924,6 +924,18 @@ static inline void simcall_cond_wait_timeout__set__timeout(smx_simcall_t simcall
 {
   simgrid::simix::marshal<double>(simcall->args[2], arg);
 }
+static inline int simcall_cond_wait_timeout__get__result(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<int>(simcall->result);
+}
+static inline int simcall_cond_wait_timeout__getraw__result(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<int>(simcall->result);
+}
+static inline void simcall_cond_wait_timeout__set__result(smx_simcall_t simcall, int result)
+{
+  simgrid::simix::marshal<int>(simcall->result, result);
+}
 
 static inline smx_sem_t simcall_sem_acquire__get__sem(smx_simcall_t simcall)
 {
@@ -961,6 +973,18 @@ static inline double simcall_sem_acquire_timeout__getraw__timeout(smx_simcall_t 
 static inline void simcall_sem_acquire_timeout__set__timeout(smx_simcall_t simcall, double arg)
 {
   simgrid::simix::marshal<double>(simcall->args[1], arg);
+}
+static inline int simcall_sem_acquire_timeout__get__result(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<int>(simcall->result);
+}
+static inline int simcall_sem_acquire_timeout__getraw__result(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal_raw<int>(simcall->result);
+}
+static inline void simcall_sem_acquire_timeout__set__result(smx_simcall_t simcall, int result)
+{
+  simgrid::simix::marshal<int>(simcall->result, result);
 }
 
 static inline surf_storage_t simcall_storage_read__get__st(smx_simcall_t simcall)

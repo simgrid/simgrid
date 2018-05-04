@@ -254,11 +254,11 @@ XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
 
 XBT_PUBLIC smx_cond_t simcall_cond_init();
 XBT_PUBLIC void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
-XBT_PUBLIC void simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
+XBT_PUBLIC int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
 
 XBT_PUBLIC void SIMIX_sem_destroy(smx_sem_t sem);
 XBT_PUBLIC void simcall_sem_acquire(smx_sem_t sem);
-XBT_PUBLIC void simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
+XBT_PUBLIC int simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
 
 /*****************************   Storage   **********************************/
 XBT_PUBLIC sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size);

@@ -29,15 +29,7 @@ void MSG_sem_acquire(msg_sem_t sem) {
 
 /** @brief locks on a semaphore object up until the provided timeout expires */
 msg_error_t MSG_sem_acquire_timeout(msg_sem_t sem, double timeout) {
-  msg_error_t res = MSG_OK;
-  try {
-    simcall_sem_acquire_timeout(sem,timeout);
-  } catch(xbt_ex& e) {
-    if (e.category == timeout_error)
-      return MSG_TIMEOUT;
-    throw;
-  }
-  return res;
+  return simcall_sem_acquire_timeout(sem, timeout) ? MSG_TIMEOUT : MSG_OK;
 }
 
 /** @brief releases the semaphore object */

@@ -52,16 +52,7 @@ void xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex)
 
 int xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay)
 {
-  try {
-    simcall_cond_wait_timeout((smx_cond_t)cond, (smx_mutex_t)mutex, delay);
-  } catch (xbt_ex& e) {
-    if (e.category == timeout_error) {
-      return 1;
-    } else {
-      throw; // rethrow the exceptions that I don't know
-    }
-  }
-  return 0;
+  return simcall_cond_wait_timeout((smx_cond_t)cond, (smx_mutex_t)mutex, delay);
 }
 
 void xbt_cond_signal(xbt_cond_t cond)

@@ -467,10 +467,10 @@ void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
  * \ingroup simix_synchro_management
  *
  */
-void simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
+int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
+  return simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
 }
 
 /**
@@ -486,10 +486,10 @@ void simcall_sem_acquire(smx_sem_t sem)
  * \ingroup simix_synchro_management
  *
  */
-void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
+int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  simcall_BODY_sem_acquire_timeout(sem, timeout);
+  return simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 
 sg_size_t simcall_storage_read(surf_storage_t st, sg_size_t size)

@@ -42,6 +42,7 @@ void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
 
     case SIMCALL_COND_WAIT_TIMEOUT:
       simgrid::xbt::intrusive_erase(simcall_cond_wait_timeout__get__cond(simcall)->sleeping, *process);
+      simcall_cond_wait_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
     case SIMCALL_SEM_ACQUIRE:
@@ -50,6 +51,7 @@ void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
       simgrid::xbt::intrusive_erase(simcall_sem_acquire_timeout__get__sem(simcall)->sleeping, *process);
+      simcall_sem_acquire_timeout__set__result(simcall, 1); // signal a timeout
       break;
 
     default:
@@ -64,19 +66,11 @@ void SIMIX_synchro_finish(smx_activity_t synchro)
   smx_simcall_t simcall = synchro->simcalls.front();
   synchro->simcalls.pop_front();
 
-  switch (synchro->state) {
-
-    case SIMIX_SRC_TIMEOUT:
-      SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Synchro's wait timeout");
-      break;
-
-    case SIMIX_FAILED:
-        simcall->issuer->context->iwannadie = 1;
-      break;
-
-    default:
+  if (synchro->state != SIMIX_SRC_TIMEOUT) {
+    if (synchro->state == SIMIX_FAILED)
+      simcall->issuer->context->iwannadie = 1;
+    else
       THROW_IMPOSSIBLE;
-      break;
   }
 
   SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
@@ -179,6 +173,7 @@ void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
 {
   XBT_IN("(%p)",simcall);
+  simcall_sem_acquire_timeout__set__result(simcall, 0); // default result, will be set to 1 on timeout
   _SIMIX_sem_wait(sem, timeout, simcall->issuer, simcall);
   XBT_OUT();
 }
