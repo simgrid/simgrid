@@ -41,25 +41,12 @@ std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, d
   if (timeout < 0)
     timeout = 0.0;
 
-  try {
-    simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
+  if (simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout)) {
+    // If we reached the timeout, we have to take the lock again:
+    lock.mutex()->lock();
+    return std::cv_status::timeout;
+  } else {
     return std::cv_status::no_timeout;
-  } catch (xbt_ex& e) {
-
-    // If the exception was a timeout, we have to take the lock again:
-    if (e.category == timeout_error) {
-      try {
-        lock.mutex()->lock();
-        return std::cv_status::timeout;
-      } catch (...) {
-        std::terminate();
-      }
-    }
-
-    // Another exception: should we reaquire the lock?
-    std::terminate();
-  } catch (...) {
-    std::terminate();
   }
 }
 
