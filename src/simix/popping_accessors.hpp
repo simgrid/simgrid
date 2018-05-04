@@ -863,19 +863,6 @@ static inline void simcall_mutex_unlock__set__mutex(smx_simcall_t simcall, smx_m
   simgrid::simix::marshal<smx_mutex_t>(simcall->args[0], arg);
 }
 
-static inline smx_cond_t simcall_cond_init__get__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<smx_cond_t>(simcall->result);
-}
-static inline smx_cond_t simcall_cond_init__getraw__result(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<smx_cond_t>(simcall->result);
-}
-static inline void simcall_cond_init__set__result(smx_simcall_t simcall, smx_cond_t result)
-{
-  simgrid::simix::marshal<smx_cond_t>(simcall->result, result);
-}
-
 static inline smx_cond_t simcall_cond_wait__get__cond(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<smx_cond_t>(simcall->args[0]);

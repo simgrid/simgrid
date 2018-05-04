@@ -56,7 +56,6 @@ void        mutex_lock(smx_mutex_t mutex) [[block]];
 int         mutex_trylock(smx_mutex_t mutex);
 void        mutex_unlock(smx_mutex_t mutex);
 
-smx_cond_t cond_init() [[nohandler]];
 void       cond_wait(smx_cond_t cond, smx_mutex_t mutex) [[block]];
 void       cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) [[block]];
 

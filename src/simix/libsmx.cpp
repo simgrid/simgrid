@@ -451,7 +451,7 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
  */
 smx_cond_t simcall_cond_init()
 {
-  return simcall_BODY_cond_init();
+  return simgrid::simix::kernelImmediate([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
 }
 
 /**

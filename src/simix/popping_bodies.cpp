@@ -156,13 +156,6 @@ inline static void simcall_BODY_mutex_unlock(smx_mutex_t mutex)
   return simcall<void, smx_mutex_t>(SIMCALL_MUTEX_UNLOCK, mutex);
 }
 
-inline static smx_cond_t simcall_BODY_cond_init()
-{
-  if (0) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_cond_init();
-  return simcall<smx_cond_t>(SIMCALL_COND_INIT);
-}
-
 inline static void simcall_BODY_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 {
   if (0) /* Go to that function to follow the code flow through the simcall barrier */

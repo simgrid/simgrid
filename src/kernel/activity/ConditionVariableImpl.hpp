@@ -34,6 +34,5 @@ private:
 } // namespace activity
 } // namespace kernel
 } // namespace simgrid
-XBT_PRIVATE smx_cond_t SIMIX_cond_init();
 
 #endif

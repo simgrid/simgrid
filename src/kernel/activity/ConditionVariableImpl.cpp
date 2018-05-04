@@ -17,21 +17,6 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
 /********************************* Condition **********************************/
 
 /**
- * \brief Initialize a condition.
- *
- * Allocates and creates the data for the condition.
- * It have to be called before the use of the condition.
- * \return A condition
- */
-smx_cond_t SIMIX_cond_init()
-{
-  XBT_IN("()");
-  smx_cond_t cond = new simgrid::kernel::activity::ConditionVariableImpl();
-  XBT_OUT();
-  return cond;
-}
-
-/**
  * \brief Handle a condition waiting simcall without timeouts
  */
 void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
