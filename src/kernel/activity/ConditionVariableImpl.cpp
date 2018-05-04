@@ -11,10 +11,29 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ConditionVariable, simix_synchro, "Condition variables");
 
-static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout, smx_actor_t issuer,
-                             smx_simcall_t simcall);
-
 /********************************* Condition **********************************/
+
+static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout, smx_actor_t issuer,
+                             smx_simcall_t simcall)
+{
+  XBT_IN("(%p, %p, %f, %p,%p)", cond, mutex, timeout, issuer, simcall);
+  smx_activity_t synchro = nullptr;
+
+  XBT_DEBUG("Wait condition %p", cond);
+
+  /* If there is a mutex unlock it */
+  /* FIXME: what happens if the issuer is not the owner of the mutex? */
+  if (mutex != nullptr) {
+    cond->mutex = mutex;
+    mutex->unlock(issuer);
+  }
+
+  synchro = SIMIX_synchro_wait(issuer->host, timeout);
+  synchro->simcalls.push_front(simcall);
+  issuer->waiting_synchro = synchro;
+  cond->sleeping.push_back(*simcall->issuer);
+  XBT_OUT();
+}
 
 /**
  * \brief Handle a condition waiting simcall without timeouts
@@ -37,28 +56,6 @@ void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond, s
   smx_actor_t issuer = simcall->issuer;
 
   _SIMIX_cond_wait(cond, mutex, timeout, issuer, simcall);
-  XBT_OUT();
-}
-
-static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout, smx_actor_t issuer,
-                             smx_simcall_t simcall)
-{
-  XBT_IN("(%p, %p, %f, %p,%p)", cond, mutex, timeout, issuer, simcall);
-  smx_activity_t synchro = nullptr;
-
-  XBT_DEBUG("Wait condition %p", cond);
-
-  /* If there is a mutex unlock it */
-  /* FIXME: what happens if the issuer is not the owner of the mutex? */
-  if (mutex != nullptr) {
-    cond->mutex = mutex;
-    mutex->unlock(issuer);
-  }
-
-  synchro = SIMIX_synchro_wait(issuer->host, timeout);
-  synchro->simcalls.push_front(simcall);
-  issuer->waiting_synchro = synchro;
-  cond->sleeping.push_back(*simcall->issuer);
   XBT_OUT();
 }
 
