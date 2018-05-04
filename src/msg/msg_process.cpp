@@ -242,19 +242,6 @@ XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup)
   msg_global->process_data_cleanup = data_cleanup;
 }
 
-/** \ingroup m_process_management
- *
- * \brief Return a #msg_process_t given its PID.
- *
- * This function search in the list of all the created msg_process_t for a msg_process_t  whose PID is equal to \a PID.
- * If no host is found, \c nullptr is returned.
-   Note that the PID are uniq in the whole simulation, not only on a given host.
- */
-msg_process_t MSG_process_from_PID(int PID)
-{
-  return SIMIX_process_from_PID(PID)->ciface();
-}
-
 /** @brief returns a list of all currently existing processes */
 xbt_dynar_t MSG_processes_as_dynar() {
   xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t), nullptr);

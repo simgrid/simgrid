@@ -16,6 +16,10 @@ int MSG_process_get_PPID(sg_actor_t actor)
 {
   return sg_actor_get_PPID(actor);
 }
+msg_process_t MSG_process_from_PID(int PID)
+{
+  return sg_actor_by_PID(PID);
+}
 const char* MSG_process_get_name(sg_actor_t actor)
 {
   return sg_actor_get_name(actor);

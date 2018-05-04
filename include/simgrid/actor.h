@@ -25,6 +25,7 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC int sg_actor_get_PID(sg_actor_t actor);
 XBT_PUBLIC int sg_actor_get_PPID(sg_actor_t actor);
+XBT_PUBLIC sg_actor_t sg_actor_by_PID(aid_t pid);
 XBT_PUBLIC const char* sg_actor_get_name(sg_actor_t actor);
 XBT_PUBLIC sg_host_t sg_actor_get_host(sg_actor_t actor);
 XBT_PUBLIC const char* sg_actor_get_property_value(sg_actor_t actor, const char* name);

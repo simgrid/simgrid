@@ -127,6 +127,7 @@ typedef sg_actor_t msg_process_t;
 
 XBT_PUBLIC int MSG_process_get_PID(msg_process_t process);
 XBT_PUBLIC int MSG_process_get_PPID(msg_process_t process);
+XBT_PUBLIC sg_actor_t MSG_process_from_PID(int pid);
 XBT_PUBLIC const char* MSG_process_get_name(msg_process_t process);
 XBT_PUBLIC sg_host_t MSG_process_get_host(msg_process_t process);
 
@@ -244,7 +245,6 @@ XBT_PUBLIC int MSG_process_killall();
 XBT_PUBLIC void MSG_process_yield();
 
 XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
-XBT_PUBLIC msg_process_t MSG_process_from_PID(int PID);
 XBT_PUBLIC int MSG_process_self_PID();
 XBT_PUBLIC int MSG_process_self_PPID();
 XBT_PUBLIC const char* MSG_process_self_name();

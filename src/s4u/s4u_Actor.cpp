@@ -462,6 +462,19 @@ int sg_actor_get_PPID(sg_actor_t actor)
 }
 
 /** \ingroup m_actor_management
+ *
+ * \brief Return a #sg_actor_t given its PID.
+ *
+ * This function search in the list of all the created sg_actor_t for a sg_actor_t  whose PID is equal to \a PID.
+ * If none is found, \c nullptr is returned.
+   Note that the PID are unique in the whole simulation, not only on a given host.
+ */
+sg_actor_t sg_actor_by_PID(aid_t pid)
+{
+  return simgrid::s4u::Actor::by_pid(pid).get();
+}
+
+/** \ingroup m_actor_management
  * \brief Return the name of an actor.
  */
 const char* sg_actor_get_name(sg_actor_t actor)
