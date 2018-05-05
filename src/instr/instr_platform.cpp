@@ -7,6 +7,7 @@
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/surf/network_interface.hpp"
@@ -271,6 +272,39 @@ static void instr_on_platform_created()
   TRACE_paje_dump_buffer(true);
 }
 
+static void instr_on_actor_suspend(simgrid::s4u::ActorPtr actor)
+{
+  simgrid::instr::Container::byName(instr_pid(actor.get()))->getState("ACTOR_STATE")->pushEvent("suspend");
+}
+
+static void instr_on_actor_resume(simgrid::s4u::ActorPtr actor)
+{
+  simgrid::instr::Container::byName(instr_pid(actor.get()))->getState("ACTOR_STATE")->popEvent();
+}
+
+static long long int counter = 0;
+
+static void instr_on_actor_migration_start(simgrid::s4u::ActorPtr actor)
+{
+  // start link
+  container_t container = simgrid::instr::Container::byName(instr_pid(actor.get()));
+  simgrid::instr::Container::getRoot()->getLink("ACTOR_LINK")->startEvent(container, "M", std::to_string(counter));
+
+  // destroy existing container of this process
+  container->removeFromParent();
+}
+
+static void instr_on_actor_migration_end(simgrid::s4u::ActorPtr actor)
+{
+  // create new container on the new_host location
+  simgrid::instr::Container::byName(actor->get_host()->get_name())->createChild(instr_pid(actor.get()), "ACTOR");
+  // end link
+  simgrid::instr::Container::getRoot()
+      ->getLink("ACTOR_LINK")
+      ->endEvent(simgrid::instr::Container::byName(instr_pid(actor.get())), "M", std::to_string(counter));
+  counter++;
+}
+
 void instr_define_callbacks()
 {
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
@@ -283,6 +317,12 @@ void instr_define_callbacks()
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
   simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);
   simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
+  if (TRACE_actor_is_enabled()) {
+    simgrid::s4u::Actor::on_suspend.connect(instr_on_actor_suspend);
+    simgrid::s4u::Actor::on_resume.connect(instr_on_actor_resume);
+    simgrid::s4u::Actor::on_migration_start.connect(instr_on_actor_migration_start);
+    simgrid::s4u::Actor::on_migration_end.connect(instr_on_actor_migration_end);
+  }
 }
 /*
  * user categories support

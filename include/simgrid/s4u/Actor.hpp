@@ -152,6 +152,14 @@ public:
 
   /** Signal to others that a new actor has been created **/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_creation;
+  /** Signal to others that an actor has been suspended**/
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_suspend;
+  /** Signal to others that an actor has been resumed **/
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_resume;
+  /** Signal to others that an actor is going to migrated to another host**/
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_start;
+  /** Signal to others that an actor is has been migrated to another host **/
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_end;
   /** Signal indicating that the given actor is about to disappear */
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_destruction;
 

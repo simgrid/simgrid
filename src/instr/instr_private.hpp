@@ -9,6 +9,7 @@
 #include <xbt/base.h>
 
 #include "simgrid/instr.h"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid_config.h"
 #include "src/instr/instr_paje_containers.hpp"
 #include "src/instr/instr_paje_events.hpp"

@@ -3,11 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/actor.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/instr/instr_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");
 
@@ -15,6 +16,10 @@ namespace simgrid {
 namespace s4u {
 
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_creation;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_suspend;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_resume;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_migration_start;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_migration_end;
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_destruction;
 
 // ***** Actor creation *****
@@ -83,23 +88,7 @@ void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data)
  */
 void Actor::migrate(Host* new_host)
 {
-  std::string key;
-  simgrid::instr::LinkType* link = nullptr;
-  bool tracing                   = TRACE_actor_is_enabled();
-  if (tracing) {
-    static long long int counter = 0;
-
-    key = std::to_string(counter);
-    counter++;
-
-    // start link
-    container_t actor_container = simgrid::instr::Container::byName(instr_pid(this));
-    link                        = simgrid::instr::Container::getRoot()->getLink("ACTOR_LINK");
-    link->startEvent(actor_container, "M", key);
-
-    // destroy existing container of this process
-    actor_container->removeFromParent();
-  }
+  s4u::Actor::on_migration_start(this);
 
   simgrid::simix::kernelImmediate([this, new_host]() {
     if (pimpl_->waiting_synchro != nullptr) {
@@ -113,12 +102,7 @@ void Actor::migrate(Host* new_host)
     SIMIX_process_change_host(this->pimpl_, new_host);
   });
 
-  if (tracing) {
-    // create new container on the new_host location
-    simgrid::instr::Container::byName(new_host->get_name())->createChild(instr_pid(this), "ACTOR");
-    // end link
-    link->endEvent(simgrid::instr::Container::byName(instr_pid(this)), "M", key);
-  }
+  s4u::Actor::on_migration_end(this);
 }
 
 s4u::Host* Actor::get_host()
@@ -158,17 +142,14 @@ aid_t Actor::get_ppid() const
 
 void Actor::suspend()
 {
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(this))->getState("ACTOR_STATE")->pushEvent("suspend");
-
+  s4u::Actor::on_suspend(this);
   simcall_process_suspend(pimpl_);
 }
 
 void Actor::resume()
 {
   simgrid::simix::kernelImmediate([this] { pimpl_->resume(); });
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(this))->getState("ACTOR_STATE")->popEvent();
+  s4u::Actor::on_resume(this);
 }
 
 int Actor::is_suspended()
@@ -355,20 +336,17 @@ Host* get_host()
 
 void suspend()
 {
-  if (TRACE_actor_is_enabled())
-    instr::Container::byName(get_name() + "-" + std::to_string(get_pid()))
-        ->getState("ACTOR_STATE")
-        ->pushEvent("suspend");
-  simcall_process_suspend(SIMIX_process_self());
+  smx_actor_t actor = SIMIX_process_self();
+  simgrid::s4u::Actor::on_suspend(actor->iface());
+
+  simcall_process_suspend(actor);
 }
 
 void resume()
 {
   smx_actor_t process = SIMIX_process_self();
   simgrid::simix::kernelImmediate([process] { process->resume(); });
-
-  if (TRACE_actor_is_enabled())
-    instr::Container::byName(get_name() + "-" + std::to_string(get_pid()))->getState("ACTOR_STATE")->popEvent();
+  simgrid::s4u::Actor::on_resume(process->iface());
 }
 
 bool is_suspended()
