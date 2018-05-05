@@ -564,9 +564,7 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   int retval = 0;
   smpi_bench_end();
 
-  if (status == nullptr) {
-    retval = MPI_ERR_ARG;
-  } else if (comm == MPI_COMM_NULL) {
+  if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
     if (status != MPI_STATUS_IGNORE){
