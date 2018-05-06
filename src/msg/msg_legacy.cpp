@@ -7,6 +7,28 @@
 
 #define MSG_CALL(type, oldname, args)
 
+/* ************************** Engine *************************** */
+void MSG_create_environment(const char* filename)
+{
+  sg_engine_load_platform(filename);
+}
+
+void MSG_launch_application(const char* filename)
+{
+  sg_engine_load_deployment(filename);
+}
+void MSG_function_register(const char* name, xbt_main_func_t code)
+{
+  sg_engine_register_function(name, code);
+}
+void MSG_function_register_default(xbt_main_func_t code)
+{
+  sg_engine_register_default(code);
+}
+double MSG_get_clock()
+{
+  return sg_engine_get_clock();
+}
 /* ************************** Actors *************************** */
 int MSG_process_get_PID(sg_actor_t actor)
 {
@@ -68,10 +90,17 @@ void MSG_process_kill(sg_actor_t actor)
 {
   sg_actor_kill(actor);
 }
-
+void MSG_process_kill_all()
+{
+  sg_actor_kill_all();
+}
 void MSG_process_set_kill_time(sg_actor_t actor, double kill_time)
 {
   sg_actor_set_kill_time(actor, kill_time);
+}
+void MSG_process_yield()
+{
+  sg_actor_yield();
 }
 
 /* ************************** NetZones *************************** */

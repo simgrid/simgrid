@@ -260,3 +260,27 @@ void Engine::set_config(std::string str)
 }
 } // namespace s4u
 } // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+void sg_engine_load_platform(const char* file)
+{
+  simgrid::s4u::Engine::get_instance()->load_platform(file);
+}
+
+void sg_engine_load_deployment(const char* file)
+{
+  simgrid::s4u::Engine::get_instance()->load_deployment(file);
+}
+
+void sg_engine_register_function(const char* name, int (*code)(int, char**))
+{
+  simgrid::s4u::Engine::get_instance()->register_function(name, code);
+}
+void sg_engine_register_default(int (*code)(int, char**))
+{
+  simgrid::s4u::Engine::get_instance()->register_default(code);
+}
+double sg_engine_get_clock()
+{
+  return simgrid::s4u::Engine::get_clock();
+}

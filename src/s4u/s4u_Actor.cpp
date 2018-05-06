@@ -570,6 +570,11 @@ void sg_actor_kill(sg_actor_t actor)
   actor->kill();
 }
 
+void sg_actor_kill_all()
+{
+  simgrid::s4u::Actor::kill_all();
+}
+
 /** \ingroup m_actor_management
  * \brief Set the kill time of an actor.
  *
@@ -579,4 +584,10 @@ void sg_actor_kill(sg_actor_t actor)
 void sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
 {
   actor->set_kill_time(kill_time);
+}
+
+/** Yield the current actor; let the other actors execute first */
+void sg_actor_yield()
+{
+  simgrid::s4u::this_actor::yield();
 }

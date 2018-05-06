@@ -442,8 +442,6 @@ set(SIMGRID_SRC
 set(MSG_SRC
   src/msg/instr_msg_process.cpp
   src/msg/instr_msg_task.cpp
-  src/msg/msg_deployment.cpp
-  src/msg/msg_environment.cpp
   src/msg/msg_global.cpp
   src/msg/msg_gos.cpp
   src/msg/msg_legacy.cpp
@@ -662,6 +660,7 @@ set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 set(headers_to_install
 
   include/simgrid/actor.h
+  include/simgrid/engine.h
   include/simgrid/chrono.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h

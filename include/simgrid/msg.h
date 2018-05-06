@@ -7,6 +7,7 @@
 #define SIMGRID_MSG_H
 
 #include <simgrid/actor.h>
+#include <simgrid/engine.h>
 #include <simgrid/forward.h>
 #include <simgrid/host.h>
 #include <simgrid/instr.h>
@@ -143,7 +144,9 @@ XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
 XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
 XBT_PUBLIC void MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC void MSG_process_kill(msg_process_t process);
+XBT_PUBLIC void MSG_process_killall();
 XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
+XBT_PUBLIC void MSG_process_yield();
 
 /* ******************************** File ************************************ */
 typedef sg_file_t msg_file_t;
@@ -240,9 +243,6 @@ XBT_PUBLIC msg_process_t MSG_process_create_with_environment(const char* name, x
 
 XBT_PUBLIC msg_process_t MSG_process_attach(const char* name, void* data, msg_host_t host, xbt_dict_t properties);
 XBT_PUBLIC void MSG_process_detach();
-
-XBT_PUBLIC int MSG_process_killall();
-XBT_PUBLIC void MSG_process_yield();
 
 XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
 XBT_PUBLIC int MSG_process_self_PID();

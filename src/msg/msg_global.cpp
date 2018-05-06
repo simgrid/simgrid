@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 
@@ -86,16 +85,6 @@ void MSG_config(const char *key, const char *value){
   simgrid::config::set_as_string(key, value);
 }
 
-/** \ingroup msg_simulation
- * \brief Kill all running process
-
- */
-int MSG_process_killall()
-{
-  simgrid::s4u::Actor::kill_all();
-  return 0;
-}
-
 static void MSG_exit() {
   if (msg_global==nullptr)
     return;
@@ -104,15 +93,13 @@ static void MSG_exit() {
   msg_global = nullptr;
 }
 
-/** \ingroup msg_simulation
- * \brief A clock (in second).
- */
-double MSG_get_clock()
-{
-  return SIMIX_get_clock();
-}
-
 unsigned long int MSG_get_sent_msg()
 {
   return msg_global->sent_msg;
+}
+
+/** \brief register functions bypassing the parser */
+void MSG_set_function(const char* host_id, const char* function_name, xbt_dynar_t arguments)
+{
+  SIMIX_process_set_function(host_id, function_name, arguments, -1, -1);
 }
