@@ -144,7 +144,7 @@ XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
 XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
 XBT_PUBLIC void MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC void MSG_process_kill(msg_process_t process);
-XBT_PUBLIC void MSG_process_kill_all();
+XBT_PUBLIC void MSG_process_killall();
 XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
 XBT_PUBLIC void MSG_process_yield();
 

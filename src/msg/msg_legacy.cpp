@@ -90,7 +90,7 @@ void MSG_process_kill(sg_actor_t actor)
 {
   sg_actor_kill(actor);
 }
-void MSG_process_kill_all()
+void MSG_process_killall()
 {
   sg_actor_kill_all();
 }
