@@ -147,11 +147,8 @@ public abstract class Process implements Runnable {
 	
 	/**
 	 * This method kills all running process of the simulation.
-	 *
-	 * @return				The function returns the PID of the next created process.
-	 *			
 	 */
-	public static native int killAll();
+	public static native void killAll();
 
 	/** Simply kills the receiving process.
 	 *
