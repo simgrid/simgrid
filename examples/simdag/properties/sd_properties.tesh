@@ -14,8 +14,8 @@ $ $SG_TEST_EXENV properties/sd_properties ${srcdir:=.}/../platforms/prop.xml
 > [0.000000] [test/INFO] Modify an existing property
 > [0.000000] [test/INFO] 	Property: Hdd old value: 120
 > [0.000000] [test/INFO] 	Property: Hdd new value: 250
-> [0.000000] [sg_host/INFO] Displaying host host2
-> [0.000000] [sg_host/INFO]   - speed: 1000000000
-> [0.000000] [sg_host/INFO]   - available speed: 1.00
-> [0.000000] [sg_host/INFO]   - properties:
-> [0.000000] [sg_host/INFO]     Hdd->250
+> [0.000000] [s4u_host/INFO] Displaying host host2
+> [0.000000] [s4u_host/INFO]   - speed: 1000000000
+> [0.000000] [s4u_host/INFO]   - available speed: 1.00
+> [0.000000] [s4u_host/INFO]   - properties:
+> [0.000000] [s4u_host/INFO]     Hdd->250
