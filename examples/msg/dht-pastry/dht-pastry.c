@@ -313,7 +313,7 @@ static void handle_task(node_t node, msg_task_t task) {
       // if the node is ready, do all the pending tasks and send update to known nodes
       if (node->ready==0) {
         XBT_DEBUG("Node %i is ready!!!", node->id);
-        while(xbt_dynar_length(node->pending_tasks)){
+        while (!xbt_dynar_is_empty(node->pending_tasks)) {
           msg_task_t task;
           xbt_dynar_shift(node->pending_tasks, &task);
           handle_task(node, task);
