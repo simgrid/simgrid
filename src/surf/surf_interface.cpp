@@ -36,13 +36,6 @@ std::vector<simgrid::s4u::Host*> host_that_restart;
 std::set<std::string> watched_hosts;
 extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
-namespace simgrid {
-namespace surf {
-
-simgrid::xbt::signal<void()> surfExitCallbacks;
-}
-}
-
 #include <simgrid/plugins/energy.h> // FIXME: this plug-in should not be linked to the core
 #include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
 
