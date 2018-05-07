@@ -229,18 +229,6 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
     mpi->getOrCreateStateType("MIGRATE_STATE");
   }
 
-  if (TRACE_actor_is_enabled()) {
-    simgrid::instr::ContainerType* actor = container->type_->getOrCreateContainerType("ACTOR");
-    simgrid::instr::StateType* state     = actor->getOrCreateStateType("ACTOR_STATE");
-    state->addEntityValue("suspend", "1 0 1");
-    state->addEntityValue("sleep", "1 1 0");
-    state->addEntityValue("receive", "1 0 0");
-    state->addEntityValue("send", "0 0 1");
-    state->addEntityValue("task_execute", "0 1 1");
-    root->type_->getOrCreateLinkType("ACTOR_LINK", actor, actor);
-    root->type_->getOrCreateLinkType("ACTOR_TASK_LINK", actor, actor);
-  }
-
   if (TRACE_vm_is_enabled()) {
     simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
     simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("MSG_VM_STATE");
@@ -272,19 +260,36 @@ static void instr_on_platform_created()
   TRACE_paje_dump_buffer(true);
 }
 
-static void instr_on_actor_suspend(simgrid::s4u::ActorPtr actor)
+static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
+{
+  container_t root      = simgrid::instr::Container::getRoot();
+  container_t container = simgrid::instr::Container::byName(actor->get_host()->get_name());
+
+  container->createChild(instr_pid(actor.get()), "ACTOR");
+  simgrid::instr::ContainerType* actor_type = container->type_->getOrCreateContainerType("ACTOR");
+  simgrid::instr::StateType* state          = actor_type->getOrCreateStateType("ACTOR_STATE");
+  state->addEntityValue("suspend", "1 0 1");
+  state->addEntityValue("sleep", "1 1 0");
+  state->addEntityValue("receive", "1 0 0");
+  state->addEntityValue("send", "0 0 1");
+  state->addEntityValue("task_execute", "0 1 1");
+  root->type_->getOrCreateLinkType("ACTOR_LINK", actor_type, actor_type);
+  root->type_->getOrCreateLinkType("ACTOR_TASK_LINK", actor_type, actor_type);
+}
+
+static void instr_actor_on_suspend(simgrid::s4u::ActorPtr actor)
 {
   simgrid::instr::Container::byName(instr_pid(actor.get()))->getState("ACTOR_STATE")->pushEvent("suspend");
 }
 
-static void instr_on_actor_resume(simgrid::s4u::ActorPtr actor)
+static void instr_actor_on_resume(simgrid::s4u::ActorPtr actor)
 {
   simgrid::instr::Container::byName(instr_pid(actor.get()))->getState("ACTOR_STATE")->popEvent();
 }
 
 static long long int counter = 0;
 
-static void instr_on_actor_migration_start(simgrid::s4u::ActorPtr actor)
+static void instr_actor_on_migration_start(simgrid::s4u::ActorPtr actor)
 {
   // start link
   container_t container = simgrid::instr::Container::byName(instr_pid(actor.get()));
@@ -294,7 +299,7 @@ static void instr_on_actor_migration_start(simgrid::s4u::ActorPtr actor)
   container->removeFromParent();
 }
 
-static void instr_on_actor_migration_end(simgrid::s4u::ActorPtr actor)
+static void instr_actor_on_migration_end(simgrid::s4u::ActorPtr actor)
 {
   // create new container on the new_host location
   simgrid::instr::Container::byName(actor->get_host()->get_name())->createChild(instr_pid(actor.get()), "ACTOR");
@@ -317,11 +322,13 @@ void instr_define_callbacks()
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
   simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);
   simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
+
   if (TRACE_actor_is_enabled()) {
-    simgrid::s4u::Actor::on_suspend.connect(instr_on_actor_suspend);
-    simgrid::s4u::Actor::on_resume.connect(instr_on_actor_resume);
-    simgrid::s4u::Actor::on_migration_start.connect(instr_on_actor_migration_start);
-    simgrid::s4u::Actor::on_migration_end.connect(instr_on_actor_migration_end);
+    simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);
+    simgrid::s4u::Actor::on_suspend.connect(instr_actor_on_suspend);
+    simgrid::s4u::Actor::on_resume.connect(instr_actor_on_resume);
+    simgrid::s4u::Actor::on_migration_start.connect(instr_actor_on_migration_start);
+    simgrid::s4u::Actor::on_migration_end.connect(instr_actor_on_migration_end);
   }
 }
 /*

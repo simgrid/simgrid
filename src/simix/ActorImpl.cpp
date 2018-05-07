@@ -337,9 +337,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   XBT_DEBUG("Inserting %s(%s) in the to_run list", process->get_cname(), host->get_cname());
   simix_global->process_to_run.push_back(process);
   intrusive_ptr_add_ref(process);
-  /* Tracing the process creation */
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(process->host->get_name())->createChild(instr_pid(process->ciface()), "ACTOR");
+
   /* The onCreation() signal must be delayed until there, where the pid and everything is set */
   simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
   simgrid::s4u::Actor::on_creation(tmp);
@@ -395,15 +393,17 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   simix_global->process_to_run.push_back(process);
   intrusive_ptr_add_ref(process);
 
-  /* Tracing the process creation */
-  if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(process->host->get_name())->createChild(instr_pid(process->ciface()), "ACTOR");
 
   auto* context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context);
   if (not context)
     xbt_die("Not a suitable context");
 
   context->attach_start();
+
+  /* The onCreation() signal must be delayed until there, where the pid and everything is set */
+  simgrid::s4u::ActorPtr tmp = process->iface(); // Passing this directly to onCreation will lead to crashes
+  simgrid::s4u::Actor::on_creation(tmp);
+
   return process;
 }
 
