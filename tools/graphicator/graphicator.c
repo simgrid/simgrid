@@ -19,5 +19,6 @@ int main(int argc, char **argv)
   int status = TRACE_platform_graph_export_graphviz (argv[2]);
 
   xbt_assert(status != 0, "%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
+  MSG_main(); /* useless, except for correctly cleaning memory */
   return 0;
 }
