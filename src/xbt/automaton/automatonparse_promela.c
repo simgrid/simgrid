@@ -44,8 +44,7 @@ static void new_state(char* id, int src){
     parsed_automaton->current_state = state;
 
   if(src) {
-    if (state_id_src)
-      xbt_free(state_id_src);
+    xbt_free(state_id_src);
     state_id_src = xbt_strdup(id);
   }
 }

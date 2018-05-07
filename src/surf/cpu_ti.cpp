@@ -47,8 +47,7 @@ CpuTiTrace::~CpuTiTrace()
 
 CpuTiTmgr::~CpuTiTmgr()
 {
-  if (trace_)
-    delete trace_;
+  delete trace_;
 }
 
 /**
@@ -372,9 +371,7 @@ CpuTi::~CpuTi()
 }
 void CpuTi::set_speed_trace(tmgr_trace_t trace)
 {
-  if (speed_integrated_trace_)
-    delete speed_integrated_trace_;
-
+  delete speed_integrated_trace_;
   speed_integrated_trace_ = new CpuTiTmgr(trace, speed_.scale);
 
   /* add a fake trace event if periodicity == 0 */

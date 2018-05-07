@@ -265,10 +265,8 @@ void Comm::cleanup_smp(){
     Comm::unref(intra_comm_);
   if (leaders_comm_ != MPI_COMM_NULL)
     Comm::unref(leaders_comm_);
-  if (non_uniform_map_ != nullptr)
-    xbt_free(non_uniform_map_);
-  if (leaders_map_ != nullptr)
-    delete[] leaders_map_;
+  xbt_free(non_uniform_map_);
+  delete[] leaders_map_;
 }
 
 void Comm::unref(Comm* comm){

@@ -317,11 +317,8 @@ void surf_exit()
     delete model;
   delete all_existing_models;
 
-
-  if (future_evt_set) {
-    delete future_evt_set;
-    future_evt_set = nullptr;
-  }
+  delete future_evt_set;
+  future_evt_set = nullptr;
 
   tmgr_finalize();
   sg_platf_exit();

@@ -86,9 +86,6 @@ void MSG_config(const char *key, const char *value){
 }
 
 static void MSG_exit() {
-  if (msg_global==nullptr)
-    return;
-
   delete msg_global;
   msg_global = nullptr;
 }
