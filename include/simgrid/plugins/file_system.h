@@ -12,6 +12,7 @@
 
 // C interface
 ////////////////
+typedef sg_file_t msg_file_t; // MSG backwards compatibility
 
 SG_BEGIN_DECL()
 XBT_PUBLIC void sg_storage_file_system_init();

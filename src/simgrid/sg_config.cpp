@@ -445,12 +445,6 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::declare_flag<std::string>("smpi/reduce", "Which collective to use for reduce", "");
 #endif // HAVE_SMPI
 
-  /* Storage */
-
-  sg_storage_max_file_descriptors = 1024;
-  simgrid::config::bind_flag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
-                             "Maximum number of concurrently opened files per host. Default is 1024");
-
   /* Others */
 
   simgrid::config::declare_flag<bool>(

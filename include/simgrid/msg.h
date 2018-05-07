@@ -148,9 +148,6 @@ XBT_PUBLIC void MSG_process_killall();
 XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
 XBT_PUBLIC void MSG_process_yield();
 
-/* ******************************** File ************************************ */
-typedef sg_file_t msg_file_t;
-XBT_PUBLIC_DATA int sg_storage_max_file_descriptors;
 
 /**
  * \brief @brief Communication action.

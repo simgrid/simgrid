@@ -7,6 +7,7 @@
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "xbt/config.hpp"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -348,6 +349,10 @@ static void onHostCreation(simgrid::s4u::Host& host)
 /* **************************** Public interface *************************** */
 void sg_storage_file_system_init()
 {
+  sg_storage_max_file_descriptors = 1024;
+  simgrid::config::bind_flag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
+                             "Maximum number of concurrently opened files per host. Default is 1024");
+
   if (not FileSystemStorageExt::EXTENSION_ID.valid()) {
     FileSystemStorageExt::EXTENSION_ID = simgrid::s4u::Storage::extension_create<FileSystemStorageExt>();
     simgrid::s4u::Storage::onCreation.connect(&onStorageCreation);
@@ -407,7 +412,7 @@ void sg_file_set_data(sg_file_t fd, void* data)
 }
 
 /**
- * \brief Set the file position indicator in the msg_file_t by adding offset bytes
+ * \brief Set the file position indicator in the sg_file_t by adding offset bytes
  * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
  *
  * \param fd : file object that identifies the stream
