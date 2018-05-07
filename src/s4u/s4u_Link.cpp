@@ -14,65 +14,16 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_link, s4u, "Logging specific to the S4U links");
 
-/*********
- * C API *
- *********/
-
-const char* sg_link_name(sg_link_t link)
-{
-  return link->get_cname();
-}
-sg_link_t sg_link_by_name(const char* name)
-{
-  return simgrid::s4u::Link::by_name(name);
-}
-
-int sg_link_is_shared(sg_link_t link)
-{
-  return (int)link->sharingPolicy();
-}
-double sg_link_bandwidth(sg_link_t link)
-{
-  return link->bandwidth();
-}
-double sg_link_latency(sg_link_t link)
-{
-  return link->latency();
-}
-void* sg_link_data(sg_link_t link)
-{
-  return link->getData();
-}
-void sg_link_data_set(sg_link_t link, void* data)
-{
-  link->setData(data);
-}
-int sg_link_count()
-{
-  return simgrid::kernel::resource::LinkImpl::linksCount();
-}
-sg_link_t* sg_link_list()
-{
-  simgrid::kernel::resource::LinkImpl** list = simgrid::kernel::resource::LinkImpl::linksList();
-  sg_link_t* res                             = (sg_link_t*)list; // Use the same memory area
-
-  int size = sg_link_count();
-  for (int i = 0; i < size; i++)
-    res[i] = &(list[i]->piface_); // Convert each entry into its interface
-
-  return res;
-}
-void sg_link_exit()
-{
-  simgrid::kernel::resource::LinkImpl::linksExit();
-}
-
-/***********
- * C++ API *
- ***********/
-
 namespace simgrid {
 namespace s4u {
+
+simgrid::xbt::signal<void(Link&)> Link::onCreation;
+simgrid::xbt::signal<void(Link&)> Link::onDestruction;
+simgrid::xbt::signal<void(Link&)> Link::onStateChange;
+simgrid::xbt::signal<void(Link&)> Link::on_bandwidth_change;
+simgrid::xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::onCommunicate;
+simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::onCommunicationStateChange;
+
 Link* Link::by_name(const char* name)
 {
   kernel::resource::LinkImpl* res = kernel::resource::LinkImpl::byName(name);
@@ -156,15 +107,56 @@ void Link::setProperty(std::string key, std::string value)
 {
   simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
-
-/*************
- * Callbacks *
- *************/
-simgrid::xbt::signal<void(s4u::Link&)> Link::onCreation;
-simgrid::xbt::signal<void(s4u::Link&)> Link::onDestruction;
-simgrid::xbt::signal<void(s4u::Link&)> Link::onStateChange;
-simgrid::xbt::signal<void(s4u::Link&)> Link::on_bandwidth_change;
-simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
-simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::onCommunicationStateChange;
 } // namespace s4u
 } // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+
+const char* sg_link_name(sg_link_t link)
+{
+  return link->get_cname();
+}
+sg_link_t sg_link_by_name(const char* name)
+{
+  return simgrid::s4u::Link::by_name(name);
+}
+
+int sg_link_is_shared(sg_link_t link)
+{
+  return (int)link->sharingPolicy();
+}
+double sg_link_bandwidth(sg_link_t link)
+{
+  return link->bandwidth();
+}
+double sg_link_latency(sg_link_t link)
+{
+  return link->latency();
+}
+void* sg_link_data(sg_link_t link)
+{
+  return link->getData();
+}
+void sg_link_data_set(sg_link_t link, void* data)
+{
+  link->setData(data);
+}
+int sg_link_count()
+{
+  return simgrid::kernel::resource::LinkImpl::linksCount();
+}
+sg_link_t* sg_link_list()
+{
+  simgrid::kernel::resource::LinkImpl** list = simgrid::kernel::resource::LinkImpl::linksList();
+  sg_link_t* res                             = (sg_link_t*)list; // Use the same memory area
+
+  int size = sg_link_count();
+  for (int i = 0; i < size; i++)
+    res[i]   = &(list[i]->piface_); // Convert each entry into its interface
+
+  return res;
+}
+void sg_link_exit()
+{
+  simgrid::kernel::resource::LinkImpl::linksExit();
+}
