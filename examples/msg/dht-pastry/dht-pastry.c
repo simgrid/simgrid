@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -313,7 +312,7 @@ static void handle_task(node_t node, msg_task_t task) {
       // if the node is ready, do all the pending tasks and send update to known nodes
       if (node->ready==0) {
         XBT_DEBUG("Node %i is ready!!!", node->id);
-        while (!xbt_dynar_is_empty(node->pending_tasks)) {
+        while (not xbt_dynar_is_empty(node->pending_tasks)) {
           msg_task_t task;
           xbt_dynar_shift(node->pending_tasks, &task);
           handle_task(node, task);
