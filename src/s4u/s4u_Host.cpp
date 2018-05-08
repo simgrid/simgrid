@@ -190,8 +190,7 @@ void Host::getProcesses(std::vector<ActorPtr>* list)
   }
 }
 
-/** @brief Returns how many actors have been launched on this host */
-// FIXME: Specify whether the user should expect only non-daemon actors here!
+/** @brief Returns how many actors (daemonized or not) have been launched on this host */
 int Host::get_actor_count()
 {
   return this->extension<simgrid::simix::Host>()->process_list.size();
