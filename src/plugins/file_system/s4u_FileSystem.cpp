@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "src/surf/HostImpl.hpp"
@@ -49,7 +48,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
   } else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath.c_str(), host->get_cname());
 
-  localStorage = st;
+  local_storage_ = st;
 
   // assign a file descriptor id to the newly opened File
   FileDescriptorHostExt* ext = host->extension<simgrid::s4u::FileDescriptorHostExt>();
@@ -62,7 +61,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
   ext->file_descriptor_table->pop_back();
 
   XBT_DEBUG("\tOpen file '%s'", path_.c_str());
-  std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
+  std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
   // if file does not exist create an empty file
   auto sz = content->find(path_);
   if (sz != content->end()) {
@@ -88,7 +87,7 @@ void File::dump()
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           getPath(), size_, mount_point_.c_str(), localStorage->get_cname(), localStorage->getType(), desc_id);
+           get_path(), size_, mount_point_.c_str(), local_storage_->get_cname(), local_storage_->getType(), desc_id);
 }
 
 sg_size_t File::read(sg_size_t size)
@@ -97,10 +96,10 @@ sg_size_t File::read(sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located and read it */
-  Host* host = localStorage->getHost();
-  XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->get_cname());
+  Host* host = local_storage_->getHost();
+  XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
-  sg_size_t read_size = localStorage->read(std::min(size, size_ - current_position_));
+  sg_size_t read_size = local_storage_->read(std::min(size, size_ - current_position_));
   current_position_ += read_size;
 
   if (strcmp(host->get_cname(), Host::current()->get_cname())) {
@@ -128,7 +127,7 @@ sg_size_t File::write(sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located (remote or local)*/
-  Host* host = localStorage->getHost();
+  Host* host = local_storage_->getHost();
 
   if (strcmp(host->get_cname(), Host::current()->get_cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
@@ -140,19 +139,19 @@ sg_size_t File::write(sg_size_t size)
     this_actor::parallel_execute(2, m_host_list, flops_amount, bytes_amount);
   }
 
-  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", getPath(), localStorage->get_cname(), size, size_);
+  XBT_DEBUG("WRITE %s on disk '%s'. size '%llu/%llu'", get_path(), local_storage_->get_cname(), size, size_);
   // If the storage is full before even starting to write
-  if (sg_storage_get_size_used(localStorage) >= sg_storage_get_size(localStorage))
+  if (sg_storage_get_size_used(local_storage_) >= sg_storage_get_size(local_storage_))
     return 0;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
-  localStorage->extension<FileSystemStorageExt>()->decrUsedSize(size_ - current_position_);
+  local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_ - current_position_);
 
-  sg_size_t write_size = localStorage->write(size);
-  localStorage->extension<FileSystemStorageExt>()->incrUsedSize(write_size);
+  sg_size_t write_size = local_storage_->write(size);
+  local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
 
   current_position_ += write_size;
   size_ = current_position_;
-  std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
+  std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
 
   content->erase(path_);
   content->insert({path_, size_});
@@ -196,7 +195,7 @@ void File::move(std::string fullpath)
 {
   /* Check if the new full path is on the same mount point */
   if (not strncmp(mount_point_.c_str(), fullpath.c_str(), mount_point_.length())) {
-    std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
+    std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
     auto sz = content->find(path_);
     if (sz != content->end()) { // src file exists
       sg_size_t new_size = sz->second;
@@ -215,14 +214,14 @@ void File::move(std::string fullpath)
 int File::unlink()
 {
   /* Check if the file is on local storage */
-  std::map<std::string, sg_size_t>* content = localStorage->extension<FileSystemStorageExt>()->getContent();
+  std::map<std::string, sg_size_t>* content = local_storage_->extension<FileSystemStorageExt>()->get_content();
 
   if (content->find(path_) == content->end()) {
-    XBT_WARN("File %s is not on disk %s. Impossible to unlink", path_.c_str(), localStorage->get_cname());
+    XBT_WARN("File %s is not on disk %s. Impossible to unlink", path_.c_str(), local_storage_->get_cname());
     return -1;
   } else {
-    XBT_DEBUG("UNLINK %s on disk '%s'", path_.c_str(), localStorage->get_cname());
-    localStorage->extension<FileSystemStorageExt>()->decrUsedSize(size_);
+    XBT_DEBUG("UNLINK %s on disk '%s'", path_.c_str(), local_storage_->get_cname());
+    local_storage_->extension<FileSystemStorageExt>()->decr_used_size(size_);
 
     // Remove the file from storage
     content->erase(fullpath_);
@@ -231,15 +230,15 @@ int File::unlink()
   }
 }
 
-int File::remoteCopy(sg_host_t host, const char* fullpath)
+int File::remote_copy(sg_host_t host, const char* fullpath)
 {
   /* Find the host where the file is physically located and read it */
-  Storage* storage_src = localStorage;
+  Storage* storage_src = local_storage_;
   Host* src_host       = storage_src->getHost();
   seek(0, SEEK_SET);
-  XBT_DEBUG("READ %s on disk '%s'", getPath(), localStorage->get_cname());
+  XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
-  sg_size_t read_size = localStorage->read(size_);
+  sg_size_t read_size = local_storage_->read(size_);
   current_position_ += read_size;
 
   /* Find the host that owns the storage where the file has to be copied */
@@ -274,23 +273,23 @@ int File::remoteCopy(sg_host_t host, const char* fullpath)
 
   /* Create file on remote host, write it and close it */
   File* fd = new File(fullpath, dst_host, nullptr);
-  sg_size_t write_size = fd->localStorage->write(read_size);
-  fd->localStorage->extension<FileSystemStorageExt>()->incrUsedSize(write_size);
-  (*(fd->localStorage->extension<FileSystemStorageExt>()->getContent()))[path_] = size_;
+  sg_size_t write_size = fd->local_storage_->write(read_size);
+  fd->local_storage_->extension<FileSystemStorageExt>()->incr_used_size(write_size);
+  (*(fd->local_storage_->extension<FileSystemStorageExt>()->get_content()))[path_] = size_;
   delete fd;
   return 0;
 }
 
-int File::remoteMove(sg_host_t host, const char* fullpath)
+int File::remote_move(sg_host_t host, const char* fullpath)
 {
-  int res = remoteCopy(host, fullpath);
+  int res = remote_copy(host, fullpath);
   unlink();
   return res;
 }
 
 FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
 {
-  content_ = parseContent(ptr->getImpl()->content_name);
+  content_ = parse_content(ptr->getImpl()->content_name);
   size_    = ptr->getImpl()->size_;
 }
 
@@ -299,7 +298,7 @@ FileSystemStorageExt::~FileSystemStorageExt()
   delete content_;
 }
 
-std::map<std::string, sg_size_t>* FileSystemStorageExt::parseContent(std::string filename)
+std::map<std::string, sg_size_t>* FileSystemStorageExt::parse_content(std::string filename)
 {
   if (filename.empty())
     return nullptr;
@@ -318,7 +317,7 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parseContent(std::string
       xbt_assert(tokens.size() == 2, "Parse error in %s: %s", filename.c_str(), line.c_str());
       sg_size_t size = std::stoull(tokens.at(1));
 
-      usedSize_ += size;
+      used_size_ += size;
       parse_content->insert({tokens.front(), size});
     }
   } while (not fs->eof());
@@ -331,17 +330,17 @@ std::map<std::string, sg_size_t>* FileSystemStorageExt::parseContent(std::string
 using simgrid::s4u::FileSystemStorageExt;
 using simgrid::s4u::FileDescriptorHostExt;
 
-static void onStorageCreation(simgrid::s4u::Storage& st)
+static void on_storage_creation(simgrid::s4u::Storage& st)
 {
   st.extension_set(new FileSystemStorageExt(&st));
 }
 
-static void onStorageDestruction(simgrid::s4u::Storage& st)
+static void on_storage_destruction(simgrid::s4u::Storage& st)
 {
   delete st.extension<FileSystemStorageExt>();
 }
 
-static void onHostCreation(simgrid::s4u::Host& host)
+static void on_host_creation(simgrid::s4u::Host& host)
 {
   host.extension_set<FileDescriptorHostExt>(new FileDescriptorHostExt());
 }
@@ -355,13 +354,13 @@ void sg_storage_file_system_init()
 
   if (not FileSystemStorageExt::EXTENSION_ID.valid()) {
     FileSystemStorageExt::EXTENSION_ID = simgrid::s4u::Storage::extension_create<FileSystemStorageExt>();
-    simgrid::s4u::Storage::onCreation.connect(&onStorageCreation);
-    simgrid::s4u::Storage::onDestruction.connect(&onStorageDestruction);
+    simgrid::s4u::Storage::onCreation.connect(&on_storage_creation);
+    simgrid::s4u::Storage::onDestruction.connect(&on_storage_destruction);
   }
 
   if (not FileDescriptorHostExt::EXTENSION_ID.valid()) {
     FileDescriptorHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<FileDescriptorHostExt>();
-    simgrid::s4u::Host::onCreation.connect(&onHostCreation);
+    simgrid::s4u::Host::onCreation.connect(&on_host_creation);
   }
 }
 
@@ -388,7 +387,7 @@ void sg_file_close(sg_file_t fd)
 const char* sg_file_get_name(sg_file_t fd)
 {
   xbt_assert((fd != nullptr), "Invalid file descriptor");
-  return fd->getPath();
+  return fd->get_path();
 }
 
 sg_size_t sg_file_get_size(sg_file_t fd)
@@ -403,12 +402,12 @@ void sg_file_dump(sg_file_t fd)
 
 void* sg_file_get_data(sg_file_t fd)
 {
-  return fd->getUserdata();
+  return fd->get_userdata();
 }
 
 void sg_file_set_data(sg_file_t fd, void* data)
 {
-  fd->setUserdata(data);
+  fd->set_userdata(data);
 }
 
 /**
@@ -451,7 +450,7 @@ void sg_file_unlink(sg_file_t fd)
  */
 int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
 {
-  return file->remoteCopy(host, fullpath);
+  return file->remote_copy(host, fullpath);
 }
 
 /**
@@ -463,27 +462,27 @@ int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
  */
 int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath)
 {
-  return file->remoteMove(host, fullpath);
+  return file->remote_move(host, fullpath);
 }
 
 sg_size_t sg_storage_get_size_free(sg_storage_t st)
 {
-  return st->extension<FileSystemStorageExt>()->getSize() - st->extension<FileSystemStorageExt>()->getUsedSize();
+  return st->extension<FileSystemStorageExt>()->get_size() - st->extension<FileSystemStorageExt>()->get_used_size();
 }
 
 sg_size_t sg_storage_get_size_used(sg_storage_t st)
 {
-  return st->extension<FileSystemStorageExt>()->getUsedSize();
+  return st->extension<FileSystemStorageExt>()->get_used_size();
 }
 
 sg_size_t sg_storage_get_size(sg_storage_t st)
 {
-  return st->extension<FileSystemStorageExt>()->getSize();
+  return st->extension<FileSystemStorageExt>()->get_size();
 }
 
 xbt_dict_t sg_storage_get_content(sg_storage_t storage)
 {
-  std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->getContent();
+  std::map<std::string, sg_size_t>* content = storage->extension<simgrid::s4u::FileSystemStorageExt>()->get_content();
   // Note: ::operator delete is ok here (no destructor called) since the dict elements are of POD type sg_size_t.
   xbt_dict_t content_as_dict = xbt_dict_new_homogeneous(::operator delete);
 

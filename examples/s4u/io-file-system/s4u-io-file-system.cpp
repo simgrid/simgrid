@@ -58,12 +58,12 @@ public:
 
     // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
     std::string newpath = "/home/tmp/simgrid.readme";
-    XBT_INFO("Move '%s' to '%s'", file->getPath(), newpath.c_str());
+    XBT_INFO("Move '%s' to '%s'", file->get_path(), newpath.c_str());
     file->move(newpath);
 
     // Test attaching some user data to the file
-    file->setUserdata(new std::string("777"));
-    std::string* file_data = static_cast<std::string*>(file->getUserdata());
+    file->set_userdata(new std::string("777"));
+    std::string* file_data = static_cast<std::string*>(file->get_userdata());
     XBT_INFO("User data attached to the file: %s", file_data->c_str());
     delete file_data;
 
@@ -82,7 +82,7 @@ public:
 
     // Reopen the file and then unlink it
     file = new simgrid::s4u::File("/home/tmp/simgrid.readme", nullptr);
-    XBT_INFO("Unlink file: '%s'", file->getPath());
+    XBT_INFO("Unlink file: '%s'", file->get_path());
     file->unlink();
     delete file; // Unlinking the file on "disk" does not free the object
 

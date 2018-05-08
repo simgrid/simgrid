@@ -93,7 +93,7 @@ public:
   ~File();
 
   /** Retrieves the path to the file */
-  const char* getPath() { return fullpath_.c_str(); }
+  const char* get_path() { return fullpath_.c_str(); }
 
   /** Simulates a local read action. Returns the size of data actually read */
   sg_size_t read(sg_size_t size);
@@ -102,9 +102,9 @@ public:
   sg_size_t write(sg_size_t size);
 
   /** Allows to store user data on that host */
-  void setUserdata(void* data) { userdata_ = data; }
+  void set_userdata(void* data) { userdata_ = data; }
   /** Retrieves the previously stored data */
-  void* getUserdata() { return userdata_; }
+  void* get_userdata() { return userdata_; }
 
   sg_size_t size();
   void seek(sg_offset_t pos);             /** Sets the file head to the given position. */
@@ -113,14 +113,14 @@ public:
 
   /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
   void move(std::string fullpath);
-  int remoteCopy(sg_host_t host, const char* fullpath);
-  int remoteMove(sg_host_t host, const char* fullpath);
+  int remote_copy(sg_host_t host, const char* fullpath);
+  int remote_move(sg_host_t host, const char* fullpath);
 
   int unlink(); /** Remove a file from the contents of a disk */
   void dump();
 
   int desc_id = 0;
-  Storage* localStorage;
+  Storage* local_storage_;
   std::string mount_point_;
 
 private:
@@ -136,16 +136,16 @@ public:
   static simgrid::xbt::Extension<Storage, FileSystemStorageExt> EXTENSION_ID;
   explicit FileSystemStorageExt(Storage* ptr);
   ~FileSystemStorageExt();
-  std::map<std::string, sg_size_t>* parseContent(std::string filename);
-  std::map<std::string, sg_size_t>* getContent() { return content_; }
-  sg_size_t getSize() { return size_; }
-  sg_size_t getUsedSize() { return usedSize_; }
-  void decrUsedSize(sg_size_t size) { usedSize_ -= size; }
-  void incrUsedSize(sg_size_t size) { usedSize_ += size; }
+  std::map<std::string, sg_size_t>* parse_content(std::string filename);
+  std::map<std::string, sg_size_t>* get_content() { return content_; }
+  sg_size_t get_size() { return size_; }
+  sg_size_t get_used_size() { return used_size_; }
+  void decr_used_size(sg_size_t size) { used_size_ -= size; }
+  void incr_used_size(sg_size_t size) { used_size_ += size; }
 
 private:
   std::map<std::string, sg_size_t>* content_;
-  sg_size_t usedSize_ = 0;
+  sg_size_t used_size_ = 0;
   sg_size_t size_     = 0;
 };
 

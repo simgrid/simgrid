@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(remote_io, "Messages specific for this io example")
 static int host(int argc, char* argv[])
 {
   simgrid::s4u::File file(argv[1], nullptr);
-  const char* filename = file.getPath();
+  const char* filename = file.get_path();
   XBT_INFO("Opened file '%s'", filename);
   file.dump();
 
@@ -27,7 +27,7 @@ static int host(int argc, char* argv[])
 
   if (argc > 5) {
     simgrid::s4u::File remoteFile(argv[2], nullptr);
-    filename = remoteFile.getPath();
+    filename = remoteFile.get_path();
     XBT_INFO("Opened file '%s'", filename);
     XBT_INFO("Try to write %llu MiB to '%s'", remoteFile.size() / 1024, filename);
     sg_size_t write = remoteFile.write(remoteFile.size() * 1024);
@@ -36,11 +36,11 @@ static int host(int argc, char* argv[])
     if (std::stoi(argv[5]) != 0) {
       XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, remoteFile.size(),
                simgrid::s4u::Host::current()->get_cname(), argv[3]);
-      remoteFile.remoteMove(simgrid::s4u::Host::by_name(argv[3]), argv[4]);
+      remoteFile.remote_move(simgrid::s4u::Host::by_name(argv[3]), argv[4]);
     } else {
       XBT_INFO("Copy '%s' (of size %llu) from '%s' to '%s'", filename, remoteFile.size(),
                simgrid::s4u::Host::current()->get_cname(), argv[3]);
-      remoteFile.remoteCopy(simgrid::s4u::Host::by_name(argv[3]), argv[4]);
+      remoteFile.remote_copy(simgrid::s4u::Host::by_name(argv[3]), argv[4]);
     }
   }
 
