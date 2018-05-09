@@ -11,7 +11,7 @@ static void test(double computation_amount, double priority)
 {
   XBT_INFO("Hello! Execute %g flops with priority %g", computation_amount, priority);
   simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(computation_amount);
-  activity->setPriority(priority);
+  activity->set_priority(priority);
   activity->start();
   activity->wait();
 

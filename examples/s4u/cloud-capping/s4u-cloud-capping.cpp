@@ -18,7 +18,7 @@ static void worker(double computation_amount, bool use_bound, double bound)
   if (use_bound) {
     if (bound < 1e-12) /* close enough to 0 without any floating precision surprise */
       XBT_INFO("bound == 0 means no capping (i.e., unlimited).");
-    exec->setBound(bound);
+    exec->set_bound(bound);
   }
   exec->start();
   exec->wait();

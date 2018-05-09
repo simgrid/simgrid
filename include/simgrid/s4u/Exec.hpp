@@ -28,13 +28,22 @@ public:
   Activity* wait(double timeout) override;
   bool test();
 
-  ExecPtr setPriority(double priority);
-  ExecPtr setBound(double bound);
-  ExecPtr setHost(Host * host);
-  Host* getHost() { return host_; }
+  ExecPtr set_priority(double priority);
+  ExecPtr set_bound(double bound);
+  ExecPtr set_host(Host* host);
+  Host* get_host();
 
   double get_remaining() override;
   double getRemainingRatio();
+
+  //////////////// Deprecated functions
+  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_priority()") ExecPtr setPriority(double priority)
+  {
+    return set_priority(priority);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_bound()") ExecPtr setBound(double bound) { return set_bound(bound); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_host()") ExecPtr setHost(Host* host) { return set_host(host); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_host()") Host* getHost() { return get_host(); }
 
 private:
   Host* host_          = nullptr;

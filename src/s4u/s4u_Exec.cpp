@@ -15,7 +15,7 @@ namespace s4u {
 
 Activity* Exec::start()
 {
-  pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1 / priority_, 0., host_);
+  pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1. / priority_, 0., host_);
   boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->setBound(bound_);
   state_ = State::started;
   return this;
@@ -34,6 +34,7 @@ Activity* Exec::wait(double timeout)
   return this;
 }
 
+/** @brief Returns whether the state of the exec is finished */
 bool Exec::test()
 {
   xbt_assert(state_ == State::inited || state_ == State::started || state_ == State::finished);
@@ -52,21 +53,34 @@ bool Exec::test()
   return false;
 }
 
-ExecPtr Exec::setPriority(double priority)
+/** @brief  Change the execution priority, don't you think?
+ *
+ * An execution with twice the priority will get twice the amount of flops when the resource is shared.
+ * The default priority is 1.
+ *
+ * Currently, this cannot be changed once the exec started. */
+ExecPtr Exec::set_priority(double priority)
 {
   xbt_assert(state_ == State::inited, "Cannot change the priority of an exec after its start");
   priority_ = priority;
   return this;
 }
 
-ExecPtr Exec::setBound(double bound)
+/** @brief change the execution bound, ie the maximal amount of flops per second that it may consume, regardless of what
+ * the host may deliver
+ *
+ * Currently, this cannot be changed once the exec started. */
+ExecPtr Exec::set_bound(double bound)
 {
   xbt_assert(state_ == State::inited, "Cannot change the bound of an exec after its start");
   bound_ = bound;
   return this;
 }
 
-ExecPtr Exec::setHost(Host* host)
+/** @brief Change the host on which this activity takes place.
+ *
+ * The activity cannot be terminated already (but it may be started). */
+ExecPtr Exec::set_host(Host* host)
 {
   xbt_assert(state_ == State::inited || state_ == State::started,
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
@@ -74,6 +88,12 @@ ExecPtr Exec::setHost(Host* host)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
   return this;
+}
+
+/** @brief Retrieve the host on which this activity takes place. */
+Host* Exec::get_host()
+{
+  return host_;
 }
 
 double Exec::get_remaining()
