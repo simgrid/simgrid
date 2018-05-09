@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u/Actor.hpp"
-#include "src/instr/instr_private.hpp"
+#include "simgrid/vm.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
 #include "src/simix/smx_host_private.hpp"
@@ -12,10 +12,14 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 
-simgrid::xbt::signal<void(simgrid::s4u::VirtualMachine*)> simgrid::s4u::VirtualMachine::onVmShutdown;
 
 namespace simgrid {
 namespace s4u {
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_start;
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_started;
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_shutdown;
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_suspend;
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_resume;
 
 VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
     : VirtualMachine(name, pm, coreAmount, 1024)
@@ -38,15 +42,6 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
 
   /* Make a process container */
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
-
-  if (TRACE_vm_is_enabled()) {
-    container_t host_container = instr::Container::byName(pm->get_name());
-    new instr::Container(name, "MSG_VM", host_container);
-    instr::Container::byName(get_name())->getState("MSG_VM_STATE")->addEntityValue("start", "0 0 1"); // start is blue
-    instr::Container::byName(get_name())
-        ->getState("MSG_VM_STATE")
-        ->addEntityValue("suspend", "1 0 0"); // suspend is red
-  }
 }
 
 VirtualMachine::~VirtualMachine()
@@ -65,15 +60,11 @@ VirtualMachine::~VirtualMachine()
 
   /* Don't free these things twice: they are the ones of my physical host */
   pimpl_netpoint = nullptr;
-
-  if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(get_name())->removeFromParent();
 }
 
 void VirtualMachine::start()
 {
-  if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->pushEvent("start");
+  on_start(*this);
 
   simgrid::simix::kernelImmediate([this]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
@@ -104,31 +95,27 @@ void VirtualMachine::start()
     this->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
   });
 
-  if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->popEvent();
+  on_started(*this);
 }
 
 void VirtualMachine::suspend()
 {
+  on_suspend(*this);
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->suspend(issuer); });
-  if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->pushEvent("suspend");
-  XBT_DEBUG("vm_suspend done");
 }
 
 void VirtualMachine::resume()
 {
   pimpl_vm_->resume();
-  if (TRACE_vm_is_enabled())
-    simgrid::instr::Container::byName(get_name())->getState("MSG_VM_STATE")->popEvent();
+  on_resume(*this);
 }
 
 void VirtualMachine::shutdown()
 {
   smx_actor_t issuer = SIMIX_process_self();
   simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->shutdown(issuer); });
-  onVmShutdown(this);
+  on_shutdown(*this);
 }
 
 void VirtualMachine::destroy()

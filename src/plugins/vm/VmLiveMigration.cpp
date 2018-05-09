@@ -283,13 +283,13 @@ void MigrationTx::operator()()
 }
 }
 
-static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine* vm)
+static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine& vm)
 {
-  if (vm->getImpl()->isMigrating) {
-    vm->extension<simgrid::vm::VmMigrationExt>()->rx_->kill();
-    vm->extension<simgrid::vm::VmMigrationExt>()->tx_->kill();
-    vm->extension<simgrid::vm::VmMigrationExt>()->issuer_->kill();
-    vm->getImpl()->isMigrating = false;
+  if (vm.getImpl()->isMigrating) {
+    vm.extension<simgrid::vm::VmMigrationExt>()->rx_->kill();
+    vm.extension<simgrid::vm::VmMigrationExt>()->tx_->kill();
+    vm.extension<simgrid::vm::VmMigrationExt>()->issuer_->kill();
+    vm.getImpl()->isMigrating = false;
   }
 }
 
@@ -297,7 +297,7 @@ void sg_vm_live_migration_plugin_init()
 {
   sg_vm_dirty_page_tracking_init();
   simgrid::vm::VmMigrationExt::ensureVmMigrationExtInstalled();
-  simgrid::s4u::VirtualMachine::onVmShutdown.connect(&onVirtualMachineShutdown);
+  simgrid::s4u::VirtualMachine::on_shutdown.connect(&onVirtualMachineShutdown);
 }
 
 /* Deprecated. Please use MSG_vm_create_migratable() instead */

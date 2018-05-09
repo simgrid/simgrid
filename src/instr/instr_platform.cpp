@@ -10,6 +10,7 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
@@ -228,18 +229,6 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
     root->type_->getOrCreateLinkType("MIGRATE_LINK", mpi, mpi);
     mpi->getOrCreateStateType("MIGRATE_STATE");
   }
-
-  if (TRACE_vm_is_enabled()) {
-    simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
-    simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("MSG_VM_STATE");
-    state->addEntityValue("suspend", "1 0 1");
-    state->addEntityValue("sleep", "1 1 0");
-    state->addEntityValue("receive", "1 0 0");
-    state->addEntityValue("send", "0 0 1");
-    state->addEntityValue("task_execute", "0 1 1");
-    root->type_->getOrCreateLinkType("MSG_VM_LINK", msg_vm, msg_vm);
-    root->type_->getOrCreateLinkType("MSG_VM_ACTOR_LINK", msg_vm, msg_vm);
-  }
 }
 
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
@@ -310,6 +299,46 @@ static void instr_actor_on_migration_end(simgrid::s4u::ActorPtr actor)
   counter++;
 }
 
+static void instr_vm_on_creation(simgrid::s4u::Host& host)
+{
+  container_t container                 = new simgrid::instr::HostContainer(host, currentContainer.back());
+  container_t root                      = simgrid::instr::Container::getRoot();
+  simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
+  simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("MSG_VM_STATE");
+  state->addEntityValue("suspend", "1 0 1");
+  state->addEntityValue("sleep", "1 1 0");
+  state->addEntityValue("receive", "1 0 0");
+  state->addEntityValue("send", "0 0 1");
+  state->addEntityValue("task_execute", "0 1 1");
+  root->type_->getOrCreateLinkType("MSG_VM_LINK", msg_vm, msg_vm);
+  root->type_->getOrCreateLinkType("MSG_VM_ACTOR_LINK", msg_vm, msg_vm);
+}
+
+static void instr_vm_on_start(simgrid::s4u::VirtualMachine& vm)
+{
+  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->pushEvent("start");
+}
+
+static void instr_vm_on_started(simgrid::s4u::VirtualMachine& vm)
+{
+  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->popEvent();
+}
+
+static void instr_vm_on_suspend(simgrid::s4u::VirtualMachine& vm)
+{
+  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->pushEvent("suspend");
+}
+
+static void instr_vm_on_resume(simgrid::s4u::VirtualMachine& vm)
+{
+  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->popEvent();
+}
+
+static void instr_vm_on_destruction(simgrid::s4u::Host& host)
+{
+  simgrid::instr::Container::byName(host.get_name())->removeFromParent();
+}
+
 void instr_define_callbacks()
 {
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
@@ -329,6 +358,15 @@ void instr_define_callbacks()
     simgrid::s4u::Actor::on_resume.connect(instr_actor_on_resume);
     simgrid::s4u::Actor::on_migration_start.connect(instr_actor_on_migration_start);
     simgrid::s4u::Actor::on_migration_end.connect(instr_actor_on_migration_end);
+  }
+
+  if (TRACE_vm_is_enabled()) {
+    simgrid::s4u::Host::onCreation.connect(instr_vm_on_creation);
+    simgrid::s4u::VirtualMachine::on_start.connect(instr_vm_on_start);
+    simgrid::s4u::VirtualMachine::on_started.connect(instr_vm_on_started);
+    simgrid::s4u::VirtualMachine::on_suspend.connect(instr_vm_on_suspend);
+    simgrid::s4u::VirtualMachine::on_resume.connect(instr_vm_on_resume);
+    simgrid::s4u::Host::onDestruction.connect(instr_vm_on_destruction);
   }
 }
 /*
