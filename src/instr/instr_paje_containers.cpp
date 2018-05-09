@@ -10,7 +10,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
 extern std::ofstream tracing_file;
-extern std::map<container_t, FILE*> tracing_files; // TI specific
+std::map<container_t, std::ofstream*> tracing_files; // TI specific
 double prefix = 0.0;                               // TI specific
 
 static container_t rootContainer = nullptr;    /* the root container */
@@ -157,7 +157,7 @@ void Container::logCreation()
     tracing_file << stream.str() << std::endl;
   } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     // if we are in the mode with only one file
-    static FILE* ti_unique_file = nullptr;
+    static std::ofstream* ti_unique_file = nullptr;
 
     if (tracing_files.empty()) {
       // generate unique run id with time
@@ -172,8 +172,8 @@ void Container::logCreation()
 #else
       mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
-      ti_unique_file = fopen(filename.c_str(), "w");
-      xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename.c_str(), strerror(errno));
+      ti_unique_file = new std::ofstream(filename.c_str(), std::ofstream::out);
+      xbt_assert(not ti_unique_file->fail(), "Tracefile %s could not be opened for writing", filename.c_str());
       tracing_file << filename << std::endl;
     }
     tracing_files.insert({this, ti_unique_file});
@@ -196,7 +196,8 @@ void Container::logDestruction()
     tracing_file << stream.str() << std::endl;
   } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
-      fclose(tracing_files.at(this));
+      tracing_files.at(this)->close();
+      delete tracing_files.at(this);
     }
     tracing_files.erase(this);
   } else {

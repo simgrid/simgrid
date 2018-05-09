@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_events, instr, "Paje tracing event system (events)");
 extern std::ofstream tracing_file;
-std::map<container_t, FILE*> tracing_files; // TI specific
+extern std::map<container_t, std::ofstream*> tracing_files; // TI specific
 
 namespace simgrid {
 namespace instr {
@@ -104,7 +104,7 @@ void StateEvent::print()
       /* Subtract -1 because this is the process id and we transform it to the rank id */
       stream_ << stoi(getContainer()->get_name().erase(0, 5)) - 1 << " " << extra_->print();
 
-    fprintf(tracing_files.at(getContainer()), "%s\n", stream_.str().c_str());
+    *tracing_files.at(getContainer()) << stream_.str() << std::endl;
   } else {
     THROW_IMPOSSIBLE;
   }
