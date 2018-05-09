@@ -303,35 +303,35 @@ static void instr_vm_on_creation(simgrid::s4u::Host& host)
 {
   container_t container                 = new simgrid::instr::HostContainer(host, currentContainer.back());
   container_t root                      = simgrid::instr::Container::getRoot();
-  simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("MSG_VM");
-  simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("MSG_VM_STATE");
+  simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("VM");
+  simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("VM_STATE");
   state->addEntityValue("suspend", "1 0 1");
   state->addEntityValue("sleep", "1 1 0");
   state->addEntityValue("receive", "1 0 0");
   state->addEntityValue("send", "0 0 1");
   state->addEntityValue("task_execute", "0 1 1");
-  root->type_->getOrCreateLinkType("MSG_VM_LINK", msg_vm, msg_vm);
-  root->type_->getOrCreateLinkType("MSG_VM_ACTOR_LINK", msg_vm, msg_vm);
+  root->type_->getOrCreateLinkType("VM_LINK", msg_vm, msg_vm);
+  root->type_->getOrCreateLinkType("VM_ACTOR_LINK", msg_vm, msg_vm);
 }
 
 static void instr_vm_on_start(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->pushEvent("start");
+  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->pushEvent("start");
 }
 
 static void instr_vm_on_started(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->popEvent();
+  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->popEvent();
 }
 
 static void instr_vm_on_suspend(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->pushEvent("suspend");
+  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->pushEvent("suspend");
 }
 
 static void instr_vm_on_resume(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("MSG_VM_STATE")->popEvent();
+  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->popEvent();
 }
 
 static void instr_vm_on_destruction(simgrid::s4u::Host& host)
@@ -374,7 +374,7 @@ void instr_define_callbacks()
  */
 static void recursiveNewVariableType(std::string new_typename, std::string color, simgrid::instr::Type* root)
 {
-  if (root->get_name() == "HOST" || root->get_name() == "MSG_VM")
+  if (root->get_name() == "HOST" || root->get_name() == "VM")
     root->getOrCreateVariableType(std::string("p") + new_typename, color);
 
   if (root->get_name() == "LINK")

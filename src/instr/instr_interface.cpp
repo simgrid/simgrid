@@ -354,7 +354,7 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 void TRACE_vm_variable_declare (const char *variable)
 {
-  instr_user_variable(0, nullptr, variable, "MSG_VM", 0, InstrUserVariable::DECLARE, nullptr, &user_vm_variables);
+  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, nullptr, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -369,7 +369,7 @@ void TRACE_vm_variable_declare (const char *variable)
  */
 void TRACE_vm_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable(0, nullptr, variable, "MSG_VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
+  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -431,7 +431,7 @@ void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
  */
 void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, InstrUserVariable::SET, nullptr, &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SET, nullptr, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -451,7 +451,7 @@ void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, InstrUserVariable::ADD, nullptr, &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::ADD, nullptr, &user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -471,7 +471,7 @@ void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, InstrUserVariable::SUB, nullptr, &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SUB, nullptr, &user_vm_variables);
 }
 
 /* for host variables */
