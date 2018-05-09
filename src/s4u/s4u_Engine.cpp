@@ -188,7 +188,8 @@ void Engine::run()
   }
 }
 
-s4u::NetZone* Engine::getNetRoot()
+/** @brief Retrieve the root netzone, containing all others */
+s4u::NetZone* Engine::get_netzone_root()
 {
   return pimpl->netzone_root_;
 }
@@ -208,13 +209,13 @@ static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char
 }
 
 /** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
-NetZone* Engine::getNetzoneByNameOrNull(const char* name)
+NetZone* Engine::netzone_by_name_or_null(const char* name)
 {
-  return netzone_by_name_recursive(getNetRoot(), name);
+  return netzone_by_name_recursive(get_netzone_root(), name);
 }
 
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
-simgrid::kernel::routing::NetPoint* Engine::getNetpointByNameOrNull(std::string name)
+simgrid::kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(std::string name)
 {
   auto netp = pimpl->netpoints_.find(name);
   return netp == pimpl->netpoints_.end() ? nullptr : netp->second;

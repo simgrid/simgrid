@@ -111,7 +111,7 @@ void NetZone::add_route(kernel::routing::NetPoint* /*src*/, kernel::routing::Net
 
 sg_netzone_t sg_zone_get_root()
 {
-  return simgrid::s4u::Engine::get_instance()->getNetRoot();
+  return simgrid::s4u::Engine::get_instance()->get_netzone_root();
 }
 
 const char* sg_zone_get_name(sg_netzone_t netzone)
@@ -121,7 +121,7 @@ const char* sg_zone_get_name(sg_netzone_t netzone)
 
 sg_netzone_t sg_zone_get_by_name(const char* name)
 {
-  return simgrid::s4u::Engine::get_instance()->getNetzoneByNameOrNull(name);
+  return simgrid::s4u::Engine::get_instance()->netzone_by_name_or_null(name);
 }
 
 void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)

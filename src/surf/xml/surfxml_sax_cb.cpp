@@ -404,7 +404,7 @@ void STag_surfxml_prop()
 {
   if (ZONE_TAG) { // We need to retrieve the most recently opened zone
     XBT_DEBUG("Set zone property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
-    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::get_instance()->getNetzoneByNameOrNull(A_surfxml_zone_id);
+    simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::get_instance()->netzone_by_name_or_null(A_surfxml_zone_id);
 
     netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
   } else {

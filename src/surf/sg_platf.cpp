@@ -96,7 +96,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(std::string name, const 
 
   if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::base;
-  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(name),
+  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
 
   simgrid::kernel::routing::NetPoint* netpoint =

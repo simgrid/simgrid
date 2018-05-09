@@ -35,7 +35,7 @@ container_t Container::getRoot()
 NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZoneContainer* father)
     : Container::Container(name, "", father)
 {
-  netpoint_ = simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(name);
+  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name);
   xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
   if (father_) {
     type_ = father_->type_->getOrCreateContainerType(std::string("L") + std::to_string(level));
@@ -51,7 +51,7 @@ RouterContainer::RouterContainer(std::string name, Container* father) : Containe
 {
   xbt_assert(father, "Only the Root container has no father");
 
-  netpoint_ = simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(name);
+  netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name);
   xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
 
   trivaNodeTypes.insert(type_->get_name());

@@ -28,7 +28,7 @@ public:
 
 NetZoneImpl::NetZoneImpl(NetZone* father, std::string name) : NetZone(father, name)
 {
-  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(name.c_str()),
+  xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name.c_str()),
              "Refusing to create a second NetZone called '%s'.", name.c_str());
 
   netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));

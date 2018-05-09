@@ -14,12 +14,10 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  std::vector<simgrid::kernel::routing::ClusterZone*>* clusters =
-      new std::vector<simgrid::kernel::routing::ClusterZone*>;
+  std::vector<simgrid::kernel::routing::ClusterZone*> clusters =
+      e.filter_netzones_by_type<simgrid::kernel::routing::ClusterZone>();
 
-  e.getNetzoneByType<simgrid::kernel::routing::ClusterZone>(clusters);
-
-  for (auto c : *clusters) {
+  for (auto c : clusters) {
     XBT_INFO("%s", c->get_cname());
     std::vector<simgrid::s4u::Host*>* hosts = new std::vector<simgrid::s4u::Host*>;
     c->getHosts(hosts);
@@ -28,15 +26,11 @@ int main(int argc, char* argv[])
     delete hosts;
   }
 
-  delete clusters;
+  std::vector<simgrid::kernel::routing::DragonflyZone*> dragonfly_clusters =
+      e.filter_netzones_by_type<simgrid::kernel::routing::DragonflyZone>();
 
-  std::vector<simgrid::kernel::routing::DragonflyZone*>* dragonfly_clusters =
-      new std::vector<simgrid::kernel::routing::DragonflyZone*>;
-
-  e.getNetzoneByType<simgrid::kernel::routing::DragonflyZone>(dragonfly_clusters);
-
-  if (not dragonfly_clusters->empty()) {
-    for (auto d : *dragonfly_clusters) {
+  if (not dragonfly_clusters.empty()) {
+    for (auto d : dragonfly_clusters) {
       XBT_INFO("%s' dragonfly topology:", d->get_cname());
       for (int i = 0; i < d->getHostCount(); i++) {
         unsigned int coords[4];
@@ -45,7 +39,6 @@ int main(int argc, char* argv[])
       }
     }
   }
-  delete dragonfly_clusters;
 
   return 0;
 }

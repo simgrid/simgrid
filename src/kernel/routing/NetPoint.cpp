@@ -35,5 +35,5 @@ NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* 
  */
 simgrid::kernel::routing::NetPoint* sg_netpoint_by_name_or_null(const char* name)
 {
-  return simgrid::s4u::Engine::get_instance()->getNetpointByNameOrNull(name);
+  return simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name);
 }
