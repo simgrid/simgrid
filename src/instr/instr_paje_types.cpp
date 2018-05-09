@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
-extern FILE* tracing_file;
+extern std::ofstream tracing_file;
 
 namespace simgrid {
 namespace instr {
@@ -141,7 +141,7 @@ void Type::logDefinition(e_event_type event_type)
   if (isColored())
     stream_ << " \"" << color_ << "\"";
   XBT_DEBUG("Dump %s", stream_.str().c_str());
-  fprintf(tracing_file, "%s\n", stream_.str().c_str());
+  tracing_file << stream_.str() << std::endl;
 }
 
 void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest)
@@ -152,7 +152,7 @@ void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* des
   stream_ << PAJE_DefineLinkType << " " << get_id() << " " << father_->get_id() << " " << source->get_id();
   stream_ << " " << dest->get_id() << " " << get_name();
   XBT_DEBUG("Dump %s", stream_.str().c_str());
-  fprintf(tracing_file, "%s\n", stream_.str().c_str());
+  tracing_file << stream_.str() << std::endl;
 }
 
 Type* Type::byName(std::string name)

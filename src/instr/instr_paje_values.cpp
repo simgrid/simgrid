@@ -7,7 +7,7 @@
 #include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
-extern FILE* tracing_file;
+extern std::ofstream tracing_file;
 
 namespace simgrid {
 namespace instr {
@@ -26,7 +26,7 @@ void EntityValue::print()
   if (not color_.empty())
     stream << " \"" << color_ << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
-  fprintf(tracing_file, "%s\n", stream.str().c_str());
+  tracing_file << stream.str() << std::endl;
 }
 
 }

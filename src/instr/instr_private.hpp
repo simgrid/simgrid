@@ -18,7 +18,9 @@
 #include "src/internal_config.h"
 #include "xbt/graph.h"
 
+#include <fstream>
 #include <iomanip> /** std::setprecision **/
+#include <iostream>
 #include <map>
 #include <memory>
 #include <set>

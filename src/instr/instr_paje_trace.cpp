@@ -14,16 +14,15 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
 static std::stringstream stream;
-FILE *tracing_file = nullptr;
+extern std::ofstream tracing_file;
 
 std::vector<simgrid::instr::PajeEvent*> buffer;
 void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf);
 
 void dump_comment(std::string comment)
 {
-  if (comment.empty())
-    return;
-  fprintf(tracing_file, "# %s\n", comment.c_str());
+  if (not comment.empty())
+    tracing_file << "# " << comment << std::endl;
 }
 
 void dump_comment_file(std::string filename)
@@ -38,9 +37,9 @@ void dump_comment_file(std::string filename)
   }
   while (not fs->eof()) {
     std::string line;
-    fprintf (tracing_file, "# ");
+    tracing_file << "# ";
     std::getline(*fs, line);
-    fprintf(tracing_file, "%s", line.c_str());
+    tracing_file << line;
   }
   fs->close();
 }

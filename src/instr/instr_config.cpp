@@ -8,13 +8,14 @@
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
 #include "xbt/virtu.h" /* sg_cmdline */
+#include <fstream>
 #include <string>
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used for Visualization/Analysis of simulations)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
-extern FILE* tracing_file;
+std::ofstream tracing_file;
 
 #define OPT_TRACING_BASIC                "tracing/basic"
 #define OPT_TRACING_BUFFER               "tracing/buffer"
@@ -97,8 +98,8 @@ static void TRACE_start()
 
     /* open the trace file(s) */
     std::string filename = TRACE_get_filename();
-    tracing_file         = fopen(filename.c_str(), "w");
-    if (tracing_file == nullptr) {
+    tracing_file.open(filename.c_str(), std::ofstream::out);
+    if (tracing_file.fail()) {
       THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
     }
 
@@ -106,15 +107,15 @@ static void TRACE_start()
 
     if (format == "Paje") {
       /* output generator version */
-      fprintf(tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n", SIMGRID_VERSION_MAJOR,
-              SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
-      fprintf(tracing_file, "#[");
+      tracing_file << "#This file was generated using SimGrid-" << SIMGRID_VERSION_MAJOR << "." << SIMGRID_VERSION_MINOR
+                   << "." << SIMGRID_VERSION_PATCH << std::endl;
+      tracing_file << "#[";
       unsigned int cpt;
       char* str;
       xbt_dynar_foreach (xbt_cmdline, cpt, str) {
-        fprintf(tracing_file, "%s ", str);
+        tracing_file << str << " ";
       }
-      fprintf(tracing_file, "]\n");
+      tracing_file << "]" << std::endl;
     }
 
     /* output one line comment */
@@ -149,7 +150,7 @@ static void TRACE_end()
   delete root_type;
 
   /* close the trace files */
-  fclose(tracing_file);
+  tracing_file.close();
   XBT_DEBUG("Filename %s is closed", TRACE_get_filename().c_str());
 
   /* de-activate trace */

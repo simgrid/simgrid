@@ -9,7 +9,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
-extern FILE* tracing_file;
+extern std::ofstream tracing_file;
 extern std::map<container_t, FILE*> tracing_files; // TI specific
 double prefix = 0.0;                               // TI specific
 
@@ -154,7 +154,7 @@ void Container::logCreation()
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_CreateContainer << " ";
     stream << timestamp << " " << id_ << " " << type_->get_id() << " " << father_->id_ << " \"" << name_ << "\"";
     XBT_DEBUG("Dump %s", stream.str().c_str());
-    fprintf(tracing_file, "%s\n", stream.str().c_str());
+    tracing_file << stream.str() << std::endl;
   } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     // if we are in the mode with only one file
     static FILE* ti_unique_file = nullptr;
@@ -174,7 +174,7 @@ void Container::logCreation()
 #endif
       ti_unique_file = fopen(filename.c_str(), "w");
       xbt_assert(ti_unique_file, "Tracefile %s could not be opened for writing: %s", filename.c_str(), strerror(errno));
-      fprintf(tracing_file, "%s\n", filename.c_str());
+      tracing_file << filename << std::endl;
     }
     tracing_files.insert({this, ti_unique_file});
   } else {
@@ -193,7 +193,7 @@ void Container::logDestruction()
     stream << std::fixed << std::setprecision(TRACE_precision()) << PAJE_DestroyContainer << " ";
     stream << timestamp << " " << type_->get_id() << " " << id_;
     XBT_DEBUG("Dump %s", stream.str().c_str());
-    fprintf(tracing_file, "%s\n", stream.str().c_str());
+    tracing_file << stream.str() << std::endl;
   } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || tracing_files.size() == 1) {
       fclose(tracing_files.at(this));

@@ -9,7 +9,7 @@
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_events, instr, "Paje tracing event system (events)");
-extern FILE* tracing_file;
+extern std::ofstream tracing_file;
 std::map<container_t, FILE*> tracing_files; // TI specific
 
 namespace simgrid {
@@ -46,7 +46,7 @@ void NewEvent::print()
   stream_ << " " << value->getId();
 
   XBT_DEBUG("Dump %s", stream_.str().c_str());
-  fprintf(tracing_file, "%s\n", stream_.str().c_str());
+  tracing_file << stream_.str() << std::endl;
 }
 
 void LinkEvent::print()
@@ -60,7 +60,7 @@ void LinkEvent::print()
     stream_ << " " << size_;
 
   XBT_DEBUG("Dump %s", stream_.str().c_str());
-  fprintf(tracing_file, "%s\n", stream_.str().c_str());
+  tracing_file << stream_.str() << std::endl;
 }
 
 void VariableEvent::print()
@@ -71,7 +71,7 @@ void VariableEvent::print()
   stream_ << " " << value;
 
   XBT_DEBUG("Dump %s", stream_.str().c_str());
-  fprintf(tracing_file, "%s\n", stream_.str().c_str());
+  tracing_file << stream_.str() << std::endl;
 }
 
 void StateEvent::print()
@@ -90,7 +90,7 @@ void StateEvent::print()
     }
 #endif
     XBT_DEBUG("Dump %s", stream_.str().c_str());
-    fprintf(tracing_file, "%s\n", stream_.str().c_str());
+    tracing_file << stream_.str() << std::endl;
   } else if (trace_format == simgrid::instr::TraceFormat::Ti) {
     if (extra_ == nullptr)
       return;
