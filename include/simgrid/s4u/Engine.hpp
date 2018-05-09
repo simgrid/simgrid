@@ -110,6 +110,7 @@ public:
   simgrid::kernel::routing::NetPoint* netpoint_by_name_or_null(std::string name);
 
   simgrid::s4u::NetZone* get_netzone_root();
+  void set_netzone_root(s4u::NetZone* netzone);
 
   simgrid::s4u::NetZone* netzone_by_name_or_null(const char* name);
 
@@ -133,9 +134,8 @@ public:
    */
   void set_config(std::string str);
 
-  simgrid::kernel::EngineImpl* pimpl;
-
 private:
+  simgrid::kernel::EngineImpl* pimpl;
   static s4u::Engine* instance_;
 
   //////////////// Deprecated functions

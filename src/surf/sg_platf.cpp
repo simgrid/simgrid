@@ -599,10 +599,7 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCre
   }
 
   if (current_routing == nullptr) { /* it is the first one */
-    xbt_assert(simgrid::s4u::Engine::get_instance()->pimpl->netzone_root_ == nullptr,
-               "All defined components must belong to a networking zone.");
-    simgrid::s4u::Engine::get_instance()->pimpl->netzone_root_ = new_zone;
-
+    simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone);
   } else {
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
