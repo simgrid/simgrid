@@ -192,8 +192,7 @@ static void instr_link_on_creation(simgrid::s4u::Link& link)
   if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
     return;
 
-  container_t father    = currentContainer.back();
-  container_t container = new simgrid::instr::Container(link.get_name(), "LINK", father);
+  container_t container = new simgrid::instr::Container(link.get_name(), "LINK", currentContainer.back());
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::VariableType* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");

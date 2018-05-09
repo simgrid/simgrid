@@ -7,11 +7,14 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/instr/instr_private.hpp"
 #include "surf/surf.hpp"
+#include "xbt/virtu.h" /* sg_cmdline */
 #include <string>
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used for Visualization/Analysis of simulations)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
+
+extern FILE* tracing_file;
 
 #define OPT_TRACING_BASIC                "tracing/basic"
 #define OPT_TRACING_BUFFER               "tracing/buffer"
@@ -89,18 +92,42 @@ static void TRACE_start()
 
     XBT_DEBUG("Tracing starts");
     /* init the tracing module to generate the right output */
-
-    /* open the trace file(s) */
     std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s", format.c_str());
-    if (format == "Paje") {
-      TRACE_paje_start();
-    } else if (format == "TI") {
-      simgrid::instr::trace_format = simgrid::instr::TraceFormat::Ti;
-      TRACE_TI_start();
-    }else{
-      xbt_die("Unknown trace format :%s ", format.c_str());
+
+    /* open the trace file(s) */
+    std::string filename = TRACE_get_filename();
+    tracing_file         = fopen(filename.c_str(), "w");
+    if (tracing_file == nullptr) {
+      THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
     }
+
+    XBT_DEBUG("Filename %s is open for writing", filename.c_str());
+
+    if (format == "Paje") {
+      /* output generator version */
+      fprintf(tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n", SIMGRID_VERSION_MAJOR,
+              SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
+      fprintf(tracing_file, "#[");
+      unsigned int cpt;
+      char* str;
+      xbt_dynar_foreach (xbt_cmdline, cpt, str) {
+        fprintf(tracing_file, "%s ", str);
+      }
+      fprintf(tracing_file, "]\n");
+    }
+
+    /* output one line comment */
+    dump_comment(TRACE_get_comment());
+
+    /* output comment file */
+    dump_comment_file(TRACE_get_comment_file());
+
+    if (format == "Paje") {
+      /* output Pajé header */
+      TRACE_header(TRACE_basic(), TRACE_display_sizes());
+    } else
+      simgrid::instr::trace_format = simgrid::instr::TraceFormat::Ti;
 
     trace_active = true;
     XBT_DEBUG("Tracing is on");
@@ -122,15 +149,8 @@ static void TRACE_end()
   delete root_type;
 
   /* close the trace files */
-  std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
-  XBT_DEBUG("Tracing format %s\n", format.c_str());
-  if (format == "Paje") {
-    TRACE_paje_end();
-  } else if (format == "TI") {
-    TRACE_TI_end();
-  } else {
-    xbt_die("Unknown trace format :%s ", format.c_str());
-  }
+  fclose(tracing_file);
+  XBT_DEBUG("Filename %s is closed", TRACE_get_filename().c_str());
 
   /* de-activate trace */
   trace_active = false;

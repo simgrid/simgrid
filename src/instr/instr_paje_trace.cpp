@@ -9,7 +9,6 @@
 #include "src/instr/instr_smpi.hpp"
 #include "src/smpi/include/private.hpp"
 #include "typeinfo"
-#include "xbt/virtu.h" /* sg_cmdline */
 #include <fstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
@@ -115,63 +114,4 @@ void simgrid::instr::PajeEvent::insertIntoBuffer()
   buffer.insert(i.base(), this);
 
   buffer_debug(&buffer);
-}
-
-void TRACE_paje_start() {
-  std::string filename = TRACE_get_filename();
-  tracing_file         = fopen(filename.c_str(), "w");
-  if (tracing_file == nullptr){
-    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
-  }
-
-  XBT_DEBUG("Filename %s is open for writing", filename.c_str());
-
-  /* output generator version */
-  fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n",
-           SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
-  fprintf (tracing_file, "#[");
-  unsigned int cpt;
-  char *str;
-  xbt_dynar_foreach (xbt_cmdline, cpt, str){
-    fprintf(tracing_file, "%s ",str);
-  }
-  fprintf (tracing_file, "]\n");
-
-  /* output one line comment */
-  dump_comment (TRACE_get_comment());
-
-  /* output comment file */
-  dump_comment_file (TRACE_get_comment_file());
-
-  /* output header */
-  TRACE_header(TRACE_basic(),TRACE_display_sizes());
-}
-
-void TRACE_paje_end() {
-  fclose(tracing_file);
-  XBT_DEBUG("Filename %s is closed", TRACE_get_filename().c_str());
-}
-
-
-void TRACE_TI_start()
-{
-  std::string filename = TRACE_get_filename();
-  tracing_file         = fopen(filename.c_str(), "w");
-  if (tracing_file == nullptr) {
-    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename.c_str());
-  }
-
-  XBT_DEBUG("Filename %s is open for writing", filename.c_str());
-
-  /* output one line comment */
-  dump_comment(TRACE_get_comment());
-
-  /* output comment file */
-  dump_comment_file(TRACE_get_comment_file());
-}
-
-void TRACE_TI_end()
-{
-  fclose(tracing_file);
-  XBT_DEBUG("Filename %s is closed", TRACE_get_filename().c_str());
 }

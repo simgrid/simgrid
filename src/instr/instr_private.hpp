@@ -210,10 +210,6 @@ extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 /* instr_paje_header.c */
 XBT_PRIVATE void TRACE_header(bool basic, int size);
 
-/* from paje.c */
-XBT_PRIVATE void TRACE_paje_start();
-XBT_PRIVATE void TRACE_paje_end();
-
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();
 XBT_PRIVATE bool TRACE_is_enabled();
@@ -254,9 +250,6 @@ void instr_new_user_variable_type(std::string father_type, std::string new_typen
 void instr_new_user_state_type(std::string father_type, std::string new_typename);
 void instr_new_value_for_user_state_type(std::string new_typename, const char* value, std::string color);
 
-/* instr_config.c */
-XBT_PRIVATE void TRACE_TI_start();
-XBT_PRIVATE void TRACE_TI_end();
 XBT_PRIVATE void TRACE_global_init();
 XBT_PRIVATE void TRACE_help(int detailed);
 
