@@ -27,11 +27,6 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 
     CpuAction* action = static_cast<CpuAction*>(get_action_heap().pop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
-    if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(action->get_variable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->get_cname(), action->get_category(), action->get_variable()->get_value(),
-                                      action->get_last_update(), now - action->get_last_update());
-    }
 
     action->finish(kernel::resource::Action::State::done);
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
@@ -55,12 +50,6 @@ void CpuModel::update_actions_state_full(double now, double delta)
   for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
     CpuAction& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
-    if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(action.get_variable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->get_cname(), action.get_category(), action.get_variable()->get_value(),
-                                      now - delta, delta);
-      TRACE_last_timestamp_to_dump = now - delta;
-    }
 
     action.update_remains(action.get_variable()->get_value() * delta);
 
@@ -189,8 +178,8 @@ void CpuAction::update_remains_lazy(double now)
 
     if (TRACE_is_enabled()) {
       Cpu* cpu = static_cast<Cpu*>(get_variable()->get_constraint(0)->get_id());
-      TRACE_surf_host_set_utilization(cpu->get_cname(), get_category(), get_last_value(), get_last_update(),
-                                      now - get_last_update());
+      TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), get_category(), get_last_value(),
+                                          get_last_update(), now - get_last_update());
     }
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, get_remains_no_update());
   }

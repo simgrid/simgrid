@@ -11,6 +11,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
+#include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
@@ -230,6 +231,15 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   }
 }
 
+static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
+                                             simgrid::kernel::resource::Action::State previous)
+{
+  simgrid::surf::Cpu* cpu = static_cast<simgrid::surf::Cpu*>(action->get_variable()->get_constraint(0)->get_id());
+  TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
+                                      action->get_variable()->get_value(), action->get_last_update(),
+                                      SIMIX_get_clock() - action->get_last_update());
+}
+
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
 {
   if (netpoint->is_router() && TRACE_needs_platform() && TRACE_is_enabled())
@@ -350,6 +360,8 @@ void instr_define_callbacks()
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
   simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);
   simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
+
+  simgrid::surf::CpuAction::onStateChange.connect(instr_cpu_action_on_state_change);
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);

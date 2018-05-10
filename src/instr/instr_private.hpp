@@ -237,8 +237,8 @@ XBT_PUBLIC bool TRACE_smpi_is_sleeping();
 XBT_PUBLIC bool TRACE_smpi_view_internals();
 
 /* from resource_utilization.c */
-XBT_PRIVATE void TRACE_surf_host_set_utilization(const char* resource, const char* category, double value, double now,
-                                                 double delta);
+XBT_PRIVATE void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
+                                                     const char* category, double value, double now, double delta);
 XBT_PRIVATE void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now,
                                                  double delta);
 

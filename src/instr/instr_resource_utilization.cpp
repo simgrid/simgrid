@@ -34,8 +34,8 @@ static void instr_event(double now, double delta, simgrid::instr::VariableType* 
   variable->subEvent(now + delta, value);
 }
 
-static void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
-                                                const char* category, double value, double now, double delta)
+void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource, const char* category,
+                                         double value, double now, double delta)
 {
   // only trace resource utilization if resource is known by tracing mechanism
   container_t container = simgrid::instr::Container::byNameOrNull(resource);
@@ -64,10 +64,4 @@ static void TRACE_surf_resource_set_utilization(const char* type, const char* na
 void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now, double delta)
 {
   TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", resource, category, value, now, delta);
-}
-
-/* TRACE_surf_host_set_utilization: entry point from SimGrid */
-void TRACE_surf_host_set_utilization(const char* resource, const char* category, double value, double now, double delta)
-{
-  TRACE_surf_resource_set_utilization("HOST", "power_used", resource, category, value, now, delta);
 }
