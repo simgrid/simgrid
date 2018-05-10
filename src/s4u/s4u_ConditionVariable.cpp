@@ -27,12 +27,12 @@ ConditionVariablePtr ConditionVariable::create()
  */
 void ConditionVariable::wait(MutexPtr lock)
 {
-  simcall_cond_wait(cond_, lock->mutex_);
+  simcall_cond_wait(cond_, lock->pimpl_);
 }
 
 void ConditionVariable::wait(std::unique_lock<Mutex>& lock)
 {
-  simcall_cond_wait(cond_, lock.mutex()->mutex_);
+  simcall_cond_wait(cond_, lock.mutex()->pimpl_);
 }
 
 std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout)
@@ -41,7 +41,7 @@ std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, d
   if (timeout < 0)
     timeout = 0.0;
 
-  if (simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout)) {
+  if (simcall_cond_wait_timeout(cond_, lock.mutex()->pimpl_, timeout)) {
     // If we reached the timeout, we have to take the lock again:
     lock.mutex()->lock();
     return std::cv_status::timeout;

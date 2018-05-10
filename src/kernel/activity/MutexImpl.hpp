@@ -42,11 +42,11 @@ public:
       delete mutex;
   }
 
-  simgrid::s4u::Mutex& mutex() { return mutex_; }
+  simgrid::s4u::Mutex& mutex() { return piface_; }
 
 private:
   std::atomic_int_fast32_t refcount_{1};
-  simgrid::s4u::Mutex mutex_;
+  simgrid::s4u::Mutex piface_;
 };
 }
 }

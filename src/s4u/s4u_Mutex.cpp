@@ -12,7 +12,7 @@ namespace s4u {
 /** @brief Blocks the calling actor until the mutex can be obtained */
 void Mutex::lock()
 {
-  simcall_mutex_lock(mutex_);
+  simcall_mutex_lock(pimpl_);
 }
 
 /** @brief Release the ownership of the mutex, unleashing a blocked actor (if any)
@@ -21,13 +21,13 @@ void Mutex::lock()
  */
 void Mutex::unlock()
 {
-  simcall_mutex_unlock(mutex_);
+  simcall_mutex_unlock(pimpl_);
 }
 
 /** @brief Acquire the mutex if it's free, and return false (without blocking) if not */
 bool Mutex::try_lock()
 {
-  return simcall_mutex_trylock(mutex_);
+  return simcall_mutex_trylock(pimpl_);
 }
 
 /** @brief Create a new mutex
@@ -44,12 +44,12 @@ MutexPtr Mutex::createMutex()
 void intrusive_ptr_add_ref(Mutex* mutex)
 {
   xbt_assert(mutex);
-  SIMIX_mutex_ref(mutex->mutex_);
+  SIMIX_mutex_ref(mutex->pimpl_);
 }
 void intrusive_ptr_release(Mutex* mutex)
 {
   xbt_assert(mutex);
-  SIMIX_mutex_unref(mutex->mutex_);
+  SIMIX_mutex_unref(mutex->pimpl_);
 }
 } // namespace s4u
 } // namespace simgrid

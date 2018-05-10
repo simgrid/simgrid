@@ -13,7 +13,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-MutexImpl::MutexImpl() : mutex_(this)
+MutexImpl::MutexImpl() : piface_(this)
 {
   XBT_IN("(%p)", this);
   XBT_OUT();

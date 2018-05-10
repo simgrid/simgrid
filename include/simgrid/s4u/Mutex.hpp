@@ -31,8 +31,8 @@ class ConditionVariable;
 class XBT_PUBLIC Mutex {
   friend ConditionVariable;
   friend simgrid::kernel::activity::MutexImpl;
-  simgrid::kernel::activity::MutexImpl* mutex_;
-  explicit Mutex(simgrid::kernel::activity::MutexImpl * mutex) : mutex_(mutex) {}
+  simgrid::kernel::activity::MutexImpl* pimpl_;
+  explicit Mutex(simgrid::kernel::activity::MutexImpl* mutex) : pimpl_(mutex) {}
 
   /* refcounting */
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Mutex* mutex);
