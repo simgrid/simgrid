@@ -31,9 +31,9 @@ public:
 
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
   s4u::Host* host_ = nullptr;
-  resource::Action* surfAction_; /* The Surf execution action encapsulated */
+  resource::Action* surf_action_; /* The Surf execution action encapsulated */
 private:
-  resource::Action* timeoutDetector = nullptr;
+  resource::Action* timeout_detector_ = nullptr;
 
 public:
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCreation;

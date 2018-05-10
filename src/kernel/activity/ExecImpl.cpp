@@ -23,11 +23,11 @@ simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, resource::Action
     this->name = name;
   this->state  = SIMIX_RUNNING;
 
-  surfAction_ = surf_action;
-  surfAction_->set_data(this);
+  surf_action_ = surf_action;
+  surf_action_->set_data(this);
   if (timeout_detector != nullptr) {
     timeout_detector->set_data(this);
-    timeoutDetector = timeout_detector;
+    timeout_detector_ = timeout_detector;
   }
 
   XBT_DEBUG("Create exec %p", this);
@@ -35,31 +35,31 @@ simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, resource::Action
 
 simgrid::kernel::activity::ExecImpl::~ExecImpl()
 {
-  if (surfAction_)
-    surfAction_->unref();
-  if (timeoutDetector)
-    timeoutDetector->unref();
+  if (surf_action_)
+    surf_action_->unref();
+  if (timeout_detector_)
+    timeout_detector_->unref();
   XBT_DEBUG("Destroy exec %p", this);
 }
 
 void simgrid::kernel::activity::ExecImpl::suspend()
 {
-  XBT_VERB("This exec is suspended (remain: %f)", surfAction_->get_remains());
-  if (surfAction_ != nullptr)
-    surfAction_->suspend();
+  XBT_VERB("This exec is suspended (remain: %f)", surf_action_->get_remains());
+  if (surf_action_ != nullptr)
+    surf_action_->suspend();
 }
 
 void simgrid::kernel::activity::ExecImpl::resume()
 {
-  XBT_VERB("This exec is resumed (remain: %f)", surfAction_->get_remains());
-  if (surfAction_ != nullptr)
-    surfAction_->resume();
+  XBT_VERB("This exec is resumed (remain: %f)", surf_action_->get_remains());
+  if (surf_action_ != nullptr)
+    surf_action_->resume();
 }
 void simgrid::kernel::activity::ExecImpl::cancel()
 {
   XBT_VERB("This exec %p is canceled", this);
-  if (surfAction_ != nullptr)
-    surfAction_->cancel();
+  if (surf_action_ != nullptr)
+    surf_action_->cancel();
 }
 
 double simgrid::kernel::activity::ExecImpl::get_remaining()
@@ -68,26 +68,26 @@ double simgrid::kernel::activity::ExecImpl::get_remaining()
                                "We would need to return a vector instead of a scalar. "
                                "Did you mean remainingRatio() instead?");
 
-  return surfAction_ ? surfAction_->get_remains() : 0;
+  return surf_action_ ? surf_action_->get_remains() : 0;
 }
 
 double simgrid::kernel::activity::ExecImpl::get_remaining_ratio()
 {
   if (host_ == nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::remains())
-    return surfAction_->get_remains();
+    return surf_action_->get_remains();
   else // Actually compute the ratio for sequential tasks
-    return surfAction_->get_remains() / surfAction_->get_cost();
+    return surf_action_->get_remains() / surf_action_->get_cost();
 }
 
 void simgrid::kernel::activity::ExecImpl::set_bound(double bound)
 {
-  if (surfAction_)
-    surfAction_->set_bound(bound);
+  if (surf_action_)
+    surf_action_->set_bound(bound);
 }
 void simgrid::kernel::activity::ExecImpl::set_priority(double priority)
 {
-  if (surfAction_)
-    surfAction_->set_priority(priority);
+  if (surf_action_)
+    surf_action_->set_priority(priority);
 }
 
 void simgrid::kernel::activity::ExecImpl::post()
@@ -96,22 +96,22 @@ void simgrid::kernel::activity::ExecImpl::post()
                                  /* If the host running the synchro failed, notice it. This way, the asking
                                   * process can be killed if it runs on that host itself */
     state = SIMIX_FAILED;
-  } else if (surfAction_ && surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
+  } else if (surf_action_ && surf_action_->get_state() == simgrid::kernel::resource::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state = SIMIX_CANCELED;
-  } else if (timeoutDetector && timeoutDetector->get_state() == simgrid::kernel::resource::Action::State::done) {
+  } else if (timeout_detector_ && timeout_detector_->get_state() == simgrid::kernel::resource::Action::State::done) {
     state = SIMIX_TIMEOUT;
   } else {
     state = SIMIX_DONE;
   }
 
-  if (surfAction_) {
-    surfAction_->unref();
-    surfAction_ = nullptr;
+  if (surf_action_) {
+    surf_action_->unref();
+    surf_action_ = nullptr;
   }
-  if (timeoutDetector) {
-    timeoutDetector->unref();
-    timeoutDetector = nullptr;
+  if (timeout_detector_) {
+    timeout_detector_->unref();
+    timeout_detector_ = nullptr;
   }
 
   onCompletion(this);
@@ -125,7 +125,7 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
 {
 
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    simgrid::kernel::resource::Action* oldAction = this->surfAction_;
+    simgrid::kernel::resource::Action* oldAction = this->surf_action_;
     simgrid::kernel::resource::Action* newAction = to->pimpl_cpu->execution_start(oldAction->get_cost());
     newAction->set_remains(oldAction->get_remains());
     newAction->set_data(this);
@@ -137,7 +137,7 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
     oldAction->set_data(nullptr);
     oldAction->cancel();
     oldAction->unref();
-    this->surfAction_ = newAction;
+    this->surf_action_ = newAction;
   }
 
   onMigration(this, to);

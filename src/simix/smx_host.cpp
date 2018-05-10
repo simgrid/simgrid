@@ -275,7 +275,7 @@ void SIMIX_set_category(smx_activity_t synchro, const char *category)
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::dynamic_pointer_cast<simgrid::kernel::activity::ExecImpl>(synchro);
   if (exec != nullptr) {
-    exec->surfAction_->set_category(category);
+    exec->surf_action_->set_category(category);
     return;
   }
 

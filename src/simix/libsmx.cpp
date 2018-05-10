@@ -117,7 +117,7 @@ void simcall_execution_cancel(smx_activity_t execution)
 {
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-  if (exec->surfAction_ == nullptr) // FIXME: One test fails if I remove this, but I don't get why...
+  if (exec->surf_action_ == nullptr) // FIXME: One test fails if I remove this, but I don't get why...
     return;
   simgrid::simix::kernelImmediate([exec] {
     exec->cancel();
