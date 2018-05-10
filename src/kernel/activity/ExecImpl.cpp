@@ -45,15 +45,21 @@ simgrid::kernel::activity::ExecImpl::~ExecImpl()
 void simgrid::kernel::activity::ExecImpl::suspend()
 {
   XBT_VERB("This exec is suspended (remain: %f)", surfAction_->get_remains());
-  if (surfAction_)
+  if (surfAction_ != nullptr)
     surfAction_->suspend();
 }
 
 void simgrid::kernel::activity::ExecImpl::resume()
 {
   XBT_VERB("This exec is resumed (remain: %f)", surfAction_->get_remains());
-  if (surfAction_)
+  if (surfAction_ != nullptr)
     surfAction_->resume();
+}
+void simgrid::kernel::activity::ExecImpl::cancel()
+{
+  XBT_VERB("This exec %p is canceled", this);
+  if (surfAction_ != nullptr)
+    surfAction_->cancel();
 }
 
 double simgrid::kernel::activity::ExecImpl::get_remaining()
@@ -77,6 +83,11 @@ void simgrid::kernel::activity::ExecImpl::set_bound(double bound)
 {
   if (surfAction_)
     surfAction_->set_bound(bound);
+}
+void simgrid::kernel::activity::ExecImpl::set_priority(double priority)
+{
+  if (surfAction_)
+    surfAction_->set_priority(priority);
 }
 
 void simgrid::kernel::activity::ExecImpl::post()

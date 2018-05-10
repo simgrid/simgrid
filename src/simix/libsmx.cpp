@@ -117,12 +117,10 @@ void simcall_execution_cancel(smx_activity_t execution)
 {
   simgrid::kernel::activity::ExecImplPtr exec =
       boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-  if (not exec->surfAction_)
+  if (exec->surfAction_ == nullptr) // FIXME: One test fails if I remove this, but I don't get why...
     return;
   simgrid::simix::kernelImmediate([exec] {
-    XBT_DEBUG("Cancel synchro %p", exec.get());
-    if (exec->surfAction_)
-      exec->surfAction_->cancel();
+    exec->cancel();
   });
 }
 
@@ -142,8 +140,7 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-    if (exec->surfAction_)
-      exec->surfAction_->set_priority(priority);
+    exec->set_priority(priority);
   });
 }
 
@@ -160,8 +157,7 @@ void simcall_execution_set_bound(smx_activity_t execution, double bound)
   simgrid::simix::kernelImmediate([execution, bound] {
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
-    if (exec->surfAction_)
-      exec->surfAction_->set_bound(bound);
+    exec->set_bound(bound);
   });
 }
 

@@ -139,7 +139,7 @@ boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 SIMIX_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host)
 {
   /* set surf's action */
-  simgrid::kernel::resource::Action* surf_action      = nullptr;
+  simgrid::kernel::resource::Action* surf_action = nullptr;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     surf_action = host->pimpl_cpu->execution_start(flops_amount);
     surf_action->set_priority(priority);
