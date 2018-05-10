@@ -50,8 +50,6 @@ public:
 
   std::map<std::string, simgrid::surf::StorageImpl*> storage_;
   simgrid::s4u::Host* piface_ = nullptr;
-
-  simgrid::s4u::Host* getHost() { return piface_; }
 };
 }
 }
