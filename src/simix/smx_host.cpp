@@ -138,20 +138,17 @@ void SIMIX_host_autorestart(sg_host_t host)
 boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 SIMIX_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host)
 {
-  /* alloc structures and initialize */
-  simgrid::kernel::activity::ExecImplPtr exec =
-      simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, host));
-
   /* set surf's action */
+  simgrid::kernel::resource::Action* surf_action      = nullptr;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-
-    exec->surfAction_ = host->pimpl_cpu->execution_start(flops_amount);
-    exec->surfAction_->set_data(exec.get());
-    exec->surfAction_->set_priority(priority);
-
+    surf_action = host->pimpl_cpu->execution_start(flops_amount);
+    surf_action->set_priority(priority);
     if (bound > 0)
-      static_cast<simgrid::surf::CpuAction*>(exec->surfAction_)->set_bound(bound);
+      static_cast<simgrid::surf::CpuAction*>(surf_action)->set_bound(bound);
   }
+
+  simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
+      new simgrid::kernel::activity::ExecImpl(name, surf_action, /*timeout_detector*/ nullptr, host));
 
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name.c_str());
   simgrid::kernel::activity::ExecImpl::onCreation(exec);
@@ -164,10 +161,6 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
                                double* bytes_amount, double rate, double timeout)
 {
 
-  /* alloc structures and initialize */
-  simgrid::kernel::activity::ExecImplPtr exec =
-      simgrid::kernel::activity::ExecImplPtr(new simgrid::kernel::activity::ExecImpl(name, nullptr));
-
   /* Check that we are not mixing VMs and PMs in the parallel task */
   bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[0]));
   for (int i = 1; i < host_nb; i++) {
@@ -176,17 +169,20 @@ SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_li
   }
 
   /* set surf's synchro */
+  simgrid::kernel::resource::Action* surf_action      = nullptr;
+  simgrid::kernel::resource::Action* timeout_detector = nullptr;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    /* set surf's synchro */
     sg_host_t* host_list_cpy = new sg_host_t[host_nb];
     std::copy_n(host_list, host_nb, host_list_cpy);
-    exec->surfAction_ = surf_host_model->execute_parallel(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
-    exec->surfAction_->set_data(exec.get());
+    surf_action = surf_host_model->execute_parallel(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
     if (timeout > 0) {
-      exec->timeoutDetector = host_list[0]->pimpl_cpu->sleep(timeout);
-      exec->timeoutDetector->set_data(exec.get());
+      timeout_detector = host_list[0]->pimpl_cpu->sleep(timeout);
     }
   }
+
+  simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
+      new simgrid::kernel::activity::ExecImpl(name, surf_action, timeout_detector, nullptr));
+
   XBT_DEBUG("Create parallel execute synchro %p", exec.get());
 
   return exec;

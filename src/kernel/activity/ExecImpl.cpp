@@ -15,11 +15,21 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, sg_host_t host) : host_(host)
+simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, resource::Action* surf_action,
+                                              resource::Action* timeout_detector, s4u::Host* host)
+    : host_(host)
 {
   if (name)
     this->name = name;
   this->state  = SIMIX_RUNNING;
+
+  surfAction_ = surf_action;
+  surfAction_->set_data(this);
+  if (timeout_detector != nullptr) {
+    timeout_detector->set_data(this);
+    timeoutDetector = timeout_detector;
+  }
+
   XBT_DEBUG("Create exec %p", this);
 }
 
