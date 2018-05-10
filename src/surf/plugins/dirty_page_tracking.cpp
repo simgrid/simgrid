@@ -46,7 +46,7 @@ void VmDirtyPageTrackingExt::start_tracking()
 {
   dp_tracking = true;
   for (auto const& elm : dp_objs)
-    dp_objs[elm.first] = elm.first->remains();
+    dp_objs[elm.first] = elm.first->get_remaining();
 }
 
 double VmDirtyPageTrackingExt::computed_flops_lookup()
@@ -54,8 +54,8 @@ double VmDirtyPageTrackingExt::computed_flops_lookup()
   double total = 0;
 
   for (auto const& elm : dp_objs) {
-    total += elm.second - elm.first->remains();
-    dp_objs[elm.first] = elm.first->remains();
+    total += elm.second - elm.first->get_remaining();
+    dp_objs[elm.first] = elm.first->get_remaining();
   }
   total += dp_updated_by_deleted_tasks;
 
@@ -78,7 +78,7 @@ static void onExecCreation(simgrid::kernel::activity::ExecImplPtr exec)
     return;
 
   if (vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->is_tracking()) {
-    vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->track(exec, exec->remains());
+    vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->track(exec, exec->get_remaining());
   } else {
     vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->track(exec, 0.0);
   }
@@ -93,8 +93,8 @@ static void onExecCompletion(simgrid::kernel::activity::ExecImplPtr exec)
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
   if (vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->is_tracking()) {
-    double delta =
-        vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_stored_remains(exec) - exec->remains();
+    double delta = vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_stored_remains(exec) -
+                   exec->get_remaining();
     vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->update_dirty_page_count(delta);
   }
   vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->untrack(exec);

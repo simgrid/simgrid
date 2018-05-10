@@ -34,7 +34,7 @@ public:
   Host* get_host();
 
   double get_remaining() override;
-  double getRemainingRatio();
+  double get_remaining_ratio();
 
   //////////////// Deprecated functions
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_priority()") ExecPtr setPriority(double priority)
@@ -44,6 +44,10 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_bound()") ExecPtr setBound(double bound) { return set_bound(bound); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::set_host()") ExecPtr setHost(Host* host) { return set_host(host); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_host()") Host* getHost() { return get_host(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Exec::get_remaining_ratio()") double getRemainingRatio()
+  {
+    return get_remaining_ratio();
+  }
 
 private:
   Host* host_          = nullptr;

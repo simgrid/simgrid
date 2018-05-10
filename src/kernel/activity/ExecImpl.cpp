@@ -46,7 +46,7 @@ void simgrid::kernel::activity::ExecImpl::resume()
     surfAction_->resume();
 }
 
-double simgrid::kernel::activity::ExecImpl::remains()
+double simgrid::kernel::activity::ExecImpl::get_remaining()
 {
   xbt_assert(host_ != nullptr, "Calling remains() on a parallel execution is not allowed. "
                                "We would need to return a vector instead of a scalar. "
@@ -55,7 +55,7 @@ double simgrid::kernel::activity::ExecImpl::remains()
   return surfAction_ ? surfAction_->get_remains() : 0;
 }
 
-double simgrid::kernel::activity::ExecImpl::remainingRatio()
+double simgrid::kernel::activity::ExecImpl::get_remaining_ratio()
 {
   if (host_ == nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::remains())
     return surfAction_->get_remains();
@@ -63,7 +63,7 @@ double simgrid::kernel::activity::ExecImpl::remainingRatio()
     return surfAction_->get_remains() / surfAction_->get_cost();
 }
 
-void simgrid::kernel::activity::ExecImpl::setBound(double bound)
+void simgrid::kernel::activity::ExecImpl::set_bound(double bound)
 {
   if (surfAction_)
     surfAction_->set_bound(bound);

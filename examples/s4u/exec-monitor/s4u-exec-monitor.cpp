@@ -11,7 +11,7 @@ static void monitor(simgrid::s4u::ExecPtr activity)
 {
   while (not activity->test()) {
     XBT_INFO("activity remaining duration: %g (%.0f%%)", activity->get_remaining(),
-             100 * activity->getRemainingRatio());
+             100 * activity->get_remaining_ratio());
     simgrid::s4u::this_actor::sleep_for(5);
   }
   XBT_INFO("My task is over.");

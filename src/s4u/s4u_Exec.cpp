@@ -16,7 +16,7 @@ namespace s4u {
 Activity* Exec::start()
 {
   pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1. / priority_, 0., host_);
-  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->setBound(bound_);
+  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_bound(bound_);
   state_ = State::started;
   return this;
 }
@@ -96,15 +96,22 @@ Host* Exec::get_host()
   return host_;
 }
 
+/** @brief Returns the amount of flops that remain to be done */
 double Exec::get_remaining()
 {
   return simgrid::simix::kernelImmediate(
-      [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->remains(); });
+      [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
-double Exec::getRemainingRatio()
+
+/** @brief Returns the ratio of elements that are still to do
+ *
+ * The returned value is between 0 (completely done) and 1 (nothing done yet).
+ */
+double Exec::get_remaining_ratio()
 {
-  return simgrid::simix::kernelImmediate(
-      [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->remainingRatio(); });
+  return simgrid::simix::kernelImmediate([this]() {
+    return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining_ratio();
+  });
 }
 
 void intrusive_ptr_release(simgrid::s4u::Exec* e)

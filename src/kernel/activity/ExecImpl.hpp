@@ -21,15 +21,15 @@ public:
   void suspend() override;
   void resume() override;
   void post() override;
-  double remains();
-  double remainingRatio();
-  void setBound(double bound);
+  double get_remaining();
+  double get_remaining_ratio();
+  void set_bound(double bound);
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */
-  sg_host_t host_               = nullptr;
-  kernel::resource::Action* surfAction_     = nullptr; /* The Surf execution action encapsulated */
-  kernel::resource::Action* timeoutDetector = nullptr;
+  s4u::Host* host_                  = nullptr;
+  resource::Action* surfAction_     = nullptr; /* The Surf execution action encapsulated */
+  resource::Action* timeoutDetector = nullptr;
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCreation;
   static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCompletion;
   static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> onMigration;

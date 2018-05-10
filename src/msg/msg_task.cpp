@@ -237,7 +237,7 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
   xbt_assert((task != nullptr), "Cannot get information from a nullptr task");
   if (task->simdata->compute) {
     // Task in progress
-    return task->simdata->compute->remainingRatio();
+    return task->simdata->compute->get_remaining_ratio();
   } else {
     // Task not started (flops_amount is > 0.0) or finished (flops_amount is set to 0.0)
     return task->simdata->flops_amount > 0.0 ? 1.0 : 0.0;
@@ -254,7 +254,7 @@ double MSG_task_get_remaining_work_ratio(msg_task_t task) {
  */
 double MSG_task_get_flops_amount(msg_task_t task) {
   if (task->simdata->compute != nullptr) {
-    return task->simdata->compute->remains();
+    return task->simdata->compute->get_remaining();
   } else {
     // Not started or already done.
     // - Before starting, flops_amount is initially the task cost
