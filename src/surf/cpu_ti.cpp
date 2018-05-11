@@ -220,19 +220,19 @@ double CpuTiTmgr::get_power_scale(double a)
 }
 
 /**
-* \brief Creates a new integration trace from a tmgr_trace_t
-*
-* \param  speedTrace    CPU availability trace
-* \param  value          Percentage of CPU speed available (useful to fixed tracing)
-* \return  Integration trace structure
-*/
-CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speedTrace, double value) : speed_trace_(speedTrace)
+ * \brief Creates a new integration trace from a tmgr_trace_t
+ *
+ * \param  speed_trace    CPU availability trace
+ * \param  value          Percentage of CPU speed available (useful to fixed tracing)
+ * \return  Integration trace structure
+ */
+CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(speed_trace)
 {
   double total_time = 0.0;
   trace_ = 0;
 
-/* no availability file, fixed trace */
-  if (not speedTrace) {
+  /* no availability file, fixed trace */
+  if (not speed_trace) {
     type_ = TRACE_FIXED;
     value_ = value;
     XBT_DEBUG("No availability trace. Constant value = %f", value);
@@ -240,22 +240,21 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speedTrace, double value) : speed_trace_(speed
   }
 
   /* only one point available, fixed trace */
-  if (speedTrace->event_list.size() == 1) {
-    trace_mgr::DatedValue val = speedTrace->event_list.front();
-    type_ = TRACE_FIXED;
-    value_                    = val.value_;
+  if (speed_trace->event_list.size() == 1) {
+    type_  = TRACE_FIXED;
+    value_ = speed_trace->event_list.front().value_;
     return;
   }
 
   type_ = TRACE_DYNAMIC;
 
   /* count the total time of trace file */
-  for (auto const& val : speedTrace->event_list)
+  for (auto const& val : speed_trace->event_list)
     total_time += val.date_;
 
-  trace_ = new CpuTiTrace(speedTrace);
+  trace_     = new CpuTiTrace(speed_trace);
   last_time_ = total_time;
-  total_    = trace_->integrate_simple(0, total_time);
+  total_     = trace_->integrate_simple(0, total_time);
 
   XBT_DEBUG("Total integral %f, last_time %f ", total_, last_time_);
 }
@@ -325,9 +324,9 @@ double CpuTiModel::next_occuring_event(double now)
 
   /* iterates over modified cpus to update share resources */
   for (auto it = std::begin(modified_cpus_); it != std::end(modified_cpus_);) {
-    CpuTi& ti = *it;
-    ++it; // increment iterator here since the following call to ti.updateActionsFinishTime() may invalidate it
-    ti.update_actions_finish_time(now);
+    CpuTi& cpu = *it;
+    ++it; // increment iterator here since the following call to ti.update_actions_finish_time() may invalidate it
+    cpu.update_actions_finish_time(now);
   }
 
   /* get the min next event if heap not empty */
@@ -385,21 +384,18 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
 void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
-    tmgr_trace_t speedTrace;
-    CpuTiTmgr* trace;
-
     XBT_DEBUG("Finish trace date: value %f", value);
     /* update remaining of actions and put in modified cpu list */
     update_remaining_amount(surf_get_clock());
 
     set_modified(true);
 
-    speedTrace                = speed_integrated_trace_->speed_trace_;
+    tmgr_trace_t speedTrace   = speed_integrated_trace_->speed_trace_;
     trace_mgr::DatedValue val = speedTrace->event_list.back();
     delete speed_integrated_trace_;
     speed_.scale = val.value_;
 
-    trace = new CpuTiTmgr(TRACE_FIXED, val.value_);
+    CpuTiTmgr* trace = new CpuTiTmgr(TRACE_FIXED, val.value_);
     XBT_DEBUG("value %f", val.value_);
 
     speed_integrated_trace_ = trace;
@@ -546,9 +542,9 @@ void CpuTi::update_remaining_amount(double now)
 CpuAction *CpuTi::execution_start(double size)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
-  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(get_model()), size, is_off(), this);
+  CpuTiAction* action = new CpuTiAction(this, size);
 
-  action_set_.push_back(*action);
+  action_set_.push_back(*action); // Actually start the action
 
   XBT_OUT();
   return action;
@@ -561,7 +557,7 @@ CpuAction *CpuTi::sleep(double duration)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  CpuTiAction* action = new CpuTiAction(static_cast<CpuTiModel*>(get_model()), 1.0, is_off(), this);
+  CpuTiAction* action = new CpuTiAction(this, 1.0);
 
   action->set_max_duration(duration);
   action->suspended_ = kernel::resource::Action::SuspendStates::sleeping;
@@ -580,14 +576,14 @@ CpuAction *CpuTi::sleep(double duration)
 
 void CpuTi::set_modified(bool modified)
 {
-  CpuTiList& modifiedCpu = static_cast<CpuTiModel*>(get_model())->modified_cpus_;
+  CpuTiList& modified_cpus = static_cast<CpuTiModel*>(get_model())->modified_cpus_;
   if (modified) {
     if (not cpu_ti_hook.is_linked()) {
-      modifiedCpu.push_back(*this);
+      modified_cpus.push_back(*this);
     }
   } else {
     if (cpu_ti_hook.is_linked())
-      simgrid::xbt::intrusive_erase(modifiedCpu, *this);
+      simgrid::xbt::intrusive_erase(modified_cpus, *this);
   }
 }
 
@@ -595,9 +591,7 @@ void CpuTi::set_modified(bool modified)
  * Action *
  **********/
 
-CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed, CpuTi *cpu)
- : CpuAction(model_, cost, failed)
- , cpu_(cpu)
+CpuTiAction::CpuTiAction(CpuTi* cpu, double cost) : CpuAction(cpu->get_model(), cost, cpu->is_off()), cpu_(cpu)
 {
   cpu_->set_modified(true);
 }

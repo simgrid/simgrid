@@ -78,10 +78,10 @@ public:
 class XBT_PRIVATE CpuTiAction : public CpuAction {
   friend class CpuTi;
 public:
-  CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
+  CpuTiAction(CpuTi* cpu, double cost);
   ~CpuTiAction();
 
-  void set_state(simgrid::kernel::resource::Action::State state) override;
+  void set_state(kernel::resource::Action::State state) override;
   void cancel() override;
   void suspend() override;
   void resume() override;
@@ -127,8 +127,6 @@ public:
   ActionTiList action_set_;                     /*< set with all actions running on cpu */
   double sum_priority_ = 0;                  /*< the sum of actions' priority that are running on cpu */
   double last_update_  = 0;                  /*< last update of actions' remaining amount done */
-
-  double current_frequency_;
 
   boost::intrusive::list_member_hook<> cpu_ti_hook;
 };
