@@ -48,7 +48,7 @@ public:
 
   PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType);
   virtual ~PajeEvent() = default;
-  virtual void print() = 0;
+  virtual void print();
   void insertIntoBuffer();
 };
 

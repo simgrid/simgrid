@@ -13,11 +13,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
-static std::stringstream stream;
 extern std::ofstream tracing_file;
 
 std::vector<simgrid::instr::PajeEvent*> buffer;
-void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf);
 
 void dump_comment(std::string comment)
 {
@@ -72,16 +70,16 @@ void TRACE_paje_dump_buffer(bool force)
   XBT_DEBUG("%s: ends", __func__);
 }
 
-void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
+static void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
 {
   if (not XBT_LOG_ISENABLED(instr_paje_trace, xbt_log_priority_debug))
     return;
   XBT_DEBUG(">>>>>> Dump the state of the buffer. %zu events", buf->size());
   for (auto const& event : *buf) {
     event->print();
-    XBT_DEBUG("%p %s", event, stream.str().c_str());
-    stream.str("");
-    stream.clear();
+    XBT_DEBUG("%p %s", event, event->stream_.str().c_str());
+    event->stream_.str("");
+    event->stream_.clear();
   }
   XBT_DEBUG("<<<<<<");
 }

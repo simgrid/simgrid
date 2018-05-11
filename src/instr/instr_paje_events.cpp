@@ -26,6 +26,15 @@ PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event
   insertIntoBuffer();
 };
 
+void PajeEvent::print()
+{
+  if (trace_format != simgrid::instr::TraceFormat::Paje)
+    return;
+
+  XBT_DEBUG("Dump %s", stream_.str().c_str());
+  tracing_file << stream_.str() << std::endl;
+}
+
 StateEvent::StateEvent(Container* container, Type* type, e_event_type event_type, EntityValue* value, TIData* extra)
     : PajeEvent::PajeEvent(container, type, SIMIX_get_clock(), event_type), value(value), extra_(extra)
 {

@@ -232,7 +232,7 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
 }
 
 static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
-                                             simgrid::kernel::resource::Action::State previous)
+                                             simgrid::kernel::resource::Action::State /* previous */)
 {
   simgrid::surf::Cpu* cpu = static_cast<simgrid::surf::Cpu*>(action->get_variable()->get_constraint(0)->get_id());
   TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
