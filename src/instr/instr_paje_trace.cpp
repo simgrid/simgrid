@@ -85,7 +85,7 @@ static void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
 }
 
 /* internal do the instrumentation module */
-void simgrid::instr::PajeEvent::insertIntoBuffer()
+void simgrid::instr::PajeEvent::insert_into_buffer()
 {
   if (not TRACE_buffer()) {
     print();

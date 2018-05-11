@@ -28,20 +28,20 @@ public:
   std::map<std::string, Container*> children_;
   kernel::routing::NetPoint* netpoint_ = nullptr;
 
-  static Container* byNameOrNull(std::string name);
-  static Container* byName(std::string name);
+  static Container* by_name_or_null(std::string name);
+  static Container* by_name(std::string name);
   std::string get_name() { return name_; }
   const char* get_cname() { return name_.c_str(); }
   long long int get_id() { return id_; }
-  void removeFromParent();
-  void logCreation();
-  void logDestruction();
+  void remove_from_parent();
+  void log_creation();
+  void log_destruction();
 
-  StateType* getState(std::string name);
-  LinkType* getLink(std::string name);
-  VariableType* getVariable(std::string name);
-  void createChild(std::string name, std::string type_name);
-  static Container* getRoot();
+  StateType* get_state(std::string name);
+  LinkType* get_link(std::string name);
+  VariableType* get_variable(std::string name);
+  void create_child(std::string name, std::string type_name);
+  static Container* get_root();
 };
 
 class NetZoneContainer : public Container {

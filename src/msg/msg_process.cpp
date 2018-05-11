@@ -40,7 +40,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
   }
 
   if (TRACE_actor_is_enabled())
-    simgrid::instr::Container::byName(instr_pid(smx_actor->ciface()))->removeFromParent();
+    simgrid::instr::Container::by_name(instr_pid(smx_actor->ciface()))->remove_from_parent();
 
   // free the data if a function was provided
   if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {

@@ -19,6 +19,6 @@ void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t proc
 {
   if (TRACE_actor_is_enabled() && status == SMX_EXIT_FAILURE) {
     //kill means that this process no longer exists, let's destroy it
-    simgrid::instr::Container::byName(instr_pid(process))->removeFromParent();
+    simgrid::instr::Container::by_name(instr_pid(process))->remove_from_parent();
   }
 }

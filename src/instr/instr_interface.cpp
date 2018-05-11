@@ -147,7 +147,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  simgrid::instr::Container::getRoot()->type_->by_name_or_create<simgrid::instr::EventType>(mark_type);
+  simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(mark_type);
   declared_marks.insert(mark_type);
 }
 
@@ -178,7 +178,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
     THROWF (tracing_error, 1, "mark_value is nullptr");
 
   simgrid::instr::EventType* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::getRoot()->type_->by_name(mark_type));
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   } else {
@@ -186,7 +186,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
       mark_color = "1.0 1.0 1.0" /*white*/;
 
     XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-    type->addEntityValue(mark_value, mark_color);
+    type->add_entity_value(mark_value, mark_color);
   }
 }
 
@@ -234,13 +234,13 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   //check if mark_type is already declared
   simgrid::instr::EventType* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::getRoot()->type_->by_name(mark_type));
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
   if (not type) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   } else {
     XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-    new simgrid::instr::NewEvent(MSG_get_clock(), simgrid::instr::Container::getRoot(), type,
-                                 type->getEntityValue(mark_value));
+    new simgrid::instr::NewEvent(MSG_get_clock(), simgrid::instr::Container::get_root(), type,
+                                 type->get_entity_value(mark_value));
   }
 }
 
@@ -275,16 +275,17 @@ static void instr_user_variable(double time, const char* resource, const char* v
     }
   }else{
     if (created != filter->end()) { // declared, let's work
-      simgrid::instr::VariableType* variable = simgrid::instr::Container::byName(resource)->getVariable(variable_name);
+      simgrid::instr::VariableType* variable =
+          simgrid::instr::Container::by_name(resource)->get_variable(variable_name);
       switch (what){
         case InstrUserVariable::SET:
-          variable->setEvent(time, value);
+          variable->set_event(time, value);
           break;
         case InstrUserVariable::ADD:
-          variable->addEvent(time, value);
+          variable->add_event(time, value);
           break;
         case InstrUserVariable::SUB:
-          variable->subEvent(time, value);
+          variable->sub_event(time, value);
           break;
         default:
           THROW_IMPOSSIBLE;
@@ -937,9 +938,9 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  */
 void TRACE_host_set_state(const char* host, const char* state_name, const char* value_name)
 {
-  simgrid::instr::StateType* state = simgrid::instr::Container::byName(host)->getState(state_name);
-  state->addEntityValue(value_name);
-  state->setEvent(value_name);
+  simgrid::instr::StateType* state = simgrid::instr::Container::by_name(host)->get_state(state_name);
+  state->add_entity_value(value_name);
+  state->set_event(value_name);
 }
 
 /** \ingroup TRACE_user_variables
@@ -955,7 +956,7 @@ void TRACE_host_set_state(const char* host, const char* state_name, const char* 
  */
 void TRACE_host_push_state(const char* host, const char* state_name, const char* value_name)
 {
-  simgrid::instr::Container::byName(host)->getState(state_name)->pushEvent(value_name);
+  simgrid::instr::Container::by_name(host)->get_state(state_name)->push_event(value_name);
 }
 
 /** \ingroup TRACE_user_variables
@@ -970,7 +971,7 @@ void TRACE_host_push_state(const char* host, const char* state_name, const char*
  */
 void TRACE_host_pop_state(const char* host, const char* state_name)
 {
-  simgrid::instr::Container::byName(host)->getState(state_name)->popEvent();
+  simgrid::instr::Container::by_name(host)->get_state(state_name)->pop_event();
 }
 
 /** \ingroup TRACE_API

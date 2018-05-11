@@ -101,7 +101,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
                               std::to_string(src->type_->get_id()) + "-" + dst->type_->get_name() +
                               std::to_string(dst->type_->get_id());
   simgrid::instr::LinkType* link = father->type_->by_name_or_create(link_typename, src->type_, dst->type_);
-  link->setCallingContainer(father);
+  link->set_calling_container(father);
 
   // register EDGE types for triva configuration
   trivaEdgeTypes.insert(link->get_name());
@@ -112,8 +112,8 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   std::string key = std::to_string(counter);
   counter++;
 
-  link->startEvent(src, "topology", key);
-  link->endEvent(dst, "topology", key);
+  link->start_event(src, "topology", key);
+  link->end_event(dst, "topology", key);
 
   XBT_DEBUG("  linkContainers %s <-> %s", src->get_cname(), dst->get_cname());
 }
@@ -141,8 +141,8 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->get_graph(graph, nodes, edges);
   for (auto elm : *edges) {
     xbt_edge_t edge = elm.second;
-    linkContainers(simgrid::instr::Container::byName(static_cast<const char*>(edge->src->data)),
-                   simgrid::instr::Container::byName(static_cast<const char*>(edge->dst->data)), filter);
+    linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
+                   simgrid::instr::Container::by_name(static_cast<const char*>(edge->dst->data)), filter);
   }
   delete nodes;
   delete edges;
@@ -155,7 +155,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
 static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
 {
   std::string id = netzone.get_name();
-  if (simgrid::instr::Container::getRoot() == nullptr) {
+  if (simgrid::instr::Container::get_root() == nullptr) {
     simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
 
     if (TRACE_smpi_is_enabled()) {
@@ -197,11 +197,11 @@ static void instr_link_on_creation(simgrid::s4u::Link& link)
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::VariableType* bandwidth = container->type_->by_name_or_create("bandwidth", "");
-    bandwidth->setCallingContainer(container);
-    bandwidth->setEvent(0, link.bandwidth());
+    bandwidth->set_calling_container(container);
+    bandwidth->set_event(0, link.bandwidth());
     simgrid::instr::VariableType* latency = container->type_->by_name_or_create("latency", "");
-    latency->setCallingContainer(container);
-    latency->setEvent(0, link.latency());
+    latency->set_calling_container(container);
+    latency->set_event(0, link.latency());
   }
   if (TRACE_uncategorized()) {
     container->type_->by_name_or_create("bandwidth_used", "0.5 0.5 0.5");
@@ -211,12 +211,12 @@ static void instr_link_on_creation(simgrid::s4u::Link& link)
 static void instr_host_on_creation(simgrid::s4u::Host& host)
 {
   container_t container = new simgrid::instr::HostContainer(host, currentContainer.back());
-  container_t root      = simgrid::instr::Container::getRoot();
+  container_t root      = simgrid::instr::Container::get_root();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::VariableType* power = container->type_->by_name_or_create("power", "");
-    power->setCallingContainer(container);
-    power->setEvent(0, host.getSpeed());
+    power->set_calling_container(container);
+    power->set_event(0, host.getSpeed());
   }
 
   if (TRACE_uncategorized())
@@ -252,7 +252,7 @@ static void instr_on_platform_created()
   std::set<std::string>* filter = new std::set<std::string>;
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(simgrid::s4u::Engine::get_instance()->get_netzone_root(),
-                           simgrid::instr::Container::getRoot(), filter);
+                           simgrid::instr::Container::get_root(), filter);
   XBT_DEBUG("Graph extraction finished.");
   delete filter;
   TRACE_paje_dump_buffer(true);
@@ -260,30 +260,30 @@ static void instr_on_platform_created()
 
 static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
 {
-  container_t root      = simgrid::instr::Container::getRoot();
-  container_t container = simgrid::instr::Container::byName(actor->get_host()->get_name());
+  container_t root      = simgrid::instr::Container::get_root();
+  container_t container = simgrid::instr::Container::by_name(actor->get_host()->get_name());
 
-  container->createChild(instr_pid(actor.get()), "ACTOR");
+  container->create_child(instr_pid(actor.get()), "ACTOR");
   simgrid::instr::ContainerType* actor_type =
       container->type_->by_name_or_create<simgrid::instr::ContainerType>("ACTOR");
   simgrid::instr::StateType* state = actor_type->by_name_or_create<simgrid::instr::StateType>("ACTOR_STATE");
-  state->addEntityValue("suspend", "1 0 1");
-  state->addEntityValue("sleep", "1 1 0");
-  state->addEntityValue("receive", "1 0 0");
-  state->addEntityValue("send", "0 0 1");
-  state->addEntityValue("task_execute", "0 1 1");
+  state->add_entity_value("suspend", "1 0 1");
+  state->add_entity_value("sleep", "1 1 0");
+  state->add_entity_value("receive", "1 0 0");
+  state->add_entity_value("send", "0 0 1");
+  state->add_entity_value("task_execute", "0 1 1");
   root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
   root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
 }
 
 static void instr_actor_on_suspend(simgrid::s4u::ActorPtr actor)
 {
-  simgrid::instr::Container::byName(instr_pid(actor.get()))->getState("ACTOR_STATE")->pushEvent("suspend");
+  simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("suspend");
 }
 
 static void instr_actor_on_resume(simgrid::s4u::ActorPtr actor)
 {
-  simgrid::instr::Container::byName(instr_pid(actor.get()))->getState("ACTOR_STATE")->popEvent();
+  simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
 }
 
 static long long int counter = 0;
@@ -291,62 +291,62 @@ static long long int counter = 0;
 static void instr_actor_on_migration_start(simgrid::s4u::ActorPtr actor)
 {
   // start link
-  container_t container = simgrid::instr::Container::byName(instr_pid(actor.get()));
-  simgrid::instr::Container::getRoot()->getLink("ACTOR_LINK")->startEvent(container, "M", std::to_string(counter));
+  container_t container = simgrid::instr::Container::by_name(instr_pid(actor.get()));
+  simgrid::instr::Container::get_root()->get_link("ACTOR_LINK")->start_event(container, "M", std::to_string(counter));
 
   // destroy existing container of this process
-  container->removeFromParent();
+  container->remove_from_parent();
 }
 
 static void instr_actor_on_migration_end(simgrid::s4u::ActorPtr actor)
 {
   // create new container on the new_host location
-  simgrid::instr::Container::byName(actor->get_host()->get_name())->createChild(instr_pid(actor.get()), "ACTOR");
+  simgrid::instr::Container::by_name(actor->get_host()->get_name())->create_child(instr_pid(actor.get()), "ACTOR");
   // end link
-  simgrid::instr::Container::getRoot()
-      ->getLink("ACTOR_LINK")
-      ->endEvent(simgrid::instr::Container::byName(instr_pid(actor.get())), "M", std::to_string(counter));
+  simgrid::instr::Container::get_root()
+      ->get_link("ACTOR_LINK")
+      ->end_event(simgrid::instr::Container::by_name(instr_pid(actor.get())), "M", std::to_string(counter));
   counter++;
 }
 
 static void instr_vm_on_creation(simgrid::s4u::Host& host)
 {
   container_t container             = new simgrid::instr::HostContainer(host, currentContainer.back());
-  container_t root                  = simgrid::instr::Container::getRoot();
+  container_t root                  = simgrid::instr::Container::get_root();
   simgrid::instr::ContainerType* vm = container->type_->by_name_or_create<simgrid::instr::ContainerType>("VM");
   simgrid::instr::StateType* state  = vm->by_name_or_create<simgrid::instr::StateType>("VM_STATE");
-  state->addEntityValue("suspend", "1 0 1");
-  state->addEntityValue("sleep", "1 1 0");
-  state->addEntityValue("receive", "1 0 0");
-  state->addEntityValue("send", "0 0 1");
-  state->addEntityValue("task_execute", "0 1 1");
+  state->add_entity_value("suspend", "1 0 1");
+  state->add_entity_value("sleep", "1 1 0");
+  state->add_entity_value("receive", "1 0 0");
+  state->add_entity_value("send", "0 0 1");
+  state->add_entity_value("task_execute", "0 1 1");
   root->type_->by_name_or_create("VM_LINK", vm, vm);
   root->type_->by_name_or_create("VM_ACTOR_LINK", vm, vm);
 }
 
 static void instr_vm_on_start(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->pushEvent("start");
+  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("start");
 }
 
 static void instr_vm_on_started(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->popEvent();
+  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event();
 }
 
 static void instr_vm_on_suspend(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->pushEvent("suspend");
+  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("suspend");
 }
 
 static void instr_vm_on_resume(simgrid::s4u::VirtualMachine& vm)
 {
-  simgrid::instr::Container::byName(vm.get_name())->getState("VM_STATE")->popEvent();
+  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event();
 }
 
 static void instr_vm_on_destruction(simgrid::s4u::Host& host)
 {
-  simgrid::instr::Container::byName(host.get_name())->removeFromParent();
+  simgrid::instr::Container::by_name(host.get_name())->remove_from_parent();
 }
 
 void instr_define_callbacks()
@@ -399,7 +399,7 @@ static void recursiveNewVariableType(std::string new_typename, std::string color
 
 void instr_new_variable_type(std::string new_typename, std::string color)
 {
-  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::getRoot()->type_);
+  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::get_root()->type_);
 }
 
 static void recursiveNewUserVariableType(std::string father_type, std::string new_typename, std::string color,
@@ -414,7 +414,7 @@ static void recursiveNewUserVariableType(std::string father_type, std::string ne
 
 void instr_new_user_variable_type(std::string father_type, std::string new_typename, std::string color)
 {
-  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::getRoot()->type_);
+  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::get_root()->type_);
 }
 
 static void recursiveNewUserStateType(std::string father_type, std::string new_typename, simgrid::instr::Type* root)
@@ -428,14 +428,14 @@ static void recursiveNewUserStateType(std::string father_type, std::string new_t
 
 void instr_new_user_state_type(std::string father_type, std::string new_typename)
 {
-  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::getRoot()->type_);
+  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::get_root()->type_);
 }
 
 static void recursiveNewValueForUserStateType(std::string type_name, const char* val, std::string color,
                                               simgrid::instr::Type* root)
 {
   if (root->get_name() == type_name)
-    static_cast<simgrid::instr::StateType*>(root)->addEntityValue(val, color);
+    static_cast<simgrid::instr::StateType*>(root)->add_entity_value(val, color);
 
   for (auto elm : root->children_)
     recursiveNewValueForUserStateType(type_name, val, color, elm.second);
@@ -443,7 +443,7 @@ static void recursiveNewValueForUserStateType(std::string type_name, const char*
 
 void instr_new_value_for_user_state_type(std::string type_name, const char* value, std::string color)
 {
-  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::getRoot()->type_);
+  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->type_);
 }
 
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
@@ -469,7 +469,7 @@ xbt_graph_t instr_routing_platform_graph()
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
   recursiveXBTGraphExtraction(ret, nodes, edges, simgrid::s4u::Engine::get_instance()->get_netzone_root(),
-                              simgrid::instr::Container::getRoot());
+                              simgrid::instr::Container::get_root());
   delete nodes;
   delete edges;
   return ret;

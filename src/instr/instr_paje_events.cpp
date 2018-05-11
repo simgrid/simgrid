@@ -23,7 +23,7 @@ PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, e_event
     stream_ << std::fixed << std::setprecision(TRACE_precision());
     stream_ << eventType_ << " " << timestamp_ << " " << type_->get_id() << " " << container_->get_id();
   }
-  insertIntoBuffer();
+  insert_into_buffer();
 };
 
 void PajeEvent::print()
@@ -52,7 +52,7 @@ void NewEvent::print()
   if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
 
-  stream_ << " " << value->getId();
+  stream_ << " " << value->get_id();
 
   XBT_DEBUG("Dump %s", stream_.str().c_str());
   tracing_file << stream_.str() << std::endl;
@@ -88,7 +88,7 @@ void StateEvent::print()
   if (trace_format == simgrid::instr::TraceFormat::Paje) {
 
     if (value != nullptr) // PAJE_PopState Event does not need to have a value
-      stream_ << " " << value->getId();
+      stream_ << " " << value->get_id();
 
     if (TRACE_display_sizes())
       stream_ << " " << ((extra_ != nullptr) ? extra_->display_size() : 0);
@@ -107,13 +107,13 @@ void StateEvent::print()
     /* Unimplemented calls are: WAITANY, SENDRECV, SCAN, EXSCAN, SSEND, and ISSEND. */
 
     // FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-    if (getContainer()->get_name().find("rank-") != 0)
-      stream_ << getContainer()->get_name() << " " << extra_->print();
+    if (get_container()->get_name().find("rank-") != 0)
+      stream_ << get_container()->get_name() << " " << extra_->print();
     else
       /* Subtract -1 because this is the process id and we transform it to the rank id */
-      stream_ << stoi(getContainer()->get_name().erase(0, 5)) - 1 << " " << extra_->print();
+      stream_ << stoi(get_container()->get_name().erase(0, 5)) - 1 << " " << extra_->print();
 
-    *tracing_files.at(getContainer()) << stream_.str() << std::endl;
+    *tracing_files.at(get_container()) << stream_.str() << std::endl;
   } else {
     THROW_IMPOSSIBLE;
   }

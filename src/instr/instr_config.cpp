@@ -144,9 +144,9 @@ static void TRACE_end()
   TRACE_last_timestamp_to_dump = surf_get_clock();
   TRACE_paje_dump_buffer(true);
 
-  simgrid::instr::Type* root_type = simgrid::instr::Container::getRoot()->type_;
+  simgrid::instr::Type* root_type = simgrid::instr::Container::get_root()->type_;
   /* destroy all data structures of tracing (and free) */
-  delete simgrid::instr::Container::getRoot();
+  delete simgrid::instr::Container::get_root();
   delete root_type;
 
   /* close the trace files */

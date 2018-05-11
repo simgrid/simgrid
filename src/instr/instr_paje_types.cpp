@@ -45,19 +45,19 @@ ValueType::~ValueType()
 ContainerType::ContainerType(std::string name, Type* father) : Type(name, name, "", father)
 {
   XBT_DEBUG("ContainerType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
-  logDefinition(PAJE_DefineContainerType);
+  log_definition(PAJE_DefineContainerType);
 }
 
 EventType::EventType(std::string name, Type* father) : ValueType(name, father)
 {
   XBT_DEBUG("EventType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
-  logDefinition(PAJE_DefineEventType);
+  log_definition(PAJE_DefineEventType);
 }
 
 StateType::StateType(std::string name, Type* father) : ValueType(name, father)
 {
   XBT_DEBUG("StateType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
-  logDefinition(PAJE_DefineStateType);
+  log_definition(PAJE_DefineStateType);
 }
 
 StateType::~StateType()
@@ -65,27 +65,27 @@ StateType::~StateType()
   events_.clear();
 }
 
-void StateType::setEvent(std::string value_name)
+void StateType::set_event(std::string value_name)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, getEntityValue(value_name), nullptr));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_SetState, get_entity_value(value_name), nullptr));
 }
 
-void StateType::pushEvent(std::string value_name, TIData* extra)
+void StateType::push_event(std::string value_name, TIData* extra)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, getEntityValue(value_name), extra));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, get_entity_value(value_name), extra));
 }
 
-void StateType::pushEvent(std::string value_name)
+void StateType::push_event(std::string value_name)
 {
-  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, getEntityValue(value_name), nullptr));
+  events_.push_back(new StateEvent(issuer_, this, PAJE_PushState, get_entity_value(value_name), nullptr));
 }
 
-void StateType::popEvent()
+void StateType::pop_event()
 {
   events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, nullptr));
 }
 
-void StateType::popEvent(TIData* extra)
+void StateType::pop_event(TIData* extra)
 {
   events_.push_back(new StateEvent(issuer_, this, PAJE_PopState, nullptr, extra));
 }
@@ -93,7 +93,7 @@ void StateType::popEvent(TIData* extra)
 VariableType::VariableType(std::string name, std::string color, Type* father) : Type(name, name, color, father)
 {
   XBT_DEBUG("VariableType %s(%lld), child of %s(%lld)", get_cname(), get_id(), father->get_cname(), father->get_id());
-  logDefinition(PAJE_DefineVariableType);
+  log_definition(PAJE_DefineVariableType);
 }
 
 VariableType::~VariableType()
@@ -113,25 +113,25 @@ void VariableType::instr_event(double now, double delta, const char* resource, d
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the global map.
   if (platform_variables.find(key) == platform_variables.end()) {
-    setEvent(now, 0);
+    set_event(now, 0);
     platform_variables.insert(key);
   }
 
-  addEvent(now, value);
-  subEvent(now + delta, value);
+  add_event(now, value);
+  sub_event(now + delta, value);
 }
 
-void VariableType::setEvent(double timestamp, double value)
+void VariableType::set_event(double timestamp, double value)
 {
   events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_SetVariable, value));
 }
 
-void VariableType::addEvent(double timestamp, double value)
+void VariableType::add_event(double timestamp, double value)
 {
   events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_AddVariable, value));
 }
 
-void VariableType::subEvent(double timestamp, double value)
+void VariableType::sub_event(double timestamp, double value)
 {
   events_.push_back(new VariableEvent(timestamp, issuer_, this, PAJE_SubVariable, value));
 }
@@ -139,34 +139,34 @@ void VariableType::subEvent(double timestamp, double value)
 LinkType::LinkType(std::string name, std::string alias, Type* father) : ValueType(name, alias, father)
 {
 }
-void LinkType::startEvent(Container* startContainer, std::string value, std::string key)
+void LinkType::start_event(Container* startContainer, std::string value, std::string key)
 {
-  startEvent(startContainer, value, key, -1);
+  start_event(startContainer, value, key, -1);
 }
 
-void LinkType::startEvent(Container* startContainer, std::string value, std::string key, int size)
+void LinkType::start_event(Container* startContainer, std::string value, std::string key, int size)
 {
   new LinkEvent(issuer_, this, PAJE_StartLink, startContainer, value, key, size);
 }
 
-void LinkType::endEvent(Container* endContainer, std::string value, std::string key)
+void LinkType::end_event(Container* endContainer, std::string value, std::string key)
 {
   new LinkEvent(issuer_, this, PAJE_EndLink, endContainer, value, key, -1);
 }
 
-void Type::logDefinition(e_event_type event_type)
+void Type::log_definition(e_event_type event_type)
 {
   if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, event_type, TRACE_precision(), 0.);
   stream_ << event_type << " " << get_id() << " " << father_->get_id() << " " << get_name();
-  if (isColored())
+  if (is_colored())
     stream_ << " \"" << color_ << "\"";
   XBT_DEBUG("Dump %s", stream_.str().c_str());
   tracing_file << stream_.str() << std::endl;
 }
 
-void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* dest)
+void Type::log_definition(simgrid::instr::Type* source, simgrid::instr::Type* dest)
 {
   if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
@@ -194,12 +194,12 @@ Type* Type::by_name(std::string name)
   return ret;
 }
 
-void ValueType::addEntityValue(std::string name)
+void ValueType::add_entity_value(std::string name)
 {
-  addEntityValue(name, "");
+  add_entity_value(name, "");
 }
 
-void ValueType::addEntityValue(std::string name, std::string color)
+void ValueType::add_entity_value(std::string name, std::string color)
 {
   if (name.empty())
     THROWF(tracing_error, 0, "can't get a value with no name");
@@ -213,7 +213,7 @@ void ValueType::addEntityValue(std::string name, std::string color)
   }
 }
 
-EntityValue* ValueType::getEntityValue(std::string name)
+EntityValue* ValueType::get_entity_value(std::string name)
 {
   auto ret = values_.find(name);
   if (ret == values_.end()) {
@@ -237,7 +237,7 @@ LinkType* Type::by_name_or_create(std::string name, Type* source, Type* dest)
     LinkType* ret = new LinkType(name, alias, this);
     XBT_DEBUG("LinkType %s(%lld), child of %s(%lld)  %s(%lld)->%s(%lld)", ret->get_cname(), ret->get_id(), get_cname(),
               get_id(), source->get_cname(), source->get_id(), dest->get_cname(), dest->get_id());
-    ret->logDefinition(source, dest);
+    ret->log_definition(source, dest);
     return ret;
   } else
     return static_cast<LinkType*>(it->second);

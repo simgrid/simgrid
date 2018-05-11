@@ -27,7 +27,7 @@ long long int instr_new_paje_id ()
 namespace simgrid {
 namespace instr {
 
-container_t Container::getRoot()
+container_t Container::get_root()
 {
   return rootContainer;
 }
@@ -41,7 +41,7 @@ NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZone
     std::string type_name = std::string("L") + std::to_string(level);
     type_                 = father_->type_->by_name_or_create<ContainerType>(type_name);
     father_->children_.insert({get_name(), this});
-    logCreation();
+    log_creation();
   } else {
     type_         = new ContainerType("0");
     rootContainer = this;
@@ -81,7 +81,7 @@ Container::Container(std::string name, std::string type_name, Container* father)
     if (not type_name.empty()) {
       type_ = father_->type_->by_name_or_create<ContainerType>(type_name);
       father_->children_.insert({name_, this});
-      logCreation();
+      log_creation();
     }
   }
 
@@ -108,34 +108,34 @@ Container::~Container()
   TRACE_paje_dump_buffer(true);
 
   // trace my destruction, but not if user requests so or if the container is root
-  if (not TRACE_disable_destroy() && this != Container::getRoot())
-    logDestruction();
+  if (not TRACE_disable_destroy() && this != Container::get_root())
+    log_destruction();
 
   // remove me from the allContainers data structure
   allContainers.erase(name_);
 }
 
-void Container::createChild(std::string name, std::string type_name)
+void Container::create_child(std::string name, std::string type_name)
 {
   new Container(name, type_name, this);
 }
 
-Container* Container::byNameOrNull(std::string name)
+Container* Container::by_name_or_null(std::string name)
 {
   auto cont = allContainers.find(name);
   return cont == allContainers.end() ? nullptr : cont->second;
 }
 
-Container* Container::byName(std::string name)
+Container* Container::by_name(std::string name)
 {
-  Container* ret = Container::byNameOrNull(name);
+  Container* ret = Container::by_name_or_null(name);
   if (ret == nullptr)
     THROWF(tracing_error, 1, "container with name %s not found", name.c_str());
 
   return ret;
 }
 
-void Container::removeFromParent()
+void Container::remove_from_parent()
 {
   if (father_) {
     XBT_DEBUG("removeChildContainer (%s) FromContainer (%s) ", get_cname(), father_->get_cname());
@@ -144,7 +144,7 @@ void Container::removeFromParent()
   delete this;
 }
 
-void Container::logCreation()
+void Container::log_creation()
 {
   double timestamp = SIMIX_get_clock();
   std::stringstream stream;
@@ -183,7 +183,7 @@ void Container::logCreation()
   }
 }
 
-void Container::logDestruction()
+void Container::log_destruction()
 {
   std::stringstream stream;
   double timestamp = SIMIX_get_clock();
@@ -206,24 +206,24 @@ void Container::logDestruction()
   }
 }
 
-StateType* Container::getState(std::string name)
+StateType* Container::get_state(std::string name)
 {
   StateType* ret = dynamic_cast<StateType*>(type_->by_name(name));
-  ret->setCallingContainer(this);
+  ret->set_calling_container(this);
   return ret;
 }
 
-LinkType* Container::getLink(std::string name)
+LinkType* Container::get_link(std::string name)
 {
   LinkType* ret = dynamic_cast<LinkType*>(type_->by_name(name));
-  ret->setCallingContainer(this);
+  ret->set_calling_container(this);
   return ret;
 }
 
-VariableType* Container::getVariable(std::string name)
+VariableType* Container::get_variable(std::string name)
 {
   VariableType* ret = dynamic_cast<VariableType*>(type_->by_name(name));
-  ret->setCallingContainer(this);
+  ret->set_calling_container(this);
   return ret;
 }
 }

@@ -188,9 +188,9 @@ void LinkImpl::turn_off()
 void LinkImpl::on_bandwidth_change()
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform())
-    instr::Container::byName(get_cname())
-        ->getVariable("bandwidth")
-        ->setEvent(surf_get_clock(), sg_bandwidth_factor * bandwidth_.scale * bandwidth_.peak);
+    instr::Container::by_name(get_cname())
+        ->get_variable("bandwidth")
+        ->set_event(surf_get_clock(), sg_bandwidth_factor * bandwidth_.scale * bandwidth_.peak);
   s4u::Link::on_bandwidth_change(this->piface_);
 }
 

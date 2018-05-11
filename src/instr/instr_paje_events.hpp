@@ -40,7 +40,7 @@ class PajeEvent {
   Container* container_;
   Type* type_;
 protected:
-  Container* getContainer() { return container_; }
+  Container* get_container() { return container_; }
 public:
   double timestamp_;
   e_event_type eventType_;
@@ -49,7 +49,7 @@ public:
   PajeEvent(Container* container, Type* type, double timestamp, e_event_type eventType);
   virtual ~PajeEvent() = default;
   virtual void print();
-  void insertIntoBuffer();
+  void insert_into_buffer();
 };
 
 class VariableEvent : public PajeEvent {

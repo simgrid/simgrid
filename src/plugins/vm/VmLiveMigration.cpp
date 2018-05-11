@@ -59,18 +59,18 @@ void MigrationRx::operator()()
     counter++;
 
     // start link
-    container_t msg = simgrid::instr::Container::byName(vm_->get_name());
-    simgrid::instr::Container::getRoot()->getLink("VM_LINK")->startEvent(msg, "M", key);
+    container_t msg = simgrid::instr::Container::by_name(vm_->get_name());
+    simgrid::instr::Container::get_root()->get_link("VM_LINK")->start_event(msg, "M", key);
 
     // destroy existing container of this vm
-    simgrid::instr::Container::byName(vm_->get_name())->removeFromParent();
+    simgrid::instr::Container::by_name(vm_->get_name())->remove_from_parent();
 
     // create new container on the new_host location
-    new simgrid::instr::Container(vm_->get_cname(), "VM", simgrid::instr::Container::byName(dst_pm_->get_name()));
+    new simgrid::instr::Container(vm_->get_cname(), "VM", simgrid::instr::Container::by_name(dst_pm_->get_name()));
 
     // end link
-    msg = simgrid::instr::Container::byName(vm_->get_name());
-    simgrid::instr::Container::getRoot()->getLink("VM_LINK")->endEvent(msg, "M", key);
+    msg = simgrid::instr::Container::by_name(vm_->get_name());
+    simgrid::instr::Container::get_root()->get_link("VM_LINK")->end_event(msg, "M", key);
   }
   // Inform the SRC that the migration has been correctly performed
   std::string* payload = new std::string("__mig_stage4:");

@@ -14,12 +14,12 @@
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
     simgrid::instr::EventType* type =                                                                                  \
-        simgrid::instr::Container::getRoot()->type_->by_name_or_create<simgrid::instr::EventType>(#cat);               \
+        simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(#cat);              \
                                                                                                                        \
     std::string cont_name = std::string("rank-" + std::to_string(simgrid::s4u::this_actor::get_pid()));                \
-    type->addEntityValue(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                  \
-    new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::byName(cont_name), type,                \
-                                 type->getEntityValue(Colls::mpi_coll_##cat##_description[i].name));                   \
+    type->add_entity_value(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                \
+    new simgrid::instr::NewEvent(SIMIX_get_clock(), simgrid::instr::Container::by_name(cont_name), type,               \
+                                 type->get_entity_value(Colls::mpi_coll_##cat##_description[i].name));                 \
   }
 
 #define AUTOMATIC_COLL_BENCH(cat, ret, args, args2)                                                                    \
