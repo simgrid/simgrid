@@ -21,7 +21,7 @@ void simgrid::kernel::activity::IoImpl::resume()
 
 void simgrid::kernel::activity::IoImpl::post()
 {
-  for (smx_simcall_t const& simcall : simcalls) {
+  for (smx_simcall_t const& simcall : simcalls_) {
     switch (simcall->call) {
       case SIMCALL_STORAGE_WRITE:
         simcall_storage_write__set__result(simcall, surf_io->get_cost());
@@ -36,10 +36,10 @@ void simgrid::kernel::activity::IoImpl::post()
 
   switch (surf_io->get_state()) {
     case simgrid::kernel::resource::Action::State::failed:
-      state = SIMIX_FAILED;
+      state_ = SIMIX_FAILED;
       break;
     case simgrid::kernel::resource::Action::State::done:
-      state = SIMIX_DONE;
+      state_ = SIMIX_DONE;
       break;
     default:
       THROW_IMPOSSIBLE;

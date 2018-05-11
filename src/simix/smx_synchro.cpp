@@ -63,11 +63,11 @@ void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
 void SIMIX_synchro_finish(smx_activity_t synchro)
 {
   XBT_IN("(%p)", synchro.get());
-  smx_simcall_t simcall = synchro->simcalls.front();
-  synchro->simcalls.pop_front();
+  smx_simcall_t simcall = synchro->simcalls_.front();
+  synchro->simcalls_.pop_front();
 
-  if (synchro->state != SIMIX_SRC_TIMEOUT) {
-    if (synchro->state == SIMIX_FAILED)
+  if (synchro->state_ != SIMIX_SRC_TIMEOUT) {
+    if (synchro->state_ == SIMIX_FAILED)
       simcall->issuer->context->iwannadie = 1;
     else
       THROW_IMPOSSIBLE;
@@ -147,7 +147,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {
     synchro = SIMIX_synchro_wait(issuer->host, timeout);
-    synchro->simcalls.push_front(simcall);
+    synchro->simcalls_.push_front(simcall);
     issuer->waiting_synchro = synchro;
     sem->sleeping.push_back(*issuer);
   } else {

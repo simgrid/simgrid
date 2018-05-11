@@ -15,10 +15,10 @@ namespace simgrid {
 namespace s4u {
 Comm::~Comm()
 {
-  if (state_ == State::started && not detached_ && (pimpl_ == nullptr || pimpl_->state == SIMIX_RUNNING)) {
+  if (state_ == State::started && not detached_ && (pimpl_ == nullptr || pimpl_->state_ == SIMIX_RUNNING)) {
     XBT_INFO("Comm %p freed before its completion. Detached: %d, State: %d", this, detached_, (int)state_);
     if (pimpl_ != nullptr)
-      XBT_INFO("pimpl_->state: %d", pimpl_->state);
+      XBT_INFO("pimpl_->state: %d", pimpl_->state_);
     else
       XBT_INFO("pimpl_ is null");
     xbt_backtrace_display_current();

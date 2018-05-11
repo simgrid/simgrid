@@ -35,7 +35,7 @@ void MutexImpl::lock(smx_actor_t issuer)
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
     synchro = SIMIX_synchro_wait(issuer->host, -1);
-    synchro->simcalls.push_back(&issuer->simcall);
+    synchro->simcalls_.push_back(&issuer->simcall);
     issuer->waiting_synchro = synchro;
     this->sleeping.push_back(*issuer);
   } else {

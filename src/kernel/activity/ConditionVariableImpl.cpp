@@ -29,7 +29,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
   }
 
   synchro = SIMIX_synchro_wait(issuer->host, timeout);
-  synchro->simcalls.push_front(simcall);
+  synchro->simcalls_.push_front(simcall);
   issuer->waiting_synchro = synchro;
   cond->sleeping.push_back(*simcall->issuer);
   XBT_OUT();

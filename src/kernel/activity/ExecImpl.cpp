@@ -20,8 +20,8 @@ simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, resource::Action
     : host_(host)
 {
   if (name)
-    this->name = name;
-  this->state  = SIMIX_RUNNING;
+    this->name_ = name;
+  this->state_ = SIMIX_RUNNING;
 
   surf_action_ = surf_action;
   surf_action_->set_data(this);
@@ -73,7 +73,8 @@ double simgrid::kernel::activity::ExecImpl::get_remaining()
 
 double simgrid::kernel::activity::ExecImpl::get_remaining_ratio()
 {
-  if (host_ == nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::remains())
+  if (host_ ==
+      nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::get_remaining())
     return surf_action_->get_remains();
   else // Actually compute the ratio for sequential tasks
     return surf_action_->get_remains() / surf_action_->get_cost();
@@ -95,14 +96,14 @@ void simgrid::kernel::activity::ExecImpl::post()
   if (host_ && host_->isOff()) { /* FIXME: handle resource failure for parallel tasks too */
                                  /* If the host running the synchro failed, notice it. This way, the asking
                                   * process can be killed if it runs on that host itself */
-    state = SIMIX_FAILED;
+                                 state_ = SIMIX_FAILED;
   } else if (surf_action_ && surf_action_->get_state() == simgrid::kernel::resource::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
-    state = SIMIX_CANCELED;
+    state_ = SIMIX_CANCELED;
   } else if (timeout_detector_ && timeout_detector_->get_state() == simgrid::kernel::resource::Action::State::done) {
-    state = SIMIX_TIMEOUT;
+    state_ = SIMIX_TIMEOUT;
   } else {
-    state = SIMIX_DONE;
+    state_ = SIMIX_DONE;
   }
 
   if (surf_action_) {
@@ -116,7 +117,7 @@ void simgrid::kernel::activity::ExecImpl::post()
 
   onCompletion(this);
   /* If there are simcalls associated with the synchro, then answer them */
-  if (not simcalls.empty())
+  if (not simcalls_.empty())
     SIMIX_execution_finish(this);
 }
 

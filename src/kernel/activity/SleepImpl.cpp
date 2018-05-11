@@ -27,9 +27,9 @@ void simgrid::kernel::activity::SleepImpl::resume()
 
 void simgrid::kernel::activity::SleepImpl::post()
 {
-  while (not simcalls.empty()) {
-    smx_simcall_t simcall = simcalls.front();
-    simcalls.pop_front();
+  while (not simcalls_.empty()) {
+    smx_simcall_t simcall = simcalls_.front();
+    simcalls_.pop_front();
 
     e_smx_state_t result;
     switch (surf_sleep->get_state()) {

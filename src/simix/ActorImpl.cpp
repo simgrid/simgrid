@@ -80,11 +80,11 @@ void SIMIX_process_cleanup(smx_actor_t process)
 
     if (comm->src_proc == process) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p", comm.get(),
-                comm->detached, (int)comm->state, comm->src_proc, comm->dst_proc);
+                comm->detached, (int)comm->state_, comm->src_proc, comm->dst_proc);
       comm->src_proc = nullptr;
 
     } else if (comm->dst_proc == process) {
-      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p", comm.get(), (int)comm->state,
+      XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p", comm.get(), (int)comm->state_,
                 comm->src_proc, comm->dst_proc);
       comm->dst_proc = nullptr;
 
@@ -484,9 +484,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       process->comms.remove(process->waiting_synchro);
       comm->cancel();
       // Remove first occurrence of &process->simcall:
-      auto i = boost::range::find(process->waiting_synchro->simcalls, &process->simcall);
-      if (i != process->waiting_synchro->simcalls.end())
-        process->waiting_synchro->simcalls.remove(&process->simcall);
+      auto i = boost::range::find(process->waiting_synchro->simcalls_, &process->simcall);
+      if (i != process->waiting_synchro->simcalls_.end())
+        process->waiting_synchro->simcalls_.remove(&process->simcall);
     } else if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
 
@@ -591,7 +591,7 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process)
   if (process != simcall->issuer) {
     SIMIX_simcall_answer(simcall);
   } else {
-    sync_suspend->simcalls.push_back(simcall);
+    sync_suspend->simcalls_.push_back(simcall);
     process->waiting_synchro = sync_suspend;
     process->waiting_synchro->suspend();
   }
@@ -643,7 +643,7 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, do
     return;
   }
   smx_activity_t sync = SIMIX_process_join(simcall->issuer, process, timeout);
-  sync->simcalls.push_back(simcall);
+  sync->simcalls_.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
 }
 
@@ -672,7 +672,7 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
     return;
   }
   smx_activity_t sync = simcall->issuer->sleep(duration);
-  sync->simcalls.push_back(simcall);
+  sync->simcalls_.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
 }
 

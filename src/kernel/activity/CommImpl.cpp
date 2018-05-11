@@ -15,7 +15,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 
 simgrid::kernel::activity::CommImpl::CommImpl(e_smx_comm_type_t _type) : type(_type)
 {
-  state    = SIMIX_WAITING;
+  state_   = SIMIX_WAITING;
   src_data = nullptr;
   dst_data = nullptr;
   XBT_DEBUG("Create comm activity %p", this);
@@ -27,7 +27,7 @@ simgrid::kernel::activity::CommImpl::~CommImpl()
 
   cleanupSurf();
 
-  if (detached && state != SIMIX_DONE) {
+  if (detached && state_ != SIMIX_DONE) {
     /* the communication has failed and was detached:
      * we have to free the buffer */
     if (clean_fun)
@@ -59,11 +59,11 @@ void simgrid::kernel::activity::CommImpl::cancel()
 {
   /* if the synchro is a waiting state means that it is still in a mbox */
   /* so remove from it and delete it */
-  if (state == SIMIX_WAITING) {
+  if (state_ == SIMIX_WAITING) {
     mbox->remove(this);
-    state = SIMIX_CANCELED;
+    state_ = SIMIX_CANCELED;
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
-             && not MC_record_replay_is_active() && (state == SIMIX_READY || state == SIMIX_RUNNING)) {
+             && not MC_record_replay_is_active() && (state_ == SIMIX_READY || state_ == SIMIX_RUNNING)) {
 
     surfAction_->cancel();
   }
@@ -98,26 +98,26 @@ void simgrid::kernel::activity::CommImpl::post()
 {
   /* Update synchro state */
   if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::done)
-    state = SIMIX_SRC_TIMEOUT;
+    state_ = SIMIX_SRC_TIMEOUT;
   else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::done)
-    state = SIMIX_DST_TIMEOUT;
+    state_ = SIMIX_DST_TIMEOUT;
   else if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::failed)
-    state = SIMIX_SRC_HOST_FAILURE;
+    state_ = SIMIX_SRC_HOST_FAILURE;
   else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::failed)
-    state = SIMIX_DST_HOST_FAILURE;
+    state_ = SIMIX_DST_HOST_FAILURE;
   else if (surfAction_ && surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
-    state = SIMIX_LINK_FAILURE;
+    state_ = SIMIX_LINK_FAILURE;
   } else
-    state = SIMIX_DONE;
+    state_ = SIMIX_DONE;
 
-  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state, src_proc,
+  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d", this, (int)state_, src_proc,
             dst_proc, detached);
 
   /* destroy the surf actions associated with the Simix communication */
   cleanupSurf();
 
   /* if there are simcalls associated with the synchro, then answer them */
-  if (not simcalls.empty()) {
+  if (not simcalls_.empty()) {
     SIMIX_comm_finish(this);
   }
 }

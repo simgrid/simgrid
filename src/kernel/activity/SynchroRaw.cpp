@@ -28,9 +28,9 @@ void simgrid::kernel::activity::RawImpl::post()
 {
   XBT_IN("(%p)",this);
   if (sleep->get_state() == simgrid::kernel::resource::Action::State::failed)
-    state = SIMIX_FAILED;
+    state_ = SIMIX_FAILED;
   else if (sleep->get_state() == simgrid::kernel::resource::Action::State::done)
-    state = SIMIX_SRC_TIMEOUT;
+    state_ = SIMIX_SRC_TIMEOUT;
 
   SIMIX_synchro_finish(this);
   XBT_OUT();

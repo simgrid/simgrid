@@ -113,7 +113,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
 
     if (mbox->permanent_receiver != nullptr) {
       //this mailbox is for small messages, which have to be sent right now
-      other_comm->state   = SIMIX_READY;
+      other_comm->state_  = SIMIX_READY;
       other_comm->dst_proc=mbox->permanent_receiver.get();
       mbox->done_comm_queue.push_back(other_comm);
       XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
@@ -124,7 +124,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
   } else {
     XBT_DEBUG("Receive already pushed");
 
-    other_comm->state = SIMIX_READY;
+    other_comm->state_ = SIMIX_READY;
     other_comm->type = SIMIX_COMM_READY;
   }
   src_proc->comms.push_back(other_comm);
@@ -149,7 +149,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
 
 
   if (MC_is_active() || MC_record_replay_is_active()) {
-    other_comm->state = SIMIX_RUNNING;
+    other_comm->state_ = SIMIX_RUNNING;
     return (detached ? nullptr : other_comm);
   }
 
@@ -203,7 +203,7 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
     } else {
       if (other_comm->surfAction_ && other_comm->remains() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
-        other_comm->state = SIMIX_DONE;
+        other_comm->state_ = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
         other_comm->mbox = nullptr;
       }
@@ -225,7 +225,7 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
     } else {
       XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
-      other_comm->state = SIMIX_READY;
+      other_comm->state_ = SIMIX_READY;
       other_comm->type = SIMIX_COMM_READY;
     }
     dst_proc->comms.push_back(other_comm);
@@ -244,7 +244,7 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
   other_comm->copy_data_fun = copy_data_fun;
 
   if (MC_is_active() || MC_record_replay_is_active()) {
-    other_comm->state = SIMIX_RUNNING;
+    other_comm->state_ = SIMIX_RUNNING;
     return other_comm;
   }
 
@@ -291,13 +291,13 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   /* Associate this simcall to the wait synchro */
   XBT_DEBUG("simcall_HANDLER_comm_wait, %p", synchro.get());
 
-  synchro->simcalls.push_back(simcall);
+  synchro->simcalls_.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     if (idx == 0) {
-      synchro->state = SIMIX_DONE;
+      synchro->state_ = SIMIX_DONE;
     } else {
       /* If we reached this point, the wait simcall must have a timeout */
       /* Otherwise it shouldn't be enabled and executed by the MC */
@@ -307,9 +307,9 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
       simgrid::kernel::activity::CommImplPtr comm =
           boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
       if (comm->src_proc == simcall->issuer)
-        comm->state = SIMIX_SRC_TIMEOUT;
+        comm->state_ = SIMIX_SRC_TIMEOUT;
       else
-        comm->state = SIMIX_DST_TIMEOUT;
+        comm->state_ = SIMIX_DST_TIMEOUT;
     }
 
     SIMIX_comm_finish(synchro);
@@ -318,7 +318,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
 
   /* If the synchro has already finish perform the error handling, */
   /* otherwise set up a waiting timeout on the right side          */
-  if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
+  if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
   } else { /* we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host
               fails */
@@ -342,8 +342,8 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_activity_t synchro)
   if (MC_is_active() || MC_record_replay_is_active()){
     simcall_comm_test__set__result(simcall, comm->src_proc && comm->dst_proc);
     if (simcall_comm_test__get__result(simcall)){
-      synchro->state = SIMIX_DONE;
-      synchro->simcalls.push_back(simcall);
+      synchro->state_ = SIMIX_DONE;
+      synchro->simcalls_.push_back(simcall);
       SIMIX_comm_finish(synchro);
     } else {
       SIMIX_simcall_answer(simcall);
@@ -351,9 +351,9 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_activity_t synchro)
     return;
   }
 
-  simcall_comm_test__set__result(simcall, (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING));
+  simcall_comm_test__set__result(simcall, (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING));
   if (simcall_comm_test__get__result(simcall)) {
-    synchro->simcalls.push_back(simcall);
+    synchro->simcalls_.push_back(simcall);
     SIMIX_comm_finish(synchro);
   } else {
     SIMIX_simcall_answer(simcall);
@@ -374,8 +374,8 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
     }else{
       simgrid::kernel::activity::ActivityImplPtr synchro = comms[idx];
       simcall_comm_testany__set__result(simcall, idx);
-      synchro->simcalls.push_back(simcall);
-      synchro->state = SIMIX_DONE;
+      synchro->simcalls_.push_back(simcall);
+      synchro->state_ = SIMIX_DONE;
       SIMIX_comm_finish(synchro);
     }
     return;
@@ -383,9 +383,9 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activi
 
   for (std::size_t i = 0; i != count; ++i) {
     simgrid::kernel::activity::ActivityImplPtr synchro = comms[i];
-    if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
+    if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
       simcall_comm_testany__set__result(simcall, i);
-      synchro->simcalls.push_back(simcall);
+      synchro->simcalls_.push_back(simcall);
       SIMIX_comm_finish(synchro);
       return;
     }
@@ -400,9 +400,9 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
       xbt_die("Timeout not implemented for waitany in the model-checker");
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     smx_activity_t synchro = xbt_dynar_get_as(synchros, idx, smx_activity_t);
-    synchro->simcalls.push_back(simcall);
+    synchro->simcalls_.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);
-    synchro->state = SIMIX_DONE;
+    synchro->state_ = SIMIX_DONE;
     SIMIX_comm_finish(synchro);
     return;
   }
@@ -422,10 +422,10 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
   xbt_dynar_foreach(synchros, cursor, ptr){
     smx_activity_t synchro = simgrid::kernel::activity::ActivityImplPtr(ptr);
     /* associate this simcall to the the synchro */
-    synchro->simcalls.push_back(simcall);
+    synchro->simcalls_.push_back(simcall);
 
     /* see if the synchro is already finished */
-    if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING){
+    if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
       SIMIX_comm_finish(synchro);
       break;
     }
@@ -442,9 +442,9 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
     smx_activity_t synchro = simgrid::kernel::activity::ActivityImplPtr(ptr);
 
     // Remove the first occurence of simcall:
-    auto i = boost::range::find(synchro->simcalls, simcall);
-    if (i !=  synchro->simcalls.end())
-      synchro->simcalls.erase(i);
+    auto i = boost::range::find(synchro->simcalls_, simcall);
+    if (i != synchro->simcalls_.end())
+      synchro->simcalls_.erase(i);
   }
 }
 
@@ -455,14 +455,14 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
 {
   /* If both the sender and the receiver are already there, start the communication */
-  if (comm->state == SIMIX_READY) {
+  if (comm->state_ == SIMIX_READY) {
 
     simgrid::s4u::Host* sender   = comm->src_proc->host;
     simgrid::s4u::Host* receiver = comm->dst_proc->host;
 
     comm->surfAction_ = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
     comm->surfAction_->set_data(comm.get());
-    comm->state = SIMIX_RUNNING;
+    comm->state_ = SIMIX_RUNNING;
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p)", comm.get(), sender->get_cname(),
               receiver->get_cname(), comm->surfAction_);
@@ -471,7 +471,7 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
     if (comm->surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->get_cname(),
                 receiver->get_cname());
-      comm->state = SIMIX_LINK_FAILURE;
+      comm->state_ = SIMIX_LINK_FAILURE;
       comm->cleanupSurf();
     }
 
@@ -501,9 +501,9 @@ void SIMIX_comm_finish(smx_activity_t synchro)
   simgrid::kernel::activity::CommImplPtr comm =
       boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
 
-  while (not synchro->simcalls.empty()) {
-    smx_simcall_t simcall = synchro->simcalls.front();
-    synchro->simcalls.pop_front();
+  while (not synchro->simcalls_.empty()) {
+    smx_simcall_t simcall = synchro->simcalls_.front();
+    synchro->simcalls_.pop_front();
 
     /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
      * list. Afterwards, get the position of the actual synchro in the waitany dynar and return it as the result of the
@@ -526,7 +526,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
     if (comm->mbox)
       comm->mbox->remove(comm);
 
-    XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state);
+    XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state_);
 
     /* Check out for errors */
 
@@ -534,7 +534,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       simcall->issuer->context->iwannadie = 1;
       SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
     } else {
-      switch (comm->state) {
+      switch (comm->state_) {
 
         case SIMIX_DONE:
           XBT_DEBUG("Communication %p complete!", synchro.get());
@@ -587,7 +587,7 @@ void SIMIX_comm_finish(smx_activity_t synchro)
           break;
 
         default:
-          xbt_die("Unexpected synchro state in SIMIX_comm_finish: %d", (int)synchro->state);
+          xbt_die("Unexpected synchro state in SIMIX_comm_finish: %d", (int)synchro->state_);
       }
     }
 

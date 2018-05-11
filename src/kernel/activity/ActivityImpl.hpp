@@ -23,9 +23,9 @@ class XBT_PUBLIC ActivityImpl {
 public:
   ActivityImpl();
   virtual ~ActivityImpl();
-  e_smx_state_t state = SIMIX_WAITING; /* State of the activity */
-  std::string name;                    /* Activity name if any */
-  std::list<smx_simcall_t> simcalls;   /* List of simcalls waiting for this activity */
+  e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
+  std::string name_;                    /* Activity name if any */
+  std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
 
   virtual void suspend() = 0;
   virtual void resume()  = 0;
