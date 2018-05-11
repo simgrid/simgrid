@@ -9,6 +9,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
 extern std::ofstream tracing_file;
+// to check if variables were previously set to 0, otherwise paje won't simulate them
+static std::set<std::string> platform_variables;
 
 namespace simgrid {
 namespace instr {
@@ -97,6 +99,26 @@ VariableType::VariableType(std::string name, std::string color, Type* father) : 
 VariableType::~VariableType()
 {
   events_.clear();
+}
+
+void VariableType::instr_event(double now, double delta, const char* resource, double value)
+{
+  /* To trace resource utilization, we use AddEvent and SubEvent only. This implies to add a SetEvent first to set the
+   * initial value of all variables for subsequent adds/subs. If we don't do so, the first AddEvent would be added to a
+   * non-determined value, hence causing analysis problems.
+   */
+
+  // create a key considering the resource and variable
+  std::string key = std::string(resource) + get_name();
+
+  // check if key exists: if it doesn't, set the variable to zero and mark this in the global map.
+  if (platform_variables.find(key) == platform_variables.end()) {
+    setEvent(now, 0);
+    platform_variables.insert(key);
+  }
+
+  addEvent(now, value);
+  subEvent(now + delta, value);
 }
 
 void VariableType::setEvent(double timestamp, double value)

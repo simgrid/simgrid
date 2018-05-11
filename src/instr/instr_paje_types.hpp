@@ -59,6 +59,7 @@ class VariableType : public Type {
 public:
   VariableType(std::string name, std::string color, Type* father);
   ~VariableType();
+  void instr_event(double now, double delta, const char* resource, double value);
   void setEvent(double timestamp, double value);
   void addEvent(double timestamp, double value);
   void subEvent(double timestamp, double value);
