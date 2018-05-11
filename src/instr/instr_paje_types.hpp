@@ -35,12 +35,15 @@ public:
   long long int get_id() { return id_; }
   bool isColored() { return not color_.empty(); }
 
-  Type* byName(std::string name);
-  ContainerType* getOrCreateContainerType(std::string name);
-  EventType* getOrCreateEventType(std::string name);
-  LinkType* getOrCreateLinkType(std::string name, Type* source, Type* dest);
-  StateType* getOrCreateStateType(std::string name);
-  VariableType* getOrCreateVariableType(std::string name, std::string color);
+  Type* by_name(std::string name);
+  LinkType* by_name_or_create(std::string name, Type* source, Type* dest);
+  VariableType* by_name_or_create(std::string name, std::string color);
+
+  template <class T> T* by_name_or_create(std::string name)
+  {
+    auto cont = children_.find(name);
+    return cont == children_.end() ? new T(name, this) : static_cast<T*>(cont->second);
+  }
 
   void setCallingContainer(Container* container) { issuer_ = container; }
 

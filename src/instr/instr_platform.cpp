@@ -100,7 +100,7 @@ static void linkContainers(container_t src, container_t dst, std::set<std::strin
   std::string link_typename = father->type_->get_name() + "-" + src->type_->get_name() +
                               std::to_string(src->type_->get_id()) + "-" + dst->type_->get_name() +
                               std::to_string(dst->type_->get_id());
-  simgrid::instr::LinkType* link = father->type_->getOrCreateLinkType(link_typename, src->type_, dst->type_);
+  simgrid::instr::LinkType* link = father->type_->by_name_or_create(link_typename, src->type_, dst->type_);
   link->setCallingContainer(father);
 
   // register EDGE types for triva configuration
@@ -159,13 +159,13 @@ static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
     simgrid::instr::NetZoneContainer* root = new simgrid::instr::NetZoneContainer(id, 0, nullptr);
 
     if (TRACE_smpi_is_enabled()) {
-      simgrid::instr::Type* mpi = root->type_->getOrCreateContainerType("MPI");
+      simgrid::instr::ContainerType* mpi = root->type_->by_name_or_create<simgrid::instr::ContainerType>("MPI");
       if (not TRACE_smpi_is_grouped())
-        mpi->getOrCreateStateType("MPI_STATE");
-      root->type_->getOrCreateLinkType("MPI_LINK", mpi, mpi);
+        mpi->by_name_or_create<simgrid::instr::StateType>("MPI_STATE");
+      root->type_->by_name_or_create("MPI_LINK", mpi, mpi);
       // TODO See if we can move this to the LoadBalancer plugin
-      root->type_->getOrCreateLinkType("MIGRATE_LINK", mpi, mpi);
-      mpi->getOrCreateStateType("MIGRATE_STATE");
+      root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
+      mpi->by_name_or_create<simgrid::instr::StateType>("MIGRATE_STATE");
     }
 
     if (TRACE_needs_platform()) {
@@ -196,15 +196,15 @@ static void instr_link_on_creation(simgrid::s4u::Link& link)
   container_t container = new simgrid::instr::Container(link.get_name(), "LINK", currentContainer.back());
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    simgrid::instr::VariableType* bandwidth = container->type_->getOrCreateVariableType("bandwidth", "");
+    simgrid::instr::VariableType* bandwidth = container->type_->by_name_or_create("bandwidth", "");
     bandwidth->setCallingContainer(container);
     bandwidth->setEvent(0, link.bandwidth());
-    simgrid::instr::VariableType* latency = container->type_->getOrCreateVariableType("latency", "");
+    simgrid::instr::VariableType* latency = container->type_->by_name_or_create("latency", "");
     latency->setCallingContainer(container);
     latency->setEvent(0, link.latency());
   }
   if (TRACE_uncategorized()) {
-    container->type_->getOrCreateVariableType("bandwidth_used", "0.5 0.5 0.5");
+    container->type_->by_name_or_create("bandwidth_used", "0.5 0.5 0.5");
   }
 }
 
@@ -214,20 +214,20 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   container_t root      = simgrid::instr::Container::getRoot();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    simgrid::instr::VariableType* power = container->type_->getOrCreateVariableType("power", "");
+    simgrid::instr::VariableType* power = container->type_->by_name_or_create("power", "");
     power->setCallingContainer(container);
     power->setEvent(0, host.getSpeed());
   }
 
   if (TRACE_uncategorized())
-    container->type_->getOrCreateVariableType("power_used", "0.5 0.5 0.5");
+    container->type_->by_name_or_create("power_used", "0.5 0.5 0.5");
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
-    simgrid::instr::ContainerType* mpi = container->type_->getOrCreateContainerType("MPI");
-    mpi->getOrCreateStateType("MPI_STATE");
+    simgrid::instr::ContainerType* mpi = container->type_->by_name_or_create<simgrid::instr::ContainerType>("MPI");
+    mpi->by_name_or_create<simgrid::instr::StateType>("MPI_STATE");
     // TODO See if we can move this to the LoadBalancer plugin
-    root->type_->getOrCreateLinkType("MIGRATE_LINK", mpi, mpi);
-    mpi->getOrCreateStateType("MIGRATE_STATE");
+    root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
+    mpi->by_name_or_create<simgrid::instr::StateType>("MIGRATE_STATE");
   }
 }
 
@@ -264,15 +264,16 @@ static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
   container_t container = simgrid::instr::Container::byName(actor->get_host()->get_name());
 
   container->createChild(instr_pid(actor.get()), "ACTOR");
-  simgrid::instr::ContainerType* actor_type = container->type_->getOrCreateContainerType("ACTOR");
-  simgrid::instr::StateType* state          = actor_type->getOrCreateStateType("ACTOR_STATE");
+  simgrid::instr::ContainerType* actor_type =
+      container->type_->by_name_or_create<simgrid::instr::ContainerType>("ACTOR");
+  simgrid::instr::StateType* state = actor_type->by_name_or_create<simgrid::instr::StateType>("ACTOR_STATE");
   state->addEntityValue("suspend", "1 0 1");
   state->addEntityValue("sleep", "1 1 0");
   state->addEntityValue("receive", "1 0 0");
   state->addEntityValue("send", "0 0 1");
   state->addEntityValue("task_execute", "0 1 1");
-  root->type_->getOrCreateLinkType("ACTOR_LINK", actor_type, actor_type);
-  root->type_->getOrCreateLinkType("ACTOR_TASK_LINK", actor_type, actor_type);
+  root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
+  root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
 }
 
 static void instr_actor_on_suspend(simgrid::s4u::ActorPtr actor)
@@ -310,17 +311,17 @@ static void instr_actor_on_migration_end(simgrid::s4u::ActorPtr actor)
 
 static void instr_vm_on_creation(simgrid::s4u::Host& host)
 {
-  container_t container                 = new simgrid::instr::HostContainer(host, currentContainer.back());
-  container_t root                      = simgrid::instr::Container::getRoot();
-  simgrid::instr::ContainerType* msg_vm = container->type_->getOrCreateContainerType("VM");
-  simgrid::instr::StateType* state      = msg_vm->getOrCreateStateType("VM_STATE");
+  container_t container             = new simgrid::instr::HostContainer(host, currentContainer.back());
+  container_t root                  = simgrid::instr::Container::getRoot();
+  simgrid::instr::ContainerType* vm = container->type_->by_name_or_create<simgrid::instr::ContainerType>("VM");
+  simgrid::instr::StateType* state  = vm->by_name_or_create<simgrid::instr::StateType>("VM_STATE");
   state->addEntityValue("suspend", "1 0 1");
   state->addEntityValue("sleep", "1 1 0");
   state->addEntityValue("receive", "1 0 0");
   state->addEntityValue("send", "0 0 1");
   state->addEntityValue("task_execute", "0 1 1");
-  root->type_->getOrCreateLinkType("VM_LINK", msg_vm, msg_vm);
-  root->type_->getOrCreateLinkType("VM_ACTOR_LINK", msg_vm, msg_vm);
+  root->type_->by_name_or_create("VM_LINK", vm, vm);
+  root->type_->by_name_or_create("VM_ACTOR_LINK", vm, vm);
 }
 
 static void instr_vm_on_start(simgrid::s4u::VirtualMachine& vm)
@@ -386,10 +387,10 @@ void instr_define_callbacks()
 static void recursiveNewVariableType(std::string new_typename, std::string color, simgrid::instr::Type* root)
 {
   if (root->get_name() == "HOST" || root->get_name() == "VM")
-    root->getOrCreateVariableType(std::string("p") + new_typename, color);
+    root->by_name_or_create(std::string("p") + new_typename, color);
 
   if (root->get_name() == "LINK")
-    root->getOrCreateVariableType(std::string("b") + new_typename, color);
+    root->by_name_or_create(std::string("b") + new_typename, color);
 
   for (auto elm : root->children_) {
     recursiveNewVariableType(new_typename, color, elm.second);
@@ -405,7 +406,7 @@ static void recursiveNewUserVariableType(std::string father_type, std::string ne
                                          simgrid::instr::Type* root)
 {
   if (root->get_name() == father_type) {
-    root->getOrCreateVariableType(new_typename, color);
+    root->by_name_or_create(new_typename, color);
   }
   for (auto elm : root->children_)
     recursiveNewUserVariableType(father_type, new_typename, color, elm.second);
@@ -419,7 +420,7 @@ void instr_new_user_variable_type(std::string father_type, std::string new_typen
 static void recursiveNewUserStateType(std::string father_type, std::string new_typename, simgrid::instr::Type* root)
 {
   if (root->get_name() == father_type)
-    root->getOrCreateStateType(new_typename);
+    root->by_name_or_create<simgrid::instr::StateType>(new_typename);
 
   for (auto elm : root->children_)
     recursiveNewUserStateType(father_type, new_typename, elm.second);

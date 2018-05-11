@@ -177,7 +177,7 @@ void Type::logDefinition(simgrid::instr::Type* source, simgrid::instr::Type* des
   tracing_file << stream_.str() << std::endl;
 }
 
-Type* Type::byName(std::string name)
+Type* Type::by_name(std::string name)
 {
   Type* ret = nullptr;
   for (auto elm : children_) {
@@ -222,32 +222,14 @@ EntityValue* ValueType::getEntityValue(std::string name)
   return ret->second;
 }
 
-ContainerType* Type::getOrCreateContainerType(std::string name)
-{
-  auto cont = children_.find(name);
-  return cont == children_.end() ? new ContainerType(name, this) : static_cast<ContainerType*>(cont->second);
-}
-
-EventType* Type::getOrCreateEventType(std::string name)
-{
-  auto cont = children_.find(name);
-  return cont == children_.end() ? new EventType(name, this) : static_cast<EventType*>(cont->second);
-}
-
-StateType* Type::getOrCreateStateType(std::string name)
-{
-  auto cont = children_.find(name);
-  return cont == children_.end() ? new StateType(name, this) : static_cast<StateType*>(cont->second);
-}
-
-VariableType* Type::getOrCreateVariableType(std::string name, std::string color)
+VariableType* Type::by_name_or_create(std::string name, std::string color)
 {
   auto cont = children_.find(name);
   std::string mycolor = color.empty() ? "1 1 1" : color;
   return cont == children_.end() ? new VariableType(name, mycolor, this) : static_cast<VariableType*>(cont->second);
 }
 
-LinkType* Type::getOrCreateLinkType(std::string name, Type* source, Type* dest)
+LinkType* Type::by_name_or_create(std::string name, Type* source, Type* dest)
 {
   std::string alias = name + "-" + std::to_string(source->id_) + "-" + std::to_string(dest->id_);
   auto it           = children_.find(alias);

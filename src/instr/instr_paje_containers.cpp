@@ -38,7 +38,8 @@ NetZoneContainer::NetZoneContainer(std::string name, unsigned int level, NetZone
   netpoint_ = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name);
   xbt_assert(netpoint_, "Element '%s' not found", name.c_str());
   if (father_) {
-    type_ = father_->type_->getOrCreateContainerType(std::string("L") + std::to_string(level));
+    std::string type_name = std::string("L") + std::to_string(level);
+    type_                 = father_->type_->by_name_or_create<ContainerType>(type_name);
     father_->children_.insert({get_name(), this});
     logCreation();
   } else {
@@ -78,7 +79,7 @@ Container::Container(std::string name, std::string type_name, Container* father)
     XBT_DEBUG("new container %s, child of %s", name.c_str(), father->name_.c_str());
 
     if (not type_name.empty()) {
-      type_ = father_->type_->getOrCreateContainerType(type_name);
+      type_ = father_->type_->by_name_or_create<ContainerType>(type_name);
       father_->children_.insert({name_, this});
       logCreation();
     }
@@ -207,21 +208,21 @@ void Container::logDestruction()
 
 StateType* Container::getState(std::string name)
 {
-  StateType* ret = dynamic_cast<StateType*>(type_->byName(name));
+  StateType* ret = dynamic_cast<StateType*>(type_->by_name(name));
   ret->setCallingContainer(this);
   return ret;
 }
 
 LinkType* Container::getLink(std::string name)
 {
-  LinkType* ret = dynamic_cast<LinkType*>(type_->byName(name));
+  LinkType* ret = dynamic_cast<LinkType*>(type_->by_name(name));
   ret->setCallingContainer(this);
   return ret;
 }
 
 VariableType* Container::getVariable(std::string name)
 {
-  VariableType* ret = dynamic_cast<VariableType*>(type_->byName(name));
+  VariableType* ret = dynamic_cast<VariableType*>(type_->by_name(name));
   ret->setCallingContainer(this);
   return ret;
 }

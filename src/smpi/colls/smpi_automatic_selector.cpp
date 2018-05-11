@@ -13,7 +13,8 @@
 //attempt to do a quick autotuning version of the collective,
 #define TRACE_AUTO_COLL(cat)                                                                                           \
   if (TRACE_is_enabled()) {                                                                                            \
-    simgrid::instr::EventType* type = simgrid::instr::Container::getRoot()->type_->getOrCreateEventType(#cat);         \
+    simgrid::instr::EventType* type =                                                                                  \
+        simgrid::instr::Container::getRoot()->type_->by_name_or_create<simgrid::instr::EventType>(#cat);               \
                                                                                                                        \
     std::string cont_name = std::string("rank-" + std::to_string(simgrid::s4u::this_actor::get_pid()));                \
     type->addEntityValue(Colls::mpi_coll_##cat##_description[i].name, "1.0 1.0 1.0");                                  \
