@@ -257,10 +257,11 @@ std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()
 
 void Host::execute(double flops)
 {
-  Host* host_list[1]   = {this};
-  double flops_list[1] = {flops};
-  smx_activity_t s     = simcall_execution_parallel_start(nullptr /*name*/, 1, host_list, flops_list,
-                                                      nullptr /*comm_sizes */, -1.0, -1 /*timeout*/);
+  execute(flops, 1.0 /* priority */);
+}
+void Host::execute(double flops, double priority)
+{
+  smx_activity_t s = simcall_execution_start(nullptr, flops, 1 / priority /*priority*/, 0. /*bound*/, this);
   simcall_execution_wait(s);
 }
 

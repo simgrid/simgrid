@@ -119,6 +119,8 @@ public:
    * The actor will not be migrated in this case. Such remote execution are easy in simulation.
    */
   void execute(double flops);
+  /** Block the calling actor on an execution located on the called host (with explicit priority) */
+  void execute(double flops, double priority);
 
   /** @brief Returns the current computation load (in flops per second) */
   double getLoad();

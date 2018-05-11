@@ -270,27 +270,24 @@ XBT_PUBLIC void sleep_until(double timeout)
 
 void execute(double flops)
 {
-  smx_activity_t s = simcall_execution_start(nullptr, flops, 1.0 /*priority*/, 0. /*bound*/, get_host());
-  simcall_execution_wait(s);
+  get_host()->execute(flops);
 }
 
 void execute(double flops, double priority)
 {
-  smx_activity_t s = simcall_execution_start(nullptr, flops, 1 / priority /*priority*/, 0. /*bound*/, get_host());
-  simcall_execution_wait(s);
+  get_host()->execute(flops, priority);
 }
 
-void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double timeout)
+void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount, double timeout)
 {
   smx_activity_t s =
-      simcall_execution_parallel_start(nullptr, host_nb, host_list, flops_amount, bytes_amount, -1, timeout);
+      simcall_execution_parallel_start(nullptr, host_nb, host_list, flops_amount, bytes_amount, /* rate */ -1, timeout);
   simcall_execution_wait(s);
 }
 
 void parallel_execute(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount)
 {
-  smx_activity_t s = simcall_execution_parallel_start(nullptr, host_nb, host_list, flops_amount, bytes_amount, -1, -1);
-  simcall_execution_wait(s);
+  parallel_execute(host_nb, host_list, flops_amount, bytes_amount, /* timeout */ -1);
 }
 
 ExecPtr exec_init(double flops_amount)
