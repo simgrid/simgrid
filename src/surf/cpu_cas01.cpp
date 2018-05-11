@@ -216,10 +216,8 @@ CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool
                 model->get_maxmin_system()->variable_new(this, 1.0 / requested_core, requested_core * speed, 1))
     , requested_core_(requested_core)
 {
-  if (model->get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy) {
+  if (model->get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy)
     set_last_update();
-    set_last_value(0.0);
-  }
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);
 }
 
