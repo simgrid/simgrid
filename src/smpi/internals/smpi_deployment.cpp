@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "SmpiHost.hpp"
+#include "smpi_host.hpp"
 #include "private.hpp"
 #include "simgrid/msg.h" /* barrier */
 #include "simgrid/s4u/Engine.hpp"
@@ -60,7 +60,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
     already_called = 1;
     std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
     for (auto const& host : list) {
-      host->extension_set(new simgrid::smpi::SmpiHost(host));
+      host->extension_set(new simgrid::smpi::Host(host));
     }
   }
 

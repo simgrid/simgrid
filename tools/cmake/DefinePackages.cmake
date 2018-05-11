@@ -221,7 +221,7 @@ set(SMPI_SRC
   src/smpi/internals/smpi_deployment.cpp
   src/smpi/internals/smpi_dvfs.cpp
   src/smpi/internals/smpi_global.cpp
-  src/smpi/internals/SmpiHost.cpp
+  src/smpi/internals/smpi_host.cpp
   src/smpi/internals/smpi_replay.cpp
   src/smpi/internals/smpi_process.cpp
   src/smpi/internals/smpi_utils.cpp
@@ -241,7 +241,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_comm.hpp
   src/smpi/include/smpi_f2c.hpp
   src/smpi/include/smpi_group.hpp
-  src/smpi/include/SmpiHost.hpp
+  src/smpi/include/smpi_host.hpp
   src/smpi/include/smpi_datatype.hpp
   src/smpi/include/smpi_info.hpp
   src/smpi/include/smpi_keyvals.hpp

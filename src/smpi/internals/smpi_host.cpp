@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "SmpiHost.hpp"
+#include "smpi_host.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "smpi_utils.hpp"
 #include "xbt/config.hpp"
@@ -17,9 +17,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_host, smpi, "Logging specific to SMPI (host
 namespace simgrid {
 namespace smpi {
 
-simgrid::xbt::Extension<simgrid::s4u::Host, SmpiHost> SmpiHost::EXTENSION_ID;
+simgrid::xbt::Extension<simgrid::s4u::Host, Host> Host::EXTENSION_ID;
 
-double SmpiHost::orecv(size_t size)
+double Host::orecv(size_t size)
 {
   double current = orecv_parsed_values.empty() ? 0.0 : orecv_parsed_values.front().values[0] +
                                                            orecv_parsed_values.front().values[1] * size;
@@ -42,7 +42,7 @@ double SmpiHost::orecv(size_t size)
   return current;
 }
 
-double SmpiHost::osend(size_t size)
+double Host::osend(size_t size)
 {
   double current =
       osend_parsed_values.empty() ? 0.0 : osend_parsed_values[0].values[0] + osend_parsed_values[0].values[1] * size;
@@ -65,7 +65,7 @@ double SmpiHost::osend(size_t size)
   return current;
 }
 
-double SmpiHost::oisend(size_t size)
+double Host::oisend(size_t size)
 {
   double current =
       oisend_parsed_values.empty() ? 0.0 : oisend_parsed_values[0].values[0] + oisend_parsed_values[0].values[1] * size;
@@ -88,10 +88,10 @@ double SmpiHost::oisend(size_t size)
   return current;
 }
 
-SmpiHost::SmpiHost(simgrid::s4u::Host *ptr) : host(ptr)
+Host::Host(simgrid::s4u::Host *ptr) : host(ptr)
 {
-  if (not SmpiHost::EXTENSION_ID.valid())
-    SmpiHost::EXTENSION_ID = simgrid::s4u::Host::extension_create<SmpiHost>();
+  if (not Host::EXTENSION_ID.valid())
+    Host::EXTENSION_ID = simgrid::s4u::Host::extension_create<Host>();
 
   const char* orecv_string = host->getProperty("smpi/or");
   if (orecv_string != nullptr) {
@@ -115,6 +115,6 @@ SmpiHost::SmpiHost(simgrid::s4u::Host *ptr) : host(ptr)
   }
 }
 
-SmpiHost::~SmpiHost()=default;
+Host::~Host()=default;
 }
 }

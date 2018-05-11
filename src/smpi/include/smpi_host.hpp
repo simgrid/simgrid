@@ -16,7 +16,7 @@
 namespace simgrid {
 namespace smpi {
 
-class SmpiHost {
+class Host {
 
   private:
   std::vector<s_smpi_factor_t> orecv_parsed_values;
@@ -25,10 +25,10 @@ class SmpiHost {
   simgrid::s4u::Host *host = nullptr;
 
   public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, SmpiHost> EXTENSION_ID;
+  static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
 
-  explicit SmpiHost(simgrid::s4u::Host *ptr);
-  ~SmpiHost();
+  explicit Host(simgrid::s4u::Host *ptr);
+  ~Host();
 
   double orecv(size_t size);
   double osend(size_t size);

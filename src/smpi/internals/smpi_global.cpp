@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "SmpiHost.hpp"
+#include "smpi_host.hpp"
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "smpi_coll.hpp"
@@ -465,7 +465,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
   // e.g., not for smpi_msg_masterslave. This should be moved to another location
   // that is always called -- maybe close to Actor::onCreation?
   simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-    host.extension_set(new simgrid::smpi::SmpiHost(&host));
+    host.extension_set(new simgrid::smpi::Host(&host));
   });
 
   // parse the platform file: get the host list

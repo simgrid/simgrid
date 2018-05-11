@@ -5,7 +5,7 @@
 
 #include "smpi_request.hpp"
 
-#include "SmpiHost.hpp"
+#include "smpi_host.hpp"
 #include "mc/mc.h"
 #include "private.hpp"
 #include "smpi_comm.hpp"
@@ -444,8 +444,8 @@ void Request::start()
     if (detached_ != 0 || ((flags_ & (ISEND | SSEND)) != 0)) { // issend should be treated as isend
       // isend and send timings may be different
       sleeptime = ((flags_ & ISEND) != 0)
-                      ? simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::SmpiHost>()->oisend(size_)
-                      : simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::SmpiHost>()->osend(size_);
+                      ? simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->oisend(size_)
+                      : simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->osend(size_);
     }
 
     if(sleeptime > 0.0){
@@ -774,7 +774,7 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     double sleeptime =
-        simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::SmpiHost>()->orecv(req->real_size());
+        simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->orecv(req->real_size());
     if(sleeptime > 0.0){
       simcall_process_sleep(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);
