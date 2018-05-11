@@ -326,7 +326,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   }
   XBT_OUT();
 
-  simgrid::s4u::Link::onCommunicate(action, src, dst);
+  simgrid::s4u::Link::on_communicate(action, src, dst);
   return action;
 }
 
@@ -346,7 +346,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const std::string& nam
   if (policy == s4u::Link::SharingPolicy::FATPIPE)
     get_constraint()->unshare();
 
-  simgrid::s4u::Link::onCreation(this->piface_);
+  simgrid::s4u::Link::on_creation(this->piface_);
 }
 
 void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)

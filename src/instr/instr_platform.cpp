@@ -356,7 +356,7 @@ void instr_define_callbacks()
   if (TRACE_needs_platform()) {
     simgrid::s4u::on_platform_created.connect(instr_on_platform_created);
     simgrid::s4u::Host::onCreation.connect(instr_host_on_creation);
-    simgrid::s4u::Link::onCreation.connect(instr_link_on_creation);
+    simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
   }
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
   simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);

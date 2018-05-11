@@ -78,22 +78,22 @@ public:
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
-  static simgrid::xbt::signal<void(s4u::Link&)> onCreation;
+  static simgrid::xbt::signal<void(s4u::Link&)> on_creation;
 
   /** @brief Callback signal fired when a Link is destroyed */
-  static simgrid::xbt::signal<void(s4u::Link&)> onDestruction;
+  static simgrid::xbt::signal<void(s4u::Link&)> on_destruction;
 
   /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
-  static simgrid::xbt::signal<void(s4u::Link&)> onStateChange;
+  static simgrid::xbt::signal<void(s4u::Link&)> on_state_change;
 
   /** @brief Callback signal fired when the bandwidth of a Link changes */
   static simgrid::xbt::signal<void(s4u::Link&)> on_bandwidth_change;
 
   /** @brief Callback signal fired when a communication starts */
-  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
+  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> on_communicate;
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
-  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> onCommunicationStateChange;
+  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> on_communication_state_change;
 
   XBT_ATTRIB_DEPRECATED_v321("Use get_cname(): v3.21 will turn this warning into an error.") const char* name();
 };

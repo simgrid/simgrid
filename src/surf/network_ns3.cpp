@@ -272,7 +272,7 @@ LinkNS3::LinkNS3(NetworkNS3Model* model, const std::string& name, double bandwid
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;
 
-  s4u::Link::onCreation(this->piface_);
+  s4u::Link::on_creation(this->piface_);
 }
 
 LinkNS3::~LinkNS3() = default;
@@ -328,7 +328,7 @@ NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalB
   port_number++;
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 
-  s4u::Link::onCommunicate(this, src, dst);
+  s4u::Link::on_communicate(this, src, dst);
 }
 
 void NetworkNS3Action::suspend() {

@@ -145,7 +145,7 @@ void LinkImpl::destroy()
 {
   if (not currentlyDestroying_) {
     currentlyDestroying_ = true;
-    s4u::Link::onDestruction(this->piface_);
+    s4u::Link::on_destruction(this->piface_);
     delete this;
   }
 }
@@ -174,14 +174,14 @@ void LinkImpl::turn_on()
 {
   if (is_off()) {
     Resource::turn_on();
-    s4u::Link::onStateChange(this->piface_);
+    s4u::Link::on_state_change(this->piface_);
   }
 }
 void LinkImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-    s4u::Link::onStateChange(this->piface_);
+    s4u::Link::on_state_change(this->piface_);
   }
 }
 
@@ -217,7 +217,7 @@ void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
 void NetworkAction::set_state(Action::State state)
 {
   Action::set_state(state);
-  s4u::Link::onCommunicationStateChange(this);
+  s4u::Link::on_communication_state_change(this);
 }
 
 /** @brief returns a list of all Links that this action is using */

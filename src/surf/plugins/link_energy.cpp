@@ -192,28 +192,24 @@ void sg_link_energy_plugin_init()
 
   xbt_assert(sg_host_count() == 0, "Please call sg_link_energy_plugin_init() before initializing the platform.");
 
-  simgrid::s4u::Link::onCreation.connect([](simgrid::s4u::Link& link) {
-    link.extension_set(new LinkEnergy(&link));
-  });
+  simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) { link.extension_set(new LinkEnergy(&link)); });
 
-  simgrid::s4u::Link::onStateChange.connect([](simgrid::s4u::Link& link) {
-    link.extension<LinkEnergy>()->update();
-  });
+  simgrid::s4u::Link::on_state_change.connect([](simgrid::s4u::Link& link) { link.extension<LinkEnergy>()->update(); });
 
-  simgrid::s4u::Link::onDestruction.connect([](simgrid::s4u::Link& link) {
+  simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link& link) {
     if (strcmp(link.get_cname(), "__loopback__"))
       XBT_INFO("Energy consumption of link '%s': %f Joules", link.get_cname(),
                link.extension<LinkEnergy>()->getConsumedEnergy());
   });
 
-  simgrid::s4u::Link::onCommunicationStateChange.connect([](simgrid::kernel::resource::NetworkAction* action) {
+  simgrid::s4u::Link::on_communication_state_change.connect([](simgrid::kernel::resource::NetworkAction* action) {
     for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
       if (link != nullptr)
         link->piface_.extension<LinkEnergy>()->update();
     }
   });
 
-  simgrid::s4u::Link::onCommunicate.connect(&onCommunicate);
+  simgrid::s4u::Link::on_communicate.connect(&onCommunicate);
   simgrid::s4u::on_simulation_end.connect(&onSimulationEnd);
 }
 
