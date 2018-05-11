@@ -63,10 +63,10 @@ public:
   CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
                  kernel::lmm::Constraint* constraint);
   ~CpuCas01Action() override;
-  int requestedCore();
+  int requested_core();
 
 private:
-  int requestedCore_ = 1;
+  int requested_core_ = 1;
 };
 
 }

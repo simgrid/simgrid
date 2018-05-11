@@ -116,7 +116,7 @@ void CpuCas01::onSpeedChange() {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(var->get_id());
 
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
-                                                            action->requestedCore() * speed_.scale * speed_.peak);
+                                                            action->requested_core() * speed_.scale * speed_.peak);
   }
 
   Cpu::onSpeedChange();
@@ -172,9 +172,9 @@ CpuAction* CpuCas01::execution_start(double size)
   return new CpuCas01Action(get_model(), size, is_off(), speed_.scale * speed_.peak, get_constraint());
 }
 
-CpuAction* CpuCas01::execution_start(double size, int requestedCores)
+CpuAction* CpuCas01::execution_start(double size, int requested_cores)
 {
-  return new CpuCas01Action(get_model(), size, is_off(), speed_.scale * speed_.peak, get_constraint(), requestedCores);
+  return new CpuCas01Action(get_model(), size, is_off(), speed_.scale * speed_.peak, get_constraint(), requested_cores);
 }
 
 CpuAction *CpuCas01::sleep(double duration)
@@ -211,10 +211,10 @@ CpuAction *CpuCas01::sleep(double duration)
  * Action *
  **********/
 CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
-                               kernel::lmm::Constraint* constraint, int requestedCore)
+                               kernel::lmm::Constraint* constraint, int requested_core)
     : CpuAction(model, cost, failed,
-                model->get_maxmin_system()->variable_new(this, 1.0 / requestedCore, requestedCore * speed, 1))
-    , requestedCore_(requestedCore)
+                model->get_maxmin_system()->variable_new(this, 1.0 / requested_core, requested_core * speed, 1))
+    , requested_core_(requested_core)
 {
   if (model->get_update_algorithm() == kernel::resource::Model::UpdateAlgo::Lazy) {
     set_last_update();
@@ -225,13 +225,13 @@ CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool
 
 CpuCas01Action::CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
                                kernel::lmm::Constraint* constraint)
-    : CpuCas01Action(model, cost, failed, speed, constraint, 1)
+    : CpuCas01Action(model, cost, failed, speed, constraint, /* requested_core */ 1)
 {
 }
 
-int CpuCas01Action::requestedCore()
+int CpuCas01Action::requested_core()
 {
-  return requestedCore_;
+  return requested_core_;
 }
 
 CpuCas01Action::~CpuCas01Action()=default;

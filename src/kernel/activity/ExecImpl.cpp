@@ -126,19 +126,19 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
 {
 
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    simgrid::kernel::resource::Action* oldAction = this->surf_action_;
-    simgrid::kernel::resource::Action* newAction = to->pimpl_cpu->execution_start(oldAction->get_cost());
-    newAction->set_remains(oldAction->get_remains());
-    newAction->set_data(this);
-    newAction->set_priority(oldAction->get_priority());
+    simgrid::kernel::resource::Action* old_action = this->surf_action_;
+    simgrid::kernel::resource::Action* new_action = to->pimpl_cpu->execution_start(old_action->get_cost());
+    new_action->set_remains(old_action->get_remains());
+    new_action->set_data(this);
+    new_action->set_priority(old_action->get_priority());
 
     // FIXME: the user-defined bound seem to not be kept by LMM, that seem to overwrite it for the multi-core modeling.
     // I hope that the user did not provide any.
 
-    oldAction->set_data(nullptr);
-    oldAction->cancel();
-    oldAction->unref();
-    this->surf_action_ = newAction;
+    old_action->set_data(nullptr);
+    old_action->cancel();
+    old_action->unref();
+    this->surf_action_ = new_action;
   }
 
   onMigration(this, to);
