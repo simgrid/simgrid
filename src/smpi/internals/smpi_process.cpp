@@ -19,10 +19,10 @@ using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 
 Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
-    : finalization_barrier_(finalization_barrier), process_(actor)
+    : finalization_barrier_(finalization_barrier), actor_(actor)
 {
-  mailbox_         = simgrid::s4u::Mailbox::byName("SMPI-" + std::to_string(process_->get_pid()));
-  mailbox_small_   = simgrid::s4u::Mailbox::byName("small-" + std::to_string(process_->get_pid()));
+  mailbox_         = simgrid::s4u::Mailbox::byName("SMPI-" + std::to_string(actor_->get_pid()));
+  mailbox_small_   = simgrid::s4u::Mailbox::byName("small-" + std::to_string(actor_->get_pid()));
   mailboxes_mutex_ = xbt_mutex_init();
   timer_           = xbt_os_timer_new();
   state_           = SMPI_UNINITIALIZED;
@@ -65,8 +65,8 @@ void Process::set_data(int* argc, char*** argv)
   if (barrier != nullptr) // don't overwrite the current one if the instance has none
     finalization_barrier_ = barrier;
 
-  process_                                                                  = simgrid::s4u::Actor::self();
-  static_cast<simgrid::msg::ActorExt*>(process_->get_impl()->getUserData())->data = this;
+  actor_                                                                        = simgrid::s4u::Actor::self();
+  static_cast<simgrid::msg::ActorExt*>(actor_->get_impl()->getUserData())->data = this;
 
   if (*argc > 3) {
     memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
@@ -77,15 +77,15 @@ void Process::set_data(int* argc, char*** argv)
   argc_ = argc;
   argv_ = argv;
   // set the process attached to the mailbox
-  mailbox_small_->setReceiver(process_);
-  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", process_->get_pid(), process_.get());
+  mailbox_small_->setReceiver(actor_);
+  XBT_DEBUG("<%ld> SMPI process has been initialized: %p", actor_->get_pid(), actor_.get());
 }
 
 /** @brief Prepares the current process for termination. */
 void Process::finalize()
 {
   state_ = SMPI_FINALIZED;
-  XBT_DEBUG("<%ld> Process left the game", process_->get_pid());
+  XBT_DEBUG("<%ld> Process left the game", actor_->get_pid());
 
   // This leads to an explosion of the search graph which cannot be reduced:
   if(MC_is_active() || MC_record_replay_is_active())
@@ -134,8 +134,9 @@ void *Process::get_user_data()
   return data_;
 }
 
-ActorPtr Process::process(){
-  return process_;
+ActorPtr Process::get_actor()
+{
+  return actor_;
 }
 
 /**
@@ -210,7 +211,7 @@ MPI_Comm Process::comm_self()
   if(comm_self_==MPI_COMM_NULL){
     MPI_Group group = new  Group(1);
     comm_self_ = new  Comm(group, nullptr);
-    group->set_mapping(process_, 0);
+    group->set_mapping(actor_, 0);
   }
   return comm_self_;
 }
