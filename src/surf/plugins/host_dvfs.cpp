@@ -303,7 +303,7 @@ void sg_host_dvfs_plugin_init()
 
   sg_host_load_plugin_init();
 
-  simgrid::s4u::Host::onCreation.connect(&on_host_added);
+  simgrid::s4u::Host::on_creation.connect(&on_host_added);
   simgrid::config::declare_flag<double>(
       property_sampling_rate, "How often should the dvfs plugin check whether the frequency needs to be changed?", 0.1);
   simgrid::config::declare_flag<std::string>(

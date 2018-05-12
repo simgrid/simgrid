@@ -58,7 +58,7 @@ static void hostStateChange(s4u::Host& host)
 }
 VMModel::VMModel()
 {
-  s4u::Host::onStateChange.connect(hostStateChange);
+  s4u::Host::on_state_change.connect(hostStateChange);
 }
 
 double VMModel::next_occuring_event(double now)

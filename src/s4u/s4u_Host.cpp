@@ -23,10 +23,10 @@ template class Extendable<simgrid::s4u::Host>;
 
 namespace s4u {
 
-simgrid::xbt::signal<void(Host&)> Host::onCreation;
-simgrid::xbt::signal<void(Host&)> Host::onDestruction;
-simgrid::xbt::signal<void(Host&)> Host::onStateChange;
-simgrid::xbt::signal<void(Host&)> Host::onSpeedChange;
+simgrid::xbt::signal<void(Host&)> Host::on_creation;
+simgrid::xbt::signal<void(Host&)> Host::on_destruction;
+simgrid::xbt::signal<void(Host&)> Host::on_state_change;
+simgrid::xbt::signal<void(Host&)> Host::on_speed_change;
 
 Host::Host(const char* name) : name_(name)
 {
@@ -43,7 +43,7 @@ Host::~Host()
   if (pimpl_netpoint != nullptr) // not removed yet by a children class
     simgrid::s4u::Engine::get_instance()->netpoint_unregister(pimpl_netpoint);
   delete pimpl_cpu;
-  delete mounts;
+  delete mounts_;
 }
 
 /** @brief Fire the required callbacks and destroy the object
@@ -58,7 +58,7 @@ void Host::destroy()
 {
   if (not currentlyDestroying_) {
     currentlyDestroying_ = true;
-    onDestruction(*this);
+    on_destruction(*this);
     Engine::get_instance()->host_unregister(std::string(name_));
     delete this;
   }
@@ -95,7 +95,7 @@ void Host::turnOn()
     simgrid::simix::simcall([this] {
       this->extension<simgrid::simix::Host>()->turnOn();
       this->pimpl_cpu->turn_on();
-      onStateChange(*this);
+      on_state_change(*this);
     });
   }
 }
@@ -106,7 +106,7 @@ void Host::turnOff()
     smx_actor_t self = SIMIX_process_self();
     simgrid::simix::simcall([this, self] {
       SIMIX_host_off(this, self);
-      onStateChange(*this);
+      on_state_change(*this);
     });
   }
 }
@@ -245,13 +245,13 @@ void Host::getAttachedStorages(std::vector<const char*>* storages)
 
 std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()
 {
-  if (mounts == nullptr) {
-    mounts = new std::unordered_map<std::string, Storage*>();
+  if (mounts_ == nullptr) {
+    mounts_ = new std::unordered_map<std::string, Storage*>();
     for (auto const& m : this->pimpl_->storage_) {
-      mounts->insert({m.first, &m.second->piface_});
+      mounts_->insert({m.first, &m.second->piface_});
     }
   }
-  return *mounts;
+  return *mounts_;
 }
 
 void Host::execute(double flops)

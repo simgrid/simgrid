@@ -46,7 +46,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
 
 VirtualMachine::~VirtualMachine()
 {
-  onDestruction(*this);
+  on_destruction(*this);
 
   XBT_DEBUG("destroy %s", get_cname());
 

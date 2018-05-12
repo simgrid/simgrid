@@ -464,9 +464,8 @@ int smpi_main(const char* executable, int argc, char *argv[])
   // TODO This will not be executed in the case where smpi_main is not called,
   // e.g., not for smpi_msg_masterslave. This should be moved to another location
   // that is always called -- maybe close to Actor::onCreation?
-  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-    host.extension_set(new simgrid::smpi::Host(&host));
-  });
+  simgrid::s4u::Host::on_creation.connect(
+      [](simgrid::s4u::Host& host) { host.extension_set(new simgrid::smpi::Host(&host)); });
 
   // parse the platform file: get the host list
   SIMIX_create_environment(argv[1]);

@@ -457,10 +457,10 @@ void sg_host_energy_plugin_init()
 
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
-  simgrid::s4u::Host::onCreation.connect(&onCreation);
-  simgrid::s4u::Host::onStateChange.connect(&onHostChange);
-  simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
-  simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
+  simgrid::s4u::Host::on_creation.connect(&onCreation);
+  simgrid::s4u::Host::on_state_change.connect(&onHostChange);
+  simgrid::s4u::Host::on_speed_change.connect(&onHostChange);
+  simgrid::s4u::Host::on_destruction.connect(&onHostDestruction);
   simgrid::s4u::on_simulation_end.connect(&onSimulationEnd);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }

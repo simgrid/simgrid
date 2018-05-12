@@ -122,12 +122,16 @@ public:
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
   void execute(double flops, double priority);
 
-  /** @brief Returns the current computation load (in flops per second) */
+  /** @brief Returns the current computation load (in flops per second)
+   * The external load (coming from an availability trace) is not taken in account.
+   *
+   * @return      The number of activities currently running on a host (an activity at priority 2 is counted twice).
+   */
   double getLoad();
 
 private:
   simgrid::xbt::string name_{"noname"};
-  std::unordered_map<std::string, Storage*>* mounts = nullptr; // caching
+  std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
 
 public:
   // TODO, this could be a unique_ptr
@@ -138,14 +142,14 @@ public:
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 
   /*** Called on each newly created host */
-  static simgrid::xbt::signal<void(Host&)> onCreation;
+  static simgrid::xbt::signal<void(Host&)> on_creation;
   /*** Called just before destructing an host */
-  static simgrid::xbt::signal<void(Host&)> onDestruction;
+  static simgrid::xbt::signal<void(Host&)> on_destruction;
   /*** Called when the machine is turned on or off (called AFTER the change) */
-  static simgrid::xbt::signal<void(Host&)> onStateChange;
+  static simgrid::xbt::signal<void(Host&)> on_state_change;
   /*** Called when the speed of the machine is changed (called AFTER the change)
    * (either because of a pstate switch or because of an external load event coming from the profile) */
-  static simgrid::xbt::signal<void(Host&)> onSpeedChange;
+  static simgrid::xbt::signal<void(Host&)> on_speed_change;
 };
 }
 } // namespace simgrid::s4u
@@ -153,18 +157,3 @@ public:
 extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */
-
-#if 0
-
-public class Host {
-
-  /**
-   * This method returns the number of tasks currently running on a host.
-   * The external load (coming from an availability trace) is not taken in account.
-   *
-   * @return      The number of tasks currently running on a host.
-   */
-  public native int getLoad();
-
-}
-#endif

@@ -355,7 +355,7 @@ void instr_define_callbacks()
   // properly
   if (TRACE_needs_platform()) {
     simgrid::s4u::on_platform_created.connect(instr_on_platform_created);
-    simgrid::s4u::Host::onCreation.connect(instr_host_on_creation);
+    simgrid::s4u::Host::on_creation.connect(instr_host_on_creation);
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
   }
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
@@ -373,12 +373,12 @@ void instr_define_callbacks()
   }
 
   if (TRACE_vm_is_enabled()) {
-    simgrid::s4u::Host::onCreation.connect(instr_vm_on_creation);
+    simgrid::s4u::Host::on_creation.connect(instr_vm_on_creation);
     simgrid::s4u::VirtualMachine::on_start.connect(instr_vm_on_start);
     simgrid::s4u::VirtualMachine::on_started.connect(instr_vm_on_started);
     simgrid::s4u::VirtualMachine::on_suspend.connect(instr_vm_on_suspend);
     simgrid::s4u::VirtualMachine::on_resume.connect(instr_vm_on_resume);
-    simgrid::s4u::Host::onDestruction.connect(instr_vm_on_destruction);
+    simgrid::s4u::Host::on_destruction.connect(instr_vm_on_destruction);
   }
 }
 /*

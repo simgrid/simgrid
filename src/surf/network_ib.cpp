@@ -92,7 +92,7 @@ void surf_network_model_init_IB()
   all_existing_models->push_back(surf_network_model);
   simgrid::s4u::Link::on_communication_state_change.connect(IB_action_state_changed_callback);
   simgrid::s4u::Link::on_communicate.connect(IB_action_init_callback);
-  simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
+  simgrid::s4u::Host::on_creation.connect(IB_create_host_callback);
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
 

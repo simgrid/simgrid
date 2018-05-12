@@ -177,15 +177,15 @@ void sg_host_load_plugin_init()
 
   /* When attaching a callback into a signal, you can use a lambda as follows, or a regular function as done below */
 
-  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+  simgrid::s4u::Host::on_creation.connect([](simgrid::s4u::Host& host) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
       return;
     host.extension_set(new HostLoad(&host));
   });
 
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
-  simgrid::s4u::Host::onStateChange.connect(&onHostChange);
-  simgrid::s4u::Host::onSpeedChange.connect(&onHostChange);
+  simgrid::s4u::Host::on_state_change.connect(&onHostChange);
+  simgrid::s4u::Host::on_speed_change.connect(&onHostChange);
 }
 
 /** @brief Returns the current load of the host passed as argument

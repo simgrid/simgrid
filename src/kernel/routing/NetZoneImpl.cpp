@@ -59,7 +59,7 @@ simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, std::vector<doubl
     for (auto const& kv : *props)
       res->setProperty(kv.first, kv.second);
 
-  simgrid::s4u::Host::onCreation(*res); // notify the signal
+  simgrid::s4u::Host::on_creation(*res); // notify the signal
 
   return res;
 }

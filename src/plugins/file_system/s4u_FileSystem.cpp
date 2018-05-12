@@ -360,7 +360,7 @@ void sg_storage_file_system_init()
 
   if (not FileDescriptorHostExt::EXTENSION_ID.valid()) {
     FileDescriptorHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<FileDescriptorHostExt>();
-    simgrid::s4u::Host::onCreation.connect(&on_host_creation);
+    simgrid::s4u::Host::on_creation.connect(&on_host_creation);
   }
 }
 

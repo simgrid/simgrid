@@ -209,7 +209,7 @@ void SIMIX_global_init(int *argc, char **argv)
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
     simgrid::s4u::on_platform_created.connect(SIMIX_post_create_environment);
-    simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
+    simgrid::s4u::Host::on_creation.connect([](simgrid::s4u::Host& host) {
       if (host.extension<simgrid::simix::Host>() == nullptr) // another callback to the same signal may have created it
         host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
