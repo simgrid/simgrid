@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (sync
 
 /** @brief creates a semaphore object of the given initial capacity */
 msg_sem_t MSG_sem_init(int initial_value) {
-  return simgrid::simix::kernelImmediate([initial_value] { return SIMIX_sem_init(initial_value); });
+  return simgrid::simix::simcall([initial_value] { return SIMIX_sem_init(initial_value); });
 }
 
 /** @brief locks on a semaphore object */
@@ -34,11 +34,11 @@ msg_error_t MSG_sem_acquire_timeout(msg_sem_t sem, double timeout) {
 
 /** @brief releases the semaphore object */
 void MSG_sem_release(msg_sem_t sem) {
-  simgrid::simix::kernelImmediate([sem] { SIMIX_sem_release(sem); });
+  simgrid::simix::simcall([sem] { SIMIX_sem_release(sem); });
 }
 
 int MSG_sem_get_capacity(msg_sem_t sem) {
-  return simgrid::simix::kernelImmediate([sem] { return SIMIX_sem_get_capacity(sem); });
+  return simgrid::simix::simcall([sem] { return SIMIX_sem_get_capacity(sem); });
 }
 
 void MSG_sem_destroy(msg_sem_t sem) {
@@ -51,7 +51,7 @@ void MSG_sem_destroy(msg_sem_t sem) {
  * But that's a classical semaphore issue, and SimGrid's semaphore are not different to usual ones here.
  */
 int MSG_sem_would_block(msg_sem_t sem) {
-  return simgrid::simix::kernelImmediate([sem] { return SIMIX_sem_would_block(sem); });
+  return simgrid::simix::simcall([sem] { return SIMIX_sem_would_block(sem); });
 }
 
 /*-**** barrier related functions ****-*/

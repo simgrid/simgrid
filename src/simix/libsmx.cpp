@@ -65,7 +65,7 @@ smx_activity_t simcall_execution_start(const char* name, double flops_amount, do
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(std::isfinite(priority), "priority is not finite!");
 
-  return simgrid::simix::kernelImmediate([name, flops_amount, priority, bound, host] {
+  return simgrid::simix::simcall([name, flops_amount, priority, bound, host] {
     return SIMIX_execution_start(name, flops_amount, priority, bound, host);
   });
 }
@@ -101,7 +101,7 @@ smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, s
 
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  return simgrid::simix::kernelImmediate([name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout] {
+  return simgrid::simix::simcall([name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout] {
     return SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, rate, timeout);
   });
 }
@@ -119,9 +119,7 @@ void simcall_execution_cancel(smx_activity_t execution)
       boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
   if (exec->surf_action_ == nullptr) // FIXME: One test fails if I remove this, but I don't get why...
     return;
-  simgrid::simix::kernelImmediate([exec] {
-    exec->cancel();
-  });
+  simgrid::simix::simcall([exec] { exec->cancel(); });
 }
 
 /**
@@ -136,7 +134,7 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(priority), "priority is not finite!");
-  simgrid::simix::kernelImmediate([execution, priority] {
+  simgrid::simix::simcall([execution, priority] {
 
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
@@ -154,7 +152,7 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
  */
 void simcall_execution_set_bound(smx_activity_t execution, double bound)
 {
-  simgrid::simix::kernelImmediate([execution, bound] {
+  simgrid::simix::simcall([execution, bound] {
     simgrid::kernel::activity::ExecImplPtr exec =
         boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(execution);
     exec->set_bound(bound);
@@ -206,7 +204,7 @@ void simcall_process_suspend(smx_actor_t process)
  */
 void simcall_process_set_data(smx_actor_t process, void *data)
 {
-  simgrid::simix::kernelImmediate([process, data] { process->setUserData(data); });
+  simgrid::simix::simcall([process, data] { process->setUserData(data); });
 }
 
 /**
@@ -343,7 +341,7 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
  */
 void simcall_comm_cancel(smx_activity_t synchro)
 {
-  simgrid::simix::kernelImmediate([synchro] {
+  simgrid::simix::simcall([synchro] {
     simgrid::kernel::activity::CommImplPtr comm =
         boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
     comm->cancel();
@@ -389,7 +387,7 @@ void simcall_set_category(smx_activity_t synchro, const char *category)
   if (category == nullptr) {
     return;
   }
-  simgrid::simix::kernelImmediate([synchro, category] { SIMIX_set_category(synchro, category); });
+  simgrid::simix::simcall([synchro, category] { SIMIX_set_category(synchro, category); });
 }
 
 /**
@@ -411,7 +409,7 @@ smx_mutex_t simcall_mutex_init()
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
     xbt_abort();
   }
-  return simgrid::simix::kernelImmediate([] { return new simgrid::kernel::activity::MutexImpl(); });
+  return simgrid::simix::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
 }
 
 /**
@@ -447,7 +445,7 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
  */
 smx_cond_t simcall_cond_init()
 {
-  return simgrid::simix::kernelImmediate([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
+  return simgrid::simix::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
 }
 
 /**

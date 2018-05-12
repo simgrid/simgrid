@@ -92,7 +92,7 @@ Host* Host::current()
 void Host::turnOn()
 {
   if (isOff()) {
-    simgrid::simix::kernelImmediate([this] {
+    simgrid::simix::simcall([this] {
       this->extension<simgrid::simix::Host>()->turnOn();
       this->pimpl_cpu->turn_on();
       onStateChange(*this);
@@ -104,7 +104,7 @@ void Host::turnOff()
 {
   if (isOn()) {
     smx_actor_t self = SIMIX_process_self();
-    simgrid::simix::kernelImmediate([this, self] {
+    simgrid::simix::simcall([this, self] {
       SIMIX_host_off(this, self);
       onStateChange(*this);
     });
@@ -168,7 +168,7 @@ void Host::routeTo(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, 
 /** Get the properties assigned to a host */
 std::map<std::string, std::string>* Host::getProperties()
 {
-  return simgrid::simix::kernelImmediate([this] { return this->pimpl_->getProperties(); });
+  return simgrid::simix::simcall([this] { return this->pimpl_->getProperties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -179,7 +179,7 @@ const char* Host::getProperty(const char* key)
 
 void Host::setProperty(std::string key, std::string value)
 {
-  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
+  simgrid::simix::simcall([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 
 /** Get the processes attached to the host */
@@ -199,8 +199,7 @@ int Host::get_actor_count()
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::getPstateSpeed(int pstate_index)
 {
-  return simgrid::simix::kernelImmediate(
-      [this, pstate_index] { return this->pimpl_cpu->getPstateSpeed(pstate_index); });
+  return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->getPstateSpeed(pstate_index); });
 }
 
 /** @brief Get the peak processor speed (under full load (=1.0), in flops/s), at the current pstate */
@@ -218,7 +217,7 @@ int Host::getCoreCount()
 /** @brief Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::kernelImmediate([this, pstate_index] { this->pimpl_cpu->setPState(pstate_index); });
+  simgrid::simix::simcall([this, pstate_index] { this->pimpl_cpu->setPState(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::getPstate()
@@ -233,13 +232,13 @@ int Host::getPstate()
  */
 std::vector<const char*> Host::get_attached_storages()
 {
-  return simgrid::simix::kernelImmediate([this] { return this->pimpl_->get_attached_storages(); });
+  return simgrid::simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
 }
 
 void Host::getAttachedStorages(std::vector<const char*>* storages)
 {
   std::vector<const char*> local_storages =
-      simgrid::simix::kernelImmediate([this] { return this->pimpl_->get_attached_storages(); });
+      simgrid::simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
   for (auto elm : local_storages)
     storages->push_back(elm);
 }

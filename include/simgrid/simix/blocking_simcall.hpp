@@ -153,8 +153,7 @@ auto kernelAsync(F code)
   typedef decltype(code().get()) T;
 
   // Execute the code in the kernel and get the kernel future:
-  simgrid::kernel::Future<T> future =
-    simgrid::simix::kernelImmediate(std::move(code));
+  simgrid::kernel::Future<T> future = simgrid::simix::simcall(std::move(code));
 
   // Wrap the kernel future in a actor future:
   return simgrid::simix::Future<T>(std::move(future));

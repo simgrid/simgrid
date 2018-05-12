@@ -244,14 +244,14 @@ std::vector<simgrid::kernel::routing::NetPoint*> Engine::get_all_netpoints()
 /** @brief Register a new netpoint to the system */
 void Engine::netpoint_register(simgrid::kernel::routing::NetPoint* point)
 {
-  // simgrid::simix::kernelImmediate([&]{ FIXME: this segfaults in set_thread
+  // simgrid::simix::simcall([&]{ FIXME: this segfaults in set_thread
   pimpl->netpoints_[point->get_name()] = point;
   // });
 }
 /** @brief Unregister a given netpoint */
 void Engine::netpoint_unregister(simgrid::kernel::routing::NetPoint* point)
 {
-  simgrid::simix::kernelImmediate([this, point] {
+  simgrid::simix::simcall([this, point] {
     pimpl->netpoints_.erase(point->get_name());
     delete point;
   });

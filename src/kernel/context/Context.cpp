@@ -80,7 +80,7 @@ void Context::stop()
   this->process_->suspended = 0;
 
   this->iwannadie = false;
-  simgrid::simix::kernelImmediate([this] { SIMIX_process_cleanup(this->process_); });
+  simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->process_); });
   this->iwannadie = true;
 }
 

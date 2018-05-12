@@ -135,7 +135,7 @@ double LinkEnergy::getPower()
 double LinkEnergy::getConsumedEnergy()
 {
   if (lastUpdated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
-    simgrid::simix::kernelImmediate(std::bind(&LinkEnergy::update, this));
+    simgrid::simix::simcall(std::bind(&LinkEnergy::update, this));
   return this->totalEnergy_;
 }
 }

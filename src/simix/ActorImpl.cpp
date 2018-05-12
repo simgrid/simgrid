@@ -814,7 +814,7 @@ smx_actor_t simcall_process_create(const char* name, std::function<void()> code,
   if (name == nullptr)
     name = "";
   smx_actor_t self = SIMIX_process_self();
-  return simgrid::simix::kernelImmediate([name, code, data, host, properties, self] {
+  return simgrid::simix::simcall([name, code, data, host, properties, self] {
     return SIMIX_process_create(name, std::move(code), data, host, properties, self);
   });
 }

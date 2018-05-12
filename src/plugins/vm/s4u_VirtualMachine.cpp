@@ -66,7 +66,7 @@ void VirtualMachine::start()
 {
   on_start(*this);
 
-  simgrid::simix::kernelImmediate([this]() {
+  simgrid::simix::simcall([this]() {
     simgrid::vm::VmHostExt::ensureVmExtInstalled();
 
     simgrid::s4u::Host* pm = this->pimpl_vm_->getPm();
@@ -85,7 +85,7 @@ void VirtualMachine::start()
           total_ramsize_of_vms += ws_vm->getRamsize();
 
       if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
-        XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
+        XBT_WARN("cannot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
                  this->get_cname(), pm->get_cname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
         THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->get_cname(),
                this->get_cname());
@@ -102,7 +102,7 @@ void VirtualMachine::suspend()
 {
   on_suspend(*this);
   smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->suspend(issuer); });
+  simgrid::simix::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
 }
 
 void VirtualMachine::resume()
@@ -114,7 +114,7 @@ void VirtualMachine::resume()
 void VirtualMachine::shutdown()
 {
   smx_actor_t issuer = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+  simgrid::simix::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
   on_shutdown(*this);
 }
 
@@ -134,12 +134,12 @@ simgrid::s4u::Host* VirtualMachine::getPm()
 
 void VirtualMachine::setPm(simgrid::s4u::Host* pm)
 {
-  simgrid::simix::kernelImmediate([this, pm]() { pimpl_vm_->setPm(pm); });
+  simgrid::simix::simcall([this, pm]() { pimpl_vm_->setPm(pm); });
 }
 
 e_surf_vm_state_t VirtualMachine::getState()
 {
-  return simgrid::simix::kernelImmediate([this]() { return pimpl_vm_->getState(); });
+  return simgrid::simix::simcall([this]() { return pimpl_vm_->getState(); });
 }
 
 size_t VirtualMachine::getRamsize()
@@ -179,7 +179,7 @@ void VirtualMachine::setRamsize(size_t ramsize)
  */
 void VirtualMachine::setBound(double bound)
 {
-  simgrid::simix::kernelImmediate([this, bound]() { pimpl_vm_->setBound(bound); });
+  simgrid::simix::simcall([this, bound]() { pimpl_vm_->setBound(bound); });
 }
 
 } // namespace simgrid

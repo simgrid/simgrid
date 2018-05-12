@@ -30,7 +30,7 @@ MailboxPtr Mailbox::byName(const char* name)
 {
   kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::byNameOrNull(name);
   if (mbox == nullptr) {
-    mbox = simix::kernelImmediate([name] { return kernel::activity::MailboxImpl::byNameOrCreate(name); });
+    mbox = simix::simcall([name] { return kernel::activity::MailboxImpl::byNameOrCreate(name); });
   }
   return MailboxPtr(&mbox->piface_, true);
 }
@@ -57,7 +57,7 @@ smx_activity_t Mailbox::front()
 
 void Mailbox::setReceiver(ActorPtr actor)
 {
-  simix::kernelImmediate([this, actor]() { this->pimpl_->setReceiver(actor); });
+  simix::simcall([this, actor]() { this->pimpl_->setReceiver(actor); });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */

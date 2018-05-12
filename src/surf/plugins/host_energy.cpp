@@ -307,7 +307,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 double HostEnergy::getConsumedEnergy()
 {
   if (last_updated < surf_get_clock()) // We need to simcall this as it modifies the environment
-    simgrid::simix::kernelImmediate(std::bind(&HostEnergy::update, this));
+    simgrid::simix::simcall(std::bind(&HostEnergy::update, this));
 
   return total_energy;
 }
@@ -473,7 +473,7 @@ void sg_host_energy_plugin_init()
  */
 void sg_host_energy_update_all()
 {
-  simgrid::simix::kernelImmediate([]() {
+  simgrid::simix::simcall([]() {
     std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
     for (auto const& host : list)
       if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host) == nullptr) // Ignore virtual machines

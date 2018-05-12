@@ -66,12 +66,12 @@ std::cv_status ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, doub
  */
 void ConditionVariable::notify_one()
 {
-  simgrid::simix::kernelImmediate([this]() { cond_->signal(); });
+  simgrid::simix::simcall([this]() { cond_->signal(); });
 }
 
 void ConditionVariable::notify_all()
 {
-  simgrid::simix::kernelImmediate([this]() { cond_->broadcast(); });
+  simgrid::simix::simcall([this]() { cond_->broadcast(); });
 }
 
 void intrusive_ptr_add_ref(ConditionVariable* cond)

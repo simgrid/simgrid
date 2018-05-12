@@ -49,8 +49,7 @@ namespace simix {
  *  More importantly, this enforces a deterministic/reproducible ordering
  *  of the operation with respect to other simcalls.
  */
-template<class F>
-typename std::result_of<F()>::type kernelImmediate(F&& code)
+template <class F> typename std::result_of<F()>::type simcall(F&& code)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall mashalling/unmarshalling/dispatch:

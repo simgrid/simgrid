@@ -70,11 +70,11 @@ double Link::getUsage()
 
 void Link::turnOn()
 {
-  simgrid::simix::kernelImmediate([this]() { this->pimpl_->turn_on(); });
+  simgrid::simix::simcall([this]() { this->pimpl_->turn_on(); });
 }
 void Link::turnOff()
 {
-  simgrid::simix::kernelImmediate([this]() { this->pimpl_->turn_off(); });
+  simgrid::simix::simcall([this]() { this->pimpl_->turn_off(); });
 }
 
 void* Link::getData()
@@ -83,20 +83,20 @@ void* Link::getData()
 }
 void Link::setData(void* d)
 {
-  simgrid::simix::kernelImmediate([this, d]() { this->pimpl_->setData(d); });
+  simgrid::simix::simcall([this, d]() { this->pimpl_->setData(d); });
 }
 
 void Link::setStateTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([this, trace]() { this->pimpl_->setStateTrace(trace); });
+  simgrid::simix::simcall([this, trace]() { this->pimpl_->setStateTrace(trace); });
 }
 void Link::setBandwidthTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([this, trace]() { this->pimpl_->setBandwidthTrace(trace); });
+  simgrid::simix::simcall([this, trace]() { this->pimpl_->setBandwidthTrace(trace); });
 }
 void Link::setLatencyTrace(tmgr_trace_t trace)
 {
-  simgrid::simix::kernelImmediate([this, trace]() { this->pimpl_->setLatencyTrace(trace); });
+  simgrid::simix::simcall([this, trace]() { this->pimpl_->setLatencyTrace(trace); });
 }
 
 const char* Link::getProperty(const char* key)
@@ -105,7 +105,7 @@ const char* Link::getProperty(const char* key)
 }
 void Link::setProperty(std::string key, std::string value)
 {
-  simgrid::simix::kernelImmediate([this, key, value] { this->pimpl_->setProperty(key, value); });
+  simgrid::simix::simcall([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
 } // namespace s4u
 } // namespace simgrid

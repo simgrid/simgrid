@@ -99,7 +99,7 @@ Host* Exec::get_host()
 /** @brief Returns the amount of flops that remain to be done */
 double Exec::get_remaining()
 {
-  return simgrid::simix::kernelImmediate(
+  return simgrid::simix::simcall(
       [this]() { return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
 
@@ -109,7 +109,7 @@ double Exec::get_remaining()
  */
 double Exec::get_remaining_ratio()
 {
-  return simgrid::simix::kernelImmediate([this]() {
+  return simgrid::simix::simcall([this]() {
     return boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->get_remaining_ratio();
   });
 }

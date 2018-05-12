@@ -69,12 +69,12 @@ void Actor::join(double timeout)
 
 void Actor::set_auto_restart(bool autorestart)
 {
-  simgrid::simix::kernelImmediate([this, autorestart]() { pimpl_->auto_restart = autorestart; });
+  simgrid::simix::simcall([this, autorestart]() { pimpl_->auto_restart = autorestart; });
 }
 
 void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data)
 {
-  simgrid::simix::kernelImmediate([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
+  simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
 }
 
 /** @brief Moves the actor to another host
@@ -90,7 +90,7 @@ void Actor::migrate(Host* new_host)
 {
   s4u::Actor::on_migration_start(this);
 
-  simgrid::simix::kernelImmediate([this, new_host]() {
+  simgrid::simix::simcall([this, new_host]() {
     if (pimpl_->waiting_synchro != nullptr) {
       // The actor is blocked on an activity. If it's an exec, migrate it too.
       // FIXME: implement the migration of other kind of activities
@@ -112,7 +112,7 @@ s4u::Host* Actor::get_host()
 
 void Actor::daemonize()
 {
-  simgrid::simix::kernelImmediate([this]() { pimpl_->daemonize(); });
+  simgrid::simix::simcall([this]() { pimpl_->daemonize(); });
 }
 
 bool Actor::is_daemon() const
@@ -148,13 +148,13 @@ void Actor::suspend()
 
 void Actor::resume()
 {
-  simgrid::simix::kernelImmediate([this] { pimpl_->resume(); });
+  simgrid::simix::simcall([this] { pimpl_->resume(); });
   s4u::Actor::on_resume(this);
 }
 
 int Actor::is_suspended()
 {
-  return simgrid::simix::kernelImmediate([this] { return pimpl_->suspended; });
+  return simgrid::simix::simcall([this] { return pimpl_->suspended; });
 }
 
 void Actor::set_kill_time(double time)
@@ -173,7 +173,7 @@ void Actor::kill(aid_t pid)
   smx_actor_t killer  = SIMIX_process_self();
   smx_actor_t process = SIMIX_process_from_PID(pid);
   if (process != nullptr) {
-    simgrid::simix::kernelImmediate([killer, process] { SIMIX_process_kill(process, killer); });
+    simgrid::simix::simcall([killer, process] { SIMIX_process_kill(process, killer); });
   } else {
     std::ostringstream oss;
     oss << "kill: (" << pid << ") - No such actor" << std::endl;
@@ -184,7 +184,7 @@ void Actor::kill(aid_t pid)
 void Actor::kill()
 {
   smx_actor_t process = SIMIX_process_self();
-  simgrid::simix::kernelImmediate(
+  simgrid::simix::simcall(
       [this, process] { SIMIX_process_kill(pimpl_, (pimpl_ == simix_global->maestro_process) ? pimpl_ : process); });
 }
 
@@ -207,28 +207,28 @@ ActorPtr Actor::by_pid(aid_t pid)
 void Actor::kill_all()
 {
   smx_actor_t self = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([&self] { SIMIX_process_killall(self); });
+  simgrid::simix::simcall([&self] { SIMIX_process_killall(self); });
 }
 
 std::map<std::string, std::string>* Actor::get_properties()
 {
-  return simgrid::simix::kernelImmediate([this] { return this->pimpl_->getProperties(); });
+  return simgrid::simix::simcall([this] { return this->pimpl_->getProperties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
 const char* Actor::get_property(const char* key)
 {
-  return simgrid::simix::kernelImmediate([this, key] { return pimpl_->getProperty(key); });
+  return simgrid::simix::simcall([this, key] { return pimpl_->getProperty(key); });
 }
 
 void Actor::set_property(const char* key, const char* value)
 {
-  simgrid::simix::kernelImmediate([this, key, value] { pimpl_->setProperty(key, value); });
+  simgrid::simix::simcall([this, key, value] { pimpl_->setProperty(key, value); });
 }
 
 Actor* Actor::restart()
 {
-  return simgrid::simix::kernelImmediate([this]() { return pimpl_->restart(); });
+  return simgrid::simix::simcall([this]() { return pimpl_->restart(); });
 }
 
 // ***** this_actor *****
@@ -258,7 +258,7 @@ void sleep_for(double duration)
 
 void yield()
 {
-  simgrid::simix::kernelImmediate([] { /* do nothing*/ });
+  simgrid::simix::simcall([] { /* do nothing*/ });
 }
 
 XBT_PUBLIC void sleep_until(double timeout)
@@ -342,20 +342,20 @@ void suspend()
 void resume()
 {
   smx_actor_t process = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([process] { process->resume(); });
+  simgrid::simix::simcall([process] { process->resume(); });
   simgrid::s4u::Actor::on_resume(process->iface());
 }
 
 bool is_suspended()
 {
   smx_actor_t process = SIMIX_process_self();
-  return simgrid::simix::kernelImmediate([process] { return process->suspended; });
+  return simgrid::simix::simcall([process] { return process->suspended; });
 }
 
 void kill()
 {
   smx_actor_t process = SIMIX_process_self();
-  simgrid::simix::kernelImmediate([process] { SIMIX_process_kill(process, process); });
+  simgrid::simix::simcall([process] { SIMIX_process_kill(process, process); });
 }
 
 void on_exit(int_f_pvoid_pvoid_t fun, void* data)
