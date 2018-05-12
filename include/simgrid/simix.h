@@ -167,8 +167,6 @@ XBT_PUBLIC void SIMIX_comm_finish(smx_activity_t synchro);
 /* They can also be called from maestro's context, and they are thread safe.  */
 /******************************************************************************/
 
-XBT_PUBLIC void simcall_call(smx_actor_t process);
-
 /******************************* Host simcalls ********************************/
 XBT_PUBLIC smx_activity_t simcall_execution_start(const char* name, double flops_amount, double priority, double bound,
                                                   sg_host_t host);

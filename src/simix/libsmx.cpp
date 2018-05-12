@@ -33,17 +33,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 #include "popping_bodies.cpp"
 
-void simcall_call(smx_actor_t actor)
-{
-  if (actor != simix_global->maestro_process) {
-    XBT_DEBUG("Yield actor '%s' on simcall %s (%d)", actor->get_cname(), SIMIX_simcall_name(actor->simcall.call),
-              (int)actor->simcall.call);
-    SIMIX_process_yield(actor);
-  } else {
-    SIMIX_simcall_handle(&actor->simcall, 0);
-  }
-}
-
 /**
  * \ingroup simix_process_management
  * \brief Creates a synchro that executes some computation of an host.
