@@ -500,6 +500,12 @@ pid=$!
 exec 3>&-
 wait $pid
 status=$?
+# With dash on Windows WSL/Ubuntu, "wait" sometimes returns early with an exit
+# status of 128. Try again.
+while test $status -eq 128 && kill -0 $pid 2>/dev/null; do
+    wait $pid
+    status=$?
+done
 pid=""
 
 # Keep temporary files on failures to help debugging
