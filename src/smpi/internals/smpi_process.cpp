@@ -236,10 +236,6 @@ int Process::sampling()
   return sampling_;
 }
 
-msg_bar_t Process::finalization_barrier(){
-  return finalization_barrier_;
-}
-
 void Process::init(int *argc, char ***argv){
 
   if (smpi_process_count() == 0) {

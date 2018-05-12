@@ -73,7 +73,6 @@ class Process {
     void set_comm_intra(MPI_Comm comm);
     void set_sampling(int s);
     int sampling();
-    msg_bar_t finalization_barrier();
     static void init(int *argc, char ***argv);
     simgrid::s4u::ActorPtr get_actor();
     int get_optind();
