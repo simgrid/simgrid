@@ -210,16 +210,14 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchr
 
 void simcall_HANDLER_execution_test(smx_simcall_t simcall, smx_activity_t synchro)
 {
-  simcall_execution_test__set__result(simcall, (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING));
-  if (simcall_execution_test__get__result(simcall)) {
+  int res = (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING);
+  if (res) {
     synchro->simcalls_.push_back(simcall);
     SIMIX_execution_finish(synchro);
   } else {
     SIMIX_simcall_answer(simcall);
   }
-  /* If the synchro is already finished then perform the error handling */
-  if (synchro->state_ != SIMIX_RUNNING)
-    SIMIX_execution_finish(synchro);
+  simcall_execution_test__set__result(simcall, res);
 }
 
 void SIMIX_execution_finish(smx_activity_t synchro)

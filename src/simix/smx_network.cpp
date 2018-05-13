@@ -339,19 +339,17 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_activity_t synchro)
   simgrid::kernel::activity::CommImplPtr comm =
       boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(synchro);
 
+  int res;
+
   if (MC_is_active() || MC_record_replay_is_active()){
-    simcall_comm_test__set__result(simcall, comm->src_proc && comm->dst_proc);
-    if (simcall_comm_test__get__result(simcall)){
+    res = comm->src_proc && comm->dst_proc;
+    if (res)
       synchro->state_ = SIMIX_DONE;
-      synchro->simcalls_.push_back(simcall);
-      SIMIX_comm_finish(synchro);
-    } else {
-      SIMIX_simcall_answer(simcall);
-    }
-    return;
+  } else {
+    res = synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING;
   }
 
-  simcall_comm_test__set__result(simcall, (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING));
+  simcall_comm_test__set__result(simcall, res);
   if (simcall_comm_test__get__result(simcall)) {
     synchro->simcalls_.push_back(simcall);
     SIMIX_comm_finish(synchro);
