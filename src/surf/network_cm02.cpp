@@ -9,7 +9,6 @@
 #include "network_cm02.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -59,7 +58,6 @@ void surf_network_model_init_LegrandVelho()
 /* } */
 void surf_network_model_init_CM02()
 {
-
   if (surf_network_model)
     return;
 
@@ -163,17 +161,6 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
 
     NetworkCm02Action* action = static_cast<NetworkCm02Action*>(get_action_heap().pop());
     XBT_DEBUG("Something happened to action %p", action);
-    if (TRACE_is_enabled()) {
-      int n = action->get_variable()->get_number_of_constraint();
-
-      for (int i = 0; i < n; i++){
-        kernel::lmm::Constraint* constraint = action->get_variable()->get_constraint(i);
-        NetworkCm02Link* link       = static_cast<NetworkCm02Link*>(constraint->get_id());
-        double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
-        TRACE_surf_link_set_utilization(link->get_cname(), action->get_category(), value, action->get_last_update(),
-                                        now - action->get_last_update());
-      }
-    }
 
     // if I am wearing a latency hat
     if (action->get_type() == ActionHeap::Type::latency) {
@@ -211,17 +198,7 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
       if (action.latency_ <= 0.0 && not action.is_suspended())
         get_maxmin_system()->update_variable_weight(action.get_variable(), action.weight_);
     }
-    if (TRACE_is_enabled()) {
-      int n = action.get_variable()->get_number_of_constraint();
-      for (int i = 0; i < n; i++) {
-        kernel::lmm::Constraint* constraint = action.get_variable()->get_constraint(i);
-        NetworkCm02Link* link = static_cast<NetworkCm02Link*>(constraint->get_id());
-        TRACE_surf_link_set_utilization(
-            link->get_cname(), action.get_category(),
-            (action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i)),
-            action.get_last_update(), now - action.get_last_update());
-      }
-    }
+
     if (not action.get_variable()->get_number_of_constraint()) {
       /* There is actually no link used, hence an infinite bandwidth. This happens often when using models like
        * vivaldi. In such case, just make sure that the action completes immediately.

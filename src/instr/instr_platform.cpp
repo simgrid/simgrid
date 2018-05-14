@@ -240,6 +240,19 @@ static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
                                       SIMIX_get_clock() - action->get_last_update());
 }
 
+static void instr_link_on_communication_state_change(simgrid::kernel::resource::NetworkAction* action)
+{
+  int n = action->get_variable()->get_number_of_constraint();
+
+  for (int i = 0; i < n; i++) {
+    simgrid::kernel::lmm::Constraint* constraint = action->get_variable()->get_constraint(i);
+    simgrid::kernel::resource::LinkImpl* link = static_cast<simgrid::kernel::resource::LinkImpl*>(constraint->get_id());
+    double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
+    TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(), value,
+                                        action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
+  }
+}
+
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
 {
   if (netpoint->is_router() && TRACE_needs_platform() && TRACE_is_enabled())
@@ -363,6 +376,7 @@ void instr_define_callbacks()
   simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
 
   simgrid::surf::CpuAction::onStateChange.connect(instr_cpu_action_on_state_change);
+  simgrid::s4u::Link::on_communication_state_change.connect(instr_link_on_communication_state_change);
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);
