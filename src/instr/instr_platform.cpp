@@ -13,6 +13,7 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 #include "xbt/graph.h"
@@ -231,6 +232,13 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   }
 }
 
+static void instr_host_on_speed_change(simgrid::s4u::Host* host)
+{
+  simgrid::instr::Container::by_name(host->get_cname())
+      ->get_variable("power")
+      ->set_event(surf_get_clock(), host->getCoreCount() * host->get_available_speed());
+}
+
 static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
                                              simgrid::kernel::resource::Action::State /* previous */)
 {
@@ -251,6 +259,12 @@ static void instr_link_on_communication_state_change(simgrid::kernel::resource::
     TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(), value,
                                         action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
   }
+}
+static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
+{
+  simgrid::instr::Container::by_name(link.get_cname())
+      ->get_variable("bandwidth")
+      ->set_event(surf_get_clock(), sg_bandwidth_factor * link.bandwidth());
 }
 
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
@@ -369,7 +383,9 @@ void instr_define_callbacks()
   if (TRACE_needs_platform()) {
     simgrid::s4u::on_platform_created.connect(instr_on_platform_created);
     simgrid::s4u::Host::onCreation.connect(instr_host_on_creation);
+    simgrid::s4u::Host::onSpeedChange.connect(instr_host_on_speed_change);
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
+    simgrid::s4u::Link::on_bandwidth_change.connect(instr_link_on_bandwidth_change);
   }
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
   simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);

@@ -5,7 +5,6 @@
 
 #include "network_interface.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -177,6 +176,7 @@ void LinkImpl::turn_on()
     s4u::Link::on_state_change(this->piface_);
   }
 }
+
 void LinkImpl::turn_off()
 {
   if (is_on()) {
@@ -187,10 +187,6 @@ void LinkImpl::turn_off()
 
 void LinkImpl::on_bandwidth_change()
 {
-  if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform())
-    instr::Container::by_name(get_cname())
-        ->get_variable("bandwidth")
-        ->set_event(surf_get_clock(), sg_bandwidth_factor * bandwidth_.scale * bandwidth_.peak);
   s4u::Link::on_bandwidth_change(this->piface_);
 }
 
