@@ -13,6 +13,7 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 #include "xbt/graph.h"
@@ -231,6 +232,13 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   }
 }
 
+static void instr_host_on_speed_change(simgrid::s4u::Host& host)
+{
+  simgrid::instr::Container::by_name(host.get_cname())
+      ->get_variable("power")
+      ->set_event(surf_get_clock(), host.getCoreCount() * host.get_available_speed());
+}
+
 static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
                                              simgrid::kernel::resource::Action::State /* previous */)
 {
@@ -238,6 +246,25 @@ static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
   TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
                                       action->get_variable()->get_value(), action->get_last_update(),
                                       SIMIX_get_clock() - action->get_last_update());
+}
+
+static void instr_link_on_communication_state_change(simgrid::kernel::resource::NetworkAction* action)
+{
+  int n = action->get_variable()->get_number_of_constraint();
+
+  for (int i = 0; i < n; i++) {
+    simgrid::kernel::lmm::Constraint* constraint = action->get_variable()->get_constraint(i);
+    simgrid::kernel::resource::LinkImpl* link = static_cast<simgrid::kernel::resource::LinkImpl*>(constraint->get_id());
+    double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
+    TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(), value,
+                                        action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
+  }
+}
+static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
+{
+  simgrid::instr::Container::by_name(link.get_cname())
+      ->get_variable("bandwidth")
+      ->set_event(surf_get_clock(), sg_bandwidth_factor * link.bandwidth());
 }
 
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
@@ -356,13 +383,16 @@ void instr_define_callbacks()
   if (TRACE_needs_platform()) {
     simgrid::s4u::on_platform_created.connect(instr_on_platform_created);
     simgrid::s4u::Host::on_creation.connect(instr_host_on_creation);
+    simgrid::s4u::Host::on_speed_change.connect(instr_host_on_speed_change);
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
+    simgrid::s4u::Link::on_bandwidth_change.connect(instr_link_on_bandwidth_change);
   }
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
   simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);
   simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
 
   simgrid::surf::CpuAction::onStateChange.connect(instr_cpu_action_on_state_change);
+  simgrid::s4u::Link::on_communication_state_change.connect(instr_link_on_communication_state_change);
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);

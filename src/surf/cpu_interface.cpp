@@ -133,10 +133,6 @@ double Cpu::get_available_speed()
 }
 
 void Cpu::onSpeedChange() {
-  if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform())
-    instr::Container::by_name(get_cname())
-        ->get_variable("power")
-        ->set_event(surf_get_clock(), coresAmount_ * speed_.scale * speed_.peak);
   s4u::Host::on_speed_change(*host_);
 }
 

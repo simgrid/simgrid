@@ -90,6 +90,7 @@ public:
   bool isOff() { return not isOn(); }
 
   double getSpeed();
+  double get_available_speed();
   int getCoreCount();
   std::map<std::string, std::string>* getProperties();
   const char* getProperty(const char* key);

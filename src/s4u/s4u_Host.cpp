@@ -207,6 +207,10 @@ double Host::getSpeed()
 {
   return pimpl_cpu->getSpeed(1.0);
 }
+double Host::get_available_speed()
+{
+  return pimpl_cpu->get_available_speed();
+}
 
 /** @brief Returns the number of core of the processor. */
 int Host::getCoreCount()
@@ -409,7 +413,7 @@ int sg_host_core_count(sg_host_t host)
 
 double sg_host_get_available_speed(sg_host_t host)
 {
-  return host->pimpl_cpu->get_available_speed();
+  return host->get_available_speed();
 }
 
 /** @brief Returns the number of power states for a host.
