@@ -3,6 +3,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bf1bdba50440485fbda2ac19f462ccc7)](https://www.codacy.com/app/mquinson/simgrid?utm_source=github.com&amp)
 [![Doc](https://readthedocs.org/projects/pip/badge/?version=stable)](http://simgrid.gforge.inria.fr/simgrid/latest/doc/)
 [![License: LGPL v3][license-badge]](COPYING)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1845/badge)](https://bestpractices.coreinfrastructure.org/projects/1845)
 
 # Welcome to the SimGrid project!
 
