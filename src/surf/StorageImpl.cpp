@@ -16,16 +16,6 @@ simgrid::surf::StorageModel* surf_storage_model = nullptr;
 namespace simgrid {
 namespace surf {
 
-/*************
- * Callbacks *
- *************/
-
-simgrid::xbt::signal<void(StorageImpl*)> storageCreatedCallbacks;
-simgrid::xbt::signal<void(StorageImpl*)> storageDestructedCallbacks;
-simgrid::xbt::signal<void(StorageImpl*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
-simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
-    storageActionStateChangedCallbacks;
-
 /*********
  * Model *
  *********/
@@ -62,7 +52,20 @@ StorageImpl::StorageImpl(kernel::resource::Model* model, std::string name, kerne
 
 StorageImpl::~StorageImpl()
 {
-  storageDestructedCallbacks(this);
+  xbt_assert(currentlyDestroying_, "Don't delete Storages directly. Call destroy() instead.");
+}
+
+/** @brief Fire the required callbacks and destroy the object
+ *
+ * Don't delete directly a Storage, call s->destroy() instead.
+ */
+void StorageImpl::destroy()
+{
+  if (not currentlyDestroying_) {
+    currentlyDestroying_ = true;
+    s4u::Storage::on_destruction(this->piface_);
+    delete this;
+  }
 }
 
 bool StorageImpl::is_used()
@@ -80,16 +83,18 @@ void StorageImpl::turn_on()
 {
   if (is_off()) {
     Resource::turn_on();
-    storageStateChangedCallbacks(this, 0, 1);
+    s4u::Storage::on_state_change(this->piface_);
   }
 }
 void StorageImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
-    storageStateChangedCallbacks(this, 1, 0);
+    s4u::Storage::on_state_change(this->piface_);
   }
 }
+xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
+    StorageAction::on_state_change;
 
 /**********
  * Action *
@@ -98,7 +103,7 @@ void StorageAction::set_state(Action::State state)
 {
   Action::State old = get_state();
   Action::set_state(state);
-  storageActionStateChangedCallbacks(this, old, state);
+  on_state_change(this, old, state);
 }
 }
 }

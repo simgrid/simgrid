@@ -335,11 +335,6 @@ static void on_storage_creation(simgrid::s4u::Storage& st)
   st.extension_set(new FileSystemStorageExt(&st));
 }
 
-static void on_storage_destruction(simgrid::s4u::Storage& st)
-{
-  delete st.extension<FileSystemStorageExt>();
-}
-
 static void on_host_creation(simgrid::s4u::Host& host)
 {
   host.extension_set<FileDescriptorHostExt>(new FileDescriptorHostExt());
@@ -354,8 +349,7 @@ void sg_storage_file_system_init()
 
   if (not FileSystemStorageExt::EXTENSION_ID.valid()) {
     FileSystemStorageExt::EXTENSION_ID = simgrid::s4u::Storage::extension_create<FileSystemStorageExt>();
-    simgrid::s4u::Storage::onCreation.connect(&on_storage_creation);
-    simgrid::s4u::Storage::onDestruction.connect(&on_storage_destruction);
+    simgrid::s4u::Storage::on_creation.connect(&on_storage_creation);
   }
 
   if (not FileDescriptorHostExt::EXTENSION_ID.valid()) {

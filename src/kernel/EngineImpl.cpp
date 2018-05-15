@@ -40,7 +40,7 @@ EngineImpl::~EngineImpl()
 
   for (auto const& kv : storages_)
     if (kv.second)
-      delete kv.second->getImpl();
+      kv.second->getImpl()->destroy();
 }
 }
 }

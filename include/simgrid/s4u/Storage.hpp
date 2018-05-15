@@ -57,11 +57,12 @@ public:
   surf::StorageImpl* getImpl() { return pimpl_; }
 
   /* The signals */
-  /** @brief Callback signal fired when a new Link is created */
-  static simgrid::xbt::signal<void(s4u::Storage&)> onCreation;
-
-  /** @brief Callback signal fired when a Link is destroyed */
-  static simgrid::xbt::signal<void(s4u::Storage&)> onDestruction;
+  /** @brief Callback signal fired when a new Storage is created */
+  static simgrid::xbt::signal<void(s4u::Storage&)> on_creation;
+  /** @brief Callback signal fired when a Storage is destroyed */
+  static simgrid::xbt::signal<void(s4u::Storage&)> on_destruction;
+  /** @brief Callback signal fired when a Storage's state changes */
+  static simgrid::xbt::signal<void(s4u::Storage&)> on_state_change;
 
   Host* attached_to_              = nullptr;
 

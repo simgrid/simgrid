@@ -30,32 +30,13 @@ class StorageAction;
  *************/
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Storage creation *
- * @details Callback functions have the following signature: `void(Storage*)`
- */
-XBT_PUBLIC_DATA simgrid::xbt::signal<void(StorageImpl*)> storageCreatedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Storage destruction *
- * @details Callback functions have the following signature: `void(StoragePtr)`
- */
-XBT_PUBLIC_DATA simgrid::xbt::signal<void(StorageImpl*)> storageDestructedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Storage State changed *
- * @details Callback functions have the following signature: `void(StorageAction *action, int previouslyOn, int
- * currentlyOn)`
- */
-XBT_PUBLIC_DATA simgrid::xbt::signal<void(StorageImpl*, int, int)> storageStateChangedCallbacks;
-
-/** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
  * @details Callback functions have the following signature: `void(StorageAction *action,
  * simgrid::kernel::resource::Action::State old, simgrid::kernel::resource::Action::State current)`
  */
 XBT_PUBLIC_DATA
 simgrid::xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
-    storageActionStateChangedCallbacks;
+    on_state_change;
 
 /*********
  * Model *
@@ -99,6 +80,8 @@ public:
   void turn_on() override;
   void turn_off() override;
 
+  void destroy(); // Must be called instead of the destructor
+
   /**
    * @brief Read a file
    *
@@ -124,6 +107,7 @@ public:
   sg_size_t size_;          // Only used at parsing time then goes to the FileSystemExtension
 
 private:
+  bool currentlyDestroying_ = false;
   // Name of the host to which this storage is attached. Only used at platform parsing time, then the interface stores
   // the Host directly.
   std::string attach_;
@@ -146,6 +130,9 @@ enum e_surf_action_storage_type_t {
  */
 class StorageAction : public kernel::resource::Action {
 public:
+  static xbt::signal<void(StorageAction*, kernel::resource::Action::State, kernel::resource::Action::State)>
+      on_state_change;
+
   /**
    * @brief StorageAction constructor
    *

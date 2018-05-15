@@ -83,8 +83,9 @@ sg_size_t Storage::write(sg_size_t size)
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::onCreation;
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::onDestruction;
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_creation;
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_destruction;
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_state_change;
 
 } /* namespace s4u */
 } /* namespace simgrid */

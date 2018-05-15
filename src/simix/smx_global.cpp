@@ -214,9 +214,9 @@ void SIMIX_global_init(int *argc, char **argv)
         host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
 
-    simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::StorageImpl* storage) {
-      sg_storage_t s = simgrid::s4u::Storage::byName(storage->get_cname());
-      xbt_assert(s != nullptr, "Storage not found for name %s", storage->get_cname());
+    simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage& storage) {
+      sg_storage_t s = simgrid::s4u::Storage::byName(storage.get_cname());
+      xbt_assert(s != nullptr, "Storage not found for name %s", storage.get_cname());
     });
   }
 
