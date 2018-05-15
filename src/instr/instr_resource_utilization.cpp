@@ -30,9 +30,3 @@ void TRACE_surf_resource_set_utilization(const char* type, const char* name, con
     container->get_variable(name)->instr_event(now, delta, resource, value);
   }
 }
-
-/* TRACE_surf_link_set_utilization: entry point from SimGrid */
-void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now, double delta)
-{
-  TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", resource, category, value, now, delta);
-}

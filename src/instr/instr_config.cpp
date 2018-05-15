@@ -119,10 +119,10 @@ static void TRACE_start()
     }
 
     /* output one line comment */
-    dump_comment(TRACE_get_comment());
+    dump_comment(simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT));
 
     /* output comment file */
-    dump_comment_file(TRACE_get_comment_file());
+    dump_comment_file(simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT_FILE));
 
     if (format == "Paje") {
       /* output Pajé header */
@@ -253,16 +253,6 @@ bool TRACE_basic ()
 bool TRACE_display_sizes ()
 {
   return trace_display_sizes && trace_smpi_enabled && trace_enabled;
-}
-
-std::string TRACE_get_comment()
-{
-  return simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT);
-}
-
-std::string TRACE_get_comment_file()
-{
-  return simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT_FILE);
 }
 
 int TRACE_precision ()

@@ -77,7 +77,7 @@ void VariableEvent::print()
   if (trace_format != simgrid::instr::TraceFormat::Paje)
     return;
 
-  stream_ << " " << value;
+  stream_ << " " << value_;
 
   XBT_DEBUG("Dump %s", stream_.str().c_str());
   tracing_file << stream_.str() << std::endl;

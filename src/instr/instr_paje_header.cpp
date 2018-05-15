@@ -7,8 +7,6 @@
 #include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_header, instr, "Paje tracing event system (header)");
-
 extern std::ofstream tracing_file;
 
 static void TRACE_header_PajeDefineContainerType(bool basic)
@@ -244,7 +242,6 @@ static void TRACE_header_PajeNewEvent()
 
 void TRACE_header(bool basic, int size)
 {
-  XBT_DEBUG ("Define paje header");
   TRACE_header_PajeDefineContainerType(basic);
   TRACE_header_PajeDefineVariableType(basic);
   TRACE_header_PajeDefineStateType(basic);

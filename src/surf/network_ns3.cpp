@@ -234,8 +234,8 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
       action->src_->routeTo(action->dst_, route, nullptr);
       for (auto const& link : route)
-        TRACE_surf_link_set_utilization(link->get_cname(), action->get_category(), (data_delta_sent) / delta,
-                                        now - delta, delta);
+        TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
+                                            (data_delta_sent) / delta, now - delta, delta);
 
       action->lastSent_ = sgFlow->sentBytes_;
     }

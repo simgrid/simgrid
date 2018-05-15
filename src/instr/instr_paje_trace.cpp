@@ -27,19 +27,17 @@ void dump_comment_file(std::string filename)
 {
   if (filename.empty())
     return;
-  std::ifstream* fs = new std::ifstream();
-  fs->open(filename.c_str(), std::ifstream::in);
+  std::ifstream fs(filename.c_str(), std::ifstream::in);
 
-  if (fs->fail()) {
+  if (fs.fail())
     THROWF(system_error, 1, "Comment file %s could not be opened for reading.", filename.c_str());
-  }
-  while (not fs->eof()) {
+
+  while (not fs.eof()) {
     std::string line;
-    tracing_file << "# ";
-    std::getline(*fs, line);
-    tracing_file << line;
+    std::getline(fs, line);
+    tracing_file << "# " << line;
   }
-  fs->close();
+  fs.close();
 }
 
 double TRACE_last_timestamp_to_dump = 0;
@@ -55,7 +53,7 @@ void TRACE_paje_dump_buffer(bool force)
       delete event;
     }
     buffer.clear();
-  }else{
+  } else {
     std::vector<simgrid::instr::PajeEvent*>::iterator i = buffer.begin();
     for (auto const& event : buffer) {
       double head_timestamp = event->timestamp_;

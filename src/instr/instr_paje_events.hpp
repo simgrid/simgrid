@@ -53,11 +53,11 @@ public:
 };
 
 class VariableEvent : public PajeEvent {
-  double value;
+  double value_;
 
 public:
   VariableEvent(double timestamp, Container* container, Type* type, e_event_type event_type, double value)
-      : PajeEvent::PajeEvent(container, type, timestamp, event_type), value(value)
+      : PajeEvent::PajeEvent(container, type, timestamp, event_type), value_(value)
   {
   }
   void print() override;

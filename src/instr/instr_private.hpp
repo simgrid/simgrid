@@ -236,11 +236,8 @@ XBT_PUBLIC bool TRACE_smpi_is_computing();
 XBT_PUBLIC bool TRACE_smpi_is_sleeping();
 XBT_PUBLIC bool TRACE_smpi_view_internals();
 
-/* from resource_utilization.c */
 XBT_PRIVATE void TRACE_surf_resource_set_utilization(const char* type, const char* name, const char* resource,
                                                      const char* category, double value, double now, double delta);
-XBT_PRIVATE void TRACE_surf_link_set_utilization(const char* resource, const char* category, double value, double now,
-                                                 double delta);
 
 /* instr_paje.c */
 extern XBT_PRIVATE std::set<std::string> trivaNodeTypes;
@@ -259,8 +256,6 @@ XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(std::string filename);
 XBT_PRIVATE void dump_comment(std::string comment);
 
-XBT_PRIVATE std::string TRACE_get_comment();
-XBT_PRIVATE std::string TRACE_get_comment_file();
 XBT_PRIVATE std::string TRACE_get_filename();
 
 #endif
