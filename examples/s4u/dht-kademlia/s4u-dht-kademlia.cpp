@@ -44,7 +44,7 @@ static int node(int argc, char* argv[])
 
     XBT_VERB("Main loop start");
 
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(std::to_string(node->getId()));
+    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(node->getId()));
 
     while (simgrid::s4u::Engine::get_clock() < deadline) {
       if (node->receive_comm == nullptr)

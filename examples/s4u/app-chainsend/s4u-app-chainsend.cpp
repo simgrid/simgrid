@@ -42,7 +42,7 @@ public:
   unsigned int received_pieces      = 0;
   unsigned int total_pieces         = 0;
 
-  Peer() { me = simgrid::s4u::Mailbox::byName(simgrid::s4u::Host::current()->get_cname()); }
+  Peer() { me = simgrid::s4u::Mailbox::by_name(simgrid::s4u::Host::current()->get_cname()); }
   ~Peer()     = default;
 
   void joinChain()
@@ -146,7 +146,7 @@ public:
     for (int i = 1; i <= hostcount; i++) {
       std::string name = std::string("node-") + std::to_string(i) + ".acme.org";
       XBT_DEBUG("%s", name.c_str());
-      mailboxes.push_back(simgrid::s4u::Mailbox::byName(name));
+      mailboxes.push_back(simgrid::s4u::Mailbox::by_name(name));
     }
   }
 

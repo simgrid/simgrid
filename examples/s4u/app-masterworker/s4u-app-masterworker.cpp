@@ -33,7 +33,7 @@ public:
   {
     for (int i = 0; i < number_of_tasks; i++) { /* For each task to be executed: */
       /* - Select a @ref worker in a round-robin way */
-      mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(i % workers_count));
+      mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i % workers_count));
 
       if (number_of_tasks < 10000 || i % 10000 == 0)
         XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", (std::string("Task_") + std::to_string(i)).c_str(),
@@ -46,7 +46,7 @@ public:
     XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
     for (int i = 0; i < workers_count; i++) {
       /* - Eventually tell all the workers to stop by sending a "finalize" task */
-      mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(i % workers_count));
+      mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i % workers_count));
       mailbox->put(new double(-1.0), 0);
     }
   }
@@ -62,7 +62,7 @@ public:
     xbt_assert(args.size() == 2, "The worker expects a single argument from the XML deployment file: "
                                  "its worker ID (its numerical rank)");
     id      = std::stol(args[1]);
-    mailbox = simgrid::s4u::Mailbox::byName(std::string("worker-") + std::to_string(id));
+    mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(id));
   }
 
   void operator()()

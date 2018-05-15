@@ -15,7 +15,7 @@ static int my_onexit(smx_process_exit_status_t /*status*/, int* pid)
 
 static void sendpid()
 {
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
   int pid                          = simgrid::s4u::this_actor::get_pid();
   double comm_size                 = 100000;
   simgrid::s4u::this_actor::on_exit((int_f_pvoid_pvoid_t)my_onexit, &pid);
@@ -29,7 +29,7 @@ static void sendpid()
 
 static void killall()
 {
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mailbox");
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
   for (int i = 0; i < 3; i++) {
     int* pid = static_cast<int*>(mailbox->get());
     XBT_INFO("Killing process \"%d\".", *pid);

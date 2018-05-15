@@ -21,8 +21,8 @@ using simgrid::s4u::ActorPtr;
 Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
     : finalization_barrier_(finalization_barrier), actor_(actor)
 {
-  mailbox_         = simgrid::s4u::Mailbox::byName("SMPI-" + std::to_string(actor_->get_pid()));
-  mailbox_small_   = simgrid::s4u::Mailbox::byName("small-" + std::to_string(actor_->get_pid()));
+  mailbox_         = simgrid::s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
+  mailbox_small_   = simgrid::s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
   mailboxes_mutex_ = xbt_mutex_init();
   timer_           = xbt_os_timer_new();
   state_           = SMPI_UNINITIALIZED;
@@ -77,7 +77,7 @@ void Process::set_data(int* argc, char*** argv)
   argc_ = argc;
   argv_ = argv;
   // set the process attached to the mailbox
-  mailbox_small_->setReceiver(actor_);
+  mailbox_small_->set_receiver(actor_);
   XBT_DEBUG("<%ld> SMPI process has been initialized: %p", actor_->get_pid(), actor_.get());
 }
 

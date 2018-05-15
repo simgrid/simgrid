@@ -117,26 +117,16 @@ public:
   /** private function, do not use. FIXME: make me protected */
   kernel::activity::MailboxImpl* get_impl() { return pimpl_; }
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const simgrid::xbt::string& getName() const
-  {
-    return get_name();
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_cname()") const char* getCname() const { return get_cname(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_impl()") kernel::activity::MailboxImpl* getImpl()
-  {
-    return get_impl();
-  }
-
   /** @brief Retrieves the name of that mailbox as a C++ string */
   const simgrid::xbt::string& get_name() const;
   /** @brief Retrieves the name of that mailbox as a C string */
   const char* get_cname() const;
 
   /** Retrieve the mailbox associated to the given C string */
-  static MailboxPtr byName(const char *name);
+  static MailboxPtr by_name(const char* name);
 
   /** Retrieve the mailbox associated to the given C++ string */
-  static MailboxPtr byName(std::string name);
+  static MailboxPtr by_name(std::string name);
 
   /** Returns whether the mailbox contains queued communications */
   bool empty();
@@ -153,10 +143,10 @@ public:
    * its host even before he does a recv(). This models the real behavior of TCP
    * and MPI communications, amongst other.
    */
-  void setReceiver(ActorPtr actor);
+  void set_receiver(ActorPtr actor);
 
   /** Return the actor declared as permanent receiver, or nullptr if none **/
-  ActorPtr getReceiver();
+  ActorPtr get_receiver();
 
   /** Creates (but don't start) a data emission to that mailbox */
   CommPtr put_init();
@@ -179,6 +169,30 @@ public:
   void* get(); // FIXME: make a typed template version
   /** Blocking data reception with timeout */
   void* get(double timeout);
+
+  // Deprecated functions
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::set_receiver()") void setReceiver(ActorPtr actor)
+  {
+    set_receiver(actor);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_receiver()") ActorPtr getReceiver() { return get_receiver(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const simgrid::xbt::string& getName() const
+  {
+    return get_name();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_cname()") const char* getCname() const { return get_cname(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_impl()") kernel::activity::MailboxImpl* getImpl()
+  {
+    return get_impl();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(const char* name)
+  {
+    return by_name(name);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(std::string name)
+  {
+    return by_name(name);
+  }
 };
 
 }} // namespace simgrid::s4u

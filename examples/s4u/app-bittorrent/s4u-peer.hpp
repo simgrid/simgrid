@@ -24,7 +24,7 @@ public:
   bool choked_upload   = true;  // Indicates if the peer is choked for the current peer
   bool choked_download = true;  // Indicates if the peer has choked the current peer
 
-  explicit Connection(int id) : id(id), mailbox_(simgrid::s4u::Mailbox::byName(std::to_string(id))){};
+  explicit Connection(int id) : id(id), mailbox_(simgrid::s4u::Mailbox::by_name(std::to_string(id))){};
   ~Connection() = default;
   void addSpeedValue(double speed) { peer_speed = peer_speed * 0.6 + speed * 0.4; }
   bool hasPiece(unsigned int piece) { return bitfield & 1U << piece; }

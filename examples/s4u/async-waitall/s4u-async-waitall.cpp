@@ -40,7 +40,7 @@ public:
     for (int i = 0; i < messages_count; i++) {
 
       std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-      simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
+      simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
       std::string msgName           = std::string("Message ") + std::to_string(i);
       std::string* payload          = new std::string(msgName); // copy the data we send:
                                                                 // 'msgName' is not a stable storage location
@@ -54,7 +54,7 @@ public:
     /* Start sending messages to let the workers know that they should stop */
     for (int i = 0; i < receivers_count; i++) {
       std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-      simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
+      simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
       std::string* payload          = new std::string("finalize"); // Make a copy of the data we will send
 
       simgrid::s4u::CommPtr comm = mbox->put_async(payload, 0);
@@ -79,7 +79,7 @@ public:
   {
     xbt_assert(args.size() == 2, "Expecting one parameter from the XML deployment file but got %zu", args.size());
     std::string mboxName = std::string("receiver-") + args[1];
-    mbox                 = simgrid::s4u::Mailbox::byName(mboxName);
+    mbox                 = simgrid::s4u::Mailbox::by_name(mboxName);
   }
   void operator()()
   {

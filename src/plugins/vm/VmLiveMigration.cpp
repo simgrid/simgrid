@@ -359,7 +359,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
-  simgrid::s4u::MailboxPtr mbox_ctl = simgrid::s4u::Mailbox::byName(
+  simgrid::s4u::MailboxPtr mbox_ctl = simgrid::s4u::Mailbox::by_name(
       std::string("__mbox_mig_ctl:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")");
   delete static_cast<std::string*>(mbox_ctl->get());
   tx->join();

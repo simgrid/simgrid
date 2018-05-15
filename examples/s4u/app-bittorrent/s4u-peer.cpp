@@ -33,7 +33,7 @@ Peer::Peer(std::vector<std::string> args)
   xbt_assert(args.size() == 3 || args.size() == 4, "Wrong number of arguments");
   try {
     id       = std::stoi(args[1]);
-    mailbox_ = simgrid::s4u::Mailbox::byName(std::to_string(id));
+    mailbox_ = simgrid::s4u::Mailbox::by_name(std::to_string(id));
   } catch (std::invalid_argument& ia) {
     throw std::invalid_argument(std::string("Invalid ID:") + args[1].c_str());
   }
@@ -70,7 +70,7 @@ void Peer::operator()()
   if (getPeersFromTracker()) {
     XBT_DEBUG("Got %zu peers from the tracker. Current status is: %s", connected_peers.size(), getStatus().c_str());
     begin_receive_time = simgrid::s4u::Engine::get_clock();
-    mailbox_->setReceiver(simgrid::s4u::Actor::self());
+    mailbox_->set_receiver(simgrid::s4u::Actor::self());
     if (hasFinished()) {
       sendHandshakeToAllPeers();
     } else {
@@ -86,7 +86,7 @@ void Peer::operator()()
 
 bool Peer::getPeersFromTracker()
 {
-  simgrid::s4u::MailboxPtr tracker_mailbox = simgrid::s4u::Mailbox::byName(TRACKER_MAILBOX);
+  simgrid::s4u::MailboxPtr tracker_mailbox = simgrid::s4u::Mailbox::by_name(TRACKER_MAILBOX);
   // Build the task to send to the tracker
   TrackerQuery* peer_request = new TrackerQuery(id, mailbox_);
   try {

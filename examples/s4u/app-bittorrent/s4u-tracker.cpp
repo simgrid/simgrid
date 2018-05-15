@@ -24,7 +24,7 @@ Tracker::Tracker(std::vector<std::string> args)
 
   stream = simgrid::s4u::this_actor::get_host()->extension<HostBittorrent>()->getStream();
 
-  mailbox = simgrid::s4u::Mailbox::byName(TRACKER_MAILBOX);
+  mailbox = simgrid::s4u::Mailbox::by_name(TRACKER_MAILBOX);
 
   XBT_INFO("Tracker launched.");
 }

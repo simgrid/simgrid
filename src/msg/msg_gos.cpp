@@ -263,7 +263,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
                                          double rate)
 {
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
   msg_error_t ret = MSG_OK;
   /* We no longer support getting a task from a specific host */
   if (host)
@@ -313,7 +313,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char* al
 {
   simdata_task_t t_simdata = nullptr;
   msg_process_t myself = MSG_process_self();
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
   TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
@@ -452,7 +452,7 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
  */
 msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
 {
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(name);
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(name);
 
   /* FIXME: these functions are not traceable */
   /* Sanity check */
@@ -778,7 +778,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_error_t ret = MSG_OK;
   simdata_task_t t_simdata = nullptr;
   msg_process_t process = MSG_process_self();
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(alias);
 
   TRACE_msg_task_put_start(task);
 
@@ -858,7 +858,7 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen(const char *alias)
 {
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(alias);
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(alias);
   return mbox->listen() ? 1 : 0;
 }
 
@@ -872,7 +872,7 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_listen_from(const char *alias)
 {
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(alias);
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(alias);
   simgrid::kernel::activity::CommImplPtr comm =
       boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(mbox->front());
 

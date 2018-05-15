@@ -28,13 +28,13 @@ public:
       throw std::invalid_argument(std::string("Processes of this example must have a numerical name, not ") +
                                   ia.what());
     }
-    my_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank));
+    my_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(rank));
     if (rank + 1 == simgrid::s4u::Engine::get_instance()->get_host_count())
       /* The last process, which sends the token back to rank 0 */
-      neighbor_mailbox = simgrid::s4u::Mailbox::byName("0");
+      neighbor_mailbox = simgrid::s4u::Mailbox::by_name("0");
     else
       /* The others processes send to their right neighbor (rank+1) */
-      neighbor_mailbox = simgrid::s4u::Mailbox::byName(std::to_string(rank + 1));
+      neighbor_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(rank + 1));
 
     if (rank == 0) {
       /* The root process (rank 0) first sends the token then waits to receive it back */

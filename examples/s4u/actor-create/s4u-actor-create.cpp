@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_create, "The logging channel used in this
  */
 static void receiver(std::string mailbox_name)
 {
-  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(mailbox_name);
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
   XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->get_cname());
 
@@ -47,8 +47,8 @@ static void receiver(std::string mailbox_name)
 static int forwarder(int argc, char** argv)
 {
   xbt_assert(argc >= 3, "Actor forwarder requires 2 parameters, but got only %d", argc - 1);
-  simgrid::s4u::MailboxPtr in  = simgrid::s4u::Mailbox::byName(argv[1]);
-  simgrid::s4u::MailboxPtr out = simgrid::s4u::Mailbox::byName(argv[2]);
+  simgrid::s4u::MailboxPtr in  = simgrid::s4u::Mailbox::by_name(argv[1]);
+  simgrid::s4u::MailboxPtr out = simgrid::s4u::Mailbox::by_name(argv[2]);
   std::string* msg             = static_cast<std::string*>(in->get());
   XBT_INFO("Forward '%s'.", msg->c_str());
   out->put(msg, msg->size());
@@ -79,7 +79,7 @@ public:
   void operator()() /* This is the main code of the actor */
   {
     XBT_INFO("Hello s4u, I have something to send");
-    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(mbox);
+    simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(mbox);
 
     mailbox->put(new std::string(msg), msg.size());
     XBT_INFO("I'm done. See you.");

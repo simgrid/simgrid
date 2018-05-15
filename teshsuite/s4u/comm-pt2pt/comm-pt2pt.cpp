@@ -51,7 +51,7 @@ static void sender(std::vector<std::string> args)
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     this_actor::sleep_until(test * 5 - 5);
     std::string* mboxName         = new std::string("Test #" + std::to_string(test));
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName->c_str());
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName->c_str());
 
     switch (args[0][test - 1]) {
       case 'r':
@@ -98,7 +98,7 @@ static void receiver(std::vector<std::string> args)
   for (unsigned int test = 1; test <= args[0].size(); test++) {
     this_actor::sleep_until(test * 5 - 5);
     std::string mboxName          = "Test #" + std::to_string(test);
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName.c_str());
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName.c_str());
     void* received                = nullptr;
 
     switch (args[0][test - 1]) {
@@ -123,24 +123,24 @@ static void receiver(std::vector<std::string> args)
         break;
       case 'p':
         XBT_INFO("Test %u: p (regular receive on permanent mailbox)", test);
-        mbox->setReceiver(Actor::self());
+        mbox->set_receiver(Actor::self());
         received = mbox->get();
         break;
       case 'P':
         XBT_INFO("Test %u: P (sleep + regular receive on permanent mailbox)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->setReceiver(Actor::self());
+        mbox->set_receiver(Actor::self());
         received = mbox->get();
         break;
       case 'j':
         XBT_INFO("Test %u: j (irecv on permanent mailbox)", test);
-        mbox->setReceiver(Actor::self());
+        mbox->set_receiver(Actor::self());
         mbox->get_async(&received)->wait();
         break;
       case 'J':
         XBT_INFO("Test %u: J (sleep + irecv on permanent mailbox)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->setReceiver(Actor::self());
+        mbox->set_receiver(Actor::self());
         mbox->get_async(&received)->wait();
         break;
       default:

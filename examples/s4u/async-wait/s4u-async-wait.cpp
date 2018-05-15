@@ -31,7 +31,7 @@ static int sender(int argc, char** argv)
   for (int i = 0; i < messages_count; i++) {
 
     std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
     std::string msgName           = std::string("Message ") + std::to_string(i);
     std::string* payload          = new std::string(msgName); // copy the data we send:
     // 'msgName' is not a stable storage location
@@ -45,7 +45,7 @@ static int sender(int argc, char** argv)
   /* Start sending messages to let the workers know that they should stop */
   for (int i = 0; i < receivers_count; i++) {
     std::string mboxName          = std::string("receiver-") + std::to_string(i % receivers_count);
-    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(mboxName);
+    simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName);
     std::string* payload          = new std::string("finalize"); // Make a copy of the data we will send
 
     simgrid::s4u::CommPtr comm = mbox->put_async(payload, 0);
@@ -69,7 +69,7 @@ static int sender(int argc, char** argv)
 static int receiver(int argc, char** argv)
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(std::string("receiver-") + argv[1]);
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(std::string("receiver-") + argv[1]);
 
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {
