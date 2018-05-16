@@ -41,7 +41,7 @@ static simgrid::config::Flag<bool> trace_enabled{
 
 static simgrid::config::Flag<bool> trace_actor_enabled{
     "tracing/msg/process", // FIXME rename this flag
-    "Trace the behavior of all categorized actors, grouping them by host.\n"
+    "Trace the behavior of all categorized actors, grouping them by host. "
     "Can be used to track actor location if the simulator does actor migration.",
     false};
 
@@ -279,7 +279,7 @@ void TRACE_global_init()
   simgrid::config::declare_flag<std::string>("tracing/filename", "Trace file created by the instrumented SimGrid.",
                                              "simgrid.trace");
   simgrid::config::declare_flag<std::string>(
-      "tracing/smpi/format", "Select trace output format used by SMPI. The default is the 'Paje' format.\n"
+      "tracing/smpi/format", "Select trace output format used by SMPI. The default is the 'Paje' format. "
                              "The 'TI' (Time-Independent) format allows for trace replay.",
       "Paje");
 
