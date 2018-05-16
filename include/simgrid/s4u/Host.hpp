@@ -47,6 +47,16 @@ private:
   bool currentlyDestroying_ = false;
 
 public:
+  /*** Called on each newly created host */
+  static simgrid::xbt::signal<void(Host&)> on_creation;
+  /*** Called just before destructing an host */
+  static simgrid::xbt::signal<void(Host&)> on_destruction;
+  /*** Called when the machine is turned on or off (called AFTER the change) */
+  static simgrid::xbt::signal<void(Host&)> on_state_change;
+  /*** Called when the speed of the machine is changed (called AFTER the change)
+   * (either because of a pstate switch or because of an external load event coming from the profile) */
+  static simgrid::xbt::signal<void(Host&)> on_speed_change;
+
   virtual void destroy();
   // No copy/move
   Host(Host const&) = delete;
@@ -62,12 +72,6 @@ public:
   static s4u::Host* by_name(std::string name);
   /** Retrieves the host on which the current actor is running */
   static s4u::Host* current();
-
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_name()") simgrid::xbt::string const& getName() const
-  {
-    return name_;
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_cname()") const char* getCname() const { return name_.c_str(); }
 
   /** Retrieves the name of that host as a C++ string */
   simgrid::xbt::string const& get_name() const { return name_; }
@@ -130,6 +134,13 @@ public:
    */
   double getLoad();
 
+  // Deprecated functions
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_name()") simgrid::xbt::string const& getName() const
+  {
+    return name_;
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_cname()") const char* getCname() const { return name_.c_str(); }
+
 private:
   simgrid::xbt::string name_{"noname"};
   std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
@@ -141,16 +152,6 @@ public:
   surf::Cpu* pimpl_cpu = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
-
-  /*** Called on each newly created host */
-  static simgrid::xbt::signal<void(Host&)> on_creation;
-  /*** Called just before destructing an host */
-  static simgrid::xbt::signal<void(Host&)> on_destruction;
-  /*** Called when the machine is turned on or off (called AFTER the change) */
-  static simgrid::xbt::signal<void(Host&)> on_state_change;
-  /*** Called when the speed of the machine is changed (called AFTER the change)
-   * (either because of a pstate switch or because of an external load event coming from the profile) */
-  static simgrid::xbt::signal<void(Host&)> on_speed_change;
 };
 }
 } // namespace simgrid::s4u
