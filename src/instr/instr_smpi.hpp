@@ -11,7 +11,6 @@
 #include <string>
 
 /* Helper functions */
-XBT_PRIVATE std::string smpi_container_key(int rank);
 XBT_PRIVATE container_t smpi_container(int rank);
 XBT_PRIVATE void TRACE_smpi_setup_container(int rank, sg_host_t host);
 

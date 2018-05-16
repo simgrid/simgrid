@@ -148,14 +148,9 @@ static const char* instr_find_color(const char* state)
   return ret;
 }
 
-XBT_PRIVATE std::string smpi_container_key(int rank)
-{
-  return std::string("rank-") + std::to_string(rank);
-}
-
 XBT_PRIVATE container_t smpi_container(int rank)
 {
-  return simgrid::instr::Container::by_name(smpi_container_key(rank));
+  return simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(rank));
 }
 
 static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
@@ -231,16 +226,12 @@ void TRACE_smpi_release()
 
 void TRACE_smpi_setup_container(int rank, sg_host_t host)
 {
-  std::string str = smpi_container_key(rank);
-
-  container_t father;
-  if (TRACE_smpi_is_grouped()){
+  container_t father = simgrid::instr::Container::get_root();
+  if (TRACE_smpi_is_grouped()) {
     father = simgrid::instr::Container::by_name_or_null(host->get_name());
-  }else{
-    father = simgrid::instr::Container::get_root();
+    xbt_assert(father != nullptr, "Could not find a parent for mpi rank 'rank-%d' at function %s", rank, __func__);
   }
-  xbt_assert(father != nullptr, "Could not find a parent for mpi rank %s at function %s", str.c_str(), __func__);
-  father->create_child(str, "MPI"); // This container is of type MPI
+  father->create_child(std::string("rank-") + std::to_string(rank), "MPI"); // This container is of type MPI
 }
 
 void TRACE_smpi_init(int rank)
