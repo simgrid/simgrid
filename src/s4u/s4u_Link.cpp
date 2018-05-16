@@ -43,67 +43,67 @@ const char* Link::name()
 {
   return get_cname();
 }
-bool Link::isUsed()
+bool Link::is_used()
 {
   return this->pimpl_->is_used();
 }
 
-double Link::latency()
+double Link::get_latency()
 {
   return this->pimpl_->latency();
 }
 
-double Link::bandwidth()
+double Link::get_bandwidth()
 {
   return this->pimpl_->bandwidth();
 }
 
-Link::SharingPolicy Link::sharingPolicy()
+Link::SharingPolicy Link::get_sharing_policy()
 {
   return this->pimpl_->sharingPolicy();
 }
 
-double Link::getUsage()
+double Link::get_usage()
 {
   return this->pimpl_->get_constraint()->get_usage();
 }
 
-void Link::turnOn()
+void Link::turn_on()
 {
   simgrid::simix::simcall([this]() { this->pimpl_->turn_on(); });
 }
-void Link::turnOff()
+void Link::turn_off()
 {
   simgrid::simix::simcall([this]() { this->pimpl_->turn_off(); });
 }
 
-void* Link::getData()
+void* Link::get_data()
 {
   return this->pimpl_->getData();
 }
-void Link::setData(void* d)
+void Link::set_data(void* d)
 {
   simgrid::simix::simcall([this, d]() { this->pimpl_->setData(d); });
 }
 
-void Link::setStateTrace(tmgr_trace_t trace)
+void Link::set_state_trace(tmgr_trace_t trace)
 {
   simgrid::simix::simcall([this, trace]() { this->pimpl_->setStateTrace(trace); });
 }
-void Link::setBandwidthTrace(tmgr_trace_t trace)
+void Link::set_bandwidth_trace(tmgr_trace_t trace)
 {
   simgrid::simix::simcall([this, trace]() { this->pimpl_->setBandwidthTrace(trace); });
 }
-void Link::setLatencyTrace(tmgr_trace_t trace)
+void Link::set_latency_trace(tmgr_trace_t trace)
 {
   simgrid::simix::simcall([this, trace]() { this->pimpl_->setLatencyTrace(trace); });
 }
 
-const char* Link::getProperty(const char* key)
+const char* Link::get_property(const char* key)
 {
   return this->pimpl_->getProperty(key);
 }
-void Link::setProperty(std::string key, std::string value)
+void Link::set_property(std::string key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->setProperty(key, value); });
 }
@@ -123,23 +123,23 @@ sg_link_t sg_link_by_name(const char* name)
 
 int sg_link_is_shared(sg_link_t link)
 {
-  return (int)link->sharingPolicy();
+  return (int)link->get_sharing_policy();
 }
 double sg_link_bandwidth(sg_link_t link)
 {
-  return link->bandwidth();
+  return link->get_bandwidth();
 }
 double sg_link_latency(sg_link_t link)
 {
-  return link->latency();
+  return link->get_latency();
 }
 void* sg_link_data(sg_link_t link)
 {
-  return link->getData();
+  return link->get_data();
 }
 void sg_link_data_set(sg_link_t link, void* data)
 {
-  link->setData(data);
+  link->set_data(data);
 }
 int sg_link_count()
 {

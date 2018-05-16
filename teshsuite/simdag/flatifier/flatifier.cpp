@@ -84,7 +84,7 @@ static void dump_links()
     simgrid::s4u::Link* link = links[i];
     std::printf("  <link id=\"");
 
-    std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->bandwidth(), link->latency());
+    std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->get_bandwidth(), link->get_latency());
     if (sg_link_is_shared(link)) {
       std::printf("/>\n");
     } else {

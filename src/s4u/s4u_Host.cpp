@@ -561,7 +561,7 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
   std::vector<simgrid::s4u::Link*> vlinks;
   from->routeTo(to, vlinks, nullptr);
   for (auto const& link : vlinks) {
-    double bandwidth = link->bandwidth();
+    double bandwidth = link->get_bandwidth();
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
       min_bandwidth = bandwidth;
   }

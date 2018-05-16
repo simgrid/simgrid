@@ -199,10 +199,10 @@ static void instr_link_on_creation(simgrid::s4u::Link& link)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     simgrid::instr::VariableType* bandwidth = container->type_->by_name_or_create("bandwidth", "");
     bandwidth->set_calling_container(container);
-    bandwidth->set_event(0, link.bandwidth());
+    bandwidth->set_event(0, link.get_bandwidth());
     simgrid::instr::VariableType* latency = container->type_->by_name_or_create("latency", "");
     latency->set_calling_container(container);
-    latency->set_event(0, link.latency());
+    latency->set_event(0, link.get_latency());
   }
   if (TRACE_uncategorized()) {
     container->type_->by_name_or_create("bandwidth_used", "0.5 0.5 0.5");
@@ -264,7 +264,7 @@ static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
 {
   simgrid::instr::Container::by_name(link.get_cname())
       ->get_variable("bandwidth")
-      ->set_event(surf_get_clock(), sg_bandwidth_factor * link.bandwidth());
+      ->set_event(surf_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
 }
 
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
