@@ -3,7 +3,6 @@
 <platform version="4.1">
   <config id="example config">
     <prop id="tracing/uncategorized" value="yes"/>
-    <prop id="tracing/buffer" value="yes"/>
     <prop id="tracing" value="yes"/>
     <prop id="tracing/filename" value="trace-masterworker.trace"/>
     <prop id="tracing/categorized" value="yes"/>

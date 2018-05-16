@@ -1,9 +1,8 @@
 #!/usr/bin/env tesh
 
 p Tracing master/worker application
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
@@ -18,7 +17,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=
 p Tracing master/worker application with xml config
 $ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT ${platfdir}/config_tracing.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
@@ -34,10 +32,9 @@ p Not tracing master/worker application
 $ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
 
 p Testing tracing by process
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes ${platfdir}/small_platform.xml ${srcdir}/../app-masterworker/app-masterworker_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
