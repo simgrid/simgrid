@@ -210,7 +210,7 @@ extern XBT_PRIVATE std::set<std::string> user_link_variables;
 extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 
 /* instr_paje_header.c */
-XBT_PRIVATE void TRACE_header(bool basic, int size);
+XBT_PRIVATE void TRACE_header(bool basic, bool size);
 
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();
@@ -250,7 +250,7 @@ void instr_new_user_state_type(std::string father_type, std::string new_typename
 void instr_new_value_for_user_state_type(std::string new_typename, const char* value, std::string color);
 
 XBT_PRIVATE void TRACE_global_init();
-XBT_PRIVATE void TRACE_help(int detailed);
+XBT_PRIVATE void TRACE_help();
 
 XBT_PRIVATE void TRACE_paje_dump_buffer(bool force);
 XBT_PRIVATE void dump_comment_file(std::string filename);

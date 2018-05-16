@@ -89,7 +89,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
       shall_exit = 1;
     } else if (not strcmp(argv[i], "--help-tracing")) {
-      TRACE_help (1);
+      TRACE_help();
       shall_exit = 1;
     } else {
       argv[j++] = argv[i];

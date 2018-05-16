@@ -196,7 +196,7 @@ static void TRACE_header_PajeResetState(bool basic)
   tracing_file << "%EndEventDef" << std::endl;
 }
 
-static void TRACE_header_PajeStartLink(bool basic, int size)
+static void TRACE_header_PajeStartLink(bool basic, bool size)
 {
   tracing_file << "%EventDef PajeStartLink " << simgrid::instr::PAJE_StartLink << std::endl;
   tracing_file << "%       Time date" << std::endl;
@@ -240,7 +240,7 @@ static void TRACE_header_PajeNewEvent()
   tracing_file << "%EndEventDef" << std::endl;
 }
 
-void TRACE_header(bool basic, int size)
+void TRACE_header(bool basic, bool size)
 {
   TRACE_header_PajeDefineContainerType(basic);
   TRACE_header_PajeDefineVariableType(basic);

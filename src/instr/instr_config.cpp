@@ -23,9 +23,6 @@ std::ofstream tracing_file;
 #define OPT_TRACING_COMMENT_FILE         "tracing/comment-file"
 #define OPT_TRACING_COMMENT              "tracing/comment"
 #define OPT_TRACING_DISABLE_DESTROY      "tracing/disable-destroy"
-#define OPT_TRACING_DISABLE_LINK         "tracing/disable-link"
-#define OPT_TRACING_DISABLE_POWER        "tracing/disable-power"
-#define OPT_TRACING_DISPLAY_SIZES        "tracing/smpi/display-sizes"
 #define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti-one-file"
 #define OPT_TRACING_PLATFORM             "tracing/platform"
 #define OPT_TRACING_SMPI_COMPUTING       "tracing/smpi/computing"
@@ -69,14 +66,16 @@ static simgrid::config::Flag<bool> trace_disable_destroy{
     OPT_TRACING_DISABLE_DESTROY, {"tracing/disable_destroy"}, "Disable platform containers destruction.", false};
 static simgrid::config::Flag<bool> trace_basic{OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
                                                false};
-static simgrid::config::Flag<bool> trace_display_sizes{OPT_TRACING_DISPLAY_SIZES,
-                                                       {"tracing/smpi/display_sizes"},
-                                                       "(smpi only) Extended events with message size information",
-                                                       false};
-static simgrid::config::Flag<bool> trace_disable_link{
-    OPT_TRACING_DISABLE_LINK, {"tracing/disable_link"}, "Do not trace link bandwidth and latency.", false};
-static simgrid::config::Flag<bool> trace_disable_power{
-    OPT_TRACING_DISABLE_POWER, {"tracing/disable_power"}, "Do not trace host power.", false};
+
+static simgrid::config::Flag<bool> trace_display_sizes{
+    "tracing/smpi/display-sizes",
+    "Add message size information (in bytes) to the to links and states (SMPI only). "
+    "For collectives, it usually corresponds to the total number of bytes sent by a process.",
+    false};
+
+static simgrid::config::Flag<bool> trace_disable_link{"tracing/disable_link",
+                                                      "Do not trace link bandwidth and latency.", false};
+static simgrid::config::Flag<bool> trace_disable_power{"tracing/disable_power", "Do not trace host power.", false};
 
 static bool trace_active     = false;
 
@@ -301,73 +300,69 @@ void TRACE_global_init()
   simgrid::s4u::on_simulation_end.connect(TRACE_end);
 }
 
-static void print_line (const char *option, const char *desc, const char *longdesc, int detailed)
+static void print_line(const char* option, const char* desc, const char* longdesc)
 {
   std::string str = std::string("--cfg=") + option + " ";
 
   int len = str.size();
   printf("%s%*.*s %s\n", str.c_str(), 30 - len, 30 - len, "", desc);
-  if (longdesc != nullptr && detailed){
+  if (longdesc != nullptr) {
     printf ("%s\n\n", longdesc);
   }
 }
 
-void TRACE_help (int detailed)
+void TRACE_help()
 {
   printf("Description of the tracing options accepted by this simulator:\n\n");
-  print_line (OPT_TRACING_CATEGORIZED, "Trace categorized resource utilization",
-      "  It activates the categorized resource utilization tracing. It should\n"
-      "  be enabled if tracing categories are used by this simulator.", detailed);
-  print_line (OPT_TRACING_UNCATEGORIZED, "Trace uncategorized resource utilization",
-      "  It activates the uncategorized resource utilization tracing. Use it if\n"
-      "  this simulator do not use tracing categories and resource use have to be\n"
-      "  traced.", detailed);
-  print_line (OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
-      "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
-      "  interface and generates a trace that can be analyzed using Gantt-like\n"
-      "  visualizations. Every MPI function (implemented by SMPI) is transformed in a\n"
-      "  state, and point-to-point communications can be analyzed with arrows.", detailed);
-  print_line (OPT_TRACING_SMPI_GROUP, "Group MPI processes by host (SMPI)",
-      "  This option only has effect if this simulator is SMPI-based. The processes\n"
-      "  are grouped by the hosts where they were executed.", detailed);
-  print_line (OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
-      "  This option aims at tracing computations in the application, outside SMPI\n"
-      "  to allow further study of simulated or real computation time", detailed);
-   print_line (OPT_TRACING_SMPI_SLEEPING, "Generates a \" Sleeping \" State",
-      "  This option aims at tracing sleeps in the application, outside SMPI\n"
-      "  to allow further study of simulated or real sleep time", detailed);
-  print_line (OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
-      "  to point-to-point messages sent by collective communications", detailed);
-  print_line (OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
-      "  This option put some events in a time-ordered buffer using the insertion\n"
-      "  sort algorithm. The process of acquiring and releasing locks to access this\n"
-      "  buffer and the cost of the sorting algorithm make this process slow. The\n"
-      "  simulator performance can be severely impacted if this option is activated,\n"
-      "  but you are sure to get a trace file with events sorted.", detailed);
-  print_line (OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
-      "  Disable the destruction of containers at the end of simulation. This can be\n"
-      "  used with simulators that have a different notion of time (different from\n"
-      "  the simulated time).", detailed);
-  print_line (OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
-      "  Some visualization tools are not able to parse correctly the Paje file format.\n"
-      "  Use this option if you are using one of these tools to visualize the simulation\n"
-      "  trace. Keep in mind that the trace might be incomplete, without all the\n"
-      "  information that would be registered otherwise.", detailed);
-  print_line (OPT_TRACING_DISPLAY_SIZES, "Only works for SMPI now. Add message size information",
-      "  Message size (in bytes) is added to links, and to states. For collectives,\n"
-      "  the displayed value is the more relevant to the collective (total sent by\n"
-      "  the process, usually)", detailed);
-  print_line (OPT_TRACING_FORMAT_TI_ONEFILE, "Only works for SMPI now, and TI output format",
-      "  By default, each process outputs to a separate file, inside a filename_files folder\n"
-      "  By setting this option to yes, all processes will output to only one file\n"
-      "  This is meant to avoid opening thousands of files with large simulations", detailed);
-  print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
-      "  Use this to add a comment line to the top of the trace file.", detailed);
-  print_line (OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
-      "  Use this to add the contents of a file to the top of the trace file as comment.", detailed);
-  print_line (OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
-        "  This option (enabled by default) can be used to disable the tracing of\n"
-        "  the platform topology in the trace file. Sometimes, such task is really\n"
-        "  time consuming, since it must get the route from each host to other hosts\n"
-        "  within the same Autonomous System (AS).", detailed);
+  print_line(OPT_TRACING_CATEGORIZED, "Trace categorized resource utilization",
+             "  It activates the categorized resource utilization tracing. It should\n"
+             "  be enabled if tracing categories are used by this simulator.");
+  print_line(OPT_TRACING_UNCATEGORIZED, "Trace uncategorized resource utilization",
+             "  It activates the uncategorized resource utilization tracing. Use it if\n"
+             "  this simulator do not use tracing categories and resource use have to be\n"
+             "  traced.");
+  print_line(OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
+             "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
+             "  interface and generates a trace that can be analyzed using Gantt-like\n"
+             "  visualizations. Every MPI function (implemented by SMPI) is transformed in a\n"
+             "  state, and point-to-point communications can be analyzed with arrows.");
+  print_line(OPT_TRACING_SMPI_GROUP, "Group MPI processes by host (SMPI)",
+             "  This option only has effect if this simulator is SMPI-based. The processes\n"
+             "  are grouped by the hosts where they were executed.");
+  print_line(OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
+             "  This option aims at tracing computations in the application, outside SMPI\n"
+             "  to allow further study of simulated or real computation time");
+  print_line(OPT_TRACING_SMPI_SLEEPING, "Generates a \" Sleeping \" State",
+             "  This option aims at tracing sleeps in the application, outside SMPI\n"
+             "  to allow further study of simulated or real sleep time");
+  print_line(OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
+             "  to point-to-point messages sent by collective communications");
+  print_line(OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
+             "  This option put some events in a time-ordered buffer using the insertion\n"
+             "  sort algorithm. The process of acquiring and releasing locks to access this\n"
+             "  buffer and the cost of the sorting algorithm make this process slow. The\n"
+             "  simulator performance can be severely impacted if this option is activated,\n"
+             "  but you are sure to get a trace file with events sorted.");
+  print_line(OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
+             "  Disable the destruction of containers at the end of simulation. This can be\n"
+             "  used with simulators that have a different notion of time (different from\n"
+             "  the simulated time).");
+  print_line(OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
+             "  Some visualization tools are not able to parse correctly the Paje file format.\n"
+             "  Use this option if you are using one of these tools to visualize the simulation\n"
+             "  trace. Keep in mind that the trace might be incomplete, without all the\n"
+             "  information that would be registered otherwise.");
+  print_line(OPT_TRACING_FORMAT_TI_ONEFILE, "Only works for SMPI now, and TI output format",
+             "  By default, each process outputs to a separate file, inside a filename_files folder\n"
+             "  By setting this option to yes, all processes will output to only one file\n"
+             "  This is meant to avoid opening thousands of files with large simulations");
+  print_line(OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
+             "  Use this to add a comment line to the top of the trace file.");
+  print_line(OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
+             "  Use this to add the contents of a file to the top of the trace file as comment.");
+  print_line(OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
+             "  This option (enabled by default) can be used to disable the tracing of\n"
+             "  the platform topology in the trace file. Sometimes, such task is really\n"
+             "  time consuming, since it must get the route from each host to other hosts\n"
+             "  within the same Autonomous System (AS).");
 }
