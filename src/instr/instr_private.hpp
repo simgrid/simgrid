@@ -219,6 +219,22 @@ public:
 
   std::string display_size() override { return ""; }
 };
+
+class AmpiMigrateTIData : public TIData {
+  size_t memory_consumption;
+public:
+  explicit AmpiMigrateTIData(size_t memory_conso) : TIData("migrate"), memory_consumption(memory_conso) { };
+
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " " << memory_consumption;
+
+    return stream.str();
+  }
+
+  std::string display_size() override { return ""; }
+};
 }
 }
 
