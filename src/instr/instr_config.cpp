@@ -26,23 +26,27 @@ std::ofstream tracing_file;
 #define OPT_TRACING_DISABLE_LINK         "tracing/disable-link"
 #define OPT_TRACING_DISABLE_POWER        "tracing/disable-power"
 #define OPT_TRACING_DISPLAY_SIZES        "tracing/smpi/display-sizes"
-#define OPT_TRACING_FILENAME             "tracing/filename"
 #define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti-one-file"
-#define OPT_TRACING_FORMAT               "tracing/smpi/format"
-#define OPT_TRACING_ACTOR "tracing/msg/process"
-#define OPT_TRACING_VM "tracing/vm"
 #define OPT_TRACING_PLATFORM             "tracing/platform"
-#define OPT_TRACING_PRECISION            "tracing/precision"
 #define OPT_TRACING_SMPI_COMPUTING       "tracing/smpi/computing"
 #define OPT_TRACING_SMPI_GROUP           "tracing/smpi/group"
 #define OPT_TRACING_SMPI_INTERNALS       "tracing/smpi/internals"
 #define OPT_TRACING_SMPI_SLEEPING        "tracing/smpi/sleeping"
 #define OPT_TRACING_SMPI                 "tracing/smpi"
 #define OPT_TRACING_TOPOLOGY             "tracing/platform/topology"
-#define OPT_TRACING                      "tracing"
 #define OPT_TRACING_UNCATEGORIZED        "tracing/uncategorized"
 
-static simgrid::config::Flag<bool> trace_enabled{OPT_TRACING, "Enable Tracing.", false};
+static simgrid::config::Flag<bool> trace_enabled{
+    "tracing", "Enable the tracing system. You have to enable this option to use other tracing options.", false};
+
+static simgrid::config::Flag<bool> trace_actor_enabled{
+    "tracing/msg/process", // FIXME rename this flag
+    "Trace the behavior of all categorized actors, grouping them by host.\n"
+    "Can be used to track actor location if the simulator does actor migration.",
+    false};
+
+static simgrid::config::Flag<bool> trace_vm_enabled{"tracing/vm", "Trace the behavior of all virtual machines.", false};
+
 static simgrid::config::Flag<bool> trace_platform{OPT_TRACING_PLATFORM,
                                                   "Register the platform in the trace as a hierarchy.", false};
 static simgrid::config::Flag<bool> trace_platform_topology{
@@ -59,8 +63,6 @@ static simgrid::config::Flag<bool> trace_categorized{
     OPT_TRACING_CATEGORIZED, "Tracing categorized resource utilization of hosts and links.", false};
 static simgrid::config::Flag<bool> trace_uncategorized{
     OPT_TRACING_UNCATEGORIZED, "Tracing uncategorized resource utilization of hosts and links.", false};
-static simgrid::config::Flag<bool> trace_actor_enabled{OPT_TRACING_ACTOR, "Tracing of actor behavior.", false};
-static simgrid::config::Flag<bool> trace_vm_enabled{OPT_TRACING_VM, "Tracing of virtual machine behavior.", false};
 static simgrid::config::Flag<bool> trace_buffer{OPT_TRACING_BUFFER,
                                                 "Buffer trace events to put them in temporal order.", true};
 static simgrid::config::Flag<bool> trace_disable_destroy{
@@ -93,7 +95,7 @@ static void TRACE_start()
 
     XBT_DEBUG("Tracing starts");
     /* init the tracing module to generate the right output */
-    std::string format = simgrid::config::get_value<std::string>(OPT_TRACING_FORMAT);
+    std::string format = simgrid::config::get_value<std::string>("tracing/smpi/format");
     XBT_DEBUG("Tracing format %s", format.c_str());
 
     /* open the trace file(s) */
@@ -257,12 +259,12 @@ bool TRACE_display_sizes ()
 
 int TRACE_precision ()
 {
-  return simgrid::config::get_value<int>(OPT_TRACING_PRECISION);
+  return simgrid::config::get_value<int>("tracing/precision");
 }
 
 std::string TRACE_get_filename()
 {
-  return simgrid::config::get_value<std::string>(OPT_TRACING_FILENAME);
+  return simgrid::config::get_value<std::string>("tracing/filename");
 }
 
 void TRACE_global_init()
@@ -274,10 +276,13 @@ void TRACE_global_init()
   is_initialised = true;
 
   /* name of the tracefile */
-  simgrid::config::declare_flag<std::string>(OPT_TRACING_FILENAME, "Trace file created by the instrumented SimGrid.",
+  simgrid::config::declare_flag<std::string>("tracing/filename", "Trace file created by the instrumented SimGrid.",
                                              "simgrid.trace");
-  simgrid::config::declare_flag<std::string>(OPT_TRACING_FORMAT, "(smpi only) Switch the output format of Tracing",
-                                             "Paje");
+  simgrid::config::declare_flag<std::string>(
+      "tracing/smpi/format", "Select trace output format used by SMPI. The default is the 'Paje' format.\n"
+                             "The 'TI' (Time-Independent) format allows for trace replay.",
+      "Paje");
+
   simgrid::config::declare_flag<bool>(OPT_TRACING_FORMAT_TI_ONEFILE,
                                       "(smpi only) For replay format only : output to one file only", false);
   simgrid::config::alias(OPT_TRACING_FORMAT_TI_ONEFILE, {"tracing/smpi/format/ti_one_file"});
@@ -286,8 +291,8 @@ void TRACE_global_init()
   simgrid::config::declare_flag<std::string>(
       OPT_TRACING_COMMENT_FILE, "The contents of the file are added to the top of the trace file as comment.", "");
   simgrid::config::alias(OPT_TRACING_COMMENT_FILE, {"tracing/comment_file"});
-  simgrid::config::declare_flag<int>(OPT_TRACING_PRECISION, "Numerical precision used when timestamping events "
-                                                            "(expressed in number of digits after decimal point)",
+  simgrid::config::declare_flag<int>("tracing/precision", "Numerical precision used when timestamping events "
+                                                          "(expressed in number of digits after decimal point)",
                                      6);
 
   /* Connect callbacks */
@@ -310,9 +315,6 @@ static void print_line (const char *option, const char *desc, const char *longde
 void TRACE_help (int detailed)
 {
   printf("Description of the tracing options accepted by this simulator:\n\n");
-  print_line (OPT_TRACING, "Enable the tracing system",
-      "  It activates the tracing system and register the simulation platform\n"
-      "  in the trace file. You have to enable this option to others take effect.", detailed);
   print_line (OPT_TRACING_CATEGORIZED, "Trace categorized resource utilization",
       "  It activates the categorized resource utilization tracing. It should\n"
       "  be enabled if tracing categories are used by this simulator.", detailed);
@@ -320,13 +322,6 @@ void TRACE_help (int detailed)
       "  It activates the uncategorized resource utilization tracing. Use it if\n"
       "  this simulator do not use tracing categories and resource use have to be\n"
       "  traced.", detailed);
-  print_line(OPT_TRACING_FILENAME, "Filename to register traces",
-             "  A file with this name will be created to register the simulation. The file\n"
-             "  is in the Paje format and can be analyzed using Paje, and PajeNG visualization\n"
-             "  tools. More information can be found in these webpages:\n"
-             "     http://github.com/schnorr/pajeng/\n"
-             "     http://paje.sourceforge.net/",
-             detailed);
   print_line (OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
       "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
       "  interface and generates a trace that can be analyzed using Gantt-like\n"
@@ -343,11 +338,6 @@ void TRACE_help (int detailed)
       "  to allow further study of simulated or real sleep time", detailed);
   print_line (OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
       "  to point-to-point messages sent by collective communications", detailed);
-  print_line(OPT_TRACING_ACTOR, "Trace actor behavior",
-             "  This option traces the behavior of all categorized actors, grouping them\n"
-             "  by hosts. This option can be used to track actor location if the simulator\n"
-             "  does actor migration.",
-             detailed);
   print_line (OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
       "  This option put some events in a time-ordered buffer using the insertion\n"
       "  sort algorithm. The process of acquiring and releasing locks to access this\n"
@@ -367,9 +357,6 @@ void TRACE_help (int detailed)
       "  Message size (in bytes) is added to links, and to states. For collectives,\n"
       "  the displayed value is the more relevant to the collective (total sent by\n"
       "  the process, usually)", detailed);
-  print_line (OPT_TRACING_FORMAT, "Only works for SMPI now. Switch output format",
-      "  Default format is Paje. Time independent traces are also supported,\n"
-      "  to output traces that can later be used by the trace replay tool", detailed);
   print_line (OPT_TRACING_FORMAT_TI_ONEFILE, "Only works for SMPI now, and TI output format",
       "  By default, each process outputs to a separate file, inside a filename_files folder\n"
       "  By setting this option to yes, all processes will output to only one file\n"
