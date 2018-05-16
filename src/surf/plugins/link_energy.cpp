@@ -88,7 +88,7 @@ void LinkEnergy::initWattsRangeList()
     return;
   inited_ = true;
 
-  const char* all_power_values_str = this->link_->getProperty("watt_range");
+  const char* all_power_values_str = this->link_->get_property("watt_range");
 
   if (all_power_values_str == nullptr)
     return;
@@ -126,7 +126,7 @@ double LinkEnergy::getPower()
 
   double power_slope = busy_ - idle_;
 
-  double normalized_link_usage = link_->getUsage() / link_->bandwidth();
+  double normalized_link_usage = link_->get_usage() / link_->get_bandwidth();
   double dynamic_power         = power_slope * normalized_link_usage;
 
   return idle_ + dynamic_power;

@@ -40,41 +40,36 @@ public:
   /** @brief Retrieves the name of that link as a C string */
   const char* get_cname() const;
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::by_name()") static Link* byName(const char* name) { return by_name(name); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_name()") const std::string& getName() const { return get_name(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_cname()") const char* getCname() const { return get_cname(); }
-
   /** @brief Get the bandwidth in bytes per second of current Link */
-  double bandwidth();
+  double get_bandwidth();
 
   /** @brief Get the latency in seconds of current Link */
-  double latency();
+  double get_latency();
 
-  /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: SPLITDUPLEX)
-   */
-  SharingPolicy sharingPolicy();
+  /** @brief Describes how the link is shared between flows */
+  SharingPolicy get_sharing_policy();
 
   /** @brief Returns the current load (in flops per second) */
-  double getUsage();
+  double get_usage();
 
-  /** @brief Check if the Link is used */
-  bool isUsed();
+  /** @brief Check if the Link is used (at least one flow uses the link) */
+  bool is_used();
 
-  void turnOn();
-  void turnOff();
+  void turn_on();
+  void turn_off();
 
-  void* getData();
-  void setData(void* d);
+  void* get_data(); /** Should be used only from the C interface. Prefer extensions in C++ */
+  void set_data(void* d);
 
-  void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain
-                                             boolean values. */
-  void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to
+  void set_state_trace(tmgr_trace_t trace);     /*< setup the trace file with states events (ON or OFF). Trace must contain
+                                                  boolean values. */
+  void set_bandwidth_trace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to
                                                   external load). Trace must contain percentages (value between 0 and 1). */
-  void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to
-                                               external load). Trace must contain absolute values */
+  void set_latency_trace(tmgr_trace_t trace);   /*< setup the trace file with latency events (peak latency changes due to
+                                                  external load). Trace must contain absolute values */
 
-  const char* getProperty(const char* key);
-  void setProperty(std::string key, std::string value);
+  const char* get_property(const char* key);
+  void set_property(std::string key, std::string value);
 
   /* The signals */
   /** @brief Callback signal fired when a new Link is created */
@@ -95,7 +90,29 @@ public:
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> on_communication_state_change;
 
+  // Deprecated methods
   XBT_ATTRIB_DEPRECATED_v321("Use get_cname(): v3.21 will turn this warning into an error.") const char* name();
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::by_name()") static Link* byName(const char* name) { return by_name(name); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_name()") const std::string& getName() const { return get_name(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_cname()") const char* getCname() const { return get_cname(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_sharing_policy()") SharingPolicy sharingPolicy() {return get_sharing_policy();}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_usage()") double getUsage() {return get_usage();}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::is_used()") bool isUsed() {return is_used();}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth()") double bandwidth() {return get_bandwidth();}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency()") double latency() {return get_latency();}
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::turn_on()") void turnOn() {turn_on();}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::turn_off()") void turnOff() {turn_off();}
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_property()") const char* getProperty(const char* key) {return get_property(key);}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_property()") void setProperty(std::string key, std::string value) {set_property(key, value);}
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_data()") void* getData() {return get_data();}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::set_data()") void setData(void* d) {set_data(d);}
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_state_trace()") void setStateTrace(tmgr_trace_t trace) {set_state_trace(trace);}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_bandwidth_trace()") void setBandwidthTrace(tmgr_trace_t trace) {set_bandwidth_trace(trace);}
+  XBT_ATTRIB_DEPRECATED_v323("Please use Link::get_latency_trace()") void setLatencyTrace(tmgr_trace_t trace) {set_latency_trace(trace);}
 };
 }
 }

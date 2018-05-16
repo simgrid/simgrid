@@ -129,7 +129,7 @@ void parse_platform_file(const char *file)
 
     sg_link_t link = simgrid::s4u::Link::by_name(elm.second.c_str());
     xbt_assert(link, "Link %s undefined", elm.second.c_str());
-    link->setStateTrace(trace);
+    link->set_state_trace(trace);
   }
 
   for (auto const& elm : trace_connect_list_link_bw) {
@@ -137,7 +137,7 @@ void parse_platform_file(const char *file)
     tmgr_trace_t trace = traces_set_list.at(elm.first);
     sg_link_t link     = simgrid::s4u::Link::by_name(elm.second.c_str());
     xbt_assert(link, "Link %s undefined", elm.second.c_str());
-    link->setBandwidthTrace(trace);
+    link->set_bandwidth_trace(trace);
   }
 
   for (auto const& elm : trace_connect_list_link_lat) {
@@ -145,7 +145,7 @@ void parse_platform_file(const char *file)
     tmgr_trace_t trace = traces_set_list.at(elm.first);
     sg_link_t link     = simgrid::s4u::Link::by_name(elm.second.c_str());
     xbt_assert(link, "Link %s undefined", elm.second.c_str());
-    link->setLatencyTrace(trace);
+    link->set_latency_trace(trace);
   }
 
   surf_parse_close();
