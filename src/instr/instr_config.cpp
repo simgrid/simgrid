@@ -18,7 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 std::ofstream tracing_file;
 
 #define OPT_TRACING_BASIC                "tracing/basic"
-#define OPT_TRACING_BUFFER               "tracing/buffer"
 #define OPT_TRACING_CATEGORIZED          "tracing/categorized"
 #define OPT_TRACING_COMMENT_FILE         "tracing/comment-file"
 #define OPT_TRACING_COMMENT              "tracing/comment"
@@ -60,8 +59,6 @@ static simgrid::config::Flag<bool> trace_categorized{
     OPT_TRACING_CATEGORIZED, "Tracing categorized resource utilization of hosts and links.", false};
 static simgrid::config::Flag<bool> trace_uncategorized{
     OPT_TRACING_UNCATEGORIZED, "Tracing uncategorized resource utilization of hosts and links.", false};
-static simgrid::config::Flag<bool> trace_buffer{OPT_TRACING_BUFFER,
-                                                "Buffer trace events to put them in temporal order.", true};
 static simgrid::config::Flag<bool> trace_disable_destroy{
     OPT_TRACING_DISABLE_DESTROY, {"tracing/disable_destroy"}, "Disable platform containers destruction.", false};
 static simgrid::config::Flag<bool> trace_basic{OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
@@ -236,11 +233,6 @@ bool TRACE_disable_speed()
   return trace_disable_power && trace_enabled;
 }
 
-bool TRACE_buffer ()
-{
-  return trace_buffer && trace_enabled;
-}
-
 bool TRACE_disable_destroy ()
 {
   return trace_disable_destroy && trace_enabled;
@@ -337,12 +329,6 @@ void TRACE_help()
              "  to allow further study of simulated or real sleep time");
   print_line(OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
              "  to point-to-point messages sent by collective communications");
-  print_line(OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
-             "  This option put some events in a time-ordered buffer using the insertion\n"
-             "  sort algorithm. The process of acquiring and releasing locks to access this\n"
-             "  buffer and the cost of the sorting algorithm make this process slow. The\n"
-             "  simulator performance can be severely impacted if this option is activated,\n"
-             "  but you are sure to get a trace file with events sorted.");
   print_line(OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
              "  Disable the destruction of containers at the end of simulation. This can be\n"
              "  used with simulators that have a different notion of time (different from\n"

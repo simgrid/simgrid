@@ -85,11 +85,6 @@ static void buffer_debug(std::vector<simgrid::instr::PajeEvent*>* buf)
 /* internal do the instrumentation module */
 void simgrid::instr::PajeEvent::insert_into_buffer()
 {
-  if (not TRACE_buffer()) {
-    print();
-    delete this;
-    return;
-  }
   buffer_debug(&buffer);
 
   XBT_DEBUG("%s: insert event_type=%u, timestamp=%f, buffersize=%zu)", __func__, eventType_, timestamp_, buffer.size());
