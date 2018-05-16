@@ -5,8 +5,11 @@
 #ifndef SMPI_REPLAY_HPP
 #define SMPI_REPLAY_HPP
 
-#include "private.hpp"
+#include "smpi/smpi.h"
+#include <simgrid/s4u/Actor.hpp>
+#include <memory>
 #include <xbt/replay.hpp>
+#include <xbt/ex.h>
 
 #include <sstream>
 
@@ -26,6 +29,11 @@
            ss.str().c_str());                                                                                        \
   }                                                                                                                  \
 }
+
+extern XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
+extern XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
+extern XBT_PRIVATE void smpi_free_tmp_buffer(void* buf);
+extern XBT_PRIVATE void smpi_free_replay_tmp_buffers();
 
 namespace simgrid {
 namespace smpi {
