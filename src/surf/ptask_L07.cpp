@@ -94,6 +94,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
       if ((action.latency_ <= 0.0) && (action.is_suspended() == 0)) {
         action.updateBound();
         get_maxmin_system()->update_variable_weight(action.get_variable(), 1.0);
+        action.set_last_update();
       }
     }
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.get_remains(),
