@@ -61,29 +61,6 @@ namespace simgrid {
 
 }} // namespaces
 
-/** @brief Stop the host if it is on */
-void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
-{
-  simgrid::simix::Host* host = h->extension<simgrid::simix::Host>();
-
-  xbt_assert((host != nullptr), "Invalid parameters");
-
-  if (h->isOn()) {
-    h->pimpl_cpu->turn_off();
-
-    /* Clean Simulator data */
-    if (not host->process_list.empty()) {
-      for (auto& process : host->process_list) {
-        SIMIX_process_kill(&process, issuer);
-        XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.get_cname(),
-                  process.host->get_cname(), issuer->get_cname());
-      }
-    }
-  } else {
-    XBT_INFO("Host %s is already off", h->get_cname());
-  }
-}
-
 /* needs to be public and without simcall for exceptions and logging events */
 const char* sg_host_self_get_name()
 {

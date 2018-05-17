@@ -100,12 +100,27 @@ void Host::turnOn()
   }
 }
 
+/** @brief Stop the host if it is on */
 void Host::turnOff()
 {
   if (isOn()) {
     smx_actor_t self = SIMIX_process_self();
     simgrid::simix::simcall([this, self] {
-      SIMIX_host_off(this, self);
+      simgrid::simix::Host* host = this->extension<simgrid::simix::Host>();
+
+      xbt_assert((host != nullptr), "Invalid parameters");
+
+      this->pimpl_cpu->turn_off();
+
+      /* Clean Simulator data */
+      if (not host->process_list.empty()) {
+        for (auto& process : host->process_list) {
+          SIMIX_process_kill(&process, self);
+          XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.get_cname(),
+                    process.host->get_cname(), self->get_cname());
+        }
+      }
+
       on_state_change(*this);
     });
   }
