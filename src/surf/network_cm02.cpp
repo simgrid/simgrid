@@ -349,7 +349,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
       while ((var = get_constraint()->get_variable(&elem))) {
         Action* action = static_cast<Action*>(var->get_id());
 
-        if (action->get_state() == Action::State::running || action->get_state() == Action::State::ready) {
+        if (action->get_state() == Action::State::inited || action->get_state() == Action::State::running) {
           action->set_finish_time(now);
           action->set_state(Action::State::failed);
         }

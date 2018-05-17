@@ -16,7 +16,7 @@ Model::Model(Model::UpdateAlgo algo) : update_algorithm_(algo) {}
 
 Model::~Model()
 {
-  delete ready_action_set_;
+  delete inited_action_set_;
   delete running_action_set_;
   delete failed_action_set_;
   delete done_action_set_;

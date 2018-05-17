@@ -31,8 +31,8 @@ public:
 
   virtual ~Model();
 
-  /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  Action::StateSet* get_ready_action_set() const { return ready_action_set_; }
+  /** @brief Get the set of [actions](@ref Action) in *inited* state */
+  Action::StateSet* get_inited_action_set() const { return inited_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
   Action::StateSet* get_running_action_set() const { return running_action_set_; }
@@ -88,10 +88,10 @@ public:
 private:
   lmm::System* maxmin_system_           = nullptr;
   const UpdateAlgo update_algorithm_;
-  Action::StateSet* ready_action_set_   = new Action::StateSet(); /**< Actions in state SURF_ACTION_READY */
-  Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Actions in state SURF_ACTION_RUNNING */
-  Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Actions in state SURF_ACTION_FAILED */
-  Action::StateSet* done_action_set_    = new Action::StateSet(); /**< Actions in state SURF_ACTION_DONE */
+  Action::StateSet* inited_action_set_  = new Action::StateSet(); /**< Created not started */
+  Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Started not done */
+  Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Done with failure */
+  Action::StateSet* done_action_set_    = new Action::StateSet(); /**< Done successful */
   ActionHeap action_heap_;
 };
 

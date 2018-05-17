@@ -16,16 +16,16 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 static const char* string_action(simgrid::kernel::resource::Action::State state)
 {
   switch (state) {
-    case simgrid::kernel::resource::Action::State::ready:
-      return "SURF_ACTION_READY";
+    case simgrid::kernel::resource::Action::State::inited:
+      return "SURF_ACTION_INITED";
     case simgrid::kernel::resource::Action::State::running:
       return "SURF_ACTION_RUNNING";
     case simgrid::kernel::resource::Action::State::failed:
       return "SURF_ACTION_FAILED";
     case simgrid::kernel::resource::Action::State::done:
       return "SURF_ACTION_DONE";
-    case simgrid::kernel::resource::Action::State::not_in_the_system:
-      return "SURF_ACTION_NOT_IN_THE_SYSTEM";
+    case simgrid::kernel::resource::Action::State::ignored:
+      return "SURF_ACTION_IGNORED";
     default:
       return "INVALID STATE";
   }

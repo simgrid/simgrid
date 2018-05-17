@@ -413,9 +413,9 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
       /* put all action running on cpu to failed */
       for (CpuTiAction& action : action_set_) {
-        if (action.get_state() == kernel::resource::Action::State::running ||
-            action.get_state() == kernel::resource::Action::State::ready ||
-            action.get_state() == kernel::resource::Action::State::not_in_the_system) {
+        if (action.get_state() == kernel::resource::Action::State::inited ||
+            action.get_state() == kernel::resource::Action::State::running ||
+            action.get_state() == kernel::resource::Action::State::ignored) {
           action.set_finish_time(date);
           action.set_state(kernel::resource::Action::State::failed);
           get_model()->get_action_heap().remove(&action);

@@ -55,23 +55,23 @@ void Action::finish(Action::State state)
 
 Action::State Action::get_state() const
 {
-  if (state_set_ == model_->get_ready_action_set())
-    return Action::State::ready;
+  if (state_set_ == model_->get_inited_action_set())
+    return Action::State::inited;
   if (state_set_ == model_->get_running_action_set())
     return Action::State::running;
   if (state_set_ == model_->get_failed_action_set())
     return Action::State::failed;
   if (state_set_ == model_->get_done_action_set())
     return Action::State::done;
-  return Action::State::not_in_the_system;
+  return Action::State::ignored;
 }
 
 void Action::set_state(Action::State state)
 {
   simgrid::xbt::intrusive_erase(*state_set_, *this);
   switch (state) {
-    case Action::State::ready:
-      state_set_ = model_->get_ready_action_set();
+    case Action::State::inited:
+      state_set_ = model_->get_inited_action_set();
       break;
     case Action::State::running:
       state_set_ = model_->get_running_action_set();
