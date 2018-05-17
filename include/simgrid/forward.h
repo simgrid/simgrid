@@ -121,6 +121,10 @@ namespace trace_mgr {
   class trace;
   class future_evt_set;
 }
+namespace vm {
+class VMModel;
+class VirtualMachineImpl;
+} // namespace vm
 } // namespace simgrid
 
 typedef simgrid::s4u::Actor s4u_Actor;

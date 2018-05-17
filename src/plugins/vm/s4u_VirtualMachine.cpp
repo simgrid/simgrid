@@ -33,12 +33,15 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
 
   /* Currently, a VM uses the network resource of its physical host */
   pimpl_netpoint = pm->pimpl_netpoint;
-  // Create a VCPU for this VM
-  surf::CpuCas01* sub_cpu = dynamic_cast<surf::CpuCas01*>(pm->pimpl_cpu);
 
-  pimpl_cpu = surf_cpu_model_vm->createCpu(this, sub_cpu->getSpeedPeakList(), coreAmount);
-  if (sub_cpu->getPState() != 0)
-    pimpl_cpu->setPState(sub_cpu->getPState());
+  // Create a VCPU for this VM
+  std::vector<double>* speeds = new std::vector<double>();
+  for (int i = 0; i < pm->getPstatesCount(); i++)
+    speeds->push_back(pm->getPstateSpeed(i));
+
+  surf_cpu_model_vm->createCpu(this, speeds, pm->getCoreCount());
+  if (pm->getPstate() != 0)
+    setPstate(pm->getPstate());
 
   /* Make a process container */
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());

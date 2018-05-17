@@ -35,6 +35,8 @@ namespace s4u {
  * and actors can retrieve the host on which they run using simgrid::s4u::Host::current().
  */
 class XBT_PUBLIC Host : public simgrid::xbt::Extendable<Host> {
+  friend simgrid::vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing
+  friend simgrid::vm::VirtualMachineImpl; // creates the the pimpl_cpu
 
 public:
   explicit Host(const char* name);
@@ -146,10 +148,10 @@ private:
   std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
 
 public:
-  // TODO, this could be a unique_ptr
-  surf::HostImpl* pimpl_ = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::Cpu* pimpl_cpu = nullptr;
+  // TODO, this could be a unique_ptr
+  surf::HostImpl* pimpl_ = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   kernel::routing::NetPoint* pimpl_netpoint = nullptr;
 };
