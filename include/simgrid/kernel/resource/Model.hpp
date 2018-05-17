@@ -43,6 +43,9 @@ public:
   /** @brief Get the set of [actions](@ref Action) in *finished* state */
   Action::StateSet* get_finished_action_set() const { return finished_action_set_; }
 
+  /** @brief Get the set of [actions](@ref Action) in *ignored* state */
+  Action::StateSet* get_ignored_action_set() const { return ignored_action_set_; }
+
   /** @brief Get the set of modified [actions](@ref Action) */
   Action::ModifiedSet* get_modified_set() const;
 
@@ -92,6 +95,8 @@ private:
   Action::StateSet* started_action_set_  = new Action::StateSet(); /**< Started not done */
   Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Done with failure */
   Action::StateSet* finished_action_set_ = new Action::StateSet(); /**< Done successful */
+  Action::StateSet* ignored_action_set_  = new Action::StateSet(); /**< not considered (failure detectors?) */
+
   ActionHeap action_heap_;
 };
 

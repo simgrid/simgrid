@@ -70,8 +70,8 @@ public:
     STARTED,  /**< Currently running */
     FAILED,   /**< either the resource failed, or the action was canceled */
     FINISHED, /**< Successfully completed  */
-    IGNORED /**< e.g. failure detectors, these infinite sleep actions that are put on resources which failure should be
-               notified */
+    IGNORED   /**< e.g. failure detectors: infinite sleep actions that are put on resources which failure should get
+                 noticed  */
   };
 
   enum class SuspendStates {

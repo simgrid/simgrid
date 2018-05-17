@@ -63,7 +63,9 @@ Action::State Action::get_state() const
     return Action::State::FAILED;
   if (state_set_ == model_->get_finished_action_set())
     return Action::State::FINISHED;
-  return Action::State::IGNORED;
+  if (state_set_ == model_->get_ignored_action_set())
+    return Action::State::IGNORED;
+  THROW_IMPOSSIBLE;
 }
 
 void Action::set_state(Action::State state)
@@ -81,6 +83,9 @@ void Action::set_state(Action::State state)
       break;
     case Action::State::FINISHED:
       state_set_ = model_->get_finished_action_set();
+      break;
+    case Action::State::IGNORED:
+      state_set_ = model_->get_ignored_action_set();
       break;
     default:
       state_set_ = nullptr;
