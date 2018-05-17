@@ -18,19 +18,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 std::ofstream tracing_file;
 
 #define OPT_TRACING_BASIC                "tracing/basic"
-#define OPT_TRACING_CATEGORIZED          "tracing/categorized"
 #define OPT_TRACING_COMMENT_FILE         "tracing/comment-file"
-#define OPT_TRACING_COMMENT              "tracing/comment"
 #define OPT_TRACING_DISABLE_DESTROY      "tracing/disable-destroy"
 #define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti-one-file"
-#define OPT_TRACING_PLATFORM             "tracing/platform"
 #define OPT_TRACING_SMPI_COMPUTING       "tracing/smpi/computing"
 #define OPT_TRACING_SMPI_GROUP           "tracing/smpi/group"
 #define OPT_TRACING_SMPI_INTERNALS       "tracing/smpi/internals"
 #define OPT_TRACING_SMPI_SLEEPING        "tracing/smpi/sleeping"
 #define OPT_TRACING_SMPI                 "tracing/smpi"
 #define OPT_TRACING_TOPOLOGY             "tracing/platform/topology"
-#define OPT_TRACING_UNCATEGORIZED        "tracing/uncategorized"
 
 static simgrid::config::Flag<bool> trace_enabled{
     "tracing", "Enable the tracing system. You have to enable this option to use other tracing options.", false};
@@ -43,22 +39,33 @@ static simgrid::config::Flag<bool> trace_actor_enabled{
 
 static simgrid::config::Flag<bool> trace_vm_enabled{"tracing/vm", "Trace the behavior of all virtual machines.", false};
 
-static simgrid::config::Flag<bool> trace_platform{OPT_TRACING_PLATFORM,
+static simgrid::config::Flag<bool> trace_platform{"tracing/platform",
                                                   "Register the platform in the trace as a hierarchy.", false};
+
 static simgrid::config::Flag<bool> trace_platform_topology{
     OPT_TRACING_TOPOLOGY, "Register the platform topology in the trace as a graph.", true};
 static simgrid::config::Flag<bool> trace_smpi_enabled{OPT_TRACING_SMPI, "Tracing of the SMPI interface.", false};
 static simgrid::config::Flag<bool> trace_smpi_grouped{OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.", false};
+
 static simgrid::config::Flag<bool> trace_smpi_computing{
     OPT_TRACING_SMPI_COMPUTING, "Generate states for timing out of SMPI parts of the application", false};
+
 static simgrid::config::Flag<bool> trace_smpi_sleeping{
     OPT_TRACING_SMPI_SLEEPING, "Generate states for timing out of SMPI parts of the application", false};
+
 static simgrid::config::Flag<bool> trace_view_internals{
-    OPT_TRACING_SMPI_INTERNALS, "View internal messages sent by Collective communications in SMPI", false};
+    "tracing/smpi/internals",
+    "Generate tracing events corresponding to point-to-point messages sent by SMPI collective communications", false};
+
 static simgrid::config::Flag<bool> trace_categorized{
-    OPT_TRACING_CATEGORIZED, "Tracing categorized resource utilization of hosts and links.", false};
+    "tracing/categorized", "Trace categorized resource utilization of hosts and links.", false};
+
 static simgrid::config::Flag<bool> trace_uncategorized{
-    OPT_TRACING_UNCATEGORIZED, "Tracing uncategorized resource utilization of hosts and links.", false};
+    "tracing/uncategorized",
+    "Trace uncategorized resource utilization of hosts and links. "
+    "To use if the simulator does not use tracing categories but resource utilization have to be traced.",
+    false};
+
 static simgrid::config::Flag<bool> trace_disable_destroy{
     OPT_TRACING_DISABLE_DESTROY, {"tracing/disable_destroy"}, "Disable platform containers destruction.", false};
 static simgrid::config::Flag<bool> trace_basic{OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
@@ -117,7 +124,7 @@ static void TRACE_start()
     }
 
     /* output one line comment */
-    dump_comment(simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT));
+    dump_comment(simgrid::config::get_value<std::string>("tracing/comment"));
 
     /* output comment file */
     dump_comment_file(simgrid::config::get_value<std::string>(OPT_TRACING_COMMENT_FILE));
@@ -277,10 +284,9 @@ void TRACE_global_init()
   simgrid::config::declare_flag<bool>(OPT_TRACING_FORMAT_TI_ONEFILE,
                                       "(smpi only) For replay format only : output to one file only", false);
   simgrid::config::alias(OPT_TRACING_FORMAT_TI_ONEFILE, {"tracing/smpi/format/ti_one_file"});
-  simgrid::config::declare_flag<std::string>(OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
-                                             "");
-  simgrid::config::declare_flag<std::string>(
-      OPT_TRACING_COMMENT_FILE, "The contents of the file are added to the top of the trace file as comment.", "");
+  simgrid::config::declare_flag<std::string>("tracing/comment", "Add a comment line to the top of the trace file.", "");
+  simgrid::config::declare_flag<std::string>(OPT_TRACING_COMMENT_FILE,
+                                             "Add the contents of a file as comments to the top of the trace.", "");
   simgrid::config::alias(OPT_TRACING_COMMENT_FILE, {"tracing/comment_file"});
   simgrid::config::declare_flag<int>("tracing/precision", "Numerical precision used when timestamping events "
                                                           "(expressed in number of digits after decimal point)",
@@ -306,13 +312,6 @@ static void print_line(const char* option, const char* desc, const char* longdes
 void TRACE_help()
 {
   printf("Description of the tracing options accepted by this simulator:\n\n");
-  print_line(OPT_TRACING_CATEGORIZED, "Trace categorized resource utilization",
-             "  It activates the categorized resource utilization tracing. It should\n"
-             "  be enabled if tracing categories are used by this simulator.");
-  print_line(OPT_TRACING_UNCATEGORIZED, "Trace uncategorized resource utilization",
-             "  It activates the uncategorized resource utilization tracing. Use it if\n"
-             "  this simulator do not use tracing categories and resource use have to be\n"
-             "  traced.");
   print_line(OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
              "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
              "  interface and generates a trace that can be analyzed using Gantt-like\n"
@@ -327,8 +326,6 @@ void TRACE_help()
   print_line(OPT_TRACING_SMPI_SLEEPING, "Generates a \" Sleeping \" State",
              "  This option aims at tracing sleeps in the application, outside SMPI\n"
              "  to allow further study of simulated or real sleep time");
-  print_line(OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
-             "  to point-to-point messages sent by collective communications");
   print_line(OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
              "  Disable the destruction of containers at the end of simulation. This can be\n"
              "  used with simulators that have a different notion of time (different from\n"
@@ -342,10 +339,6 @@ void TRACE_help()
              "  By default, each process outputs to a separate file, inside a filename_files folder\n"
              "  By setting this option to yes, all processes will output to only one file\n"
              "  This is meant to avoid opening thousands of files with large simulations");
-  print_line(OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
-             "  Use this to add a comment line to the top of the trace file.");
-  print_line(OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
-             "  Use this to add the contents of a file to the top of the trace file as comment.");
   print_line(OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
              "  This option (enabled by default) can be used to disable the tracing of\n"
              "  the platform topology in the trace file. Sometimes, such task is really\n"
