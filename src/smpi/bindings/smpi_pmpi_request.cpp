@@ -109,12 +109,12 @@ int PMPI_Start(MPI_Request * request)
                                                        req->size(),
                                                        req->tag(), 
                                                        simgrid::smpi::Datatype::encode(req->type())));
-    if (not TRACE_smpi_view_internals() && req->flags() & SEND)
+    if (not TRACE_smpi_view_internals() && req->flags() & MPI_REQ_SEND)
       TRACE_smpi_send(my_proc_id, my_proc_id, getPid(req->comm(), req->dst()), req->tag(), req->size());
 
     req->start();
 
-    if (not TRACE_smpi_view_internals() && req->flags() & RECV)
+    if (not TRACE_smpi_view_internals() && req->flags() & MPI_REQ_RECV)
       TRACE_smpi_recv(getPid(req->comm(), req->src()), my_proc_id, req->tag());
     retval = MPI_SUCCESS;
     TRACE_smpi_comm_out(my_proc_id);
@@ -143,7 +143,7 @@ int PMPI_Startall(int count, MPI_Request * requests)
       if (not TRACE_smpi_view_internals())
         for (int i = 0; i < count; i++) {
           req = requests[i];
-          if (req->flags() & SEND)
+          if (req->flags() & MPI_REQ_SEND)
             TRACE_smpi_send(my_proc_id, my_proc_id, getPid(req->comm(), req->dst()), req->tag(), req->size());
         }
 
@@ -152,7 +152,7 @@ int PMPI_Startall(int count, MPI_Request * requests)
       if (not TRACE_smpi_view_internals())
         for (int i = 0; i < count; i++) {
           req = requests[i];
-          if (req->flags() & RECV)
+          if (req->flags() & MPI_REQ_RECV)
             TRACE_smpi_recv(getPid(req->comm(), req->src()), my_proc_id, req->tag());
         }
       TRACE_smpi_comm_out(my_proc_id);
@@ -612,7 +612,7 @@ static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
     int src_traced = req->src();
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     int dst_traced = req->dst();
-    if (req->flags() & RECV) { // Is this request a wait for RECV?
+    if (req->flags() & MPI_REQ_RECV) { // Is this request a wait for RECV?
       if (src_traced == MPI_ANY_SOURCE)
         src_traced = (status != MPI_STATUSES_IGNORE) ? req->comm()->group()->rank(status->MPI_SOURCE) : req->src();
       TRACE_smpi_recv(src_traced, dst_traced, req->tag());
