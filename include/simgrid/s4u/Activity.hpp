@@ -32,7 +32,7 @@ public:
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
 
-  enum class State { inited = 0, started, canceled, errored, finished };
+  enum class State { INITED = 0, STARTED, CANCELED, ERRORED, FINISHED };
 
   /** Starts a previously created activity.
    *
@@ -82,7 +82,7 @@ public:
 
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;
-  Activity::State state_                            = Activity::State::inited;
+  Activity::State state_                            = Activity::State::INITED;
   double remains_ = 0;
   void* user_data_                                  = nullptr;
 }; // class

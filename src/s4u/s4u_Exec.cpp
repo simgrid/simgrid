@@ -17,14 +17,14 @@ Activity* Exec::start()
 {
   pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1. / priority_, 0., host_);
   boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_bound(bound_);
-  state_ = State::started;
+  state_ = State::STARTED;
   return this;
 }
 
 Activity* Exec::wait()
 {
   simcall_execution_wait(pimpl_);
-  state_ = State::finished;
+  state_ = State::FINISHED;
   return this;
 }
 
@@ -37,16 +37,16 @@ Activity* Exec::wait(double timeout)
 /** @brief Returns whether the state of the exec is finished */
 bool Exec::test()
 {
-  xbt_assert(state_ == State::inited || state_ == State::started || state_ == State::finished);
+  xbt_assert(state_ == State::INITED || state_ == State::STARTED || state_ == State::FINISHED);
 
-  if (state_ == State::finished)
+  if (state_ == State::FINISHED)
     return true;
 
-  if (state_ == State::inited)
+  if (state_ == State::INITED)
     this->start();
 
   if (simcall_execution_test(pimpl_)) {
-    state_ = State::finished;
+    state_ = State::FINISHED;
     return true;
   }
 
@@ -61,7 +61,7 @@ bool Exec::test()
  * Currently, this cannot be changed once the exec started. */
 ExecPtr Exec::set_priority(double priority)
 {
-  xbt_assert(state_ == State::inited, "Cannot change the priority of an exec after its start");
+  xbt_assert(state_ == State::INITED, "Cannot change the priority of an exec after its start");
   priority_ = priority;
   return this;
 }
@@ -72,7 +72,7 @@ ExecPtr Exec::set_priority(double priority)
  * Currently, this cannot be changed once the exec started. */
 ExecPtr Exec::set_bound(double bound)
 {
-  xbt_assert(state_ == State::inited, "Cannot change the bound of an exec after its start");
+  xbt_assert(state_ == State::INITED, "Cannot change the bound of an exec after its start");
   bound_ = bound;
   return this;
 }
@@ -82,9 +82,9 @@ ExecPtr Exec::set_bound(double bound)
  * The activity cannot be terminated already (but it may be started). */
 ExecPtr Exec::set_host(Host* host)
 {
-  xbt_assert(state_ == State::inited || state_ == State::started,
+  xbt_assert(state_ == State::INITED || state_ == State::STARTED,
              "Cannot change the host of an exec once it's done (state: %d)", (int)state_);
-  if (state_ == State::started)
+  if (state_ == State::STARTED)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
   return this;

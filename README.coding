@@ -24,7 +24,8 @@ SimGrid4 will follow the these rules:
     (because of a bug in Sonar coverage computation)
   C++
   - fields, methods and variables are in snake_case()
-  - Classes and Enum are in UpperCamelCase
+  - Classes and Enum names are in UpperCamelCase
+  - Enum values are in UPPER_SNAKE_CASE (as constants)
   - public filenames: api_Class.cpp and api/Class.hpp.
     - Example: src/s4u/s4u_ConditionVariable.cpp and
                include/simgrid/s4u/ConditionVariable.hpp
