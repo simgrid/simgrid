@@ -44,7 +44,11 @@ public:
   bool empty() const { return heap_type::empty(); }
 };
 
-/** @details An action is a consumption on a resource (e.g.: a communication for the network) */
+/** @details An action is a consumption on a resource (e.g.: a communication for the network).
+ *
+ * It is related (but still different) from activities, that are the stuff on which an actor can be blocked.
+ * See simgrid::s4u::Activity for more details.
+ */
 class XBT_PUBLIC Action {
   friend ActionHeap;
 
