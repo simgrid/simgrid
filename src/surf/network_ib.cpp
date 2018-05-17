@@ -32,7 +32,7 @@ static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkA
   using simgrid::kernel::resource::IBNode;
   using simgrid::kernel::resource::NetworkIBModel;
 
-  if (action->get_state() != simgrid::kernel::resource::Action::State::done)
+  if (action->get_state() != simgrid::kernel::resource::Action::State::FINISHED)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
   XBT_DEBUG("IB callback - action %p finished", action);

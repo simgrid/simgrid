@@ -16,15 +16,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 static const char* string_action(simgrid::kernel::resource::Action::State state)
 {
   switch (state) {
-    case simgrid::kernel::resource::Action::State::inited:
+    case simgrid::kernel::resource::Action::State::INITED:
       return "SURF_ACTION_INITED";
-    case simgrid::kernel::resource::Action::State::running:
+    case simgrid::kernel::resource::Action::State::STARTED:
       return "SURF_ACTION_RUNNING";
-    case simgrid::kernel::resource::Action::State::failed:
+    case simgrid::kernel::resource::Action::State::FAILED:
       return "SURF_ACTION_FAILED";
-    case simgrid::kernel::resource::Action::State::done:
+    case simgrid::kernel::resource::Action::State::FINISHED:
       return "SURF_ACTION_DONE";
-    case simgrid::kernel::resource::Action::State::ignored:
+    case simgrid::kernel::resource::Action::State::IGNORED:
       return "SURF_ACTION_IGNORED";
     default:
       return "INVALID STATE";
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
       action.unref();
     }
 
-    action_list = surf_cpu_model_pm->get_done_action_set();
+    action_list = surf_cpu_model_pm->get_finished_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   CPU Done action");
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
       action.unref();
     }
 
-    action_list = surf_network_model->get_done_action_set();
+    action_list = surf_network_model->get_finished_action_set();
     while (not action_list->empty()) {
       simgrid::kernel::resource::Action& action = action_list->front();
       XBT_INFO("   Network Done action");
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
     }
 
   } while (
-      (surf_network_model->get_running_action_set()->size() || surf_cpu_model_pm->get_running_action_set()->size()) &&
+      (surf_network_model->get_started_action_set()->size() || surf_cpu_model_pm->get_started_action_set()->size()) &&
       surf_solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");

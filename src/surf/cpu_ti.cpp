@@ -343,7 +343,7 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
   while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
     CpuTiAction* action = static_cast<CpuTiAction*>(get_action_heap().pop());
     XBT_DEBUG("Action %p: finish", action);
-    action->finish(kernel::resource::Action::State::done);
+    action->finish(kernel::resource::Action::State::FINISHED);
     /* update remaining amount of all actions */
     action->cpu_->update_remaining_amount(surf_get_clock());
   }
@@ -413,11 +413,11 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
       /* put all action running on cpu to failed */
       for (CpuTiAction& action : action_set_) {
-        if (action.get_state() == kernel::resource::Action::State::inited ||
-            action.get_state() == kernel::resource::Action::State::running ||
-            action.get_state() == kernel::resource::Action::State::ignored) {
+        if (action.get_state() == kernel::resource::Action::State::INITED ||
+            action.get_state() == kernel::resource::Action::State::STARTED ||
+            action.get_state() == kernel::resource::Action::State::IGNORED) {
           action.set_finish_time(date);
-          action.set_state(kernel::resource::Action::State::failed);
+          action.set_state(kernel::resource::Action::State::FAILED);
           get_model()->get_action_heap().remove(&action);
         }
       }
@@ -439,7 +439,7 @@ void CpuTi::update_actions_finish_time(double now)
   sum_priority_ = 0.0;
   for (CpuTiAction const& action : action_set_) {
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->get_running_action_set())
+    if (action.get_state_set() != surf_cpu_model_pm->get_started_action_set())
       continue;
 
     /* bogus priority, skip it */
@@ -456,7 +456,7 @@ void CpuTi::update_actions_finish_time(double now)
   for (CpuTiAction& action : action_set_) {
     double min_finish = -1;
     /* action not running, skip it */
-    if (action.get_state_set() != surf_cpu_model_pm->get_running_action_set())
+    if (action.get_state_set() != surf_cpu_model_pm->get_started_action_set())
       continue;
 
     /* verify if the action is really running on cpu */
@@ -513,7 +513,7 @@ void CpuTi::update_remaining_amount(double now)
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, last_update_);
   for (CpuTiAction& action : action_set_) {
     /* action not running, skip it */
-    if (action.get_state_set() != get_model()->get_running_action_set())
+    if (action.get_state_set() != get_model()->get_started_action_set())
       continue;
 
     /* bogus priority, skip it */
@@ -613,7 +613,7 @@ void CpuTiAction::set_state(Action::State state)
 
 void CpuTiAction::cancel()
 {
-  this->set_state(Action::State::failed);
+  this->set_state(Action::State::FAILED);
   get_model()->get_action_heap().remove(this);
   cpu_->set_modified(true);
 }

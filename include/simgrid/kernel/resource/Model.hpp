@@ -34,14 +34,14 @@ public:
   /** @brief Get the set of [actions](@ref Action) in *inited* state */
   Action::StateSet* get_inited_action_set() const { return inited_action_set_; }
 
-  /** @brief Get the set of [actions](@ref Action) in *running* state */
-  Action::StateSet* get_running_action_set() const { return running_action_set_; }
+  /** @brief Get the set of [actions](@ref Action) in *started* state */
+  Action::StateSet* get_started_action_set() const { return started_action_set_; }
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
   Action::StateSet* get_failed_action_set() const { return failed_action_set_; }
 
-  /** @brief Get the set of [actions](@ref Action) in *done* state */
-  Action::StateSet* get_done_action_set() const { return done_action_set_; }
+  /** @brief Get the set of [actions](@ref Action) in *finished* state */
+  Action::StateSet* get_finished_action_set() const { return finished_action_set_; }
 
   /** @brief Get the set of modified [actions](@ref Action) */
   Action::ModifiedSet* get_modified_set() const;
@@ -89,9 +89,9 @@ private:
   lmm::System* maxmin_system_           = nullptr;
   const UpdateAlgo update_algorithm_;
   Action::StateSet* inited_action_set_  = new Action::StateSet(); /**< Created not started */
-  Action::StateSet* running_action_set_ = new Action::StateSet(); /**< Started not done */
+  Action::StateSet* started_action_set_  = new Action::StateSet(); /**< Started not done */
   Action::StateSet* failed_action_set_  = new Action::StateSet(); /**< Done with failure */
-  Action::StateSet* done_action_set_    = new Action::StateSet(); /**< Done successful */
+  Action::StateSet* finished_action_set_ = new Action::StateSet(); /**< Done successful */
   ActionHeap action_heap_;
 };
 

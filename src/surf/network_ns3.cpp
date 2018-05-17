@@ -190,7 +190,7 @@ double NetworkNS3Model::next_occuring_event(double now)
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
-  if (not get_running_action_set()->size() || now == 0.0)
+  if (not get_started_action_set()->size() || now == 0.0)
     return -1.0;
   else
     do {
@@ -211,7 +211,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
   static std::vector<std::string> socket_to_destroy;
 
   /* If there are no running flows, advance the NS3 simulator and return */
-  if (get_running_action_set()->empty()) {
+  if (get_started_action_set()->empty()) {
 
     while(double_positive(now - ns3::Simulator::Now().GetSeconds(), sg_surf_precision))
       ns3_simulator(now-ns3::Simulator::Now().GetSeconds());
@@ -227,7 +227,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
     action->set_remains(action->get_cost() - sgFlow->sentBytes_);
 
-    if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::running) {
+    if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::STARTED) {
       double data_delta_sent = sgFlow->sentBytes_ - action->lastSent_;
 
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
@@ -243,7 +243,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     if(sgFlow->finished_){
       socket_to_destroy.push_back(ns3Socket);
       XBT_DEBUG("Destroy socket %p of action %p", ns3Socket.c_str(), action);
-      action->finish(kernel::resource::Action::State::done);
+      action->finish(kernel::resource::Action::State::FINISHED);
     } else {
       XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3Socket.c_str(), sgFlow->sentBytes_,
                 sgFlow->totalBytes_, sgFlow->remaining_);

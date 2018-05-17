@@ -151,11 +151,11 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
       while ((var = cnst->get_variable(&elem))) {
         kernel::resource::Action* action = static_cast<kernel::resource::Action*>(var->get_id());
 
-        if (action->get_state() == kernel::resource::Action::State::inited ||
-            action->get_state() == kernel::resource::Action::State::running ||
-            action->get_state() == kernel::resource::Action::State::ignored) {
+        if (action->get_state() == kernel::resource::Action::State::INITED ||
+            action->get_state() == kernel::resource::Action::State::STARTED ||
+            action->get_state() == kernel::resource::Action::State::IGNORED) {
           action->set_finish_time(date);
-          action->set_state(kernel::resource::Action::State::failed);
+          action->set_state(kernel::resource::Action::State::FAILED);
         }
       }
     }

@@ -66,11 +66,12 @@ public:
       StateSet;
 
   enum class State {
-    inited,  /**< Created, but not started yet */
-    running, /**< Started, currently running */
-    failed,  /**< Completed (unsuccessfully: either the resource failed, or the action was canceled) */
-    done,    /**< Completed (successfully) */
-    ignored  /**< e.g. failure detectors, these infinite sleep actions that are put on resources which failure should be notified */
+    INITED,   /**< Created, but not started yet */
+    STARTED,  /**< Currently running */
+    FAILED,   /**< either the resource failed, or the action was canceled */
+    FINISHED, /**< Successfully completed  */
+    IGNORED /**< e.g. failure detectors, these infinite sleep actions that are put on resources which failure should be
+               notified */
   };
 
   enum class SuspendStates {

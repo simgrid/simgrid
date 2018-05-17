@@ -33,12 +33,12 @@ void simgrid::kernel::activity::SleepImpl::post()
 
     e_smx_state_t result;
     switch (surf_sleep->get_state()) {
-      case simgrid::kernel::resource::Action::State::failed:
+      case simgrid::kernel::resource::Action::State::FAILED:
         simcall->issuer->context->iwannadie = 1;
         result                              = SIMIX_SRC_HOST_FAILURE;
         break;
 
-      case simgrid::kernel::resource::Action::State::done:
+      case simgrid::kernel::resource::Action::State::FINISHED:
         result = SIMIX_DONE;
         break;
 

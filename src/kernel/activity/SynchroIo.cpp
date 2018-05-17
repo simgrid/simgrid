@@ -35,10 +35,10 @@ void simgrid::kernel::activity::IoImpl::post()
   }
 
   switch (surf_io->get_state()) {
-    case simgrid::kernel::resource::Action::State::failed:
+    case simgrid::kernel::resource::Action::State::FAILED:
       state_ = SIMIX_FAILED;
       break;
-    case simgrid::kernel::resource::Action::State::done:
+    case simgrid::kernel::resource::Action::State::FINISHED:
       state_ = SIMIX_DONE;
       break;
     default:
