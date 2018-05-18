@@ -14,7 +14,7 @@ static void master()
   simgrid::s4u::this_actor::sleep_for(1);
 
   XBT_INFO("Turning off the worker host");
-  jupiter->turnOff();
+  jupiter->turn_off();
   XBT_INFO("Master has finished");
 }
 

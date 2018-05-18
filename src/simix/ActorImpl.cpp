@@ -236,7 +236,7 @@ void ActorImpl::resume()
 
 smx_activity_t ActorImpl::sleep(double duration)
 {
-  if (host->isOff())
+  if (host->is_off())
     THROWF(host_error, 0, "Host %s failed, you cannot sleep there.", host->get_cname());
 
   simgrid::kernel::activity::SleepImpl* synchro = new simgrid::kernel::activity::SleepImpl();
@@ -294,7 +294,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 
   XBT_DEBUG("Start process %s on host '%s'", name, host->get_cname());
 
-  if (host->isOff()) {
+  if (host->is_off()) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->get_cname());
     return nullptr;
   }
@@ -354,7 +354,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   sg_host_t host = sg_host_by_name(hostname);
   XBT_DEBUG("Attach process %s on host '%s'", name, hostname);
 
-  if (host->isOff()) {
+  if (host->is_off()) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, hostname);
     return nullptr;
   }
@@ -711,7 +711,7 @@ void SIMIX_process_yield(smx_actor_t self)
     /* execute the on_exit functions */
     SIMIX_process_on_exit_runall(self);
     /* Add the process to the list of process to restart, only if the host is down */
-    if (self->auto_restart && self->host->isOff()) {
+    if (self->auto_restart && self->host->is_off()) {
       SIMIX_host_add_auto_restart_process(self->host, self->get_cname(), self->code, self->getUserData(),
                                           SIMIX_timer_get_date(self->kill_timer), self->getProperties(),
                                           self->auto_restart);

@@ -93,21 +93,21 @@ Host::Host(simgrid::s4u::Host *ptr) : host(ptr)
   if (not Host::EXTENSION_ID.valid())
     Host::EXTENSION_ID = simgrid::s4u::Host::extension_create<Host>();
 
-  const char* orecv_string = host->getProperty("smpi/or");
+  const char* orecv_string = host->get_property("smpi/or");
   if (orecv_string != nullptr) {
     orecv_parsed_values = parse_factor(orecv_string);
   } else {
     orecv_parsed_values = parse_factor(simgrid::config::get_value<std::string>("smpi/or"));
   }
 
-  const char* osend_string = host->getProperty("smpi/os");
+  const char* osend_string = host->get_property("smpi/os");
   if (osend_string != nullptr) {
     osend_parsed_values = parse_factor(osend_string);
   } else {
     osend_parsed_values = parse_factor(simgrid::config::get_value<std::string>("smpi/os"));
   }
 
-  const char* oisend_string = host->getProperty("smpi/ois");
+  const char* oisend_string = host->get_property("smpi/ois");
   if (oisend_string != nullptr) {
     oisend_parsed_values = parse_factor(oisend_string);
   } else {

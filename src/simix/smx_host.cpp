@@ -86,7 +86,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::
       new simgrid::kernel::actor::ProcessArg(name, code, data, host, kill_time, nullptr, auto_restart);
   arg->properties.reset(properties, [](decltype(properties)) {});
 
-  if (host->isOff() && watched_hosts.find(host->get_cname()) == watched_hosts.end()) {
+  if (host->is_off() && watched_hosts.find(host->get_cname()) == watched_hosts.end()) {
     watched_hosts.insert(host->get_cname());
     XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
   }
@@ -232,7 +232,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
         xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d", (int)exec->state_);
     }
     /* Fail the process if the host is down */
-    if (simcall->issuer->host->isOff())
+    if (simcall->issuer->host->is_off())
       simcall->issuer->context->iwannadie = 1;
 
     simcall->issuer->waiting_synchro = nullptr;

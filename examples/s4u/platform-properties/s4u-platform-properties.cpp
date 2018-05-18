@@ -23,26 +23,26 @@ static void test_host(std::string hostname)
     XBT_INFO("  Host property: '%s' -> '%s'", kv.first.c_str(), kv.second.c_str());
 
   XBT_INFO("== Try to get a host property that does not exist");
-  value = thehost->getProperty(noexist);
+  value = thehost->get_property(noexist);
   xbt_assert(not value, "The key exists (it's not supposed to)");
 
   XBT_INFO("== Try to get a host property that does exist");
-  value = thehost->getProperty(exist);
+  value = thehost->get_property(exist);
   xbt_assert(value, "\tProperty %s is undefined (where it should)", exist);
   xbt_assert(!strcmp(value, "180"), "\tValue of property %s is defined to %s (where it should be 180)", exist, value);
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   XBT_INFO("== Trying to modify a host property");
-  thehost->setProperty(exist, "250");
+  thehost->set_property(exist, "250");
 
   /* Test if we have changed the value */
-  value = thehost->getProperty(exist);
+  value = thehost->get_property(exist);
   xbt_assert(value, "Property %s is undefined (where it should)", exist);
   xbt_assert(!strcmp(value, "250"), "Value of property %s is defined to %s (where it should be 250)", exist, value);
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   /* Restore the value for the next test */
-  thehost->setProperty(exist, "180");
+  thehost->set_property(exist, "180");
 }
 
 static int alice(int argc, char* argv[])

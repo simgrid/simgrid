@@ -41,7 +41,7 @@ public:
 
   void init()
   {
-    const char* local_sampling_rate_config = host_->getProperty(property_sampling_rate);
+    const char* local_sampling_rate_config = host_->get_property(property_sampling_rate);
     double global_sampling_rate_config     = simgrid::config::get_value<double>(property_sampling_rate);
     if (local_sampling_rate_config != nullptr) {
       sampling_rate = std::stod(local_sampling_rate_config);
@@ -240,9 +240,9 @@ static void on_host_added(simgrid::s4u::Host& host)
     XBT_DEBUG("DVFS process on %s is a daemon: %d", daemon_proc->get_host()->get_cname(), daemon_proc->is_daemon());
 
     std::string dvfs_governor;
-    const char* host_conf = daemon_proc->get_host()->getProperty(property_governor);
+    const char* host_conf = daemon_proc->get_host()->get_property(property_governor);
     if (host_conf != nullptr) {
-      dvfs_governor = std::string(daemon_proc->get_host()->getProperty(property_governor));
+      dvfs_governor = std::string(daemon_proc->get_host()->get_property(property_governor));
       boost::algorithm::to_lower(dvfs_governor);
     } else {
       dvfs_governor = simgrid::config::get_value<std::string>(property_governor);

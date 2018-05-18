@@ -93,10 +93,10 @@ void simgrid::kernel::activity::ExecImpl::set_priority(double priority)
 
 void simgrid::kernel::activity::ExecImpl::post()
 {
-  if (host_ && host_->isOff()) { /* FIXME: handle resource failure for parallel tasks too */
-                                 /* If the host running the synchro failed, notice it. This way, the asking
-                                  * process can be killed if it runs on that host itself */
-                                 state_ = SIMIX_FAILED;
+  if (host_ && host_->is_off()) { /* FIXME: handle resource failure for parallel tasks too */
+    /* If the host running the synchro failed, notice it. This way, the asking
+     * process can be killed if it runs on that host itself */
+    state_ = SIMIX_FAILED;
   } else if (surf_action_ && surf_action_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
     state_ = SIMIX_CANCELED;

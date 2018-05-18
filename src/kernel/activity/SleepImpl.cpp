@@ -46,7 +46,7 @@ void simgrid::kernel::activity::SleepImpl::post()
         THROW_IMPOSSIBLE;
         break;
     }
-    if (simcall->issuer->host->isOff()) {
+    if (simcall->issuer->host->is_off()) {
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, result);
