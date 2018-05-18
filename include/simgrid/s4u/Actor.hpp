@@ -156,6 +156,10 @@ public:
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_suspend;
   /** Signal to others that an actor has been resumed **/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_resume;
+  /** Signal to others that an actor is sleeping **/
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_sleep;
+  /** Signal to others that an actor wakes up for a sleep **/
+  static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_wake_up;
   /** Signal to others that an actor is going to migrated to another host**/
   static simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> on_migration_start;
   /** Signal to others that an actor is has been migrated to another host **/

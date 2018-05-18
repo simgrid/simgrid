@@ -182,13 +182,6 @@ static void instr_netzone_on_creation(simgrid::s4u::NetZone& netzone)
   }
 }
 
-static void instr_netzone_on_seal(simgrid::s4u::NetZone& /*netzone*/)
-{
-  if (TRACE_needs_platform()) {
-    currentContainer.pop_back();
-  }
-}
-
 static void instr_link_on_creation(simgrid::s4u::Link& link)
 {
   if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
@@ -269,7 +262,7 @@ static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
 
 static void instr_netpoint_on_creation(simgrid::kernel::routing::NetPoint* netpoint)
 {
-  if (netpoint->is_router() && TRACE_needs_platform() && TRACE_is_enabled())
+  if (netpoint->is_router())
     new simgrid::instr::RouterContainer(netpoint->get_cname(), currentContainer.back());
 }
 
@@ -301,16 +294,6 @@ static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
   state->add_entity_value("task_execute", "0 1 1");
   root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
   root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
-}
-
-static void instr_actor_on_suspend(simgrid::s4u::ActorPtr actor)
-{
-  simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("suspend");
-}
-
-static void instr_actor_on_resume(simgrid::s4u::ActorPtr actor)
-{
-  simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
 }
 
 static long long int counter = 0;
@@ -351,31 +334,6 @@ static void instr_vm_on_creation(simgrid::s4u::Host& host)
   root->type_->by_name_or_create("VM_ACTOR_LINK", vm, vm);
 }
 
-static void instr_vm_on_start(simgrid::s4u::VirtualMachine& vm)
-{
-  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("start");
-}
-
-static void instr_vm_on_started(simgrid::s4u::VirtualMachine& vm)
-{
-  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event();
-}
-
-static void instr_vm_on_suspend(simgrid::s4u::VirtualMachine& vm)
-{
-  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("suspend");
-}
-
-static void instr_vm_on_resume(simgrid::s4u::VirtualMachine& vm)
-{
-  simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event();
-}
-
-static void instr_vm_on_destruction(simgrid::s4u::Host& host)
-{
-  simgrid::instr::Container::by_name(host.get_name())->remove_from_parent();
-}
-
 void instr_define_callbacks()
 {
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
@@ -386,29 +344,48 @@ void instr_define_callbacks()
     simgrid::s4u::Host::on_speed_change.connect(instr_host_on_speed_change);
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
     simgrid::s4u::Link::on_bandwidth_change.connect(instr_link_on_bandwidth_change);
+    simgrid::s4u::NetZone::onSeal.connect([](simgrid::s4u::NetZone& /*netzone*/) { currentContainer.pop_back(); });
+    simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
   }
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
-  simgrid::s4u::NetZone::onSeal.connect(instr_netzone_on_seal);
-  simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
 
   simgrid::surf::CpuAction::onStateChange.connect(instr_cpu_action_on_state_change);
   simgrid::s4u::Link::on_communication_state_change.connect(instr_link_on_communication_state_change);
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);
-    simgrid::s4u::Actor::on_suspend.connect(instr_actor_on_suspend);
-    simgrid::s4u::Actor::on_resume.connect(instr_actor_on_resume);
+    simgrid::s4u::Actor::on_suspend.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("suspend");
+    });
+    simgrid::s4u::Actor::on_resume.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
+    });
+    simgrid::s4u::Actor::on_sleep.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->push_event("sleep");
+    });
+    simgrid::s4u::Actor::on_wake_up.connect([](simgrid::s4u::ActorPtr actor) {
+      simgrid::instr::Container::by_name(instr_pid(actor.get()))->get_state("ACTOR_STATE")->pop_event();
+    });
     simgrid::s4u::Actor::on_migration_start.connect(instr_actor_on_migration_start);
     simgrid::s4u::Actor::on_migration_end.connect(instr_actor_on_migration_end);
   }
 
   if (TRACE_vm_is_enabled()) {
     simgrid::s4u::Host::on_creation.connect(instr_vm_on_creation);
-    simgrid::s4u::VirtualMachine::on_start.connect(instr_vm_on_start);
-    simgrid::s4u::VirtualMachine::on_started.connect(instr_vm_on_started);
-    simgrid::s4u::VirtualMachine::on_suspend.connect(instr_vm_on_suspend);
-    simgrid::s4u::VirtualMachine::on_resume.connect(instr_vm_on_resume);
-    simgrid::s4u::Host::on_destruction.connect(instr_vm_on_destruction);
+    simgrid::s4u::VirtualMachine::on_start.connect([](simgrid::s4u::VirtualMachine& vm) {
+      simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("start");
+    });
+    simgrid::s4u::VirtualMachine::on_started.connect([](simgrid::s4u::VirtualMachine& vm) {
+      simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event();
+    });
+    simgrid::s4u::VirtualMachine::on_suspend.connect([](simgrid::s4u::VirtualMachine& vm) {
+      simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("suspend");
+    });
+    simgrid::s4u::VirtualMachine::on_resume.connect([](simgrid::s4u::VirtualMachine& vm) {
+      simgrid::instr::Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event();
+    });
+    simgrid::s4u::Host::on_destruction.connect(
+        [](simgrid::s4u::Host& host) { simgrid::instr::Container::by_name(host.get_name())->remove_from_parent(); });
   }
 }
 /*

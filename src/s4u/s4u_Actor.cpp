@@ -18,6 +18,8 @@ namespace s4u {
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_creation;
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_suspend;
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_resume;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_sleep;
+simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_wake_up;
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_migration_start;
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_migration_end;
 simgrid::xbt::signal<void(simgrid::s4u::ActorPtr)> s4u::Actor::on_destruction;
@@ -252,8 +254,14 @@ bool is_maestro()
 
 void sleep_for(double duration)
 {
-  if (duration > 0)
+  if (duration > 0) {
+    smx_actor_t actor = SIMIX_process_self();
+    simgrid::s4u::Actor::on_sleep(actor->iface());
+
     simcall_process_sleep(duration);
+
+    simgrid::s4u::Actor::on_wake_up(actor->iface());
+  }
 }
 
 void yield()
@@ -265,7 +273,7 @@ XBT_PUBLIC void sleep_until(double timeout)
 {
   double now = SIMIX_get_clock();
   if (timeout > now)
-    simcall_process_sleep(timeout - now);
+    sleep_for(timeout - now);
 }
 
 void execute(double flops)
