@@ -20,6 +20,7 @@ Model::~Model()
   delete started_action_set_;
   delete failed_action_set_;
   delete finished_action_set_;
+  delete ignored_action_set_;
   delete maxmin_system_;
 }
 
