@@ -138,9 +138,6 @@ XBT_PUBLIC smx_actor_t SIMIX_process_attach(const char* name, void* data, const 
 #endif
 XBT_PUBLIC void SIMIX_process_detach();
 
-/*********************************** Host *************************************/
-XBT_PUBLIC void SIMIX_host_off(sg_host_t host, smx_actor_t issuer);
-
 /********************************* Process ************************************/
 XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();

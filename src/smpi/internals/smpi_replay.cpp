@@ -422,7 +422,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 
   // Must be taken before Request::wait() since the request may be set to
   // MPI_REQUEST_NULL by Request::wait!
-  bool is_wait_for_receive = (request->flags() & RECV);
+  bool is_wait_for_receive = (request->flags() & MPI_REQ_RECV);
   // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
   TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("wait"));
 
@@ -540,7 +540,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
       std::vector<MPI_Request> reqs;
       req_storage.get_requests(reqs);
       for (const auto& req : reqs) {
-        if (req && (req->flags() & RECV)) {
+        if (req && (req->flags() & MPI_REQ_RECV)) {
           sender_receiver.push_back({req->src(), req->dst()});
         }
       }

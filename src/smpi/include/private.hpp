@@ -17,17 +17,17 @@
 #include <time.h>
 #endif
 
-#define PERSISTENT 0x1
-#define NON_PERSISTENT 0x2
-#define SEND 0x4
-#define RECV 0x8
-#define RECV_DELETE 0x10
-#define ISEND 0x20
-#define SSEND 0x40
-#define PREPARED 0x80
-#define FINISHED 0x100
-#define RMA 0x200
-#define ACCUMULATE 0x400
+#define MPI_REQ_PERSISTENT 0x1
+#define MPI_REQ_NON_PERSISTENT 0x2
+#define MPI_REQ_SEND 0x4
+#define MPI_REQ_RECV 0x8
+//#define MPI_REQ_RECV_DELETE 0x10
+#define MPI_REQ_ISEND 0x20
+#define MPI_REQ_SSEND 0x40
+#define MPI_REQ_PREPARED 0x80
+#define MPI_REQ_FINISHED 0x100
+#define MPI_REQ_RMA 0x200
+#define MPI_REQ_ACCUMULATE 0x400
 
 enum smpi_process_state { SMPI_UNINITIALIZED, SMPI_INITIALIZED, SMPI_FINALIZED };
 

@@ -68,7 +68,7 @@ double StorageN11Model::next_occuring_event(double now)
 
 void StorageN11Model::update_actions_state(double /*now*/, double delta)
 {
-  for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
+  for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     StorageAction& action = static_cast<StorageAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     action.update_remains(lrint(action.get_variable()->get_value() * delta));
@@ -78,7 +78,7 @@ void StorageN11Model::update_actions_state(double /*now*/, double delta)
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(kernel::resource::Action::State::done);
+      action.finish(kernel::resource::Action::State::FINISHED);
     }
   }
 }
@@ -132,7 +132,7 @@ StorageN11Action::StorageN11Action(kernel::resource::Model* model, double cost, 
 
 void StorageN11Action::cancel()
 {
-  set_state(Action::State::failed);
+  set_state(Action::State::FAILED);
 }
 
 void StorageN11Action::suspend()

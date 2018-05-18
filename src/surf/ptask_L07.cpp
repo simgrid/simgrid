@@ -68,7 +68,7 @@ NetworkL07Model::~NetworkL07Model()
 double HostL07Model::next_occuring_event(double now)
 {
   double min = HostModel::next_occuring_event_full(now);
-  for (kernel::resource::Action const& action : *get_running_action_set()) {
+  for (kernel::resource::Action const& action : *get_started_action_set()) {
     const L07Action& net_action = static_cast<const L07Action&>(action);
     if (net_action.latency_ > 0 && (min < 0 || net_action.latency_ < min)) {
       min = net_action.latency_;
@@ -82,7 +82,7 @@ double HostL07Model::next_occuring_event(double now)
 
 void HostL07Model::update_actions_state(double /*now*/, double delta)
 {
-  for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
+  for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     L07Action& action = static_cast<L07Action&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (action.latency_ > 0) {
@@ -114,7 +114,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
 
     if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(kernel::resource::Action::State::done);
+      action.finish(kernel::resource::Action::State::FINISHED);
     } else {
       /* Need to check that none of the model has failed */
       int i = 0;
@@ -124,7 +124,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
         void* constraint_id = cnst->get_id();
         if (static_cast<simgrid::kernel::resource::Resource*>(constraint_id)->is_off()) {
           XBT_DEBUG("Action (%p) Failed!!", &action);
-          action.finish(kernel::resource::Action::State::failed);
+          action.finish(kernel::resource::Action::State::FAILED);
           break;
         }
         cnst = action.get_variable()->get_constraint(i);

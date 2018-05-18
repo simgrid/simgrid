@@ -14,7 +14,17 @@ namespace s4u {
 /** @brief Activities
  *
  * This class is the ancestor of every activities that an actor can undertake.
- * That is, of the actions that do take time in the simulated world.
+ * That is, activities are all the things that do take time to the actor in the simulated world.
+ *
+ * They are somewhat linked but not identical to simgrid::kernel::resource::Action,
+ * that are stuff occurring on a resource:
+ *
+ * - A sequential execution activity encompasses 2 actions: one for the exec itself,
+ *   and a time-limited sleep used as timeout detector.
+ * - A point-to-point communication activity encompasses 3 actions: one for the comm itself
+ *   (which spans on all links of the path), and one infinite sleep used as failure detector
+ *   on both sender and receiver hosts.
+ * - Synchronization activities may possibly be connected to no action.
  */
 class XBT_PUBLIC Activity {
   friend Comm;
@@ -32,7 +42,7 @@ public:
   Activity(Activity const&) = delete;
   Activity& operator=(Activity const&) = delete;
 
-  enum class State { inited = 0, started, canceled, errored, finished };
+  enum class State { INITED = 0, STARTED, CANCELED, ERRORED, FINISHED };
 
   /** Starts a previously created activity.
    *
@@ -82,7 +92,7 @@ public:
 
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;
-  Activity::State state_                            = Activity::State::inited;
+  Activity::State state_                            = Activity::State::INITED;
   double remains_ = 0;
   void* user_data_                                  = nullptr;
 }; // class

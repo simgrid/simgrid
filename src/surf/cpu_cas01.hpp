@@ -27,7 +27,6 @@ public:
   ~CpuCas01Model() override;
 
   Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
-  kernel::resource::Action::StateSet cpuRunningActionSetThatDoesNotNeedBeingChecked_;
 };
 
 /************

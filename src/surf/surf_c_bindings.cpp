@@ -161,7 +161,7 @@ static simgrid::kernel::resource::Action* ActionListExtract(simgrid::kernel::res
 
 simgrid::kernel::resource::Action* surf_model_extract_done_action_set(simgrid::kernel::resource::Model* model)
 {
-  return ActionListExtract(model->get_done_action_set());
+  return ActionListExtract(model->get_finished_action_set());
 }
 
 simgrid::kernel::resource::Action* surf_model_extract_failed_action_set(simgrid::kernel::resource::Model* model)
@@ -171,7 +171,7 @@ simgrid::kernel::resource::Action* surf_model_extract_failed_action_set(simgrid:
 
 int surf_model_running_action_set_size(simgrid::kernel::resource::Model* model)
 {
-  return model->get_running_action_set()->size();
+  return model->get_started_action_set()->size();
 }
 
 void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* action, double bound)

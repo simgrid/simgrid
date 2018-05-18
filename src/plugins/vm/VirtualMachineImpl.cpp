@@ -90,7 +90,6 @@ double VMModel::next_occuring_event(double now)
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* const& ws_vm : VirtualMachineImpl::allVms_) {
     surf::Cpu* cpu = ws_vm->pimpl_cpu;
-    xbt_assert(cpu, "cpu-less host");
 
     double solved_value =
         ws_vm->getImpl()->action_->get_variable()->get_value(); // this is X1 in comment above, what

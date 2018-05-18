@@ -97,15 +97,15 @@ void simgrid::kernel::activity::CommImpl::cleanupSurf()
 void simgrid::kernel::activity::CommImpl::post()
 {
   /* Update synchro state */
-  if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::done)
+  if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
     state_ = SIMIX_SRC_TIMEOUT;
-  else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::done)
+  else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::FINISHED)
     state_ = SIMIX_DST_TIMEOUT;
-  else if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::failed)
+  else if (src_timeout && src_timeout->get_state() == simgrid::kernel::resource::Action::State::FAILED)
     state_ = SIMIX_SRC_HOST_FAILURE;
-  else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::failed)
+  else if (dst_timeout && dst_timeout->get_state() == simgrid::kernel::resource::Action::State::FAILED)
     state_ = SIMIX_DST_HOST_FAILURE;
-  else if (surfAction_ && surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
+  else if (surfAction_ && surfAction_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
     state_ = SIMIX_LINK_FAILURE;
   } else
     state_ = SIMIX_DONE;

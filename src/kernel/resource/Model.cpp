@@ -16,10 +16,10 @@ Model::Model(Model::UpdateAlgo algo) : update_algorithm_(algo) {}
 
 Model::~Model()
 {
-  delete ready_action_set_;
-  delete running_action_set_;
+  delete inited_action_set_;
+  delete started_action_set_;
   delete failed_action_set_;
-  delete done_action_set_;
+  delete finished_action_set_;
   delete maxmin_system_;
 }
 
@@ -50,7 +50,7 @@ double Model::next_occuring_event_lazy(double now)
     maxmin_system_->modified_set_->pop_front();
     bool max_duration_flag = false;
 
-    if (action->get_state_set() != running_action_set_)
+    if (action->get_state_set() != started_action_set_)
       continue;
 
     /* bogus priority, skip it */
@@ -108,7 +108,7 @@ double Model::next_occuring_event_full(double /*now*/)
 
   double min = -1;
 
-  for (Action& action : *get_running_action_set()) {
+  for (Action& action : *get_started_action_set()) {
     double value = action.get_variable()->get_value();
     if (value > 0) {
       if (action.get_remains() > 0)

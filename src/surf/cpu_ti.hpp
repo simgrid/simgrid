@@ -145,7 +145,6 @@ public:
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  kernel::resource::Action::StateSet runningActionSetThatDoesNotNeedBeingChecked_;
   CpuTiList modified_cpus_;
 };
 

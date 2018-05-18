@@ -28,14 +28,14 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
     CpuAction* action = static_cast<CpuAction*>(get_action_heap().pop());
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
 
-    action->finish(kernel::resource::Action::State::done);
+    action->finish(kernel::resource::Action::State::FINISHED);
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
   }
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    for (kernel::resource::Action const& action : *get_running_action_set()) {
+    for (kernel::resource::Action const& action : *get_started_action_set()) {
       if (smaller < 0 || action.get_last_update() < smaller)
         smaller = action.get_last_update();
     }
@@ -47,7 +47,7 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 
 void CpuModel::update_actions_state_full(double now, double delta)
 {
-  for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
+  for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     CpuAction& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
 
@@ -58,7 +58,7 @@ void CpuModel::update_actions_state_full(double now, double delta)
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(kernel::resource::Action::State::done);
+      action.finish(kernel::resource::Action::State::FINISHED);
     }
   }
 }
@@ -161,7 +161,7 @@ void Cpu::set_speed_trace(tmgr_trace_t trace)
 
 void CpuAction::update_remains_lazy(double now)
 {
-  xbt_assert(get_state_set() == get_model()->get_running_action_set(),
+  xbt_assert(get_state_set() == get_model()->get_started_action_set(),
              "You're updating an action that is not running.");
   xbt_assert(get_priority() > 0, "You're updating an action that seems suspended.");
 

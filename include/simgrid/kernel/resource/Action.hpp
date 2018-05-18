@@ -44,7 +44,11 @@ public:
   bool empty() const { return heap_type::empty(); }
 };
 
-/** @details An action is a consumption on a resource (e.g.: a communication for the network) */
+/** @details An action is a consumption on a resource (e.g.: a communication for the network).
+ *
+ * It is related (but still different) from activities, that are the stuff on which an actor can be blocked.
+ * See simgrid::s4u::Activity for more details.
+ */
 class XBT_PUBLIC Action {
   friend ActionHeap;
 
@@ -62,12 +66,12 @@ public:
       StateSet;
 
   enum class State {
-    ready = 0,        /**< Ready        */
-    running,          /**< Running      */
-    failed,           /**< Task Failure */
-    done,             /**< Completed    */
-    to_free,          /**< Action to free in next cleanup */
-    not_in_the_system /**< Not in the system anymore. Why did you ask ? */
+    INITED,   /**< Created, but not started yet */
+    STARTED,  /**< Currently running */
+    FAILED,   /**< either the resource failed, or the action was canceled */
+    FINISHED, /**< Successfully completed  */
+    IGNORED   /**< e.g. failure detectors: infinite sleep actions that are put on resources which failure should get
+                 noticed  */
   };
 
   enum class SuspendStates {

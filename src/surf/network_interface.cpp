@@ -102,7 +102,7 @@ double NetworkModel::next_occuring_event_full(double now)
 {
   double minRes = Model::next_occuring_event_full(now);
 
-  for (Action const& action : *get_running_action_set()) {
+  for (Action const& action : *get_started_action_set()) {
     const NetworkAction& net_action = static_cast<const NetworkAction&>(action);
     if (net_action.latency_ > 0)
       minRes = (minRes < 0) ? net_action.latency_ : std::min(minRes, net_action.latency_);

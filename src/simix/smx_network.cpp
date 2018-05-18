@@ -466,7 +466,7 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
               receiver->get_cname(), comm->surfAction_);
 
     /* If a link is failed, detect it immediately */
-    if (comm->surfAction_->get_state() == simgrid::kernel::resource::Action::State::failed) {
+    if (comm->surfAction_->get_state() == simgrid::kernel::resource::Action::State::FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", sender->get_cname(),
                 receiver->get_cname());
       comm->state_ = SIMIX_LINK_FAILURE;

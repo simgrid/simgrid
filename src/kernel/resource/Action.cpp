@@ -26,7 +26,7 @@ Action::Action(simgrid::kernel::resource::Model* model, double cost, bool failed
   if (failed)
     state_set_ = get_model()->get_failed_action_set();
   else
-    state_set_ = get_model()->get_running_action_set();
+    state_set_ = get_model()->get_started_action_set();
 
   state_set_->push_back(*this);
 }
@@ -55,32 +55,37 @@ void Action::finish(Action::State state)
 
 Action::State Action::get_state() const
 {
-  if (state_set_ == model_->get_ready_action_set())
-    return Action::State::ready;
-  if (state_set_ == model_->get_running_action_set())
-    return Action::State::running;
+  if (state_set_ == model_->get_inited_action_set())
+    return Action::State::INITED;
+  if (state_set_ == model_->get_started_action_set())
+    return Action::State::STARTED;
   if (state_set_ == model_->get_failed_action_set())
-    return Action::State::failed;
-  if (state_set_ == model_->get_done_action_set())
-    return Action::State::done;
-  return Action::State::not_in_the_system;
+    return Action::State::FAILED;
+  if (state_set_ == model_->get_finished_action_set())
+    return Action::State::FINISHED;
+  if (state_set_ == model_->get_ignored_action_set())
+    return Action::State::IGNORED;
+  THROW_IMPOSSIBLE;
 }
 
 void Action::set_state(Action::State state)
 {
   simgrid::xbt::intrusive_erase(*state_set_, *this);
   switch (state) {
-    case Action::State::ready:
-      state_set_ = model_->get_ready_action_set();
+    case Action::State::INITED:
+      state_set_ = model_->get_inited_action_set();
       break;
-    case Action::State::running:
-      state_set_ = model_->get_running_action_set();
+    case Action::State::STARTED:
+      state_set_ = model_->get_started_action_set();
       break;
-    case Action::State::failed:
+    case Action::State::FAILED:
       state_set_ = model_->get_failed_action_set();
       break;
-    case Action::State::done:
-      state_set_ = model_->get_done_action_set();
+    case Action::State::FINISHED:
+      state_set_ = model_->get_finished_action_set();
+      break;
+    case Action::State::IGNORED:
+      state_set_ = model_->get_ignored_action_set();
       break;
     default:
       state_set_ = nullptr;
@@ -136,7 +141,7 @@ void Action::set_priority(double weight)
 
 void Action::cancel()
 {
-  set_state(Action::State::failed);
+  set_state(Action::State::FAILED);
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) {
     if (modified_set_hook_.is_linked())
       simgrid::xbt::intrusive_erase(*get_model()->get_modified_set(), *this);
@@ -161,7 +166,7 @@ void Action::suspend()
     get_model()->get_maxmin_system()->update_variable_weight(get_variable(), 0.0);
     if (get_model()->get_update_algorithm() == Model::UpdateAlgo::Lazy) {
       get_model()->get_action_heap().remove(this);
-      if (state_set_ == get_model()->get_running_action_set() && sharing_priority_ > 0) {
+      if (state_set_ == get_model()->get_started_action_set() && sharing_priority_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
         update_remains_lazy(surf_get_clock());
       }

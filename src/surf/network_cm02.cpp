@@ -174,7 +174,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
-      action->finish(Action::State::done);
+      action->finish(Action::State::FINISHED);
       get_action_heap().remove(action);
     }
   }
@@ -182,7 +182,7 @@ void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
 
 void NetworkCm02Model::update_actions_state_full(double now, double delta)
 {
-  for (auto it = std::begin(*get_running_action_set()); it != std::end(*get_running_action_set());) {
+  for (auto it = std::begin(*get_started_action_set()); it != std::end(*get_started_action_set());) {
     NetworkCm02Action& action = static_cast<NetworkCm02Action&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     XBT_DEBUG("Something happened to action %p", &action);
@@ -212,7 +212,7 @@ void NetworkCm02Model::update_actions_state_full(double now, double delta)
 
     if (((action.get_remains() <= 0) && (action.get_variable()->get_weight() > 0)) ||
         ((action.get_max_duration() > NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
-      action.finish(Action::State::done);
+      action.finish(Action::State::FINISHED);
     }
   }
 }
@@ -349,9 +349,9 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
       while ((var = get_constraint()->get_variable(&elem))) {
         Action* action = static_cast<Action*>(var->get_id());
 
-        if (action->get_state() == Action::State::running || action->get_state() == Action::State::ready) {
+        if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
           action->set_finish_time(now);
-          action->set_state(Action::State::failed);
+          action->set_state(Action::State::FAILED);
         }
       }
     }
@@ -448,7 +448,7 @@ void NetworkCm02Action::update_remains_lazy(double now)
 
   if ((get_remains_no_update() <= 0 && (get_variable()->get_weight() > 0)) ||
       ((max_duration > NO_MAX_DURATION) && (max_duration <= 0))) {
-    finish(Action::State::done);
+    finish(Action::State::FINISHED);
     get_model()->get_action_heap().remove(this);
   }
 
