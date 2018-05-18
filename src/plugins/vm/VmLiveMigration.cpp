@@ -333,10 +333,10 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
   simgrid::s4u::Host* src_pm = vm->getPm();
 
-  if (src_pm->isOff())
+  if (src_pm->is_off())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->get_cname(),
            src_pm->get_cname());
-  if (dst_pm->isOff())
+  if (dst_pm->is_off())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->get_cname(), dst_pm->get_cname());
   if (vm->getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->get_cname());

@@ -65,7 +65,7 @@ static void execute_load_test()
   s4u_Host* host2 = simgrid::s4u::Host::by_name("MyHost2");
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 computed %.0f flops so far and has an average load of %.5f.",
            sg_host_get_computed_flops(host2), sg_host_get_avg_load(host2));
-  host2->turnOff();
+  host2->turn_off();
   start = simgrid::s4u::Engine::get_clock();
   simgrid::s4u::this_actor::sleep_for(10);
   XBT_INFO("Done sleeping %.2f s; peak speed: %.0E flop/s; number of flops computed so far: %.0E",

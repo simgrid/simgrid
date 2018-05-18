@@ -89,9 +89,9 @@ Host* Host::current()
   return smx_proc->host;
 }
 
-void Host::turnOn()
+void Host::turn_on()
 {
-  if (isOff()) {
+  if (is_off()) {
     simgrid::simix::simcall([this] {
       this->extension<simgrid::simix::Host>()->turnOn();
       this->pimpl_cpu->turn_on();
@@ -101,9 +101,9 @@ void Host::turnOn()
 }
 
 /** @brief Stop the host if it is on */
-void Host::turnOff()
+void Host::turn_off()
 {
-  if (isOn()) {
+  if (is_on()) {
     smx_actor_t self = SIMIX_process_self();
     simgrid::simix::simcall([this, self] {
       simgrid::simix::Host* host = this->extension<simgrid::simix::Host>();
@@ -126,7 +126,7 @@ void Host::turnOff()
   }
 }
 
-bool Host::isOn()
+bool Host::is_on()
 {
   return this->pimpl_cpu->is_on();
 }
@@ -137,10 +137,33 @@ int Host::getPstatesCount() const
 }
 
 /**
- * \brief Return the list of actors attached to an host.
+ * \brief Return a copy of the list of actors that are executing on this host.
  *
- * \param whereto a vector in which we should push actors living on that host
+ * Daemons and regular actors are all mixed in this list.
  */
+std::vector<ActorPtr> Host::get_all_actors()
+{
+  std::vector<ActorPtr> res;
+  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list)
+    res.push_back(actor.ciface());
+  return res;
+}
+
+/** @brief Returns how many actors (daemonized or not) have been launched on this host */
+int Host::get_actor_count()
+{
+  return this->extension<simgrid::simix::Host>()->process_list.size();
+}
+
+/** @deprecated */
+void Host::getProcesses(std::vector<ActorPtr>* list)
+{
+  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
+    list->push_back(actor.iface());
+  }
+}
+
+/** @deprecated */
 void Host::actorList(std::vector<ActorPtr>* whereto)
 {
   for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
@@ -187,28 +210,14 @@ std::map<std::string, std::string>* Host::getProperties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Host::getProperty(const char* key)
+const char* Host::get_property(const char* key)
 {
   return this->pimpl_->getProperty(key);
 }
 
-void Host::setProperty(std::string key, std::string value)
+void Host::set_property(std::string key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->setProperty(key, value); });
-}
-
-/** Get the processes attached to the host */
-void Host::getProcesses(std::vector<ActorPtr>* list)
-{
-  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
-    list->push_back(actor.iface());
-  }
-}
-
-/** @brief Returns how many actors (daemonized or not) have been launched on this host */
-int Host::get_actor_count()
-{
-  return this->extension<simgrid::simix::Host>()->process_list.size();
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
@@ -466,7 +475,7 @@ void sg_host_set_pstate(sg_host_t host, int pstate)
  */
 void sg_host_turn_on(sg_host_t host)
 {
-  host->turnOn();
+  host->turn_on();
 }
 
 /** \ingroup m_host_management
@@ -478,7 +487,7 @@ void sg_host_turn_on(sg_host_t host)
  */
 void sg_host_turn_off(sg_host_t host)
 {
-  host->turnOff();
+  host->turn_off();
 }
 
 /** @ingroup m_host_management
@@ -492,7 +501,7 @@ void sg_host_turn_off(sg_host_t host)
  */
 int sg_host_is_on(sg_host_t host)
 {
-  return host->isOn();
+  return host->is_on();
 }
 
 /** @ingroup m_host_management
@@ -503,7 +512,7 @@ int sg_host_is_on(sg_host_t host)
  */
 int sg_host_is_off(sg_host_t host)
 {
-  return host->isOff();
+  return host->is_off();
 }
 
 /** @brief Get the properties of an host */
@@ -528,12 +537,12 @@ xbt_dict_t sg_host_get_properties(sg_host_t host)
 */
 const char* sg_host_get_property_value(sg_host_t host, const char* name)
 {
-  return host->getProperty(name);
+  return host->get_property(name);
 }
 
 void sg_host_set_property_value(sg_host_t host, const char* name, const char* value)
 {
-  host->setProperty(name, value);
+  host->set_property(name, value);
 }
 
 /**

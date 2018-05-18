@@ -13,7 +13,7 @@ static void dvfs()
   simgrid::s4u::Host* host1 = simgrid::s4u::Host::by_name("MyHost1");
   simgrid::s4u::Host* host2 = simgrid::s4u::Host::by_name("MyHost2");
 
-  XBT_INFO("Energetic profile: %s", host1->getProperty("watt_per_state"));
+  XBT_INFO("Energetic profile: %s", host1->get_property("watt_per_state"));
   XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J", host1->getSpeed(),
            sg_host_get_consumed_energy(host1));
 
@@ -56,7 +56,7 @@ static void dvfs()
   // =========== Turn the other host off ==========
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated %.0f J so far.",
            sg_host_get_consumed_energy(host2));
-  host2->turnOff();
+  host2->turn_off();
   start = simgrid::s4u::Engine::get_clock();
   simgrid::s4u::this_actor::sleep_for(10);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",

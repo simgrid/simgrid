@@ -80,29 +80,30 @@ public:
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const { return name_.c_str(); }
 
-  void actorList(std::vector<ActorPtr> * whereto);
+  int get_actor_count();
+  std::vector<ActorPtr> get_all_actors();
 
   /** Turns that host on if it was previously off
    *
    * All actors on that host which were marked autorestart will be restarted automatically.
    * This call does nothing if the host is already on.
    */
-  void turnOn();
+  void turn_on();
   /** Turns that host off. All actors are forcefully stopped. */
-  void turnOff();
+  void turn_off();
   /** Returns if that host is currently up and running */
-  bool isOn();
+  bool is_on();
   /** Returns if that host is currently down and offline */
-  bool isOff() { return not isOn(); }
+  bool is_off() { return not is_on(); }
+
+  const char* get_property(const char* key);
+  void set_property(std::string key, std::string value);
+  std::map<std::string, std::string>* getProperties();
 
   double getSpeed();
   double get_available_speed();
   int getCoreCount();
-  std::map<std::string, std::string>* getProperties();
-  const char* getProperty(const char* key);
-  void setProperty(std::string key, std::string value);
-  void getProcesses(std::vector<ActorPtr> * list);
-  int get_actor_count();
+
   double getPstateSpeed(int pstate_index);
   int getPstatesCount() const;
   void setPstate(int pstate_index);
@@ -142,6 +143,21 @@ public:
     return name_;
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_cname()") const char* getCname() const { return name_.c_str(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_all_actors()") void actorList(std::vector<ActorPtr>* whereto);
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_all_actors()") void getProcesses(std::vector<ActorPtr>* list);
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::turn_on()") void turnOn() { turn_on(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::turn_off()") void turnOff() { turn_off(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::is_on()") bool isOn() { return is_on(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::is_off()") bool isOff() { return is_off(); }
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_property()") const char* getProperty(const char* key)
+  {
+    return get_property(key);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::set_property()") void setProperty(std::string key, std::string value)
+  {
+    set_property(key, value);
+  }
 
 private:
   simgrid::xbt::string name_{"noname"};

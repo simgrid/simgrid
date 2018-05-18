@@ -22,10 +22,9 @@ static void worker()
 static void master()
 {
   simgrid::s4u::this_actor::sleep_for(1);
-  std::vector<simgrid::s4u::ActorPtr>* actor_list = new std::vector<simgrid::s4u::ActorPtr>();
-  simgrid::s4u::this_actor::get_host()->actorList(actor_list);
+  std::vector<simgrid::s4u::ActorPtr> actor_list = simgrid::s4u::this_actor::get_host()->get_all_actors();
 
-  for (auto const& actor : *actor_list) {
+  for (auto const& actor : actor_list) {
     XBT_INFO("Actor (pid=%ld, ppid=%ld, name=%s)", actor->get_pid(), actor->get_ppid(), actor->get_cname());
     if (simgrid::s4u::this_actor::get_pid() != actor->get_pid())
       actor->kill();
@@ -48,7 +47,6 @@ static void master()
   simgrid::s4u::this_actor::sleep_for(2);
   actor->kill();
 
-  delete actor_list;
   XBT_INFO("Goodbye now!");
 }
 

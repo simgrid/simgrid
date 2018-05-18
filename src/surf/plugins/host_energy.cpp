@@ -176,14 +176,14 @@ void HostEnergy::update()
   }
 
   /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
-  this->pstate = host->isOn() ? host->getPstate() : pstate_off;
+  this->pstate = host->is_on() ? host->getPstate() : pstate_off;
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_get_clock())
 {
   initWattsRangeList();
 
-  const char* off_power_str = host->getProperty("watt_off");
+  const char* off_power_str = host->get_property("watt_off");
   if (off_power_str != nullptr) {
     try {
       this->watts_off = std::stod(std::string(off_power_str));
@@ -314,7 +314,7 @@ double HostEnergy::getConsumedEnergy()
 
 void HostEnergy::initWattsRangeList()
 {
-  const char* all_power_values_str = host->getProperty("watt_per_state");
+  const char* all_power_values_str = host->get_property("watt_per_state");
   if (all_power_values_str == nullptr)
     return;
 

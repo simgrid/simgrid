@@ -517,7 +517,7 @@ int console_host_set_property(lua_State *L) {
 
   sg_host_t host = sg_host_by_name(name);
   lua_ensure(host, "no host '%s' found",name);
-  host->setProperty(prop_id, prop_value);
+  host->set_property(prop_id, prop_value);
 
   return 0;
 }

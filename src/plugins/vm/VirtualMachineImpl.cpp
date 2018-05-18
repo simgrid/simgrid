@@ -46,7 +46,7 @@ const double virt_overhead = 1; // 0.95
 
 static void hostStateChange(s4u::Host& host)
 {
-  if (host.isOff()) { // just turned off.
+  if (host.is_off()) { // just turned off.
     std::vector<s4u::VirtualMachine*> trash;
     /* Find all VMs living on that host */
     for (s4u::VirtualMachine* const& vm : VirtualMachineImpl::allVms_)

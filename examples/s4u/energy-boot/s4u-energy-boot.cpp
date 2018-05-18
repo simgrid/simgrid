@@ -43,7 +43,7 @@ static void simulate_bootup(simgrid::s4u::Host* host)
   host->setPstate(3);
 
   XBT_INFO("Actually start the host");
-  host->turnOn();
+  host->turn_on();
 
   XBT_INFO("Wait 150s to simulate the boot time.");
   simgrid::s4u::this_actor::sleep_for(150);
@@ -66,7 +66,7 @@ static void simulate_shutdown(simgrid::s4u::Host* host)
   host->setPstate(previous_pstate);
 
   XBT_INFO("Actually shutdown the host");
-  host->turnOff();
+  host->turn_off();
 }
 
 static int monitor()
