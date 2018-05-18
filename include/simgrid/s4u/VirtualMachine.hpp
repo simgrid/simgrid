@@ -16,10 +16,6 @@ enum e_surf_vm_state_t {
 };
 
 namespace simgrid {
-namespace vm {
-class VirtualMachineImpl;
-};
-
 namespace s4u {
 
 /** @ingroup s4u_api
