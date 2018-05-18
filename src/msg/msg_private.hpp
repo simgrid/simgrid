@@ -102,8 +102,6 @@ XBT_PRIVATE void TRACE_msg_task_get_start();
 XBT_PRIVATE void TRACE_msg_task_put_start(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_put_end();
 
-/* declaration of instrumentation functions from msg_process_instr.c */
-XBT_PRIVATE void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
 
 inline void s_simdata_task_t::setUsed()
 {

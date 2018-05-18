@@ -278,6 +278,13 @@ static void instr_on_platform_created()
   TRACE_paje_dump_buffer(true);
 }
 
+static void TRACE_actor_kill(smx_process_exit_status_t status, msg_process_t process)
+{
+  if (status == SMX_EXIT_FAILURE)
+    // kill means that this actor no longer exists, let's destroy it
+    simgrid::instr::Container::by_name(instr_pid(process))->remove_from_parent();
+}
+
 static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
 {
   container_t root      = simgrid::instr::Container::get_root();
@@ -294,6 +301,8 @@ static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
   state->add_entity_value("task_execute", "0 1 1");
   root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
   root->type_->by_name_or_create("ACTOR_TASK_LINK", actor_type, actor_type);
+
+  actor->on_exit((int_f_pvoid_pvoid_t)TRACE_actor_kill, actor->get_impl());
 }
 
 static long long int counter = 0;

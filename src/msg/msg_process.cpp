@@ -11,6 +11,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
+std::string instr_pid(msg_process_t proc)
+{
+  return std::string(proc->get_cname()) + "-" + std::to_string(proc->get_pid());
+}
+
 /** @addtogroup m_process_management
  *
  *  Processes (#msg_process_t) are independent agents that can do stuff on their own. They are in charge of executing
@@ -153,8 +158,7 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
     delete msgExt;
     return nullptr;
   }
-
-  process->ciface()->on_exit((int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
+  MSG_process_yield();
   return process->ciface();
 }
 
@@ -181,7 +185,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
       SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->get_cname(), &props, nullptr);
   if (not process)
     xbt_die("Could not attach");
-  process->ciface()->on_exit((int_f_pvoid_pvoid_t)TRACE_msg_process_kill, process);
+  MSG_process_yield();
   return process->ciface();
 }
 
