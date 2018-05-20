@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_interface.hpp"
-#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -30,18 +29,6 @@ void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 
     action->finish(kernel::resource::Action::State::FINISHED);
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
-  }
-  if (TRACE_is_enabled()) {
-    //defining the last timestamp that we can safely dump to trace file
-    //without losing the event ascending order (considering all CPU's)
-    double smaller = -1;
-    for (kernel::resource::Action const& action : *get_started_action_set()) {
-      if (smaller < 0 || action.get_last_update() < smaller)
-        smaller = action.get_last_update();
-    }
-    if (smaller > 0) {
-      TRACE_last_timestamp_to_dump = smaller;
-    }
   }
 }
 
@@ -173,11 +160,6 @@ void CpuAction::update_remains_lazy(double now)
                get_last_update());
     update_remains(get_last_value() * delta);
 
-    if (TRACE_is_enabled()) {
-      Cpu* cpu = static_cast<Cpu*>(get_variable()->get_constraint(0)->get_id());
-      TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), get_category(), get_last_value(),
-                                          get_last_update(), now - get_last_update());
-    }
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, get_remains_no_update());
   }
 

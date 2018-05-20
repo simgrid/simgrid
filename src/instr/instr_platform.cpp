@@ -278,11 +278,11 @@ static void instr_on_platform_created()
   TRACE_paje_dump_buffer(true);
 }
 
-static void TRACE_actor_kill(smx_process_exit_status_t status, msg_process_t process)
+static void TRACE_actor_kill(smx_process_exit_status_t status, simgrid::s4u::Actor* actor)
 {
   if (status == SMX_EXIT_FAILURE)
     // kill means that this actor no longer exists, let's destroy it
-    simgrid::instr::Container::by_name(instr_pid(process))->remove_from_parent();
+    simgrid::instr::Container::by_name(instr_pid(actor))->remove_from_parent();
 }
 
 static void instr_actor_on_creation(simgrid::s4u::ActorPtr actor)
