@@ -125,12 +125,15 @@ public:
 
   simgrid::s4u::Host* get_host() { return host_; }
 
+private:
   int cores_count_ = 1;
   simgrid::s4u::Host* host_;
 
-  std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related) */
   int pstate_ = 0;                     /*< Current pstate (index in the speedPeakList)*/
+protected:
+  std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related) */
 
+public:
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
   virtual void
   set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to
