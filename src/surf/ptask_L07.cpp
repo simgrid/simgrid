@@ -263,7 +263,7 @@ kernel::resource::Action* CpuL07::execution_start(double size)
   sg_host_t* host_list = new sg_host_t[1]();
   double* flops_amount = new double[1]();
 
-  host_list[0] = getHost();
+  host_list[0]    = get_host();
   flops_amount[0] = size;
 
   return static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(1, host_list, flops_amount, nullptr, -1);
@@ -312,12 +312,12 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
     onSpeedChange();
     tmgr_trace_event_unref(&speed_.event);
 
-  } else if (triggered == stateEvent_) {
+  } else if (triggered == state_event_) {
     if (value > 0)
       turn_on();
     else
       turn_off();
-    tmgr_trace_event_unref(&stateEvent_);
+    tmgr_trace_event_unref(&state_event_);
 
   } else {
     xbt_die("Unknown event!\n");

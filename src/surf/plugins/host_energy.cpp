@@ -235,7 +235,7 @@ double HostEnergy::getCurrentWattsValue()
     cpu_load = host->pimpl_cpu->get_constraint()->get_usage() / current_speed;
 
   /** Divide by the number of cores here **/
-  cpu_load /= host->pimpl_cpu->coreCount();
+  cpu_load /= host->pimpl_cpu->get_cores_count();
 
   if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
     cpu_load = 1;
@@ -384,7 +384,7 @@ static void onCreation(simgrid::s4u::Host& host)
 static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::kernel::resource::Action::State previous)
 {
   for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
-    simgrid::s4u::Host* host = cpu->getHost();
+    simgrid::s4u::Host* host = cpu->get_host();
     if (host != nullptr) {
 
       // If it's a VM, take the corresponding PM

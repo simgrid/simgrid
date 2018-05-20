@@ -93,11 +93,11 @@ CpuCas01::CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, std::vector<d
 CpuCas01::~CpuCas01()
 {
   if (get_model() == surf_cpu_model_pm)
-    speedPerPstate_.clear();
+    speed_per_pstate_.clear();
 }
 
 std::vector<double> * CpuCas01::getSpeedPeakList(){
-  return &speedPerPstate_;
+  return &speed_per_pstate_;
 }
 
 bool CpuCas01::is_used()
@@ -111,7 +111,7 @@ void CpuCas01::onSpeedChange() {
   const kernel::lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
-                                                            coresAmount_ * speed_.scale * speed_.peak);
+                                                            cores_count_ * speed_.scale * speed_.peak);
   while ((var = get_constraint()->get_variable(&elem))) {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(var->get_id());
 
@@ -126,19 +126,19 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(coresAmount_ == 1, "FIXME: add speed scaling code also for constraint_core[i]");
+    xbt_assert(cores_count_ == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
     speed_.scale = value;
     onSpeedChange();
 
     tmgr_trace_event_unref(&speed_.event);
-  } else if (event == stateEvent_) {
+  } else if (event == state_event_) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(coresAmount_ == 1, "FIXME: add state change code also for constraint_core[i]");
+    xbt_assert(cores_count_ == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
       if (is_off())
-        host_that_restart.push_back(getHost());
+        host_that_restart.push_back(get_host());
       turn_on();
     } else {
       kernel::lmm::Constraint* cnst = get_constraint();
@@ -159,7 +159,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
         }
       }
     }
-    tmgr_trace_event_unref(&stateEvent_);
+    tmgr_trace_event_unref(&state_event_);
 
   } else {
     xbt_die("Unknown event!\n");

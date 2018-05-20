@@ -151,7 +151,7 @@ static void onHostChange(simgrid::s4u::Host& host)
 static void onActionStateChange(simgrid::surf::CpuAction* action, simgrid::kernel::resource::Action::State /*previous*/)
 {
   for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
-    simgrid::s4u::Host* host = cpu->getHost();
+    simgrid::s4u::Host* host = cpu->get_host();
 
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(host)) // Ignore virtual machines
       return;

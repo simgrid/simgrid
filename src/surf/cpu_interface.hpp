@@ -103,7 +103,7 @@ public:
   virtual simgrid::kernel::resource::Action* sleep(double duration) = 0;
 
   /** @brief Get the amount of cores */
-  virtual int coreCount();
+  virtual int get_cores_count();
 
   /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
   virtual double getSpeed(double load);
@@ -119,16 +119,16 @@ public:
   /** @brief Get the current Cpu computational speed */
   virtual double getPstateSpeed(int pstate_index);
 
-  virtual int getNbPStates();
-  virtual void setPState(int pstate_index);
-  virtual int  getPState();
+  virtual int get_pstates_count();
+  virtual void set_pstate(int pstate_index);
+  virtual int get_pstate();
 
-  simgrid::s4u::Host* getHost() { return host_; }
+  simgrid::s4u::Host* get_host() { return host_; }
 
-  int coresAmount_ = 1;
+  int cores_count_ = 1;
   simgrid::s4u::Host* host_;
 
-  std::vector<double> speedPerPstate_; /*< List of supported CPU capacities (pstate related) */
+  std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related) */
   int pstate_ = 0;                     /*< Current pstate (index in the speedPeakList)*/
 
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
@@ -136,7 +136,7 @@ public:
   set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to
                                           external load). Trace must contain relative values (ratio between 0 and 1) */
 
-  tmgr_trace_event_t stateEvent_ = nullptr;
+  tmgr_trace_event_t state_event_ = nullptr;
   Metric speed_                  = {1.0, 0, nullptr};
 };
 

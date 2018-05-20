@@ -73,7 +73,7 @@ Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, std::vector<d
 
 Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
          std::vector<double>* speedPerPstate, int core)
-    : Resource(model, host->get_cname(), constraint), coresAmount_(core), host_(host)
+    : Resource(model, host->get_cname(), constraint), cores_count_(core), host_(host)
 {
   xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->get_cname());
 
@@ -84,41 +84,42 @@ Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::
 
   // Copy the power peak array:
   for (double const& value : *speedPerPstate) {
-    speedPerPstate_.push_back(value);
+    speed_per_pstate_.push_back(value);
   }
 }
 
 Cpu::~Cpu() = default;
 
-int Cpu::getNbPStates()
+int Cpu::get_pstates_count()
 {
-  return speedPerPstate_.size();
+  return speed_per_pstate_.size();
 }
 
-void Cpu::setPState(int pstate_index)
+void Cpu::set_pstate(int pstate_index)
 {
-  xbt_assert(pstate_index <= static_cast<int>(speedPerPstate_.size()),
+  xbt_assert(pstate_index <= static_cast<int>(speed_per_pstate_.size()),
              "Invalid parameters for CPU %s (pstate %d > length of pstates %d). Please fix your platform file, or your "
              "call to change the pstate.",
-             get_cname(), pstate_index, static_cast<int>(speedPerPstate_.size()));
+             get_cname(), pstate_index, static_cast<int>(speed_per_pstate_.size()));
 
-  double new_peak_speed = speedPerPstate_[pstate_index];
+  double new_peak_speed = speed_per_pstate_[pstate_index];
   pstate_ = pstate_index;
   speed_.peak = new_peak_speed;
 
   onSpeedChange();
 }
 
-int Cpu::getPState()
+int Cpu::get_pstate()
 {
   return pstate_;
 }
 
 double Cpu::getPstateSpeed(int pstate_index)
 {
-  xbt_assert((pstate_index <= static_cast<int>(speedPerPstate_.size())), "Invalid parameters (pstate index out of bounds)");
+  xbt_assert((pstate_index <= static_cast<int>(speed_per_pstate_.size())),
+             "Invalid parameters (pstate index out of bounds)");
 
-  return speedPerPstate_[pstate_index];
+  return speed_per_pstate_[pstate_index];
 }
 
 double Cpu::getSpeed(double load)
@@ -136,16 +137,16 @@ void Cpu::onSpeedChange() {
   s4u::Host::on_speed_change(*host_);
 }
 
-int Cpu::coreCount()
+int Cpu::get_cores_count()
 {
-  return coresAmount_;
+  return cores_count_;
 }
 
 void Cpu::setStateTrace(tmgr_trace_t trace)
 {
-  xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Host %s", host_->get_cname());
+  xbt_assert(state_event_ == nullptr, "Cannot set a second state trace to Host %s", host_->get_cname());
 
-  stateEvent_ = future_evt_set->add_trace(trace, this);
+  state_event_ = future_evt_set->add_trace(trace, this);
 }
 void Cpu::set_speed_trace(tmgr_trace_t trace)
 {

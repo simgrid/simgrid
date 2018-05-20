@@ -402,10 +402,10 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
     tmgr_trace_event_unref(&speed_.event);
 
-  } else if (event == stateEvent_) {
+  } else if (event == state_event_) {
     if (value > 0) {
       if (is_off())
-        host_that_restart.push_back(getHost());
+        host_that_restart.push_back(get_host());
       turn_on();
     } else {
       turn_off();
@@ -422,7 +422,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
         }
       }
     }
-    tmgr_trace_event_unref(&stateEvent_);
+    tmgr_trace_event_unref(&state_event_);
 
   } else {
     xbt_die("Unknown event!\n");

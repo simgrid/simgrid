@@ -133,7 +133,7 @@ bool Host::is_on()
 
 int Host::getPstatesCount() const
 {
-  return this->pimpl_cpu->getNbPStates();
+  return this->pimpl_cpu->get_pstates_count();
 }
 
 /**
@@ -226,31 +226,31 @@ double Host::getPstateSpeed(int pstate_index)
   return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->getPstateSpeed(pstate_index); });
 }
 
-/** @brief Get the peak processor speed (under full load (=1.0), in flops/s), at the current pstate */
+/** @brief Get the peak processor speed in flops/s, (under full load (=1.0), at the current pstate) */
 double Host::getSpeed()
 {
-  return pimpl_cpu->getSpeed(1.0);
+  return this->pimpl_cpu->getSpeed(1.0);
 }
 double Host::get_available_speed()
 {
-  return pimpl_cpu->get_available_speed();
+  return this->pimpl_cpu->get_available_speed();
 }
 
 /** @brief Returns the number of core of the processor. */
 int Host::getCoreCount()
 {
-  return pimpl_cpu->coreCount();
+  return this->pimpl_cpu->get_cores_count();
 }
 
 /** @brief Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::simcall([this, pstate_index] { this->pimpl_cpu->setPState(pstate_index); });
+  simgrid::simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::getPstate()
 {
-  return this->pimpl_cpu->getPState();
+  return this->pimpl_cpu->get_pstate();
 }
 
 /**

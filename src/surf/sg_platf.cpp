@@ -84,7 +84,7 @@ void sg_platf_new_host(simgrid::kernel::routing::HostCreationArgs* args)
   if (args->speed_trace)
     host->pimpl_cpu->set_speed_trace(args->speed_trace);
   if (args->pstate != 0)
-    host->pimpl_cpu->setPState(args->pstate);
+    host->pimpl_cpu->set_pstate(args->pstate);
   if (args->coord && strcmp(args->coord, ""))
     new simgrid::kernel::routing::vivaldi::Coords(host->pimpl_netpoint, args->coord);
 }
