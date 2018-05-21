@@ -90,15 +90,7 @@ CpuCas01::CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, std::vector<d
 {
 }
 
-CpuCas01::~CpuCas01()
-{
-  if (get_model() == surf_cpu_model_pm)
-    speed_per_pstate_.clear();
-}
-
-std::vector<double> * CpuCas01::getSpeedPeakList(){
-  return &speed_per_pstate_;
-}
+CpuCas01::~CpuCas01() = default;
 
 bool CpuCas01::is_used()
 {

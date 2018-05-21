@@ -44,8 +44,6 @@ public:
 
   bool is_used() override;
 
-  std::vector<double> * getSpeedPeakList(); // FIXME: killme to hide our internals
-
 protected:
   void onSpeedChange() override;
 };

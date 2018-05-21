@@ -75,7 +75,11 @@ Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::
   }
 }
 
-Cpu::~Cpu() = default;
+Cpu::~Cpu()
+{
+  if (get_model() == surf_cpu_model_pm)
+    speed_per_pstate_.clear();
+}
 
 int Cpu::get_pstates_count()
 {
