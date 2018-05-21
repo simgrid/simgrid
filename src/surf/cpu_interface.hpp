@@ -142,6 +142,7 @@ public:
    */
   virtual void set_speed_trace(tmgr_trace_t trace);
 
+protected:
   tmgr_trace_event_t state_event_ = nullptr;
   Metric speed_                  = {1.0, 0, nullptr};
 };
