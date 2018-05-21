@@ -36,7 +36,7 @@ public:
    * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)=0;
+  virtual Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core) = 0;
 
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
@@ -155,8 +155,6 @@ protected:
  * @brief A CpuAction represents the execution of code on one or several Cpus
  */
 class XBT_PUBLIC CpuAction : public simgrid::kernel::resource::Action {
-  friend XBT_PUBLIC Cpu* getActionCpu(CpuAction * action);
-
 public:
   /** @brief Signal emitted when the action state changes (ready/running/done, etc)
    *  Signature: `void(CpuAction *action, simgrid::kernel::resource::Action::State previous)`

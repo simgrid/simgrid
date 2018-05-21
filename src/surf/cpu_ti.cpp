@@ -313,9 +313,9 @@ CpuTiModel::~CpuTiModel()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedPerPstate, int core)
+Cpu* CpuTiModel::create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core)
 {
-  return new CpuTi(this, host, speedPerPstate, core);
+  return new CpuTi(this, host, speed_per_pstate, core);
 }
 
 double CpuTiModel::next_occuring_event(double now)

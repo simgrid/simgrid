@@ -26,7 +26,7 @@ public:
   explicit CpuCas01Model(kernel::resource::Model::UpdateAlgo algo);
   ~CpuCas01Model() override;
 
-  Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
+  Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
 };
 
 /************

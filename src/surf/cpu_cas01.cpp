@@ -76,9 +76,9 @@ CpuCas01Model::~CpuCas01Model()
   surf_cpu_model_pm = nullptr;
 }
 
-Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
+Cpu* CpuCas01Model::create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core)
 {
-  return new CpuCas01(this, host, speedPerPstate, core);
+  return new CpuCas01(this, host, speed_per_pstate, core);
 }
 
 /************

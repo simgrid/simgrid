@@ -141,7 +141,7 @@ class CpuTiModel : public CpuModel {
 public:
   CpuTiModel() : CpuModel(Model::UpdateAlgo::Full){};
   ~CpuTiModel() override;
-  Cpu* createCpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
+  Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 

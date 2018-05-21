@@ -39,7 +39,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
   for (int i = 0; i < pm->getPstatesCount(); i++)
     speeds.push_back(pm->getPstateSpeed(i));
 
-  surf_cpu_model_vm->createCpu(this, &speeds, pm->getCoreCount());
+  surf_cpu_model_vm->create_cpu(this, &speeds, pm->getCoreCount());
   if (pm->getPstate() != 0)
     setPstate(pm->getPstate());
 

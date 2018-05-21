@@ -49,7 +49,7 @@ public:
   CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   ~CpuL07Model();
 
-  Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
+  Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
   HostL07Model *hostModel_;
 };
 
@@ -71,7 +71,7 @@ public:
 
 class CpuL07 : public Cpu {
 public:
-  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, std::vector<double> * speedPerPstate, int core);
+  CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
   ~CpuL07() override;
   bool is_used() override;
   void apply_event(tmgr_trace_event_t event, double value) override;
