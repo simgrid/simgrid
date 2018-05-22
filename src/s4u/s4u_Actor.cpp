@@ -541,6 +541,16 @@ sg_actor_t sg_actor_restart(sg_actor_t actor)
   return actor->restart();
 }
 
+/**
+ * \ingroup m_actor_management
+ * \brief Sets the "auto-restart" flag of the actor.
+ * If the flag is set to 1, the actor will be automatically restarted when its host comes back up.
+ */
+void sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
+{
+  actor->set_auto_restart(auto_restart);
+}
+
 /** @ingroup m_actor_management
  * @brief This actor will be terminated automatically when the last non-daemon actor finishes
  */

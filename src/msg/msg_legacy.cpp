@@ -74,6 +74,11 @@ void MSG_process_restart(sg_actor_t actor)
 {
   sg_actor_restart(actor);
 }
+void MSG_process_auto_restart_set(sg_actor_t actor, int auto_restart)
+{
+  sg_actor_set_auto_restart(actor, auto_restart);
+}
+
 void MSG_process_daemonize(sg_actor_t actor)
 {
   sg_actor_daemonize(actor);

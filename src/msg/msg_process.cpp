@@ -307,15 +307,6 @@ smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- 
 void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
   simgrid::s4u::this_actor::on_exit(fun, data);
 }
-/**
- * \ingroup m_process_management
- * \brief Sets the "auto-restart" flag of the process.
- * If the flag is set to 1, the process will be automatically restarted when its host comes back up.
- */
-XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_restart)
-{
-  process->set_auto_restart(auto_restart);
-}
 
 /** @ingroup m_process_management
  * @brief Take an extra reference on that process to prevent it to be garbage-collected

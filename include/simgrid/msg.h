@@ -140,6 +140,7 @@ XBT_PUBLIC void MSG_process_suspend(msg_process_t process);
 XBT_PUBLIC void MSG_process_resume(msg_process_t process);
 XBT_PUBLIC int MSG_process_is_suspended(msg_process_t process);
 XBT_PUBLIC void MSG_process_restart(msg_process_t process);
+XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_restart);
 XBT_PUBLIC void MSG_process_daemonize(msg_process_t process);
 XBT_PUBLIC void MSG_process_migrate(msg_process_t process, msg_host_t host);
 XBT_PUBLIC void MSG_process_join(msg_process_t process, double timeout);
@@ -253,7 +254,6 @@ XBT_PUBLIC void* MSG_process_get_data(msg_process_t process);
 XBT_PUBLIC msg_error_t MSG_process_set_data(msg_process_t process, void* data);
 
 XBT_PUBLIC void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void* data);
-XBT_PUBLIC void MSG_process_auto_restart_set(msg_process_t process, int auto_restart);
 
 XBT_PUBLIC void MSG_process_ref(msg_process_t process);
 XBT_PUBLIC void MSG_process_unref(msg_process_t process);
