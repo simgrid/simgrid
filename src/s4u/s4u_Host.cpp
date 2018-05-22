@@ -223,17 +223,24 @@ void Host::set_property(std::string key, std::string value)
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::getPstateSpeed(int pstate_index)
 {
-  return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->getPstateSpeed(pstate_index); });
+  return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
 }
 
-/** @brief Get the peak processor speed in flops/s, (under full load (=1.0), at the current pstate) */
+/** @brief Get the peak processor speed in flops/s, (under full load (=1.0), at the current pstate)
+ *
+ *  The result also takes the external load into account.
+ */
 double Host::getSpeed()
 {
-  return this->pimpl_cpu->getSpeed(1.0);
+  return this->pimpl_cpu->get_speed(1.0);
 }
+/** @brief Get the available speed ratio, between 0 and 1.
+ *
+ * This accounts for external load (see @ref set_speed_trace()).
+ */
 double Host::get_available_speed()
 {
-  return this->pimpl_cpu->get_available_speed();
+  return this->pimpl_cpu->get_speed_ratio();
 }
 
 /** @brief Returns the number of core of the processor. */

@@ -286,7 +286,8 @@ bool CpuL07::is_used()
 }
 
 /** @brief take into account changes of speed (either load or max) */
-void CpuL07::onSpeedChange() {
+void CpuL07::on_speed_change()
+{
   kernel::lmm::Variable* var = nullptr;
   const kernel::lmm::Element* elem = nullptr;
 
@@ -297,7 +298,7 @@ void CpuL07::onSpeedChange() {
     get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
   }
 
-  Cpu::onSpeedChange();
+  Cpu::on_speed_change();
 }
 
 bool LinkL07::is_used()
@@ -310,7 +311,7 @@ void CpuL07::apply_event(tmgr_trace_event_t triggered, double value)
   XBT_DEBUG("Updating cpu %s (%p) with value %g", get_cname(), this, value);
   if (triggered == speed_.event) {
     speed_.scale = value;
-    onSpeedChange();
+    on_speed_change();
     tmgr_trace_event_unref(&speed_.event);
 
   } else if (triggered == state_event_) {

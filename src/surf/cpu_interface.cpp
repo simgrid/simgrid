@@ -97,7 +97,7 @@ void Cpu::set_pstate(int pstate_index)
   pstate_ = pstate_index;
   speed_.peak = new_peak_speed;
 
-  onSpeedChange();
+  on_speed_change();
 }
 
 int Cpu::get_pstate()
@@ -105,7 +105,7 @@ int Cpu::get_pstate()
   return pstate_;
 }
 
-double Cpu::getPstateSpeed(int pstate_index)
+double Cpu::get_pstate_peak_speed(int pstate_index)
 {
   xbt_assert((pstate_index <= static_cast<int>(speed_per_pstate_.size())),
              "Invalid parameters (pstate index out of bounds)");
@@ -113,18 +113,19 @@ double Cpu::getPstateSpeed(int pstate_index)
   return speed_per_pstate_[pstate_index];
 }
 
-double Cpu::getSpeed(double load)
+double Cpu::get_speed(double load)
 {
   return load * speed_.peak;
 }
 
-double Cpu::get_available_speed()
+double Cpu::get_speed_ratio()
 {
 /* number between 0 and 1 */
   return speed_.scale;
 }
 
-void Cpu::onSpeedChange() {
+void Cpu::on_speed_change()
+{
   s4u::Host::on_speed_change(*host_);
 }
 
@@ -133,7 +134,7 @@ int Cpu::get_cores_count()
   return cores_count_;
 }
 
-void Cpu::setStateTrace(tmgr_trace_t trace)
+void Cpu::set_state_trace(tmgr_trace_t trace)
 {
   xbt_assert(state_event_ == nullptr, "Cannot set a second state trace to Host %s", host_->get_cname());
 

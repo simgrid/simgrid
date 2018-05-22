@@ -109,7 +109,7 @@ void parse_platform_file(const char *file)
     xbt_assert(host, "Host %s undefined", elm.second.c_str());
     simgrid::surf::Cpu* cpu = host->pimpl_cpu;
 
-    cpu->setStateTrace(trace);
+    cpu->set_state_trace(trace);
   }
 
   for (auto const& elm : trace_connect_list_host_speed) {

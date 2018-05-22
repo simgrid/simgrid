@@ -119,7 +119,7 @@ public:
     return nullptr;
   }
   CpuAction *sleep(double duration) override;
-  double get_available_speed() override;
+  double get_speed_ratio() override;
 
   void set_modified(bool modified);
 

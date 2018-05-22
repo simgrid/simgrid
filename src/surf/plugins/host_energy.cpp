@@ -171,7 +171,7 @@ void HostEnergy::update()
 
     XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> "
               "%.2f J",
-              host->get_cname(), start_time, finish_time, host->pimpl_cpu->getSpeed(1.0), previous_energy,
+              host->get_cname(), start_time, finish_time, host->pimpl_cpu->get_speed(1.0), previous_energy,
               energy_this_step);
   }
 

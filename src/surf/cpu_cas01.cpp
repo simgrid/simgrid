@@ -98,7 +98,8 @@ bool CpuCas01::is_used()
 }
 
 /** @brief take into account changes of speed (either load or max) */
-void CpuCas01::onSpeedChange() {
+void CpuCas01::on_speed_change()
+{
   kernel::lmm::Variable* var = nullptr;
   const kernel::lmm::Element* elem = nullptr;
 
@@ -111,7 +112,7 @@ void CpuCas01::onSpeedChange() {
                                                             action->requested_core() * speed_.scale * speed_.peak);
   }
 
-  Cpu::onSpeedChange();
+  Cpu::on_speed_change();
 }
 
 void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
@@ -121,7 +122,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
     xbt_assert(get_cores_count() == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
     speed_.scale = value;
-    onSpeedChange();
+    on_speed_change();
 
     tmgr_trace_event_unref(&speed_.event);
   } else if (event == state_event_) {

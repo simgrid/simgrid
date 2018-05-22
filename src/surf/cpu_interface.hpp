@@ -105,19 +105,30 @@ public:
   /** @brief Get the amount of cores */
   virtual int get_cores_count();
 
-  /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
-  virtual double getSpeed(double load);
+  /** @brief Get a forecast of the speed (in flops/s) if the load were as provided.
+   *
+   * The provided load encompasses both the application's activities and the external load that come from a trace.
+   *
+   * Use a load of 1.0 to compute the amount of flops that the Cpu would deliver with one CPU-bound task.
+   * If you use a load of 0, this function will return 0: when nobody is using the Cpu, it delivers nothing.
+   *
+   * If you want to know the amount of flops currently delivered, use  load = get_load()*get_speed_ratio()
+   */
+  virtual double get_speed(double load);
 
 protected:
   /** @brief Take speed changes (either load or max) into account */
-  virtual void onSpeedChange();
+  virtual void on_speed_change();
 
 public:
-  /** @brief Get the available speed of the current Cpu */
-  virtual double get_available_speed();
+  /** @brief Get the available speed ratio, between 0 and 1.
+   *
+   * This accounts for external load (see @ref set_speed_trace()).
+   */
+  virtual double get_speed_ratio();
 
-  /** @brief Get the current Cpu computational speed */
-  virtual double getPstateSpeed(int pstate_index);
+  /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
+  virtual double get_pstate_peak_speed(int pstate_index);
 
   virtual int get_pstates_count();
   virtual void set_pstate(int pstate_index);
@@ -129,14 +140,14 @@ private:
   int cores_count_ = 1;
   simgrid::s4u::Host* host_;
 
-  int pstate_ = 0;                     /*< Current pstate (index in the speedPeakList)*/
+  int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/
   std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related) */
 
 public:
   /** @brief Setup the trace file with states events (ON or OFF).
    * Trace must contain boolean values (0 or 1).
    */
-  virtual void setStateTrace(tmgr_trace_t trace);
+  virtual void set_state_trace(tmgr_trace_t trace);
   /*< @brief Setup the trace file with availability events (peak speed changes due to external load).
    * Trace must contain relative values (ratio between 0 and 1)
    */

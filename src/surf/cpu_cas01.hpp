@@ -45,7 +45,7 @@ public:
   bool is_used() override;
 
 protected:
-  void onSpeedChange() override;
+  void on_speed_change() override;
 };
 
 /**********

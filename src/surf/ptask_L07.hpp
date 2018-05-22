@@ -84,7 +84,7 @@ public:
   kernel::resource::Action* sleep(double duration) override;
 
 protected:
-  void onSpeedChange() override;
+  void on_speed_change() override;
 };
 
 class LinkL07 : public kernel::resource::LinkImpl {

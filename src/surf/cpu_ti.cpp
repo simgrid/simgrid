@@ -494,10 +494,10 @@ bool CpuTi::is_used()
   return not action_set_.empty();
 }
 
-double CpuTi::get_available_speed()
+double CpuTi::get_speed_ratio()
 {
   speed_.scale = speed_integrated_trace_->get_power_scale(surf_get_clock());
-  return Cpu::get_available_speed();
+  return Cpu::get_speed_ratio();
 }
 
 /** @brief Update the remaining amount of actions */
