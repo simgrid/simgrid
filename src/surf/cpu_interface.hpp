@@ -107,7 +107,7 @@ public:
 
   /** @brief Get a forecast of the speed (in flops/s) if the load were as provided.
    *
-   * The provided load encompasses both the application's activities and the external load that come from a trace.
+   * The provided load should encompasses both the application's activities and the external load that come from a trace.
    *
    * Use a load of 1.0 to compute the amount of flops that the Cpu would deliver with one CPU-bound task.
    * If you use a load of 0, this function will return 0: when nobody is using the Cpu, it delivers nothing.

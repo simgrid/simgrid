@@ -50,7 +50,9 @@ public:
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool is_used() = 0;
 
-  /** @brief returns the current load (in flops per second, byte per second or similar) */
+  /** @brief returns the current load due to activities (in flops per second, byte per second or similar)
+   *
+   * The load due to external usages modeled by trace files is ignored.*/
   virtual double get_load();
 
   /** @brief Check if the current Resource is active */
