@@ -19,38 +19,38 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static int runner(int argc, char* argv[])
 {
   /* Retrieve the list of all hosts as an array of hosts */
-  int hosts_count   = MSG_get_host_number();
+  int host_count    = MSG_get_host_number();
   msg_host_t* hosts = xbt_dynar_to_array(MSG_hosts_as_dynar());
 
   XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
            "and 10MB to exchange between each pair");
-  double* computation_amounts   = xbt_new0(double, hosts_count);
-  double* communication_amounts = xbt_new0(double, hosts_count* hosts_count);
+  double* computation_amounts   = xbt_new0(double, host_count);
+  double* communication_amounts = xbt_new0(double, host_count* host_count);
 
-  for (int i               = 0; i < hosts_count; i++)
+  for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
 
-  for (int i = 0; i < hosts_count; i++)
-    for (int j                                   = i + 1; j < hosts_count; j++)
-      communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
+  for (int i = 0; i < host_count; i++)
+    for (int j = i + 1; j < host_count; j++)
+      communication_amounts[i * host_count + j] = 1e7; // 10 MB
 
   msg_task_t ptask =
-      MSG_parallel_task_create("parallel task", hosts_count, hosts, computation_amounts, communication_amounts, NULL);
+      MSG_parallel_task_create("parallel task", host_count, hosts, computation_amounts, communication_amounts, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
   xbt_free(communication_amounts);
   xbt_free(computation_amounts);
 
   XBT_INFO("We can do the same with a timeout of one second enabled.");
-  computation_amounts   = xbt_new0(double, hosts_count);
-  communication_amounts = xbt_new0(double, hosts_count* hosts_count);
-  for (int i               = 0; i < hosts_count; i++)
+  computation_amounts   = xbt_new0(double, host_count);
+  communication_amounts = xbt_new0(double, host_count* host_count);
+  for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
-  for (int i = 0; i < hosts_count; i++)
-    for (int j                                   = i + 1; j < hosts_count; j++)
-      communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
+  for (int i = 0; i < host_count; i++)
+    for (int j = i + 1; j < host_count; j++)
+      communication_amounts[i * host_count + j] = 1e7; // 10 MB
   ptask =
-      MSG_parallel_task_create("parallel task", hosts_count, hosts, computation_amounts, communication_amounts, NULL);
+      MSG_parallel_task_create("parallel task", host_count, hosts, computation_amounts, communication_amounts, NULL);
   msg_error_t errcode = MSG_parallel_task_execute_with_timeout(ptask, 1 /* timeout (in seconds)*/);
   xbt_assert(errcode == MSG_TIMEOUT, "Woops, this did not timeout as expected... Please report that bug.");
   MSG_task_destroy(ptask);
@@ -58,19 +58,19 @@ static int runner(int argc, char* argv[])
   xbt_free(computation_amounts);
 
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
-  computation_amounts = xbt_new0(double, hosts_count);
-  for (int i               = 0; i < hosts_count; i++)
+  computation_amounts = xbt_new0(double, host_count);
+  for (int i = 0; i < host_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
-  ptask = MSG_parallel_task_create("parallel exec", hosts_count, hosts, computation_amounts, NULL /* no comm */, NULL);
+  ptask = MSG_parallel_task_create("parallel exec", host_count, hosts, computation_amounts, NULL /* no comm */, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
   xbt_free(computation_amounts);
 
   XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
-  computation_amounts   = xbt_new0(double, hosts_count);
-  communication_amounts = xbt_new0(double, hosts_count* hosts_count); /* memset to 0 by xbt_new0 */
+  computation_amounts   = xbt_new0(double, host_count);
+  communication_amounts = xbt_new0(double, host_count* host_count); /* memset to 0 by xbt_new0 */
   ptask =
-      MSG_parallel_task_create("parallel sync", hosts_count, hosts, computation_amounts, communication_amounts, NULL);
+      MSG_parallel_task_create("parallel sync", host_count, hosts, computation_amounts, communication_amounts, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
   xbt_free(communication_amounts);

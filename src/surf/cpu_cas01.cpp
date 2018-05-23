@@ -104,7 +104,7 @@ void CpuCas01::on_speed_change()
   const kernel::lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
-                                                            get_cores_count() * speed_.scale * speed_.peak);
+                                                            get_core_count() * speed_.scale * speed_.peak);
   while ((var = get_constraint()->get_variable(&elem))) {
     CpuCas01Action* action = static_cast<CpuCas01Action*>(var->get_id());
 
@@ -119,7 +119,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(get_cores_count() == 1, "FIXME: add speed scaling code also for constraint_core[i]");
+    xbt_assert(get_core_count() == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
     speed_.scale = value;
     on_speed_change();
@@ -127,7 +127,7 @@ void CpuCas01::apply_event(tmgr_trace_event_t event, double value)
     tmgr_trace_event_unref(&speed_.event);
   } else if (event == state_event_) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(get_cores_count() == 1, "FIXME: add state change code also for constraint_core[i]");
+    xbt_assert(get_core_count() == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
       if (is_off())

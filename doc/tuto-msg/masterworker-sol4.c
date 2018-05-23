@@ -36,19 +36,19 @@ static int master(int argc, char* argv[])
   double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s"); /** - Task communication size */
 
   /* Get the info about the worker processes */
-  int workers_count   = MSG_get_host_number();
+  int worker_count    = MSG_get_host_number();
   msg_host_t* workers = xbt_dynar_to_array(MSG_hosts_as_dynar());
 
-  for (int i = 0; i < workers_count; i++) // Remove my host from the list
+  for (int i = 0; i < worker_count; i++) // Remove my host from the list
     if (host_self == workers[i]) {
-      workers[i] = workers[workers_count - 1];
-      workers_count--;
+      workers[i] = workers[worker_count - 1];
+      worker_count--;
       break;
     }
 
-  for (int i = 0; i < workers_count; i++)
+  for (int i = 0; i < worker_count; i++)
     MSG_process_create("worker", worker, (void*)master_name, workers[i]);
-  XBT_INFO("Got %d workers and will send tasks for %g seconds", workers_count, timeout);
+  XBT_INFO("Got %d workers and will send tasks for %g seconds", worker_count, timeout);
 
   /* Dispatch the tasks */
   int task_num = 0;
@@ -78,7 +78,7 @@ static int master(int argc, char* argv[])
   }
 
   XBT_DEBUG("Time is up. Let's tell everybody the computation is over.");
-  for (int i = 0; i < workers_count; i++) { /* We don't write in order, but the total amount is right */
+  for (int i = 0; i < worker_count; i++) { /* We don't write in order, but the total amount is right */
 
     /* Don't write to a worker that did not request for work, or it will deadlock: both would be sending something */
     msg_task_t request = NULL;

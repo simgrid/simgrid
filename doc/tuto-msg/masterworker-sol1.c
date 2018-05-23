@@ -43,23 +43,23 @@ static int master(int argc, char* argv[])
   }
 
   /* Get the info about the worker processes (directly from SimGrid) */
-  int workers_count   = MSG_get_host_number();
+  int worker_count    = MSG_get_host_number();
   msg_host_t* workers = xbt_dynar_to_array(MSG_hosts_as_dynar());
 
-  for (int i = 0; i < workers_count; i++)
+  for (int i = 0; i < worker_count; i++)
     if (host_self == workers[i]) {
-      workers[i] = workers[workers_count - 1];
-      workers_count--;
+      workers[i] = workers[worker_count - 1];
+      worker_count--;
       break;
     }
 
-  for (int i = 0; i < workers_count; i++)
+  for (int i = 0; i < worker_count; i++)
     MSG_process_create("worker", worker, (void*)master_name, workers[i]);
-  XBT_INFO("Got %d workers and %ld tasks to process", workers_count, number_of_tasks);
+  XBT_INFO("Got %d workers and %ld tasks to process", worker_count, number_of_tasks);
 
   /* Dispatch the tasks */
   for (int i = 0; i < number_of_tasks; i++) {
-    build_channel_name(channel, master_name, MSG_host_get_name(workers[i % workers_count]));
+    build_channel_name(channel, master_name, MSG_host_get_name(workers[i % worker_count]));
 
     XBT_INFO("Sending '%s' to channel '%s'", todo[i]->name, channel);
 
@@ -68,9 +68,9 @@ static int master(int argc, char* argv[])
   }
 
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (int i = 0; i < workers_count; i++) {
+  for (int i = 0; i < worker_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
-    MSG_task_send(finalize, build_channel_name(channel, master_name, MSG_host_get_name(workers[i % workers_count])));
+    MSG_task_send(finalize, build_channel_name(channel, master_name, MSG_host_get_name(workers[i % worker_count])));
   }
 
   XBT_INFO("Goodbye now!");

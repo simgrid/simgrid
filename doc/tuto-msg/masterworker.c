@@ -28,28 +28,28 @@ static int master(int argc, char* argv[])
   }
 
   /* Get the info about the worker processes from my parameters */
-  int workers_count   = argc - 4;
-  msg_host_t* workers = xbt_new0(msg_host_t, workers_count);
+  int worker_count    = argc - 4;
+  msg_host_t* workers = xbt_new0(msg_host_t, worker_count);
 
   for (int i = 4; i < argc; i++) {
     workers[i - 4] = MSG_get_host_by_name(argv[i]);
     xbt_assert(workers[i - 4] != NULL, "Unknown host %s. Stopping Now! ", argv[i]);
   }
-  XBT_INFO("Got %d workers and %ld tasks to process", workers_count, number_of_tasks);
+  XBT_INFO("Got %d workers and %ld tasks to process", worker_count, number_of_tasks);
 
   /* Dispatch the tasks */
   for (int i = 0; i < number_of_tasks; i++) {
-    XBT_INFO("Sending '%s' to '%s'", todo[i]->name, MSG_host_get_name(workers[i % workers_count]));
-    if (MSG_host_self() == workers[i % workers_count]) {
+    XBT_INFO("Sending '%s' to '%s'", todo[i]->name, MSG_host_get_name(workers[i % worker_count]));
+    if (MSG_host_self() == workers[i % worker_count]) {
       XBT_INFO("Hey ! It's me ! :)");
     }
 
-    MSG_task_send(todo[i], MSG_host_get_name(workers[i % workers_count]));
+    MSG_task_send(todo[i], MSG_host_get_name(workers[i % worker_count]));
     XBT_INFO("Sent");
   }
 
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (int i = 0; i < workers_count; i++) {
+  for (int i = 0; i < worker_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
     MSG_task_send(finalize, MSG_host_get_name(workers[i]));
   }

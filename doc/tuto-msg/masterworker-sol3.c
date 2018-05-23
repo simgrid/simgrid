@@ -36,19 +36,19 @@ static int master(int argc, char* argv[])
   double comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s"); /** - Task communication size */
 
   /* Get the info about the worker processes */
-  int workers_count   = MSG_get_host_number();
+  int worker_count    = MSG_get_host_number();
   msg_host_t* workers = xbt_dynar_to_array(MSG_hosts_as_dynar());
 
-  for (int i = 0; i < workers_count; i++) // Remove my host from the list
+  for (int i = 0; i < worker_count; i++) // Remove my host from the list
     if (host_self == workers[i]) {
-      workers[i] = workers[workers_count - 1];
-      workers_count--;
+      workers[i] = workers[worker_count - 1];
+      worker_count--;
       break;
     }
 
-  for (int i = 0; i < workers_count; i++)
+  for (int i = 0; i < worker_count; i++)
     MSG_process_create("worker", worker, (void*)master_name, workers[i]);
-  XBT_INFO("Got %d workers and will send tasks for %g seconds", workers_count, timeout);
+  XBT_INFO("Got %d workers and will send tasks for %g seconds", worker_count, timeout);
 
   /* Dispatch the tasks */
   int task_num = 0;
@@ -62,7 +62,7 @@ static int master(int argc, char* argv[])
     msg_task_t task = MSG_task_create(sprintf_buffer, comp_size, comm_size, NULL);
     MSG_task_set_category(task, master_name);
 
-    build_channel_name(channel, master_name, MSG_host_get_name(workers[task_num % workers_count]));
+    build_channel_name(channel, master_name, MSG_host_get_name(workers[task_num % worker_count]));
 
     XBT_DEBUG("Sending '%s' to channel '%s'", task->name, channel);
     MSG_task_send(task, channel);
@@ -71,9 +71,9 @@ static int master(int argc, char* argv[])
   }
 
   XBT_DEBUG("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (int i = 0; i < workers_count; i++) {
+  for (int i = 0; i < worker_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
-    MSG_task_send(finalize, build_channel_name(channel, master_name, MSG_host_get_name(workers[i % workers_count])));
+    MSG_task_send(finalize, build_channel_name(channel, master_name, MSG_host_get_name(workers[i % worker_count])));
   }
 
   XBT_INFO("Sent %d tasks in total!", task_num);

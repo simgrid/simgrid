@@ -103,7 +103,7 @@ public:
   virtual simgrid::kernel::resource::Action* sleep(double duration) = 0;
 
   /** @brief Get the amount of cores */
-  virtual int get_cores_count();
+  virtual int get_core_count();
 
   /** @brief Get a forecast of the speed (in flops/s) if the load were as provided.
    *
@@ -130,14 +130,14 @@ public:
   /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
   virtual double get_pstate_peak_speed(int pstate_index);
 
-  virtual int get_pstates_count();
+  virtual int get_pstate_count();
   virtual void set_pstate(int pstate_index);
   virtual int get_pstate();
 
   simgrid::s4u::Host* get_host() { return host_; }
 
 private:
-  int cores_count_ = 1;
+  int core_count_ = 1;
   simgrid::s4u::Host* host_;
 
   int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/

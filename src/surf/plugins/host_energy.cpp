@@ -235,7 +235,7 @@ double HostEnergy::getCurrentWattsValue()
     cpu_load = host->pimpl_cpu->get_constraint()->get_usage() / current_speed;
 
   /** Divide by the number of cores here **/
-  cpu_load /= host->pimpl_cpu->get_cores_count();
+  cpu_load /= host->pimpl_cpu->get_core_count();
 
   if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
     cpu_load = 1;

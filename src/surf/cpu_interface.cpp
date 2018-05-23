@@ -60,7 +60,7 @@ Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, std::vector<d
 
 Cpu::Cpu(kernel::resource::Model* model, simgrid::s4u::Host* host, kernel::lmm::Constraint* constraint,
          std::vector<double>* speedPerPstate, int core)
-    : Resource(model, host->get_cname(), constraint), cores_count_(core), host_(host)
+    : Resource(model, host->get_cname(), constraint), core_count_(core), host_(host)
 {
   xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->get_cname());
 
@@ -81,7 +81,7 @@ Cpu::~Cpu()
     speed_per_pstate_.clear();
 }
 
-int Cpu::get_pstates_count()
+int Cpu::get_pstate_count()
 {
   return speed_per_pstate_.size();
 }
@@ -129,9 +129,9 @@ void Cpu::on_speed_change()
   s4u::Host::on_speed_change(*host_);
 }
 
-int Cpu::get_cores_count()
+int Cpu::get_core_count()
 {
-  return cores_count_;
+  return core_count_;
 }
 
 void Cpu::set_state_trace(tmgr_trace_t trace)

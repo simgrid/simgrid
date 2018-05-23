@@ -133,7 +133,7 @@ bool Host::is_on()
 
 int Host::get_pstate_count() const
 {
-  return this->pimpl_cpu->get_pstates_count();
+  return this->pimpl_cpu->get_pstate_count();
 }
 
 /**
@@ -246,7 +246,7 @@ double Host::get_available_speed()
 /** @brief Returns the number of core of the processor. */
 int Host::get_core_count()
 {
-  return this->pimpl_cpu->get_cores_count();
+  return this->pimpl_cpu->get_core_count();
 }
 
 /** @brief Set the pstate at which the host should run */
