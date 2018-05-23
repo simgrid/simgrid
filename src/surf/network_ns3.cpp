@@ -232,7 +232,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
 
-      action->src_->routeTo(action->dst_, route, nullptr);
+      action->src_->route_to(action->dst_, route, nullptr);
       for (auto const& link : route)
         TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
                                             (data_delta_sent) / delta, now - delta, delta);
