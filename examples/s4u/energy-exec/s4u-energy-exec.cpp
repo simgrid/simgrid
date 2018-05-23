@@ -31,12 +31,12 @@ static void dvfs()
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW"
            " depending on load; Energy dissipated=%.0f J",
            simgrid::s4u::Engine::get_clock() - start, host1->getSpeed(),
-           sg_host_get_wattmin_at(host1, host1->getPstate()), sg_host_get_wattmax_at(host1, host1->getPstate()),
+           sg_host_get_wattmin_at(host1, host1->get_pstate()), sg_host_get_wattmax_at(host1, host1->get_pstate()),
            sg_host_get_consumed_energy(host1));
 
   // ========= Change power peak =========
   int pstate = 2;
-  host1->setPstate(pstate);
+  host1->set_pstate(pstate);
   XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s)", pstate,
            host1->getPstateSpeed(pstate), host1->getSpeed());
 

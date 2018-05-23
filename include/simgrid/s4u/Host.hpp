@@ -102,12 +102,12 @@ public:
 
   double getSpeed();
   double get_available_speed();
-  int getCoreCount();
+  int get_core_count();
 
   double getPstateSpeed(int pstate_index);
-  int getPstatesCount() const;
-  void setPstate(int pstate_index);
-  int getPstate();
+  int get_pstate_count() const;
+  void set_pstate(int pstate_index);
+  int get_pstate();
 
   std::vector<const char*> get_attached_storages();
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
@@ -119,8 +119,8 @@ public:
    */
   std::unordered_map<std::string, Storage*> const& getMountedStorages();
 
-  void routeTo(Host* dest, std::vector<Link*>& links, double* latency);
-  void routeTo(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);
+  void route_to(Host* dest, std::vector<Link*>& links, double* latency);
+  void route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);
 
   /** Block the calling actor on an execution located on the called host
    *
@@ -158,6 +158,24 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::set_property()") void setProperty(std::string key, std::string value)
   {
     set_property(key, value);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::set_pstate()") void setPstate(int idx) { set_pstate(idx); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_pstate()") int getPstate() { return get_pstate(); }
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::route_to()") void routeTo(Host* dest, std::vector<Link*>& links,
+                                                                         double* latency)
+  {
+    route_to(dest, links, latency);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::route_to()") void routeTo(
+      Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
+  {
+    route_to(dest, links, latency);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_core_count()") int getCoreCount() { return get_core_count(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_pstate_count()") int getPstatesCount() const
+  {
+    return get_pstate_count();
   }
 
 private:

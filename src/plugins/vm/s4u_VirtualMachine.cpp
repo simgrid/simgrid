@@ -36,12 +36,12 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, 
 
   // Create a VCPU for this VM
   std::vector<double> speeds;
-  for (int i = 0; i < pm->getPstatesCount(); i++)
+  for (int i = 0; i < pm->get_pstate_count(); i++)
     speeds.push_back(pm->getPstateSpeed(i));
 
-  surf_cpu_model_vm->create_cpu(this, &speeds, pm->getCoreCount());
-  if (pm->getPstate() != 0)
-    setPstate(pm->getPstate());
+  surf_cpu_model_vm->create_cpu(this, &speeds, pm->get_core_count());
+  if (pm->get_pstate() != 0)
+    set_pstate(pm->get_pstate());
 
   /* Make a process container */
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());

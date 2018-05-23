@@ -176,7 +176,7 @@ void HostEnergy::update()
   }
 
   /* Save data for the upcoming time interval: whether it's on/off and the pstate if it's on */
-  this->pstate = host->is_on() ? host->getPstate() : pstate_off;
+  this->pstate = host->is_on() ? host->get_pstate() : pstate_off;
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host(ptr), last_updated(surf_get_clock())
@@ -286,7 +286,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
      * (maxCpuLoad is by definition 1)
      */
     double power_slope;
-    int coreCount         = host->getCoreCount();
+    int coreCount         = host->get_core_count();
     double coreReciprocal = static_cast<double>(1) / static_cast<double>(coreCount);
     if (coreCount > 1)
       power_slope = (max_power - min_power) / (1 - coreReciprocal);
@@ -320,14 +320,14 @@ void HostEnergy::initWattsRangeList()
 
   std::vector<std::string> all_power_values;
   boost::split(all_power_values, all_power_values_str, boost::is_any_of(","));
-  XBT_DEBUG("%s: profile: %s, cores: %d", host->get_cname(), all_power_values_str, host->getCoreCount());
+  XBT_DEBUG("%s: profile: %s, cores: %d", host->get_cname(), all_power_values_str, host->get_core_count());
 
   int i = 0;
   for (auto const& current_power_values_str : all_power_values) {
     /* retrieve the power values associated with the current pstate */
     std::vector<std::string> current_power_values;
     boost::split(current_power_values, current_power_values_str, boost::is_any_of(":"));
-    if (host->getCoreCount() == 1) {
+    if (host->get_core_count() == 1) {
       xbt_assert(current_power_values.size() == 2 || current_power_values.size() == 3,
                  "Power properties incorrectly defined for host %s."
                  "It should be 'Idle:FullSpeed' power values because you have one core only.",

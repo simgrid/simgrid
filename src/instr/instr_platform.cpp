@@ -229,7 +229,7 @@ static void instr_host_on_speed_change(simgrid::s4u::Host& host)
 {
   simgrid::instr::Container::by_name(host.get_cname())
       ->get_variable("power")
-      ->set_event(surf_get_clock(), host.getCoreCount() * host.get_available_speed());
+      ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
 }
 
 static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,

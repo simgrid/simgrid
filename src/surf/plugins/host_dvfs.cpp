@@ -69,7 +69,7 @@ class Performance : public Governor {
 public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
-  void update() override { get_host()->setPstate(0); }
+  void update() override { get_host()->set_pstate(0); }
   std::string getName() override { return "Performance"; }
 };
 
@@ -87,7 +87,7 @@ class Powersave : public Governor {
 public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
 
-  void update() override { get_host()->setPstate(get_host()->getPstatesCount() - 1); }
+  void update() override { get_host()->set_pstate(get_host()->get_pstate_count() - 1); }
   std::string getName() override { return "Powersave"; }
 };
 
@@ -113,11 +113,11 @@ public:
   std::string getName() override { return "OnDemand"; }
   void update() override
   {
-    double load = get_host()->getCoreCount() * sg_host_get_avg_load(get_host());
+    double load = get_host()->get_core_count() * sg_host_get_avg_load(get_host());
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold) {
-      get_host()->setPstate(0); /* Run at max. performance! */
+      get_host()->set_pstate(0); /* Run at max. performance! */
       XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold, 0);
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
@@ -127,11 +127,11 @@ public:
        * So they assume that frequency increases by 100 MHz. We will just use
        * lowest_pstate - load*pstatesCount()
        */
-      int max_pstate = get_host()->getPstatesCount() - 1;
+      int max_pstate = get_host()->get_pstate_count() - 1;
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold
       int new_pstate = max_pstate - load * (max_pstate + 1);
-      get_host()->setPstate(new_pstate);
+      get_host()->set_pstate(new_pstate);
 
       XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold, new_pstate);
     }
@@ -160,22 +160,22 @@ public:
   virtual std::string getName() override { return "Conservative"; }
   virtual void update() override
   {
-    double load = get_host()->getCoreCount() * sg_host_get_avg_load(get_host());
-    int pstate  = get_host()->getPstate();
+    double load = get_host()->get_core_count() * sg_host_get_avg_load(get_host());
+    int pstate  = get_host()->get_pstate();
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold) {
       if (pstate != 0) {
-        get_host()->setPstate(pstate - 1);
+        get_host()->set_pstate(pstate - 1);
         XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold, pstate - 1);
       }
       else {
         XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load, freq_up_threshold, pstate);
       }
     } else if (load < freq_down_threshold) {
-      int max_pstate = get_host()->getPstatesCount() - 1;
+      int max_pstate = get_host()->get_pstate_count() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
-        get_host()->setPstate(pstate + 1);
+        get_host()->set_pstate(pstate + 1);
         XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold, pstate + 1);
       }
       else {

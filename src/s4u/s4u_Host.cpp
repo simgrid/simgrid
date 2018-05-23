@@ -131,7 +131,7 @@ bool Host::is_on()
   return this->pimpl_cpu->is_on();
 }
 
-int Host::getPstatesCount() const
+int Host::get_pstate_count() const
 {
   return this->pimpl_cpu->get_pstates_count();
 }
@@ -183,16 +183,16 @@ void Host::actorList(std::vector<ActorPtr>* whereto)
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
  */
-void Host::routeTo(Host* dest, std::vector<Link*>& links, double* latency)
+void Host::route_to(Host* dest, std::vector<Link*>& links, double* latency)
 {
   std::vector<kernel::resource::LinkImpl*> linkImpls;
-  this->routeTo(dest, linkImpls, latency);
+  this->route_to(dest, linkImpls, latency);
   for (kernel::resource::LinkImpl* const& l : linkImpls)
     links.push_back(&l->piface_);
 }
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
-void Host::routeTo(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
+void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency)
 {
   simgrid::kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint, dest->pimpl_netpoint, links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
@@ -244,18 +244,18 @@ double Host::get_available_speed()
 }
 
 /** @brief Returns the number of core of the processor. */
-int Host::getCoreCount()
+int Host::get_core_count()
 {
   return this->pimpl_cpu->get_cores_count();
 }
 
 /** @brief Set the pstate at which the host should run */
-void Host::setPstate(int pstate_index)
+void Host::set_pstate(int pstate_index)
 {
   simgrid::simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
-int Host::getPstate()
+int Host::get_pstate()
 {
   return this->pimpl_cpu->get_pstate();
 }
@@ -439,7 +439,7 @@ double sg_host_get_pstate_speed(sg_host_t host, int pstate_index)
  */
 int sg_host_core_count(sg_host_t host)
 {
-  return host->getCoreCount();
+  return host->get_core_count();
 }
 
 double sg_host_get_available_speed(sg_host_t host)
@@ -453,7 +453,7 @@ double sg_host_get_available_speed(sg_host_t host)
  */
 int sg_host_get_nb_pstates(sg_host_t host)
 {
-  return host->getPstatesCount();
+  return host->get_pstate_count();
 }
 
 /** @brief Gets the pstate at which that host currently runs.
@@ -462,7 +462,7 @@ int sg_host_get_nb_pstates(sg_host_t host)
  */
 int sg_host_get_pstate(sg_host_t host)
 {
-  return host->getPstate();
+  return host->get_pstate();
 }
 /** @brief Sets the pstate at which that host should run.
  *
@@ -470,7 +470,7 @@ int sg_host_get_pstate(sg_host_t host)
  */
 void sg_host_set_pstate(sg_host_t host, int pstate)
 {
-  host->setPstate(pstate);
+  host->set_pstate(pstate);
 }
 
 /** \ingroup m_host_management
@@ -562,7 +562,7 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
 void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, vlinks, nullptr);
+  from->route_to(to, vlinks, nullptr);
   for (auto const& link : vlinks)
     xbt_dynar_push(links, &link);
 }
@@ -576,7 +576,7 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
 {
   std::vector<simgrid::s4u::Link*> vlinks;
   double res = 0;
-  from->routeTo(to, vlinks, &res);
+  from->route_to(to, vlinks, &res);
   return res;
 }
 /**
@@ -590,7 +590,7 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
   double min_bandwidth = -1.0;
 
   std::vector<simgrid::s4u::Link*> vlinks;
-  from->routeTo(to, vlinks, nullptr);
+  from->route_to(to, vlinks, nullptr);
   for (auto const& link : vlinks) {
     double bandwidth = link->get_bandwidth();
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)

@@ -56,8 +56,8 @@ static void dump_hosts()
   for (unsigned int i = 0; i < totalHosts; i++) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_speed(hosts[i]));
     props = hosts[i]->getProperties();
-    if (hosts[i]->getCoreCount() > 1) {
-      std::printf(" core=\"%d\"", hosts[i]->getCoreCount());
+    if (hosts[i]->get_core_count() > 1) {
+      std::printf(" core=\"%d\"", hosts[i]->get_core_count());
     }
     if (props && not props->empty()) {
       std::printf(">\n");

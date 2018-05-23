@@ -225,7 +225,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
 
-  src->routeTo(dst, route, &latency);
+  src->route_to(dst, route, &latency);
   xbt_assert(not route.empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->get_cname(), dst->get_cname());
@@ -233,7 +233,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   bool failed = std::any_of(route.begin(), route.end(), [](LinkImpl* link) { return link->is_off(); });
 
   if (cfg_crosstraffic) {
-    dst->routeTo(src, back_route, nullptr);
+    dst->route_to(src, back_route, nullptr);
     if (not failed)
       failed = std::any_of(back_route.begin(), back_route.end(), [](LinkImpl* const& link) { return link->is_off(); });
   }

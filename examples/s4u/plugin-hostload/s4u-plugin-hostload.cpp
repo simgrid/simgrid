@@ -35,12 +35,12 @@ static void execute_load_test()
            simgrid::s4u::Engine::get_clock() - start, host->getSpeed(), speed, sg_host_get_computed_flops(host),
            sg_host_get_avg_load(host),
            static_cast<double>(200E6) /
-               (10.5 * speed * host->getCoreCount() +
-                (simgrid::s4u::Engine::get_clock() - start - 0.5) * host->getSpeed() * host->getCoreCount()));
+               (10.5 * speed * host->get_core_count() +
+                (simgrid::s4u::Engine::get_clock() - start - 0.5) * host->getSpeed() * host->get_core_count()));
 
   // ========= Change power peak =========
   int pstate = 1;
-  host->setPstate(pstate);
+  host->set_pstate(pstate);
   XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s, average load is %.5f)", pstate,
            host->getPstateSpeed(pstate), host->getSpeed(), sg_host_get_avg_load(host));
 
@@ -78,7 +78,7 @@ static void change_speed()
   simgrid::s4u::this_actor::sleep_for(10.5);
   XBT_INFO("I slept until now, but now I'll change the speed of this host "
       "while the other process is still computing! This should slow the computation down.");
-  host->setPstate(2);
+  host->set_pstate(2);
 }
 
 int main(int argc, char* argv[])

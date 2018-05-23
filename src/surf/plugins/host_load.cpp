@@ -73,7 +73,7 @@ void HostLoad::update()
     idle_time += (now - last_updated);
   }
 
-  theor_max_flops += current_speed * host->getCoreCount() * (now - last_updated);
+  theor_max_flops += current_speed * host->get_core_count() * (now - last_updated);
   current_speed    = host->getSpeed();
   last_updated     = now;
   was_prev_idle    = (current_flops == 0);
@@ -93,7 +93,7 @@ double HostLoad::getCurrentLoad()
   // We don't need to call update() here because it is called everytime an
   // action terminates or starts
   // FIXME: Can this happen at the same time? stop -> call to getCurrentLoad, load = 0 -> next action starts?
-  return current_flops / static_cast<double>(host->getSpeed() * host->getCoreCount());
+  return current_flops / static_cast<double>(host->getSpeed() * host->get_core_count());
 }
 
 /**

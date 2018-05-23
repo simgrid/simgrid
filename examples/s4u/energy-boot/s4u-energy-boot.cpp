@@ -37,10 +37,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this example");
 
 static void simulate_bootup(simgrid::s4u::Host* host)
 {
-  int previous_pstate = host->getPstate();
+  int previous_pstate = host->get_pstate();
 
   XBT_INFO("Switch to virtual pstate 3, that encodes the 'booting up' state in that platform");
-  host->setPstate(3);
+  host->set_pstate(3);
 
   XBT_INFO("Actually start the host");
   host->turn_on();
@@ -49,21 +49,21 @@ static void simulate_bootup(simgrid::s4u::Host* host)
   simgrid::s4u::this_actor::sleep_for(150);
 
   XBT_INFO("The host is now up and running. Switch back to previous pstate %d", previous_pstate);
-  host->setPstate(previous_pstate);
+  host->set_pstate(previous_pstate);
 }
 
 static void simulate_shutdown(simgrid::s4u::Host* host)
 {
-  int previous_pstate = host->getPstate();
+  int previous_pstate = host->get_pstate();
 
   XBT_INFO("Switch to virtual pstate 4, that encodes the 'shutting down' state in that platform");
-  host->setPstate(4);
+  host->set_pstate(4);
 
   XBT_INFO("Wait 7 seconds to simulate the shutdown time.");
   simgrid::s4u::this_actor::sleep_for(7);
 
   XBT_INFO("Switch back to previous pstate %d, that will be used on reboot.", previous_pstate);
-  host->setPstate(previous_pstate);
+  host->set_pstate(previous_pstate);
 
   XBT_INFO("Actually shutdown the host");
   host->turn_off();
@@ -73,25 +73,25 @@ static int monitor()
 {
   simgrid::s4u::Host* host1 = simgrid::s4u::Host::by_name("MyHost1");
 
-  XBT_INFO("Initial pstate: %d; Energy dissipated so far:%.0E J", host1->getPstate(),
+  XBT_INFO("Initial pstate: %d; Energy dissipated so far:%.0E J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
   XBT_INFO("Sleep for 10 seconds");
   simgrid::s4u::this_actor::sleep_for(10);
-  XBT_INFO("Done sleeping. Current pstate: %d; Energy dissipated so far: %.2f J", host1->getPstate(),
+  XBT_INFO("Done sleeping. Current pstate: %d; Energy dissipated so far: %.2f J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
   simulate_shutdown(host1);
-  XBT_INFO("Host1 is now OFF. Current pstate: %d; Energy dissipated so far: %.2f J", host1->getPstate(),
+  XBT_INFO("Host1 is now OFF. Current pstate: %d; Energy dissipated so far: %.2f J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
   XBT_INFO("Sleep for 10 seconds");
   simgrid::s4u::this_actor::sleep_for(10);
-  XBT_INFO("Done sleeping. Current pstate: %d; Energy dissipated so far: %.2f J", host1->getPstate(),
+  XBT_INFO("Done sleeping. Current pstate: %d; Energy dissipated so far: %.2f J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
   simulate_bootup(host1);
-  XBT_INFO("Host1 is now ON again. Current pstate: %d; Energy dissipated so far: %.2f J", host1->getPstate(),
+  XBT_INFO("Host1 is now ON again. Current pstate: %d; Energy dissipated so far: %.2f J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
   return 0;

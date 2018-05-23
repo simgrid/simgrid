@@ -165,7 +165,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
           double lat=0.0;
 
           std::vector<kernel::resource::LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
+          hostList_->at(i)->route_to(hostList_->at(j), route, &lat);
           latency = std::max(latency, lat);
 
           for (auto const& link : route)
@@ -193,7 +193,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
       for (int j = 0; j < host_nb; j++) {
         if (bytes_amount[i * host_nb + j] > 0.0) {
           std::vector<kernel::resource::LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), route, nullptr);
+          hostList_->at(i)->route_to(hostList_->at(j), route, nullptr);
 
           for (auto const& link : route)
             model->get_maxmin_system()->expand_add(link->get_constraint(), this->get_variable(),
@@ -394,7 +394,7 @@ void L07Action::updateBound()
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
           std::vector<kernel::resource::LinkImpl*> route;
-          hostList_->at(i)->routeTo(hostList_->at(j), route, &lat);
+          hostList_->at(i)->route_to(hostList_->at(j), route, &lat);
 
           lat_current = std::max(lat_current, lat * communicationAmount_[i * hostNb + j]);
         }
