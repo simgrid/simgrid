@@ -43,7 +43,7 @@ HostL07Model::~HostL07Model()
 }
 
 CpuL07Model::CpuL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
-    : CpuModel(Model::UpdateAlgo::Full), hostModel_(hmodel)
+    : CpuModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
 }
@@ -54,7 +54,7 @@ CpuL07Model::~CpuL07Model()
 }
 
 NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
-    : NetworkModel(Model::UpdateAlgo::Full), hostModel_(hmodel)
+    : NetworkModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
   loopback_ = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);

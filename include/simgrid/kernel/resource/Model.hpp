@@ -20,8 +20,8 @@ class XBT_PUBLIC Model {
 public:
   /** @brief Possible update mechanisms */
   enum class UpdateAlgo {
-    Full, /**< Full update mechanism: the remaining time of every action is recomputed at each step */
-    Lazy  /**< Lazy update mechanism: only the modified actions get recomputed.
+    FULL, /**< Full update mechanism: the remaining time of every action is recomputed at each step */
+    LAZY  /**< Lazy update mechanism: only the modified actions get recomputed.
                    It may be slower than full if your system is tightly coupled to the point where every action
                    gets recomputed anyway. In that case, you'd better not try to be cleaver with lazy and go for
                    a simple full update.  */

@@ -20,7 +20,7 @@ namespace surf {
  * Model *
  *********/
 
-StorageModel::StorageModel() : Model(Model::UpdateAlgo::Full)
+StorageModel::StorageModel() : Model(Model::UpdateAlgo::FULL)
 {
   set_maxmin_system(new simgrid::kernel::lmm::System(true /* selective update */));
 }

@@ -133,8 +133,8 @@ namespace kernel {
 namespace resource {
 
 NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(bool))
-    : NetworkModel(simgrid::config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::Full
-                                                                                      : Model::UpdateAlgo::Lazy)
+    : NetworkModel(simgrid::config::get_value<std::string>("network/optim") == "Full" ? Model::UpdateAlgo::FULL
+                                                                                      : Model::UpdateAlgo::LAZY)
 {
   std::string optim = simgrid::config::get_value<std::string>("network/optim");
   bool select       = simgrid::config::get_value<bool>("network/maxmin-selective-update");
@@ -242,7 +242,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->weight_ = latency;
   action->latency_ = latency;
   action->rate_ = rate;
-  if (get_update_algorithm() == Model::UpdateAlgo::Lazy) {
+  if (get_update_algorithm() == Model::UpdateAlgo::LAZY) {
     action->set_last_update();
   }
 
@@ -267,7 +267,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 
   if (action->latency_ > 0) {
     action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
-    if (get_update_algorithm() == Model::UpdateAlgo::Lazy) {
+    if (get_update_algorithm() == Model::UpdateAlgo::LAZY) {
       // add to the heap the event when the latency is payed
       double date = action->latency_ + action->get_last_update();
 

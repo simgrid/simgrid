@@ -139,7 +139,7 @@ typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
  *********/
 class CpuTiModel : public CpuModel {
 public:
-  CpuTiModel() : CpuModel(Model::UpdateAlgo::Full){};
+  CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL){};
   ~CpuTiModel() override;
   Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
   double next_occuring_event(double now) override;

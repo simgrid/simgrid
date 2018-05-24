@@ -26,7 +26,7 @@ class XBT_PRIVATE NetworkConstantAction;
  *********/
 class NetworkConstantModel : public NetworkModel {
 public:
-  NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::Full) {}
+  NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::FULL) {}
   Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) override;
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
