@@ -5,6 +5,7 @@
 
 #include "simdag_private.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/surf/surf_interface.hpp"

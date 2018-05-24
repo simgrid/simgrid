@@ -63,9 +63,4 @@ int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
  * Action *
  **********/
 
-/** \ingroup SURF_models
- *  \brief List of initialized models
- */
-XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*>* all_existing_models;
-
 #endif /* SURF_MODEL_H_ */
