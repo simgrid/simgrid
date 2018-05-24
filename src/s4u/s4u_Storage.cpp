@@ -57,17 +57,17 @@ Host* Storage::getHost()
 
 std::map<std::string, std::string>* Storage::getProperties()
 {
-  return simgrid::simix::simcall([this] { return pimpl_->getProperties(); });
+  return simgrid::simix::simcall([this] { return pimpl_->get_properties(); });
 }
 
 const char* Storage::getProperty(std::string key)
 {
-  return this->pimpl_->getProperty(key);
+  return this->pimpl_->get_property(key);
 }
 
 void Storage::setProperty(std::string key, std::string value)
 {
-  simgrid::simix::simcall([this, key, value] { this->pimpl_->setProperty(key, value); });
+  simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }
 
 sg_size_t Storage::read(sg_size_t size)

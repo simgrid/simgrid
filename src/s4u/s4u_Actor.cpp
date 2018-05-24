@@ -214,18 +214,18 @@ void Actor::kill_all()
 
 std::map<std::string, std::string>* Actor::get_properties()
 {
-  return simgrid::simix::simcall([this] { return this->pimpl_->getProperties(); });
+  return simgrid::simix::simcall([this] { return this->pimpl_->get_properties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
 const char* Actor::get_property(const char* key)
 {
-  return simgrid::simix::simcall([this, key] { return pimpl_->getProperty(key); });
+  return simgrid::simix::simcall([this, key] { return pimpl_->get_property(key); });
 }
 
 void Actor::set_property(const char* key, const char* value)
 {
-  simgrid::simix::simcall([this, key, value] { pimpl_->setProperty(key, value); });
+  simgrid::simix::simcall([this, key, value] { pimpl_->set_property(key, value); });
 }
 
 Actor* Actor::restart()

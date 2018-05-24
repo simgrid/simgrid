@@ -126,7 +126,7 @@ void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link)
 
     if (link->properties) {
       for (auto const& elm : *link->properties)
-        l->setProperty(elm.first, elm.second);
+        l->set_property(elm.first, elm.second);
     }
 
     if (link->latency_trace)
@@ -363,7 +363,7 @@ void sg_platf_new_storage(simgrid::kernel::routing::StorageCreationArgs* storage
 
   if (storage->properties) {
     for (auto const& elm : *storage->properties)
-      s->setProperty(elm.first, elm.second);
+      s->set_property(elm.first, elm.second);
     delete storage->properties;
   }
 }

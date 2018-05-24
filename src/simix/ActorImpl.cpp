@@ -321,7 +321,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
   /* Add properties */
   if (properties != nullptr)
     for (auto const& kv : *properties)
-      process->setProperty(kv.first, kv.second);
+      process->set_property(kv.first, kv.second);
 
   /* Make sure that the process is initialized for simix, in case we are called from the Host::onCreation signal */
   if (host->extension<simgrid::simix::Host>() == nullptr)
@@ -382,7 +382,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
   /* Add properties */
   if (properties != nullptr)
     for (auto const& kv : *properties)
-      process->setProperty(kv.first, kv.second);
+      process->set_property(kv.first, kv.second);
 
   /* Add the process to it's host process list */
   host->extension<simgrid::simix::Host>()->process_list.push_back(*process);
@@ -713,7 +713,7 @@ void SIMIX_process_yield(smx_actor_t self)
     /* Add the process to the list of process to restart, only if the host is down */
     if (self->auto_restart && self->host->is_off()) {
       SIMIX_host_add_auto_restart_process(self->host, self->get_cname(), self->code, self->getUserData(),
-                                          SIMIX_timer_get_date(self->kill_timer), self->getProperties(),
+                                          SIMIX_timer_get_date(self->kill_timer), self->get_properties(),
                                           self->auto_restart);
     }
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host->get_cname());

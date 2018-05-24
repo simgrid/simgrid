@@ -21,13 +21,13 @@ public:
   PropertyHolder() = default;
   ~PropertyHolder();
 
-  const char* getProperty(std::string key);
-  void setProperty(std::string id, std::string value);
+  const char* get_property(std::string key);
+  void set_property(std::string id, std::string value);
 
   /* FIXME: This should not be exposed, as users may do bad things with the dict they got (it's not a copy).
    * But some user API expose this call so removing it is not so easy.
    */
-  std::map<std::string, std::string>* getProperties();
+  std::map<std::string, std::string>* get_properties();
 
 private:
   std::map<std::string, std::string>* properties_ = nullptr;

@@ -13,7 +13,7 @@ PropertyHolder::~PropertyHolder() {
 }
 
 /** @brief Return the property associated to the provided key (or nullptr if not existing) */
-const char* PropertyHolder::getProperty(std::string key)
+const char* PropertyHolder::get_property(std::string key)
 {
   if (properties_ == nullptr)
     return nullptr;
@@ -22,7 +22,7 @@ const char* PropertyHolder::getProperty(std::string key)
 }
 
 /** @brief Change the value of a given key in the property set */
-void PropertyHolder::setProperty(std::string key, std::string value)
+void PropertyHolder::set_property(std::string key, std::string value)
 {
   if (not properties_)
     properties_       = new std::map<std::string, std::string>;
@@ -30,7 +30,7 @@ void PropertyHolder::setProperty(std::string key, std::string value)
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */
-std::map<std::string, std::string>* PropertyHolder::getProperties()
+std::map<std::string, std::string>* PropertyHolder::get_properties()
 {
   if (not properties_)
     properties_ = new std::map<std::string, std::string>;

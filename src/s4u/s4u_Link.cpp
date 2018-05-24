@@ -101,11 +101,11 @@ void Link::set_latency_trace(tmgr_trace_t trace)
 
 const char* Link::get_property(const char* key)
 {
-  return this->pimpl_->getProperty(key);
+  return this->pimpl_->get_property(key);
 }
 void Link::set_property(std::string key, std::string value)
 {
-  simgrid::simix::simcall([this, key, value] { this->pimpl_->setProperty(key, value); });
+  simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }
 } // namespace s4u
 } // namespace simgrid

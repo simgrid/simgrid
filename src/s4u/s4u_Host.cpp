@@ -206,18 +206,18 @@ void Host::route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links,
 /** Get the properties assigned to a host */
 std::map<std::string, std::string>* Host::getProperties()
 {
-  return simgrid::simix::simcall([this] { return this->pimpl_->getProperties(); });
+  return simgrid::simix::simcall([this] { return this->pimpl_->get_properties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
 const char* Host::get_property(const char* key)
 {
-  return this->pimpl_->getProperty(key);
+  return this->pimpl_->get_property(key);
 }
 
 void Host::set_property(std::string key, std::string value)
 {
-  simgrid::simix::simcall([this, key, value] { this->pimpl_->setProperty(key, value); });
+  simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
