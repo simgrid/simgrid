@@ -180,7 +180,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
   auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
   check_blocks(private_blocks, buff_size);
   void* tmpbuff=buff;
-  if ((smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) &&
+  if ((smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) &&
       (static_cast<char*>(buff) >= smpi_data_exe_start) &&
       (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
@@ -189,7 +189,7 @@ void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t b
     memcpy_private(tmpbuff, buff, private_blocks);
   }
 
-  if ((smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) && ((char*)comm->dst_buff >= smpi_data_exe_start) &&
+  if ((smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) && ((char*)comm->dst_buff >= smpi_data_exe_start) &&
       ((char*)comm->dst_buff < smpi_data_exe_start + smpi_data_exe_size)) {
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
     smpi_switch_data_segment(comm->dst_proc->iface());
@@ -349,7 +349,7 @@ void smpi_global_destroy()
     xbt_os_timer_free(global_timer);
   }
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
 }
@@ -365,24 +365,24 @@ static void smpi_init_options(){
   xbt_assert(smpi_host_speed >= 0, "You're trying to set the host_speed to a negative value (%f)", smpi_host_speed);
   std::string smpi_privatize_option = simgrid::config::get_value<std::string>("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
-    smpi_privatize_global_variables = SmpiPrivStrategies::None;
+    smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
   else if (smpi_privatize_option == "yes" || smpi_privatize_option == "1")
-    smpi_privatize_global_variables = SmpiPrivStrategies::Default;
+    smpi_privatize_global_variables = SmpiPrivStrategies::DEFAULT;
   else if (smpi_privatize_option == "mmap")
-    smpi_privatize_global_variables = SmpiPrivStrategies::Mmap;
+    smpi_privatize_global_variables = SmpiPrivStrategies::MMAP;
   else if (smpi_privatize_option == "dlopen")
-    smpi_privatize_global_variables = SmpiPrivStrategies::Dlopen;
+    smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
   else
     xbt_die("Invalid value for smpi/privatization: '%s'", smpi_privatize_option.c_str());
 
   if (not SMPI_switch_data_segment) {
     XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
-    smpi_privatize_global_variables = SmpiPrivStrategies::None;
+    smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
   }
 #if defined(__FreeBSD__)
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     XBT_INFO("mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
-    smpi_privatize_global_variables = SmpiPrivStrategies::Dlopen;
+    smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
   }
 #endif
 
@@ -472,7 +472,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Dlopen) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::DLOPEN) {
 
     std::string executable_copy = executable;
 
@@ -541,7 +541,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     };
   }
   else {
-    if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
+    if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
       smpi_prepare_global_memory_segment();
     // Load the dynamic library and resolve the entry point:
     void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
@@ -550,7 +550,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
     smpi_entry_point_type entry_point = smpi_resolve_function(handle);
     if (not entry_point)
       xbt_die("main not found in %s", executable);
-    if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap)
+    if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
       smpi_backup_global_memory_segment();
 
     // Execute the same entry point for each simulated process:

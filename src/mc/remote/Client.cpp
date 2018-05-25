@@ -258,7 +258,7 @@ void Client::declareStack(void* stack, size_t size, smx_actor_t process, ucontex
   region.size    = size;
   region.block   = ((char*)stack - (char*)heap->heapbase) / BLOCKSIZE + 1;
 #if HAVE_SMPI
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap && process)
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP && process)
     region.process_index = process->pid - 1;
   else
 #endif

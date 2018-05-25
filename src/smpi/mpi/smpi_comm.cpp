@@ -58,7 +58,7 @@ void Comm::destroy(Comm* comm)
 }
 
 int Comm::dup(MPI_Comm* newcomm){
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
@@ -300,7 +300,7 @@ void Comm::init_smp(){
     smpi_process()->set_replaying(false);
   }
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
@@ -337,7 +337,7 @@ void Comm::init_smp(){
 
   Coll_allgather_mpich::allgather(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
@@ -410,7 +410,7 @@ void Comm::init_smp(){
   }
   Coll_bcast_mpich::bcast(&(is_uniform_),1, MPI_INT, 0, comm_intra );
 
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }

@@ -240,7 +240,7 @@ void Op::set_fortran_op()
 
 void Op::apply(void *invec, void *inoutvec, int *len, MPI_Datatype datatype)
 {
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     // we need to switch as the called function may silently touch global variables
     XBT_DEBUG("Applying operation, switch to the right data frame ");
     smpi_switch_data_segment(simgrid::s4u::Actor::self());

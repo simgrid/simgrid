@@ -82,7 +82,7 @@ void smpi_execute_benched(double duration)
 
 void smpi_bench_begin()
 {
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::Mmap) {
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     smpi_switch_data_segment(simgrid::s4u::Actor::self());
   }
 

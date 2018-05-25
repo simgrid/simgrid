@@ -163,7 +163,7 @@ void smpi_backup_global_memory_segment()
   XBT_DEBUG("bss+data segment found : size %d starting at %p", smpi_data_exe_size, smpi_data_exe_start);
 
   if (smpi_data_exe_size == 0) { // no need to do anything as global variables don't exist
-    smpi_privatize_global_variables = SmpiPrivStrategies::None;
+    smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
     return;
   }
 
