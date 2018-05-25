@@ -25,7 +25,7 @@ Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
   mailbox_small_   = simgrid::s4u::Mailbox::by_name("small-" + std::to_string(actor_->get_pid()));
   mailboxes_mutex_ = xbt_mutex_init();
   timer_           = xbt_os_timer_new();
-  state_           = SMPI_UNINITIALIZED;
+  state_           = SmpiProcessState::UNINITIALIZED;
   if (MC_is_active())
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
@@ -84,7 +84,7 @@ void Process::set_data(int* argc, char*** argv)
 /** @brief Prepares the current process for termination. */
 void Process::finalize()
 {
-  state_ = SMPI_FINALIZED;
+  state_ = SmpiProcessState::FINALIZED;
   XBT_DEBUG("<%ld> Process left the game", actor_->get_pid());
 
   // This leads to an explosion of the search graph which cannot be reduced:
@@ -97,7 +97,7 @@ void Process::finalize()
 /** @brief Check if a process is finalized */
 int Process::finalized()
 {
-  return (state_ == SMPI_FINALIZED);
+  return (state_ == SmpiProcessState::FINALIZED);
 }
 
 /** @brief Check if a process is initialized */
@@ -105,18 +105,18 @@ int Process::initialized()
 {
   // TODO cheinrich: Check if we still need this. This should be a global condition, not for a
   // single process ... ?
-  return (state_ == SMPI_INITIALIZED);
+  return (state_ == SmpiProcessState::INITIALIZED);
 }
 
 /** @brief Mark a process as initialized (=MPI_Init called) */
 void Process::mark_as_initialized()
 {
-  if (state_ != SMPI_FINALIZED)
-    state_ = SMPI_INITIALIZED;
+  if (state_ != SmpiProcessState::FINALIZED)
+    state_ = SmpiProcessState::INITIALIZED;
 }
 
 void Process::set_replaying(bool value){
-  if (state_ != SMPI_FINALIZED)
+  if (state_ != SmpiProcessState::FINALIZED)
     replaying_ = value;
 }
 

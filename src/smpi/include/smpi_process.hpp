@@ -28,7 +28,7 @@ class Process {
     MPI_Comm comm_intra_  = MPI_COMM_NULL;
     MPI_Comm* comm_world_ = nullptr;
     void* data_           = nullptr; /* user data */
-    char state_;
+    SmpiProcessState state_;
     int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
     std::string instance_id_;
     bool replaying_                 = false; /* is the process replaying a trace */
