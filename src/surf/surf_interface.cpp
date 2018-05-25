@@ -40,7 +40,8 @@ extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 #include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
 
 s_surf_model_description_t surf_plugin_description[] = {
-    {"Energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
+    {"Host_Energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
+    {"Link_Energy", "Link energy consumption.", &sg_link_energy_plugin_init},
     {"Load", "Cpu load.", &sg_host_load_plugin_init},
     {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
 };
