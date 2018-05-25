@@ -340,9 +340,9 @@ void* smpi_shared_malloc_partial(size_t size, size_t* shared_block_offsets, int 
 }
 
 void *smpi_shared_malloc(size_t size, const char *file, int line) {
-  if (size > 0 && smpi_cfg_shared_malloc == shmalloc_local) {
+  if (size > 0 && smpi_cfg_shared_malloc == SharedMallocType::LOCAL) {
     return smpi_shared_malloc_local(size, file, line);
-  } else if (smpi_cfg_shared_malloc == shmalloc_global) {
+  } else if (smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
     int nb_shared_blocks = 1;
     size_t shared_block_offsets[2] = {0, size};
     return smpi_shared_malloc_partial(size, shared_block_offsets, nb_shared_blocks);
@@ -355,7 +355,7 @@ int smpi_is_shared(void* ptr, std::vector<std::pair<size_t, size_t>> &private_bl
   private_blocks.clear(); // being paranoid
   if (allocs_metadata.empty())
     return 0;
-  if ( smpi_cfg_shared_malloc == shmalloc_local || smpi_cfg_shared_malloc == shmalloc_global) {
+  if (smpi_cfg_shared_malloc == SharedMallocType::LOCAL || smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
     auto low = allocs_metadata.lower_bound(ptr);
     if (low != allocs_metadata.end() && low->first == ptr) {
       private_blocks = low->second.private_blocks;
@@ -419,7 +419,7 @@ std::vector<std::pair<size_t, size_t>> merge_private_blocks(const std::vector<st
 
 void smpi_shared_free(void *ptr)
 {
-  if (smpi_cfg_shared_malloc == shmalloc_local) {
+  if (smpi_cfg_shared_malloc == SharedMallocType::LOCAL) {
     char loc[PTR_STRLEN];
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
@@ -441,7 +441,7 @@ void smpi_shared_free(void *ptr)
       XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
     }
 
-  } else if (smpi_cfg_shared_malloc == shmalloc_global) {
+  } else if (smpi_cfg_shared_malloc == SharedMallocType::GLOBAL) {
     auto meta = allocs_metadata.find(ptr);
     if (meta != allocs_metadata.end()){
       meta->second.data->second.count--;

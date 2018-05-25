@@ -391,11 +391,11 @@ static void smpi_init_options(){
 
   std::string val = simgrid::config::get_value<std::string>("smpi/shared-malloc");
   if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
-    smpi_cfg_shared_malloc = shmalloc_global;
+    smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
   } else if (val == "local") {
-    smpi_cfg_shared_malloc = shmalloc_local;
+    smpi_cfg_shared_malloc = SharedMallocType::LOCAL;
   } else if ((val == "no") || (val == "0") || (val == "off")) {
-    smpi_cfg_shared_malloc = shmalloc_none;
+    smpi_cfg_shared_malloc = SharedMallocType::NONE;
   } else {
     xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
             val.c_str());

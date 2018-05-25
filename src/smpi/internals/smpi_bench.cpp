@@ -30,7 +30,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (ben
 double smpi_cpu_threshold = -1;
 double smpi_host_speed;
 
-shared_malloc_type smpi_cfg_shared_malloc = shmalloc_global;
+SharedMallocType smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
 double smpi_total_benched_time = 0;
 
 extern "C" XBT_PUBLIC void smpi_execute_flops_(double* flops);
