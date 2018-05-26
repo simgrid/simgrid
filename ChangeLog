@@ -4,23 +4,29 @@ TRACE
  - Change --cfg=tracing/msg/vm to --cfg=tracing/vm as virtual machine
    behavior tracing is no longer limited to MSG
 
- S4U:
+S4U:
  - Introduced new function simgrid::s4u::Host::get_actor_count. This function
    returns the number of actors running on a specific host.
 
- Simix:
+Plugins:
+ - Allow to run the Link energy plugin from the command line with 
+   --cfg=plugin:link_energy
+ - Rename Energy plugin into host_energy
+ - Rename Load plugin into host_load
+
+simix:
  - Add parameter --cfg=simix/breakpoint to raise a SIGTRAP at given time.
 
- SMPI:
+SMPI:
  - Replay: The replay file has been re-written in C++.
  - Replay: Tags used for messages sent via MPI_Send / MPI_Recv are now
    supported. They are stored in the trace and used when replayed.
 
- XBT:
+XBT:
  - Config: the C API is now deprecated (will be removed in 3.23), and
            the C++ API has been slightly improved.
 
- Fixed bugs:
+Fixed bugs:
  - #143: Setting a breakpoint at a given time
  - #258: daemonized actors hang after all non-daemonized actors have completed
 

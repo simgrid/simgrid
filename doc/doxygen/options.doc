@@ -254,24 +254,31 @@ when using SimDag.
 
 \subsection options_generic_plugin Plugins
 
-SimGrid supports the use of plugins; currently, no known plugins
-can be activated but there are use-cases where you may want to write
-your own plugin (for instance, for logging).
+SimGrid plugins allow to extend the framework without changing its
+source code directly. Read the source code of the existing plugins to
+learn how to do so (in ``src/plugins``), and ask your questions to the
+usual channels (Stack Overflow, Mailing list, IRC). The basic idea is
+that plugins usually register callbacks to some signals of interest.
+If they need to store some information about a given object (Link, CPU
+or Actor), they do so through the use of a dedicated object extension.
 
-Plugins can for instance define own classes that inherit from
-existing classes (for instance, a class "CpuEnergy" inherits from
-"Cpu" to assess energy consumption).
-
-The plugin connects to the code by registering callbacks using
-``signal.connect(callback)`` (see file ``src/surf/plugins/energy.cpp`` for
-details).
+Some of the existing plugins can be activated from the command line,
+meaning that you can activate them from the command line without any
+modification to your simulation code. For example, you can activate
+the host energy plugin by adding the following to your command line:
 
 \verbatim
-    --cfg=plugin:Energy
+    --cfg=plugin:host_energy
 \endverbatim
 
-\note
-    This option is case-sensitive: Energy and energy are not the same!
+Here is the full list of plugins that can be activated this way:
+
+ - \b host_energy: keeps track of the energy dissipated by
+   computations. More details in @ref plugin_energy.
+ - \b link_energy: keeps track of the energy dissipated by
+   communications. More details in @ref SURF_plugin_energy.
+ - \b host_load: keeps track of the computational load. 
+   More details in @ref plugin_load.
 
 \subsection options_model_optim Optimization level of the platform models
 
