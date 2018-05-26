@@ -40,7 +40,7 @@ private:
   double computed_flops    = 0;
   double idle_time         = 0;
   double theor_max_flops   = 0;
-  bool   was_prev_idle     = true; /* A host is idle at the beginning */
+  bool was_prev_idle       = true; /* A host is idle at the beginning */
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostLoad> HostLoad::EXTENSION_ID;
@@ -74,9 +74,9 @@ void HostLoad::update()
   }
 
   theor_max_flops += current_speed * host->get_core_count() * (now - last_updated);
-  current_speed    = host->getSpeed();
-  last_updated     = now;
-  was_prev_idle    = (current_flops == 0);
+  current_speed = host->getSpeed();
+  last_updated  = now;
+  was_prev_idle = (current_flops == 0);
 }
 
 /**
@@ -99,7 +99,8 @@ double HostLoad::getCurrentLoad()
 /**
  * Return idle time since last reset
  */
-double HostLoad::getIdleTime() {
+double HostLoad::getIdleTime()
+{
   return idle_time;
 }
 
@@ -131,8 +132,8 @@ void HostLoad::reset()
   current_speed   = host->getSpeed();
   was_prev_idle   = (current_flops == 0);
 }
-}
-}
+} // namespace plugin
+} // namespace simgrid
 
 using simgrid::plugin::HostLoad;
 

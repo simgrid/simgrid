@@ -330,11 +330,6 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
-  src/surf/plugins/dirty_page_tracking.cpp
-  src/surf/plugins/host_dvfs.cpp
-  src/surf/plugins/host_energy.cpp
-  src/surf/plugins/link_energy.cpp
-  src/surf/plugins/host_load.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
   src/surf/StorageImpl.cpp
@@ -353,6 +348,11 @@ set(SURF_SRC
   )
 
 set(PLUGINS_SRC
+  src/plugins/dirty_page_tracking.cpp
+  src/plugins/host_dvfs.cpp
+  src/plugins/host_energy.cpp
+  src/plugins/link_energy.cpp
+  src/plugins/host_load.cpp
   src/plugins/file_system/s4u_FileSystem.cpp
   src/plugins/vm/VirtualMachineImpl.hpp
   src/plugins/vm/s4u_VirtualMachine.cpp

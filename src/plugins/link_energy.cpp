@@ -67,9 +67,7 @@ private:
 
 simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID;
 
-LinkEnergy::LinkEnergy(simgrid::s4u::Link* ptr) : link_(ptr), lastUpdated_(surf_get_clock())
-{
-}
+LinkEnergy::LinkEnergy(simgrid::s4u::Link* ptr) : link_(ptr), lastUpdated_(surf_get_clock()) {}
 
 LinkEnergy::~LinkEnergy() = default;
 
@@ -138,8 +136,8 @@ double LinkEnergy::getConsumedEnergy()
     simgrid::simix::simcall(std::bind(&LinkEnergy::update, this));
   return this->totalEnergy_;
 }
-}
-}
+} // namespace plugin
+} // namespace simgrid
 
 using simgrid::plugin::LinkEnergy;
 

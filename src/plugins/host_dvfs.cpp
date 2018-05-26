@@ -167,19 +167,20 @@ public:
     if (load > freq_up_threshold) {
       if (pstate != 0) {
         get_host()->set_pstate(pstate - 1);
-        XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold, pstate - 1);
-      }
-      else {
-        XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load, freq_up_threshold, pstate);
+        XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold,
+                 pstate - 1);
+      } else {
+        XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load,
+                  freq_up_threshold, pstate);
       }
     } else if (load < freq_down_threshold) {
       int max_pstate = get_host()->get_pstate_count() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
         get_host()->set_pstate(pstate + 1);
         XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold, pstate + 1);
-      }
-      else {
-        XBT_DEBUG("Load: %f < threshold: %f -> cannot slow down even more, already in slowest pstate %d", load, freq_down_threshold, pstate);
+      } else {
+        XBT_DEBUG("Load: %f < threshold: %f -> cannot slow down even more, already in slowest pstate %d", load,
+                  freq_down_threshold, pstate);
       }
     }
   }
@@ -216,9 +217,9 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostDvfs> HostDvfs::EXTENSION_ID;
 HostDvfs::HostDvfs(simgrid::s4u::Host* ptr) {}
 
 HostDvfs::~HostDvfs() = default;
-}
-}
-}
+} // namespace dvfs
+} // namespace plugin
+} // namespace simgrid
 
 using simgrid::plugin::dvfs::HostDvfs;
 

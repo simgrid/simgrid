@@ -5,9 +5,9 @@
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/load.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "simgrid/s4u/Engine.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -140,7 +140,7 @@ private:
   /* We need to keep track of what pstate has been used, as we will sometimes be notified only *after* a pstate has been
    * used (but we need to update the energy consumption with the old pstate!)
    */
-  int pstate = 0;
+  int pstate           = 0;
   const int pstate_off = -1;
 
 public:
@@ -365,8 +365,8 @@ void HostEnergy::initWattsRangeList()
     i++;
   }
 }
-}
-}
+} // namespace plugin
+} // namespace simgrid
 
 using simgrid::plugin::HostEnergy;
 
@@ -433,13 +433,13 @@ static void onSimulationEnd()
 
       bool host_was_used = (sg_host_get_computed_flops(hosts[i]) != 0);
       double energy      = hosts[i]->extension<HostEnergy>()->getConsumedEnergy();
-      total_energy      += energy;
+      total_energy += energy;
       if (host_was_used)
         used_hosts_energy += energy;
     }
   }
-  XBT_INFO("Total energy consumption: %f Joules (used hosts: %f Joules; unused/idle hosts: %f)",
-           total_energy, used_hosts_energy, total_energy - used_hosts_energy);
+  XBT_INFO("Total energy consumption: %f Joules (used hosts: %f Joules; unused/idle hosts: %f)", total_energy,
+           used_hosts_energy, total_energy - used_hosts_energy);
 }
 
 /* **************************** Public interface *************************** */

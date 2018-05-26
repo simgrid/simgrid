@@ -63,8 +63,8 @@ double VmDirtyPageTrackingExt::computed_flops_lookup()
 
   return total;
 }
-}
-}
+} // namespace vm
+} // namespace simgrid
 
 static void onVirtualMachineCreation(simgrid::vm::VirtualMachineImpl* vm)
 {
