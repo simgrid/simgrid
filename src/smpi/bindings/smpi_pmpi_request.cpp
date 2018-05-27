@@ -335,12 +335,15 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     retval = MPI_SUCCESS;
 
     // the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-    if (status != MPI_STATUS_IGNORE) {
-      int src_traced = getPid(comm, status->MPI_SOURCE);
-      if (not TRACE_smpi_view_internals()) {
-        TRACE_smpi_recv(src_traced, my_proc_id, tag);
-      }
+    int src_traced=0;
+    if (status != MPI_STATUS_IGNORE) 
+      src_traced = getPid(comm, status->MPI_SOURCE);
+    else
+      src_traced = getPid(comm, src);
+    if (not TRACE_smpi_view_internals()) {
+      TRACE_smpi_recv(src_traced, my_proc_id, tag);
     }
+    
     TRACE_smpi_comm_out(my_proc_id);
   }
 
