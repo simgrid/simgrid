@@ -5,12 +5,12 @@
 #ifndef SMPI_REPLAY_HPP_
 #define SMPI_REPLAY_HPP_
 
-#include "smpi/smpi.h"
-#include <simgrid/s4u/Actor.hpp>
-#include <memory>
+#include <boost/algorithm/string/join.hpp>
+#include <src/smpi/include/smpi_process.hpp>
 #include <xbt/replay.hpp>
 #include <xbt/ex.h>
 
+#include <memory>
 #include <sstream>
 
 #define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                             \
@@ -30,10 +30,12 @@
   }                                                                                                                  \
 }
 
-extern XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
-extern XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
-extern XBT_PRIVATE void smpi_free_tmp_buffer(void* buf);
-extern XBT_PRIVATE void smpi_free_replay_tmp_buffers();
+XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
+XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
+XBT_PRIVATE void smpi_free_tmp_buffer(void* buf);
+XBT_PRIVATE void smpi_free_replay_tmp_buffers();
+
+XBT_PRIVATE void log_timed_action(simgrid::xbt::ReplayAction& action, double clock);
 
 namespace simgrid {
 namespace smpi {
@@ -89,6 +91,8 @@ public:
   int root = 0;
   MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
   MPI_Datatype datatype2 = MPI_DEFAULT_TYPE;
+
+  virtual void parse(simgrid::xbt::ReplayAction& action, std::string name) = 0;
 };
 
 class BcastArgParser : public CollCommParser {
@@ -162,7 +166,7 @@ public:
 /**
  * Base class for all ReplayActions.
  * Note that this class actually implements the behavior of each action
- * while the parsing of the replay arguments is done in the ActionArgParser class.
+ * while the parsing of the replay arguments is done in the @ActionArgParser class.
  * In other words: The logic goes here, the setup is done by the ActionArgParser.
  */
 template <class T> class ReplayAction {
@@ -175,7 +179,16 @@ public:
   explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
   virtual ~ReplayAction() = default;
 
-  virtual void execute(simgrid::xbt::ReplayAction& action);
+  void execute(simgrid::xbt::ReplayAction& action)
+  {
+    // Needs to be re-initialized for every action, hence here
+    double start_time = smpi_process()->simulated_elapsed();
+    args.parse(action, name);
+    kernel(action);
+    if (name != "Init")
+      log_timed_action(action, start_time);
+  }
+
   virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
   void* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
   void* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }

@@ -64,8 +64,7 @@ public:
 typedef std::tuple</*sender*/ int, /* reciever */ int, /* tag */int> req_key_t;
 typedef std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int,int,int>>> req_storage_t;
 
-
-static void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
+void log_timed_action(simgrid::xbt::ReplayAction& action, double clock)
 {
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     std::string s = boost::algorithm::join(action, " ");
@@ -391,17 +390,6 @@ void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string n
   }
   send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
   recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
-}
-
-template<class T>
-void ReplayAction<T>::execute(simgrid::xbt::ReplayAction& action)
-{
-  // Needs to be re-initialized for every action, hence here
-  double start_time = smpi_process()->simulated_elapsed();
-  args.parse(action, name);
-  kernel(action);
-  if (name != "Init")
-    log_timed_action(action, start_time);
 }
 
 void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
