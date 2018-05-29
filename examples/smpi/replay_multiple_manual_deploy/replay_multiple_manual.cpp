@@ -33,20 +33,10 @@ struct Job
     int unique_job_number; // in [0, n[
 };
 
-// Function declarations needed by psychorigid warnings.
-bool job_comparator(const Job * j1, const Job * j2);
-void pop_some_processes(int nb_processes, msg_host_t host);
-int smpi_replay_process(int argc, char *argv[]);
-int sleeper_process(int argc, char * argv[]);
-int job_executor_process(int argc, char *argv[]);
-int workload_executor_process(int argc, char *argv[]);
-std::vector<Job *> all_jobs(const std::string & workload_file);
-std::vector<msg_host_t> all_hosts();
-
 // ugly global to avoid creating structures for giving args to processes
 std::vector<msg_host_t> hosts;
 
-bool job_comparator(const Job * j1, const Job * j2)
+static bool job_comparator(const Job * j1, const Job * j2)
 {
     if (j1->starting_time == j2->starting_time)
         return j1->smpi_app_name < j2->smpi_app_name;
@@ -60,7 +50,7 @@ struct s_smpi_replay_process_args
     int rank;
 };
 
-int smpi_replay_process(int argc, char *argv[])
+static int smpi_replay_process(int argc, char *argv[])
 {
     s_smpi_replay_process_args * args = (s_smpi_replay_process_args *)
                                         MSG_process_get_data(MSG_process_self());
@@ -83,7 +73,7 @@ int smpi_replay_process(int argc, char *argv[])
 }
 
 // Sleeps for a given amount of time
-int sleeper_process(int argc, char * argv[])
+static int sleeper_process(int argc, char * argv[])
 {
     (void) argc;
     (void) argv;
@@ -98,7 +88,7 @@ int sleeper_process(int argc, char * argv[])
     return 0;
 }
 
-int job_executor_process(int argc, char *argv[])
+static int job_executor_process(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
@@ -155,7 +145,7 @@ int job_executor_process(int argc, char *argv[])
 }
 
 // Executes a workload of SMPI processes
-int workload_executor_process(int argc, char *argv[])
+static int workload_executor_process(int argc, char *argv[])
 {
     (void) argc;
     (void) argv;
@@ -194,7 +184,7 @@ int workload_executor_process(int argc, char *argv[])
 }
 
 // Launches some sleeper processes
-void pop_some_processes(int nb_processes, msg_host_t host)
+static void pop_some_processes(int nb_processes, msg_host_t host)
 {
     for (int i = 0; i < nb_processes; ++i)
     {
@@ -205,7 +195,7 @@ void pop_some_processes(int nb_processes, msg_host_t host)
 }
 
 // Reads jobs from a workload file and returns them
-vector<Job *> all_jobs(const std::string & workload_file)
+static vector<Job *> all_jobs(const std::string & workload_file)
 {
     ifstream f(workload_file);
     xbt_assert(f.is_open(), "Cannot open file '%s'.", workload_file.c_str());
@@ -305,7 +295,7 @@ vector<Job *> all_jobs(const std::string & workload_file)
 }
 
 // Returns all MSG hosts as a std::vector
-vector<msg_host_t> all_hosts()
+static vector<msg_host_t> all_hosts()
 {
     vector<msg_host_t> hosts;
 
