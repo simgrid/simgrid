@@ -22,8 +22,6 @@ using namespace std;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
-void pop_some_processes(int nb_processes, msg_host_t host);
-
 struct Job
 {
     string smpi_app_name;
@@ -34,6 +32,16 @@ struct Job
     vector<string> traces_filenames;
     int unique_job_number; // in [0, n[
 };
+
+// Function declarations needed by psychorigid warnings.
+bool job_comparator(const Job * j1, const Job * j2);
+void pop_some_processes(int nb_processes, msg_host_t host);
+int smpi_replay_process(int argc, char *argv[]);
+int sleeper_process(int argc, char * argv[]);
+int job_executor_process(int argc, char *argv[]);
+int workload_executor_process(int argc, char *argv[]);
+std::vector<Job *> all_jobs(const std::string & workload_file);
+std::vector<msg_host_t> all_hosts();
 
 // ugly global to avoid creating structures for giving args to processes
 std::vector<msg_host_t> hosts;
@@ -101,14 +109,20 @@ int job_executor_process(int argc, char *argv[])
     XBT_INFO("Executing job %d (smpi_app '%s')",
              job->unique_job_number, job->smpi_app_name.c_str());
 
+    int err = -1;
+
     for (int i = 0; i < job->app_size; ++i)
     {
         // Probable memory leaks
         char * str_instance_name, * str_rank, * str_pname, * str_tfname;
-        asprintf(&str_instance_name, "%s", job->smpi_app_name.c_str());
-        asprintf(&str_rank, "%d", i);
-        asprintf(&str_pname, "%d_%d", job->unique_job_number, i);
-        asprintf(&str_tfname, "%s", job->traces_filenames[i].c_str());
+        err = asprintf(&str_instance_name, "%s", job->smpi_app_name.c_str());
+        xbt_assert(err != -1, "asprintf error");
+        err = asprintf(&str_rank, "%d", i);
+        xbt_assert(err != -1, "asprintf error");
+        err = asprintf(&str_pname, "%d_%d", job->unique_job_number, i);
+        xbt_assert(err != -1, "asprintf error");
+        err = asprintf(&str_tfname, "%s", job->traces_filenames[i].c_str());
+        xbt_assert(err != -1, "asprintf error");
 
         char **argv = xbt_new(char*, 5);
         argv[0] = xbt_strdup("1");      // log only?
@@ -196,15 +210,18 @@ vector<Job *> all_jobs(const std::string & workload_file)
     ifstream f(workload_file);
     xbt_assert(f.is_open(), "Cannot open file '%s'.", workload_file.c_str());
     vector<Job *> jobs;
+    int err = -1;
 
     char * workload_filename_copy;
-    asprintf(&workload_filename_copy, "%s", workload_file.c_str());
+    err = asprintf(&workload_filename_copy, "%s", workload_file.c_str());
+    xbt_assert(err != -1, "asprintf error");
     char * dir = dirname(workload_filename_copy);
 
     if (strlen(dir) == 0)
     {
         free(workload_filename_copy);
-        asprintf(&workload_filename_copy, ".");
+        err = asprintf(&workload_filename_copy, ".");
+        xbt_assert(err != -1, "asprintf error");
         dir = dirname(workload_filename_copy);
     }
 
@@ -226,7 +243,9 @@ vector<Job *> all_jobs(const std::string & workload_file)
                 string alloc = m[5];
 
                 char * job_filename_copy;
-                asprintf(&job_filename_copy, "%s", job->filename.c_str());
+                int err = asprintf(&job_filename_copy, "%s",
+                                   job->filename.c_str());
+                xbt_assert(err != -1, "asprintf error");
                 char * job_filename_end = basename(job_filename_copy);
 
                 vector<string> subparts;
