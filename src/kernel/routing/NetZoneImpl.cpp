@@ -169,13 +169,13 @@ static void find_common_ancestors(NetPoint* src, NetPoint* dst,
   NetZoneImpl* current = src->get_englobing_zone();
   while (current != nullptr) {
     path_src.push_back(current);
-    current = static_cast<NetZoneImpl*>(current->getFather());
+    current = static_cast<NetZoneImpl*>(current->get_father());
   }
   std::vector<NetZoneImpl*> path_dst;
   current = dst->get_englobing_zone();
   while (current != nullptr) {
     path_dst.push_back(current);
-    current = static_cast<NetZoneImpl*>(current->getFather());
+    current = static_cast<NetZoneImpl*>(current->get_father());
   }
 
   /* (3) find the common father.

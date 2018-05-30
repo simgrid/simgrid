@@ -66,7 +66,7 @@ const char* NetZone::get_cname() const
 {
   return name_.c_str();
 }
-NetZone* NetZone::getFather()
+NetZone* NetZone::get_father()
 {
   return father_;
 }

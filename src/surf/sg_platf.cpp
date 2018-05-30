@@ -626,7 +626,7 @@ void sg_platf_new_Zone_seal()
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();
   simgrid::s4u::NetZone::onSeal(*current_routing);
-  current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->getFather());
+  current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->get_father());
 }
 
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
