@@ -232,8 +232,7 @@ static void instr_host_on_speed_change(simgrid::s4u::Host& host)
       ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
 }
 
-static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
-                                             simgrid::kernel::resource::Action::State /* previous */)
+static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action)
 {
   simgrid::surf::Cpu* cpu = static_cast<simgrid::surf::Cpu*>(action->get_variable()->get_constraint(0)->get_id());
   TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
@@ -358,7 +357,7 @@ void instr_define_callbacks()
   }
   simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
 
-  simgrid::surf::CpuAction::onStateChange.connect(instr_cpu_action_on_state_change);
+  simgrid::surf::CpuAction::on_state_change.connect(instr_cpu_action_on_state_change);
   simgrid::s4u::Link::on_communication_state_change.connect(instr_link_on_communication_state_change);
 
   if (TRACE_actor_is_enabled()) {
