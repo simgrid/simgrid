@@ -6,10 +6,11 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+
+#include "../kernel/activity/IoImpl.hpp"
 #include "simgrid/sg_config.hpp"
 #include "smx_private.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"

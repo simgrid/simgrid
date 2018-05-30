@@ -5,8 +5,8 @@
 
 #include "mc/mc.h"
 #include "smx_private.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/Client.hpp"

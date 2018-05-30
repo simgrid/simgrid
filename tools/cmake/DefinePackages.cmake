@@ -391,14 +391,14 @@ set(SIMIX_SRC
   src/kernel/activity/CommImpl.hpp
   src/kernel/activity/ExecImpl.cpp
   src/kernel/activity/ExecImpl.hpp
+  src/kernel/activity/IoImpl.cpp
+  src/kernel/activity/IoImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
   src/kernel/activity/MutexImpl.cpp
   src/kernel/activity/MutexImpl.hpp
   src/kernel/activity/SleepImpl.cpp
   src/kernel/activity/SleepImpl.hpp
-  src/kernel/activity/SynchroIo.cpp
-  src/kernel/activity/SynchroIo.hpp
   src/kernel/activity/SynchroRaw.cpp
   src/kernel/activity/SynchroRaw.hpp
 

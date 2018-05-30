@@ -9,14 +9,14 @@
 
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/Storage.hpp"
+
 #include "smx_private.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
 #include "src/simix/smx_io_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
-
-#include "src/kernel/activity/SynchroIo.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
@@ -30,9 +30,9 @@ void simcall_HANDLER_storage_read(smx_simcall_t simcall, surf_storage_t st, sg_s
 smx_activity_t SIMIX_storage_read(surf_storage_t st, sg_size_t size)
 {
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_io                           = st->read(size);
+  synchro->surf_action_                      = st->read(size);
 
-  synchro->surf_io->set_data(synchro);
+  synchro->surf_action_->set_data(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -48,8 +48,8 @@ void simcall_HANDLER_storage_write(smx_simcall_t simcall, surf_storage_t st, sg_
 smx_activity_t SIMIX_storage_write(surf_storage_t st, sg_size_t size)
 {
   simgrid::kernel::activity::IoImpl* synchro = new simgrid::kernel::activity::IoImpl();
-  synchro->surf_io                           = st->write(size);
-  synchro->surf_io->set_data(synchro);
+  synchro->surf_action_                      = st->write(size);
+  synchro->surf_action_->set_data(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -59,8 +59,8 @@ void SIMIX_io_destroy(smx_activity_t synchro)
 {
   simgrid::kernel::activity::IoImplPtr io = boost::static_pointer_cast<simgrid::kernel::activity::IoImpl>(synchro);
   XBT_DEBUG("Destroy synchro %p", synchro.get());
-  if (io->surf_io)
-    io->surf_io->unref();
+  if (io->surf_action_)
+    io->surf_action_->unref();
 }
 
 void SIMIX_io_finish(smx_activity_t synchro)

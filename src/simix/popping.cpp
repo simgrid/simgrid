@@ -11,8 +11,8 @@
 
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_popping, simix,
