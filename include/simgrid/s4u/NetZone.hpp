@@ -39,22 +39,6 @@ public:
   const char* get_cname() const;
   NetZone* get_father();
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_father()") NetZone* getFather() { return get_father(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_name()") const std::string& getName() const { return get_name(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_cname()") const char* getCname() const { return get_cname(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_route()") void addRoute(
-      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
-  {
-    add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
-  }
-  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_bypass_route()") void addBypassRoute(
-      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
-  {
-    add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
-  }
-
   std::vector<NetZone*>* getChildren();             // Sub netzones
   void getHosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
   int getHostCount();
@@ -82,6 +66,23 @@ public:
       on_route_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_seal;
+
+  // Deprecation wrappers
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_father()") NetZone* getFather() { return get_father(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_name()") const std::string& getName() const { return get_name(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_cname()") const char* getCname() const { return get_cname(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_route()") void addRoute(
+      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+  {
+    add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_bypass_route()") void addBypassRoute(
+      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+      kernel::routing::NetPoint* gw_dst, std::vector<simgrid::kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+  {
+    add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  }
 
 protected:
   unsigned int getTableSize() { return vertices_.size(); }
