@@ -76,8 +76,13 @@
 #define XBT_ATTRIB_DEPRECATED_v323(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.23)") /* Will be dropped in v3.23 */
 
-#define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
-#define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__(prio)))
+#if !defined(__APPLE__)
+#  define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
+#  define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__(prio)))
+#else
+#  define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__))
+#  define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__))
+#endif
 
 #if defined(__GNUC__)
 #  define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
