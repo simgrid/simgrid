@@ -610,7 +610,7 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCre
 
   /* set the new current component of the tree */
   current_routing = new_zone;
-  simgrid::s4u::NetZone::onCreation(*new_zone); // notify the signal
+  simgrid::s4u::NetZone::on_creation(*new_zone); // notify the signal
 
   return new_zone;
 }
@@ -625,7 +625,7 @@ void sg_platf_new_Zone_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();
-  simgrid::s4u::NetZone::onSeal(*current_routing);
+  simgrid::s4u::NetZone::on_seal(*current_routing);
   current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->get_father());
 }
 

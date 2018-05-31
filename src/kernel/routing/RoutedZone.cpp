@@ -201,7 +201,7 @@ void RoutedZone::addRouteCheckParams(NetPoint* src, NetPoint* dst, NetPoint* gw_
                dstName, gw_dst->get_cname());
   }
 
-  onRouteCreation(symmetrical, src, dst, gw_src, gw_dst, link_list);
+  on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
 }
 }
 }

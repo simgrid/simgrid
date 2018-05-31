@@ -79,9 +79,9 @@ public:
   static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                    kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                                    std::vector<kernel::resource::LinkImpl*>& link_list)>
-      onRouteCreation;
-  static simgrid::xbt::signal<void(NetZone&)> onCreation;
-  static simgrid::xbt::signal<void(NetZone&)> onSeal;
+      on_route_creation;
+  static simgrid::xbt::signal<void(NetZone&)> on_creation;
+  static simgrid::xbt::signal<void(NetZone&)> on_seal;
 
 protected:
   unsigned int getTableSize() { return vertices_.size(); }

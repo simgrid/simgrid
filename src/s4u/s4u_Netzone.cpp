@@ -17,9 +17,9 @@ namespace s4u {
 simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                           kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                           std::vector<kernel::resource::LinkImpl*>& link_list)>
-    NetZone::onRouteCreation;
-simgrid::xbt::signal<void(NetZone&)> NetZone::onCreation;
-simgrid::xbt::signal<void(NetZone&)> NetZone::onSeal;
+    NetZone::on_route_creation;
+simgrid::xbt::signal<void(NetZone&)> NetZone::on_creation;
+simgrid::xbt::signal<void(NetZone&)> NetZone::on_seal;
 
 NetZone::NetZone(NetZone* father, std::string name) : father_(father), name_(name)
 {

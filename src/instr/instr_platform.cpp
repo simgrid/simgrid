@@ -351,10 +351,10 @@ void instr_define_callbacks()
     simgrid::s4u::Host::on_speed_change.connect(instr_host_on_speed_change);
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
     simgrid::s4u::Link::on_bandwidth_change.connect(instr_link_on_bandwidth_change);
-    simgrid::s4u::NetZone::onSeal.connect([](simgrid::s4u::NetZone& /*netzone*/) { currentContainer.pop_back(); });
+    simgrid::s4u::NetZone::on_seal.connect([](simgrid::s4u::NetZone& /*netzone*/) { currentContainer.pop_back(); });
     simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
   }
-  simgrid::s4u::NetZone::onCreation.connect(instr_netzone_on_creation);
+  simgrid::s4u::NetZone::on_creation.connect(instr_netzone_on_creation);
 
   simgrid::surf::CpuAction::on_state_change.connect(instr_cpu_action_on_state_change);
   simgrid::s4u::Link::on_communication_state_change.connect(instr_link_on_communication_state_change);
