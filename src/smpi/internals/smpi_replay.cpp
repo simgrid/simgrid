@@ -697,7 +697,7 @@ void AllToAllVAction::kernel(simgrid::xbt::ReplayAction& action)
 } // Replay Namespace
 }} // namespace simgrid::smpi
 
-static std::vector<simgrid::smpi::replay::RequestStorage> storage;
+static std::unordered_map<aid_t, simgrid::smpi::replay::RequestStorage> storage;
 /** @brief Only initialize the replay, don't do it for real */
 void smpi_replay_init(int* argc, char*** argv)
 {
@@ -706,7 +706,9 @@ void smpi_replay_init(int* argc, char*** argv)
   smpi_process()->set_replaying(true);
 
   int my_proc_id = simgrid::s4u::this_actor::get_pid();
-  storage.resize(smpi_process_count());
+  for (int i = 0; i < smpi_process_count(); i++) {
+    storage[i] = simgrid::smpi::replay::RequestStorage();
+  }
 
   TRACE_smpi_init(my_proc_id);
   TRACE_smpi_computing_init(my_proc_id);
