@@ -436,46 +436,32 @@ if(CMAKE_USE_PTHREADS_INIT)
   ### Test that we have a way to create semaphores
 
   if(HAVE_SEM_OPEN_LIB)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_open.c -lpthread -o sem_open
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
-    )
-
-    # Test sem_open by compiling:
-    if(HAVE_SEM_OPEN_compil)
-      set(HAVE_SEM_OPEN 0)
-      message(STATUS "Warning: sem_open not compilable")
-      message(STATUS "HAVE_SEM_OPEN_comp_output: ${HAVE_SEM_OPEN_comp_output}")
-    else()
-      set(HAVE_SEM_OPEN 1)
-      message(STATUS "sem_open is compilable")
-    endif()
-
-    # If we're not crosscompiling, we check by executing the program:
-    if (HAVE_SEM_OPEN AND NOT CMAKE_CROSSCOMPILING)
-      execute_process(COMMAND ./sem_open
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        RESULT_VARIABLE HAVE_SEM_OPEN_run
-        OUTPUT_VARIABLE var_compil
-      )
-      if (NOT HAVE_SEM_OPEN_run)
-        set(HAVE_SEM_OPEN 1)
-        message(STATUS "sem_open is executable")
-      else()
-        set(HAVE_SEM_OPEN 0)
-        if(EXISTS "${CMAKE_BINARY_DIR}/sem_open")
-          message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open exists!")
-        else()
-          message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open not exists!")
-        endif()
-        message(STATUS "Warning: sem_open not executable")
-        message(STATUS "Compilation output: '${var_compil}'")
-        message(STATUS "Exit result of sem_open: ${HAVE_SEM_OPEN_run}")
-      endif()
-    endif()
-    file(REMOVE sem_open)
-  else()
+    try_run(semopen_retval semopen_compilable
+            ${CMAKE_BINARY_DIR}
+            ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_open.c
+	    LINK_LIBRARIES pthread
+	    COMPILE_OUTPUT_VARIABLE semopen_compilmsg
+            RUN_OUTPUT_VARIABLE semopen_runmsg)
+    
     set(HAVE_SEM_OPEN 0)
+    if(semopen_compilable)
+      if(NOT semopen_retval) # error if not 0
+        message(STATUS "sem_open is compilable and executable")
+	set(HAVE_SEM_OPEN 1)
+      else()
+        message(STATUS "Warning: sem_open seems compilable but not executable")
+        message(STATUS "Compilation output: ${semopen_compilmsg}")
+        message(STATUS "Execution output: ${semopen_runmsg}")
+        message(STATUS "Exit value: ${semopen_retval}")
+      endif()
+    else()
+      message(STATUS "Warning: sem_open not compilable")
+      message(STATUS "Compilation output: ${semopen_compilmsg}")
+    endif()
+    unset(semopen_compilable)
+    unset(semopen_retval)
+    unset(semopen_runmsg)
+    unset(semopen_compilmsg)
   endif()
 
   if(HAVE_SEM_INIT_LIB)
