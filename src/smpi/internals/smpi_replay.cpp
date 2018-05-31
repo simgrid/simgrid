@@ -706,9 +706,6 @@ void smpi_replay_init(int* argc, char*** argv)
   smpi_process()->set_replaying(true);
 
   int my_proc_id = simgrid::s4u::this_actor::get_pid();
-  for (int i = 0; i < smpi_process_count(); i++) {
-    storage[i] = simgrid::smpi::replay::RequestStorage();
-  }
 
   TRACE_smpi_init(my_proc_id);
   TRACE_smpi_computing_init(my_proc_id);
@@ -758,6 +755,7 @@ void smpi_replay_main(int* argc, char*** argv)
 {
   static int active_processes = 0;
   active_processes++;
+  storage[simgrid::s4u::this_actor::get_pid()] = simgrid::smpi::replay::RequestStorage();
   simgrid::xbt::replay_runner(*argc, *argv);
 
   /* and now, finalize everything */
