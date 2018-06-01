@@ -58,6 +58,6 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/generate_multiple
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_resources
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_time
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_time_and_resources
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_no_job PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_nojob PARENT_SCOPE)
 set(tesh_files    ${tesh_files}    ${rm_tesh_files_as_string} PARENT_SCOPE)
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual.cpp PARENT_SCOPE)

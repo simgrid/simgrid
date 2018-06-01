@@ -835,7 +835,7 @@ configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_depl
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_resources ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_resources COPYONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time COPYONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources COPYONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_no_job ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_no_job COPYONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_nojob ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_nojob COPYONLY)
 
   set(generated_files_to_clean
     ${generated_files_to_clean}
@@ -911,7 +911,7 @@ configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_depl
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_resources
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources
-    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_no_job
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_nojob
     )
 endif()
 
