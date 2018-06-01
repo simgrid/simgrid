@@ -11,6 +11,7 @@
 #include <xbt/ex.h>
 #include <xbt/parmap.h>
 #ifdef __cplusplus
+#include <functional>
 #include <map>
 #endif
 
@@ -149,6 +150,10 @@ XBT_PUBLIC void SIMIX_process_on_exit_runall(smx_actor_t process);
 XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data);
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, std::function<void(int, void*)> fun, void* data);
+#endif
 
 /****************************** Communication *********************************/
 XBT_PUBLIC void SIMIX_comm_set_copy_data_callback(void (*callback)(smx_activity_t, void*, size_t));
