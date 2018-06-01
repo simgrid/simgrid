@@ -109,7 +109,6 @@ static int job_executor_process(int argc, char* argv[])
   int err = -1;
 
   for (int i = 0; i < job->app_size; ++i) {
-    // Probable memory leaks
     char *str_instance_name, *str_rank, *str_pname, *str_tfname;
     err = asprintf(&str_instance_name, "%s", job->smpi_app_name.c_str());
     xbt_assert(err != -1, "asprintf error");
@@ -136,6 +135,7 @@ static int job_executor_process(int argc, char* argv[])
       args->semaphore = job_semaphore;
 
     MSG_process_create_with_arguments(str_pname, smpi_replay_process, (void*)args, hosts[job->allocation[i]], 5, argv);
+    free(str_pname);
   }
 
   MSG_sem_acquire(job_semaphore);
