@@ -11,6 +11,11 @@ if(enable_smpi)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_sr)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_st)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_st_sr)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed1)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2_sr)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2_st)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2_st_sr)
 
   # One-string version of the files (very ugly. Could be "just ugly" with recent CMake)
   set(rm_tesh_files_as_string
@@ -20,6 +25,11 @@ if(enable_smpi)
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_sr.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st_sr.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed1.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_sr.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_st.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_st_sr.tesh
   )
 
   IF(NOT HAVE_MC)
