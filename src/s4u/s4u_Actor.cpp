@@ -79,6 +79,11 @@ void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data)
   simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
 }
 
+void Actor::on_exit(std::function<void(int, void*)> fun, void* data)
+{
+  simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
+}
+
 /** @brief Moves the actor to another host
  *
  * If the actor is currently blocked on an execution activity, the activity is also
@@ -367,6 +372,11 @@ void kill()
 }
 
 void on_exit(int_f_pvoid_pvoid_t fun, void* data)
+{
+  SIMIX_process_self()->iface()->on_exit(fun, data);
+}
+
+void on_exit(std::function<void(int, void*)> fun, void* data)
 {
   SIMIX_process_self()->iface()->on_exit(fun, data);
 }

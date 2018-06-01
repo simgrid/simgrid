@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_ACTOR_HPP
 #define SIMGRID_S4U_ACTOR_HPP
 
+#include <functional>
 #include <simgrid/chrono.hpp>
 #include <xbt/Extendable.hpp>
 #include <xbt/functional.hpp>
@@ -237,6 +238,7 @@ public:
    * executed when your actor is killed. You should use them to free the data used by your actor.
    */
   void on_exit(int_f_pvoid_pvoid_t fun, void* data);
+  void on_exit(std::function<void(int, void*)> fun, void* data);
 
   /** Sets the time at which that actor should be killed */
   void set_kill_time(double time);
@@ -408,6 +410,7 @@ XBT_PUBLIC void kill();
 
 /** @brief Add a function to the list of "on_exit" functions. */
 XBT_PUBLIC void on_exit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
