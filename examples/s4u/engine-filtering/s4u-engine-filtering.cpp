@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   /**
    * Use a lambda function to filter hosts: We only want multicore hosts
    */
-  XBT_INFO("Hosts currently registered with this engine: %lu", e.get_host_count());
+  XBT_INFO("Hosts currently registered with this engine: %zu", e.get_host_count());
   std::vector<simgrid::s4u::Host*> list =
       e.get_filtered_hosts([](simgrid::s4u::Host* host) { return host->get_core_count() > 1; });
 
