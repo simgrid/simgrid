@@ -10,11 +10,12 @@
 #include "src/simix/popping_private.hpp"
 #include "src/surf/PropertyHolder.hpp"
 #include <boost/intrusive/list.hpp>
+#include <functional>
 #include <list>
 #include <map>
 
 struct s_smx_process_exit_fun_t {
-  int_f_pvoid_pvoid_t fun;
+  std::function<void(int, void*)> fun;
   void *arg;
 };
 

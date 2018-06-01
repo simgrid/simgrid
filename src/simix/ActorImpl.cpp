@@ -758,14 +758,14 @@ void SIMIX_process_on_exit_runall(smx_actor_t process) {
   while (not process->on_exit.empty()) {
     s_smx_process_exit_fun_t exit_fun = process->on_exit.back();
     process->on_exit.pop_back();
-    (exit_fun.fun)((void*)exit_status, exit_fun.arg);
+    (exit_fun.fun)(exit_status, exit_fun.arg);
   }
 }
 
 void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data) {
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
-  s_smx_process_exit_fun_t exit_fun = {fun, data};
+  s_smx_process_exit_fun_t exit_fun = {[fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data};
 
   process->on_exit.push_back(exit_fun);
 }
