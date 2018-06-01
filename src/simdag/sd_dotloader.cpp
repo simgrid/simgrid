@@ -239,7 +239,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   }
 
   if (result && not acyclic_graph_detail(result)) {
-    std::string base = simgrid::xbt::Path(filename).getBasename();
+    std::string base = simgrid::xbt::Path(filename).get_base_name();
     XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", base.c_str());
     xbt_dynar_free(&result);
     result = nullptr;

@@ -960,7 +960,7 @@ void surf_parse_open(const char *file)
   xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
 
   surf_parsed_filename = file;
-  std::string dir      = simgrid::xbt::Path(file).getDirname();
+  std::string dir      = simgrid::xbt::Path(file).get_dir_name();
   surf_path.push_back(dir);
 
   surf_file_to_parse = surf_fopen(file, "r");

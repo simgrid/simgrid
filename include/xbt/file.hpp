@@ -19,11 +19,11 @@ public:
   explicit Path(std::string path): path_(std::move(path)) {}
 
   /** @brief Returns the full path name */
-  std::string getName() { return path_; }
+  std::string get_name() { return path_; }
   /** @brief Returns the directory component of a path (reimplementation of POSIX dirname) */
-  std::string getDirname();
+  std::string get_dir_name();
   /** @brief Returns the file component of a path (reimplementation of POSIX basename) */
-  std::string getBasename();
+  std::string get_base_name();
 
 private:
   std::string path_;

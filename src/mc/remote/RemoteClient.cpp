@@ -114,7 +114,7 @@ static bool is_filtered_lib(const std::string& libname)
 
 static std::string get_lib_name(const std::string& pathname)
 {
-  std::string map_basename = simgrid::xbt::Path(pathname).getBasename();
+  std::string map_basename = simgrid::xbt::Path(pathname).get_base_name();
   std::string libname;
 
   size_t pos = map_basename.rfind(".so");

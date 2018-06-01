@@ -15,14 +15,14 @@
 #include <cstring>
 #include <libgen.h> /* POSIX dirname */
 
-std::string simgrid::xbt::Path::getDirname()
+std::string simgrid::xbt::Path::get_dir_name()
 {
   std::string p(path_);
   char *res = dirname(&p[0]);
   return std::string(res, strlen(res));
 }
 
-std::string simgrid::xbt::Path::getBasename()
+std::string simgrid::xbt::Path::get_base_name()
 {
   std::string p(path_);
   char *res = basename(&p[0]);

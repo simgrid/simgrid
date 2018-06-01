@@ -186,13 +186,13 @@ void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
 {
-  std::string name = simgrid::xbt::Path(result->file_name).getBasename();
+  std::string name = simgrid::xbt::Path(result->file_name).get_base_name();
 
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty())
       continue;
-    std::string map_basename = simgrid::xbt::Path(maps[i].pathname).getBasename();
+    std::string map_basename = simgrid::xbt::Path(maps[i].pathname).get_base_name();
     if (map_basename != name)
       continue;
 
@@ -518,7 +518,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 
     // If dot_output enabled, do not handle the corresponding file
     if (dot_output != nullptr) {
-      std::string link_basename = simgrid::xbt::Path(link).getBasename();
+      std::string link_basename = simgrid::xbt::Path(link).get_base_name();
       if (link_basename == _sg_mc_dot_output_file.get())
         continue;
     }

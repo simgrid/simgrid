@@ -222,7 +222,7 @@ xbt_dynar_t SD_daxload(const char *filename)
 
   if (not acyclic_graph_detail(result)) {
     XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.",
-              simgrid::xbt::Path(filename).getBasename().c_str());
+              simgrid::xbt::Path(filename).get_base_name().c_str());
     xbt_dynar_foreach(result, cpt, file)
       SD_task_destroy(file);
     xbt_dynar_free_container(&result);
