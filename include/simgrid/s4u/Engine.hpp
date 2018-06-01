@@ -28,6 +28,9 @@ class XBT_PUBLIC Engine {
 public:
   /** Constructor, taking the command line parameters of your main function */
   Engine(int* argc, char** argv);
+  /** Currently, only one instance is allowed to exist. This is why you can't copy or move it */
+  Engine(const Engine&) = delete;
+  Engine(Engine&&)      = delete;
 
   ~Engine();
   /** Finalize the default engine and all its dependencies */
