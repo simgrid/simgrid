@@ -120,7 +120,7 @@ void Comm::get_name (char* name, int* len)
     return;
   }
   if(this == MPI_COMM_WORLD) {
-    strncpy(name, "WORLD",5);
+    strncpy(name, "WORLD", 6);
     *len = 5;
   } else {
     *len = snprintf(name, MPI_MAX_NAME_STRING, "%p", this);

@@ -200,7 +200,7 @@ std::vector<std::string> resolveBacktrace(
       line_func[strlen(line_func) - 1] = '\0';
     } else {
       XBT_VERB("Cannot run fgets to look for symbol %zu, addr %s", i, addrs[i].c_str());
-      strncpy(line_func, "???",3);
+      strncpy(line_func, "???", 4);
     }
     if (fgets(line_pos, 1024, pipe)) {
       line_pos[strlen(line_pos) - 1] = '\0';
@@ -295,7 +295,7 @@ std::vector<std::string> resolveBacktrace(
           line_func[strlen(line_func) - 1] = '\0';
         } else {
           XBT_VERB("Cannot read result of subcommand %s", subcmd.c_str());
-          strncpy(line_func, "???",3);
+          strncpy(line_func, "???", 4);
         }
         if (fgets(line_pos, 1024, subpipe)) {
           line_pos[strlen(line_pos) - 1] = '\0';
