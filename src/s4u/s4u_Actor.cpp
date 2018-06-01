@@ -74,7 +74,7 @@ void Actor::set_auto_restart(bool autorestart)
   simgrid::simix::simcall([this, autorestart]() { pimpl_->auto_restart = autorestart; });
 }
 
-void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data)
+void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {
   simgrid::simix::simcall([this, fun, data] { SIMIX_process_on_exit(pimpl_, fun, data); });
 }
@@ -371,11 +371,6 @@ void kill()
   simgrid::simix::simcall([process] { SIMIX_process_kill(process, process); });
 }
 
-void on_exit(int_f_pvoid_pvoid_t fun, void* data)
-{
-  SIMIX_process_self()->iface()->on_exit(fun, data);
-}
-
 void on_exit(std::function<void(int, void*)> fun, void* data)
 {
   SIMIX_process_self()->iface()->on_exit(fun, data);
@@ -418,9 +413,13 @@ bool isSuspended() /* deprecated */
 {
   return is_suspended();
 }
-void onExit /* deprecated */ (int_f_pvoid_pvoid_t fun, void* data)
+void on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {
-  on_exit(fun, data);
+  SIMIX_process_self()->iface()->on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
+}
+void onExit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
+{
+  on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
 }
 
 } // namespace this_actor

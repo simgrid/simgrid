@@ -237,7 +237,6 @@ public:
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
    * executed when your actor is killed. You should use them to free the data used by your actor.
    */
-  void on_exit(int_f_pvoid_pvoid_t fun, void* data);
   void on_exit(std::function<void(int, void*)> fun, void* data);
 
   /** Sets the time at which that actor should be killed */
@@ -317,9 +316,11 @@ public:
   {
     set_auto_restart(a);
   }
+  XBT_ATTRIB_DEPRECATED_v323("Please use a std::function<void(int, void*)> for first parameter.") void on_exit(
+      int_f_pvoid_pvoid_t fun, void* data);
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::on_exit()") void onExit(int_f_pvoid_pvoid_t fun, void* data)
   {
-    on_exit(fun, data);
+    on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_kill_time()") void setKillTime(double time) { set_kill_time(time); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_kill_time()") double getKillTime() { return get_kill_time(); }
@@ -409,7 +410,8 @@ XBT_PUBLIC bool is_suspended();
 XBT_PUBLIC void kill();
 
 /** @brief Add a function to the list of "on_exit" functions. */
-XBT_PUBLIC void on_exit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
+    void on_exit(int_f_pvoid_pvoid_t fun, void* data);
 XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
