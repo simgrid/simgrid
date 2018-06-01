@@ -1,0 +1,10 @@
+One app alone
+alone compute_only.txt 2 0 0,1
+
+Two apps at the same time, but not on the same machines
+not_alone0 compute_only.txt 2 1000 0,1
+not_alone1 compute_only.txt 2 1001 2,3
+
+Two apps at the same time, on the same machines
+time_sharing0 compute_only.txt 2 2000 0,1
+time_sharing1 compute_only.txt 2 2001 0,1
