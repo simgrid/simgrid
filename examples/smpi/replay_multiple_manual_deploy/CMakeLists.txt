@@ -25,7 +25,7 @@ if(enable_smpi)
   IF(NOT HAVE_MC)
     foreach(rm_tesh_file IN LISTS tesh_filename_list)
       string(REPLACE "_" "-" dash_separated ${rm_tesh_file})
-      ADD_TESH(${dash_separated}
+      ADD_TESH("smpi-${dash_separated}"
         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy
         --cd ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy
         ${CMAKE_CURRENT_SOURCE_DIR}/${rm_tesh_file}.tesh)
