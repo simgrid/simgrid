@@ -7,18 +7,12 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this msg example");
 
-static int my_onexit(smx_process_exit_status_t /*status*/, int* pid)
-{
-  XBT_INFO("Process \"%d\" killed.", *pid);
-  return 0;
-}
-
 static void sendpid()
 {
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name("mailbox");
   int pid                          = simgrid::s4u::this_actor::get_pid();
   double comm_size                 = 100000;
-  simgrid::s4u::this_actor::on_exit((int_f_pvoid_pvoid_t)my_onexit, &pid);
+  simgrid::s4u::this_actor::on_exit([](int, void* pid) { XBT_INFO("Process \"%d\" killed.", *(int*)pid); }, &pid);
 
   XBT_INFO("Sending pid of \"%d\".", pid);
   mailbox->put(&pid, comm_size);

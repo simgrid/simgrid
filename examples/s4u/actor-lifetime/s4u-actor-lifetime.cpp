@@ -11,10 +11,9 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this s4u example");
 
 /* Executed on process termination, to display a message helping to understand the output */
-static int my_onexit(void*, void*)
+static void my_onexit(int, void*)
 {
   XBT_INFO("Exiting now (done sleeping or got killed).");
-  return 0;
 }
 
 /* Just sleep until termination */

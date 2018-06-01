@@ -305,7 +305,7 @@ smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- 
  * You should use them to free the data used by your process.
  */
 void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
-  simgrid::s4u::this_actor::on_exit(fun, data);
+  simgrid::s4u::this_actor::on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
 }
 
 /** @ingroup m_process_management
