@@ -114,19 +114,18 @@ static bool is_filtered_lib(const std::string& libname)
 
 static std::string get_lib_name(const std::string& pathname)
 {
-  constexpr char digits[]  = ".0123456789";
   std::string map_basename = simgrid::xbt::Path(pathname).getBasename();
   std::string libname;
 
   size_t pos = map_basename.rfind(".so");
-  if (pos != std::string::npos && map_basename.find_first_not_of(digits, pos + 3) == std::string::npos) {
-    // strip the extension (matching regex "\.so[.0-9]*$")
+  if (pos != std::string::npos) {
+    // strip the extension (matching regex "\.so.*$")
     libname.assign(map_basename, 0, pos);
 
     // strip the version suffix (matching regex "-[.0-9-]*$")
     while (true) {
       pos = libname.rfind('-');
-      if (pos == std::string::npos || libname.find_first_not_of(digits, pos + 1) != std::string::npos)
+      if (pos == std::string::npos || libname.find_first_not_of(".0123456789", pos + 1) != std::string::npos)
         break;
       libname.erase(pos);
     }
