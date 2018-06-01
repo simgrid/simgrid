@@ -6,30 +6,52 @@ if(enable_smpi)
 
   # Define a list of a tesh files
   list(APPEND tesh_filename_list replay_multiple_manual_nojob)
+  list(APPEND tesh_filename_list replay_multiple_manual_nojob_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty1)
+  list(APPEND tesh_filename_list replay_multiple_manual_empty1_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2)
+  list(APPEND tesh_filename_list replay_multiple_manual_empty2_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_sr)
+  list(APPEND tesh_filename_list replay_multiple_manual_empty2_sr_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_st)
+  list(APPEND tesh_filename_list replay_multiple_manual_empty2_st_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_st_sr)
+  list(APPEND tesh_filename_list replay_multiple_manual_empty2_st_sr_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed1)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed1_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed2)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed2_sr)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2_sr_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed2_st)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2_st_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed2_st_sr)
+  list(APPEND tesh_filename_list replay_multiple_manual_mixed2_st_sr_noise)
 
   # One-string version of the files (very ugly. Could be "just ugly" with recent CMake)
   set(rm_tesh_files_as_string
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_nojob.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_nojob_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty1.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty1_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_sr.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_sr_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st_sr.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st_sr_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed1.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed1_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_sr.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_sr_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_st.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_st_noise.tesh
     ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_st_sr.tesh
+    ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_st_sr_noise.tesh
   )
 
   IF(NOT HAVE_MC)

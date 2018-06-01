@@ -78,7 +78,7 @@ static int sleeper_process(int argc, char* argv[])
 
   int* param = (int*)MSG_process_get_data(MSG_process_self());
 
-  XBT_INFO("Sleeping for %d seconds", *param);
+  XBT_DEBUG("Sleeping for %d seconds", *param);
   MSG_process_sleep((double)*param);
 
   delete param;
@@ -167,8 +167,8 @@ static int workload_executor_process(int argc, char* argv[])
 
     if (noise_between_jobs > 0) {
       // Let's add some process noise
-      XBT_INFO("Popping %d noise processes before running job %d (app '%s')", noise_between_jobs,
-               job->unique_job_number, job->smpi_app_name.c_str());
+      XBT_DEBUG("Popping %d noise processes before running job %d (app '%s')", noise_between_jobs,
+                job->unique_job_number, job->smpi_app_name.c_str());
       pop_some_processes(noise_between_jobs, hosts[job->allocation[0]]);
     }
 
@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
   xbt_assert(noise_between_jobs >= 0, "Invalid noise_between_jobs argument");
 
   if (initial_noise > 0) {
-    XBT_INFO("Popping %d noise processes", initial_noise);
+    XBT_DEBUG("Popping %d noise processes", initial_noise);
     pop_some_processes(initial_noise, hosts[0]);
   }
 
