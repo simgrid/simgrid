@@ -190,6 +190,20 @@ std::vector<Link*> Engine::get_all_links()
   return res;
 }
 
+std::vector<Link*> Engine::get_filtered_links(std::function<bool(Link*)> filter)
+{
+  // FIXME: This is a terrible implementation and should be done
+  // without getting all links first.
+  std::vector<Link*> res;
+  kernel::resource::LinkImpl::linksList(&res);
+  std::vector<Link*> filtered_list;
+  for (auto& link : res) {
+    if (filter(link))
+      filtered_list.push_back(link);
+  }
+  return filtered_list;
+}
+
 void Engine::run()
 {
   if (MC_is_active()) {

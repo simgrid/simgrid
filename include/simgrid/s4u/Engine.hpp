@@ -104,6 +104,7 @@ public:
 
   size_t get_link_count();
   std::vector<Link*> get_all_links();
+  std::vector<Link*> get_filtered_links(std::function<bool(Link*)> filter);
 
   size_t get_storage_count();
   std::vector<Storage*> get_all_storages();
