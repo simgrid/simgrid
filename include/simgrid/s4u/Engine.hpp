@@ -95,6 +95,7 @@ protected:
 public:
   size_t get_host_count();
   std::vector<Host*> get_all_hosts();
+  std::vector<Host*> get_filtered_hosts(std::function<bool(Host*)> filter);
   simgrid::s4u::Host* host_by_name(std::string name);
   simgrid::s4u::Host* host_by_name_or_null(std::string name);
 

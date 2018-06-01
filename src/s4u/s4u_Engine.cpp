@@ -108,6 +108,17 @@ std::vector<Host*> Engine::get_all_hosts()
   return res;
 }
 
+std::vector<Host*> Engine::get_filtered_hosts(std::function<bool(Host*)> filter)
+{
+  std::vector<Host*> hosts;
+  for (auto const& kv : pimpl->hosts_) {
+    if (filter(kv.second))
+      hosts.push_back(kv.second);
+  }
+
+  return hosts;
+}
+
 void Engine::host_register(std::string name, simgrid::s4u::Host* host)
 {
   pimpl->hosts_[name] = host;
