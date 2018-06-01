@@ -1,7 +1,7 @@
 p Workload with one empty job
 ! timeout 120
 ! output sort 19
-$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml  ${srcdir:=.}/workload_empty1 --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n"
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml  ${srcdir:=.}/workload_empty1 --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 0 0
 > [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
 > [   0.000000] (maestro@) Job read: app='alone', file='empty.txt', size=2, start=0, alloc='0,1'
 > [   0.000000] (workload_executor@Bourassa) Launching the job executor of job 0 (app 'alone')

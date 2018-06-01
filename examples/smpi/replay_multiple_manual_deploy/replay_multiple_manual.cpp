@@ -32,8 +32,9 @@ struct Job {
   int unique_job_number; // in [0, n[
 };
 
-// ugly global to avoid creating structures for giving args to processes
+// ugly globals to avoid creating structures for giving args to processes
 std::vector<msg_host_t> hosts;
+int noise_between_jobs;
 
 static bool job_comparator(const Job* j1, const Job* j2)
 {
@@ -83,6 +84,16 @@ static int sleeper_process(int argc, char* argv[])
   delete param;
 
   return 0;
+}
+
+// Launches some sleeper processes
+static void pop_some_processes(int nb_processes, msg_host_t host)
+{
+  for (int i = 0; i < nb_processes; ++i) {
+    int* param = new int;
+    *param     = i + 1;
+    MSG_process_create("meh", sleeper_process, (void*)param, host);
+  }
 }
 
 static int job_executor_process(int argc, char* argv[])
@@ -154,11 +165,12 @@ static int workload_executor_process(int argc, char* argv[])
       MSG_process_sleep(time_to_sleep);
     }
 
-    // Let's add some process noise
-    /*XBT_INFO("Popping %d noise processes before running job %d (app '%s')",
-             job->app_size, job->unique_job_number,
-             job->smpi_app_name.c_str());
-    pop_some_processes(job->app_size, hosts[job->allocation[0]]);*/
+    if (noise_between_jobs > 0) {
+      // Let's add some process noise
+      XBT_INFO("Popping %d noise processes before running job %d (app '%s')", noise_between_jobs,
+               job->unique_job_number, job->smpi_app_name.c_str());
+      pop_some_processes(noise_between_jobs, hosts[job->allocation[0]]);
+    }
 
     // Let's finally run the job executor
     string job_process_name = "job_" + job->smpi_app_name;
@@ -167,16 +179,6 @@ static int workload_executor_process(int argc, char* argv[])
   }
 
   return 0;
-}
-
-// Launches some sleeper processes
-static void pop_some_processes(int nb_processes, msg_host_t host)
-{
-  for (int i = 0; i < nb_processes; ++i) {
-    int* param = new int;
-    *param     = i + 1;
-    MSG_process_create("meh", sleeper_process, (void*)param, host);
-  }
 }
 
 // Reads jobs from a workload file and returns them
@@ -287,8 +289,8 @@ int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
 
-  xbt_assert(argc > 2,
-             "Usage: %s platform_file workload_file\n"
+  xbt_assert(argc > 4,
+             "Usage: %s platform_file workload_file initial_noise noise_between_jobs\n"
              "\tExample: %s platform.xml workload_compute\n",
              argv[0], argv[0]);
 
@@ -307,8 +309,17 @@ int main(int argc, char* argv[])
 
   SMPI_init();
 
-  // Initial noise can be added
-  // pop_some_processes(3000, hosts[0]);
+  // Read noise arguments
+  int initial_noise = std::stoi(argv[3]);
+  xbt_assert(initial_noise >= 0, "Invalid initial_noise argument");
+
+  noise_between_jobs = std::stoi(argv[4]);
+  xbt_assert(noise_between_jobs >= 0, "Invalid noise_between_jobs argument");
+
+  if (initial_noise > 0) {
+    XBT_INFO("Popping %d noise processes", initial_noise);
+    pop_some_processes(initial_noise, hosts[0]);
+  }
 
   // Let's execute the workload
   MSG_process_create("workload_executor", workload_executor_process, (void*)&jobs, hosts[0]);
