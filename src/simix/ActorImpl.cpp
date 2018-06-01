@@ -141,7 +141,7 @@ ActorImpl::~ActorImpl()
   delete this->context;
 }
 
-static int dying_daemon(void* exit_status, void* data)
+static void dying_daemon(int /*exit_status*/, void* data)
 {
   std::vector<ActorImpl*>* vect = &simix_global->daemons;
 
@@ -151,9 +151,8 @@ static int dying_daemon(void* exit_status, void* data)
   /* Don't move the whole content since we don't really care about the order */
   std::swap(*it, vect->back());
   vect->pop_back();
-
-  return 0;
 }
+
 /** This process will be terminated automatically when the last non-daemon process finishes */
 void ActorImpl::daemonize()
 {
@@ -652,12 +651,11 @@ smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, doubl
   smx_activity_t res = issuer->sleep(timeout);
   intrusive_ptr_add_ref(res.get());
   SIMIX_process_on_exit(process,
-                        [](void*, void* arg) {
+                        [](int, void* arg) {
                           auto sleep = static_cast<simgrid::kernel::activity::SleepImpl*>(arg);
                           if (sleep->surf_sleep)
                             sleep->surf_sleep->finish(simgrid::kernel::resource::Action::State::FINISHED);
                           intrusive_ptr_release(sleep);
-                          return 0;
                         },
                         res.get());
   return res;
