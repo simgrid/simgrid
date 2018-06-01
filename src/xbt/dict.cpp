@@ -560,7 +560,7 @@ static void debugged_add_ext(xbt_dict_t head, const char* key, const char* data_
 
   xbt_dict_set(head, key, data, nullptr);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
-    xbt_dict_dump(head, (void (*)(void *)) &printf);
+    xbt_dict_dump(head, [](void* s) { fputs((char*)s, stdout); });
     fflush(stdout);
   }
 }
