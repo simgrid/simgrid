@@ -14,6 +14,7 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "simgrid/s4u/Storage.hpp"
 #include "simgrid/simix.h"
+#include "src/simix/smx_private.hpp" // For access to simix_global->process_list
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/network_interface.hpp"
@@ -202,6 +203,31 @@ std::vector<Link*> Engine::get_filtered_links(std::function<bool(Link*)> filter)
       filtered_list.push_back(link);
   }
   return filtered_list;
+}
+
+size_t Engine::get_actor_count()
+{
+  return simix_global->process_list.size();
+}
+
+std::vector<ActorPtr> Engine::get_all_actors()
+{
+  std::vector<ActorPtr> actor_list;
+  actor_list.push_back(simgrid::s4u::Actor::self());
+  for (auto& kv : simix_global->process_list) {
+    actor_list.push_back(kv.second->iface());
+  }
+  return actor_list;
+}
+
+std::vector<ActorPtr> Engine::get_filtered_actors(std::function<bool(ActorPtr)> filter)
+{
+  std::vector<ActorPtr> actor_list;
+  for (auto& kv : simix_global->process_list) {
+    if (filter(kv.second->iface()))
+      actor_list.push_back(kv.second->iface());
+  }
+  return actor_list;
 }
 
 void Engine::run()

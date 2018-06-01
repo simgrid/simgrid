@@ -106,6 +106,10 @@ public:
   std::vector<Link*> get_all_links();
   std::vector<Link*> get_filtered_links(std::function<bool(Link*)> filter);
 
+  size_t get_actor_count();
+  std::vector<ActorPtr> get_all_actors();
+  std::vector<ActorPtr> get_filtered_actors(std::function<bool(ActorPtr)> filter);
+
   size_t get_storage_count();
   std::vector<Storage*> get_all_storages();
   simgrid::s4u::Storage* storage_by_name(std::string name);
