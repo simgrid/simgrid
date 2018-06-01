@@ -287,7 +287,7 @@ RngStream RngStream_CreateStream (const char name[])
    if (name) {
       len = strlen (name);
       g->name = (char *) xbt_malloc ((len + 1) * sizeof (char));
-      strncpy (g->name, name, len + 1);
+      memcpy(g->name, name, len + 1);
    } else
       g->name = 0;
    g->Anti = 0;
