@@ -4,6 +4,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This example shows how to replay SMPI time-independent traces in a dynamic
+   fashion. It is inspired from Batsim (https://github.com/oar-team/batsim).
+
+   The program workflow can be summarized as:
+   1. Read an input workload (set of jobs).
+      Each job is a time-independent trace and a starting time.
+   2. Create initial noise, by spawning useless actors.
+      This is done to avoid SMPI actors to start at actor_id=0.
+   3. For each job:
+        1. Sleep until job's starting time is reached (if needed)
+        2. Launch the replay of the corresponding time-indepent trace.
+        3. Create inter-process noise, by spawning useless actors.
+   4. Wait for completion (implicitly, via MSG_main's return)
+*/
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
