@@ -213,6 +213,10 @@ result in short reads and short write, as in reality.
 
 @section s4u_ex_platf Interacting with the platform
 
+ - <b>Retrieving the list of hosts matching a given criteria</b>.
+   @ref examples/s4u/engine-filtering/s4u-engine-filtering.cpp\n
+   Filtering the actors that match a given criteria is rather simple.
+
  - <b>User-defined properties</b>.
    @ref examples/s4u/platform-properties/s4u-platform-properties.cpp and 
    @ref examples/s4u/platform-properties/s4u-platform-properties_d.xml and
@@ -323,6 +327,7 @@ than the previous examples.
 @example examples/s4u/app-pingpong/s4u-app-pingpong.cpp
 @example examples/s4u/app-token-ring/s4u-app-token-ring.cpp
 @example examples/s4u/dht-chord/s4u-dht-chord.cpp
+@example examples/s4u/engine-filtering/s4u-engine-filtering.cpp
 @example examples/s4u/energy-boot/platform_boot.xml
 @example examples/s4u/energy-boot/s4u-energy-boot.cpp
 @example examples/s4u/energy-exec/s4u-energy-exec.cpp
