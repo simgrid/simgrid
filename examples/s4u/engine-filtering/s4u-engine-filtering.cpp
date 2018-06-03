@@ -13,7 +13,8 @@ class FrequencyChanged {
   std::map<simgrid::s4u::Host*, int> host_list;
 
 public:
-  FrequencyChanged(simgrid::s4u::Engine& e) {
+  explicit FrequencyChanged(simgrid::s4u::Engine& e)
+  {
     std::vector<simgrid::s4u::Host*> list = e.get_all_hosts();
     for (auto& host : list) {
       host_list.insert({host, host->get_pstate()});
