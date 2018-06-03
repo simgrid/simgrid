@@ -91,7 +91,8 @@ ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 # New tests should use the Boost Unit Test Framework
 if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
   add_executable       (unit_tmgr src/surf/trace_mgr_test.cpp)
-  target_link_libraries(unit_tmgr simgrid ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+  get_filename_component(Boost_UNIT_TEST_FRAMEWORK_LIBRARY_dir ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY} DIRECTORY)
+  target_link_libraries(unit_tmgr simgrid "-L${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_dir}" "-lboost_unit_test_framework")
   ADD_TEST(unit_tmgr ${CMAKE_BINARY_DIR}/unit_tmgr --build_info=yes)
   set_property(
     TARGET unit_tmgr

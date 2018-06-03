@@ -29,6 +29,7 @@ XBT:
 Fixed bugs:
  - #143: Setting a breakpoint at a given time
  - #258: daemonized actors hang after all non-daemonized actors have completed
+ - #267: Linker error on unit_tmgr
 
 ----------------------------------------------------------------------------
 
