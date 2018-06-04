@@ -22,11 +22,11 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <regex>
 #include <stdexcept>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
 
 #include <simgrid/msg.h>
 #include <smpi/smpi.h>
@@ -214,12 +214,12 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
     dir = dirname(workload_filename_copy);
   }
 
-  std::regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
+  boost::regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
   std::string line;
   while (getline(f, line)) {
-    std::smatch m;
+    boost::smatch m;
 
-    if (regex_match(line, m, r)) {
+    if (boost::regex_match(line, m, r)) {
       try {
         Job* job           = new Job;
         job->smpi_app_name = m[1];
