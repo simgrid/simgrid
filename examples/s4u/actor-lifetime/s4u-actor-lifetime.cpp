@@ -10,21 +10,20 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this s4u example");
 
-/* Executed on process termination, to display a message helping to understand the output */
-static void my_onexit(int, void*)
-{
-  XBT_INFO("Exiting now (done sleeping or got killed).");
-}
-
-/* Just sleep until termination */
+/* This actor just sleeps until termination */
 class sleeper {
 
 public:
   explicit sleeper(std::vector<std::string> /*args*/)
   {
-    XBT_INFO("Hello! I go to sleep.");
-    simgrid::s4u::this_actor::on_exit(my_onexit, NULL);
+    simgrid::s4u::this_actor::on_exit(
+        [](int, void*) {
+          /* Executed on process termination, to display a message helping to understand the output */
+          XBT_INFO("Exiting now (done sleeping or got killed).");
+        },
+        nullptr);
 
+    XBT_INFO("Hello! I go to sleep.");
     simgrid::s4u::this_actor::sleep_for(10);
   }
   void operator()() { XBT_INFO("Done sleeping."); }
