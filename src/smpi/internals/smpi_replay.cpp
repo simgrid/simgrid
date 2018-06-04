@@ -18,6 +18,9 @@
 #include <vector>
 
 #include <tuple>
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay, smpi, "Trace Replay with SMPI");
+
 // From https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set
 // This is all just to make std::unordered_map work with std::tuple. If we need this in other places,
 // this could go into a header file.
@@ -57,8 +60,6 @@ public:
   }
 };
 }
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 typedef std::tuple</*sender*/ int, /* reciever */ int, /* tag */int> req_key_t;
 typedef std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int,int,int>>> req_storage_t;
