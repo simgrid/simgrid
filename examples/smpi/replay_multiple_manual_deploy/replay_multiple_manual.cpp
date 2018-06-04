@@ -33,17 +33,15 @@
 
 #include <libgen.h>
 
-using namespace std;
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
 struct Job {
-  string smpi_app_name;
-  string filename;
+  std::string smpi_app_name;
+  std::string filename;
   int app_size;
   int starting_time;
-  vector<int> allocation;
-  vector<string> traces_filenames;
+  std::vector<int> allocation;
+  std::vector<std::string> traces_filenames;
   int unique_job_number; // in [0, n[
 };
 
@@ -167,7 +165,7 @@ static int workload_executor_process(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  vector<Job*>* workload = (vector<Job*>*)MSG_process_get_data(MSG_process_self());
+  std::vector<Job*>* workload = (std::vector<Job*>*)MSG_process_get_data(MSG_process_self());
   double curr_time;
 
   for (const Job* job : *workload) {
@@ -188,7 +186,7 @@ static int workload_executor_process(int argc, char* argv[])
     }
 
     // Let's finally run the job executor
-    string job_process_name = "job_" + job->smpi_app_name;
+    std::string job_process_name = "job_" + job->smpi_app_name;
     XBT_INFO("Launching the job executor of job %d (app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
     MSG_process_create(job_process_name.c_str(), job_executor_process, (void*)job, hosts[job->allocation[0]]);
   }
@@ -197,11 +195,11 @@ static int workload_executor_process(int argc, char* argv[])
 }
 
 // Reads jobs from a workload file and returns them
-static vector<Job*> all_jobs(const std::string& workload_file)
+static std::vector<Job*> all_jobs(const std::string& workload_file)
 {
-  ifstream f(workload_file);
+  std::ifstream f(workload_file);
   xbt_assert(f.is_open(), "Cannot open file '%s'.", workload_file.c_str());
-  vector<Job*> jobs;
+  std::vector<Job*> jobs;
   int err = -1;
 
   char* workload_filename_copy;
@@ -216,26 +214,26 @@ static vector<Job*> all_jobs(const std::string& workload_file)
     dir = dirname(workload_filename_copy);
   }
 
-  regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
-  string line;
+  std::regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
+  std::string line;
   while (getline(f, line)) {
-    smatch m;
+    std::smatch m;
 
     if (regex_match(line, m, r)) {
       try {
         Job* job           = new Job;
         job->smpi_app_name = m[1];
-        job->filename      = string(dir) + "/" + string(m[2]);
+        job->filename      = std::string(dir) + "/" + std::string(m[2]);
         job->app_size      = stoi(m[3]);
         job->starting_time = stoi(m[4]);
-        string alloc       = m[5];
+        std::string alloc       = m[5];
 
         char* job_filename_copy;
         int err = asprintf(&job_filename_copy, "%s", job->filename.c_str());
         xbt_assert(err != -1, "asprintf error");
         char* job_filename_end = basename(job_filename_copy);
 
-        vector<string> subparts;
+        std::vector<std::string> subparts;
         boost::split(subparts, alloc, boost::is_any_of(","), boost::token_compress_on);
 
         if ((int)subparts.size() != job->app_size)
@@ -246,14 +244,14 @@ static vector<Job*> all_jobs(const std::string& workload_file)
           job->allocation[i] = stoi(subparts[i]);
 
         // Let's read the filename
-        ifstream traces_file(job->filename);
+        std::ifstream traces_file(job->filename);
         if (!traces_file.is_open())
           throw std::runtime_error("Cannot open file " + job->filename);
 
-        string traces_line;
+        std::string traces_line;
         while (getline(traces_file, traces_line)) {
           boost::trim_right(traces_line);
-          job->traces_filenames.push_back(string(dir) + "/" + traces_line);
+          job->traces_filenames.push_back(std::string(dir) + "/" + traces_line);
         }
 
         if ((int)job->traces_filenames.size() < job->app_size)
@@ -284,9 +282,9 @@ static vector<Job*> all_jobs(const std::string& workload_file)
 }
 
 // Returns all MSG hosts as a std::vector
-static vector<msg_host_t> all_hosts()
+static std::vector<msg_host_t> all_hosts()
 {
-  vector<msg_host_t> hosts;
+  std::vector<msg_host_t> hosts;
 
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t host;
@@ -316,7 +314,7 @@ int main(int argc, char* argv[])
   xbt_assert(hosts.size() >= 4, "The given platform should contain at least 4 hosts (found %lu).", hosts.size());
 
   // Let's retrieve all SMPI jobs
-  vector<Job*> jobs = all_jobs(argv[2]);
+  std::vector<Job*> jobs = all_jobs(argv[2]);
 
   // Let's register them
   for (const Job* job : jobs)
