@@ -24,7 +24,6 @@ class Group : public F2C{
      */
     std::vector<simgrid::s4u::ActorPtr> rank_to_actor_map_;
     std::map<simgrid::s4u::ActorPtr, int> actor_to_rank_map_;
-    std::vector<int> rank_to_index_map_;
     std::vector<int> index_to_rank_map_;
 
     int refcount_;
