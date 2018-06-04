@@ -64,7 +64,7 @@ struct s_smpi_replay_process_args {
 
 static int smpi_replay_process(int argc, char* argv[])
 {
-  s_smpi_replay_process_args* args = (s_smpi_replay_process_args*)MSG_process_get_data(MSG_process_self());
+  s_smpi_replay_process_args* args = static_cast<s_smpi_replay_process_args*>(MSG_process_get_data(MSG_process_self()));
 
   if (args->semaphore != nullptr)
     MSG_sem_acquire(args->semaphore);
@@ -114,16 +114,14 @@ static int job_executor_process(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  Job* job = (Job*)MSG_process_get_data(MSG_process_self());
+  Job* job = static_cast<Job*>(MSG_process_get_data(MSG_process_self()));
 
   msg_sem_t job_semaphore = MSG_sem_init(1);
   XBT_INFO("Executing job %d (smpi_app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
 
-  int err = -1;
-
   for (int i = 0; i < job->app_size; ++i) {
     char *str_instance_name, *str_rank, *str_pname, *str_tfname;
-    err = asprintf(&str_instance_name, "%s", job->smpi_app_name.c_str());
+    int err = asprintf(&str_instance_name, "%s", job->smpi_app_name.c_str());
     xbt_assert(err != -1, "asprintf error");
     err = asprintf(&str_rank, "%d", i);
     xbt_assert(err != -1, "asprintf error");
@@ -166,11 +164,10 @@ static int workload_executor_process(int argc, char* argv[])
   (void)argv;
 
   std::vector<Job*>* workload = (std::vector<Job*>*)MSG_process_get_data(MSG_process_self());
-  double curr_time;
 
   for (const Job* job : *workload) {
     // Let's wait until the job's waiting time if needed
-    curr_time = MSG_get_clock();
+    double curr_time = MSG_get_clock();
     if (job->starting_time > curr_time) {
       double time_to_sleep = (double)job->starting_time - curr_time;
       XBT_INFO("Sleeping %g seconds (waiting for job %d, app '%s')", time_to_sleep, job->starting_time,
@@ -200,10 +197,9 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
   std::ifstream f(workload_file);
   xbt_assert(f.is_open(), "Cannot open file '%s'.", workload_file.c_str());
   std::vector<Job*> jobs;
-  int err = -1;
 
   char* workload_filename_copy;
-  err = asprintf(&workload_filename_copy, "%s", workload_file.c_str());
+  int err = asprintf(&workload_filename_copy, "%s", workload_file.c_str());
   xbt_assert(err != -1, "asprintf error");
   char* dir = dirname(workload_filename_copy);
 
