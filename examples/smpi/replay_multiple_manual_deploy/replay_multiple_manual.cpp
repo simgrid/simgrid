@@ -226,7 +226,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
         job->filename      = std::string(dir) + "/" + std::string(m[2]);
         job->app_size      = stoi(m[3]);
         job->starting_time = stoi(m[4]);
-        std::string alloc       = m[5];
+        std::string alloc  = m[5];
 
         char* job_filename_copy;
         int err = asprintf(&job_filename_copy, "%s", job->filename.c_str());
