@@ -709,7 +709,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 } // Replay Namespace
 }} // namespace simgrid::smpi
 
-std::vector<simgrid::smpi::replay::RequestStorage> storage;
+static std::vector<simgrid::smpi::replay::RequestStorage> storage;
 /** @brief Only initialize the replay, don't do it for real */
 void smpi_replay_init(int* argc, char*** argv)
 {
