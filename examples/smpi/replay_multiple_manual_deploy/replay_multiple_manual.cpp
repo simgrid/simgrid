@@ -26,12 +26,11 @@
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
 #include <simgrid/msg.h>
 #include <smpi/smpi.h>
-
-#include <libgen.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
@@ -198,17 +197,8 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
   xbt_assert(f.is_open(), "Cannot open file '%s'.", workload_file.c_str());
   std::vector<Job*> jobs;
 
-  char* workload_filename_copy;
-  int err = asprintf(&workload_filename_copy, "%s", workload_file.c_str());
-  xbt_assert(err != -1, "asprintf error");
-  char* dir = dirname(workload_filename_copy);
-
-  if (strlen(dir) == 0) {
-    free(workload_filename_copy);
-    err = asprintf(&workload_filename_copy, ".");
-    xbt_assert(err != -1, "asprintf error");
-    dir = dirname(workload_filename_copy);
-  }
+  boost::filesystem::path path(workload_file);
+  std::string dir = path.parent_path().native();
 
   boost::regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
   std::string line;
@@ -219,15 +209,12 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
       try {
         Job* job           = new Job;
         job->smpi_app_name = m[1];
-        job->filename      = std::string(dir) + "/" + std::string(m[2]);
+        job->filename      = dir + "/" + std::string(m[2]);
         job->app_size      = stoi(m[3]);
         job->starting_time = stoi(m[4]);
         std::string alloc  = m[5];
 
-        char* job_filename_copy;
-        int err = asprintf(&job_filename_copy, "%s", job->filename.c_str());
-        xbt_assert(err != -1, "asprintf error");
-        char* job_filename_end = basename(job_filename_copy);
+        std::string filename_unprefixed = m[2];
 
         std::vector<std::string> subparts;
         boost::split(subparts, alloc, boost::is_any_of(","), boost::token_compress_on);
@@ -247,7 +234,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
         std::string traces_line;
         while (getline(traces_file, traces_line)) {
           boost::trim_right(traces_line);
-          job->traces_filenames.push_back(std::string(dir) + "/" + traces_line);
+          job->traces_filenames.push_back(dir + "/" + traces_line);
         }
 
         if ((int)job->traces_filenames.size() < job->app_size)
@@ -256,10 +243,9 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
 
         XBT_INFO("Job read: app='%s', file='%s', size=%d, start=%d, "
                  "alloc='%s'",
-                 job->smpi_app_name.c_str(), job_filename_end, job->app_size, job->starting_time, alloc.c_str());
+                 job->smpi_app_name.c_str(), filename_unprefixed.c_str(), job->app_size, job->starting_time,
+                 alloc.c_str());
         jobs.push_back(job);
-
-        free(job_filename_copy);
       } catch (const std::exception& e) {
         printf("Bad line '%s' of file '%s': %s.\n", line.c_str(), workload_file.c_str(), e.what());
       }
@@ -273,7 +259,6 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
   for (unsigned int i = 0; i < jobs.size(); ++i)
     jobs[i]->unique_job_number = i;
 
-  free(workload_filename_copy);
   return jobs;
 }
 

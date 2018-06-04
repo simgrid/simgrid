@@ -2,7 +2,7 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   # Boost regex dependency
-  find_package(Boost COMPONENTS regex REQUIRED)
+  find_package(Boost COMPONENTS regex filesystem REQUIRED)
 
   add_executable       (replay_multiple_manual replay_multiple_manual.cpp)
   target_link_libraries(replay_multiple_manual simgrid ${Boost_LIBRARIES})
