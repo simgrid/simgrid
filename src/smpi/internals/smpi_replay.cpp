@@ -3,17 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_group.hpp"
-#include "smpi_process.hpp"
 #include "smpi_request.hpp"
 #include "xbt/replay.hpp"
 #include <simgrid/smpi/replay.hpp>
+#include <src/smpi/include/private.hpp>
 
-#include <boost/algorithm/string/join.hpp>
 #include <memory>
 #include <numeric>
 #include <unordered_map>
