@@ -107,6 +107,10 @@ size_t Request::real_size(){
   return real_size_;
 }
 
+void Request::ref(){
+  refcount_++;
+}
+
 void Request::unref(MPI_Request* request)
 {
   if((*request) != MPI_REQUEST_NULL){
@@ -361,7 +365,7 @@ void Request::start()
   xbt_assert(action_ == nullptr, "Cannot (re-)start unfinished communication");
   flags_ &= ~MPI_REQ_PREPARED;
   flags_ &= ~MPI_REQ_FINISHED;
-  refcount_++;
+  this->ref();
 
   if ((flags_ & MPI_REQ_RECV) != 0) {
     this->print_request("New recv");
@@ -431,7 +435,7 @@ void Request::start()
       void *oldbuf = nullptr;
       detached_ = 1;
       XBT_DEBUG("Send request %p is detached", this);
-      refcount_++;
+      this->ref();
       if (not(old_type_->flags() & DT_FLAG_DERIVED)) {
         oldbuf = buf_;
         if (not process->replaying() && oldbuf != nullptr && size_ != 0) {
