@@ -156,7 +156,7 @@ public:
       tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load).
                                    Trace must contain absolute values */
 
-  tmgr_trace_event_t stateEvent_    = nullptr;
+  tmgr_trace_event_t state_event_   = nullptr;
   Metric latency_                   = {1.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};
 

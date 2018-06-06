@@ -192,8 +192,8 @@ void LinkImpl::on_bandwidth_change()
 
 void LinkImpl::set_state_trace(tmgr_trace_t trace)
 {
-  xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", get_cname());
-  stateEvent_ = future_evt_set->add_trace(trace, this);
+  xbt_assert(state_event_ == nullptr, "Cannot set a second state trace to Link %s", get_cname());
+  state_event_ = future_evt_set->add_trace(trace, this);
 }
 void LinkImpl::set_bandwidth_trace(tmgr_trace_t trace)
 {

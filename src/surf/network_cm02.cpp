@@ -337,7 +337,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
     set_latency(value);
     tmgr_trace_event_unref(&latency_.event);
 
-  } else if (triggered == stateEvent_) {
+  } else if (triggered == state_event_) {
     if (value > 0)
       turn_on();
     else {
@@ -355,7 +355,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
         }
       }
     }
-    tmgr_trace_event_unref(&stateEvent_);
+    tmgr_trace_event_unref(&state_event_);
   } else {
     xbt_die("Unknown event!\n");
   }
