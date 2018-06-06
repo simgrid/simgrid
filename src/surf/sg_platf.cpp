@@ -393,7 +393,7 @@ void sg_platf_new_mount(simgrid::kernel::routing::MountCreationArgs* mount)
 
   if (mount_list.empty())
     XBT_DEBUG("Create a Mount list for %s", A_surfxml_host_id);
-  mount_list.insert({mount->name, simgrid::s4u::Engine::get_instance()->storage_by_name(mount->storageId)->getImpl()});
+  mount_list.insert({mount->name, simgrid::s4u::Engine::get_instance()->storage_by_name(mount->storageId)->get_impl()});
 }
 
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)

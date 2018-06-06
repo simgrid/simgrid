@@ -23,7 +23,7 @@ static void host()
     XBT_INFO("Storage name: %s, mount name: %s", kv.second->get_cname(), kv.first.c_str());
 
   /* - Write 200,000 bytes on Disk4 */
-  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName("Disk4");
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::by_name("Disk4");
   sg_size_t write                = storage->write(200000);
   XBT_INFO("Wrote %llu bytes on 'Disk4'", write);
 
@@ -34,12 +34,12 @@ static void host()
   /* - Attach some user data to disk1 */
   XBT_INFO("*** Get/set data for storage element: Disk4 ***");
 
-  std::string* data = static_cast<std::string*>(storage->getUserdata());
+  std::string* data = static_cast<std::string*>(storage->get_data());
 
   XBT_INFO("Get storage data: '%s'", data ? data->c_str() : "No user data");
 
-  storage->setUserdata(new std::string("Some user data"));
-  data = static_cast<std::string*>(storage->getUserdata());
+  storage->set_data(new std::string("Some user data"));
+  data = static_cast<std::string*>(storage->get_data());
   XBT_INFO("Set and get data: '%s'", data->c_str());
   delete data;
 }

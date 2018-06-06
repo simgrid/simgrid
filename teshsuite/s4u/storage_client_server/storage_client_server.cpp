@@ -72,19 +72,19 @@ static void display_storage_content(simgrid::s4u::Storage* storage)
 static void dump_storage_by_name(const std::string& name)
 {
   XBT_INFO("*** Dump a storage element ***");
-  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(name);
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::by_name(name);
   display_storage_content(storage);
 }
 
 static void get_set_storage_data(const std::string& storage_name)
 {
   XBT_INFO("*** GET/SET DATA for storage element: %s ***", storage_name.c_str());
-  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName(storage_name);
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::by_name(storage_name);
 
-  std::string* data = static_cast<std::string*>(storage->getUserdata());
+  std::string* data = static_cast<std::string*>(storage->get_data());
   XBT_INFO("Get data: '%s'", data ? data->c_str() : "No User Data");
-  storage->setUserdata(new std::string("Some data"));
-  data = static_cast<std::string*>(storage->getUserdata());
+  storage->set_data(new std::string("Some data"));
+  data = static_cast<std::string*>(storage->get_data());
   XBT_INFO("\tSet and get data: '%s'", data->c_str());
   delete data;
 }
@@ -94,8 +94,8 @@ static void dump_platform_storages()
   std::vector<simgrid::s4u::Storage*> storages = simgrid::s4u::Engine::get_instance()->get_all_storages();
 
   for (auto const& s : storages) {
-    XBT_INFO("Storage %s is attached to %s", s->get_cname(), s->getHost()->get_cname());
-    s->setProperty("other usage", "gpfs");
+    XBT_INFO("Storage %s is attached to %s", s->get_cname(), s->get_host()->get_cname());
+    s->set_property("other usage", "gpfs");
   }
 }
 

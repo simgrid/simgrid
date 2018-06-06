@@ -41,7 +41,7 @@ EngineImpl::~EngineImpl()
 
   for (auto const& kv : storages_)
     if (kv.second)
-      kv.second->getImpl()->destroy();
+      kv.second->get_impl()->destroy();
 
   for (auto const& kv : links_)
     if (kv.second)

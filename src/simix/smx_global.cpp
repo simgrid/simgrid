@@ -216,7 +216,7 @@ void SIMIX_global_init(int *argc, char **argv)
     });
 
     simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage& storage) {
-      sg_storage_t s = simgrid::s4u::Storage::byName(storage.get_cname());
+      sg_storage_t s = simgrid::s4u::Storage::by_name(storage.get_cname());
       xbt_assert(s != nullptr, "Storage not found for name %s", storage.get_cname());
     });
   }

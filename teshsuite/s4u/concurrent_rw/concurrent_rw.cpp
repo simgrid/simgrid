@@ -9,7 +9,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u test");
 
 static void host()
 {
-  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName("Disk1");
+  simgrid::s4u::Storage* storage = simgrid::s4u::Storage::by_name("Disk1");
   int id                         = simgrid::s4u::this_actor::get_pid();
   XBT_INFO("process %d is writing!", id);
   storage->write(3000000);

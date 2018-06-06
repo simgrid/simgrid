@@ -54,7 +54,7 @@ public:
     write = file->write(100000); // Write 100,000 bytes
     XBT_INFO("Write %llu bytes on %s", write, filename.c_str());
 
-    simgrid::s4u::Storage* storage = simgrid::s4u::Storage::byName("Disk4");
+    simgrid::s4u::Storage* storage = simgrid::s4u::Storage::by_name("Disk4");
 
     // Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
     std::string newpath = "/home/tmp/simgrid.readme";
@@ -72,10 +72,10 @@ public:
 
     // Now attach some user data to disk1
     XBT_INFO("Get/set data for storage element: %s", storage->get_cname());
-    XBT_INFO("    Uninitialized storage data: '%s'", static_cast<char*>(storage->getUserdata()));
+    XBT_INFO("    Uninitialized storage data: '%s'", static_cast<char*>(storage->get_data()));
 
-    storage->setUserdata(new std::string("Some user data"));
-    std::string* storage_data = static_cast<std::string*>(storage->getUserdata());
+    storage->set_data(new std::string("Some user data"));
+    std::string* storage_data = static_cast<std::string*>(storage->get_data());
     XBT_INFO("    Set and get data: '%s'", storage_data->c_str());
 
     delete storage_data;

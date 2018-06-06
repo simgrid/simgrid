@@ -87,7 +87,7 @@ void File::dump()
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
            "\t\tFile Descriptor Id: %d",
-           get_path(), size_, mount_point_.c_str(), local_storage_->get_cname(), local_storage_->getType(), desc_id);
+           get_path(), size_, mount_point_.c_str(), local_storage_->get_cname(), local_storage_->get_type(), desc_id);
 }
 
 sg_size_t File::read(sg_size_t size)
@@ -96,7 +96,7 @@ sg_size_t File::read(sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located and read it */
-  Host* host = local_storage_->getHost();
+  Host* host = local_storage_->get_host();
   XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
   sg_size_t read_size = local_storage_->read(std::min(size, size_ - current_position_));
@@ -127,7 +127,7 @@ sg_size_t File::write(sg_size_t size)
     return 0;
 
   /* Find the host where the file is physically located (remote or local)*/
-  Host* host = local_storage_->getHost();
+  Host* host = local_storage_->get_host();
 
   if (strcmp(host->get_cname(), Host::current()->get_cname())) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
@@ -234,7 +234,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
 {
   /* Find the host where the file is physically located and read it */
   Storage* storage_src = local_storage_;
-  Host* src_host       = storage_src->getHost();
+  Host* src_host       = storage_src->get_host();
   seek(0, SEEK_SET);
   XBT_DEBUG("READ %s on disk '%s'", get_path(), local_storage_->get_cname());
   // if the current position is close to the end of the file, we may not be able to read the requested size
@@ -257,14 +257,14 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
 
   if (storage_dest != nullptr) {
     /* Mount point found, retrieve the host the storage is attached to */
-    dst_host = storage_dest->getHost();
+    dst_host = storage_dest->get_host();
   } else {
     XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, host->get_cname());
     return -1;
   }
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, src_host->get_cname(),
-            storage_dest->getHost()->get_cname());
+            storage_dest->get_host()->get_cname());
   Host* m_host_list[]     = {src_host, dst_host};
   double* flops_amount    = new double[2]{0, 0};
   double* bytes_amount    = new double[4]{0, static_cast<double>(read_size), 0, 0};
@@ -289,8 +289,8 @@ int File::remote_move(sg_host_t host, const char* fullpath)
 
 FileSystemStorageExt::FileSystemStorageExt(simgrid::s4u::Storage* ptr)
 {
-  content_ = parse_content(ptr->getImpl()->content_name);
-  size_    = ptr->getImpl()->size_;
+  content_ = parse_content(ptr->get_impl()->content_name);
+  size_    = ptr->get_impl()->size_;
 }
 
 FileSystemStorageExt::~FileSystemStorageExt()

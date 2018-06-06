@@ -30,33 +30,11 @@ class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
 
 public:
   explicit Storage(std::string name, surf::StorageImpl * pimpl);
+
+protected:
   virtual ~Storage() = default;
-  /** Retrieve a Storage by its name. It must exist in the platform file */
-  static Storage* byName(std::string name);
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_name()") std::string const& getName() const { return get_name(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_cname()") const char* getCname() const { return get_cname(); }
-
-  /** @brief Retrieves the name of that storage as a C++ string */
-  std::string const& get_name() const;
-  /** @brief Retrieves the name of that storage as a C string */
-  const char* get_cname() const;
-
-  const char* getType();
-  Host* getHost();
-
-  std::map<std::string, std::string>* getProperties();
-  const char* getProperty(std::string key);
-  void setProperty(std::string, std::string value);
-
-  void setUserdata(void* data) { userdata_ = data; }
-  void* getUserdata() { return userdata_; }
-
-  sg_size_t read(sg_size_t size);
-  sg_size_t write(sg_size_t size);
-  surf::StorageImpl* getImpl() { return pimpl_; }
-
-  /* The signals */
+public:
   /** @brief Callback signal fired when a new Storage is created */
   static simgrid::xbt::signal<void(s4u::Storage&)> on_creation;
   /** @brief Callback signal fired when a Storage is destroyed */
@@ -64,9 +42,51 @@ public:
   /** @brief Callback signal fired when a Storage's state changes */
   static simgrid::xbt::signal<void(s4u::Storage&)> on_state_change;
 
-  Host* attached_to_              = nullptr;
+  /** Retrieve a Storage by its name. It must exist in the platform file */
+  static Storage* by_name(std::string name);
+
+  /** @brief Retrieves the name of that storage as a C++ string */
+  std::string const& get_name() const;
+  /** @brief Retrieves the name of that storage as a C string */
+  const char* get_cname() const;
+
+  const char* get_type();
+  Host* get_host() { return attached_to_; };
+  void set_host(Host* host) { attached_to_ = host; }
+
+  std::map<std::string, std::string>* getProperties();
+  const char* get_property(std::string key);
+  void set_property(std::string, std::string value);
+
+  void set_data(void* data) { userdata_ = data; }
+  void* get_data() { return userdata_; }
+
+  sg_size_t read(sg_size_t size);
+  sg_size_t write(sg_size_t size);
+  surf::StorageImpl* get_impl() { return pimpl_; }
+
+  // Deprecated functions
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::by_name()") Storage* byName(std::string name)
+  {
+    return by_name(name);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_name()") std::string const& getName() const { return get_name(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_cname()") const char* getCname() const { return get_cname(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_type()") const char* getType() { return get_type(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_host()") Host* getHost() { return get_host(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_property()") const char* getProperty(const char* key)
+  {
+    return get_property(key);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_property()") void setProperty(std::string key, std::string value)
+  {
+    set_property(key, value);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::set_data()") void setUserdata(void* data) { set_data(data); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_data()") void* getUserdata() { return get_data(); }
 
 private:
+  Host* attached_to_              = nullptr;
   surf::StorageImpl* const pimpl_ = nullptr;
   std::string name_;
   void* userdata_ = nullptr;

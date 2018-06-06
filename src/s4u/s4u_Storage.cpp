@@ -30,7 +30,7 @@ Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), na
   simgrid::s4u::Engine::get_instance()->storage_register(name, this);
 }
 
-Storage* Storage::byName(std::string name)
+Storage* Storage::by_name(std::string name)
 {
   return Engine::get_instance()->storage_by_name_or_null(name);
 }
@@ -45,14 +45,9 @@ const char* Storage::get_cname() const
   return name_.c_str();
 }
 
-const char* Storage::getType()
+const char* Storage::get_type()
 {
   return pimpl_->typeId_.c_str();
-}
-
-Host* Storage::getHost()
-{
-  return attached_to_;
 }
 
 std::map<std::string, std::string>* Storage::getProperties()
@@ -60,12 +55,12 @@ std::map<std::string, std::string>* Storage::getProperties()
   return simgrid::simix::simcall([this] { return pimpl_->get_properties(); });
 }
 
-const char* Storage::getProperty(std::string key)
+const char* Storage::get_property(std::string key)
 {
   return this->pimpl_->get_property(key);
 }
 
-void Storage::setProperty(std::string key, std::string value)
+void Storage::set_property(std::string key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { this->pimpl_->set_property(key, value); });
 }
@@ -111,7 +106,7 @@ const char* sg_storage_get_name(sg_storage_t storage)
 const char* sg_storage_get_host(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->getHost()->get_cname();
+  return storage->get_host()->get_cname();
 }
 
 /** \ingroup sg_storage_management
@@ -141,7 +136,7 @@ xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
  */
 void sg_storage_set_property_value(sg_storage_t storage, const char* name, const char* value)
 {
-  storage->setProperty(name, value);
+  storage->set_property(name, value);
 }
 
 /** \ingroup sg_storage_management
@@ -153,7 +148,7 @@ void sg_storage_set_property_value(sg_storage_t storage, const char* name, const
  */
 const char* sg_storage_get_property_value(sg_storage_t storage, const char* name)
 {
-  return storage->getProperty(name);
+  return storage->get_property(name);
 }
 
 /** \ingroup sg_storage_management
@@ -163,7 +158,7 @@ const char* sg_storage_get_property_value(sg_storage_t storage, const char* name
  */
 sg_storage_t sg_storage_get_by_name(const char* name)
 {
-  return simgrid::s4u::Storage::byName(name);
+  return simgrid::s4u::Storage::by_name(name);
 }
 
 /** \ingroup sg_storage_management
@@ -181,12 +176,12 @@ xbt_dynar_t sg_storages_as_dynar()
 void* sg_storage_get_data(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters");
-  return storage->getUserdata();
+  return storage->get_data();
 }
 
 void sg_storage_set_data(sg_storage_t storage, void* data)
 {
-  storage->setUserdata(data);
+  storage->set_data(data);
 }
 
 sg_size_t sg_storage_read(sg_storage_t storage, sg_size_t size)
