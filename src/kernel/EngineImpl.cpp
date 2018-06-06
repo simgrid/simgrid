@@ -7,8 +7,8 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/Link.hpp"
 #include "src/surf/StorageImpl.hpp"
+#include "src/surf/network_interface.hpp"
 
 #include <algorithm>
 
@@ -42,9 +42,10 @@ EngineImpl::~EngineImpl()
   for (auto const& kv : storages_)
     if (kv.second)
       kv.second->getImpl()->destroy();
+
   for (auto const& kv : links_)
     if (kv.second)
-      (kv.second)->destroy();
+      kv.second->get_impl()->destroy();
 }
 }
 }

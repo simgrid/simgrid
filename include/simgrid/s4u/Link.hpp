@@ -34,7 +34,6 @@ class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
 public:
   enum class SharingPolicy { SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
 
-  virtual void destroy();
   kernel::resource::LinkImpl* get_impl() { return pimpl_; }
 
   /** @brief Retrieve a link from its name */

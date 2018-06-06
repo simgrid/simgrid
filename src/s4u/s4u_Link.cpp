@@ -25,15 +25,6 @@ simgrid::xbt::signal<void(Link&)> Link::on_bandwidth_change;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::on_communicate;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::on_communication_state_change;
 
-void Link::destroy()
-{
-  if (not currentlyDestroying_) {
-    currentlyDestroying_ = true;
-    on_destruction(*this);
-    Engine::get_instance()->link_unregister(std::string(pimpl_->get_cname()));
-  }
-}
-
 Link* Link::by_name(std::string name)
 {
   return Engine::get_instance()->link_by_name(name);
