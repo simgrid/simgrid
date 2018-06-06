@@ -147,8 +147,6 @@ public:
 
   void on_bandwidth_change();
 
-  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF).
-                                                          Trace must contain boolean values. */
   virtual void set_bandwidth_trace(
       tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load).
                                    Trace must contain percentages (value between 0 and 1). */
@@ -156,7 +154,6 @@ public:
       tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load).
                                    Trace must contain absolute values */
 
-  tmgr_trace_event_t state_event_   = nullptr;
   Metric latency_                   = {1.0, 0, nullptr};
   Metric bandwidth_                 = {1.0, 0, nullptr};
 

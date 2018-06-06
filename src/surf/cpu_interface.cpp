@@ -134,12 +134,6 @@ int Cpu::get_core_count()
   return core_count_;
 }
 
-void Cpu::set_state_trace(tmgr_trace_t trace)
-{
-  xbt_assert(state_event_ == nullptr, "Cannot set a second state trace to Host %s", host_->get_cname());
-
-  state_event_ = future_evt_set->add_trace(trace, this);
-}
 void Cpu::set_speed_trace(tmgr_trace_t trace)
 {
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->get_cname());

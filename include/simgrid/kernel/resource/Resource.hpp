@@ -63,6 +63,8 @@ public:
   virtual void turn_on();
   /** @brief Turn off the current Resource */
   virtual void turn_off();
+  /** @brief setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
+  virtual void set_state_trace(tmgr_trace_t trace);
 
 private:
   std::string name_;
@@ -75,6 +77,9 @@ public: /* LMM */
 
 private:
   kernel::lmm::Constraint* const constraint_ = nullptr;
+
+public:
+  TraceEvent* state_event_ = nullptr;
 
 protected:
   struct Metric {
