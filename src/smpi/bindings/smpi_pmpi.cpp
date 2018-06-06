@@ -41,6 +41,7 @@ int PMPI_Init(int *argc, char ***argv)
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("init"));
     TRACE_smpi_comm_out(rank);
     TRACE_smpi_computing_init(rank);
+    TRACE_smpi_sleeping_init(rank);
     smpi_bench_begin();
   }
 

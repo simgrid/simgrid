@@ -180,7 +180,7 @@ static unsigned int private_sleep(double secs)
   smpi_bench_end();
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
-  int rank = MPI_COMM_WORLD->rank();
+  int rank = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_sleeping_in(rank, secs);
 
   simcall_process_sleep(secs);

@@ -19,6 +19,7 @@ XBT_PRIVATE const char* TRACE_internal_smpi_get_category();
 XBT_PRIVATE void TRACE_smpi_computing_init(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_out(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_in(int rank, double amount);
+XBT_PRIVATE void TRACE_smpi_sleeping_init(int rank);
 XBT_PRIVATE void TRACE_smpi_sleeping_out(int rank);
 XBT_PRIVATE void TRACE_smpi_sleeping_in(int rank, double duration);
 XBT_PRIVATE void TRACE_smpi_testing_out(int rank);

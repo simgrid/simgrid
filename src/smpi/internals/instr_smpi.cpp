@@ -271,6 +271,13 @@ void TRACE_smpi_computing_init(int rank)
    smpi_container(rank)->get_state("MPI_STATE")->add_entity_value("computing", instr_find_color("computing"));
 }
 
+void TRACE_smpi_sleeping_init(int rank)
+{
+ //first use, initialize the color in the trace
+ if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
+   smpi_container(rank)->get_state("MPI_STATE")->add_entity_value("sleeping", instr_find_color("sleeping"));
+}
+
 void TRACE_smpi_computing_in(int rank, double amount)
 {
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing())
@@ -295,7 +302,7 @@ void TRACE_smpi_sleeping_in(int rank, double duration)
 
 void TRACE_smpi_sleeping_out(int rank)
 {
-  if (TRACE_smpi_is_enabled() && not TRACE_smpi_is_sleeping())
+  if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
     smpi_container(rank)->get_state("MPI_STATE")->pop_event();
 }
 

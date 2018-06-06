@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "mpi.h"
 #include "simgrid/instr.h"
+#include <unistd.h>
 
 #define DATATOSENT 100000
 
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
+  sleep(rank);
   /** Tests:
   * A: 0(isend -> wait) with 1(recv)
   * B: 0(send) with 1(irecv -> wait)
