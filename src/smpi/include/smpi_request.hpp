@@ -54,7 +54,7 @@ class Request : public F2C {
     void print_request(const char *message);
     void start();
     void cancel();
-
+    void ref();
     static void finish_wait(MPI_Request* request, MPI_Status * status);
     static void unref(MPI_Request* request);
     static void wait(MPI_Request* req, MPI_Status * status);
