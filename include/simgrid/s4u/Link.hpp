@@ -29,7 +29,6 @@ class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
   // The private implementation, that never changes
   kernel::resource::LinkImpl* const pimpl_;
 
-private:
   bool currentlyDestroying_ = false;
 
 public:
