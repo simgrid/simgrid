@@ -29,8 +29,6 @@ class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
   // The private implementation, that never changes
   kernel::resource::LinkImpl* const pimpl_;
 
-  bool currentlyDestroying_ = false;
-
 public:
   enum class SharingPolicy { SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
 
