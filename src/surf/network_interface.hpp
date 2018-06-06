@@ -162,16 +162,6 @@ public:
   void set_data(void* d) { userdata_ = d; }
 private:
   void* userdata_ = nullptr;
-
-  /* List of all links. FIXME: should move to the Engine */
-  static std::unordered_map<std::string, LinkImpl*>* links;
-
-public:
-  static LinkImpl* by_name(std::string name);
-  static int linksCount();
-  static LinkImpl** linksList();
-  static void linksList(std::vector<s4u::Link*>* linkList);
-  static void linksExit();
 };
 
 /**********

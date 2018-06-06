@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "simgrid/sg_config.hpp"
 #include "simgrid/simix.hpp"
@@ -24,13 +25,25 @@ simgrid::xbt::signal<void(Link&)> Link::on_bandwidth_change;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::on_communicate;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::on_communication_state_change;
 
-Link* Link::by_name(const char* name)
+void Link::destroy()
 {
-  kernel::resource::LinkImpl* res = kernel::resource::LinkImpl::by_name(name);
-  if (res == nullptr)
-    return nullptr;
-  return &res->piface_;
+  if (not currentlyDestroying_) {
+    currentlyDestroying_ = true;
+    on_destruction(*this);
+    Engine::get_instance()->link_unregister(std::string(pimpl_->get_cname()));
+  }
 }
+
+Link* Link::by_name(std::string name)
+{
+  return Engine::get_instance()->link_by_name(name);
+}
+
+Link* Link::by_name_or_null(std::string name)
+{
+  return Engine::get_instance()->link_by_name_or_null(name);
+}
+
 const std::string& Link::get_name() const
 {
   return this->pimpl_->get_name();
@@ -143,20 +156,15 @@ void sg_link_data_set(sg_link_t link, void* data)
 }
 int sg_link_count()
 {
-  return simgrid::kernel::resource::LinkImpl::linksCount();
+  return simgrid::s4u::Engine::get_instance()->get_link_count();
 }
+
 sg_link_t* sg_link_list()
 {
-  simgrid::kernel::resource::LinkImpl** list = simgrid::kernel::resource::LinkImpl::linksList();
-  sg_link_t* res                             = (sg_link_t*)list; // Use the same memory area
+  std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
 
-  int size = sg_link_count();
-  for (int i = 0; i < size; i++)
-    res[i]   = &(list[i]->piface_); // Convert each entry into its interface
+  sg_link_t* res = (sg_link_t*)malloc(sizeof(sg_link_t) * links.size());
+  memcpy(res, links.data(), sizeof(sg_link_t) * links.size());
 
   return res;
-}
-void sg_link_exit()
-{
-  simgrid::kernel::resource::LinkImpl::linksExit();
 }

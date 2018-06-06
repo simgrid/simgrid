@@ -450,7 +450,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
     linkTemplate.policy    = s4u::Link::SharingPolicy::SHARED;
     linkTemplate.id        = "limiter_"+std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->limiter_link_ = resource::LinkImpl::by_name(linkTemplate.id);
+    this->limiter_link_ = s4u::Link::by_name(linkTemplate.id)->get_impl();
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
     linkTemplate.bandwidth = cluster->loopback_bw;
@@ -458,7 +458,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
     linkTemplate.policy    = s4u::Link::SharingPolicy::FATPIPE;
     linkTemplate.id        = "loopback_"+ std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = resource::LinkImpl::by_name(linkTemplate.id);
+    this->loopback = s4u::Link::by_name(linkTemplate.id)->get_impl();
   }
 }
 
@@ -475,12 +475,10 @@ FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, Fa
   sg_platf_new_link(&linkTemplate);
 
   if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    std::string tmpID = std::string(linkTemplate.id) + "_UP";
-    this->up_link_    = resource::LinkImpl::by_name(tmpID); // check link?
-    tmpID          = std::string(linkTemplate.id) + "_DOWN";
-    this->down_link_  = resource::LinkImpl::by_name(tmpID); // check link ?
+    this->up_link_   = s4u::Link::by_name(linkTemplate.id + "_UP")->get_impl();   // check link?
+    this->down_link_ = s4u::Link::by_name(linkTemplate.id + "_DOWN")->get_impl(); // check link ?
   } else {
-    this->up_link_   = resource::LinkImpl::by_name(linkTemplate.id);
+    this->up_link_   = s4u::Link::by_name(linkTemplate.id)->get_impl();
     this->down_link_ = this->up_link_;
   }
   uniqueId++;

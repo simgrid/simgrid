@@ -85,11 +85,15 @@ public:
 
 protected:
   friend s4u::Host;
+  friend s4u::Link;
   friend s4u::Storage;
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
+  friend kernel::resource::LinkImpl;
   void host_register(std::string name, simgrid::s4u::Host* host);
   void host_unregister(std::string name);
+  void link_register(std::string name, simgrid::s4u::Link* link);
+  void link_unregister(std::string name);
   void storage_register(std::string name, simgrid::s4u::Storage* storage);
   void storage_unregister(std::string name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
@@ -105,6 +109,8 @@ public:
   size_t get_link_count();
   std::vector<Link*> get_all_links();
   std::vector<Link*> get_filtered_links(std::function<bool(Link*)> filter);
+  simgrid::s4u::Link* link_by_name(std::string name);
+  simgrid::s4u::Link* link_by_name_or_null(std::string name);
 
   size_t get_actor_count();
   std::vector<ActorPtr> get_all_actors();

@@ -141,6 +141,27 @@ simgrid::s4u::Host* Engine::host_by_name_or_null(std::string name)
   return host == pimpl->hosts_.end() ? nullptr : host->second;
 }
 
+simgrid::s4u::Link* Engine::link_by_name(std::string name)
+{
+  return pimpl->links_.at(name); // Will raise a std::out_of_range if the host does not exist
+}
+
+simgrid::s4u::Link* Engine::link_by_name_or_null(std::string name)
+{
+  auto link = pimpl->links_.find(name);
+  return link == pimpl->links_.end() ? nullptr : link->second;
+}
+
+void Engine::link_register(std::string name, simgrid::s4u::Link* link)
+{
+  pimpl->links_[name] = link;
+}
+
+void Engine::link_unregister(std::string name)
+{
+  pimpl->links_.erase(name);
+}
+
 /** @brief Returns the amount of storages in the platform */
 size_t Engine::get_storage_count()
 {
@@ -180,28 +201,24 @@ void Engine::storage_unregister(std::string name)
 /** @brief Returns the amount of links in the platform */
 size_t Engine::get_link_count()
 {
-  return kernel::resource::LinkImpl::linksCount();
+  return pimpl->links_.size();
 }
 
 /** @brief Returns the list of all links found in the platform */
 std::vector<Link*> Engine::get_all_links()
 {
   std::vector<Link*> res;
-  kernel::resource::LinkImpl::linksList(&res);
+  for (auto const& kv : pimpl->links_)
+    res.push_back(kv.second);
   return res;
 }
 
 std::vector<Link*> Engine::get_filtered_links(std::function<bool(Link*)> filter)
 {
-  // FIXME: This is a terrible implementation and should be done
-  // without getting all links first.
-  std::vector<Link*> res;
-  kernel::resource::LinkImpl::linksList(&res);
   std::vector<Link*> filtered_list;
-  for (auto& link : res) {
-    if (filter(link))
-      filtered_list.push_back(link);
-  }
+  for (auto const& kv : pimpl->links_)
+    if (filter(kv.second))
+      filtered_list.push_back(kv.second);
   return filtered_list;
 }
 

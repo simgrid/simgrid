@@ -609,13 +609,13 @@ void STag_surfxml_link___ctn()
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link = simgrid::kernel::resource::LinkImpl::by_name(A_surfxml_link___ctn_id);
+    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id))->get_impl();
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link = simgrid::kernel::resource::LinkImpl::by_name(std::string(A_surfxml_link___ctn_id) + "_UP");
+    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id) + "_UP")->get_impl();
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link = simgrid::kernel::resource::LinkImpl::by_name(std::string(A_surfxml_link___ctn_id) + "_DOWN");
+    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id) + "_DOWN")->get_impl();
     break;
   default:
     surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
@@ -647,7 +647,7 @@ void ETag_surfxml_backbone(){
   link.policy     = simgrid::s4u::Link::SharingPolicy::SHARED;
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl::by_name(A_surfxml_backbone_id));
+  routing_cluster_add_backbone(simgrid::s4u::Link::by_name(std::string(A_surfxml_backbone_id))->get_impl());
 }
 
 void STag_surfxml_route(){

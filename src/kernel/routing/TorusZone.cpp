@@ -57,12 +57,10 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     resource::LinkImpl* linkUp;
     resource::LinkImpl* linkDown;
     if (link.policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      std::string tmp_link = link_id + "_UP";
-      linkUp               = resource::LinkImpl::by_name(tmp_link);
-      tmp_link             = link_id + "_DOWN";
-      linkDown             = resource::LinkImpl::by_name(tmp_link);
+      linkUp   = s4u::Link::by_name(link_id + "_UP")->get_impl();
+      linkDown = s4u::Link::by_name(link_id + "_DOWN")->get_impl();
     } else {
-      linkUp   = resource::LinkImpl::by_name(link_id);
+      linkUp   = s4u::Link::by_name(link_id)->get_impl();
       linkDown = linkUp;
     }
     /*

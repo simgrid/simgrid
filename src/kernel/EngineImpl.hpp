@@ -20,6 +20,7 @@ public:
 
 private:
   std::map<std::string, simgrid::s4u::Host*> hosts_;
+  std::map<std::string, simgrid::s4u::Link*> links_;
   std::map<std::string, simgrid::s4u::Storage*> storages_;
   std::unordered_map<std::string, simgrid::kernel::routing::NetPoint*> netpoints_;
   friend simgrid::s4u::Engine;

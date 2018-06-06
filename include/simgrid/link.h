@@ -22,7 +22,6 @@ XBT_PUBLIC void* sg_link_data(sg_link_t link);
 XBT_PUBLIC void sg_link_data_set(sg_link_t link, void* data);
 XBT_PUBLIC int sg_link_count();
 XBT_PUBLIC sg_link_t* sg_link_list();
-XBT_PUBLIC void sg_link_exit();
 SG_END_DECL()
 
 #endif /* INCLUDE_SIMGRID_LINK_H_ */

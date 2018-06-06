@@ -306,7 +306,6 @@ void surf_init(int *argc, char **argv)
 void surf_exit()
 {
   simgrid::s4u::Engine::shutdown();
-  sg_link_exit();
   for (auto const& e : storage_types) {
     simgrid::surf::StorageType* stype = e.second;
     delete stype->properties;

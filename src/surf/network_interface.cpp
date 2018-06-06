@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_interface.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
@@ -12,52 +13,6 @@
 #define NETWORK_INTERFACE_CPP_
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf, "Logging specific to the SURF network module");
-
-namespace simgrid {
-namespace kernel {
-namespace resource {
-
-/* List of links */
-std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
-
-LinkImpl* LinkImpl::by_name(std::string name)
-{
-  auto link = links->find(name);
-  return link == links->end() ? nullptr : link->second;
-}
-/** @brief Returns the amount of links in the platform */
-int LinkImpl::linksCount()
-{
-  return links->size();
-}
-void LinkImpl::linksList(std::vector<s4u::Link*>* linkList)
-{
-  for (auto const& kv : *links) {
-    linkList->push_back(&kv.second->piface_);
-  }
-}
-
-/** @brief Returns a list of all existing links */
-LinkImpl** LinkImpl::linksList()
-{
-  LinkImpl** res = xbt_new(LinkImpl*, (int)links->size());
-  int i          = 0;
-  for (auto const& kv : *links) {
-    res[i] = kv.second;
-    i++;
-  }
-  return res;
-}
-/** @brief destructor of the static data */
-void LinkImpl::linksExit()
-{
-  for (auto const& kv : *links)
-    (kv.second)->destroy();
-  delete links;
-}
-}
-}
-} // namespace simgrid
 
 /*********
  * Model *
@@ -122,12 +77,12 @@ LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint
 {
 
   if (name != "__loopback__")
-    xbt_assert(not LinkImpl::by_name(name), "Link '%s' declared several times in the platform.", name.c_str());
+    xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
 
   latency_.scale   = 1;
   bandwidth_.scale = 1;
 
-  links->insert({name, this});
+  s4u::Engine::get_instance()->link_register(name, &piface_);
   XBT_DEBUG("Create link '%s'", name.c_str());
 }
 

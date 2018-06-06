@@ -173,10 +173,10 @@ void DragonflyZone::createLink(const std::string& id, int numlinks, resource::Li
   XBT_DEBUG("Generating link %s", id.c_str());
   resource::LinkImpl* link;
   if (this->sharing_policy_ == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    *linkup   = resource::LinkImpl::by_name(linkTemplate.id + "_UP");   // check link?
-    *linkdown = resource::LinkImpl::by_name(linkTemplate.id + "_DOWN"); // check link ?
+    *linkup   = s4u::Link::by_name(linkTemplate.id + "_UP")->get_impl();   // check link?
+    *linkdown = s4u::Link::by_name(linkTemplate.id + "_DOWN")->get_impl(); // check link ?
   } else {
-    link      = resource::LinkImpl::by_name(linkTemplate.id);
+    link      = s4u::Link::by_name(linkTemplate.id)->get_impl();
     *linkup   = link;
     *linkdown = link;
   }

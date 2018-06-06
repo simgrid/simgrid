@@ -210,8 +210,8 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     // other columns are to store one or more link for the node
 
     //add a loopback link
-    simgrid::kernel::resource::LinkImpl* linkUp   = nullptr;
-    simgrid::kernel::resource::LinkImpl* linkDown = nullptr;
+    simgrid::s4u::Link* linkUp   = nullptr;
+    simgrid::s4u::Link* linkDown = nullptr;
     if(cluster->loopback_bw > 0 || cluster->loopback_lat > 0){
       std::string tmp_link = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link.c_str(), cluster->loopback_bw);
@@ -222,11 +222,11 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       link.latency   = cluster->loopback_lat;
       link.policy    = simgrid::s4u::Link::SharingPolicy::FATPIPE;
       sg_platf_new_link(&link);
-      linkUp   = simgrid::kernel::resource::LinkImpl::by_name(tmp_link);
-      linkDown = simgrid::kernel::resource::LinkImpl::by_name(tmp_link);
+      linkUp   = simgrid::s4u::Link::by_name_or_null(tmp_link);
+      linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
 
       auto* as_cluster = static_cast<ClusterZone*>(current_as);
-      as_cluster->private_links_.insert({as_cluster->node_pos(rankId), {linkUp, linkDown}});
+      as_cluster->private_links_.insert({as_cluster->node_pos(rankId), {linkUp->get_impl(), linkDown->get_impl()}});
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -242,9 +242,10 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
       link.latency = 0;
       link.policy    = simgrid::s4u::Link::SharingPolicy::SHARED;
       sg_platf_new_link(&link);
-      linkDown = simgrid::kernel::resource::LinkImpl::by_name(tmp_link);
+      linkDown = simgrid::s4u::Link::by_name_or_null(tmp_link);
       linkUp   = linkDown;
-      current_as->private_links_.insert({current_as->node_pos_with_loopback(rankId), {linkUp, linkDown}});
+      current_as->private_links_.insert(
+          {current_as->node_pos_with_loopback(rankId), {linkUp->get_impl(), linkDown->get_impl()}});
     }
 
     //call the cluster function that adds the others links
@@ -279,7 +280,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link.id.c_str(), cluster->bb_bw, cluster->bb_lat);
     sg_platf_new_link(&link);
 
-    routing_cluster_add_backbone(simgrid::kernel::resource::LinkImpl::by_name(link.id));
+    routing_cluster_add_backbone(simgrid::s4u::Link::by_name(link.id)->get_impl());
   }
 
   XBT_DEBUG("</AS>");
@@ -637,8 +638,8 @@ void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostl
   xbt_assert(dynamic_cast<simgrid::kernel::routing::ClusterZone*>(current_routing),
              "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
-  simgrid::kernel::resource::LinkImpl* linkUp   = simgrid::kernel::resource::LinkImpl::by_name(hostlink->link_up);
-  simgrid::kernel::resource::LinkImpl* linkDown = simgrid::kernel::resource::LinkImpl::by_name(hostlink->link_down);
+  simgrid::s4u::Link* linkUp   = simgrid::s4u::Link::by_name_or_null(hostlink->link_up);
+  simgrid::s4u::Link* linkDown = simgrid::s4u::Link::by_name_or_null(hostlink->link_down);
 
   xbt_assert(linkUp, "Link '%s' not found!", hostlink->link_up.c_str());
   xbt_assert(linkDown, "Link '%s' not found!", hostlink->link_down.c_str());
@@ -649,7 +650,7 @@ void sg_platf_new_hostlink(simgrid::kernel::routing::HostLinkCreationArgs* hostl
     surf_parse_error(std::string("Host_link for '") + hostlink->id.c_str() + "' is already defined!");
 
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
-  as_cluster->private_links_.insert({netpoint->id(), {linkUp, linkDown}});
+  as_cluster->private_links_.insert({netpoint->id(), {linkUp->get_impl(), linkDown->get_impl()}});
 }
 
 void sg_platf_new_trace(simgrid::kernel::routing::TraceCreationArgs* trace)

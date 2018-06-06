@@ -29,11 +29,18 @@ class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
   // The private implementation, that never changes
   kernel::resource::LinkImpl* const pimpl_;
 
+private:
+  bool currentlyDestroying_ = false;
+
 public:
   enum class SharingPolicy { SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
 
+  virtual void destroy();
+  kernel::resource::LinkImpl* get_impl() { return pimpl_; }
+
   /** @brief Retrieve a link from its name */
-  static Link* by_name(const char* name);
+  static Link* by_name(std::string name);
+  static Link* by_name_or_null(std::string name);
 
   /** @brief Retrieves the name of that link as a C++ string */
   const std::string& get_name() const;
