@@ -249,14 +249,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   if (sg_weight_S_parameter > 0) {
     action->weight_ =
         std::accumulate(route.begin(), route.end(), action->weight_, [](double total, LinkImpl* const& link) {
-          return total + sg_weight_S_parameter / link->bandwidth();
+          return total + sg_weight_S_parameter / link->get_bandwidth();
         });
   }
 
-  double bandwidth_bound = route.empty() ? -1.0 : bandwidthFactor(size) * route.front()->bandwidth();
+  double bandwidth_bound = route.empty() ? -1.0 : bandwidthFactor(size) * route.front()->get_bandwidth();
 
   for (auto const& link : route)
-    bandwidth_bound = std::min(bandwidth_bound, bandwidthFactor(size) * link->bandwidth());
+    bandwidth_bound = std::min(bandwidth_bound, bandwidthFactor(size) * link->get_bandwidth());
 
   action->lat_current_ = action->latency_;
   action->latency_ *= latencyFactor(size);
@@ -330,11 +330,11 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
 {
   /* Find out which of my iterators was triggered, and react accordingly */
   if (triggered == bandwidth_.event) {
-    setBandwidth(value);
+    set_bandwidth(value);
     tmgr_trace_event_unref(&bandwidth_.event);
 
   } else if (triggered == latency_.event) {
-    setLatency(value);
+    set_latency(value);
     tmgr_trace_event_unref(&latency_.event);
 
   } else if (triggered == stateEvent_) {
@@ -364,7 +364,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_event_t triggered, double value)
             get_constraint());
 }
 
-void NetworkCm02Link::setBandwidth(double value)
+void NetworkCm02Link::set_bandwidth(double value)
 {
   bandwidth_.peak = value;
 
@@ -389,7 +389,7 @@ void NetworkCm02Link::setBandwidth(double value)
   }
 }
 
-void NetworkCm02Link::setLatency(double value)
+void NetworkCm02Link::set_latency(double value)
 {
   double delta                 = value - latency_.peak;
   kernel::lmm::Variable* var   = nullptr;

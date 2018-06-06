@@ -98,7 +98,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
 
     //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
-    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->bandwidth(), link->latency());
+    XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->get_bandwidth(), link->get_latency());
 
     // create link ns3
     NetPointNs3* host_src = src->extension<NetPointNs3>();
@@ -107,7 +107,7 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
     xbt_assert(host_src != nullptr, "Network element %s does not seem to be NS3-ready", src->get_cname());
     xbt_assert(host_dst != nullptr, "Network element %s does not seem to be NS3-ready", dst->get_cname());
 
-    ns3_add_link(host_src, host_dst, link->bandwidth(), link->latency());
+    ns3_add_link(host_src, host_dst, link->get_bandwidth(), link->get_latency());
   } else {
     static bool warned_about_long_routes = false;
 
@@ -281,10 +281,12 @@ void LinkNS3::apply_event(tmgr_trace_event_t event, double value)
 {
   THROW_UNIMPLEMENTED;
 }
-void LinkNS3::setBandwidthTrace(tmgr_trace_t trace) {
+void LinkNS3::set_bandwidth_trace(tmgr_trace_t trace)
+{
   xbt_die("The NS3 network model doesn't support bandwidth traces");
 }
-void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
+void LinkNS3::set_latency_trace(tmgr_trace_t trace)
+{
   xbt_die("The NS3 network model doesn't support latency traces");
 }
 

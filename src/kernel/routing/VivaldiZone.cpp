@@ -95,7 +95,7 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     if (info.first) {
       route->link_list.push_back(info.first);
       if (lat)
-        *lat += info.first->latency();
+        *lat += info.first->get_latency();
     }
   } else {
     XBT_DEBUG("Source of private link (%u) doesn't exist", src->id());
@@ -107,7 +107,7 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     if (info.second) {
       route->link_list.push_back(info.second);
       if (lat)
-        *lat += info.second->latency();
+        *lat += info.second->get_latency();
     }
   } else {
     XBT_DEBUG("Destination of private link (%u) doesn't exist", dst->id());

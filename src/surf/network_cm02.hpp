@@ -49,8 +49,8 @@ public:
                   s4u::Link::SharingPolicy policy, lmm::System* system);
   virtual ~NetworkCm02Link() = default;
   void apply_event(tmgr_trace_event_t event, double value) override;
-  void setBandwidth(double value) override;
-  void setLatency(double value) override;
+  void set_bandwidth(double value) override;
+  void set_latency(double value) override;
 };
 
 /**********

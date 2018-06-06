@@ -58,11 +58,11 @@ void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int 
     resource::LinkImpl* linkDown;
     if (link.policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
       std::string tmp_link = link_id + "_UP";
-      linkUp               = resource::LinkImpl::byName(tmp_link);
+      linkUp               = resource::LinkImpl::by_name(tmp_link);
       tmp_link             = link_id + "_DOWN";
-      linkDown             = resource::LinkImpl::byName(tmp_link);
+      linkDown             = resource::LinkImpl::by_name(tmp_link);
     } else {
-      linkUp   = resource::LinkImpl::byName(link_id);
+      linkUp   = resource::LinkImpl::by_name(link_id);
       linkDown = linkUp;
     }
     /*
@@ -106,7 +106,7 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 
     route->link_list.push_back(info.first);
     if (lat)
-      *lat += info.first->latency();
+      *lat += info.first->get_latency();
     return;
   }
 
@@ -189,11 +189,11 @@ void TorusZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     if (use_lnk_up == false) {
       route->link_list.push_back(info.second);
       if (lat)
-        *lat += info.second->latency();
+        *lat += info.second->get_latency();
     } else {
       route->link_list.push_back(info.first);
       if (lat)
-        *lat += info.first->latency();
+        *lat += info.first->get_latency();
     }
     current_node = next_node;
     next_node    = 0;

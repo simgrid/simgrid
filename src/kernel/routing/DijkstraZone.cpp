@@ -154,7 +154,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     for (auto const& link : e_route->link_list) {
       route->link_list.insert(route->link_list.begin(), link);
       if (lat)
-        *lat += static_cast<resource::LinkImpl*>(link)->latency();
+        *lat += static_cast<resource::LinkImpl*>(link)->get_latency();
     }
   }
 
@@ -238,7 +238,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
       for (auto const& link : e_route_as_to_as) {
         route->link_list.insert(pos, link);
         if (lat)
-          *lat += link->latency();
+          *lat += link->get_latency();
         pos++;
       }
     }
@@ -246,7 +246,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
     for (auto const& link : e_route->link_list) {
       route->link_list.insert(route->link_list.begin(), link);
       if (lat)
-        *lat += static_cast<resource::LinkImpl*>(link)->latency();
+        *lat += static_cast<resource::LinkImpl*>(link)->get_latency();
     }
   }
 

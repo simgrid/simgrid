@@ -125,19 +125,19 @@ public:
   s4u::Link piface_;
 
   /** @brief Get the bandwidth in bytes per second of current Link */
-  virtual double bandwidth();
+  virtual double get_bandwidth();
 
   /** @brief Update the bandwidth in bytes per second of current Link */
-  virtual void setBandwidth(double value) = 0;
+  virtual void set_bandwidth(double value) = 0;
 
   /** @brief Get the latency in seconds of current Link */
-  virtual double latency();
+  virtual double get_latency();
 
   /** @brief Update the latency in seconds of current Link */
-  virtual void setLatency(double value) = 0;
+  virtual void set_latency(double value) = 0;
 
   /** @brief The sharing policy */
-  virtual s4u::Link::SharingPolicy sharingPolicy();
+  virtual s4u::Link::SharingPolicy get_sharing_policy();
 
   /** @brief Check if the Link is used */
   bool is_used() override;
@@ -147,12 +147,12 @@ public:
 
   void on_bandwidth_change();
 
-  virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF).
+  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF).
                                                           Trace must contain boolean values. */
-  virtual void setBandwidthTrace(
+  virtual void set_bandwidth_trace(
       tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load).
                                    Trace must contain percentages (value between 0 and 1). */
-  virtual void setLatencyTrace(
+  virtual void set_latency_trace(
       tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load).
                                    Trace must contain absolute values */
 
@@ -161,16 +161,16 @@ public:
   Metric bandwidth_                 = {1.0, 0, nullptr};
 
   /* User data */
-  void* getData() { return userData; }
-  void setData(void* d) { userData = d; }
+  void* get_data() { return userdata_; }
+  void set_data(void* d) { userdata_ = d; }
 private:
-  void* userData = nullptr;
+  void* userdata_ = nullptr;
 
   /* List of all links. FIXME: should move to the Engine */
   static std::unordered_map<std::string, LinkImpl*>* links;
 
 public:
-  static LinkImpl* byName(std::string name);
+  static LinkImpl* by_name(std::string name);
   static int linksCount();
   static LinkImpl** linksList();
   static void linksList(std::vector<s4u::Link*>* linkList);

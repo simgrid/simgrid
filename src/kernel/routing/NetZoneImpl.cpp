@@ -217,7 +217,7 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
       for (resource::LinkImpl* const& link : bypassedRoute->links) {
         links.push_back(link);
         if (latency)
-          *latency += link->latency();
+          *latency += link->get_latency();
       }
       XBT_DEBUG("Found a bypass route from '%s' to '%s' with %zu links", src->get_cname(), dst->get_cname(),
                 bypassedRoute->links.size());
@@ -301,7 +301,7 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
     for (resource::LinkImpl* const& link : bypassedRoute->links) {
       links.push_back(link);
       if (latency)
-        *latency += link->latency();
+        *latency += link->get_latency();
     }
     if (dst != key.second)
       get_global_route(bypassedRoute->gw_dst, dst, links, latency);

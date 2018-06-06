@@ -26,7 +26,7 @@ simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::on_communicat
 
 Link* Link::by_name(const char* name)
 {
-  kernel::resource::LinkImpl* res = kernel::resource::LinkImpl::byName(name);
+  kernel::resource::LinkImpl* res = kernel::resource::LinkImpl::by_name(name);
   if (res == nullptr)
     return nullptr;
   return &res->piface_;
@@ -50,17 +50,17 @@ bool Link::is_used()
 
 double Link::get_latency()
 {
-  return this->pimpl_->latency();
+  return this->pimpl_->get_latency();
 }
 
 double Link::get_bandwidth()
 {
-  return this->pimpl_->bandwidth();
+  return this->pimpl_->get_bandwidth();
 }
 
 Link::SharingPolicy Link::get_sharing_policy()
 {
-  return this->pimpl_->sharingPolicy();
+  return this->pimpl_->get_sharing_policy();
 }
 
 double Link::get_usage()
@@ -79,24 +79,24 @@ void Link::turn_off()
 
 void* Link::get_data()
 {
-  return this->pimpl_->getData();
+  return this->pimpl_->get_data();
 }
 void Link::set_data(void* d)
 {
-  simgrid::simix::simcall([this, d]() { this->pimpl_->setData(d); });
+  simgrid::simix::simcall([this, d]() { this->pimpl_->set_data(d); });
 }
 
 void Link::set_state_trace(tmgr_trace_t trace)
 {
-  simgrid::simix::simcall([this, trace]() { this->pimpl_->setStateTrace(trace); });
+  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_state_trace(trace); });
 }
 void Link::set_bandwidth_trace(tmgr_trace_t trace)
 {
-  simgrid::simix::simcall([this, trace]() { this->pimpl_->setBandwidthTrace(trace); });
+  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_bandwidth_trace(trace); });
 }
 void Link::set_latency_trace(tmgr_trace_t trace)
 {
-  simgrid::simix::simcall([this, trace]() { this->pimpl_->setLatencyTrace(trace); });
+  simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_trace(trace); });
 }
 
 const char* Link::get_property(const char* key)

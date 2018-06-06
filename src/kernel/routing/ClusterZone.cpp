@@ -33,7 +33,7 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     std::pair<resource::LinkImpl*, resource::LinkImpl*> info = private_links_.at(node_pos(src->id()));
     route->link_list.push_back(info.first);
     if (lat)
-      *lat += info.first->latency();
+      *lat += info.first->get_latency();
     return;
   }
 
@@ -48,14 +48,14 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     if (info.first) { // link up
       route->link_list.push_back(info.first);
       if (lat)
-        *lat += info.first->latency();
+        *lat += info.first->get_latency();
     }
   }
 
   if (backbone_) {
     route->link_list.push_back(backbone_);
     if (lat)
-      *lat += backbone_->latency();
+      *lat += backbone_->get_latency();
   }
 
   if (not dst->is_router()) { // No specific link for router
@@ -65,7 +65,7 @@ void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     if (info.second) { // link down
       route->link_list.push_back(info.second);
       if (lat)
-        *lat += info.second->latency();
+        *lat += info.second->get_latency();
     }
     if (has_limiter_) { // limiter for receiver
       info = private_links_.at(node_pos_with_loopback(dst->id()));
@@ -134,10 +134,10 @@ void ClusterZone::create_links_for_node(ClusterCreationArgs* cluster, int id, in
   resource::LinkImpl* linkUp;
   resource::LinkImpl* linkDown;
   if (link.policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkUp   = resource::LinkImpl::byName(link_id + "_UP");
-    linkDown = resource::LinkImpl::byName(link_id + "_DOWN");
+    linkUp   = resource::LinkImpl::by_name(link_id + "_UP");
+    linkDown = resource::LinkImpl::by_name(link_id + "_DOWN");
   } else {
-    linkUp   = resource::LinkImpl::byName(link_id);
+    linkUp   = resource::LinkImpl::by_name(link_id);
     linkDown = linkUp;
   }
   private_links_.insert({position, {linkUp, linkDown}});

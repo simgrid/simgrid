@@ -82,7 +82,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   if (source->id == destination->id && this->has_loopback_) {
     into->link_list.push_back(source->loopback);
     if (latency)
-      *latency += source->loopback->latency();
+      *latency += source->loopback->get_latency();
     return;
   }
 
@@ -100,7 +100,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
     into->link_list.push_back(currentNode->parents[d]->up_link_);
 
     if (latency)
-      *latency += currentNode->parents[d]->up_link_->latency();
+      *latency += currentNode->parents[d]->up_link_->get_latency();
 
     if (this->has_limiter_)
       into->link_list.push_back(currentNode->limiter_link_);
@@ -116,7 +116,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
       if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
         into->link_list.push_back(currentNode->children[i]->down_link_);
         if (latency)
-          *latency += currentNode->children[i]->down_link_->latency();
+          *latency += currentNode->children[i]->down_link_->get_latency();
         currentNode = currentNode->children[i]->down_node_;
         if (this->has_limiter_)
           into->link_list.push_back(currentNode->limiter_link_);
@@ -450,7 +450,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
     linkTemplate.policy    = s4u::Link::SharingPolicy::SHARED;
     linkTemplate.id        = "limiter_"+std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->limiter_link_ = resource::LinkImpl::byName(linkTemplate.id);
+    this->limiter_link_ = resource::LinkImpl::by_name(linkTemplate.id);
   }
   if (cluster->loopback_bw || cluster->loopback_lat) {
     linkTemplate.bandwidth = cluster->loopback_bw;
@@ -458,7 +458,7 @@ FatTreeNode::FatTreeNode(ClusterCreationArgs* cluster, int id, int level, int po
     linkTemplate.policy    = s4u::Link::SharingPolicy::FATPIPE;
     linkTemplate.id        = "loopback_"+ std::to_string(id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = resource::LinkImpl::byName(linkTemplate.id);
+    this->loopback = resource::LinkImpl::by_name(linkTemplate.id);
   }
 }
 
@@ -476,11 +476,11 @@ FatTreeLink::FatTreeLink(ClusterCreationArgs* cluster, FatTreeNode* downNode, Fa
 
   if (cluster->sharing_policy == s4u::Link::SharingPolicy::SPLITDUPLEX) {
     std::string tmpID = std::string(linkTemplate.id) + "_UP";
-    this->up_link_    = resource::LinkImpl::byName(tmpID); // check link?
+    this->up_link_    = resource::LinkImpl::by_name(tmpID); // check link?
     tmpID          = std::string(linkTemplate.id) + "_DOWN";
-    this->down_link_  = resource::LinkImpl::byName(tmpID); // check link ?
+    this->down_link_  = resource::LinkImpl::by_name(tmpID); // check link ?
   } else {
-    this->up_link_   = resource::LinkImpl::byName(linkTemplate.id);
+    this->up_link_   = resource::LinkImpl::by_name(linkTemplate.id);
     this->down_link_ = this->up_link_;
   }
   uniqueId++;

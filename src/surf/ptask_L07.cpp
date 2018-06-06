@@ -330,11 +330,11 @@ void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
 {
   XBT_DEBUG("Updating link %s (%p) with value=%f", get_cname(), this, value);
   if (triggered == bandwidth_.event) {
-    setBandwidth(value);
+    set_bandwidth(value);
     tmgr_trace_event_unref(&bandwidth_.event);
 
   } else if (triggered == latency_.event) {
-    setLatency(value);
+    set_latency(value);
     tmgr_trace_event_unref(&latency_.event);
 
   } else if (triggered == stateEvent_) {
@@ -349,7 +349,7 @@ void LinkL07::apply_event(tmgr_trace_event_t triggered, double value)
   }
 }
 
-void LinkL07::setBandwidth(double value)
+void LinkL07::set_bandwidth(double value)
 {
   bandwidth_.peak = value;
   LinkImpl::on_bandwidth_change();
@@ -357,7 +357,7 @@ void LinkL07::setBandwidth(double value)
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), bandwidth_.peak * bandwidth_.scale);
 }
 
-void LinkL07::setLatency(double value)
+void LinkL07::set_latency(double value)
 {
   kernel::lmm::Variable* var = nullptr;
   L07Action *action;

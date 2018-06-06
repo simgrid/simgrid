@@ -66,7 +66,7 @@ void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
     for (auto const& link : e_route->link_list) {
       res->link_list.push_back(link);
       if (lat)
-        *lat += link->latency();
+        *lat += link->get_latency();
     }
   }
 }

@@ -20,7 +20,7 @@ namespace resource {
 /* List of links */
 std::unordered_map<std::string, LinkImpl*>* LinkImpl::links = new std::unordered_map<std::string, LinkImpl*>();
 
-LinkImpl* LinkImpl::byName(std::string name)
+LinkImpl* LinkImpl::by_name(std::string name)
 {
   auto link = links->find(name);
   return link == links->end() ? nullptr : link->second;
@@ -122,7 +122,7 @@ LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint
 {
 
   if (name != "__loopback__")
-    xbt_assert(not LinkImpl::byName(name), "Link '%s' declared several times in the platform.", name.c_str());
+    xbt_assert(not LinkImpl::by_name(name), "Link '%s' declared several times in the platform.", name.c_str());
 
   latency_.scale   = 1;
   bandwidth_.scale = 1;
@@ -154,17 +154,17 @@ bool LinkImpl::is_used()
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
-double LinkImpl::latency()
+double LinkImpl::get_latency()
 {
   return latency_.peak * latency_.scale;
 }
 
-double LinkImpl::bandwidth()
+double LinkImpl::get_bandwidth()
 {
   return bandwidth_.peak * bandwidth_.scale;
 }
 
-s4u::Link::SharingPolicy LinkImpl::sharingPolicy()
+s4u::Link::SharingPolicy LinkImpl::get_sharing_policy()
 {
   return get_constraint()->get_sharing_policy();
 }
@@ -190,17 +190,17 @@ void LinkImpl::on_bandwidth_change()
   s4u::Link::on_bandwidth_change(this->piface_);
 }
 
-void LinkImpl::setStateTrace(tmgr_trace_t trace)
+void LinkImpl::set_state_trace(tmgr_trace_t trace)
 {
   xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", get_cname());
   stateEvent_ = future_evt_set->add_trace(trace, this);
 }
-void LinkImpl::setBandwidthTrace(tmgr_trace_t trace)
+void LinkImpl::set_bandwidth_trace(tmgr_trace_t trace)
 {
   xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", get_cname());
   bandwidth_.event = future_evt_set->add_trace(trace, this);
 }
-void LinkImpl::setLatencyTrace(tmgr_trace_t trace)
+void LinkImpl::set_latency_trace(tmgr_trace_t trace)
 {
   xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", get_cname());
   latency_.event = future_evt_set->add_trace(trace, this);

@@ -78,7 +78,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
     for (auto const& link : e_route->link_list) {
       route->link_list.push_back(link);
       if (lat)
-        *lat += link->latency();
+        *lat += link->get_latency();
     }
 
     prev_dst_gw = e_route->gw_dst;
