@@ -158,7 +158,7 @@ public:
   void ref();
   /** @brief Unref that action (and destroy it if refcount reaches 0)
    *  @return true if the action was destroyed and false if someone still has references on it */
-  int unref();
+  bool unref();
 
   /** @brief Cancel the current Action if running */
   virtual void cancel();

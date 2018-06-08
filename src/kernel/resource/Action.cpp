@@ -149,14 +149,14 @@ void Action::cancel()
   }
 }
 
-int Action::unref()
+bool Action::unref()
 {
   refcount_--;
   if (not refcount_) {
     delete this;
-    return 1;
+    return true;
   }
-  return 0;
+  return false;
 }
 
 void Action::suspend()

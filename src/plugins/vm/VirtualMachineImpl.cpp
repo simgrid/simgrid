@@ -135,8 +135,8 @@ VirtualMachineImpl::~VirtualMachineImpl()
     allVms_.erase(iter);
 
   /* Free the cpu_action of the VM. */
-  XBT_ATTRIB_UNUSED int ret = action_->unref();
-  xbt_assert(ret == 1, "Bug: some resource still remains");
+  XBT_ATTRIB_UNUSED bool ret = action_->unref();
+  xbt_assert(ret, "Bug: some resource still remains");
 }
 
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
@@ -252,7 +252,8 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
     new_cpu_action->set_bound(old_bound);
   }
 
-  xbt_assert(action_->unref() == 1, "Bug: some resource still remains");
+  XBT_ATTRIB_UNUSED bool ret = action_->unref();
+  xbt_assert(ret, "Bug: some resource still remains");
 
   action_ = new_cpu_action;
 
