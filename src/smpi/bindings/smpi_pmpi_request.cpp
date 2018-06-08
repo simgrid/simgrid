@@ -684,6 +684,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   if(*index!=MPI_UNDEFINED){
     trace_smpi_recv_helper(&savedreqs[*index], status);
     TRACE_smpi_comm_out(rank_traced);
+    requests[*index] = MPI_REQUEST_NULL;
   }
   
   for(int i=0; i<count; i++)
