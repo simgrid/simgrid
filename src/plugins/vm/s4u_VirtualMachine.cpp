@@ -21,27 +21,27 @@ simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_shutdown;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_suspend;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_resume;
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount)
-    : VirtualMachine(name, pm, coreAmount, 1024)
+VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount)
+    : VirtualMachine(name, physical_host, core_amount, 1024)
 {
 }
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm, int coreAmount, size_t ramsize)
-    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, pm, coreAmount, ramsize))
+VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount, size_t ramsize)
+    : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
   XBT_DEBUG("Create VM %s", name);
 
   /* Currently, a VM uses the network resource of its physical host */
-  pimpl_netpoint = pm->pimpl_netpoint;
+  pimpl_netpoint = physical_host->pimpl_netpoint;
 
   // Create a VCPU for this VM
   std::vector<double> speeds;
-  for (int i = 0; i < pm->get_pstate_count(); i++)
-    speeds.push_back(pm->getPstateSpeed(i));
+  for (int i = 0; i < physical_host->get_pstate_count(); i++)
+    speeds.push_back(physical_host->getPstateSpeed(i));
 
-  surf_cpu_model_vm->create_cpu(this, &speeds, pm->get_core_count());
-  if (pm->get_pstate() != 0)
-    set_pstate(pm->get_pstate());
+  surf_cpu_model_vm->create_cpu(this, &speeds, physical_host->get_core_count());
+  if (physical_host->get_pstate() != 0)
+    set_pstate(physical_host->get_pstate());
 
   /* Make a process container */
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());

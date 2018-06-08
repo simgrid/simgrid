@@ -151,14 +151,14 @@ public:
   /** Creates (but don't start) a data emission to that mailbox */
   CommPtr put_init();
   /** Creates (but don't start) a data emission to that mailbox */
-  CommPtr put_init(void* data, uint64_t simulatedSizeInBytes);
+  CommPtr put_init(void* data, uint64_t simulated_size_in_bytes);
   /** Creates and start a data emission to that mailbox */
-  CommPtr put_async(void* data, uint64_t simulatedSizeInBytes);
+  CommPtr put_async(void* data, uint64_t simulated_size_in_bytes);
 
   /** Blocking data emission */
-  void put(void* payload, uint64_t simulatedSizeInBytes);
+  void put(void* payload, uint64_t simulated_size_in_bytes);
   /** Blocking data emission with timeout */
-  void put(void* payload, uint64_t simulatedSizeInBytes, double timeout);
+  void put(void* payload, uint64_t simulated_size_in_bytes, double timeout);
 
   /** Creates (but don't start) a data reception onto that mailbox */
   CommPtr get_init();
