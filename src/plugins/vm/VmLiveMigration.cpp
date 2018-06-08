@@ -50,7 +50,7 @@ void MigrationRx::operator()()
   vm_->resume();
 
   // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-  vm_->getImpl()->isMigrating = false;
+  vm_->getImpl()->is_migrating_ = false;
   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm_->get_cname(), src_pm_->get_cname(), dst_pm_->get_cname());
 
   if (TRACE_vm_is_enabled()) {
@@ -285,11 +285,11 @@ void MigrationTx::operator()()
 
 static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine& vm)
 {
-  if (vm.getImpl()->isMigrating) {
+  if (vm.getImpl()->is_migrating_) {
     vm.extension<simgrid::vm::VmMigrationExt>()->rx_->kill();
     vm.extension<simgrid::vm::VmMigrationExt>()->tx_->kill();
     vm.extension<simgrid::vm::VmMigrationExt>()->issuer_->kill();
-    vm.getImpl()->isMigrating = false;
+    vm.getImpl()->is_migrating_ = false;
   }
 }
 
@@ -326,7 +326,7 @@ simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, co
 
 int sg_vm_is_migrating(simgrid::s4u::VirtualMachine* vm)
 {
-  return vm->getImpl()->isMigrating;
+  return vm->getImpl()->is_migrating_;
 }
 
 void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
@@ -340,10 +340,10 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->get_cname(), dst_pm->get_cname());
   if (vm->getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->get_cname());
-  if (vm->getImpl()->isMigrating)
+  if (vm->getImpl()->is_migrating_)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());
 
-  vm->getImpl()->isMigrating = true;
+  vm->getImpl()->is_migrating_ = true;
 
   std::string rx_name =
       std::string("__pr_mig_rx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
@@ -365,5 +365,5 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   tx->join();
   rx->join();
 
-  vm->getImpl()->isMigrating = false;
+  vm->getImpl()->is_migrating_ = false;
 }

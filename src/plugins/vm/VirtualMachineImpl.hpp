@@ -31,61 +31,45 @@ class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt
   friend simgrid::s4u::VirtualMachine;
 
 public:
-  explicit VirtualMachineImpl(s4u::VirtualMachine * piface, s4u::Host * host, int coreAmount, size_t ramsize);
+  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host, int core_amount, size_t ramsize);
   ~VirtualMachineImpl();
 
-  /** @brief Suspend the VM */
-  virtual void suspend(simgrid::kernel::actor::ActorImpl* issuer);
+  /** @brief Callbacks fired after VM creation. Signature: `void(VirtualMachineImpl*)` */
+  static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_creation;
+  /** @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachineImpl*)` */
+  static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_destruction;
+  /** @brief Callbacks after VM State changes. Signature: `void(VirtualMachineImpl*)` */
+  static xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> on_state_change;
 
-  /** @brief Resume the VM */
+  virtual void suspend(kernel::actor::ActorImpl* issuer);
   virtual void resume();
-
-  /** @brief Shutdown the VM */
-  virtual void shutdown(simgrid::kernel::actor::ActorImpl* issuer);
+  virtual void shutdown(kernel::actor::ActorImpl* issuer);
 
   /** @brief Change the physical host on which the given VM is running */
-  virtual void setPm(s4u::Host* dest);
+  virtual void set_physical_host(s4u::Host* dest);
+  /** @brief Get the physical host on which the given VM is running */
+  s4u::Host* get_physical_host() { return physical_host_; }
 
-  /** @brief Get the physical machine hosting the VM */
-  s4u::Host* getPm();
+  sg_size_t get_ramsize() { return ramsize_; }
+  void set_ramsize(sg_size_t ramsize) { ramsize_ = ramsize; }
 
-  sg_size_t getRamsize() { return ramsize_; }
-  void setRamsize(sg_size_t ramsize) { ramsize_ = ramsize; }
+  e_surf_vm_state_t get_state() { return vm_state_; }
+  void set_state(e_surf_vm_state_t state) { vm_state_ = state; }
 
-  virtual void setBound(double bound);
+  int get_core_amount() { return core_amount_; }
+
+  virtual void set_bound(double bound);
 
   /* The vm object of the lower layer */
   kernel::resource::Action* action_ = nullptr;
-
-  e_surf_vm_state_t getState();
-  void setState(e_surf_vm_state_t state);
   static std::deque<s4u::VirtualMachine*> allVms_;
-  int coreAmount() { return coreAmount_; }
-
-  bool isMigrating = false;
-  /*************
-   * Callbacks *
-   *************/
-  /** @ingroup SURF_callbacks
-   * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
-   */
-  static simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmCreation;
-
-  /** @ingroup SURF_callbacks
-   * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
-   */
-  static simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmDestruction;
-
-  /** @ingroup SURF_callbacks
-   * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
-   */
-  static simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmStateChange;
+  bool is_migrating_ = false;
 
 private:
-  simgrid::s4u::Host* hostPM_;
-  int coreAmount_;
+  s4u::Host* physical_host_;
+  int core_amount_;
   size_t ramsize_            = 0;
-  e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
+  e_surf_vm_state_t vm_state_ = SURF_VM_STATE_CREATED;
 };
 
 /*********

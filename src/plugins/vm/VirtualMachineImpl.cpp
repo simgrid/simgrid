@@ -21,17 +21,14 @@ void surf_vm_model_init_HL13()
   }
 }
 
-
+namespace simgrid {
+namespace vm {
 /*************
  * Callbacks *
  *************/
-
-simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> simgrid::vm::VirtualMachineImpl::onVmCreation;
-simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> simgrid::vm::VirtualMachineImpl::onVmDestruction;
-simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> simgrid::vm::VirtualMachineImpl::onVmStateChange;
-
-namespace simgrid {
-namespace vm {
+simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_creation;
+simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_destruction;
+simgrid::xbt::signal<void(VirtualMachineImpl*)> VirtualMachineImpl::on_state_change;
 /*********
  * Model *
  *********/
@@ -56,6 +53,7 @@ static void hostStateChange(s4u::Host& host)
       vm->shutdown();
   }
 }
+
 VMModel::VMModel()
 {
   s4u::Host::on_state_change.connect(hostStateChange);
@@ -113,24 +111,24 @@ double VMModel::next_occuring_event(double now)
  ************/
 
 VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM,
-                                       int coreAmount, size_t ramsize)
-    : HostImpl(piface), hostPM_(host_PM), coreAmount_(coreAmount), ramsize_(ramsize)
+                                       int core_amount, size_t ramsize)
+    : HostImpl(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
-  action_ = host_PM->pimpl_cpu->execution_start(0, coreAmount);
+  action_ = host_PM->pimpl_cpu->execution_start(0, core_amount);
 
-  XBT_VERB("Create VM(%s)@PM(%s)", piface->get_cname(), hostPM_->get_cname());
-  onVmCreation(this);
+  XBT_VERB("Create VM(%s)@PM(%s)", piface->get_cname(), physical_host_->get_cname());
+  on_creation(this);
 }
 
 /** @brief A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation */
 VirtualMachineImpl::~VirtualMachineImpl()
 {
-  onVmDestruction(this);
+  on_destruction(this);
   /* I was already removed from the allVms set if the VM was destroyed cleanly */
   auto iter = find(allVms_.begin(), allVms_.end(), piface_);
   if (iter != allVms_.end())
@@ -141,19 +139,9 @@ VirtualMachineImpl::~VirtualMachineImpl()
   xbt_assert(ret == 1, "Bug: some resource still remains");
 }
 
-e_surf_vm_state_t VirtualMachineImpl::getState()
-{
-  return vmState_;
-}
-
-void VirtualMachineImpl::setState(e_surf_vm_state_t state)
-{
-  vmState_ = state;
-}
-
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
-  if (getState() != SURF_VM_STATE_RUNNING)
+  if (get_state() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->get_cname());
   if (issuer->host == piface_)
     THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
@@ -171,12 +159,12 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
   XBT_DEBUG("suspend all processes on the VM done done");
 
-  vmState_ = SURF_VM_STATE_SUSPENDED;
+  vm_state_ = SURF_VM_STATE_SUSPENDED;
 }
 
 void VirtualMachineImpl::resume()
 {
-  if (getState() != SURF_VM_STATE_SUSPENDED)
+  if (get_state() != SURF_VM_STATE_SUSPENDED)
     THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->get_cname());
 
   auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
@@ -189,7 +177,7 @@ void VirtualMachineImpl::resume()
     smx_process.resume();
   }
 
-  vmState_ = SURF_VM_STATE_RUNNING;
+  vm_state_ = SURF_VM_STATE_RUNNING;
 }
 
 /** @brief Power off a VM.
@@ -201,9 +189,9 @@ void VirtualMachineImpl::resume()
  */
 void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 {
-  if (getState() != SURF_VM_STATE_RUNNING) {
+  if (get_state() != SURF_VM_STATE_RUNNING) {
     const char* stateName = "(unknown state)";
-    switch (getState()) {
+    switch (get_state()) {
       case SURF_VM_STATE_CREATED:
         stateName = "created, but not yet started";
         break;
@@ -229,36 +217,30 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     SIMIX_process_kill(&smx_process, issuer);
   }
 
-  setState(SURF_VM_STATE_DESTROYED);
+  set_state(SURF_VM_STATE_DESTROYED);
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
-}
-
-/** @brief returns the physical machine on which the VM is running **/
-s4u::Host* VirtualMachineImpl::getPm()
-{
-  return hostPM_;
 }
 
 /** @brief Change the physical host on which the given VM is running
  *
  * This is an instantaneous migration.
  */
-void VirtualMachineImpl::setPm(s4u::Host* destination)
+void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 {
   const char* vm_name     = piface_->get_cname();
-  const char* pm_name_src = hostPM_->get_cname();
+  const char* pm_name_src = physical_host_->get_cname();
   const char* pm_name_dst = destination->get_cname();
 
   /* update net_elm with that of the destination physical host */
   piface_->pimpl_netpoint = destination->pimpl_netpoint;
 
-  hostPM_ = destination;
+  physical_host_ = destination;
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
   surf::CpuAction* new_cpu_action =
-      static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->coreAmount_));
+      static_cast<surf::CpuAction*>(destination->pimpl_cpu->execution_start(0, this->core_amount_));
 
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());
@@ -270,15 +252,14 @@ void VirtualMachineImpl::setPm(s4u::Host* destination)
     new_cpu_action->set_bound(old_bound);
   }
 
-  XBT_ATTRIB_UNUSED int ret = action_->unref();
-  xbt_assert(ret == 1, "Bug: some resource still remains");
+  xbt_assert(action_->unref() == 1, "Bug: some resource still remains");
 
   action_ = new_cpu_action;
 
   XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 }
 
-void VirtualMachineImpl::setBound(double bound)
+void VirtualMachineImpl::set_bound(double bound)
 {
   action_->set_bound(bound);
 }
