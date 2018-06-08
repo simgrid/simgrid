@@ -637,13 +637,15 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     retval = MPI_SUCCESS;
   } else {
     //for tracing, save the handle which might get overriden before we can use the helper on it
-    MPI_Request savedreq=*request;
-    if (savedreq!=MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED))
+    MPI_Request savedreq = *request;
+    if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & MPI_REQ_FINISHED))
       savedreq->ref();//don't erase te handle in Request::wait, we'll need it later
+    else
+      savedreq = MPI_REQUEST_NULL;
+
     int my_proc_id = (*request)->comm() != MPI_COMM_NULL
                          ? simgrid::s4u::this_actor::get_pid()
                          : -1; // TODO: cheinrich: Check if this correct or if it should be MPI_UNDEFINED
-
     TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("wait"));
 
     simgrid::smpi::Request::wait(request, status);
@@ -652,7 +654,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     TRACE_smpi_comm_out(my_proc_id);
     trace_smpi_recv_helper(&savedreq, status);
-    if (savedreq!=MPI_REQUEST_NULL)
+    if (savedreq != MPI_REQUEST_NULL)
       simgrid::smpi::Request::unref(&savedreq);
   }
 
@@ -670,11 +672,13 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 
   smpi_bench_end();
   //for tracing, save the handles which might get overriden before we can use the helper on it
-  MPI_Request* savedreqs= static_cast<MPI_Request*>(xbt_malloc(count * sizeof(MPI_Request)));
-  memcpy(savedreqs, requests, count * sizeof(MPI_Request));
-  for(int i=0; i<count; i++)
-    if (savedreqs[i]!=MPI_REQUEST_NULL && not(savedreqs[i]->flags() & MPI_REQ_FINISHED))
-      savedreqs[i]->ref();
+  std::vector<MPI_Request> savedreqs(requests, requests + count);
+  for (MPI_Request& req : savedreqs) {
+    if (req != MPI_REQUEST_NULL && not(req->flags() & MPI_REQ_FINISHED))
+      req->ref();
+    else
+      req = MPI_REQUEST_NULL;
+  }
 
   int rank_traced = simgrid::s4u::this_actor::get_pid(); // FIXME: In PMPI_Wait, we check if the comm is null?
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("waitAny", static_cast<double>(count)));
@@ -686,11 +690,10 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     TRACE_smpi_comm_out(rank_traced);
     requests[*index] = MPI_REQUEST_NULL;
   }
-  
-  for(int i=0; i<count; i++)
-    if (savedreqs[i]!=MPI_REQUEST_NULL && not(savedreqs[i]->flags() & MPI_REQ_FINISHED))
-      simgrid::smpi::Request::unref(&(savedreqs[i]));
-  xbt_free(savedreqs);
+
+  for (MPI_Request& req : savedreqs)
+    if (req != MPI_REQUEST_NULL)
+      simgrid::smpi::Request::unref(&req);
 
   smpi_bench_begin();
   return MPI_SUCCESS;
@@ -701,11 +704,13 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   smpi_bench_end();
 
   //for tracing, save the handles which might get overriden before we can use the helper on it
-  MPI_Request* savedreqs= static_cast<MPI_Request*>(xbt_malloc(count * sizeof(MPI_Request)));
-  memcpy(savedreqs, requests, count * sizeof(MPI_Request));
-  for(int i=0; i<count; i++)
-    if (savedreqs[i]!=MPI_REQUEST_NULL && not(savedreqs[i]->flags() & MPI_REQ_FINISHED))
-      savedreqs[i]->ref();
+  std::vector<MPI_Request> savedreqs(requests, requests + count);
+  for (MPI_Request& req : savedreqs) {
+    if (req != MPI_REQUEST_NULL && not(req->flags() & MPI_REQ_FINISHED))
+      req->ref();
+    else
+      req = MPI_REQUEST_NULL;
+  }
 
   int rank_traced = simgrid::s4u::this_actor::get_pid(); // FIXME: In PMPI_Wait, we check if the comm is null?
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("waitAll", static_cast<double>(count)));
@@ -717,10 +722,9 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   }
   TRACE_smpi_comm_out(rank_traced);
 
-  for(int i=0; i<count; i++)
-    if (savedreqs[i]!=MPI_REQUEST_NULL && not(savedreqs[i]->flags() & MPI_REQ_FINISHED))
-      simgrid::smpi::Request::unref(&(savedreqs[i]));
-  xbt_free(savedreqs);
+  for (MPI_Request& req : savedreqs)
+    if (req != MPI_REQUEST_NULL)
+      simgrid::smpi::Request::unref(&req);
 
   smpi_bench_begin();
   return retval;
