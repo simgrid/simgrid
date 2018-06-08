@@ -44,7 +44,14 @@ private:
   simgrid::s4u::Host* host_ = nullptr;
   double last_updated_      = 0;
   double last_reset_        = 0;
+  /**
+   * current_speed each core is running at right now
+   */
   double current_speed_     = 0;
+  /**
+   * How many flops are currently used by all the processes running on this
+   * host?
+   */
   double current_flops_     = 0;
   double computed_flops_    = 0;
   double idle_time_         = 0;
