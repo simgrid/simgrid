@@ -12,7 +12,6 @@
 
 #include <map>
 #include <string>
-#include <unordered_map>
 
 namespace simgrid {
 namespace xbt {
@@ -21,7 +20,7 @@ extern template class XBT_PUBLIC Extendable<simgrid::s4u::Storage>;
 namespace s4u {
 
 XBT_ATTRIB_DEPRECATED_v322(
-    "simgrid::s4u::getStorageList() is deprecated in favor of Engine::getAllStorages(). Please switch before v3.22")
+    "simgrid::s4u::getStorageList() is deprecated in favor of Engine::get_all_storages(). Please switch before v3.22")
     XBT_PUBLIC void getStorageList(std::map<std::string, Storage*>* whereTo);
 
 class XBT_PUBLIC Storage : public simgrid::xbt::Extendable<Storage> {
@@ -44,17 +43,18 @@ public:
 
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage* by_name(std::string name);
+  static Storage* by_name_or_null(std::string name);
 
   /** @brief Retrieves the name of that storage as a C++ string */
-  std::string const& get_name() const;
+  std::string const& get_name() const { return name_; }
   /** @brief Retrieves the name of that storage as a C string */
-  const char* get_cname() const;
+  const char* get_cname() const { return name_.c_str(); }
 
   const char* get_type();
   Host* get_host() { return attached_to_; };
   void set_host(Host* host) { attached_to_ = host; }
 
-  std::map<std::string, std::string>* getProperties();
+  std::map<std::string, std::string>* get_properties();
   const char* get_property(std::string key);
   void set_property(std::string, std::string value);
 
@@ -74,6 +74,10 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_cname()") const char* getCname() const { return get_cname(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_type()") const char* getType() { return get_type(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_host()") Host* getHost() { return get_host(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_properties()") std::map<std::string, std::string>* getProperties()
+  {
+    return get_properties();
+  }
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_property()") const char* getProperty(const char* key)
   {
     return get_property(key);

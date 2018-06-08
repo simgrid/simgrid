@@ -9,9 +9,6 @@
 #include "simgrid/storage.h"
 #include "src/surf/StorageImpl.hpp"
 
-#include <string>
-#include <unordered_map>
-
 namespace simgrid {
 namespace xbt {
 template class Extendable<simgrid::s4u::Storage>;
@@ -19,11 +16,9 @@ template class Extendable<simgrid::s4u::Storage>;
 
 namespace s4u {
 
-void getStorageList(std::map<std::string, Storage*>* whereTo)
-{
-  for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages())
-    whereTo->insert({s->get_name(), s});
-}
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_creation;
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_destruction;
+simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_state_change;
 
 Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), name_(name)
 {
@@ -32,17 +27,12 @@ Storage::Storage(std::string name, surf::StorageImpl* pimpl) : pimpl_(pimpl), na
 
 Storage* Storage::by_name(std::string name)
 {
+  return Engine::get_instance()->storage_by_name(name);
+}
+
+Storage* Storage::by_name_or_null(std::string name)
+{
   return Engine::get_instance()->storage_by_name_or_null(name);
-}
-
-const std::string& Storage::get_name() const
-{
-  return name_;
-}
-
-const char* Storage::get_cname() const
-{
-  return name_.c_str();
 }
 
 const char* Storage::get_type()
@@ -50,7 +40,7 @@ const char* Storage::get_type()
   return pimpl_->typeId_.c_str();
 }
 
-std::map<std::string, std::string>* Storage::getProperties()
+std::map<std::string, std::string>* Storage::get_properties()
 {
   return simgrid::simix::simcall([this] { return pimpl_->get_properties(); });
 }
@@ -75,12 +65,12 @@ sg_size_t Storage::write(sg_size_t size)
   return simcall_storage_write(pimpl_, size);
 }
 
-/*************
- * Callbacks *
- *************/
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_creation;
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_destruction;
-simgrid::xbt::signal<void(s4u::Storage&)> Storage::on_state_change;
+// Deprecated functions
+void getStorageList(std::map<std::string, Storage*>* whereTo)
+{
+  for (auto const& s : simgrid::s4u::Engine::get_instance()->get_all_storages())
+    whereTo->insert({s->get_name(), s});
+}
 
 } /* namespace s4u */
 } /* namespace simgrid */
@@ -118,7 +108,7 @@ xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
   xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
-  std::map<std::string, std::string>* props = storage->getProperties();
+  std::map<std::string, std::string>* props = storage->get_properties();
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {
