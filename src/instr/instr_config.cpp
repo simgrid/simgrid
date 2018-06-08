@@ -21,10 +21,7 @@ std::ofstream tracing_file;
 #define OPT_TRACING_COMMENT_FILE         "tracing/comment-file"
 #define OPT_TRACING_DISABLE_DESTROY      "tracing/disable-destroy"
 #define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti-one-file"
-#define OPT_TRACING_SMPI_COMPUTING       "tracing/smpi/computing"
-#define OPT_TRACING_SMPI_GROUP           "tracing/smpi/group"
 #define OPT_TRACING_SMPI_INTERNALS       "tracing/smpi/internals"
-#define OPT_TRACING_SMPI_SLEEPING        "tracing/smpi/sleeping"
 #define OPT_TRACING_SMPI                 "tracing/smpi"
 #define OPT_TRACING_TOPOLOGY             "tracing/platform/topology"
 
@@ -45,13 +42,14 @@ static simgrid::config::Flag<bool> trace_platform{"tracing/platform",
 static simgrid::config::Flag<bool> trace_platform_topology{
     OPT_TRACING_TOPOLOGY, "Register the platform topology in the trace as a graph.", true};
 static simgrid::config::Flag<bool> trace_smpi_enabled{OPT_TRACING_SMPI, "Tracing of the SMPI interface.", false};
-static simgrid::config::Flag<bool> trace_smpi_grouped{OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.", false};
+static simgrid::config::Flag<bool> trace_smpi_grouped{"tracing/smpi/group", "Group MPI processes by host.", false};
 
 static simgrid::config::Flag<bool> trace_smpi_computing{
-    OPT_TRACING_SMPI_COMPUTING, "Generate states for timing out of SMPI parts of the application", false};
+    "tracing/smpi/computing", "Generate 'Computing' states to trace the out-of-SMPI parts of the application", false};
 
 static simgrid::config::Flag<bool> trace_smpi_sleeping{
-    OPT_TRACING_SMPI_SLEEPING, "Generate states for timing out of SMPI parts of the application", false};
+    "tracing/smpi/sleeping", "Generate 'Sleeping' states for the sleeps in the application that do not pertain to SMPI",
+    false};
 
 static simgrid::config::Flag<bool> trace_view_internals{
     "tracing/smpi/internals",
@@ -317,15 +315,6 @@ void TRACE_help()
              "  interface and generates a trace that can be analyzed using Gantt-like\n"
              "  visualizations. Every MPI function (implemented by SMPI) is transformed in a\n"
              "  state, and point-to-point communications can be analyzed with arrows.");
-  print_line(OPT_TRACING_SMPI_GROUP, "Group MPI processes by host (SMPI)",
-             "  This option only has effect if this simulator is SMPI-based. The processes\n"
-             "  are grouped by the hosts where they were executed.");
-  print_line(OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
-             "  This option aims at tracing computations in the application, outside SMPI\n"
-             "  to allow further study of simulated or real computation time");
-  print_line(OPT_TRACING_SMPI_SLEEPING, "Generates a \" Sleeping \" State",
-             "  This option aims at tracing sleeps in the application, outside SMPI\n"
-             "  to allow further study of simulated or real sleep time");
   print_line(OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
              "  Disable the destruction of containers at the end of simulation. This can be\n"
              "  used with simulators that have a different notion of time (different from\n"
