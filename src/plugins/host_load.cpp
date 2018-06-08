@@ -32,6 +32,9 @@ public:
   {
   }
   ~HostLoad() = default;
+  HostLoad() = delete;
+  explicit HostLoad(simgrid::s4u::Host& ptr) = delete;
+  explicit HostLoad(simgrid::s4u::Host&& ptr) = delete;
 
   double get_current_load();
   double get_average_load() { return (theor_max_flops_ == 0) ? 0 : computed_flops_ / theor_max_flops_; };
