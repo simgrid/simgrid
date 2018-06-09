@@ -21,24 +21,6 @@ constexpr int CTX_ADDR_LEN = 2;
 static_assert(sizeof(simgrid::kernel::context::UContext*) <= CTX_ADDR_LEN * sizeof(int),
               "Ucontexts are not supported on this arch yet");
 
-// The name of this function is currently hardcoded in the code (as string).
-// Do not change it without fixing those references as well.
-static void smx_ctx_sysv_wrapper(int i1, int i2)
-{
-  // Rebuild the Context* pointer from the integers:
-  int ctx_addr[CTX_ADDR_LEN] = {i1, i2};
-  simgrid::kernel::context::UContext* context;
-  memcpy(&context, ctx_addr, sizeof context);
-
-  try {
-    (*context)();
-    context->Context::stop();
-  } catch (simgrid::kernel::context::Context::StopRequest const&) {
-    XBT_DEBUG("Caught a StopRequest");
-  }
-  context->suspend();
-}
-
 namespace simgrid {
 namespace kernel {
 namespace context {
@@ -103,7 +85,7 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
     this->uc_.uc_link = nullptr;
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(this->stack_);
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
-    UContext::make_ctx(&this->uc_, UContext::wrapper, this);
+    UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
   } else {
     if (process != nullptr && maestro_context_ == nullptr)
       maestro_context_ = this;
@@ -121,9 +103,22 @@ UContext::~UContext()
   SIMIX_context_stack_delete(this->stack_);
 }
 
-void UContext::wrapper(int i1, int i2)
+// The name of this function is currently hardcoded in the code (as string).
+// Do not change it without fixing those references as well.
+void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
 {
-  smx_ctx_sysv_wrapper(i1, i2);
+  // Rebuild the Context* pointer from the integers:
+  int ctx_addr[CTX_ADDR_LEN] = {i1, i2};
+  simgrid::kernel::context::UContext* context;
+  memcpy(&context, ctx_addr, sizeof context);
+
+  try {
+    (*context)();
+    context->Context::stop();
+  } catch (simgrid::kernel::context::Context::StopRequest const&) {
+    XBT_DEBUG("Caught a StopRequest");
+  }
+  context->suspend();
 }
 
 /** A better makecontext

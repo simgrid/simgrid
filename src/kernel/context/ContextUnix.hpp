@@ -41,7 +41,7 @@ private:
   void* stack_ = nullptr; /* the thread stack */
   ucontext_t uc_;         /* the ucontext that executes the code */
 
-  static void wrapper(int, int);
+  static void smx_ctx_sysv_wrapper(int, int);
   static void make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg);
 };
 
