@@ -369,6 +369,7 @@ set(SIMIX_SRC
   src/kernel/future.cpp
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
+  src/kernel/context/context_private.hpp
   src/kernel/context/Context.cpp
   src/kernel/context/Context.hpp
   src/kernel/context/ContextRaw.cpp
