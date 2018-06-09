@@ -7,6 +7,7 @@
 #define INSTR_PAJE_EVENTS_HPP
 
 #include "src/instr/instr_private.hpp"
+#include "src/internal_config.h"
 #include <sstream>
 #include <string>
 
@@ -66,7 +67,9 @@ public:
 class StateEvent : public PajeEvent {
   EntityValue* value;
   std::string filename = "(null)";
+#if HAVE_SMPI
   int linenumber       = -1;
+#endif
   TIData* extra_;
 
 public:
