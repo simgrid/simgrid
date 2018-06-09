@@ -112,7 +112,7 @@ if((NOT enable_memcheck) AND (NOT enable_address_sanitizer) AND (NOT enable_unde
   set(tuto-src-path "${CMAKE_SOURCE_DIR}/doc/tuto-msg")
   set(tuto-bin-path "${CMAKE_BINARY_DIR}/doc/tuto-msg")
   set(tuto-platform-file "${CMAKE_SOURCE_DIR}/examples/platforms/small_platform.xml")
-  set(tuto-make "make -C ${tuto-bin-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=\"-I${CMAKE_SOURCE_DIR}/include -I${CMAKE_BINARY_DIR}/include -L${CMAKE_BINARY_DIR}/lib\"")
+  set(tuto-make "make -C ${tuto-bin-path} CC=${CMAKE_C_COMPILER} EXTRA_CFLAGS=\"-I${CMAKE_SOURCE_DIR}/include -I${CMAKE_BINARY_DIR}/include -L${CMAKE_BINARY_DIR}/lib -Wl,-rpath ${CMAKE_BINARY_DIR}/lib\"")
   ADD_TEST(tuto-msg-clean sh -xc "${tuto-make} clean")
   ADD_TEST(tuto-msg-0 sh -xc "${tuto-make} masterworker      && ${tuto-bin-path}/masterworker      ${tuto-platform-file} ${tuto-src-path}/deployment0.xml")
   ADD_TEST(tuto-msg-1 sh -xc "${tuto-make} masterworker-sol1 && ${tuto-bin-path}/masterworker-sol1 ${tuto-platform-file} ${tuto-src-path}/deployment1.xml")

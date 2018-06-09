@@ -874,7 +874,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
         if ((requests[index] == MPI_REQUEST_NULL) ||
             (not((requests[index]->flags_ & MPI_REQ_ACCUMULATE) && (requests[index]->flags_ & MPI_REQ_RECV)))) {
           finish_wait(&requests[index],status);
-          if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags_ & MPI_REQ_NON_PERSISTENT))
+          if (requests[index] != MPI_REQUEST_NULL && (requests[index]->flags_ & MPI_REQ_NON_PERSISTENT))
             requests[index] = MPI_REQUEST_NULL;
         }
       }
