@@ -6,6 +6,7 @@
 /* \file UContext.cpp Context switching with ucontexts from System V        */
 
 #include "ContextUnix.hpp"
+#include "context_private.hpp"
 
 #include "mc/mc.h"
 #include "src/mc/mc_ignore.hpp"
@@ -85,6 +86,11 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
     this->uc_.uc_link = nullptr;
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(this->stack_);
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
+#if PTH_STACKGROWTH == -1
+    ASAN_EVAL(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
+#else
+    ASAN_EVAL(this->asan_stack_ = this->stack_);
+#endif
     UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
   } else {
     if (process != nullptr && maestro_context_ == nullptr)
@@ -112,12 +118,14 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
   simgrid::kernel::context::UContext* context;
   memcpy(&context, ctx_addr, sizeof context);
 
+  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
     context->Context::stop();
   } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
+  ASAN_EVAL(context->asan_stop_ = true);
   context->suspend();
 }
 
@@ -131,6 +139,15 @@ void UContext::make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg)
   int ctx_addr[CTX_ADDR_LEN]{};
   memcpy(ctx_addr, &arg, sizeof arg);
   makecontext(ucp, (void (*)())func, 2, ctx_addr[0], ctx_addr[1]);
+}
+
+inline void UContext::swap(UContext* from, UContext* to)
+{
+  void* fake_stack = nullptr;
+  ASAN_EVAL(to->asan_ctx_ = from);
+  ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
+  swapcontext(&from->uc_, &to->uc_);
+  ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
 }
 
 void UContext::stop()

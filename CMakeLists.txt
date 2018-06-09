@@ -507,8 +507,6 @@ if(NOT HAVE_UCONTEXT_H)
 elseif(APPLE)
   message(STATUS "No ucontext factory: Apple don't want us to use them.")
   set(HAVE_UCONTEXT_H 0)
-elseif(enable_address_sanitizer)
-  message(STATUS "No ucontext factory: ASan needs us to write the wrappers as explained in https://github.com/google/sanitizers/issues/189")
 else()
   try_compile(compile_makecontext ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_makecontext.c
     OUTPUT_VARIABLE compile_makecontext_output)

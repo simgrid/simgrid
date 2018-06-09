@@ -32,7 +32,7 @@ public:
   void stop() override;
   virtual void resume() = 0;
 
-  static void swap(UContext* from, UContext* to) { swapcontext(&from->uc_, &to->uc_); }
+  static void swap(UContext* from, UContext* to);
   static UContext* getMaestro() { return maestro_context_; }
   static void setMaestro(UContext* maestro) { maestro_context_ = maestro; }
 
@@ -40,6 +40,13 @@ private:
   static UContext* maestro_context_;
   void* stack_ = nullptr; /* the thread stack */
   ucontext_t uc_;         /* the ucontext that executes the code */
+
+#if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
+  const void* asan_stack_ = nullptr;
+  size_t asan_stack_size_ = 0;
+  UContext* asan_ctx_     = nullptr;
+  bool asan_stop_         = false;
+#endif
 
   static void smx_ctx_sysv_wrapper(int, int);
   static void make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg);
