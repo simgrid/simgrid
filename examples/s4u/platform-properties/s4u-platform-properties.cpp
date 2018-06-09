@@ -73,9 +73,9 @@ static int bob(int argc, char* argv[])
   /* this host also tests the properties of the AS*/
   simgrid::s4u::NetZone* root = simgrid::s4u::Engine::get_instance()->get_netzone_root();
   XBT_INFO("== Print the properties of the zone");
-  XBT_INFO("   Zone property: filename -> %s", root->getProperty("filename"));
-  XBT_INFO("   Zone property: date -> %s", root->getProperty("date"));
-  XBT_INFO("   Zone property: author -> %s", root->getProperty("author"));
+  XBT_INFO("   Zone property: filename -> %s", root->get_property("filename"));
+  XBT_INFO("   Zone property: date -> %s", root->get_property("date"));
+  XBT_INFO("   Zone property: author -> %s", root->get_property("author"));
 
   /* Get the property list of current bob process */
   std::map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();

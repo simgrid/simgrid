@@ -22,7 +22,7 @@ FullZone::FullZone(NetZone* father, std::string name) : RoutedZone(father, name)
 
 void FullZone::seal()
 {
-  unsigned int table_size = getTableSize();
+  unsigned int table_size = get_table_size();
 
   /* Create table if needed */
   if (not routing_table_)
@@ -44,7 +44,7 @@ void FullZone::seal()
 FullZone::~FullZone()
 {
   if (routing_table_) {
-    unsigned int table_size = getTableSize();
+    unsigned int table_size = get_table_size();
     /* Delete routing table */
     for (unsigned int i = 0; i < table_size; i++)
       for (unsigned int j = 0; j < table_size; j++)
@@ -57,7 +57,7 @@ void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
 {
   XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
-  unsigned int table_size        = getTableSize();
+  unsigned int table_size        = get_table_size();
   RouteCreationArgs* e_route     = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route != nullptr) {
@@ -76,7 +76,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
 {
   addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
-  unsigned int table_size = getTableSize();
+  unsigned int table_size = get_table_size();
 
   if (not routing_table_)
     routing_table_ = new RouteCreationArgs*[table_size * table_size]();

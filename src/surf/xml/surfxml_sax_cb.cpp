@@ -406,7 +406,7 @@ void STag_surfxml_prop()
     XBT_DEBUG("Set zone property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
     simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::get_instance()->netzone_by_name_or_null(A_surfxml_zone_id);
 
-    netzone->setProperty(A_surfxml_prop_id, A_surfxml_prop_value);
+    netzone->set_property(A_surfxml_prop_id, A_surfxml_prop_value);
   } else {
     if (not current_property_set)
       current_property_set = new std::map<std::string, std::string>; // Maybe, it should raise an error

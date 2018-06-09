@@ -33,7 +33,7 @@ FloydZone::~FloydZone()
 {
   if (link_table_ == nullptr) // Dealing with a parse error in the file?
     return;
-  unsigned int table_size = getTableSize();
+  unsigned int table_size = get_table_size();
   /* Delete link_table */
   for (unsigned int i = 0; i < table_size; i++)
     for (unsigned int j = 0; j < table_size; j++)
@@ -46,7 +46,7 @@ FloydZone::~FloydZone()
 
 void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
-  unsigned int table_size = getTableSize();
+  unsigned int table_size = get_table_size();
 
   getRouteCheckParams(src, dst);
 
@@ -89,7 +89,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
                           std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   /* set the size of table routing */
-  unsigned int table_size = getTableSize();
+  unsigned int table_size = get_table_size();
 
   addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
@@ -157,7 +157,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
 void FloydZone::seal()
 {
   /* set the size of table routing */
-  unsigned int table_size = getTableSize();
+  unsigned int table_size = get_table_size();
 
   if (not link_table_) {
     /* Create Cost, Predecessor and Link tables */

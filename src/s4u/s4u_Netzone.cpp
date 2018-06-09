@@ -44,11 +44,11 @@ std::unordered_map<std::string, std::string>* NetZone::getProperties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* NetZone::getProperty(const char* key)
+const char* NetZone::get_property(const char* key)
 {
   return properties_.at(key).c_str();
 }
-void NetZone::setProperty(const char* key, const char* value)
+void NetZone::set_property(const char* key, const char* value)
 {
   simgrid::simix::simcall([this, key, value] { properties_[key] = value; });
 }
@@ -133,12 +133,12 @@ void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)
 
 const char* sg_zone_get_property_value(sg_netzone_t netzone, const char* name)
 {
-  return netzone->getProperty(name);
+  return netzone->get_property(name);
 }
 
 void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, char* value)
 {
-  netzone->setProperty(name, value);
+  netzone->set_property(name, value);
 }
 
 void sg_zone_get_hosts(sg_netzone_t netzone, xbt_dynar_t whereto)

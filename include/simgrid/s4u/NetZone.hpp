@@ -43,12 +43,16 @@ public:
   void getHosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
   int getHostCount();
 
+private:
+  std::unordered_map<std::string, std::string> properties_;
+
+public:
   /** Get the properties assigned to a host */
   std::unordered_map<std::string, std::string>* getProperties();
 
   /** Retrieve the property value (or nullptr if not set) */
-  const char* getProperty(const char* key);
-  void setProperty(const char* key, const char* value);
+  const char* get_property(const char* key);
+  void set_property(const char* key, const char* value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   virtual int addComponent(kernel::routing::NetPoint * elm); /* A host, a router or a netzone, whatever */
@@ -83,16 +87,24 @@ public:
   {
     add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
-
-protected:
-  unsigned int getTableSize() { return vertices_.size(); }
-  std::vector<kernel::routing::NetPoint*> getVertices() { return vertices_; }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_property()") const char* getProperty(const char* key)
+  {
+    return get_property(key);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::set_property()") void setProperty(const char* key, const char* value)
+  {
+    set_property(key, value);
+  }
 
 private:
   // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
   std::vector<kernel::routing::NetPoint*> vertices_;
 
-  std::unordered_map<std::string, std::string> properties_;
+protected:
+  unsigned int get_table_size() { return vertices_.size(); }
+  std::vector<kernel::routing::NetPoint*> getVertices() { return vertices_; }
+
+private:
   NetZone* father_ = nullptr;
   std::string name_;
 
