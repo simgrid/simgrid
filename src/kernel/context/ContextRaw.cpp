@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ContextRaw.hpp"
+#include "context_private.hpp"
 #include "mc/mc.h"
 #include "src/simix/smx_private.hpp"
 
@@ -235,6 +236,11 @@ RawContext::RawContext(std::function<void()> code, void_pfn_smxprocess_t cleanup
 {
    if (has_code()) {
      this->stack_ = SIMIX_context_stack_new();
+#if PTH_STACKGROWTH == -1
+     ASAN_EVAL(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
+#else
+     ASAN_EVAL(this->asan_stack_ = this->stack_);
+#endif
      this->stack_top_ = raw_makecontext(this->stack_, smx_context_usable_stack_size, RawContext::wrapper, this);
    } else {
      if (process != nullptr && maestro_context_ == nullptr)
@@ -252,18 +258,24 @@ RawContext::~RawContext()
 void RawContext::wrapper(void* arg)
 {
   RawContext* context = static_cast<RawContext*>(arg);
+  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
     context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
+  ASAN_EVAL(context->asan_stop_ = true);
   context->suspend();
 }
 
 inline void RawContext::swap(RawContext* from, RawContext* to)
 {
+  void* fake_stack = nullptr;
+  ASAN_EVAL(to->asan_ctx_ = from);
+  ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   raw_swapcontext(&from->stack_top_, to->stack_top_);
+  ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
 }
 
 void RawContext::stop()
