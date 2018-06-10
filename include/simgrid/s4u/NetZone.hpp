@@ -39,23 +39,24 @@ public:
   const char* get_cname() const;
   NetZone* get_father();
 
+  std::vector<Host*> get_all_hosts();
+
   std::vector<NetZone*>* getChildren();             // Sub netzones
-  void getHosts(std::vector<s4u::Host*> * whereto); // retrieve my content as a vector of hosts
   int getHostCount();
 
 private:
   std::unordered_map<std::string, std::string> properties_;
 
 public:
-  /** Get the properties assigned to a host */
-  std::unordered_map<std::string, std::string>* getProperties();
+  /** Get the properties assigned to a netzone */
+  std::unordered_map<std::string, std::string>* get_properties();
 
   /** Retrieve the property value (or nullptr if not set) */
   const char* get_property(const char* key);
   void set_property(const char* key, const char* value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
-  virtual int addComponent(kernel::routing::NetPoint * elm); /* A host, a router or a netzone, whatever */
+  virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                          std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
@@ -71,7 +72,23 @@ public:
   static simgrid::xbt::signal<void(NetZone&)> on_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_seal;
 
-  // Deprecation wrappers
+private:
+  // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  std::vector<kernel::routing::NetPoint*> vertices_;
+
+protected:
+  unsigned int get_table_size() { return vertices_.size(); }
+  std::vector<kernel::routing::NetPoint*> get_vertices() { return vertices_; }
+
+private:
+  NetZone* father_ = nullptr;
+  std::string name_;
+
+  bool sealed_ = false; // We cannot add more content when sealed
+
+  std::vector<NetZone*>* children_ = nullptr; // sub-netzones
+
+public: // Deprecation wrappers
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_father()") NetZone* getFather() { return get_father(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_name()") const std::string& getName() const { return get_name(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_cname()") const char* getCname() const { return get_cname(); }
@@ -87,6 +104,11 @@ public:
   {
     add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
+  XBT_ATTRIB_DEPRECATED_v323(
+      "Please use NetZone::get_properties()") std::unordered_map<std::string, std::string>* getProperties()
+  {
+    return get_properties();
+  }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_property()") const char* getProperty(const char* key)
   {
     return get_property(key);
@@ -95,22 +117,17 @@ public:
   {
     set_property(key, value);
   }
-
-private:
-  // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
-  std::vector<kernel::routing::NetPoint*> vertices_;
-
-protected:
-  unsigned int get_table_size() { return vertices_.size(); }
-  std::vector<kernel::routing::NetPoint*> getVertices() { return vertices_; }
-
-private:
-  NetZone* father_ = nullptr;
-  std::string name_;
-
-  bool sealed_ = false; // We cannot add more content when sealed
-
-  std::vector<NetZone*>* children_ = nullptr; // sub-netzones
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_component()") virtual int addComponent(
+      kernel::routing::NetPoint* elm)
+  {
+    return add_component(elm);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_vertices()") std::vector<kernel::routing::NetPoint*> getVertices()
+  {
+    return get_vertices();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_all_hosts()") void getHosts(
+      std::vector<s4u::Host*>* whereto); // retrieve my content as a vector of hosts
 };
 }
 }; // Namespace simgrid::s4u

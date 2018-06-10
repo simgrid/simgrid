@@ -19,11 +19,9 @@ int main(int argc, char* argv[])
 
   for (auto c : clusters) {
     XBT_INFO("%s", c->get_cname());
-    std::vector<simgrid::s4u::Host*>* hosts = new std::vector<simgrid::s4u::Host*>;
-    c->getHosts(hosts);
-    for (auto h : *hosts)
+    std::vector<simgrid::s4u::Host*> hosts = c->get_all_hosts();
+    for (auto h : hosts)
       XBT_INFO("   %s", h->get_cname());
-    delete hosts;
   }
 
   std::vector<simgrid::kernel::routing::DragonflyZone*> dragonfly_clusters =

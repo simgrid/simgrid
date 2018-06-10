@@ -38,7 +38,7 @@ NetZone::~NetZone()
   delete children_;
 }
 
-std::unordered_map<std::string, std::string>* NetZone::getProperties()
+std::unordered_map<std::string, std::string>* NetZone::get_properties()
 {
   return simgrid::simix::simcall([this] { return &properties_; });
 }
@@ -71,6 +71,22 @@ NetZone* NetZone::get_father()
   return father_;
 }
 
+/** @brief Returns the list of the hosts found in this NetZone (not recursively)
+ *
+ * Only the hosts that are directly contained in this NetZone are retrieved,
+ * not the ones contained in sub-netzones.
+ */
+std::vector<Host*> NetZone::get_all_hosts()
+{
+  std::vector<Host*> res;
+  for (auto const& card : vertices_) {
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
+    if (host != nullptr)
+      res.push_back(host);
+  }
+  return res;
+}
+
 void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
 {
   for (auto const& card : vertices_) {
@@ -91,7 +107,7 @@ int NetZone::getHostCount()
   return count;
 }
 
-int NetZone::addComponent(kernel::routing::NetPoint* elm)
+int NetZone::add_component(kernel::routing::NetPoint* elm)
 {
   vertices_.push_back(elm);
   return vertices_.size() - 1; // The rank of the newly created object
@@ -144,8 +160,7 @@ void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, char* va
 void sg_zone_get_hosts(sg_netzone_t netzone, xbt_dynar_t whereto)
 {
   /* converts vector to dynar */
-  std::vector<simgrid::s4u::Host*> hosts;
-  netzone->getHosts(&hosts);
+  std::vector<simgrid::s4u::Host*> hosts = netzone->get_all_hosts();
   for (auto const& host : hosts)
     xbt_dynar_push(whereto, &host);
 }

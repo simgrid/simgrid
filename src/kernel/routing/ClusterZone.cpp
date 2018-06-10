@@ -89,7 +89,7 @@ void ClusterZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
-  for (auto const& src : getVertices()) {
+  for (auto const& src : get_vertices()) {
     if (not src->is_router()) {
       xbt_node_t previous = new_xbt_graph_node(graph, src->get_cname(), nodes);
 

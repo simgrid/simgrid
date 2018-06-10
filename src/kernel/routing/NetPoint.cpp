@@ -19,7 +19,7 @@ NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* 
     : name_(name), component_type_(componentType), englobing_zone_(netzone_p)
 {
   if (netzone_p != nullptr)
-    id_ = netzone_p->addComponent(this);
+    id_ = netzone_p->add_component(this);
   else
     id_ = static_cast<decltype(id_)>(-1);
   simgrid::s4u::Engine::get_instance()->netpoint_register(this);
