@@ -10,11 +10,13 @@
 
 #if HAVE_SANITIZE_ADDRESS_FIBER_SUPPORT
 #include <sanitizer/asan_interface.h>
+#define ASAN_ASSERT(...) xbt_assert(__VA_ARGS__)
 #define ASAN_EVAL(expr) (expr)
 #define ASAN_START_SWITCH(fake_stack_save, bottom, size) __sanitizer_start_switch_fiber(fake_stack_save, bottom, size)
 #define ASAN_FINISH_SWITCH(fake_stack_save, bottom_old, size_old)                                                      \
   __sanitizer_finish_switch_fiber(fake_stack_save, bottom_old, size_old)
 #else
+#define ASAN_ASSERT(expr) (void)0
 #define ASAN_EVAL(expr) (void)0
 #define ASAN_START_SWITCH(fake_stack_save, bottom, size) (void)0
 #define ASAN_FINISH_SWITCH(fake_stack_save, bottom_old, size_old) (void)(fake_stack_save)
