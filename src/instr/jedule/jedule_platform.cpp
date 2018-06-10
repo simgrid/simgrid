@@ -67,8 +67,7 @@ void Container::createHierarchy(sg_netzone_t from_as)
   if (from_as->getChildren()->empty()) {
     // I am no AS
     // add hosts to jedule platform
-    std::vector<sg_host_t> table;
-    from_as->getHosts(&table);
+    std::vector<sg_host_t> table = from_as->get_all_hosts();
     this->addResources(table);
   } else {
     for (auto const& nz : *from_as->getChildren()) {

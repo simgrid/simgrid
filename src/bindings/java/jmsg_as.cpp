@@ -127,8 +127,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   if (not cls)
     return nullptr;
 
-  std::vector<sg_host_t> table;
-  as->getHosts(&table);
+  std::vector<simgrid::s4u::Host*> table = as->get_all_hosts();
 
   jtable = env->NewObjectArray(static_cast<jsize>(table.size()), cls, nullptr);
 
