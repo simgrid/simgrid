@@ -40,7 +40,7 @@ struct HostCreationArgs {
   tmgr_trace_t speed_trace = nullptr;
   tmgr_trace_t state_trace = nullptr;
   const char* coord        = nullptr;
-  std::map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string>* properties = nullptr;
 };
 
 class HostLinkCreationArgs {
@@ -59,7 +59,7 @@ public:
   tmgr_trace_t latency_trace          = nullptr;
   tmgr_trace_t state_trace            = nullptr;
   simgrid::s4u::Link::SharingPolicy policy       = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-  std::map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string>* properties = nullptr;
 };
 
 class PeerCreationArgs {
@@ -102,7 +102,7 @@ public:
   double limiter_link = 0;
   ClusterTopology topology;
   std::string topo_parameters;
-  std::map<std::string, std::string>* properties;
+  std::unordered_map<std::string, std::string>* properties;
   std::string router_id;
   simgrid::s4u::Link::SharingPolicy sharing_policy;
   simgrid::s4u::Link::SharingPolicy bb_sharing_policy;
@@ -124,7 +124,7 @@ public:
   std::string id;
   std::string type_id;
   std::string content;
-  std::map<std::string, std::string>* properties;
+  std::unordered_map<std::string, std::string>* properties;
   std::string attach;
 };
 
@@ -133,8 +133,8 @@ public:
   std::string id;
   std::string model;
   std::string content;
-  std::map<std::string, std::string>* properties;
-  std::map<std::string, std::string>* model_properties;
+  std::unordered_map<std::string, std::string>* properties;
+  std::unordered_map<std::string, std::string>* model_properties;
   sg_size_t size;
 };
 
@@ -166,7 +166,7 @@ enum class ActorOnFailure { DIE, RESTART }; // FIXME: move to a better namespace
 class ActorCreationArgs {
 public:
   std::vector<std::string> args;
-  std::map<std::string, std::string>* properties = nullptr;
+  std::unordered_map<std::string, std::string>* properties = nullptr;
   const char* host                       = nullptr;
   const char* function                   = nullptr;
   double start_time                      = 0.0;

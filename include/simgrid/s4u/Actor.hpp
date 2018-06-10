@@ -7,7 +7,9 @@
 #define SIMGRID_S4U_ACTOR_HPP
 
 #include <functional>
+#include <map> // deprecated wrappers
 #include <simgrid/chrono.hpp>
+#include <unordered_map>
 #include <xbt/Extendable.hpp>
 #include <xbt/functional.hpp>
 #include <xbt/signal.hpp>
@@ -276,7 +278,8 @@ public:
   kernel::actor::ActorImpl* get_impl();
 
   /** Retrieve the property value (or nullptr if not set) */
-  std::map<std::string, std::string>* get_properties(); // FIXME: do not export the map, but only the keys or something
+  std::unordered_map<std::string, std::string>*
+  get_properties(); // FIXME: do not export the map, but only the keys or something
   const char* get_property(const char* key);
   void set_property(const char* key, const char* value);
 
@@ -337,7 +340,11 @@ public:
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") std::map<std::string, std::string>* getProperties()
   {
-    return get_properties();
+    std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
+    std::unordered_map<std::string, std::string>* props = get_properties();
+    for (auto const& kv : *props)
+      res->insert(kv);
+    return res;
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") void setProperty(const char* key, const char* value)
   {

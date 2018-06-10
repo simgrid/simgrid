@@ -5,6 +5,7 @@
 
 // TODO: also test the properties attached to links
 
+#include <algorithm>
 #include <simgrid/s4u.hpp>
 #include <string>
 
@@ -13,14 +14,19 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Property test");
 static void test_host(std::string hostname)
 {
   simgrid::s4u::Host* thehost = simgrid::s4u::Host::by_name(hostname);
-  std::map<std::string, std::string>* props = thehost->getProperties();
+  std::unordered_map<std::string, std::string>* props = thehost->get_properties();
   const char* noexist = "Unknown";
   const char* exist   = "Hdd";
   const char* value;
 
   XBT_INFO("== Print the properties of the host '%s'", hostname.c_str());
-  for (const auto& kv : *props)
-    XBT_INFO("  Host property: '%s' -> '%s'", kv.first.c_str(), kv.second.c_str());
+  // Sort the properties before displaying them, so that the tests are perfectly reproducible
+  std::vector<std::string> keys;
+  for (auto const& kv : *props)
+    keys.push_back(kv.first);
+  std::sort(keys.begin(), keys.end());
+  for (std::string key : keys)
+    XBT_INFO("  Host property: '%s' -> '%s'", key.c_str(), props->at(key).c_str());
 
   XBT_INFO("== Try to get a host property that does not exist");
   value = thehost->get_property(noexist);
@@ -78,7 +84,7 @@ static int bob(int argc, char* argv[])
   XBT_INFO("   Zone property: author -> %s", root->get_property("author"));
 
   /* Get the property list of current bob process */
-  std::map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
+  std::unordered_map<std::string, std::string>* props = simgrid::s4u::Actor::self()->get_properties();
   const char* noexist = "UnknownProcessProp";
   XBT_ATTRIB_UNUSED const char* value;
 

@@ -8,7 +8,7 @@
 
 #include <boost/intrusive/list.hpp>
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "src/simix/ActorImpl.hpp"
@@ -40,7 +40,8 @@ public:
 
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::function<void()> code,
                                                      void* data, double kill_time,
-                                                     std::map<std::string, std::string>* properties, int auto_restart);
+                                                     std::unordered_map<std::string, std::string>* properties,
+                                                     int auto_restart);
 
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 

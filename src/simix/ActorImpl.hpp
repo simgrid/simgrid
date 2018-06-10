@@ -30,11 +30,11 @@ public:
   void* data            = nullptr;
   s4u::Host* host       = nullptr;
   double kill_time      = 0.0;
-  std::shared_ptr<std::map<std::string, std::string>> properties;
+  std::shared_ptr<std::unordered_map<std::string, std::string>> properties;
   bool auto_restart     = false;
   ProcessArg()          = default;
   explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
-                      std::shared_ptr<std::map<std::string, std::string>> properties, bool auto_restart)
+                      std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
       : name(name)
       , code(std::move(code))
       , data(data)
@@ -137,7 +137,7 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
 XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                             std::map<std::string, std::string>* properties,
+                                             std::unordered_map<std::string, std::string>* properties,
                                              smx_actor_t parent_process);
 
 XBT_PRIVATE void SIMIX_process_runall();

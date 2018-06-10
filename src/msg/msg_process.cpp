@@ -58,7 +58,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 smx_actor_t MSG_process_create_from_SIMIX(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                          std::map<std::string, std::string>* properties,
+                                          std::unordered_map<std::string, std::string>* properties,
                                           smx_actor_t /*parent_process*/)
 {
   msg_process_t p = MSG_process_create_from_stdfunc(name, std::move(code), data, host, properties);
@@ -131,7 +131,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   if (code)
     function = simgrid::xbt::wrapMain(code, argc, static_cast<const char* const*>(argv));
 
-  std::map<std::string, std::string> props;
+  std::unordered_map<std::string, std::string> props;
   xbt_dict_cursor_t cursor = nullptr;
   char* key;
   char* value;
@@ -147,7 +147,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
 }
 
 msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data, msg_host_t host,
-                                              std::map<std::string, std::string>* properties)
+                                              std::unordered_map<std::string, std::string>* properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
   simgrid::msg::ActorExt* msgExt = new simgrid::msg::ActorExt(data);
@@ -172,7 +172,7 @@ msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<vo
 msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  std::map<std::string, std::string> props;
+  std::unordered_map<std::string, std::string> props;
   xbt_dict_cursor_t cursor = nullptr;
   char* key;
   char* value;

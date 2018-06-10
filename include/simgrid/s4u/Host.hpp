@@ -98,7 +98,15 @@ public:
 
   const char* get_property(const char* key);
   void set_property(std::string key, std::string value);
-  std::map<std::string, std::string>* getProperties();
+  std::unordered_map<std::string, std::string>* get_properties();
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_properties()") std::map<std::string, std::string>* getProperties()
+  {
+    std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
+    std::unordered_map<std::string, std::string>* props = get_properties();
+    for (auto const& kv : *props)
+      res->insert(kv);
+    return res;
+  }
 
   double getSpeed();
   double get_available_speed();

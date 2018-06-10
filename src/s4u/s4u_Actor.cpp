@@ -217,7 +217,7 @@ void Actor::kill_all()
   simgrid::simix::simcall([&self] { SIMIX_process_killall(self); });
 }
 
-std::map<std::string, std::string>* Actor::get_properties()
+std::unordered_map<std::string, std::string>* Actor::get_properties()
 {
   return simgrid::simix::simcall([this] { return this->pimpl_->get_properties(); });
 }
@@ -500,11 +500,11 @@ xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
 {
   xbt_assert(actor != nullptr, "Invalid parameter: First argument must not be nullptr");
   xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
-  std::map<std::string, std::string>* props = actor->get_properties();
+  std::unordered_map<std::string, std::string>* props = actor->get_properties();
   if (props == nullptr)
     return nullptr;
-  for (auto const& elm : *props) {
-    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()), nullptr);
+  for (auto const& kv : *props) {
+    xbt_dict_set(as_dict, kv.first.c_str(), xbt_strdup(kv.second.c_str()), nullptr);
   }
   return as_dict;
 }

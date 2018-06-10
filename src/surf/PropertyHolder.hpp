@@ -5,8 +5,8 @@
 
 #ifndef SRC_SURF_PROPERTYHOLDER_HPP_
 #define SRC_SURF_PROPERTYHOLDER_HPP_
-#include <map>
 #include <string>
+#include <unordered_map>
 
 namespace simgrid {
 namespace surf {
@@ -24,13 +24,13 @@ public:
   const char* get_property(std::string key);
   void set_property(std::string id, std::string value);
 
-  /* FIXME: This should not be exposed, as users may do bad things with the dict they got (it's not a copy).
+  /* FIXME: This should not be exposed, as users may do bad things with the map they got (it's not a copy).
    * But some user API expose this call so removing it is not so easy.
    */
-  std::map<std::string, std::string>* get_properties();
+  std::unordered_map<std::string, std::string>* get_properties();
 
 private:
-  std::map<std::string, std::string>* properties_ = nullptr;
+  std::unordered_map<std::string, std::string>* properties_ = nullptr;
 };
 
 } /* namespace surf */

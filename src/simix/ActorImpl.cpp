@@ -288,7 +288,7 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  * \return the process created
  */
 smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, simgrid::s4u::Host* host,
-                                 std::map<std::string, std::string>* properties, smx_actor_t parent_process)
+                                 std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
 
   XBT_DEBUG("Start process %s on host '%s'", name, host->get_cname());
@@ -345,7 +345,7 @@ smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, v
 }
 
 smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
-                                 std::map<std::string, std::string>* properties, smx_actor_t parent_process)
+                                 std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
   // This is mostly a copy/paste from SIMIX_process_new(),
   // it'd be nice to share some code between those two functions.
@@ -798,7 +798,7 @@ void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
  * \param properties the properties of the process
  */
 smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
-                                   char** argv, std::map<std::string, std::string>* properties)
+                                   char** argv, std::unordered_map<std::string, std::string>* properties)
 {
   if (name == nullptr)
     name = "";
@@ -811,7 +811,7 @@ smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void*
 }
 
 smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                   std::map<std::string, std::string>* properties)
+                                   std::unordered_map<std::string, std::string>* properties)
 {
   if (name == nullptr)
     name = "";

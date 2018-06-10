@@ -10,7 +10,7 @@
 #include "src/surf/network_smpi.hpp"
 #include "xbt/base.h"
 
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 namespace simgrid {

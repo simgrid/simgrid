@@ -25,15 +25,15 @@ const char* PropertyHolder::get_property(std::string key)
 void PropertyHolder::set_property(std::string key, std::string value)
 {
   if (not properties_)
-    properties_       = new std::map<std::string, std::string>;
+    properties_ = new std::unordered_map<std::string, std::string>;
   (*properties_)[key] = value;
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */
-std::map<std::string, std::string>* PropertyHolder::get_properties()
+std::unordered_map<std::string, std::string>* PropertyHolder::get_properties()
 {
   if (not properties_)
-    properties_ = new std::map<std::string, std::string>;
+    properties_ = new std::unordered_map<std::string, std::string>;
   return properties_;
 }
 

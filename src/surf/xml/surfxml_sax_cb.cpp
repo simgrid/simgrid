@@ -266,8 +266,8 @@ static std::vector<double> surf_parse_get_all_speeds(char* speeds, const char* e
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
-std::map<std::string, std::string>* current_property_set       = nullptr;
-std::map<std::string, std::string>* current_model_property_set = nullptr;
+std::unordered_map<std::string, std::string>* current_property_set       = nullptr;
+std::unordered_map<std::string, std::string>* current_model_property_set = nullptr;
 int ZONE_TAG                            = 0; // Whether we just opened a zone tag (to see what to do with the properties)
 
 FILE *surf_file_to_parse = nullptr;
@@ -409,7 +409,7 @@ void STag_surfxml_prop()
     netzone->set_property(A_surfxml_prop_id, A_surfxml_prop_value);
   } else {
     if (not current_property_set)
-      current_property_set = new std::map<std::string, std::string>; // Maybe, it should raise an error
+      current_property_set = new std::unordered_map<std::string, std::string>; // Maybe, it should raise an error
     current_property_set->insert({A_surfxml_prop_id, A_surfxml_prop_value});
     XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
               current_property_set);
@@ -858,12 +858,19 @@ void STag_surfxml_config()
 
 void ETag_surfxml_config()
 {
-  for (auto const& elm : *current_property_set) {
-    if (simgrid::config::is_default(elm.first.c_str())) {
-      std::string cfg = elm.first + ":" + elm.second;
+  // Sort config elements before applying.
+  // That's a little waste of time, but not doing so would break the tests
+  std::vector<std::string> keys;
+  for (auto const& kv : *current_property_set) {
+    keys.push_back(kv.first);
+  }
+  std::sort(keys.begin(), keys.end());
+  for (std::string key : keys) {
+    if (simgrid::config::is_default(key.c_str())) {
+      std::string cfg = key + ":" + current_property_set->at(key);
       simgrid::config::set_parse(std::move(cfg));
     } else
-      XBT_INFO("The custom configuration '%s' is already defined by user!", elm.first.c_str());
+      XBT_INFO("The custom configuration '%s' is already defined by user!", key.c_str());
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
@@ -931,7 +938,7 @@ void STag_surfxml_argument(){
 
 void STag_surfxml_model___prop(){
   if (not current_model_property_set)
-    current_model_property_set = new std::map<std::string, std::string>();
+    current_model_property_set = new std::unordered_map<std::string, std::string>();
 
   current_model_property_set->insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
 }

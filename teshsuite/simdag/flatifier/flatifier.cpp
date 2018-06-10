@@ -47,7 +47,7 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
 
 static void dump_hosts()
 {
-  std::map<std::string, std::string>* props = nullptr;
+  std::unordered_map<std::string, std::string>* props = nullptr;
   unsigned int totalHosts = sg_host_count();
   sg_host_t* hosts        = sg_host_list();
   std::sort(hosts, hosts + totalHosts,
@@ -55,15 +55,19 @@ static void dump_hosts()
 
   for (unsigned int i = 0; i < totalHosts; i++) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", hosts[i]->get_cname(), sg_host_speed(hosts[i]));
-    props = hosts[i]->getProperties();
+    props = hosts[i]->get_properties();
     if (hosts[i]->get_core_count() > 1) {
       std::printf(" core=\"%d\"", hosts[i]->get_core_count());
     }
-    if (props && not props->empty()) {
+    // Sort the properties before displaying them, so that the tests are perfectly reproducible
+    std::vector<std::string> keys;
+    for (auto const& kv : *props)
+      keys.push_back(kv.first);
+    if (not keys.empty()) {
       std::printf(">\n");
-      for (auto const& kv : *props) {
-        std::printf("    <prop id=\"%s\" value=\"%s\"/>\n", kv.first.c_str(), kv.second.c_str());
-      }
+      std::sort(keys.begin(), keys.end());
+      for (std::string key : keys)
+        std::printf("    <prop id=\"%s\" value=\"%s\"/>\n", key.c_str(), props->at(key).c_str());
       std::printf("  </host>\n");
     } else {
       std::printf("/>\n");

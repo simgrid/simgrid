@@ -12,6 +12,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 
 namespace simgrid {
 namespace xbt {
@@ -54,7 +55,7 @@ public:
   Host* get_host() { return attached_to_; };
   void set_host(Host* host) { attached_to_ = host; }
 
-  std::map<std::string, std::string>* get_properties();
+  std::unordered_map<std::string, std::string>* get_properties();
   const char* get_property(std::string key);
   void set_property(std::string, std::string value);
 
@@ -76,7 +77,11 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_host()") Host* getHost() { return get_host(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_properties()") std::map<std::string, std::string>* getProperties()
   {
-    return get_properties();
+    std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
+    std::unordered_map<std::string, std::string>* props = get_properties();
+    for (auto const& kv : *props)
+      res->insert(kv);
+    return res;
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Storage::get_property()") const char* getProperty(const char* key)
   {

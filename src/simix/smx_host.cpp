@@ -79,7 +79,7 @@ const char* sg_host_self_get_name()
  * again to restart the process again.
  */
 void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::function<void()> code, void* data,
-                                         double kill_time, std::map<std::string, std::string>* properties,
+                                         double kill_time, std::unordered_map<std::string, std::string>* properties,
                                          int auto_restart)
 {
   simgrid::kernel::actor::ProcessArg* arg =

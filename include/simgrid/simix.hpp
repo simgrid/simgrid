@@ -12,8 +12,8 @@
 #include <xbt/future.hpp>
 #include <xbt/signal.hpp>
 
-#include <map>
 #include <string>
+#include <unordered_map>
 
 XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code);
 
@@ -100,13 +100,13 @@ typedef smx_actor_t (*smx_creation_func_t)(
     /* name */ const char*, std::function<void()> code,
     /* userdata */ void*,
     /* hostname */ sg_host_t,
-    /* props */ std::map<std::string, std::string>*,
+    /* props */ std::unordered_map<std::string, std::string>*,
     /* parent_process */ smx_actor_t);
 
 XBT_PUBLIC void SIMIX_function_register_process_create(smx_creation_func_t function);
 
 XBT_PUBLIC smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
-                                              std::map<std::string, std::string>* properties);
+                                              std::unordered_map<std::string, std::string>* properties);
 
 XBT_PUBLIC smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 

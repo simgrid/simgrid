@@ -188,7 +188,7 @@ void sg_platf_new_cluster(simgrid::kernel::routing::ClusterCreationArgs* cluster
     simgrid::kernel::routing::HostCreationArgs host;
     host.id = host_id.c_str();
     if ((cluster->properties != nullptr) && (not cluster->properties->empty())) {
-      host.properties = new std::map<std::string, std::string>;
+      host.properties = new std::unordered_map<std::string, std::string>;
 
       for (auto const& elm : *cluster->properties)
         host.properties->insert({elm.first, elm.second});
@@ -438,7 +438,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 
   std::string actor_name     = actor->args[0];
   std::function<void()> code = factory(std::move(actor->args));
-  std::shared_ptr<std::map<std::string, std::string>> properties(actor->properties);
+  std::shared_ptr<std::unordered_map<std::string, std::string>> properties(actor->properties);
 
   simgrid::kernel::actor::ProcessArg* arg =
       new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, properties, auto_restart);

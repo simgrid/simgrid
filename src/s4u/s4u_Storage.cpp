@@ -40,7 +40,7 @@ const char* Storage::get_type()
   return pimpl_->typeId_.c_str();
 }
 
-std::map<std::string, std::string>* Storage::get_properties()
+std::unordered_map<std::string, std::string>* Storage::get_properties()
 {
   return simgrid::simix::simcall([this] { return pimpl_->get_properties(); });
 }
@@ -108,7 +108,7 @@ xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
 {
   xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
   xbt_dict_t as_dict                        = xbt_dict_new_homogeneous(xbt_free_f);
-  std::map<std::string, std::string>* props = storage->get_properties();
+  std::unordered_map<std::string, std::string>* props = storage->get_properties();
   if (props == nullptr)
     return nullptr;
   for (auto const& elm : *props) {

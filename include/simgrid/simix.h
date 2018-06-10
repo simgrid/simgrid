@@ -12,7 +12,7 @@
 #include <xbt/parmap.h>
 #ifdef __cplusplus
 #include <functional>
-#include <map>
+#include <unordered_map>
 #endif
 
 /* ******************************** Host ************************************ */
@@ -135,7 +135,8 @@ XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char*
 XBT_PUBLIC void SIMIX_maestro_create(void (*code)(void*), void* data);
 #ifdef __cplusplus
 XBT_PUBLIC smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
-                                            std::map<std::string, std::string>* properties, smx_actor_t parent_process);
+                                            std::unordered_map<std::string, std::string>* properties,
+                                            smx_actor_t parent_process);
 #endif
 XBT_PUBLIC void SIMIX_process_detach();
 
@@ -186,7 +187,8 @@ SG_BEGIN_DECL()
 /* Constructor and Destructor */
 #ifdef __cplusplus
 XBT_PUBLIC smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host,
-                                              int argc, char** argv, std::map<std::string, std::string>* properties);
+                                              int argc, char** argv,
+                                              std::unordered_map<std::string, std::string>* properties);
 #endif
 
 XBT_PUBLIC void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);

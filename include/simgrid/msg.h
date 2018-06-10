@@ -375,7 +375,7 @@ SG_END_DECL()
 #ifdef __cplusplus
 XBT_PUBLIC msg_process_t MSG_process_create_from_stdfunc(const char* name, std::function<void()> code, void* data,
                                                          msg_host_t host,
-                                                         std::map<std::string, std::string>* properties);
+                                                         std::unordered_map<std::string, std::string>* properties);
 #endif
 
 #endif
