@@ -652,6 +652,9 @@ sub RunMPIProgram {
 	    # Skip FORTRAN STOP
 	    if (/FORTRAN STOP/) { next; }
 	    $inline .= $_;
+	    if (/^==[0-9]+== ?WARNING: ASan doesn't fully support/) {
+		next;
+	    }
 	    if (/^\s*No [Ee]rrors\s*$/ && $found_noerror == 0) {
 		$found_noerror = 1;
 	    }
