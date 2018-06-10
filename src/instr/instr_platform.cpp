@@ -127,9 +127,9 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
     return;
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->get_cname());
-  if (not netzone->getChildren()->empty()) {
+  if (not netzone->get_children()->empty()) {
     // bottom-up recursion
-    for (auto const& nz_son : *netzone->getChildren()) {
+    for (auto const& nz_son : *netzone->get_children()) {
       container_t child_container = container->children_.at(nz_son->get_cname());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
@@ -466,9 +466,9 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
                                         std::map<std::string, xbt_edge_t>* edges, sg_netzone_t netzone,
                                         container_t container)
 {
-  if (not netzone->getChildren()->empty()) {
+  if (not netzone->get_children()->empty()) {
     // bottom-up recursion
-    for (auto const& netzone_child : *netzone->getChildren()) {
+    for (auto const& netzone_child : *netzone->get_children()) {
       container_t child_container = container->children_.at(netzone_child->get_cname());
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }

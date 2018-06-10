@@ -606,7 +606,7 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCre
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
-    current_routing->getChildren()->push_back(static_cast<simgrid::s4u::NetZone*>(new_zone));
+    current_routing->get_children()->push_back(static_cast<simgrid::s4u::NetZone*>(new_zone));
   }
 
   /* set the new current component of the tree */

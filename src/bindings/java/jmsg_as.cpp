@@ -69,14 +69,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
   if (not cls)
     return nullptr;
 
-  jtable = env->NewObjectArray(static_cast<jsize>(self_as->getChildren()->size()), cls, nullptr);
+  jtable = env->NewObjectArray(static_cast<jsize>(self_as->get_children()->size()), cls, nullptr);
 
   if (not jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
     return nullptr;
   }
 
-  for (auto const& tmp_as : *self_as->getChildren()) {
+  for (auto const& tmp_as : *self_as->get_children()) {
     jobject tmp_jas = jnetzone_new_instance(env);
     if (not tmp_jas) {
       jxbt_throw_jni(env, "java As instantiation failed");

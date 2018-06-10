@@ -273,7 +273,7 @@ static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char
   if (not strcmp(current->get_cname(), name))
     return current;
 
-  for (auto const& elem : *(current->getChildren())) {
+  for (auto const& elem : *(current->get_children())) {
     simgrid::s4u::NetZone* tmp = netzone_by_name_recursive(elem, name);
     if (tmp != nullptr) {
       return tmp;

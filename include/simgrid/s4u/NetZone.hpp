@@ -37,12 +37,12 @@ public:
   const std::string& get_name() const { return name_; }
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const;
+
   NetZone* get_father();
+  std::vector<NetZone*>* get_children(); // Sub netzones
 
   std::vector<Host*> get_all_hosts();
-
-  std::vector<NetZone*>* getChildren();             // Sub netzones
-  int getHostCount();
+  int get_host_count();
 
 private:
   std::unordered_map<std::string, std::string> properties_;
@@ -126,8 +126,13 @@ public: // Deprecation wrappers
   {
     return get_vertices();
   }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_host_count()") int getHostCount() { return get_host_count(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_all_hosts()") void getHosts(
       std::vector<s4u::Host*>* whereto); // retrieve my content as a vector of hosts
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_children()") std::vector<NetZone*>* getChildren()
+  {
+    return get_children();
+  }
 };
 }
 }; // Namespace simgrid::s4u

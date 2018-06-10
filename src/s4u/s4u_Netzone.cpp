@@ -57,7 +57,7 @@ void NetZone::set_property(const char* key, const char* value)
  *
  * This function returns the internal copy of the children, not a copy. Don't mess with it!
  */
-std::vector<NetZone*>* NetZone::getChildren()
+std::vector<NetZone*>* NetZone::get_children()
 {
   return children_;
 }
@@ -96,7 +96,7 @@ void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
   }
 }
 
-int NetZone::getHostCount()
+int NetZone::get_host_count()
 {
   int count = 0;
   for (auto const& card : vertices_) {
@@ -142,7 +142,7 @@ sg_netzone_t sg_zone_get_by_name(const char* name)
 
 void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)
 {
-  for (auto const& elem : *netzone->getChildren()) {
+  for (auto const& elem : *netzone->get_children()) {
     xbt_dict_set(whereto, elem->get_cname(), static_cast<void*>(elem), nullptr);
   }
 }

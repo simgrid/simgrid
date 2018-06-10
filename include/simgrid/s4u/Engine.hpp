@@ -130,10 +130,10 @@ public:
   simgrid::s4u::NetZone* netzone_by_name_or_null(const char* name);
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
-  template <class T> std::vector<T*> filter_netzones_by_type()
+  template <class T> std::vector<T*> get_filtered_netzones()
   {
     std::vector<T*> res;
-    filter_netzones_by_type_recursive(get_netzone_root(), &res);
+    get_filtered_netzones_recursive(get_netzone_root(), &res);
     return res;
   }
 
@@ -242,7 +242,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::filter_netzones_by_type()") void getNetzoneByType(
       std::vector<T*>* whereto)
   {
-    filter_netzones_by_type_recursive(get_netzone_root(), whereto);
+    get_filtered_netzones_recursive(get_netzone_root(), whereto);
   }
 
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_instance()") static s4u::Engine* getInstance()
@@ -273,10 +273,10 @@ extern XBT_PUBLIC xbt::signal<void(double)> on_time_advance;
 /** Callback fired when the time cannot jump because of inter-actors deadlock */
 extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
-template <class T> XBT_PRIVATE void filter_netzones_by_type_recursive(s4u::NetZone* current, std::vector<T*>* whereto)
+template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)
 {
-  for (auto const& elem : *(current->getChildren())) {
-    filter_netzones_by_type_recursive(elem, whereto);
+  for (auto const& elem : *(current->get_children())) {
+    get_filtered_netzones_recursive(elem, whereto);
     if (elem == dynamic_cast<T*>(elem))
       whereto->push_back(dynamic_cast<T*>(elem));
   }
