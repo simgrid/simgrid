@@ -17,7 +17,7 @@
 #else
 #define ASAN_ONLY(expr) (void)0
 #define ASAN_START_SWITCH(fake_stack_save, bottom, size) (void)0
-#define ASAN_FINISH_SWITCH(fake_stack_save, bottom_old, size_old) (void)(fake_stack_save)
+#define ASAN_FINISH_SWITCH(fake_stack_save, bottom_old, size_old) (void)0
 #endif
 
 #endif

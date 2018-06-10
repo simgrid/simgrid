@@ -271,7 +271,7 @@ void RawContext::wrapper(void* arg)
 
 inline void RawContext::swap(RawContext* from, RawContext* to)
 {
-  void* fake_stack = nullptr;
+  ASAN_ONLY(void* fake_stack = nullptr);
   ASAN_ONLY(to->asan_ctx_ = from);
   ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   raw_swapcontext(&from->stack_top_, to->stack_top_);

@@ -129,7 +129,7 @@ inline void BoostContext::swap(BoostContext* from, BoostContext* to)
   boost::context::jump_fcontext(&from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
 #else
   BoostContext* ctx[2] = {from, to};
-  void* fake_stack     = nullptr;
+  ASAN_ONLY(void* fake_stack = nullptr);
   ASAN_ONLY(to->asan_ctx_ = from);
   ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   boost::context::detail::transfer_t arg = boost::context::detail::jump_fcontext(to->fc_, ctx);
