@@ -75,7 +75,7 @@ BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cle
 #else
     void* stack = this->stack_;
 #endif
-    ASAN_EVAL(this->asan_stack_ = stack);
+    ASAN_ONLY(this->asan_stack_ = stack);
 #if BOOST_VERSION < 106100
     this->fc_ = boost::context::make_fcontext(stack, smx_context_usable_stack_size, BoostContext::wrapper);
 #else
@@ -107,7 +107,7 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   BoostContext* context = reinterpret_cast<BoostContext*>(arg);
 #else
   BoostContext* context = static_cast<BoostContext**>(arg.data)[1];
-  ASAN_ASSERT(context->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]);
+  ASAN_ONLY(xbt_assert(context->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
   ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
@@ -117,7 +117,7 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
-  ASAN_EVAL(context->asan_stop_ = true);
+  ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
 
@@ -130,10 +130,10 @@ inline void BoostContext::swap(BoostContext* from, BoostContext* to)
 #else
   BoostContext* ctx[2] = {from, to};
   void* fake_stack     = nullptr;
-  ASAN_EVAL(to->asan_ctx_ = from);
+  ASAN_ONLY(to->asan_ctx_ = from);
   ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   boost::context::detail::transfer_t arg = boost::context::detail::jump_fcontext(to->fc_, ctx);
-  ASAN_ASSERT(from->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]);
+  ASAN_ONLY(xbt_assert(from->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif

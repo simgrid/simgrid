@@ -87,9 +87,9 @@ UContext::UContext(std::function<void()> code, void_pfn_smxprocess_t cleanup_fun
     this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(this->stack_);
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
 #if PTH_STACKGROWTH == -1
-    ASAN_EVAL(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
+    ASAN_ONLY(this->asan_stack_ = static_cast<char*>(this->stack_) + smx_context_usable_stack_size);
 #else
-    ASAN_EVAL(this->asan_stack_ = this->stack_);
+    ASAN_ONLY(this->asan_stack_ = this->stack_);
 #endif
     UContext::make_ctx(&this->uc_, UContext::smx_ctx_sysv_wrapper, this);
   } else {
@@ -125,7 +125,7 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
   } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
-  ASAN_EVAL(context->asan_stop_ = true);
+  ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
 
@@ -144,7 +144,7 @@ void UContext::make_ctx(ucontext_t* ucp, void (*func)(int, int), UContext* arg)
 inline void UContext::swap(UContext* from, UContext* to)
 {
   void* fake_stack = nullptr;
-  ASAN_EVAL(to->asan_ctx_ = from);
+  ASAN_ONLY(to->asan_ctx_ = from);
   ASAN_START_SWITCH(from->asan_stop_ ? nullptr : &fake_stack, to->asan_stack_, to->asan_stack_size_);
   swapcontext(&from->uc_, &to->uc_);
   ASAN_FINISH_SWITCH(fake_stack, &from->asan_ctx_->asan_stack_, &from->asan_ctx_->asan_stack_size_);
