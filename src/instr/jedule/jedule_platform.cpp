@@ -64,13 +64,13 @@ void Container::addResources(std::vector<sg_host_t> hosts)
 void Container::createHierarchy(sg_netzone_t from_as)
 {
 
-  if (from_as->getChildren()->empty()) {
+  if (from_as->get_children()->empty()) {
     // I am no AS
     // add hosts to jedule platform
     std::vector<sg_host_t> table = from_as->get_all_hosts();
     this->addResources(table);
   } else {
-    for (auto const& nz : *from_as->getChildren()) {
+    for (auto const& nz : *from_as->get_children()) {
       jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->get_cname()));
       this->addChild(child_container);
       child_container->createHierarchy(nz);
