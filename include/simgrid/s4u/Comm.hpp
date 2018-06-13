@@ -45,9 +45,9 @@ public:
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
   Activity* detach();
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  Activity* detach(void (*cleanFunction)(void*))
+  Activity* detach(void (*clean_function)(void*))
   {
-    clean_fun_ = cleanFunction;
+    clean_fun_ = clean_function;
     return detach();
   }
 

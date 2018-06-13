@@ -73,7 +73,7 @@ public:
   static simgrid::xbt::signal<void(NetZone&)> on_seal;
 
 private:
-  // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
   std::vector<kernel::routing::NetPoint*> vertices_;
 
 protected:
@@ -104,8 +104,7 @@ public: // Deprecation wrappers
   {
     add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
   }
-  XBT_ATTRIB_DEPRECATED_v323(
-      "Please use NetZone::get_properties()") std::unordered_map<std::string, std::string>* getProperties()
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_properties()") std::unordered_map<std::string, std::string>* getProperties()
   {
     return get_properties();
   }
