@@ -252,23 +252,6 @@ void TRACE_smpi_sleeping_out(int rank)
     smpi_container(rank)->get_state("MPI_STATE")->pop_event();
 }
 
-void TRACE_smpi_testing_in(int rank)
-{
-  //do not forget to set the color first, otherwise this will explode
-  if (not TRACE_smpi_is_enabled())
-    return;
-
-  simgrid::instr::StateType* state = smpi_container(rank)->get_state("MPI_STATE");
-  state->add_entity_value("test");
-  state->push_event("test", new simgrid::instr::NoOpTIData("test"));
-}
-
-void TRACE_smpi_testing_out(int rank)
-{
-  if (TRACE_smpi_is_enabled())
-    smpi_container(rank)->get_state("MPI_STATE")->pop_event();
-}
-
 void TRACE_smpi_comm_in(int rank, const char* operation, simgrid::instr::TIData* extra)
 {
   if (not TRACE_smpi_is_enabled()) {

@@ -498,7 +498,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
     // Different times in traced application and replayed version may lead to this
     // In this case, ignore the extra calls.
     if (request != MPI_REQUEST_NULL) {
-      TRACE_smpi_testing_in(my_proc_id);
+      TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("test"));
 
       MPI_Status status;
       int flag = Request::test(&request, &status);
@@ -511,7 +511,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
       else
         req_storage.add(request);
 
-      TRACE_smpi_testing_out(my_proc_id);
+      TRACE_smpi_comm_out(my_proc_id);
     }
   }
 

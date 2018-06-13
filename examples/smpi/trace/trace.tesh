@@ -149,7 +149,7 @@ $ tail -n +3 ${bindir:=.}/smpi_trace.trace
 > 5 14 2 PMPI_Irecv "1 0.52 0.52"
 > 5 15 2 PMPI_Waitany "0.78 0.78 0.58"
 > 5 16 2 PMPI_Waitall "0.78 0.78 0"
-> 5 17 2 test
+> 5 17 2 PMPI_Test "0.52 0.52 0"
 > 5 18 2 PMPI_Finalize "0 1 0"
 > 13 1.000000 2 2
 > 12 1.000000 2 2 11
