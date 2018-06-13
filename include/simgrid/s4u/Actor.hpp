@@ -132,8 +132,7 @@ class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
   static std::function<void()> wrap_task(F f, Args... args)
   {
     typedef decltype(f(std::move(args)...)) R;
-    auto task = std::make_shared<simgrid::xbt::Task<R()>>(
-      simgrid::xbt::makeTask(std::move(f), std::move(args)...));
+    auto task = std::make_shared<simgrid::xbt::Task<R()>>(simgrid::xbt::make_task(std::move(f), std::move(args)...));
     return [task] { (*task)(); };
   }
 

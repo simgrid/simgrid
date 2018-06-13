@@ -327,8 +327,7 @@ public:
       throw std::future_error(std::future_errc::no_state);
     // Give shared-ownership to the continuation:
     auto state = std::move(state_);
-    state->set_continuation(simgrid::xbt::makeTask(
-      std::move(continuation), state));
+    state->set_continuation(simgrid::xbt::make_task(std::move(continuation), state));
   }
 
   /** Attach a continuation to this future
@@ -347,15 +346,13 @@ public:
     Promise<R> promise;
     Future<R> future = promise.get_future();
     // ...and when the current future is ready...
-    state->set_continuation(simgrid::xbt::makeTask(
-      [](Promise<R> promise, std::shared_ptr<FutureState<T>> state, F continuation) {
-        // ...set the new future value by running the continuation.
-        Future<T> future(std::move(state));
-        simgrid::xbt::fulfillPromise(promise,[&]{
-          return continuation(std::move(future));
-        });
-      },
-      std::move(promise), state, std::move(continuation)));
+    state->set_continuation(simgrid::xbt::make_task(
+        [](Promise<R> promise, std::shared_ptr<FutureState<T>> state, F continuation) {
+          // ...set the new future value by running the continuation.
+          Future<T> future(std::move(state));
+          simgrid::xbt::fulfillPromise(promise, [&] { return continuation(std::move(future)); });
+        },
+        std::move(promise), state, std::move(continuation)));
     return std::move(future);
   }
 

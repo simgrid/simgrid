@@ -58,9 +58,7 @@ void SIMIX_launch_application(const char *file)
 // Wrap a main() function into a ActorCodeFactory:
 static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 {
-  return [code](std::vector<std::string> args) {
-    return simgrid::xbt::wrapMain(code, std::move(args));
-  };
+  return [code](std::vector<std::string> args) { return simgrid::xbt::wrap_main(code, std::move(args)); };
 }
 
 /**

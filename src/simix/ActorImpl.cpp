@@ -802,7 +802,7 @@ smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void*
 {
   if (name == nullptr)
     name = "";
-  auto wrapped_code = simgrid::xbt::wrapMain(code, argc, argv);
+  auto wrapped_code = simgrid::xbt::wrap_main(code, argc, argv);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);

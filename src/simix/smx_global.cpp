@@ -562,7 +562,7 @@ void SIMIX_run()
  */
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
-  smx_timer_t timer = new s_smx_timer_t(date, simgrid::xbt::makeTask([callback, arg]() { callback(arg); }));
+  smx_timer_t timer = new s_smx_timer_t(date, simgrid::xbt::make_task([callback, arg]() { callback(arg); }));
   timer->handle_    = simix_timers.emplace(std::make_pair(date, timer));
   return timer;
 }
