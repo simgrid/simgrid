@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u.hpp>
 #include "simgrid/plugins/load.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
@@ -157,6 +158,14 @@ void sg_host_load_plugin_init()
     return;
 
   HostLoad::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostLoad>();
+
+  if (simgrid::s4u::Engine::is_initialized()) { // If not yet initialized, this would create a new instance
+                                                // which would cause seg faults...
+    simgrid::s4u::Engine* e = simgrid::s4u::Engine::get_instance();
+    for (auto& host : e->get_all_hosts()) {
+      host->extension_set(new HostLoad(host));
+    }
+  }
 
   /* When attaching a callback into a signal, you can use a lambda as follows, or a regular function as done below */
 
