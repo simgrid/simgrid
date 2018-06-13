@@ -522,11 +522,11 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   } else {
     int my_proc_id = ((*request)->comm() != MPI_COMM_NULL) ? simgrid::s4u::this_actor::get_pid() : -1;
 
-    TRACE_smpi_testing_in(my_proc_id);
-
+    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("test"));
+    
     *flag = simgrid::smpi::Request::test(request,status);
 
-    TRACE_smpi_testing_out(my_proc_id);
+    TRACE_smpi_comm_out(my_proc_id);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -541,7 +541,10 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_S
   if (index == nullptr || flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
+    int my_proc_id = simgrid::s4u::this_actor::get_pid();
+    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("testany"));
     *flag = simgrid::smpi::Request::testany(count, requests, index, status);
+    TRACE_smpi_comm_out(my_proc_id);
     retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
@@ -556,8 +559,29 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
   if (flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
+    int my_proc_id = simgrid::s4u::this_actor::get_pid();
+    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("testall"));
     *flag = simgrid::smpi::Request::testall(count, requests, statuses);
+    TRACE_smpi_comm_out(my_proc_id);
     retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indices, MPI_Status status[])
+{
+  int retval = 0;
+
+  smpi_bench_end();
+  if (outcount == nullptr) {
+    retval = MPI_ERR_ARG;
+  } else {
+    int my_proc_id = simgrid::s4u::this_actor::get_pid();
+    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("testsome"));
+    *outcount = simgrid::smpi::Request::testsome(incount, requests, indices, status);
+    TRACE_smpi_comm_out(my_proc_id);
+    retval    = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
@@ -739,21 +763,6 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount, int *indic
   } else {
     *outcount = simgrid::smpi::Request::waitsome(incount, requests, indices, status);
     retval = MPI_SUCCESS;
-  }
-  smpi_bench_begin();
-  return retval;
-}
-
-int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indices, MPI_Status status[])
-{
-  int retval = 0;
-
-  smpi_bench_end();
-  if (outcount == nullptr) {
-    retval = MPI_ERR_ARG;
-  } else {
-    *outcount = simgrid::smpi::Request::testsome(incount, requests, indices, status);
-    retval    = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;

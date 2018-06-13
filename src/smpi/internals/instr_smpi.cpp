@@ -20,132 +20,78 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
 static std::unordered_map<std::string, std::deque<std::string>*> keys;
 
-static const char* smpi_colors[] = {"recv",
-                                    "1 0 0",
-                                    "irecv",
-                                    "1 0.52 0.52",
-                                    "send",
-                                    "0 0 1",
-                                    "isend",
-                                    "0.52 0.52 1",
-                                    "sendrecv",
-                                    "0 1 1",
-                                    "wait",
-                                    "1 1 0",
-                                    "waitall",
-                                    "0.78 0.78 0",
-                                    "waitany",
-                                    "0.78 0.78 0.58",
-                                    "test",
-                                    "0.52 0.52 0",
+static std::map<std::string, std::string> smpi_colors = {{"recv", "1 0 0"},
+  {"irecv", "1 0.52 0.52"},
+  {"send", "0 0 1"},
+  {"isend", "0.52 0.52 1"},
+  {"sendrecv", "0 1 1"},
+  {"wait", "1 1 0"},
+  {"waitall", "0.78 0.78 0"},
+  {"waitany", "0.78 0.78 0.58"},
+  {"test", "0.52 0.52 0"},
 
-                                    "allgather",
-                                    "1 0 0",
-                                    "allgatherv",
-                                    "1 0.52 0.52",
-                                    "allreduce",
-                                    "1 0 1",
-                                    "alltoall",
-                                    "0.52 0 1",
-                                    "alltoallv",
-                                    "0.78 0.52 1",
-                                    "barrier",
-                                    "0 0.78 0.78",
-                                    "bcast",
-                                    "0 0.78 0.39",
-                                    "gather",
-                                    "1 1 0",
-                                    "gatherv",
-                                    "1 1 0.52",
-                                    "reduce",
-                                    "0 1 0",
-                                    "reducescatter",
-                                    "0.52 1 0.52",
-                                    "scan",
-                                    "1 0.58 0.23",
-                                    "exscan",
-                                    "1 0.54 0.25",
-                                    "scatterv",
-                                    "0.52 0 0.52",
-                                    "scatter",
-                                    "1 0.74 0.54",
+  {"allgather", "1 0 0"},
+  {"allgatherv", "1 0.52 0.52"},
+  {"allreduce", "1 0 1"},
+  {"alltoall", "0.52 0 1"},
+  {"alltoallv", "0.78 0.52 1"},
+  {"barrier", "0 0.78 0.78"},
+  {"bcast", "0 0.78 0.39"},
+  {"gather", "1 1 0"},
+  {"gatherv", "1 1 0.52"},
+  {"reduce", "0 1 0"},
+  {"reducescatter", "0.52 1 0.52"},
+  {"scan", "1 0.58 0.23"},
+  {"exscan", "1 0.54 0.25"},
+  {"scatterv", "0.52 0 0.52"},
+  {"scatter", "1 0.74 0.54"},
 
-                                    "computing",
-                                    "0 1 1",
-                                    "sleeping",
-                                    "0 0.5 0.5",
+  {"computing", "0 1 1"},
+  {"sleeping", "0 0.5 0.5"},
 
-                                    "init",
-                                    "0 1 0",
-                                    "finalize",
-                                    "0 1 0",
+  {"init", "0 1 0"},
+  {"finalize", "0 1 0"},
 
-                                    "put",
-                                    "0.3 1 0",
-                                    "get",
-                                    "0 1 0.3",
-                                    "accumulate",
-                                    "1 0.3 0",
-                                    "migration",
-                                    "0.2 0.5 0.2",
-                                    "rput",
-                                    "0.3 1 0",
-                                    "rget",
-                                    "0 1 0.3",
-                                    "raccumulate",
-                                    "1 0.3 0",
-                                    "compare_and_swap",
-                                    "0.3 1 0",
-                                    "get_accumulate",
-                                    "0 1 0.3",
-                                    "rget_accumulate",
-                                    "1 0.3 0",
-                                    "win_fence",
-                                    "1 0 0.3",
-                                    "win_post",
-                                    "1 0 0.8",
-                                    "win_wait",
-                                    "1 0.8 0",
-                                    "win_start",
-                                    "0.8 0 1",
-                                    "win_complete",
-                                    "0.8 1 0",
-                                    "win_lock",
-                                    "1 0 0.3",
-                                    "win_unlock",
-                                    "1 0 0.3",
-                                    "win_lock_all",
-                                    "1 0 0.8",
-                                    "win_unlock_all",
-                                    "1 0.8 0",
-                                    "win_flush",
-                                    "1 0 0.3",
-                                    "win_flush_local",
-                                    "1 0 0.8",
-                                    "win_flush_all",
-                                    "1 0.8 0",
-                                    "win_flush_local_all",
-                                    "1 0 0.3",
-                                    "",
-                                    ""};
+  {"put", "0.3 1 0"},
+  {"get", "0 1 0.3"},
+  {"accumulate", "1 0.3 0"},
+  {"migration", "0.2 0.5 0.2"},
+  {"rput", "0.3 1 0"},
+  {"rget", "0 1 0.3"},
+  {"raccumulate", "1 0.3 0"},
+  {"compare_and_swap", "0.3 1 0"},
+  {"get_accumulate", "0 1 0.3"},
+  {"rget_accumulate", "1 0.3 0"},
+  {"win_fence", "1 0 0.3"},
+  {"win_post", "1 0 0.8"},
+  {"win_wait", "1 0.8 0"},
+  {"win_start", "0.8 0 1"},
+  {"win_complete", "0.8 1 0"},
+  {"win_lock", "1 0 0.3"},
+  {"win_unlock", "1 0 0.3"},
+  {"win_lock_all", "1 0 0.8"},
+  {"win_unlock_all", "1 0.8 0"},
+  {"win_flush", "1 0 0.3"},
+  {"win_flush_local", "1 0 0.8"},
+  {"win_flush_all", "1 0.8 0"},
+  {"win_flush_local_all", "1 0 0.3"}
+};
 
-static const char* instr_find_color(const char* state)
+static const char* instr_find_color(std::string state)
 {
-  std::string target = std::string(state);
-  boost::algorithm::to_lower(target);
-  const char* ret     = nullptr;
-  unsigned int i      = 0;
-  const char* current = smpi_colors[i];
-  while (current != nullptr) {
-    if (target == current                          // exact match
-        || strstr(target.c_str(), current) != 0) { // as substring
-      ret = smpi_colors[i + 1];
-      break;
-    }
-    i+=2;
-    current = smpi_colors[i];
+  boost::algorithm::to_lower(state);
+  if (state.substr(0, 5) == "pmpi_")
+    state = state.substr(5, std::string::npos); // Remove pmpi_ to allow for exact matches
+
+  if (smpi_colors.find(state) != smpi_colors.end()) { // Exact match in the map?
+    return smpi_colors.find(state)->second.c_str();
   }
-  return ret;
+  for (const auto& pair : smpi_colors) { // Is an entry of our map a substring of this state name?
+    if (std::strstr(state.c_str(), pair.first.c_str()) != 0)
+      return pair.second.c_str();
+  }
+
+  return "0.5 0.5 0.5"; // Just in case we find nothing in the map ...
 }
 
 XBT_PRIVATE container_t smpi_container(int rank)
@@ -303,23 +249,6 @@ void TRACE_smpi_sleeping_in(int rank, double duration)
 void TRACE_smpi_sleeping_out(int rank)
 {
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_sleeping())
-    smpi_container(rank)->get_state("MPI_STATE")->pop_event();
-}
-
-void TRACE_smpi_testing_in(int rank)
-{
-  //do not forget to set the color first, otherwise this will explode
-  if (not TRACE_smpi_is_enabled())
-    return;
-
-  simgrid::instr::StateType* state = smpi_container(rank)->get_state("MPI_STATE");
-  state->add_entity_value("test");
-  state->push_event("test", new simgrid::instr::NoOpTIData("test"));
-}
-
-void TRACE_smpi_testing_out(int rank)
-{
-  if (TRACE_smpi_is_enabled())
     smpi_container(rank)->get_state("MPI_STATE")->pop_event();
 }
 
