@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_cloud_migration, "Messages specific for this ex
 
 static void vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
-  simgrid::s4u::Host* src_pm = vm->getPm();
+  simgrid::s4u::Host* src_pm = vm->get_pm();
   double mig_sta             = simgrid::s4u::Engine::get_clock();
   sg_vm_migrate(vm, dst_pm);
   double mig_end = simgrid::s4u::Engine::get_clock();
@@ -31,19 +31,19 @@ static void master_main()
   simgrid::s4u::Host* pm2 = simgrid::s4u::Host::by_name("Bourassa");
 
   simgrid::s4u::VirtualMachine* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->setRamsize(1e9); // 1Gbytes
+  vm0->set_ramsize(1e9); // 1Gbytes
   vm0->start();
 
-  XBT_INFO("Test: Migrate a VM with %zu Mbytes RAM", vm0->getRamsize() / 1000 / 1000);
+  XBT_INFO("Test: Migrate a VM with %zu Mbytes RAM", vm0->get_ramsize() / 1000 / 1000);
   vm_migrate(vm0, pm1);
 
   vm0->destroy();
 
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->setRamsize(1e8); // 100Mbytes
+  vm0->set_ramsize(1e8); // 100Mbytes
   vm0->start();
 
-  XBT_INFO("Test: Migrate a VM with %zu Mbytes RAM", vm0->getRamsize() / 1000 / 1000);
+  XBT_INFO("Test: Migrate a VM with %zu Mbytes RAM", vm0->get_ramsize() / 1000 / 1000);
   vm_migrate(vm0, pm1);
 
   vm0->destroy();
@@ -51,8 +51,8 @@ static void master_main()
   vm0                               = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   simgrid::s4u::VirtualMachine* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
 
-  vm0->setRamsize(1e9); // 1Gbytes
-  vm1->setRamsize(1e9); // 1Gbytes
+  vm0->set_ramsize(1e9); // 1Gbytes
+  vm1->set_ramsize(1e9); // 1Gbytes
   vm0->start();
   vm1->start();
 
@@ -67,8 +67,8 @@ static void master_main()
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
 
-  vm0->setRamsize(1e9); // 1Gbytes
-  vm1->setRamsize(1e9); // 1Gbytes
+  vm0->set_ramsize(1e9); // 1Gbytes
+  vm1->set_ramsize(1e9); // 1Gbytes
   vm0->start();
   vm1->start();
 

@@ -390,7 +390,7 @@ static void onActionStateChange(simgrid::surf::CpuAction* action)
       // If it's a VM, take the corresponding PM
       simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
       if (vm) // If it's a VM, take the corresponding PM
-        host = vm->getPm();
+        host = vm->get_pm();
 
       // Get the host_energy extension for the relevant host
       HostEnergy* host_energy = host->extension<HostEnergy>();

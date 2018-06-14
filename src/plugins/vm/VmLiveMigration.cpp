@@ -46,11 +46,11 @@ void MigrationRx::operator()()
   xbt_assert(vm_->getState() == SURF_VM_STATE_SUSPENDED);
 
   /* Update the vm location and resume it */
-  vm_->setPm(dst_pm_);
+  vm_->set_pm(dst_pm_);
   vm_->resume();
 
   // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-  vm_->getImpl()->is_migrating_ = false;
+  vm_->get_impl()->is_migrating_ = false;
   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm_->get_cname(), src_pm_->get_cname(), dst_pm_->get_cname());
 
   if (TRACE_vm_is_enabled()) {
@@ -134,8 +134,8 @@ void MigrationTx::operator()()
 {
   XBT_DEBUG("mig: tx_start");
 
-  double host_speed = vm_->getPm()->getSpeed();
-  const sg_size_t ramsize = vm_->getRamsize();
+  double host_speed       = vm_->get_pm()->getSpeed();
+  const sg_size_t ramsize = vm_->get_ramsize();
   const double dp_rate =
       host_speed ? (sg_vm_get_migration_speed(vm_) * sg_vm_get_dirty_page_intensity(vm_)) / host_speed : 1;
   const sg_size_t dp_cap = sg_vm_get_working_set_memory(vm_);
@@ -285,11 +285,11 @@ void MigrationTx::operator()()
 
 static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine& vm)
 {
-  if (vm.getImpl()->is_migrating_) {
+  if (vm.get_impl()->is_migrating_) {
     vm.extension<simgrid::vm::VmMigrationExt>()->rx_->kill();
     vm.extension<simgrid::vm::VmMigrationExt>()->tx_->kill();
     vm.extension<simgrid::vm::VmMigrationExt>()->issuer_->kill();
-    vm.getImpl()->is_migrating_ = false;
+    vm.get_impl()->is_migrating_ = false;
   }
 }
 
@@ -316,7 +316,7 @@ simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, co
 
   sg_vm_t vm = new simgrid::s4u::VirtualMachine(name, pm, coreAmount, static_cast<sg_size_t>(ramsize) * 1024 * 1024);
   sg_vm_set_dirty_page_intensity(vm, dp_intensity / 100.0);
-  sg_vm_set_working_set_memory(vm, vm->getRamsize() * 0.9); // assume working set memory is 90% of ramsize
+  sg_vm_set_working_set_memory(vm, vm->get_ramsize() * 0.9); // assume working set memory is 90% of ramsize
   sg_vm_set_migration_speed(vm, mig_netspeed * 1024 * 1024.0);
 
   XBT_DEBUG("migspeed : %f intensity mem : %d", mig_netspeed * 1024 * 1024.0, dp_intensity);
@@ -326,12 +326,12 @@ simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, co
 
 int sg_vm_is_migrating(simgrid::s4u::VirtualMachine* vm)
 {
-  return vm->getImpl()->is_migrating_;
+  return vm->get_impl()->is_migrating_;
 }
 
 void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
-  simgrid::s4u::Host* src_pm = vm->getPm();
+  simgrid::s4u::Host* src_pm = vm->get_pm();
 
   if (src_pm->is_off())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->get_cname(),
@@ -340,10 +340,10 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->get_cname(), dst_pm->get_cname());
   if (vm->getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->get_cname());
-  if (vm->getImpl()->is_migrating_)
+  if (vm->get_impl()->is_migrating_)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());
 
-  vm->getImpl()->is_migrating_ = true;
+  vm->get_impl()->is_migrating_ = true;
 
   std::string rx_name =
       std::string("__pr_mig_rx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
@@ -365,5 +365,5 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   tx->join();
   rx->join();
 
-  vm->getImpl()->is_migrating_ = false;
+  vm->get_impl()->is_migrating_ = false;
 }

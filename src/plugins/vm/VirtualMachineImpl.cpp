@@ -47,7 +47,7 @@ static void hostStateChange(s4u::Host& host)
     std::vector<s4u::VirtualMachine*> trash;
     /* Find all VMs living on that host */
     for (s4u::VirtualMachine* const& vm : VirtualMachineImpl::allVms_)
-      if (vm->getPm() == &host)
+      if (vm->get_pm() == &host)
         trash.push_back(vm);
     for (s4u::VirtualMachine* vm : trash)
       vm->shutdown();
@@ -90,9 +90,9 @@ double VMModel::next_occuring_event(double now)
     surf::Cpu* cpu = ws_vm->pimpl_cpu;
 
     double solved_value =
-        ws_vm->getImpl()->action_->get_variable()->get_value(); // this is X1 in comment above, what
-                                                                // this VM got in the sharing on the PM
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->getPm()->get_cname());
+        ws_vm->get_impl()->action_->get_variable()->get_value(); // this is X1 in comment above, what
+                                                                 // this VM got in the sharing on the PM
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
     xbt_assert(cpu->get_model() == surf_cpu_model_vm);
     kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();

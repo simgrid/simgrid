@@ -193,7 +193,7 @@ static void master_main()
            " network one");
   XBT_INFO("### Relocate VM0 between PM0 and PM1");
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->setRamsize(1L * 1024 * 1024 * 1024); // 1GiB
+  vm0->set_ramsize(1L * 1024 * 1024 * 1024); // 1GiB
 
   vm0->start();
   launch_communication_worker(vm0, pm2);

@@ -38,18 +38,18 @@ public:
   VirtualMachine(VirtualMachine const&) = delete;
   VirtualMachine& operator=(VirtualMachine const&) = delete;
 
-  simgrid::vm::VirtualMachineImpl* getImpl() { return pimpl_vm_; }
+  simgrid::vm::VirtualMachineImpl* get_impl() { return pimpl_vm_; }
   void start();
   void suspend();
   void resume();
   void shutdown();
   void destroy();
 
-  simgrid::s4u::Host* getPm();
-  void setPm(simgrid::s4u::Host * pm);
-  size_t getRamsize();
-  void setRamsize(size_t ramsize);
-  void setBound(double bound);
+  simgrid::s4u::Host* get_pm();
+  void set_pm(simgrid::s4u::Host* pm);
+  size_t get_ramsize();
+  void set_ramsize(size_t ramsize);
+  void set_bound(double bound);
 
   e_surf_vm_state_t getState();
   static simgrid::xbt::signal<void(VirtualMachine&)> on_start;
@@ -57,6 +57,20 @@ public:
   static simgrid::xbt::signal<void(VirtualMachine&)> on_shutdown;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_suspend;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_resume;
+
+  // Deprecated methods
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_impl()") simgrid::vm::VirtualMachineImpl* getImpl()
+  {
+    return pimpl_vm_;
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_pm()") simgrid::s4u::Host* getPm() { return get_pm(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_pm()") void setPm(simgrid::s4u::Host* pm) { set_pm(pm); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_ramsize()") size_t getRamsize() { return get_ramsize(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_ramsize()") void setRamsize(size_t ramsize)
+  {
+    set_ramsize(ramsize);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::set_bound()") void setBound(double bound) { set_bound(bound); }
 };
 }
 } // namespace simgrid::s4u

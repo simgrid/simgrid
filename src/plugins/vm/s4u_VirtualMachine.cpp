@@ -78,14 +78,14 @@ void VirtualMachine::start()
 
     long pm_ramsize   = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
     int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
-    long vm_ramsize   = this->getRamsize();
+    long vm_ramsize   = this->get_ramsize();
 
     if (pm_ramsize && not pm_overcommit) { /* Only verify that we don't overcommit on need */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
       long total_ramsize_of_vms = 0;
       for (simgrid::s4u::VirtualMachine* const& ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
-        if (pm == ws_vm->getPm())
-          total_ramsize_of_vms += ws_vm->getRamsize();
+        if (pm == ws_vm->get_pm())
+          total_ramsize_of_vms += ws_vm->get_ramsize();
 
       if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
         XBT_WARN("cannot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
@@ -130,12 +130,12 @@ void VirtualMachine::destroy()
   Host::destroy();
 }
 
-simgrid::s4u::Host* VirtualMachine::getPm()
+simgrid::s4u::Host* VirtualMachine::get_pm()
 {
   return pimpl_vm_->get_physical_host();
 }
 
-void VirtualMachine::setPm(simgrid::s4u::Host* pm)
+void VirtualMachine::set_pm(simgrid::s4u::Host* pm)
 {
   simgrid::simix::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
 }
@@ -145,12 +145,12 @@ e_surf_vm_state_t VirtualMachine::getState()
   return simgrid::simix::simcall([this]() { return pimpl_vm_->get_state(); });
 }
 
-size_t VirtualMachine::getRamsize()
+size_t VirtualMachine::get_ramsize()
 {
   return pimpl_vm_->get_ramsize();
 }
 
-void VirtualMachine::setRamsize(size_t ramsize)
+void VirtualMachine::set_ramsize(size_t ramsize)
 {
   pimpl_vm_->set_ramsize(ramsize);
 }
@@ -180,7 +180,7 @@ void VirtualMachine::setRamsize(size_t ramsize)
  * 2. Note that bound == 0 means no bound (i.e., unlimited). But, if a host has multiple CPU cores, the CPU share of a
  *    computation task (or a VM) never exceeds the capacity of a CPU core.
  */
-void VirtualMachine::setBound(double bound)
+void VirtualMachine::set_bound(double bound)
 {
   simgrid::simix::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
 }
@@ -216,22 +216,22 @@ const char* sg_vm_get_name(sg_vm_t vm)
 /** @brief Get the physical host of a given VM. */
 sg_host_t sg_vm_get_pm(sg_vm_t vm)
 {
-  return vm->getPm();
+  return vm->get_pm();
 }
 
 void sg_vm_set_ramsize(sg_vm_t vm, size_t size)
 {
-  vm->setRamsize(size);
+  vm->set_ramsize(size);
 }
 
 size_t sg_vm_get_ramsize(sg_vm_t vm)
 {
-  return vm->getRamsize();
+  return vm->get_ramsize();
 }
 
 void sg_vm_set_bound(sg_vm_t vm, double bound)
 {
-  vm->setBound(bound);
+  vm->set_bound(bound);
 }
 
 /** @brief Returns whether the given VM has just created, not running. */

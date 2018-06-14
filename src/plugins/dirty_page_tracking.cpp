@@ -77,10 +77,10 @@ static void onExecCreation(simgrid::kernel::activity::ExecImplPtr exec)
   if (vm == nullptr)
     return;
 
-  if (vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->is_tracking()) {
-    vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->track(exec, exec->get_remaining());
+  if (vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->is_tracking()) {
+    vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->track(exec, exec->get_remaining());
   } else {
-    vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->track(exec, 0.0);
+    vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->track(exec, 0.0);
   }
 }
 
@@ -92,12 +92,12 @@ static void onExecCompletion(simgrid::kernel::activity::ExecImplPtr exec)
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
-  if (vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->is_tracking()) {
-    double delta = vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_stored_remains(exec) -
+  if (vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->is_tracking()) {
+    double delta = vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_stored_remains(exec) -
                    exec->get_remaining();
-    vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->update_dirty_page_count(delta);
+    vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->update_dirty_page_count(delta);
   }
-  vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->untrack(exec);
+  vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->untrack(exec);
 }
 
 void sg_vm_dirty_page_tracking_init()
@@ -113,50 +113,50 @@ void sg_vm_dirty_page_tracking_init()
 
 void sg_vm_start_dirty_page_tracking(sg_vm_t vm)
 {
-  vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->start_tracking();
+  vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->start_tracking();
 }
 
 void sg_vm_stop_dirty_page_tracking(sg_vm_t vm)
 {
-  vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->stop_tracking();
+  vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->stop_tracking();
 }
 
 double sg_vm_lookup_computed_flops(sg_vm_t vm)
 {
-  return vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->computed_flops_lookup();
+  return vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->computed_flops_lookup();
 }
 
 void sg_vm_set_dirty_page_intensity(sg_vm_t vm, double intensity)
 {
-  vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->set_intensity(intensity);
+  vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->set_intensity(intensity);
 }
 
 double sg_vm_get_dirty_page_intensity(sg_vm_t vm)
 {
-  return vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_intensity();
+  return vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_intensity();
 }
 
 void sg_vm_set_working_set_memory(sg_vm_t vm, sg_size_t size)
 {
-  vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->set_working_set_memory(size);
+  vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->set_working_set_memory(size);
 }
 
 sg_size_t sg_vm_get_working_set_memory(sg_vm_t vm)
 {
-  return vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_working_set_memory();
+  return vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_working_set_memory();
 }
 
 void sg_vm_set_migration_speed(sg_vm_t vm, double speed)
 {
-  vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->set_migration_speed(speed);
+  vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->set_migration_speed(speed);
 }
 
 double sg_vm_get_migration_speed(sg_vm_t vm)
 {
-  return vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_migration_speed();
+  return vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_migration_speed();
 }
 
 double sg_vm_get_max_downtime(sg_vm_t vm)
 {
-  return vm->getImpl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_max_downtime();
+  return vm->get_impl()->extension<simgrid::vm::VmDirtyPageTrackingExt>()->get_max_downtime();
 }

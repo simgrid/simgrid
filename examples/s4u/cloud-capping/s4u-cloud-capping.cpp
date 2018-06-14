@@ -41,7 +41,7 @@ static void worker_busy_loop(const char* name, double speed)
     if (speed > 0) {
       double new_bound = (speed / 10) * i;
       XBT_INFO("set bound of VM1 to %f", new_bound);
-      static_cast<simgrid::s4u::VirtualMachine*>(simgrid::s4u::this_actor::get_host())->setBound(new_bound);
+      static_cast<simgrid::s4u::VirtualMachine*>(simgrid::s4u::this_actor::get_host())->set_bound(new_bound);
     }
     simgrid::s4u::this_actor::sleep_for(100);
     double exec_remain_now = exec->get_remaining();
@@ -189,7 +189,7 @@ static void master_main()
   vm0->destroy();
 
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->setBound(pm0->getSpeed() / 10);
+  vm0->set_bound(pm0->getSpeed() / 10);
   vm0->start();
 
   XBT_INFO("# 7. Put a single task on the VM capped by 10%%.");
@@ -207,7 +207,7 @@ static void master_main()
   vm0->destroy();
 
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->setRamsize(1e9); // 1GB
+  vm0->set_ramsize(1e9); // 1GB
   vm0->start();
 
   double cpu_speed = pm0->getSpeed();
@@ -221,7 +221,7 @@ static void master_main()
   XBT_INFO(" ");
 
   XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put a task on the VM.");
-  vm0->setBound(cpu_speed / 10);
+  vm0->set_bound(cpu_speed / 10);
   simgrid::s4u::Actor::create("worker0", vm0, worker, computation_amount, false, 0);
   simgrid::s4u::this_actor::sleep_for(1000);
   XBT_INFO(" ");

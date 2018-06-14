@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_cloud_interrupt_migration, "Messages specific f
 
 static void vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 {
-  simgrid::s4u::Host* src_pm = vm->getPm();
+  simgrid::s4u::Host* src_pm = vm->get_pm();
   double mig_sta             = simgrid::s4u::Engine::get_clock();
   sg_vm_migrate(vm, dst_pm);
   double mig_end = simgrid::s4u::Engine::get_clock();
@@ -30,7 +30,7 @@ static void master_main()
   simgrid::s4u::Host* pm1 = simgrid::s4u::Host::by_name("Tremblay");
 
   simgrid::s4u::VirtualMachine* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->setRamsize(1e9); // 1Gbytes
+  vm0->set_ramsize(1e9); // 1Gbytes
   vm0->start();
 
   XBT_INFO("Start the migration of %s from %s to %s", vm0->get_cname(), pm0->get_cname(), pm1->get_cname());
