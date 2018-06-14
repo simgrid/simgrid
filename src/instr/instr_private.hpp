@@ -196,6 +196,29 @@ public:
   }
   std::string display_size() override { return std::to_string(send_size > 0 ? send_size : recv_size); }
 };
+
+/**
+ * If we want to wait for a request of asynchronous communication, we need to be able
+ * to identify this request. We do this by searching for a request identified by (src, dest, tag).
+ */
+class WaitTIData : public TIData {
+  int src;
+  int dest;
+  int tag;
+
+public:
+  explicit WaitTIData(int src, int dest, int tag) : TIData("wait"), src(src), dest(dest), tag(tag){};
+
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " " << src << " " << dest << " " << tag;
+
+    return stream.str();
+  }
+
+  std::string display_size() override { return ""; }
+};
 }
 }
 

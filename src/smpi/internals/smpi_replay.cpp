@@ -424,7 +424,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
   // MPI_REQUEST_NULL by Request::wait!
   bool is_wait_for_receive = (request->flags() & MPI_REQ_RECV);
   // TODO: Here we take the rank while we normally take the process id (look for my_proc_id)
-  TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("wait"));
+  TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::WaitTIData(args.src, args.dst, args.tag));
 
   MPI_Status status;
   Request::wait(&request, &status);
