@@ -5,8 +5,7 @@ if(enable_smpi)
 
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
 
-  foreach(x replay
-            trace trace_simple trace_call_location energy load_balancer)
+  foreach(x replay load_balancer trace trace_simple trace_call_location energy)
     add_executable       (smpi_${x} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x})
     target_link_libraries(smpi_${x} simgrid)
     set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
