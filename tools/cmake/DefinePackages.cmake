@@ -255,6 +255,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_win.hpp
   src/smpi/plugins/sampi_loadbalancer.cpp
   src/smpi/plugins/sampi_pampi.cpp
+  src/smpi/plugins/load_balancer/LoadBalancer.cpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
   )
@@ -1004,6 +1005,7 @@ set(CMAKEFILES_TXT
     examples/smpi/smpi_msg_masterslave/CMakeLists.txt
     examples/smpi/replay_multiple/CMakeLists.txt
     examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
+    examples/smpi/load_balancer_replay/CMakeLists.txt
     examples/smpi/energy/f77/CMakeLists.txt
     examples/smpi/energy/f90/CMakeLists.txt
 
