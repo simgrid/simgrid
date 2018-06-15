@@ -8,13 +8,6 @@
 
 #include <simgrid/s4u/Host.hpp>
 
-enum e_surf_vm_state_t {
-  SURF_VM_STATE_CREATED, /**< created, but not yet started */
-  SURF_VM_STATE_RUNNING,
-  SURF_VM_STATE_SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-  SURF_VM_STATE_DESTROYED
-};
-
 namespace simgrid {
 namespace s4u {
 
@@ -38,6 +31,13 @@ public:
   VirtualMachine(VirtualMachine const&) = delete;
   VirtualMachine& operator=(VirtualMachine const&) = delete;
 
+  enum class state {
+    CREATED, /**< created, but not yet started */
+    RUNNING,
+    SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
+    DESTROYED
+  };
+
   simgrid::vm::VirtualMachineImpl* get_impl() { return pimpl_vm_; }
   void start();
   void suspend();
@@ -51,7 +51,7 @@ public:
   void set_ramsize(size_t ramsize);
   void set_bound(double bound);
 
-  e_surf_vm_state_t getState();
+  VirtualMachine::state getState();
   static simgrid::xbt::signal<void(VirtualMachine&)> on_start;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_started;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_shutdown;

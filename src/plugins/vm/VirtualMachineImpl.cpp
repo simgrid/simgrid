@@ -141,7 +141,7 @@ VirtualMachineImpl::~VirtualMachineImpl()
 
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
-  if (get_state() != SURF_VM_STATE_RUNNING)
+  if (get_state() != s4u::VirtualMachine::state::RUNNING)
     THROWF(vm_error, 0, "Cannot suspend VM %s: it is not running.", piface_->get_cname());
   if (issuer->host == piface_)
     THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
@@ -159,12 +159,12 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
   XBT_DEBUG("suspend all processes on the VM done done");
 
-  vm_state_ = SURF_VM_STATE_SUSPENDED;
+  vm_state_ = s4u::VirtualMachine::state::SUSPENDED;
 }
 
 void VirtualMachineImpl::resume()
 {
-  if (get_state() != SURF_VM_STATE_SUSPENDED)
+  if (get_state() != s4u::VirtualMachine::state::SUSPENDED)
     THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->get_cname());
 
   auto& process_list = piface_->extension<simgrid::simix::Host>()->process_list;
@@ -177,7 +177,7 @@ void VirtualMachineImpl::resume()
     smx_process.resume();
   }
 
-  vm_state_ = SURF_VM_STATE_RUNNING;
+  vm_state_ = s4u::VirtualMachine::state::RUNNING;
 }
 
 /** @brief Power off a VM.
@@ -189,16 +189,16 @@ void VirtualMachineImpl::resume()
  */
 void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 {
-  if (get_state() != SURF_VM_STATE_RUNNING) {
+  if (get_state() != s4u::VirtualMachine::state::RUNNING) {
     const char* stateName = "(unknown state)";
     switch (get_state()) {
-      case SURF_VM_STATE_CREATED:
+      case s4u::VirtualMachine::state::CREATED:
         stateName = "created, but not yet started";
         break;
-      case SURF_VM_STATE_SUSPENDED:
+      case s4u::VirtualMachine::state::SUSPENDED:
         stateName = "suspended";
         break;
-      case SURF_VM_STATE_DESTROYED:
+      case s4u::VirtualMachine::state::DESTROYED:
         stateName = "destroyed";
         break;
       default: /* SURF_VM_STATE_RUNNING or unexpected values */
@@ -217,7 +217,7 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     SIMIX_process_kill(&smx_process, issuer);
   }
 
-  set_state(SURF_VM_STATE_DESTROYED);
+  set_state(s4u::VirtualMachine::state::DESTROYED);
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
 }

@@ -43,7 +43,7 @@ void MigrationRx::operator()()
 
   /* Update the vm location */
   /* precopy migration makes the VM temporally paused */
-  xbt_assert(vm_->getState() == SURF_VM_STATE_SUSPENDED);
+  xbt_assert(vm_->getState() == s4u::VirtualMachine::state::SUSPENDED);
 
   /* Update the vm location and resume it */
   vm_->set_pm(dst_pm_);
@@ -338,7 +338,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
            src_pm->get_cname());
   if (dst_pm->is_off())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' to host '%s', which is offline.", vm->get_cname(), dst_pm->get_cname());
-  if (vm->getState() != SURF_VM_STATE_RUNNING)
+  if (vm->getState() != simgrid::s4u::VirtualMachine::state::RUNNING)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is not running yet.", vm->get_cname());
   if (vm->get_impl()->is_migrating_)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());

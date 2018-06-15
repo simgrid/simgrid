@@ -95,7 +95,7 @@ void VirtualMachine::start()
       }
     }
 
-    this->pimpl_vm_->set_state(SURF_VM_STATE_RUNNING);
+    this->pimpl_vm_->set_state(VirtualMachine::state::RUNNING);
   });
 
   on_started(*this);
@@ -140,7 +140,7 @@ void VirtualMachine::set_pm(simgrid::s4u::Host* pm)
   simgrid::simix::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
 }
 
-e_surf_vm_state_t VirtualMachine::getState()
+VirtualMachine::state VirtualMachine::getState()
 {
   return simgrid::simix::simcall([this]() { return pimpl_vm_->get_state(); });
 }
@@ -237,19 +237,19 @@ void sg_vm_set_bound(sg_vm_t vm, double bound)
 /** @brief Returns whether the given VM has just created, not running. */
 int sg_vm_is_created(sg_vm_t vm)
 {
-  return vm->getState() == SURF_VM_STATE_CREATED;
+  return vm->getState() == simgrid::s4u::VirtualMachine::state::CREATED;
 }
 
 /** @brief Returns whether the given VM is currently running */
 int sg_vm_is_running(sg_vm_t vm)
 {
-  return vm->getState() == SURF_VM_STATE_RUNNING;
+  return vm->getState() == simgrid::s4u::VirtualMachine::state::RUNNING;
 }
 
 /** @brief Returns whether the given VM is currently suspended, not running. */
 int sg_vm_is_suspended(sg_vm_t vm)
 {
-  return vm->getState() == SURF_VM_STATE_SUSPENDED;
+  return vm->getState() == simgrid::s4u::VirtualMachine::state::SUSPENDED;
 }
 
 /** @brief Start a vm (i.e., boot the guest operating system)
