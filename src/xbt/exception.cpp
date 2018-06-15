@@ -28,9 +28,7 @@ namespace xbt {
 
 WithContextException::~WithContextException() = default;
 
-void logException(
-  e_xbt_log_priority_t prio,
-  const char* context, std::exception const& exception)
+void log_exception(e_xbt_log_priority_t prio, const char* context, std::exception const& exception)
 {
   try {
     auto name = simgrid::xbt::demangle(typeid(exception).name());
@@ -60,7 +58,7 @@ void logException(
       with_nested->rethrow_nested();
     }
     catch (std::exception& nested_exception) {
-      logException(prio, "Caused by", nested_exception);
+      log_exception(prio, "Caused by", nested_exception);
     }
     // We could catch nested_exception or WithContextException but we don't bother:
     catch (...) {
@@ -105,7 +103,7 @@ static void handler()
 
   // We manage C++ exception ourselves
   catch (std::exception& e) {
-    logException(xbt_log_priority_critical, "Uncaught exception", e);
+    log_exception(xbt_log_priority_critical, "Uncaught exception", e);
     showBacktrace(bt);
     std::abort();
   }
@@ -124,13 +122,22 @@ static void handler()
 
 }
 
-void installExceptionHandler()
+void install_exception_handler()
 {
   static std::once_flag handler_flag;
   std::call_once(handler_flag, [] {
     previous_terminate_handler = std::set_terminate(handler);
   });
 }
-
+// deprecated
+void logException(e_xbt_log_priority_t priority, const char* context, std::exception const& exception)
+{
+  log_exception(priority, context, exception);
 }
+void installExceptionHandler()
+{
+  install_exception_handler();
+}
+
+} // namespace xbt
 }

@@ -122,7 +122,7 @@ static void xbt_postexit()
 /** @brief Initialize the xbt mechanisms. */
 void xbt_init(int *argc, char **argv)
 {
-  simgrid::xbt::installExceptionHandler();
+  simgrid::xbt::install_exception_handler();
 
   xbt_initialized++;
   if (xbt_initialized > 1) {
