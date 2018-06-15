@@ -51,7 +51,7 @@ public:
   void set_ramsize(size_t ramsize);
   void set_bound(double bound);
 
-  VirtualMachine::state getState();
+  VirtualMachine::state get_state();
   static simgrid::xbt::signal<void(VirtualMachine&)> on_start;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_started;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_shutdown;
@@ -59,6 +59,10 @@ public:
   static simgrid::xbt::signal<void(VirtualMachine&)> on_resume;
 
   // Deprecated methods
+  XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_state()") VirtualMachine::state getState()
+  {
+    return get_state();
+  }
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_impl()") simgrid::vm::VirtualMachineImpl* getImpl()
   {
     return pimpl_vm_;
