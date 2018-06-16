@@ -80,7 +80,7 @@ public:
   }
 
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
-  /* The pair is {linkUp, linkDown} */
+  /* The pair is {link_up, link_down} */
   std::unordered_map<unsigned int, std::pair<kernel::resource::LinkImpl*, kernel::resource::LinkImpl*>> private_links_;
 
   unsigned int node_pos(int id) { return id * num_links_per_node_; }

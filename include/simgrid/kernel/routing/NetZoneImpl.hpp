@@ -55,7 +55,7 @@ protected:
 
 public:
   /** @brief Make an host within that NetZone */
-  simgrid::s4u::Host* create_host(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
+  simgrid::s4u::Host* create_host(const char* name, std::vector<double>* speed_per_pstate, int core_count,
                                   std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
   void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,

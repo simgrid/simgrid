@@ -162,11 +162,11 @@ bind_flag(T& value, const char* name, const char* description, std::map<T, std::
                      found = true;
                  }
                  if (not found || std::string(val) == "help") {
-                   std::string mesg;
+                   std::string mesg = std::string("\n");
                    if (std::string(val) == "help")
-                     mesg = std::string("\nPossible values for option ") + name + ":\n";
+                     mesg += std::string("Possible values for option ") + name + ":\n";
                    else
-                     mesg = std::string("\nInvalid value '") + val + "' for option " + name + ". Possible values:\n";
+                     mesg += std::string("Invalid value '") + val + "' for option " + name + ". Possible values:\n";
                    for (auto kv : valid_values)
                      mesg += "  - '" + std::string(kv.first) + "': " + kv.second +
                              (kv.first == value ? "  <=== DEFAULT" : "") + "\n";

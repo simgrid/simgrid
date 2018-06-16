@@ -36,7 +36,7 @@ public:
    * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core) = 0;
+  virtual Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) = 0;
 
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
@@ -92,7 +92,7 @@ public:
    * @param requestedCores The desired amount of cores. Must be >= 1
    * @return The CpuAction corresponding to the processing
    */
-  virtual simgrid::kernel::resource::Action* execution_start(double size, int requestedCores) = 0;
+  virtual simgrid::kernel::resource::Action* execution_start(double size, int requested_cores) = 0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)
