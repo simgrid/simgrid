@@ -23,8 +23,12 @@ int xbt_backtrace_no_malloc(void **array, int size) {
 namespace simgrid {
 namespace xbt {
 
-std::vector<std::string> resolveBacktrace(
-  xbt_backtrace_location_t const* loc, std::size_t count)
+std::vector<std::string> resolveBacktrace(xbt_backtrace_location_t const* loc, std::size_t count) // deprecated
+{
+  return resolve_backtrace(loc, count);
+}
+
+std::vector<std::string> resolve_backtrace(xbt_backtrace_location_t const* loc, std::size_t count)
 {
   return std::vector<std::string>();
 }

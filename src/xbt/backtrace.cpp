@@ -32,7 +32,7 @@ static bool startWith(std::string str, const char* prefix)
 void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
 {
 #ifdef HAVE_BACKTRACE
-  std::vector<std::string> backtrace = simgrid::xbt::resolveBacktrace(loc, count);
+  std::vector<std::string> backtrace = simgrid::xbt::resolve_backtrace(loc, count);
   if (backtrace.empty()) {
     fprintf(stderr, "(backtrace not set)\n");
     return;
