@@ -199,9 +199,17 @@ public:
  *  @param    code  What we want to do
  *  @param  promise Where to want to store the result
  */
-template<class R, class F>
-auto fulfillPromise(R& promise, F&& code)
--> decltype(promise.set_value(code()))
+template <class R, class F> auto fulfill_promise(R& promise, F&& code) -> decltype(promise.set_value(code()))
+{
+  try {
+    promise.set_value(std::forward<F>(code)());
+  } catch (...) {
+    promise.set_exception(std::current_exception());
+  }
+}
+template <class R, class F>
+XBT_ATTRIB_DEPRECATED_v323("Please use xbt::fulfill_promise()") auto fulfillPromise(R& promise, F&& code)
+    -> decltype(promise.set_value(code()))
 {
   try {
     promise.set_value(std::forward<F>(code)());
@@ -211,9 +219,18 @@ auto fulfillPromise(R& promise, F&& code)
   }
 }
 
-template<class P, class F>
-auto fulfillPromise(P& promise, F&& code)
--> decltype(promise.set_value())
+template <class P, class F> auto fulfill_promise(P& promise, F&& code) -> decltype(promise.set_value())
+{
+  try {
+    std::forward<F>(code)();
+    promise.set_value();
+  } catch (...) {
+    promise.set_exception(std::current_exception());
+  }
+}
+template <class P, class F>
+XBT_ATTRIB_DEPRECATED_v323("Please use xbt::fulfill_promise()") auto fulfillPromise(P& promise, F&& code)
+    -> decltype(promise.set_value())
 {
   try {
     std::forward<F>(code)();
@@ -238,10 +255,14 @@ auto fulfillPromise(P& promise, F&& code)
  *  @param promise output (a valid future or a result)
  *  @param future  input (a ready/waitable future or a valid result)
  */
-template<class P, class F> inline
-void setPromise(P& promise, F&& future)
+template <class P, class F> inline void set_promise(P& promise, F&& future)
 {
-  fulfillPromise(promise, [&]{ return std::forward<F>(future).get(); });
+  fulfill_promise(promise, [&] { return std::forward<F>(future).get(); });
+}
+template <class P, class F>
+inline XBT_ATTRIB_DEPRECATED_v323("Please use xbt::set_promise()") void setPromise(P& promise, F&& future)
+{
+  fulfill_promise(promise, [&] { return std::forward<F>(future).get(); });
 }
 
 }

@@ -60,7 +60,7 @@ auto kernelSync(F code) -> decltype(code().get())
     try {
       auto future = code();
       future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-        simgrid::xbt::setPromise(result, simgrid::kernel::Future<T>(value));
+        simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
         simgrid::simix::unblock(self);
       });
     }
@@ -96,7 +96,7 @@ public:
         // When the kernel future is ready...
         this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
           // ... wake up the process with the result of the kernel future.
-          simgrid::xbt::setPromise(result, simgrid::kernel::Future<T>(value));
+          simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
           simgrid::simix::unblock(self);
         });
       }

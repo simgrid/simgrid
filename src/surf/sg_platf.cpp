@@ -54,8 +54,8 @@ void sg_platf_init()
 
 /** Module management function: frees all internal data structures */
 void sg_platf_exit() {
-  simgrid::surf::on_cluster.disconnectSlots();
-  simgrid::s4u::on_platform_created.disconnectSlots();
+  simgrid::surf::on_cluster.disconnect_slots();
+  simgrid::s4u::on_platform_created.disconnect_slots();
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;

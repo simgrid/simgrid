@@ -61,9 +61,7 @@ template <class F> typename std::result_of<F()>::type simcall(F&& code)
   // conveniently handles the success/failure value for us.
   typedef typename std::result_of<F()>::type R;
   simgrid::xbt::Result<R> result;
-  simcall_run_kernel([&]{
-    simgrid::xbt::fulfillPromise(result, std::forward<F>(code));
-  });
+  simcall_run_kernel([&] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); });
   return result.get();
 }
 

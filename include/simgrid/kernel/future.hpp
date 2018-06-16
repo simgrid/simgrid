@@ -210,10 +210,8 @@ void bindPromise(Promise<T> promise, Future<T> future)
   class PromiseBinder {
   public:
     explicit PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
-    void operator()(Future<T> future)
-    {
-      simgrid::xbt::setPromise(promise_, future);
-    }
+    void operator()(Future<T> future) { simgrid::xbt::set_promise(promise_, future); }
+
   private:
     Promise<T> promise_;
   };
@@ -350,7 +348,7 @@ public:
         [](Promise<R> promise, std::shared_ptr<FutureState<T>> state, F continuation) {
           // ...set the new future value by running the continuation.
           Future<T> future(std::move(state));
-          simgrid::xbt::fulfillPromise(promise, [&] { return continuation(std::move(future)); });
+          simgrid::xbt::fulfill_promise(promise, [&] { return continuation(std::move(future)); });
         },
         std::move(promise), state, std::move(continuation)));
     return std::move(future);
