@@ -168,6 +168,7 @@ examples/s4u/energy-boot/s4u-energy-boot
 examples/s4u/energy-exec/s4u-energy-exec
 examples/s4u/energy-link/s4u-energy-link
 examples/s4u/energy-vm/s4u-energy-vm
+examples/s4u/engine-filtering/s4u-engine-filtering
 examples/s4u/exec-async/s4u-exec-async
 examples/s4u/exec-basic/s4u-exec-basic
 examples/s4u/exec-dvfs/s4u-exec-dvfs
