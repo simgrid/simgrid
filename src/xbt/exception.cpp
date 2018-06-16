@@ -35,10 +35,8 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
 
     auto* with_context = dynamic_cast<const simgrid::xbt::WithContextException*>(&exception);
     if (with_context != nullptr)
-      XBT_LOG(prio, "%s %s by %s/%d: %s",
-        context, name.get(),
-        with_context->processName().c_str(), with_context->pid(),
-        exception.what());
+      XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.get(), with_context->process_name().c_str(),
+              with_context->pid(), exception.what());
     else
       XBT_LOG(prio, "%s %s: %s", context, name.get(), exception.what());
 
