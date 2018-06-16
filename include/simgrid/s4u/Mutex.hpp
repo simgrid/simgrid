@@ -48,11 +48,14 @@ public:
   Mutex& operator=(Mutex const&) = delete;
 
   /** Constructs a new mutex */
-  static Ptr createMutex();
+  static Ptr create();
 
   void lock();
   void unlock();
   bool try_lock();
+
+  // deprecated
+  XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static Ptr createMutex() { return create(); }
 };
 
 using MutexPtr = Mutex::Ptr;

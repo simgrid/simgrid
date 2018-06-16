@@ -34,7 +34,7 @@ bool Mutex::try_lock()
  *
  * See @ref s4u_raii.
  */
-MutexPtr Mutex::createMutex()
+MutexPtr Mutex::create()
 {
   smx_mutex_t mutex = simcall_mutex_init();
   return MutexPtr(&mutex->mutex(), false);
