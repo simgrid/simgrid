@@ -16,7 +16,7 @@
 
 #include <stddef.h> /* size_t */
 
-#include <simgrid_config.h> /* SIMGRID_HAVE_MC ? */
+#include <simgrid/config.h> /* SIMGRID_HAVE_MC ? */
 
 #include <xbt/base.h>
 

@@ -8,7 +8,7 @@
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
-#include <simgrid_config.h>
+#include <simgrid/config.h>
 #include <xbt/base.h>
 #include <xbt/dynar.h>
 

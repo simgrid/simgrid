@@ -6,8 +6,8 @@
 #ifndef JED_SIMGRID_PLATFORM_H_
 #define JED_SIMGRID_PLATFORM_H_
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
-#include <simgrid_config.h>
 #include <xbt/dynar.h>
 
 #include <unordered_map>

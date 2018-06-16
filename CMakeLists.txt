@@ -615,11 +615,11 @@ endif()
 
 # Avoid triggering a (full) rebuild by touching the files if they did not really change
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h.generated"    @ONLY IMMEDIATE)
-configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in"          "${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid/config.h.in"          "${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated" @ONLY IMMEDIATE)
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/internal_config.h.generated ${CMAKE_BINARY_DIR}/src/internal_config.h)
-execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid_config.h)
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid/config.h)
 file(REMOVE ${CMAKE_BINARY_DIR}/src/internal_config.h.generated)
-file(REMOVE ${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated)
+file(REMOVE ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated)
 
 # We need two versions of the SMPI scripts because they contain the path to the library
 # so, it depends of whether SimGrid is installed, or run from the sources (during the build)
@@ -679,7 +679,7 @@ endif()
 
 set(generated_headers_to_install
   ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/mpif.h
-  ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/config.h
   )
 
 set(generated_headers  ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h )
@@ -857,9 +857,9 @@ foreach(line ${config_output})
   message("   ${line}")
 endforeach()
 message("##########################################")
-message("####   Content of simgrid_config.h    ####")
+message("####   Content of simgrid/config.h    ####")
 message("##########################################")
-file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h config_output)
+file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/config.h config_output)
 LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8 9 -1) # Pass the file header
 foreach(line ${config_output})
   message("   ${line}")

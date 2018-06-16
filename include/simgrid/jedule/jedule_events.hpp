@@ -8,8 +8,8 @@
 
 #include <simgrid/jedule/jedule_platform.hpp>
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
-#include <simgrid_config.h>
 
 #include <vector>
 #include <string>

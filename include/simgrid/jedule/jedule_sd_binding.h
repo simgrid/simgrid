@@ -6,8 +6,8 @@
 #ifndef JEDULE_SD_BINDING_H_
 #define JEDULE_SD_BINDING_H_
 
+#include <simgrid/config.h>
 #include <simgrid/simdag.h>
-#include <simgrid_config.h>
 
 #if SIMGRID_HAVE_JEDULE
 SG_BEGIN_DECL()

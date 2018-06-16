@@ -27,6 +27,9 @@ XBT:
  - Config: the C API is now deprecated (will be removed in 3.23), and
            the C++ API has been slightly improved.
 
+Other:
+ - Move simgrid_config.h to simgrid/config.h (old header still working)
+
 Fixed bugs:
  - #143: Setting a breakpoint at a given time
  - #258: daemonized actors hang after all non-daemonized actors have completed

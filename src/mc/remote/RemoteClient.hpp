@@ -16,7 +16,7 @@
 
 #include <sys/types.h>
 
-#include <simgrid_config.h>
+#include <simgrid/config.h>
 
 #include "xbt/base.h"
 #include <xbt/mmalloc.h>

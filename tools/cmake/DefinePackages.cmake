@@ -658,6 +658,7 @@ set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
 
+  include/simgrid_config.h
   include/simgrid/actor.h
   include/simgrid/engine.h
   include/simgrid/chrono.hpp
@@ -763,7 +764,7 @@ set(headers_to_install
   include/xbt/xbt_os_time.h
   )
 set(source_of_generated_headers
-  include/simgrid_config.h.in
+  include/simgrid/config.h.in
   include/smpi/mpif.h.in)
 
 ### depend of some variables setted upper

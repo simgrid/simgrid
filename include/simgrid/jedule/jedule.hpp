@@ -6,9 +6,9 @@
 #ifndef JEDULE_HPP_
 #define JEDULE_HPP_
 
+#include <simgrid/config.h>
 #include <simgrid/jedule/jedule_events.hpp>
 #include <simgrid/jedule/jedule_platform.hpp>
-#include <simgrid_config.h>
 
 #include <cstdio>
 

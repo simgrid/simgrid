@@ -72,7 +72,7 @@
 /* Copy the first part of user declarations.  */
 #line 7 "parserPromela.yacc" /* yacc.c:339  */
 
-#include "simgrid_config.h"
+#include "simgrid/config.h"
 #if !HAVE_UNISTD_H
 #define YY_NO_UNISTD_H /* hello Windows */
 #endif

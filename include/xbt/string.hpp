@@ -6,7 +6,7 @@
 #ifndef SIMGRID_XBT_STRING_HPP
 #define SIMGRID_XBT_STRING_HPP
 
-#include <simgrid_config.h>
+#include <simgrid/config.h>
 
 #include <cstdarg>
 #include <cstdlib>

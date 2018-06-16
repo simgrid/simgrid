@@ -24,7 +24,7 @@
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
-#include <simgrid_config.h>
+#include <simgrid/config.h>
 
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"

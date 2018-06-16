@@ -56,9 +56,16 @@
 cmake_minimum_required(VERSION 2.8)
 
 find_path(SimGrid_INCLUDE_DIR
-  NAMES simgrid_config.h
+  NAMES simgrid/config.h
   PATHS ${SimGrid_PATH}/include /opt/simgrid/include
 )
+if (NOT SimGrid_INCLUDE_DIR)
+  # search under the old name
+  find_path(SimGrid_INCLUDE_DIR
+    NAMES simgrid_config.h
+    PATHS ${SimGrid_PATH}/include /opt/simgrid/include
+  )
+endif()    
 find_library(SimGrid_LIBRARY
   NAMES simgrid
   PATHS ${SimGrid_PATH}/lib /opt/simgrid/lib
@@ -68,7 +75,11 @@ mark_as_advanced(SimGrid_LIBRARY)
 
 if (SimGrid_INCLUDE_DIR)
   set(SimGrid_VERSION_REGEX "^#define SIMGRID_VERSION_(MAJOR|MINOR|PATCH) ([0-9]+)$")
-  file(STRINGS "${SimGrid_INCLUDE_DIR}/simgrid_config.h" SimGrid_VERSION_STRING REGEX ${SimGrid_VERSION_REGEX})
+  if (EXISTS "${SimGrid_INCLUDE_DIR}/simgrid/config.h")
+    file(STRINGS "${SimGrid_INCLUDE_DIR}/simgrid/config.h" SimGrid_VERSION_STRING REGEX ${SimGrid_VERSION_REGEX})
+  else()
+    file(STRINGS "${SimGrid_INCLUDE_DIR}/simgrid_config.h" SimGrid_VERSION_STRING REGEX ${SimGrid_VERSION_REGEX})
+  endif()
   set(SimGrid_VERSION "")
 
   # Concat the matches to MAJOR.MINOR.PATCH assuming they appear in this order
