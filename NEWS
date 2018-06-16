@@ -5,6 +5,10 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|\___/
                (NOT RELEASED)
 
+
+ * Sanitize the public API. Compatibility wrappers in place for one year.
+ * MPI: Port the trace replay engine to C++, fix visualization
+
                     _               _____  _  ___   _
 __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \ / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | (_) || |
