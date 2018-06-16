@@ -158,8 +158,6 @@ static void kill_process(smx_actor_t process)
 namespace simgrid {
 namespace simix {
 
-simgrid::xbt::signal<void()> onDeadlock;
-
 simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
                                          "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 }
@@ -530,9 +528,6 @@ void SIMIX_run()
 
     XBT_DEBUG("### time %f, #processes %zu, #to_run %zu", time, simix_global->process_list.size(),
               simix_global->process_to_run.size());
-
-    if (simix_global->process_to_run.empty() && not simix_global->process_list.empty())
-      simgrid::simix::onDeadlock();
 
   } while (time > -1.0 || not simix_global->process_to_run.empty());
 

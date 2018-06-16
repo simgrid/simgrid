@@ -266,7 +266,7 @@ extern XBT_PUBLIC xbt::signal<void()> on_simulation_end;
 /** Callback fired when the time jumps into the future */
 extern XBT_PUBLIC xbt::signal<void(double)> on_time_advance;
 
-/** Callback fired when the time cannot jump because of inter-actors deadlock */
+/** Callback fired when the time cannot advance because of inter-actors deadlock */
 extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
 template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)

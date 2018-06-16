@@ -16,6 +16,7 @@ Plugins:
 
 simix:
  - Add parameter --cfg=simix/breakpoint to raise a SIGTRAP at given time.
+ - kill simix::onDeadlock() that was somewhat dupplicating s4u::on_deadlock()
 
 SMPI:
  - Replay: The replay file has been re-written in C++.
