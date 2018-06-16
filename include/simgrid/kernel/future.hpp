@@ -204,8 +204,7 @@ public:
   }
 };
 
-template<class T>
-void bindPromise(Promise<T> promise, Future<T> future)
+template <class T> void bind_promise(Promise<T> promise, Future<T> future)
 {
   class PromiseBinder {
   public:
@@ -218,7 +217,18 @@ void bindPromise(Promise<T> promise, Future<T> future)
   future.then_(PromiseBinder(std::move(promise)));
 }
 
-template<class T> Future<T> unwrapFuture(Future<Future<T>> future);
+template <class T> Future<T> unwrap_future(Future<Future<T>> future);
+
+template <class T>
+XBT_ATTRIB_DEPRECATED_v323("Please use bind_promise") void bindPromise(Promise<T> promise, Future<T> future)
+{
+  bind_promise(promise, future);
+}
+template <class T>
+XBT_ATTRIB_DEPRECATED_v323("Please use unwrap_future") Future<T> unwrapFuture(Future<Future<T>> future)
+{
+  unwrap_future(future);
+}
 
 /** Result of some (probably) asynchronous operation in the SimGrid kernel
  *
@@ -332,9 +342,7 @@ public:
    *
    *  This version never does future unwrapping.
    */
-  template<class F>
-  auto thenNoUnwrap(F continuation)
-  -> Future<decltype(continuation(std::move(*this)))>
+  template <class F> auto then_no_unwrap(F continuation) -> Future<decltype(continuation(std::move(*this)))>
   {
     typedef decltype(continuation(std::move(*this))) R;
     if (state_ == nullptr)
@@ -354,6 +362,13 @@ public:
     return std::move(future);
   }
 
+  template <class F>
+  XBT_ATTRIB_DEPRECATED_v323("Please use then_no_unwrap") auto thenNoUnwrap(F continuation)
+      -> Future<decltype(continuation(std::move(*this)))>
+  {
+    then_no_unwrap(continuation);
+  }
+
   /** Attach a continuation to this future
    *
    *  The future must be valid in order to make this call.
@@ -368,7 +383,7 @@ public:
   auto then(F continuation) -> typename std::enable_if<not is_future<decltype(continuation(std::move(*this)))>::value,
                                                        Future<decltype(continuation(std::move(*this)))>>::type
   {
-    return this->thenNoUnwrap(std::move(continuation));
+    return this->then_no_unwrap(std::move(continuation));
   }
 
   /** Attach a continuation to this future (future chaining) */
@@ -379,7 +394,7 @@ public:
        decltype(continuation(std::move(*this)))
      >::type
   {
-    return unwrapFuture(this->thenNoUnwap(std::move(continuation)));
+    return unwrap_future(this->then_no_unwrap(std::move(continuation)));
   }
 
   /** Get the value from the future
@@ -405,12 +420,11 @@ private:
   std::shared_ptr<FutureState<T>> state_;
 };
 
-template<class T>
-Future<T> unwrapFuture(Future<Future<T>> future)
+template <class T> Future<T> unwrap_future(Future<Future<T>> future)
 {
   Promise<T> promise;
   Future<T> result = promise.get_future();
-  bindPromise(std::move(promise), std::move(future));
+  bind_promise(std::move(promise), std::move(future));
   return std::move(result);
 }
 

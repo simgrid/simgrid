@@ -200,7 +200,7 @@ The crux of `future.then()` is:
 @code{cpp}
 template<class T>
 template<class F>
-auto simgrid::kernel::Future<T>::thenNoUnwrap(F continuation)
+auto simgrid::kernel::Future<T>::then_no_unwrap(F continuation)
 -> Future<decltype(continuation(std::move(*this)))>
 {
   typedef decltype(continuation(std::move(*this))) R;
