@@ -468,14 +468,14 @@ kernel which will wake up the actor (with
 `simgrid::simix::unblock(actor)`) when the operation is completed.
 
 This is wrapped in a higher-level primitive as well. The
-`kernelSync()` function expects a function-object which is executed
+`kernel_sync()` function expects a function-object which is executed
 immediately in the simulation kernel and returns a `Future<T>`.  The
 simulator blocks the actor and resumes it when the `Future<T>` becomes
 ready with its result:
 
 @code{cpp}
 template<class F>
-auto kernelSync(F code) -> decltype(code().get())
+auto kernel_sync(F code) -> decltype(code().get())
 {
   typedef decltype(code().get()) T;
   if (SIMIX_is_maestro())
@@ -510,7 +510,7 @@ auto kernelSync(F code) -> decltype(code().get())
 A contrived example of this would be:
 
 @code{cpp}
-int res = simgrid::simix::kernelSync([&] {
+int res = simgrid::simix::kernel_sync([&] {
   return kernel_wait_until(30).then(
     [](simgrid::kernel::Future<void> future) {
       return 42;
@@ -521,7 +521,7 @@ int res = simgrid::simix::kernelSync([&] {
 
 ### Asynchronous operations {#uhood_switch_v2_async}
 
-We can write the related `kernelAsync()` which wakes up the actor immediately
+We can write the related `kernel_async()` which wakes up the actor immediately
 and returns a future to the actor. As this future is used in the actor context,
 it is a different future
 (`simgrid::simix::Future` instead of `simgrid::kernel::Future`)
@@ -572,12 +572,12 @@ T simgrid::simix::Future<T>::get()
 }
 @endcode
 
-`kernelAsync()` simply :wink: calls `kernelImmediate()` and wraps the
+`kernel_async()` simply :wink: calls `kernelImmediate()` and wraps the
 `simgrid::kernel::Future` into a `simgrid::simix::Future`:
 
 @code{cpp}
 template<class F>
-auto kernelAsync(F code)
+auto kernel_async(F code)
   -> Future<decltype(code().get())>
 {
   typedef decltype(code().get()) T;
@@ -594,7 +594,7 @@ auto kernelAsync(F code)
 A contrived example of this would be:
 
 @code{cpp}
-simgrid::simix::Future<int> future = simgrid::simix::kernelSync([&] {
+simgrid::simix::Future<int> future = simgrid::simix::kernel_sync([&] {
   return kernel_wait_until(30).then(
     [](simgrid::kernel::Future<void> future) {
       return 42;
@@ -605,18 +605,18 @@ do_some_stuff();
 int res = future.get();
 @endcode
 
-`kernelSync()` could be rewritten as:
+`kernel_sync()` could be rewritten as:
 
 @code{cpp}
 template<class F>
-auto kernelSync(F code) -> decltype(code().get())
+auto kernel_sync(F code) -> decltype(code().get())
 {
-  return kernelAsync(std::move(code)).get();
+  return kernel_async(std::move(code)).get();
 }
 @endcode
 
 The semantic is equivalent but this form would require two simcalls
-instead of one to do the same job (one in `kernelAsync()` and one in
+instead of one to do the same job (one in `kernel_async()` and one in
 `.get()`).
 
 ## Mutexes and condition variables
@@ -769,7 +769,7 @@ We wrote two future implementations based on the `std::future` API:
 * the second one is a wait-based (`future.get()`) future used in the actors
   which waits using a simcall.
 
-These futures are used to implement `kernelSync()` and `kernelAsync()` which
+These futures are used to implement `kernel_sync()` and `kernel_async()` which
 expose asynchronous operations in the simulation kernel to the actors.
 
 In addition, we wrote variations of some other C++ standard library
