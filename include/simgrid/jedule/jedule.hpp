@@ -6,13 +6,10 @@
 #ifndef JEDULE_HPP_
 #define JEDULE_HPP_
 
-#include <simgrid/config.h>
 #include <simgrid/jedule/jedule_events.hpp>
 #include <simgrid/jedule/jedule_platform.hpp>
 
 #include <cstdio>
-
-#if SIMGRID_HAVE_JEDULE
 
 namespace simgrid {
 namespace jedule{
@@ -33,6 +30,5 @@ public:
 }
 
 typedef simgrid::jedule::Jedule *jedule_t;
-#endif
 
 #endif /* JEDULE_HPP_ */

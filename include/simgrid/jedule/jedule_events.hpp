@@ -8,14 +8,12 @@
 
 #include <simgrid/jedule/jedule_platform.hpp>
 
-#include <simgrid/config.h>
 #include <simgrid/forward.h>
 
 #include <vector>
 #include <string>
 #include <unordered_map>
 
-#if SIMGRID_HAVE_JEDULE
 namespace simgrid {
 namespace jedule{
 
@@ -41,6 +39,5 @@ private:
 }
 
 typedef simgrid::jedule::Event* jed_event_t;
-#endif
 
 #endif /* JEDULE_EVENTS_H_ */

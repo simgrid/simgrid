@@ -6,15 +6,12 @@
 #ifndef JED_SIMGRID_PLATFORM_H_
 #define JED_SIMGRID_PLATFORM_H_
 
-#include <simgrid/config.h>
 #include <simgrid/forward.h>
 #include <xbt/dynar.h>
 
 #include <unordered_map>
 #include <vector>
 #include <string>
-
-#if SIMGRID_HAVE_JEDULE
 
 namespace simgrid {
 namespace jedule{
@@ -54,7 +51,5 @@ public:
 typedef simgrid::jedule::Container * jed_container_t;
 typedef simgrid::jedule::Subset * jed_subset_t;
 void get_resource_selection_by_hosts(std::vector<jed_subset_t>* subset_list, std::vector<sg_host_t> *host_list);
-
-#endif
 
 #endif /* JED_SIMGRID_PLATFORM_H_ */
