@@ -10,31 +10,25 @@
 - doc/html/.*
 
 + BuildSimGrid.sh
-+ circle.yml
++ COPYRIGHT.template
++ README\.(coding|git)
++ \.appveyor.yml
++ \.circleci/.*
++ \.clang-format
 + \.classpath
 + \.cproject
++ \.editorconfig
 + \.project
 + \.travis.yml
 + sonar-project.properties
-+ \.editorconfig
-+ \.appveyor.yml
-+ COPYRIGHT.template
-+ README\.(coding|git)
-+ mk_win-dist.sh
-
-+ tools/jenkins/.*
 
 + contrib/.*
 
-+ src/simix/README_attempt_without_stack
++ tools/git-hooks/.*
++ tools/internal/.*
++ tools/jenkins/.*
+
 + src/simix/simix_network\.tla
-
 + src/smpi/BUGS
-+ src/smpi/colls/alltoall-bruck\.c
-
-+ .clang-format
-+ tools/git-hooks/clang-format.pre-commit
 
 + teshsuite/smpi/mpich3-test/f77/attr/.*
-
-+ tools/internal/.*
