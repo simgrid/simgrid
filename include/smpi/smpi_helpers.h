@@ -20,6 +20,7 @@ unsigned int smpi_sleep(unsigned int secs);
 int smpi_gettimeofday(struct timeval* tv, struct timezone* tz);
 
 struct option;
+int smpi_getopt_long_only (int argc,  char *const *argv,  const char *options,  const struct option *long_options, int *opt_index);
 int smpi_getopt_long (int argc,  char *const *argv,  const char *options,  const struct option *long_options, int *opt_index);
 int smpi_getopt (int argc,  char *const *argv,  const char *options);
 
