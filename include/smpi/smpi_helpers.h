@@ -11,6 +11,10 @@
 #include <time.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int smpi_usleep(useconds_t usecs);
 #if _POSIX_TIMERS > 0
 int smpi_nanosleep(const struct timespec* tp, struct timespec* t);
@@ -36,4 +40,7 @@ int smpi_getopt (int argc,  char *const *argv,  const char *options);
 #define getopt_long(x,y,z,a,b) smpi_getopt_long(x,y,z,a,b)
 #define getopt_long_only(x,y,z,a,b) smpi_getopt_long_only(x,y,z,a,b)
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 #endif
