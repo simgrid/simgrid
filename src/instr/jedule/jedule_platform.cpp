@@ -46,16 +46,16 @@ void Container::add_child(jed_container_t child)
 
 void Container::add_resources(std::vector<sg_host_t> hosts)
 {
-  this->is_lowest = 1;
+  this->is_lowest_ = 1;
   this->children.clear();
-  this->last_id = 0;
+  this->last_id_ = 0;
 
   //FIXME do we need to sort?: xbt_dynar_sort_strings(host_names);
 
   for (auto const& host : hosts) {
     const char *host_name = sg_host_get_name(host);
-    this->name2id.insert({host_name, this->last_id});
-    (this->last_id)++;
+    this->name2id.insert({host_name, this->last_id_});
+    (this->last_id_)++;
     host2_simgrid_parent_container.insert({host_name, this});
     this->resource_list.push_back(host);
   }

@@ -42,13 +42,13 @@ public:
   }
 
 private:
-  std::string name;
-  double start_time;
-  double end_time;
-  std::string type;
-  std::vector<jed_subset_t>* resource_subsets;
-  std::vector<char*> characteristics_list;   /* just a list of names (strings) */
-  std::unordered_map<char*, char*> info_map; /* key/value pairs */
+  std::string name_;
+  double start_time_;
+  double end_time_;
+  std::string type_;
+  std::vector<jed_subset_t>* resource_subsets_;
+  std::vector<char*> characteristics_list_;   /* just a list of names */
+  std::unordered_map<char*, char*> info_map_; /* key/value pairs */
 };
 }
 }

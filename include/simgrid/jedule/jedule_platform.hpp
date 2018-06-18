@@ -20,8 +20,9 @@ public:
   explicit Container(std::string name);
   virtual ~Container();
 private:
-  int last_id;
-  int is_lowest = 0;
+  int last_id_;
+  int is_lowest_ = 0;
+
 public:
   std::string name;
   std::unordered_map<const char*, unsigned int> name2id;

@@ -18,9 +18,9 @@ class XBT_PUBLIC Jedule {
 public:
   Jedule()=default;
   ~Jedule();
-  std::vector<Event *> event_set;
-  Container* root_container = nullptr;
-  std::unordered_map<char*, char*> meta_info;
+  std::vector<Event*> event_set_;
+  Container* root_container_ = nullptr;
+  std::unordered_map<char*, char*> meta_info_;
   void add_meta_info(char* key, char* value);
   void cleanup_output();
   void write_output(FILE* file);

@@ -13,10 +13,10 @@ namespace simgrid{
 namespace jedule {
 
 Jedule::~Jedule() {
-  delete this->root_container;
-  for (auto const& evt : this->event_set)
+  delete this->root_container_;
+  for (auto const& evt : this->event_set_)
     delete evt;
-  this->event_set.clear();
+  this->event_set_.clear();
 }
 
 void Jedule::add_meta_info(char* key, char* value)
@@ -24,27 +24,27 @@ void Jedule::add_meta_info(char* key, char* value)
   xbt_assert(key != nullptr);
   xbt_assert(value != nullptr);
 
-  this->meta_info.insert({key, value});
+  this->meta_info_.insert({key, value});
 }
 
 void Jedule::write_output(FILE* file)
 {
-  if (not this->event_set.empty()) {
+  if (not this->event_set_.empty()) {
     fprintf(file, "<jedule>\n");
 
-    if (not this->meta_info.empty()) {
+    if (not this->meta_info_.empty()) {
       fprintf(file, "  <jedule_meta>\n");
-      for (auto const& elm : this->meta_info)
+      for (auto const& elm : this->meta_info_)
         fprintf(file, "        <prop key=\"%s\" value=\"%s\" />\n",elm.first,elm.second);
       fprintf(file, "  </jedule_meta>\n");
     }
 
     fprintf(file, "  <platform>\n");
-    this->root_container->print(file);
+    this->root_container_->print(file);
     fprintf(file, "  </platform>\n");
 
     fprintf(file, "  <events>\n");
-    for (auto const& event : this->event_set)
+    for (auto const& event : this->event_set_)
       event->print(file);
     fprintf(file, "  </events>\n");
 
