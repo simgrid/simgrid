@@ -406,7 +406,7 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::alias("smpi/privatization", {"smpi/privatize_global_variables", "smpi/privatize-global-variables"});
 
   simgrid::config::declare_flag<std::string>(
-      "smpi/privatize-lib", "Add a library to privatize (libgfortran for example)", "");
+      "smpi/privatize-libs", "Add libraries (; separated) to privatize (libgfortran for example). You need to provide the full names of the files (libgfortran.so.4), or its full path", "");
 
   simgrid::config::declare_flag<bool>("smpi/grow-injected-times",
                                       "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to "

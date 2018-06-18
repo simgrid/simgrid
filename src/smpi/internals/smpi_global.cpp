@@ -15,7 +15,9 @@
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
+#if not defined(__APPLE__)
 #include <link.h>
+#endif
 #include <fstream>
 
 #if HAVE_SENDFILE
@@ -54,7 +56,7 @@ static int smpi_exit_status = 0;
 int smpi_universe_size = 0;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
-static char* privatize_lib_path=nullptr;
+static std::vector<std::string> privatize_libs_paths;
 /**
  * Setting MPI_COMM_WORLD to MPI_COMM_UNINITIALIZED (it's a variable)
  * is important because the implementation of MPI_Comm checks
@@ -485,6 +487,7 @@ static void smpi_copy_file(std::string src,std::string target, off_t fdin_size, 
     close(fdout);
 }
 
+#if not defined(__APPLE__)
 static int visit_libs (struct dl_phdr_info *info,
                            size_t size, void *data){
   char* libname = (char*)(data);
@@ -496,6 +499,7 @@ static int visit_libs (struct dl_phdr_info *info,
   
   return 0;
 }
+#endif
 
 int smpi_main(const char* executable, int argc, char *argv[])
 {
@@ -536,21 +540,30 @@ int smpi_main(const char* executable, int argc, char *argv[])
     static std::size_t rank = 0;
     
     
-    std::string libname = simgrid::config::get_value<std::string>("smpi/privatize-lib");
-    std::string target_lib;
-    if(not libname.empty()){
-      //load the library once to add it to the local libs, to get the absolute path
-      void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
-      //get library name from path
-      char fullpath[512]={'\0'};
-      strcpy(fullpath, libname.c_str());
-      int ret = dl_iterate_phdr(visit_libs, fullpath);
-      if(ret==0)
-        xbt_die("Can't find a linked %s - check the setting you gave to smpi/privatize-lib", fullpath);
-      else
-        XBT_DEBUG("Extra lib to privatize found : %s", fullpath);
-      privatize_lib_path=strdup(fullpath);
-      dlclose(libhandle);
+    std::string libnames = simgrid::config::get_value<std::string>("smpi/privatize-libs");
+    if(not libnames.empty()){
+      //split option
+      std::vector<std::string> privatize_libs;
+      boost::split(privatize_libs,libnames, boost::is_any_of(";"));
+
+      for (auto const& libname : privatize_libs) {
+        //load the library once to add it to the local libs, to get the absolute path
+        void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
+        //get library name from path
+        char fullpath[512]={'\0'};
+        strcpy(fullpath, libname.c_str());
+#if not defined(__APPLE__)
+        int ret = dl_iterate_phdr(visit_libs, fullpath);
+        if(ret==0)
+          xbt_die("Can't find a linked %s - check the setting you gave to smpi/privatize-libs", fullpath);
+        else
+          XBT_DEBUG("Extra lib to privatize found : %s", fullpath);
+#else
+          xbt_die("smpi/privatize-libs is not (yet) compatible with OSX");
+#endif
+        privatize_libs_paths.push_back(fullpath);
+        dlclose(libhandle);
+      }
     }
     
     simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
@@ -562,31 +575,37 @@ int smpi_main(const char* executable, int argc, char *argv[])
           + "_" + std::to_string(rank) + ".so";
 
         smpi_copy_file(executable_copy, target_executable, fdin_size, rank);
+        //if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
+          std::string target_lib;
+          for (auto const& libpath : privatize_libs_paths){
+          //if we were given a full path, strip it
+          size_t index = libpath.find_last_of("/\\");
+          std::string libname;
+          if(index!=std::string::npos)
+            libname=libpath.substr(index+1);
 
-        //if smpi/privatize-lib is set, duplicate pointed lib and link each executable to a different one.
-        //TODO : extend to multiple libs
-        std::string libname = simgrid::config::get_value<std::string>("smpi/privatize-lib");
-        //if we were given a full path, strip it
-        size_t index = libname.find_last_of("/\\");
-        if(index!=std::string::npos)
-          libname=libname.substr(index+1);
-        std::string target_lib;
-        if(not libname.empty()){
-          //load the library to add it to the local libs, to get the absolute path
-          struct stat fdin_stat2;
-          stat(privatize_lib_path, &fdin_stat2);
-          off_t fdin_size2 = fdin_stat2.st_size;
-          
-          // Copy the dynamic library, the new name must be the same length as the old one
-          // just replace the name with 0s and the rank.
-          target_lib = std::string(libname.length() - std::to_string(rank).length(), '0')+std::to_string(rank);
-          XBT_DEBUG("copy lib %s to %s, with size %zd", privatize_lib_path, target_lib.c_str(), fdin_size2);
-          smpi_copy_file(privatize_lib_path, target_lib, fdin_size2, rank);
+          if(not libname.empty()){
+            //load the library to add it to the local libs, to get the absolute path
+            struct stat fdin_stat2;
+            stat(libpath.c_str(), &fdin_stat2);
+            off_t fdin_size2 = fdin_stat2.st_size;
+            
+            // Copy the dynamic library, the new name must be the same length as the old one
+            // just replace the name with 7 digits for the rank and the rest of the name.
+            unsigned int pad=7;
+            if(libname.length()<pad)
+              pad=libname.length();
+            target_lib = std::string(pad - std::to_string(rank).length(), '0')
+                        +std::to_string(rank)+libname.substr(pad);
+            XBT_DEBUG("copy lib %s to %s, with size %ld", libpath.c_str(), target_lib.c_str(), fdin_size2);
+            smpi_copy_file(libpath, target_lib, fdin_size2, rank);
 
-          std::string sedcommand = "sed -i -e 's/"+libname+"/"+target_lib+"/g' "+target_executable;
-          int ret = system(sedcommand.c_str());
-          if(ret!=0) xbt_die ("error while applying sed command %s \n", sedcommand.c_str());
+            std::string sedcommand = "sed -i -e 's/"+libname+"/"+target_lib+"/g' "+target_executable;
+            int ret = system(sedcommand.c_str());
+            if(ret!=0) xbt_die ("error while applying sed command %s \n", sedcommand.c_str());
+          }
         }
+
         rank++;
         // Load the copy and resolve the entry point:
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
