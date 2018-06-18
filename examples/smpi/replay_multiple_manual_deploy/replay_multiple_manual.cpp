@@ -30,19 +30,19 @@
 #include <boost/regex.hpp>
 
 #include <simgrid/msg.h>
-#include <smpi/smpi.h>
 #include <simgrid/s4u.hpp>
+#include <smpi/smpi.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_multiple_manual, "Messages specific for this example");
 
 struct Job {
-  std::string smpi_app_name; //!< The unique name of the SMPI application
-  std::string filename; //!<  The filename of the main trace file (which contains other filenames for each rank)
-  int app_size; //!< The number of processes (actors) of the job
-  int starting_time; //!< When the job should start
-  std::vector<int> allocation; //!< Where the job should be executed. Values are hosts indexes (from simgrid::s4u::get_all_hosts())
+  std::string smpi_app_name;   //!< The unique name of the SMPI application
+  std::string filename;        //!<  The filename of the main trace file (which contains other filenames for each rank)
+  int app_size;                //!< The number of processes (actors) of the job
+  int starting_time;           //!< When the job should start
+  std::vector<int> allocation; //!< Where the job should be executed. Values are hosts indexes.
   std::vector<std::string> traces_filenames; //!< The filenames of the different action files. Read from filename.
-  int unique_job_number; //!< The job unique number in [0, n[.
+  int unique_job_number;                     //!< The job unique number in [0, n[.
 };
 
 // ugly globals to avoid creating structures for giving args to processes
@@ -84,7 +84,7 @@ static int smpi_replay_process(int argc, char* argv[])
 }
 
 // Sleeps for a given amount of time
-static int sleeper_process(int * param)
+static int sleeper_process(int* param)
 {
   XBT_DEBUG("Sleeping for %d seconds", *param);
   simgrid::s4u::this_actor::sleep_for(*param);
@@ -148,7 +148,7 @@ static int job_executor_process(Job* job)
 }
 
 // Executes a workload of SMPI processes
-static int workload_executor_process(std::vector<Job*> * workload)
+static int workload_executor_process(std::vector<Job*>* workload)
 {
   for (Job* job : *workload) {
     // Let's wait until the job's waiting time if needed
@@ -284,8 +284,7 @@ int main(int argc, char* argv[])
   }
 
   // Let's execute the workload
-  simgrid::s4u::Actor::create("workload_executor", hosts[0],
-          workload_executor_process, &jobs);
+  simgrid::s4u::Actor::create("workload_executor", hosts[0], workload_executor_process, &jobs);
 
   e.run();
   XBT_INFO("Simulation finished! Final time: %g", e.get_clock());
