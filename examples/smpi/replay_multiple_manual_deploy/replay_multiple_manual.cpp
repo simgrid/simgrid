@@ -33,7 +33,7 @@
 #include <smpi/smpi.h>
 #include <simgrid/s4u.hpp>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(replay_multiple_manual, "Messages specific for this example");
 
 struct Job {
   std::string smpi_app_name; //!< The unique name of the SMPI application
