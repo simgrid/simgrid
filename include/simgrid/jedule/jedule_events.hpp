@@ -21,10 +21,25 @@ class XBT_PUBLIC Event {
 public:
   Event(std::string name, double start_time, double end_time, std::string type);
   ~Event();
-  void addCharacteristic(char* characteristic);
-  void addResources(std::vector<sg_host_t>* host_selection);
-  void addInfo(char* key, char* value);
+  void add_characteristic(char* characteristic);
+  void add_resources(std::vector<sg_host_t>* host_selection);
+  void add_info(char* key, char* value);
   void print(FILE* file);
+
+  // deprecated
+  XBT_ATTRIB_DEPRECATED_v323("Please use Event::add_characteristic()") void addCharacteristic(char* characteristic)
+  {
+    add_characteristic(characteristic);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Event::add_resources()") void addResources(
+      std::vector<sg_host_t>* host_selection)
+  {
+    add_resources(host_selection);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Event::add_info()") void addInfo(char* key, char* value)
+  {
+    add_info(key, value);
+  }
 
 private:
   std::string name;

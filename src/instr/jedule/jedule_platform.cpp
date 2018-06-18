@@ -37,14 +37,14 @@ Container::~Container()
       delete child;
 }
 
-void Container::addChild(jed_container_t child)
+void Container::add_child(jed_container_t child)
 {
   xbt_assert(child != nullptr);
   this->children.push_back(child);
   child->parent = this;
 }
 
-void Container::addResources(std::vector<sg_host_t> hosts)
+void Container::add_resources(std::vector<sg_host_t> hosts)
 {
   this->is_lowest = 1;
   this->children.clear();
@@ -61,30 +61,30 @@ void Container::addResources(std::vector<sg_host_t> hosts)
   }
 }
 
-void Container::createHierarchy(sg_netzone_t from_as)
+void Container::create_hierarchy(sg_netzone_t from_as)
 {
 
   if (from_as->get_children()->empty()) {
     // I am no AS
     // add hosts to jedule platform
     std::vector<sg_host_t> table = from_as->get_all_hosts();
-    this->addResources(table);
+    this->add_resources(table);
   } else {
     for (auto const& nz : *from_as->get_children()) {
       jed_container_t child_container = new simgrid::jedule::Container(std::string(nz->get_cname()));
-      this->addChild(child_container);
-      child_container->createHierarchy(nz);
+      this->add_child(child_container);
+      child_container->create_hierarchy(nz);
     }
   }
 }
 
-std::vector<int> Container::getHierarchy()
+std::vector<int> Container::get_hierarchy()
 {
   if(this->parent != nullptr ) {
 
     if (not this->parent->children.empty()) {
       // we are in the last level
-      return this->parent->getHierarchy();
+      return this->parent->get_hierarchy();
     } else {
       unsigned int i =0;
       int child_nb = -1;
@@ -98,7 +98,7 @@ std::vector<int> Container::getHierarchy()
       }
 
       xbt_assert( child_nb > - 1);
-      std::vector<int> heir_list = this->parent->getHierarchy();
+      std::vector<int> heir_list = this->parent->get_hierarchy();
       heir_list.insert(heir_list.begin(), child_nb);
       return heir_list;
     }
@@ -109,11 +109,11 @@ std::vector<int> Container::getHierarchy()
   }
 }
 
-std::string Container::getHierarchyAsString()
+std::string Container::get_hierarchy_as_string()
 {
   std::string output("");
 
-  std::vector<int> heir_list = this->getHierarchy();
+  std::vector<int> heir_list = this->get_hierarchy();
 
   unsigned int length = heir_list.size();
   unsigned int i = 0;
@@ -127,13 +127,13 @@ std::string Container::getHierarchyAsString()
   return output;
 }
 
-void Container::printResources(FILE * jed_file)
+void Container::print_resources(FILE* jed_file)
 {
   unsigned int i=0;
   xbt_assert(not this->resource_list.empty());
 
   unsigned int res_nb = this->resource_list.size();
-  std::string resid = this->getHierarchyAsString();
+  std::string resid   = this->get_hierarchy_as_string();
 
   fprintf(jed_file, "      <rset id=\"%s\" nb=\"%u\" names=\"", resid.c_str(), res_nb);
   for (auto const& res : this->resource_list) {
@@ -155,7 +155,7 @@ void Container::print(FILE* jed_file)
       child->print(jed_file);
     }
   } else {
-    this->printResources(jed_file);
+    this->print_resources(jed_file);
   }
   fprintf(jed_file, "    </res>\n");
 }

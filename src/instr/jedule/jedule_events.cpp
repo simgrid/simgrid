@@ -27,18 +27,19 @@ Event::~Event()
   }
 }
 
-void Event::addResources(std::vector<sg_host_t> *host_selection)
+void Event::add_resources(std::vector<sg_host_t>* host_selection)
 {
   get_resource_selection_by_hosts(this->resource_subsets, host_selection);
 }
 
-void Event::addCharacteristic(char *characteristic)
+void Event::add_characteristic(char* characteristic)
 {
   xbt_assert( characteristic != nullptr );
   this->characteristics_list.push_back(characteristic);
 }
 
-void Event::addInfo(char* key, char *value) {
+void Event::add_info(char* key, char* value)
+{
   xbt_assert((key != nullptr) && value != nullptr);
   this->info_map.insert({key, value});
 }
@@ -55,7 +56,7 @@ void Event::print(FILE *jed_file)
   fprintf(jed_file, "      <res_util>\n");
   for (auto const& subset : *this->resource_subsets) {
     fprintf(jed_file, "        <select resources=\"");
-    fprintf(jed_file, "%s", subset->parent->getHierarchyAsString().c_str());
+    fprintf(jed_file, "%s", subset->parent->get_hierarchy_as_string().c_str());
     fprintf(jed_file, ".[%d-%d]", subset->start_idx, subset->start_idx + subset->nres-1);
     fprintf(jed_file, "\" />\n");
   }

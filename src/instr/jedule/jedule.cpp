@@ -19,14 +19,16 @@ Jedule::~Jedule() {
   this->event_set.clear();
 }
 
-void Jedule::addMetaInfo(char *key, char *value) {
+void Jedule::add_meta_info(char* key, char* value)
+{
   xbt_assert(key != nullptr);
   xbt_assert(value != nullptr);
 
   this->meta_info.insert({key, value});
 }
 
-void Jedule::writeOutput(FILE *file) {
+void Jedule::write_output(FILE* file)
+{
   if (not this->event_set.empty()) {
     fprintf(file, "<jedule>\n");
 
