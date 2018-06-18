@@ -719,6 +719,7 @@ set(headers_to_install
   include/smpi/smpi.h
   include/smpi/smpi_main.h
   include/smpi/smpi_helpers.h
+  include/smpi/smpi_helpers_internal.h
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
