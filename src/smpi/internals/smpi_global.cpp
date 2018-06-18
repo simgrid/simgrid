@@ -597,7 +597,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
               pad=libname.length();
             target_lib = std::string(pad - std::to_string(rank).length(), '0')
                         +std::to_string(rank)+libname.substr(pad);
-            XBT_DEBUG("copy lib %s to %s, with size %ld", libpath.c_str(), target_lib.c_str(), fdin_size2);
+            XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
             smpi_copy_file(libpath, target_lib, fdin_size2, rank);
 
             std::string sedcommand = "sed -i -e 's/"+libname+"/"+target_lib+"/g' "+target_executable;
