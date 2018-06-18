@@ -223,7 +223,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
           job->traces_filenames.push_back(dir + "/" + traces_line);
         }
 
-        if ((int)job->traces_filenames.size() < job->app_size)
+        if (static_cast<int>(job->traces_filenames.size()) < job->app_size)
           throw std::runtime_error("size/tracefiles inconsistency");
         job->traces_filenames.resize(job->app_size);
 
