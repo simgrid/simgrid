@@ -15,6 +15,7 @@
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <link.h>
 #include <fstream>
 
 #if HAVE_SENDFILE
@@ -53,6 +54,7 @@ static int smpi_exit_status = 0;
 int smpi_universe_size = 0;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
+static char* privatize_lib_path=nullptr;
 /**
  * Setting MPI_COMM_WORLD to MPI_COMM_UNINITIALIZED (it's a variable)
  * is important because the implementation of MPI_Comm checks
@@ -424,6 +426,7 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   return 0;
 }
 
+
 // TODO, remove the number of functions involved here
 static smpi_entry_point_type smpi_resolve_function(void* handle)
 {
@@ -442,6 +445,56 @@ static smpi_entry_point_type smpi_resolve_function(void* handle)
   }
 
   return smpi_entry_point_type();
+}
+
+static void smpi_copy_file(std::string src,std::string target, off_t fdin_size, int rank){
+
+    int fdin = open(src.c_str(), O_RDONLY);
+    xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.",
+               src.c_str());
+    int fdout = open(target.c_str(), O_CREAT | O_RDWR, S_IRWXU);
+    xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
+
+    XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target.c_str());
+#if HAVE_SENDFILE
+    ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
+    xbt_assert(sent_size == fdin_size,
+               "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
+               target.c_str(), sent_size, fdin_size, errno, strerror(errno));
+#else
+    const int bufsize = 1024 * 1024 * 4;
+    char buf[bufsize];
+    while (int got = read(fdin, buf, bufsize)) {
+      if (got == -1) {
+        xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
+      } else {
+        char* p  = buf;
+        int todo = got;
+        while (int done = write(fdout, p, todo)) {
+          if (done == -1) {
+            xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
+          } else {
+            p += done;
+            todo -= done;
+          }
+        }
+      }
+    }
+#endif
+    close(fdin);
+    close(fdout);
+}
+
+static int visit_libs (struct dl_phdr_info *info,
+                           size_t size, void *data){
+  char* libname = (char*)(data);
+  const char *path = info->dlpi_name;
+  if(strstr(path, libname)){
+    strncpy(libname, path, 512);
+    return 1;
+  }
+  
+  return 0;
 }
 
 int smpi_main(const char* executable, int argc, char *argv[])
@@ -481,61 +534,73 @@ int smpi_main(const char* executable, int argc, char *argv[])
     stat(executable_copy.c_str(), &fdin_stat);
     off_t fdin_size = fdin_stat.st_size;
     static std::size_t rank = 0;
-
+    
+    
+    std::string libname = simgrid::config::get_value<std::string>("smpi/privatize-lib");
+    std::string target_lib;
+    if(not libname.empty()){
+      //load the library once to add it to the local libs, to get the absolute path
+      void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
+      //get library name from path
+      char fullpath[512]={'\0'};
+      strcpy(fullpath, libname.c_str());
+      int ret = dl_iterate_phdr(visit_libs, fullpath);
+      if(ret==0)
+        xbt_die("Can't find a linked %s - check the setting you gave to smpi/privatize-lib", fullpath);
+      else
+        XBT_DEBUG("Extra lib to privatize found : %s", fullpath);
+      privatize_lib_path=strdup(fullpath);
+      dlclose(libhandle);
+    }
+    
     simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
       return std::function<void()>([executable_copy, fdin_size, args] {
 
         // Copy the dynamic library:
         std::string target_executable = executable_copy
           + "_" + std::to_string(getpid())
-          + "_" + std::to_string(rank++) + ".so";
+          + "_" + std::to_string(rank) + ".so";
 
-        int fdin = open(executable_copy.c_str(), O_RDONLY);
-        xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.",
-                   executable_copy.c_str());
-        int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
-        xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
+        smpi_copy_file(executable_copy, target_executable, fdin_size, rank);
 
-        XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target_executable.c_str());
-#if HAVE_SENDFILE
-        ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
-        xbt_assert(sent_size == fdin_size,
-                   "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
-                   target_executable.c_str(), sent_size, fdin_size, errno, strerror(errno));
-#else
-        const int bufsize = 1024 * 1024 * 4;
-        char buf[bufsize];
-        while (int got = read(fdin, buf, bufsize)) {
-          if (got == -1) {
-            xbt_assert(errno == EINTR, "Cannot read from %s", executable_copy.c_str());
-          } else {
-            char* p  = buf;
-            int todo = got;
-            while (int done = write(fdout, p, todo)) {
-              if (done == -1) {
-                xbt_assert(errno == EINTR, "Cannot write into %s", target_executable.c_str());
-              } else {
-                p += done;
-                todo -= done;
-              }
-            }
-          }
+        //if smpi/privatize-lib is set, duplicate pointed lib and link each executable to a different one.
+        //TODO : extend to multiple libs
+        std::string libname = simgrid::config::get_value<std::string>("smpi/privatize-lib");
+        //if we were given a full path, strip it
+        size_t index = libname.find_last_of("/\\");
+        if(index!=std::string::npos)
+          libname=libname.substr(index+1);
+        std::string target_lib;
+        if(not libname.empty()){
+          //load the library to add it to the local libs, to get the absolute path
+          struct stat fdin_stat2;
+          stat(privatize_lib_path, &fdin_stat2);
+          off_t fdin_size2 = fdin_stat2.st_size;
+          
+          // Copy the dynamic library, the new name must be the same length as the old one
+          // just replace the name with 0s and the rank.
+          target_lib = std::string(libname.length() - std::to_string(rank).length(), '0')+std::to_string(rank);
+          XBT_DEBUG("copy lib %s to %s, with size %zd", privatize_lib_path, target_lib.c_str(), fdin_size2);
+          smpi_copy_file(privatize_lib_path, target_lib, fdin_size2, rank);
+
+          std::string sedcommand = "sed -i -e 's/"+libname+"/"+target_lib+"/g' "+target_executable;
+          int ret = system(sedcommand.c_str());
+          if(ret!=0) xbt_die ("error while applying sed command %s \n", sedcommand.c_str());
         }
-#endif
-        close(fdin);
-        close(fdout);
-
+        rank++;
         // Load the copy and resolve the entry point:
         void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
         int saved_errno = errno;
-        if (simgrid::config::get_value<bool>("smpi/keep-temps") == false)
+        if (simgrid::config::get_value<bool>("smpi/keep-temps") == false){
           unlink(target_executable.c_str());
+          if(not target_lib.empty())
+            unlink(target_lib.c_str());
+        }
         if (handle == nullptr)
           xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno, strerror(saved_errno));
         smpi_entry_point_type entry_point = smpi_resolve_function(handle);
         if (not entry_point)
           xbt_die("Could not resolve entry point");
-
         smpi_run_entry_point(entry_point, args);
       });
     };
