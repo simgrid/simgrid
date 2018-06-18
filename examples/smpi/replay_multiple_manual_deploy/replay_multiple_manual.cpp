@@ -36,13 +36,13 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
 struct Job {
-  std::string smpi_app_name;
-  std::string filename;
-  int app_size;
-  int starting_time;
-  std::vector<int> allocation;
-  std::vector<std::string> traces_filenames;
-  int unique_job_number; // in [0, n[
+  std::string smpi_app_name; //!< The unique name of the SMPI application
+  std::string filename; //!<  The filename of the main trace file (which contains other filenames for each rank)
+  int app_size; //!< The number of processes (actors) of the job
+  int starting_time; //!< When the job should start
+  std::vector<int> allocation; //!< Where the job should be executed. Values are hosts indexes (from simgrid::s4u::get_all_hosts())
+  std::vector<std::string> traces_filenames; //!< The filenames of the different action files. Read from filename.
+  int unique_job_number; //!< The job unique number in [0, n[.
 };
 
 // ugly globals to avoid creating structures for giving args to processes
