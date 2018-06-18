@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-p Testing the Chord implementation with MSG
+p Testing the Chord implementation with S4U
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-dht-chord$EXEEXT -nb_bits=3 ${platfdir}/cluster.xml s4u-dht-chord_d.xml --log=s4u_chord.thres:verbose "--log=root.fmt:[%10.5r]%e(%P@%h)%e%m%n"

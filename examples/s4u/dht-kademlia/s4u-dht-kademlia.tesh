@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-p Testing the Kademlia implementation with MSG
+p Testing the Kademlia implementation with S4U
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/s4u-dht-kademlia ${platfdir}/cluster.xml ${srcdir:=.}/s4u-dht-kademlia_d.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"

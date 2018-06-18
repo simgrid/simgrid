@@ -75,7 +75,7 @@ static void test_one_task(simgrid::s4u::Host* host)
   const double cpu_speed          = host->getSpeed();
   const double computation_amount = cpu_speed * 10;
 
-  XBT_INFO("### Test: with/without MSG_task_set_bound");
+  XBT_INFO("### Test: with/without task set_bound");
 
   XBT_INFO("### Test: no bound for Task1@%s", host->get_cname());
   simgrid::s4u::Actor::create("worker0", host, worker, computation_amount, false, 0);
