@@ -31,6 +31,7 @@
 
 #include <simgrid/msg.h>
 #include <smpi/smpi.h>
+#include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
@@ -45,7 +46,7 @@ struct Job {
 };
 
 // ugly globals to avoid creating structures for giving args to processes
-std::vector<msg_host_t> hosts;
+std::vector<simgrid::s4u::Host*> hosts;
 int noise_between_jobs;
 
 static bool job_comparator(const Job* j1, const Job* j2)
@@ -83,15 +84,10 @@ static int smpi_replay_process(int argc, char* argv[])
 }
 
 // Sleeps for a given amount of time
-static int sleeper_process(int argc, char* argv[])
+static int sleeper_process(int * param)
 {
-  (void)argc;
-  (void)argv;
-
-  int* param = (int*)MSG_process_get_data(MSG_process_self());
-
   XBT_DEBUG("Sleeping for %d seconds", *param);
-  MSG_process_sleep((double)*param);
+  simgrid::s4u::this_actor::sleep_for(*param);
 
   delete param;
 
@@ -99,22 +95,17 @@ static int sleeper_process(int argc, char* argv[])
 }
 
 // Launches some sleeper processes
-static void pop_some_processes(int nb_processes, msg_host_t host)
+static void pop_some_processes(int nb_processes, simgrid::s4u::Host* host)
 {
   for (int i = 0; i < nb_processes; ++i) {
     int* param = new int;
     *param     = i + 1;
-    MSG_process_create("meh", sleeper_process, (void*)param, host);
+    simgrid::s4u::Actor::create("meh", host, sleeper_process, param);
   }
 }
 
-static int job_executor_process(int argc, char* argv[])
+static int job_executor_process(Job* job)
 {
-  (void)argc;
-  (void)argv;
-
-  Job* job = static_cast<Job*>(MSG_process_get_data(MSG_process_self()));
-
   msg_sem_t job_semaphore = MSG_sem_init(1);
   XBT_INFO("Executing job %d (smpi_app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
 
@@ -157,21 +148,16 @@ static int job_executor_process(int argc, char* argv[])
 }
 
 // Executes a workload of SMPI processes
-static int workload_executor_process(int argc, char* argv[])
+static int workload_executor_process(std::vector<Job*> * workload)
 {
-  (void)argc;
-  (void)argv;
-
-  std::vector<Job*>* workload = (std::vector<Job*>*)MSG_process_get_data(MSG_process_self());
-
-  for (const Job* job : *workload) {
+  for (Job* job : *workload) {
     // Let's wait until the job's waiting time if needed
-    double curr_time = MSG_get_clock();
+    double curr_time = simgrid::s4u::Engine::get_clock();
     if (job->starting_time > curr_time) {
       double time_to_sleep = (double)job->starting_time - curr_time;
       XBT_INFO("Sleeping %g seconds (waiting for job %d, app '%s')", time_to_sleep, job->starting_time,
                job->smpi_app_name.c_str());
-      MSG_process_sleep(time_to_sleep);
+      simgrid::s4u::this_actor::sleep_for(time_to_sleep);
     }
 
     if (noise_between_jobs > 0) {
@@ -184,7 +170,7 @@ static int workload_executor_process(int argc, char* argv[])
     // Let's finally run the job executor
     std::string job_process_name = "job_" + job->smpi_app_name;
     XBT_INFO("Launching the job executor of job %d (app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
-    MSG_process_create(job_process_name.c_str(), job_executor_process, (void*)job, hosts[job->allocation[0]]);
+    simgrid::s4u::Actor::create(job_process_name.c_str(), hosts[job->allocation[0]], job_executor_process, job);
   }
 
   return 0;
@@ -202,7 +188,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
 
   boost::regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
   std::string line;
-  while (getline(f, line)) {
+  while (std::getline(f, line)) {
     boost::smatch m;
 
     if (boost::regex_match(line, m, r)) {
@@ -232,7 +218,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
           throw std::runtime_error("Cannot open file " + job->filename);
 
         std::string traces_line;
-        while (getline(traces_file, traces_line)) {
+        while (std::getline(traces_file, traces_line)) {
           boost::trim_right(traces_line);
           job->traces_filenames.push_back(dir + "/" + traces_line);
         }
@@ -262,37 +248,19 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
   return jobs;
 }
 
-// Returns all MSG hosts as a std::vector
-static std::vector<msg_host_t> all_hosts()
-{
-  std::vector<msg_host_t> hosts;
-
-  xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
-  msg_host_t host;
-  unsigned int i;
-  xbt_dynar_foreach (hosts_dynar, i, host) {
-    hosts.push_back(host);
-  }
-
-  xbt_dynar_free(&hosts_dynar);
-
-  return hosts;
-}
-
 int main(int argc, char* argv[])
 {
-  MSG_init(&argc, argv);
-
   xbt_assert(argc > 4,
              "Usage: %s platform_file workload_file initial_noise noise_between_jobs\n"
              "\tExample: %s platform.xml workload_compute\n",
              argv[0], argv[0]);
 
   //  Simulation setting
-  MSG_create_environment(argv[1]);
-  hosts = all_hosts();
-
-  xbt_assert(hosts.size() >= 4, "The given platform should contain at least 4 hosts (found %lu).", hosts.size());
+  MSG_init(&argc, argv);
+  simgrid::s4u::Engine e(&argc, argv);
+  e.load_platform(argv[1]);
+  hosts = e.get_all_hosts();
+  xbt_assert(hosts.size() >= 4, "The given platform should contain at least 4 hosts (found %zu).", hosts.size());
 
   // Let's retrieve all SMPI jobs
   std::vector<Job*> jobs = all_jobs(argv[2]);
@@ -316,16 +284,16 @@ int main(int argc, char* argv[])
   }
 
   // Let's execute the workload
-  MSG_process_create("workload_executor", workload_executor_process, (void*)&jobs, hosts[0]);
+  simgrid::s4u::Actor::create("workload_executor", hosts[0],
+          workload_executor_process, &jobs);
 
-  msg_error_t res = MSG_main();
-
-  XBT_INFO("Simulation finished! Final time: %g", MSG_get_clock());
+  e.run();
+  XBT_INFO("Simulation finished! Final time: %g", e.get_clock());
 
   SMPI_finalize();
 
   for (const Job* job : jobs)
     delete job;
 
-  return res != MSG_OK;
+  return 0;
 }
