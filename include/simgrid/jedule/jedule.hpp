@@ -20,7 +20,6 @@ public:
   ~Jedule();
   std::vector<Event*> event_set_;
   Container* root_container_ = nullptr;
-  std::unordered_map<char*, char*> meta_info_;
   void add_meta_info(char* key, char* value);
   void cleanup_output();
   void write_output(FILE* file);
@@ -32,6 +31,9 @@ public:
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Jedule::cleanup_output()") void cleanupOutput() { cleanup_output(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Jedule::write_output()") void writeOutput(FILE* file) { write_output(file); }
+
+private:
+  std::unordered_map<char*, char*> meta_info_;
 };
 
 }
