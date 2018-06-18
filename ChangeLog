@@ -9,7 +9,7 @@ S4U:
    returns the number of actors running on a specific host.
 
 Plugins:
- - Allow to run the Link energy plugin from the command line with 
+ - Allow to run the Link energy plugin from the command line with
    --cfg=plugin:link_energy
  - Rename Energy plugin into host_energy
  - Rename Load plugin into host_load
@@ -17,6 +17,7 @@ Plugins:
 simix:
  - Add parameter --cfg=simix/breakpoint to raise a SIGTRAP at given time.
  - kill simix::onDeadlock() that was somewhat dupplicating s4u::on_deadlock()
+ - Improve performance when handling timeouts of simix synchros.
 
 SMPI:
  - Replay: The replay file has been re-written in C++.
@@ -26,12 +27,14 @@ SMPI:
 XBT:
  - Config: the C API is now deprecated (will be removed in 3.23), and
            the C++ API has been slightly improved.
+ - Fix several build issues on OSX.
 
 Other:
  - Move simgrid_config.h to simgrid/config.h (old header still working)
 
 Fixed bugs:
  - #143: Setting a breakpoint at a given time
+ - #150: Inconsistent event names in SMPI replay
  - #258: daemonized actors hang after all non-daemonized actors have completed
  - #267: Linker error on unit_tmgr
  - #269: SMPI : tracing of MPI_Wait/all/any broken
@@ -137,7 +140,9 @@ SimGrid (3.19) Released March 20 2018
  Fixed bugs:
  - #194: Feature request: simgrid::s4u::Comm::test_any()
  - #245: migrating an actor does not migrate its execution
+ - #253: Feature Request: expose clusters as objects
  - #254: Something seems wrong with s4u::Actor::kill(aid_t)
+ - #255: Tesh broken on Windows
  - #256: Modernize FindSimGrid.cmake
  - #257: Fix (ab)use of CMake install
 
