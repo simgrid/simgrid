@@ -33,5 +33,6 @@ int smpi_getopt (int argc,  char *const *argv,  const char *options);
 
 #define getopt(x,y,z) smpi_getopt(x,y,z)
 #define getopt_long(x,y,z,a,b) smpi_getopt_long(x,y,z,a,b)
+#define getopt_long_only(x,y,z,a,b) smpi_getopt_long_only(x,y,z,a,b)
 
 #endif

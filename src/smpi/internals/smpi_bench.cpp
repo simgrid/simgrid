@@ -443,6 +443,17 @@ void smpi_bench_destroy()
   samples.clear();
 }
 
+int smpi_getopt_long_only (int argc,  char *const *argv,  const char *options,
+                      const struct option * long_options, int *opt_index)
+{
+  if (smpi_process())
+    optind = smpi_process()->get_optind();
+  int ret = getopt_long_only (argc,  argv,  options, long_options, opt_index);
+  if (smpi_process())
+    smpi_process()->set_optind(optind);
+  return ret;
+}
+
 int smpi_getopt_long (int argc,  char *const *argv,  const char *options,
                       const struct option * long_options, int *opt_index)
 {
