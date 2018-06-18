@@ -750,6 +750,20 @@ if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace30.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace30.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace31.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace31.txt COPYONLY)
 
+  set(smpi_replay_manual_deploy_files
+    compute_only.txt compute_only/actions0.txt compute_only/actions1.txt
+    empty.txt empty/actions0.txt empty/actions1.txt mixed.txt mixed/actions0.txt
+    mixed/actions1.txt workload_compute workload_compute_consecutive
+    workload_compute_consecutive2 workload_compute_simple workload_empty1
+    workload_empty2 workload_empty2_same_resources workload_empty2_same_time
+    workload_empty2_same_time_and_resources workload_mixed1 workload_mixed2
+    workload_mixed2_same_resources workload_mixed2_same_time
+    workload_mixed2_same_time_and_resources workload_nojob)
+  foreach(file IN LISTS ${smpi_replay_manual_deploy_files})
+      configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/${file}
+        ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/${file} COPYONLY)
+  endforeach()
+
   set(generated_files_to_clean
     ${generated_files_to_clean}
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt
@@ -800,6 +814,31 @@ if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace29.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace30.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/ti_traces_32_1/ti_trace31.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions0.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/compute_only/actions1.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty/actions0.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/empty/actions1.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed/actions0.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/mixed/actions1.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/replay_multiple_manual.tesh
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive2
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_simple
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty1
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time_and_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed1
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_mixed2_same_time_and_resources
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_nojob
     )
 endif()
 
