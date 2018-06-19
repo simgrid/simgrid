@@ -56,23 +56,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
 }
 
 /** \ingroup msg_simulation
- * \brief Launch the MSG simulation
- */
-msg_error_t MSG_main()
-{
-  /* Clean IO before the run */
-  fflush(stdout);
-  fflush(stderr);
-
-  if (MC_is_active()) {
-    MC_run();
-  } else {
-    SIMIX_run();
-  }
-  return MSG_OK;
-}
-
-/** \ingroup msg_simulation
  * \brief set a configuration variable
  *
  * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.

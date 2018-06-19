@@ -249,6 +249,10 @@ std::vector<ActorPtr> Engine::get_filtered_actors(std::function<bool(ActorPtr)> 
 
 void Engine::run()
 {
+  /* Clean IO before the run */
+  fflush(stdout);
+  fflush(stderr);
+
   if (MC_is_active()) {
     MC_run();
   } else {
@@ -346,7 +350,10 @@ void sg_engine_load_deployment(const char* file)
 {
   simgrid::s4u::Engine::get_instance()->load_deployment(file);
 }
-
+void sg_engine_run()
+{
+  simgrid::s4u::Engine::get_instance()->run();
+}
 void sg_engine_register_function(const char* name, int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);

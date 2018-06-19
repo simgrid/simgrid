@@ -444,7 +444,6 @@ set(MSG_SRC
   src/msg/msg_global.cpp
   src/msg/msg_gos.cpp
   src/msg/msg_legacy.cpp
-  src/msg/msg_mailbox.cpp
   src/msg/msg_process.cpp
   src/msg/msg_synchro.cpp
   src/msg/msg_task.cpp
@@ -670,6 +669,7 @@ set(headers_to_install
   include/simgrid/plugins/load_balancer.h
   include/simgrid/smpi/replay.hpp
   include/simgrid/instr.h
+  include/simgrid/mailbox.h
   include/simgrid/msg.h
   include/simgrid/simdag.h
   include/simgrid/modelchecker.h

@@ -4,6 +4,11 @@ TRACE
  - Change --cfg=tracing/msg/vm to --cfg=tracing/vm as virtual machine
    behavior tracing is no longer limited to MSG
 
+MSG
+ - The deprecation of MSG is ongoing. A lot of functions are now simple
+   wrappers on the C API of S4U. All these wrappers (and their S4U counterparts
+   can be found in src/msg/msg_legacy.cpp).
+
 S4U:
  - Introduced new function simgrid::s4u::Host::get_actor_count. This function
    returns the number of actors running on a specific host.

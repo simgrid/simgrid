@@ -326,7 +326,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname)
 {
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
-  MSG_mailbox_set_async(name);
+  sg_mailbox_set_receiver(name);
   env->ReleaseStringUTFChars((jstring) jname, name);
 }
 

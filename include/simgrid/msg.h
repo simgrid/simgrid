@@ -11,6 +11,7 @@
 #include <simgrid/forward.h>
 #include <simgrid/host.h>
 #include <simgrid/instr.h>
+#include <simgrid/mailbox.h>
 #include <simgrid/plugins/live_migration.h>
 #include <simgrid/storage.h>
 #include <simgrid/vm.h>
