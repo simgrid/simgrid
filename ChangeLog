@@ -46,9 +46,9 @@ SMPI:
 XBT:
  - Config: the C API is now deprecated (will be removed in 3.23), and
            the C++ API has been slightly improved.
- - Fix several build issues on OSX.
 
 Other:
+ - Fix several build issues on OSX.
  - Move simgrid_config.h to simgrid/config.h (old header still working)
 
 Fixed bugs:
