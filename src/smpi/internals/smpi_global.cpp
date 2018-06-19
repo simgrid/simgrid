@@ -449,42 +449,40 @@ static smpi_entry_point_type smpi_resolve_function(void* handle)
   return smpi_entry_point_type();
 }
 
-static void smpi_copy_file(std::string src,std::string target, off_t fdin_size, int rank){
+static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
+{
+  int fdin = open(src.c_str(), O_RDONLY);
+  xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.", src.c_str());
+  int fdout = open(target.c_str(), O_CREAT | O_RDWR, S_IRWXU);
+  xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
 
-    int fdin = open(src.c_str(), O_RDONLY);
-    xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.",
-               src.c_str());
-    int fdout = open(target.c_str(), O_CREAT | O_RDWR, S_IRWXU);
-    xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
-
-    XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target.c_str());
+  XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target.c_str());
 #if HAVE_SENDFILE
-    ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
-    xbt_assert(sent_size == fdin_size,
-               "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
-               target.c_str(), sent_size, fdin_size, errno, strerror(errno));
+  ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
+  xbt_assert(sent_size == fdin_size, "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
+             target.c_str(), sent_size, fdin_size, errno, strerror(errno));
 #else
-    const int bufsize = 1024 * 1024 * 4;
-    char buf[bufsize];
-    while (int got = read(fdin, buf, bufsize)) {
-      if (got == -1) {
-        xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
-      } else {
-        char* p  = buf;
-        int todo = got;
-        while (int done = write(fdout, p, todo)) {
-          if (done == -1) {
-            xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
-          } else {
-            p += done;
-            todo -= done;
-          }
+  const int bufsize = 1024 * 1024 * 4;
+  char buf[bufsize];
+  while (int got = read(fdin, buf, bufsize)) {
+    if (got == -1) {
+      xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
+    } else {
+      char* p  = buf;
+      int todo = got;
+      while (int done = write(fdout, p, todo)) {
+        if (done == -1) {
+          xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
+        } else {
+          p += done;
+          todo -= done;
         }
       }
     }
+  }
 #endif
-    close(fdin);
-    close(fdout);
+  close(fdin);
+  close(fdout);
 }
 
 #if not defined(__APPLE__)
@@ -574,7 +572,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
           + "_" + std::to_string(getpid())
           + "_" + std::to_string(rank) + ".so";
 
-        smpi_copy_file(executable_copy, target_executable, fdin_size, rank);
+        smpi_copy_file(executable_copy, target_executable, fdin_size);
         //if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
           std::string target_lib;
           for (auto const& libpath : privatize_libs_paths){
@@ -598,7 +596,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
             target_lib = std::string(pad - std::to_string(rank).length(), '0')
                         +std::to_string(rank)+libname.substr(pad);
             XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
-            smpi_copy_file(libpath, target_lib, fdin_size2, rank);
+            smpi_copy_file(libpath, target_lib, fdin_size2);
 
             std::string sedcommand = "sed -i -e 's/"+libname+"/"+target_lib+"/g' "+target_executable;
             int ret = system(sedcommand.c_str());
