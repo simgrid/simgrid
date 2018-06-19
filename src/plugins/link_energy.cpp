@@ -138,8 +138,7 @@ double LinkEnergy::get_consumed_energy()
 using simgrid::plugin::LinkEnergy;
 
 /* **************************** events  callback *************************** */
-static void on_communicate(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host* src,
-                           simgrid::s4u::Host* dst)
+static void on_communicate(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host*, simgrid::s4u::Host*)
 {
   XBT_DEBUG("onCommunicate is called");
   for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
