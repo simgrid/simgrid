@@ -29,30 +29,30 @@ class Governor {
 
 private:
   simgrid::s4u::Host* const host_;
+  double sampling_rate_;
 
 protected:
   simgrid::s4u::Host* get_host() const { return host_; }
 
 public:
-  double sampling_rate;
 
   explicit Governor(simgrid::s4u::Host* ptr) : host_(ptr) { init(); }
   virtual ~Governor() = default;
+  virtual std::string get_name() = 0;
 
   void init()
   {
     const char* local_sampling_rate_config = host_->get_property(property_sampling_rate);
     double global_sampling_rate_config     = simgrid::config::get_value<double>(property_sampling_rate);
     if (local_sampling_rate_config != nullptr) {
-      sampling_rate = std::stod(local_sampling_rate_config);
+      sampling_rate_ = std::stod(local_sampling_rate_config);
     } else {
-      sampling_rate = global_sampling_rate_config;
+      sampling_rate_ = global_sampling_rate_config;
     }
   }
 
   virtual void update()         = 0;
-  virtual std::string getName() = 0;
-  double samplingRate() { return sampling_rate; }
+  double get_sampling_rate() { return sampling_rate_; }
 };
 
 /**
@@ -68,9 +68,9 @@ public:
 class Performance : public Governor {
 public:
   explicit Performance(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  std::string get_name() override { return "Performance"; }
 
   void update() override { get_host()->set_pstate(0); }
-  std::string getName() override { return "Performance"; }
 };
 
 /**
@@ -86,9 +86,9 @@ public:
 class Powersave : public Governor {
 public:
   explicit Powersave(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  std::string get_name() override { return "Powersave"; }
 
   void update() override { get_host()->set_pstate(get_host()->get_pstate_count() - 1); }
-  std::string getName() override { return "Powersave"; }
 };
 
 /**
@@ -105,20 +105,20 @@ class OnDemand : public Governor {
    * See https://elixir.bootlin.com/linux/v4.15.4/source/drivers/cpufreq/cpufreq_ondemand.c
    * DEF_FREQUENCY_UP_THRESHOLD and od_update()
    */
-  double freq_up_threshold = 0.80;
+  double freq_up_threshold_ = 0.80;
 
 public:
   explicit OnDemand(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  std::string get_name() override { return "OnDemand"; }
 
-  std::string getName() override { return "OnDemand"; }
   void update() override
   {
     double load = get_host()->get_core_count() * sg_host_get_avg_load(get_host());
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
-    if (load > freq_up_threshold) {
+    if (load > freq_up_threshold_) {
       get_host()->set_pstate(0); /* Run at max. performance! */
-      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold, 0);
+      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, 0);
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
@@ -129,11 +129,11 @@ public:
        */
       int max_pstate = get_host()->get_pstate_count() - 1;
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
-      // because pstate 0 can only be selected if load > freq_up_threshold
+      // because pstate 0 can only be selected if load > freq_up_threshold_
       int new_pstate = max_pstate - load * (max_pstate + 1);
       get_host()->set_pstate(new_pstate);
 
-      XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold, new_pstate);
+      XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold_, new_pstate);
     }
   }
 };
@@ -151,36 +151,36 @@ public:
  * > environment.
  */
 class Conservative : public Governor {
-  double freq_up_threshold   = .8;
-  double freq_down_threshold = .2;
+  double freq_up_threshold_   = .8;
+  double freq_down_threshold_ = .2;
 
 public:
   explicit Conservative(simgrid::s4u::Host* ptr) : Governor(ptr) {}
+  virtual std::string get_name() override { return "Conservative"; }
 
-  virtual std::string getName() override { return "Conservative"; }
   virtual void update() override
   {
     double load = get_host()->get_core_count() * sg_host_get_avg_load(get_host());
     int pstate  = get_host()->get_pstate();
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
-    if (load > freq_up_threshold) {
+    if (load > freq_up_threshold_) {
       if (pstate != 0) {
         get_host()->set_pstate(pstate - 1);
-        XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold,
+        XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold_,
                  pstate - 1);
       } else {
         XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load,
-                  freq_up_threshold, pstate);
+                  freq_up_threshold_, pstate);
       }
-    } else if (load < freq_down_threshold) {
+    } else if (load < freq_down_threshold_) {
       int max_pstate = get_host()->get_pstate_count() - 1;
       if (pstate != max_pstate) { // Are we in the slowest pstate already?
         get_host()->set_pstate(pstate + 1);
-        XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold, pstate + 1);
+        XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold_, pstate + 1);
       } else {
         XBT_DEBUG("Load: %f < threshold: %f -> cannot slow down even more, already in slowest pstate %d", load,
-                  freq_down_threshold, pstate);
+                  freq_down_threshold_, pstate);
       }
     }
   }
@@ -208,15 +208,12 @@ class HostDvfs {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostDvfs> EXTENSION_ID;
 
-  explicit HostDvfs(simgrid::s4u::Host*);
-  ~HostDvfs();
+  explicit HostDvfs(simgrid::s4u::Host*){};
+  ~HostDvfs() = default;
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostDvfs> HostDvfs::EXTENSION_ID;
 
-HostDvfs::HostDvfs(simgrid::s4u::Host* ptr) {}
-
-HostDvfs::~HostDvfs() = default;
 } // namespace dvfs
 } // namespace plugin
 } // namespace simgrid
@@ -275,16 +272,16 @@ static void on_host_added(simgrid::s4u::Host& host)
       // Sleep *before* updating; important for startup (i.e., t = 0).
       // In the beginning, we want to go with the pstates specified in the platform file
       // (so we sleep first)
-      simgrid::s4u::this_actor::sleep_for(governor->samplingRate());
+      simgrid::s4u::this_actor::sleep_for(governor->get_sampling_rate());
       governor->update();
-      XBT_DEBUG("Governor (%s) just updated!", governor->getName().c_str());
+      XBT_DEBUG("Governor (%s) just updated!", governor->get_name().c_str());
     }
 
     XBT_WARN("I should have never reached this point: daemons should be killed when all regular processes are done");
     return 0;
   });
 
-  // This call must be placed in this function. Otherweise, the daemonize() call comes too late and
+  // This call must be placed in this function. Otherwise, the daemonize() call comes too late and
   // SMPI will take this process as an MPI process!
   daemon->daemonize();
 }
