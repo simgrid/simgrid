@@ -142,11 +142,11 @@ public final class NativeLib {
 		else if ("x86_64".equalsIgnoreCase(arch) || "AMD64".equalsIgnoreCase(arch))
 			arch = "amd64";
 
-		if (os.toLowerCase().startsWith("win")){
+		if (os.toLowerCase().startsWith("win")) {
 			os = "Windows";
-		} else if (os.contains("OS X"))
+		} else if (os.contains("OS X")) {
 			os = "Darwin";
-
+		}
 		os = os.replace(' ', '_');
 		arch = arch.replace(' ', '_');
 
