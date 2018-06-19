@@ -479,8 +479,8 @@ static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
 }
 
 #if not defined(__APPLE__)
-static int visit_libs (struct dl_phdr_info *info,
-                           size_t size, void *data){
+static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
+{
   char* libname = (char*)(data);
   const char *path = info->dlpi_name;
   if(strstr(path, libname)){
