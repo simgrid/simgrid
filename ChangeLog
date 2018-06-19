@@ -25,9 +25,23 @@ simix:
  - Improve performance when handling timeouts of simix synchros.
 
 SMPI:
+ - SMPI is now tested with ~45 proxy apps from various sources, with none or 
+   only minor patching needed : check github.com/simgrid/SMPI-proxy-apps
  - Replay: The replay file has been re-written in C++.
  - Replay: Tags used for messages sent via MPI_Send / MPI_Recv are now
    supported. They are stored in the trace and used when replayed.
+ - Basic support of MPI_Cancel. Robustness not guaranteed.
+ - Support of MPI_Win_allocate_shared, MPI_Win_shared_query, MPI_Comm_split_type
+   (only for MPI_COMM_TYPE_SHARED).
+ - New option : smpi/privatize-libs, to add external shared libs to be privatized
+   by SMPI. They will be copied locally and loaded separately by each process.
+   Example --cfg=smpi/privatize-libs:"libgfortran.so.3;libscalapack.so".
+ - Tracing : add tracing for MPI_Start, Startall, Testall, Testany
+ - Interception of getopt, getopt_long and getopt_long_only calls to avoid issues 
+   with internal index optind with multiple processes. Only works if MPI_Init has 
+   already been called.
+ - Fortran : SMPI builds a mpi.mod file which should allow use of "use mpi" 
+   syntax without preprocessing tricks.
 
 XBT:
  - Config: the C API is now deprecated (will be removed in 3.23), and
@@ -43,6 +57,7 @@ Fixed bugs:
  - #258: daemonized actors hang after all non-daemonized actors have completed
  - #267: Linker error on unit_tmgr
  - #269: SMPI : tracing of MPI_Wait/all/any broken
+ - SMPI : Fix various crashes with combined use of MPI_PROC_NULL and MPI_IGNORE_STATUS 
 
 ----------------------------------------------------------------------------
 
