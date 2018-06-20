@@ -623,3 +623,73 @@ void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot)
 }
 }
 
+#ifdef SIMGRID_TEST
+
+/* **BOOST** */
+#define BOOST_TEST_MODULE checkpoint
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+
+static
+void add_region(int index, simgrid::mc::Snapshot* snapshot,
+                                  simgrid::mc::RegionType type,
+                                  simgrid::mc::ObjectInformation* object_info,
+                                  void *start_addr, void* permanent_addr,
+                                  std::size_t size)
+{
+  if (type == simgrid::mc::RegionType::Data)
+    xbt_assert(object_info, "Missing object info for object.");
+  else if (type == simgrid::mc::RegionType::Heap)
+    xbt_assert(not object_info, "Unexpected object info for heap region.");
+
+  simgrid::mc::RegionSnapshot region;
+#if HAVE_SMPI
+  const bool privatization_aware = object_info
+    && mc_model_checker->process().privatized(*object_info);
+  if (privatization_aware && MC_smpi_process_count())
+    region = simgrid::mc::privatized_region(
+      type, start_addr, permanent_addr, size);
+  else
+#endif
+    region = simgrid::mc::region(type, start_addr, permanent_addr, size);
+
+  region.object_info(object_info);
+  snapshot->snapshot_regions[index]
+    = std::unique_ptr<simgrid::mc::RegionSnapshot>(
+      new simgrid::mc::RegionSnapshot(std::move(region)));
+}
+
+/*
+add_region test
+*/
+static
+int add_region_BOOST()
+{
+  
+  RemoteClient* this_process = new RemoteClient(getpid(), -1);
+  /* read /proc/getpid()/maps into "this_process->memory_map", etc. */
+  this_process->init();
+  simgrid::mc::Snapshot* snapshot = new simgrid::mc::Snapshot(this_process, 0); // first ckpt
+  simgrid::mc::RegionType type = simgrid::mc::RegionType::Unknown;
+  // simgrid::mc::ObjectInformation* object_info;
+  /* TODO: mmap some memory to use  */
+  void* start_addr = 0x7fb7539a0000;     // random addr
+  void* permanent_addr = 0x7fb7539a0000; // random addr
+  std::size_t size = 4096; // PAGESIZE
+  int region_num = 10;
+  for(int i=0; i<region_num; ++i) {
+    add_region(i, snaphot, type, NULL, start_addr, permanent_addr, size);
+  } 
+  BOOST_TEST(snapshot.size == 10);
+  BOOST_TEST(snapshot[0] == snapshot[7]);
+  return 1; // just for testing
+}
+
+
+BOOST_AUTO_TEST_SUITE(checkpoint)
+BOOST_AUTO_TEST_CASE(add_region_test) {
+  BOOST_TEST(add_region_BOOST() == 1);
+}
+BOOST_AUTO_TEST_SUITE_END()
+
+#endif // SIMGRID_TEST
