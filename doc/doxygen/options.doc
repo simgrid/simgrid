@@ -1042,7 +1042,7 @@ to choose between them.
 \subsection options_smpi_privatize_libs smpi/privatize-libs: Automatic privatization of
  global variables inside external libraries
 
-Linux/BSD only : When using dlopen (default) privatization, privatize specific 
+Linux/BSD only: When using dlopen (default) privatization, privatize specific 
 shared libraries with internal global variables, if they can't be linked statically. 
 For example libgfortran is usually used for Fortran I/O and indexes in files 
 can be mixed up.
@@ -1050,7 +1050,7 @@ can be mixed up.
 \warning
   This configuration option can only use either full paths to libraries, or full names.
   Check with ldd the name of the library you want to use.
-  Example :
+  Example:
   ldd allpairf90 
     libgfortran.so.3 => /usr/lib/x86_64-linux-gnu/libgfortran.so.3 (0x00007fbb4d91b000)
   Then you can use --cfg=smpi/privatize-libs:"libgfortran.so.3" or --cfg=smpi/privatize-libs:"/usr/lib/x86_64-linux-gnu/libgfortran.so.3", but not "libgfortran" or "libgfortran.so".

@@ -166,7 +166,7 @@ Most of these are best described in <a href="http://www.cs.arizona.edu/~dkl/rese
  - 2dmesh: organizes the nodes as a two dimensional mesh, and perform allgather 
    along the dimensions
  - 3dmesh: adds a third dimension to the previous algorithm
- - rdb: recursive doubling : extends the mesh to a nth dimension, each one 
+ - rdb: recursive doubling: extends the mesh to a nth dimension, each one 
    containing two nodes
  - pair: pairwise exchange, only works for power of 2 procs, size-1 steps,
    each process sends and receives from the same process at each step
