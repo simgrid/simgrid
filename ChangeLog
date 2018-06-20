@@ -5,9 +5,11 @@ TRACE
    behavior tracing is no longer limited to MSG
 
 MSG
- - The deprecation of MSG is ongoing. A lot of functions are now simple
-   wrappers on the C API of S4U. All these wrappers (and their S4U counterparts
-   can be found in src/msg/msg_legacy.cpp).
+ - The deprecation of MSG is ongoing (but this should not impact you).
+   Many MSG functions are now simple wrappers on the C API of S4U. If
+   you wish to convert your code to S4U, find the S4U counterparts of
+   your MSG calls in src/msg/msg_legacy.cpp.
+ - MSG can still be used, but won't evolve anymore.
 
 S4U:
  - Introduced new function simgrid::s4u::Host::get_actor_count. This function
@@ -26,7 +28,7 @@ simix:
 
 SMPI:
  - SMPI is now tested with ~45 proxy apps from various sources, with none or 
-   only minor patching needed: check github.com/simgrid/SMPI-proxy-apps
+   only minor patching needed: check https://github.com/simgrid/SMPI-proxy-apps
  - Replay: The replay file has been re-written in C++.
  - Replay: Tags used for messages sent via MPI_Send / MPI_Recv are now
    supported. They are stored in the trace and used when replayed.
