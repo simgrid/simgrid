@@ -2,11 +2,11 @@
 1 init
 2 init
 
-0 Irecv 1 0 2000
+0 irecv 1 0 2000
 1 isend 0 0 2000
-2 Irecv 1 1 3000
+2 irecv 1 1 3000
 
-0 Irecv 2 2 3000
+0 irecv 2 2 3000
 1 isend 2 1 3000
 2 isend 0 2 3000
 

@@ -203,7 +203,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Irecv", src,
+                       new simgrid::instr::Pt2PtTIData("irecv", src,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 
