@@ -3,6 +3,17 @@ SimGrid (3.20) NOT RELEASED YET (Release target: June 21. 2018 10:07 UTC)
 TRACE
  - Change --cfg=tracing/msg/vm to --cfg=tracing/vm as virtual machine
    behavior tracing is no longer limited to MSG
+ - TIT (Time Independent Traces): We finally support tags. Unfortunately,
+   this means that traces now need to be updated or re-obtained; both Irecv
+   and Isend lines in your traces have now in total 5 mandatory fields:
+      <rankid> <command> <to/from rankid> <tag> <size>
+   To update your traces, it suffices to add a 0 for the tag here.
+ - TIT now also supports waiting for a distinct request via MPI_Wait.
+   Wait/Test now wait for a specific request, not just the last one that was
+   issued. This unfortunately means another update, because we need to
+   identify which request you want to wait for. We do this via the
+   triplet (sender, receiver, tag), which needs to be added:
+      <rankid> <command> <sender> <receiver> <tag>
 
 MSG
  - The deprecation of MSG is ongoing (but this should not impact you).
