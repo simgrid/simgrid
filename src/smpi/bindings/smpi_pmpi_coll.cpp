@@ -657,7 +657,7 @@ int PMPI_Alltoallv(void* sendbuf, int* sendcounts, int* senddisps, MPI_Datatype 
     }
 
     TRACE_smpi_comm_in(rank, __func__,
-                       new simgrid::instr::VarCollTIData("allToAllV", -1, send_size, trace_sendcounts, recv_size,
+                       new simgrid::instr::VarCollTIData("alltoallv", -1, send_size, trace_sendcounts, recv_size,
                                                          trace_recvcounts, simgrid::smpi::Datatype::encode(sendtype),
                                                          simgrid::smpi::Datatype::encode(recvtype)));
 

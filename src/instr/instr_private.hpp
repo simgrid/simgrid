@@ -76,7 +76,7 @@ public:
       , recv_size(recv_size)
       , send_type(send_type)
       , recv_type(recv_type){};
-  // VarCollTI: gatherv, scatterv, allgatherv, allToAllV (+ reducescatter out of laziness)
+  // VarCollTI: gatherv, scatterv, allgatherv, alltoallv (+ reducescatter out of laziness)
   explicit TIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
                   std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
       : TIData(name, root, send_size, std::shared_ptr<std::vector<int>>(sendcounts), recv_size,

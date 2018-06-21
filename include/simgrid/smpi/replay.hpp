@@ -319,7 +319,7 @@ public:
 
 class AllToAllVAction : public ReplayAction<AllToAllVArgParser> {
 public:
-  explicit AllToAllVAction() : ReplayAction("allToAllV") {}
+  explicit AllToAllVAction() : ReplayAction("alltoallv") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 }
