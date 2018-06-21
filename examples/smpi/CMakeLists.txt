@@ -10,7 +10,6 @@ if(enable_smpi)
     add_executable       (smpi_${x} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x})
     target_link_libraries(smpi_${x} simgrid)
     set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-    set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x})
   endforeach()
 
   set_target_properties(smpi_trace_call_location PROPERTIES COMPILE_FLAGS "-trace-call-location")
