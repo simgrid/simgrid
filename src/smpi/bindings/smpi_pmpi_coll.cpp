@@ -144,7 +144,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recv
 
     TRACE_smpi_comm_in(rank, __func__,
                        new simgrid::instr::VarCollTIData(
-                           "gatherV", root,
+                           "gatherv", root,
                            sendtmptype->is_replayable() ? sendtmpcount : sendtmpcount * sendtmptype->size(), nullptr,
                            dt_size_recv, trace_recvcounts, simgrid::smpi::Datatype::encode(sendtmptype),
                            simgrid::smpi::Datatype::encode(recvtype)));

@@ -250,7 +250,7 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string nam
   disps      = std::vector<int>(comm_size, 0);
   recvcounts = std::shared_ptr<std::vector<int>>(new std::vector<int>(comm_size));
 
-  if (name == "gatherV") {
+  if (name == "gatherv") {
     root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
     if (action.size() > 4 + comm_size)
       datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
@@ -622,10 +622,10 @@ void GatherVAction::kernel(simgrid::xbt::ReplayAction& action)
   int rank = MPI_COMM_WORLD->rank();
 
   TRACE_smpi_comm_in(my_proc_id, name.c_str(), new simgrid::instr::VarCollTIData(
-        name, (name == "gatherV") ? args.root : -1, args.send_size, nullptr, -1, args.recvcounts,
+        name, (name == "gatherv") ? args.root : -1, args.send_size, nullptr, -1, args.recvcounts,
         Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
-  if (name == "gatherV") {
+  if (name == "gatherv") {
     Colls::gatherv(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
         (rank == args.root) ? recv_buffer(args.recv_size_sum * args.datatype2->size()) : nullptr,
         args.recvcounts->data(), args.disps.data(), args.datatype2, args.root, MPI_COMM_WORLD);
@@ -732,7 +732,7 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("allToAllV", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::AllToAllVAction().execute(action); });
   xbt_replay_action_register("gather",   [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherAction("gather").execute(action); });
   xbt_replay_action_register("scatter",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ScatterAction().execute(action); });
-  xbt_replay_action_register("gatherV",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherVAction("gatherV").execute(action); });
+  xbt_replay_action_register("gatherv",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherVAction("gatherv").execute(action); });
   xbt_replay_action_register("scatterv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ScatterVAction().execute(action); });
   xbt_replay_action_register("allGather", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherAction("allGather").execute(action); });
   xbt_replay_action_register("allgatherv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherVAction("allgatherv").execute(action); });
