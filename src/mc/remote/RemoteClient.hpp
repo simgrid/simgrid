@@ -6,37 +6,12 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
-#include <cstddef>
-#include <cstdint>
-
-#include <memory>
-#include <string>
-#include <type_traits>
-#include <vector>
-
-#include <sys/types.h>
-
-#include <simgrid/config.h>
-
-#include "xbt/base.h"
-#include <xbt/mmalloc.h>
-
 #include "src/xbt/mmalloc/mmprivate.h"
-
 #include "src/mc/remote/Channel.hpp"
-#include "src/mc/remote/RemotePtr.hpp"
-
-#include "src/simix/popping_private.hpp"
 #include "src/simix/smx_private.hpp"
-#include <simgrid/simix.h>
-
-#include "src/xbt/memory_map.hpp"
-
-#include "src/mc/AddressSpace.hpp"
 #include "src/mc/ObjectInformation.hpp"
-#include "src/mc/mc_base.h"
-#include "src/mc/mc_forward.hpp"
-#include "src/mc/remote/mc_protocol.h"
+
+#include <vector>
 
 namespace simgrid {
 namespace mc {

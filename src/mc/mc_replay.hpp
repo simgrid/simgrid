@@ -6,9 +6,6 @@
 #ifndef SIMGRID_MC_REPLAY_H
 #define SIMGRID_MC_REPLAY_H
 
-#include "xbt/base.h"
-#include <string>
-
 #include "src/mc/mc_config.hpp"
 
 /** Replay path (if any) in string representation
