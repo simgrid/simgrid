@@ -500,7 +500,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datat
     }
 
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::VarCollTIData(
-                                           "reduceScatter", -1, dt_send_size, nullptr, -1, trace_recvcounts,
+                                           "reducescatter", -1, dt_send_size, nullptr, -1, trace_recvcounts,
                                            simgrid::smpi::Datatype::encode(datatype), ""));
 
     simgrid::smpi::Colls::reduce_scatter(sendtmpbuf, recvbuf, recvcounts, datatype, op, comm);
@@ -543,7 +543,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
     }
 
     TRACE_smpi_comm_in(rank, __func__,
-                       new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, trace_recvcounts,
+                       new simgrid::instr::VarCollTIData("reducescatter", -1, 0, nullptr, -1, trace_recvcounts,
                                                          simgrid::smpi::Datatype::encode(datatype), ""));
 
     int* recvcounts = new int[count];

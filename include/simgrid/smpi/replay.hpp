@@ -313,7 +313,7 @@ public:
 
 class ReduceScatterAction : public ReplayAction<ReduceScatterArgParser> {
 public:
-  explicit ReduceScatterAction() : ReplayAction("reduceScatter") {}
+  explicit ReduceScatterAction() : ReplayAction("reducescatter") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 

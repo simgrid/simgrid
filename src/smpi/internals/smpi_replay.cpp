@@ -341,7 +341,7 @@ void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, std::string na
 void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, std::string name)
 {
   /* The structure of the reducescatter action for the rank 0 (total 4 processes) is the following:
-       0 reduceScatter 275427 275427 275427 204020 11346849 0
+       0 reducescatter 275427 275427 275427 204020 11346849 0
      where:
        1) The first four values after the name of the action declare the recvcounts array
        2) The value 11346849 is the amount of instructions
@@ -670,7 +670,7 @@ void ScatterVAction::kernel(simgrid::xbt::ReplayAction& action)
 void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction& action)
 {
   TRACE_smpi_comm_in(my_proc_id, "action_reducescatter",
-      new simgrid::instr::VarCollTIData("reduceScatter", -1, 0, nullptr, -1, args.recvcounts,
+      new simgrid::instr::VarCollTIData("reducescatter", -1, 0, nullptr, -1, args.recvcounts,
         std::to_string(args.comp_size), /* ugly hack to print comp_size */
         Datatype::encode(args.datatype1)));
 
@@ -736,7 +736,7 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("scatterv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ScatterVAction().execute(action); });
   xbt_replay_action_register("allGather", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherAction("allGather").execute(action); });
   xbt_replay_action_register("allgatherv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherVAction("allgatherv").execute(action); });
-  xbt_replay_action_register("reduceScatter", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ReduceScatterAction().execute(action); });
+  xbt_replay_action_register("reducescatter", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ReduceScatterAction().execute(action); });
   xbt_replay_action_register("compute", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ComputeAction().execute(action); });
 
   //if we have a delayed start, sleep here.
