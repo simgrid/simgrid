@@ -61,7 +61,7 @@ public:
 
   // NoOpTI: init, finalize, test, wait, barrier
   explicit TIData(std::string name) : name_(name){};
-  // CPuTI: compute, sleep (+ waitAny and waitAll out of laziness)
+  // CPuTI: compute, sleep (+ waitAny and waitall out of laziness)
   explicit TIData(std::string name, double amount) : name_(name), amount_(amount){};
   // Pt2PtTI: send, isend, sssend, issend, recv, irecv
   explicit TIData(std::string name, int endpoint, int size, std::string datatype)

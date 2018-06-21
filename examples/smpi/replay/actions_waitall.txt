@@ -10,9 +10,9 @@
 1 Isend 2 1 3000
 2 Isend 0 2 3000
 
-0 waitAll
-1 waitAll
-2 waitAll
+0 waitall
+1 waitall
+2 waitall
 
 0 finalize
 1 finalize

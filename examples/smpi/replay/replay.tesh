@@ -342,11 +342,11 @@ $ ../../smpi_script/bin/smpirun -no-privatize -ext smpi_replay --log=replay.thre
 > [Fafard:2:(3) 0.000000] [smpi_replay/VERBOSE] 2 Isend 0 2 3000 0.000000
 > [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 Isend 0 0 2000 0.000000
 > [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 Isend 2 1 3000 0.000000
-> [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 waitAll 0.000000
+> [Jupiter:1:(2) 0.000000] [smpi_replay/VERBOSE] 1 waitall 0.000000
 > [Tremblay:0:(1) 0.000000] [smpi_replay/VERBOSE] 0 Irecv 1 0 2000 0.000000
 > [Tremblay:0:(1) 0.000000] [smpi_replay/VERBOSE] 0 Irecv 2 2 3000 0.000000
-> [Tremblay:0:(1) 0.003787] [smpi_replay/VERBOSE] 0 waitAll 0.003787
-> [Fafard:2:(3) 0.006220] [smpi_replay/VERBOSE] 2 waitAll 0.006220
+> [Tremblay:0:(1) 0.003787] [smpi_replay/VERBOSE] 0 waitall 0.003787
+> [Fafard:2:(3) 0.006220] [smpi_replay/VERBOSE] 2 waitall 0.006220
 > [Fafard:2:(3) 0.006220] [smpi_replay/INFO] Simulation time 0.006220
 
 $ rm -f replay/one_trace

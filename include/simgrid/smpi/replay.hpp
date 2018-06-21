@@ -253,7 +253,7 @@ private:
   RequestStorage& req_storage;
 
 public:
-  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll"), req_storage(storage) {}
+  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitall"), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
