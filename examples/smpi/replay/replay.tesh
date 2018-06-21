@@ -295,9 +295,9 @@ p Test of AllToAll replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay replay/one_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 0.004041] [smpi_replay/VERBOSE] 0 allToAll 500 500 0.004041
-> [Fafard:2:(3) 0.006920] [smpi_replay/VERBOSE] 2 allToAll 500 500 0.006920
-> [Jupiter:1:(2) 0.006920] [smpi_replay/VERBOSE] 1 allToAll 500 500 0.006920
+> [Tremblay:0:(1) 0.004041] [smpi_replay/VERBOSE] 0 alltoall 500 500 0.004041
+> [Fafard:2:(3) 0.006920] [smpi_replay/VERBOSE] 2 alltoall 500 500 0.006920
+> [Jupiter:1:(2) 0.006920] [smpi_replay/VERBOSE] 1 alltoall 500 500 0.006920
 > [Jupiter:1:(2) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
 
 

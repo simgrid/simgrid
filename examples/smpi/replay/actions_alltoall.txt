@@ -2,9 +2,9 @@
 1 init
 2 init
 
-0 allToAll 500 500
-1 allToAll 500 500
-2 allToAll 500 500
+0 alltoall 500 500
+1 alltoall 500 500
+2 alltoall 500 500
 
 
 0 finalize

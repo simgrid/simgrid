@@ -58,7 +58,7 @@
 16 compute 124216
 16 gather 795 795 0 
 16 compute 248019689
-16 allToAll 1746 1746 
+16 alltoall 1746 1746 
 16 compute 276028
 16 barrier
 16 compute 409314252
@@ -75,9 +75,9 @@
 16 compute 915153808
 16 barrier
 16 compute 1449835669
-16 allToAll 13824 13824 
+16 alltoall 13824 13824 
 16 compute 72647803
-16 allToAll 13824 13824 
+16 alltoall 13824 13824 
 16 compute 20518093
 16 comm_size 32
 16 allreduce 1 5226292
@@ -88,9 +88,9 @@
 16 comm_size 32
 16 allreduce 2 63798502
 16 compute 21530343
-16 allToAll 13824 13824 
+16 alltoall 13824 13824 
 16 compute 72647758
-16 allToAll 13824 13824 
+16 alltoall 13824 13824 
 16 compute 20517492
 16 comm_size 32
 16 allreduce 1 3823764
