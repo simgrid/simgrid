@@ -66,7 +66,7 @@ public:
   // Pt2PtTI: send, isend, sssend, issend, recv, irecv
   explicit TIData(std::string name, int endpoint, int size, std::string datatype)
       : name_(name), endpoint(endpoint), send_size(size), send_type(datatype){};
-  // CollTI: bcast, reduce, allreduce, gather, scatter, allGather, allToAll
+  // CollTI: bcast, reduce, allreduce, gather, scatter, allgather, allToAll
   explicit TIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
                   std::string recv_type)
       : name_(name)

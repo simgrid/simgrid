@@ -182,7 +182,7 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
     TRACE_smpi_comm_in(rank, __func__,
                        new simgrid::instr::CollTIData(
-                           "allGather", -1, -1.0, sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(),
+                           "allgather", -1, -1.0, sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(),
                            recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(),
                            simgrid::smpi::Datatype::encode(sendtype), simgrid::smpi::Datatype::encode(recvtype)));
 
