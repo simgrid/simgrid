@@ -244,7 +244,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     int trace_dst = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Isend", dst,
+                       new simgrid::instr::Pt2PtTIData("isend", dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 

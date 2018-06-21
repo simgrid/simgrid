@@ -3,12 +3,12 @@
 2 init
 
 0 Irecv 1 0 2000
-1 Isend 0 0 2000
+1 isend 0 0 2000
 2 Irecv 1 1 3000
 
 0 Irecv 2 2 3000
-1 Isend 2 1 3000
-2 Isend 0 2 3000
+1 isend 2 1 3000
+2 isend 0 2 3000
 
 0 waitall
 1 waitall
