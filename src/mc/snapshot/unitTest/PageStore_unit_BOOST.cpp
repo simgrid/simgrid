@@ -26,7 +26,7 @@ TODO: comment
 
 #include <memory>
 
-#include "/home/onesphore/simgrid/src/mc/PageStore.hpp"
+#include "src/mc/PageStore.hpp"
 
 static int value = 0;
 

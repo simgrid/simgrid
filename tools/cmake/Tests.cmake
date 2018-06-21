@@ -100,16 +100,16 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
     APPEND PROPERTY
            INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	   )
-  add_executable       (unit_snapshot src/mc/snapshot/unitTest/mc_snapshot_unit_BOOST.cpp)
-  # add_library(boost_unit_test_framework SHARED IMPORTED)
-  # set_target_properties(boost_unit_test_framework PROPERTIES IMPORTED_LOCATION ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-  target_link_libraries(unit_snapshot simgrid boost_unit_test_framework)
-  ADD_TEST(unit_snapshot ${CMAKE_BINARY_DIR}/unit_tmgr --build_info=yes)
-  set_property(
-    TARGET unit_snapshot
-    APPEND PROPERTY
-           INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
-	   )
+  if (SIMGRID_HAVE_MC)
+    add_executable       (unit_snapshot src/mc/snapshot/unitTest/mc_snapshot_unit_BOOST.cpp)
+    target_link_libraries(unit_snapshot simgrid boost_unit_test_framework)
+    ADD_TEST(unit_snapshot ${CMAKE_BINARY_DIR}/unit_snapshot --build_info=yes)
+    set_property(
+      TARGET unit_snapshot
+      APPEND PROPERTY
+             INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
+	     )
+  endif()
 
 
 else()

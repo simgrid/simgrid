@@ -22,10 +22,10 @@ TODO: comment
 
 #include <sys/mman.h>
 
-#include "simgrid/src/mc/mc_config.hpp"
-#include "simgrid/src/mc/mc_mmu.hpp"
-#include "simgrid/src/mc/mc_private.hpp"
-#include "simgrid/src/mc/mc_snapshot.hpp"
+#include "src/mc/mc_config.hpp"
+#include "src/mc/mc_mmu.hpp"
+#include "src/mc/mc_private.hpp"
+#include "src/mc/mc_snapshot.hpp"
 
 
 static inline void init_memory(void* mem, size_t size)
