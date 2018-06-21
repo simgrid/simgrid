@@ -39,7 +39,7 @@ def convert_trace(trace_path, base_path, output_path, trace_version="1.0"):
 
         with open(new_file_path, "w") as new_trace:
             # Write header
-            new_trace.write("# version: " + trace_version)
+            new_trace.write("# version: " + trace_version + "\n")
 
             last_async_call_src = None
             last_async_call_dst = None
