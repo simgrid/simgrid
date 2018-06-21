@@ -283,7 +283,7 @@ public:
 
 class AllToAllAction : public ReplayAction<AllToAllArgParser> {
 public:
-  explicit AllToAllAction() : ReplayAction("allToAll") {}
+  explicit AllToAllAction() : ReplayAction("alltoall") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 

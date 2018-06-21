@@ -587,7 +587,7 @@ int PMPI_Alltoall(void* sendbuf, int sendcount, MPI_Datatype sendtype, void* rec
 
     TRACE_smpi_comm_in(rank, __func__,
                        new simgrid::instr::CollTIData(
-                           "allToAll", -1, -1.0,
+                           "alltoall", -1, -1.0,
                            sendtmptype->is_replayable() ? sendtmpcount : sendtmpcount * sendtmptype->size(),
                            recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(),
                            simgrid::smpi::Datatype::encode(sendtmptype), simgrid::smpi::Datatype::encode(recvtype)));

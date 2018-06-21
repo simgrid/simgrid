@@ -588,8 +588,8 @@ void AllReduceAction::kernel(simgrid::xbt::ReplayAction& action)
 
 void AllToAllAction::kernel(simgrid::xbt::ReplayAction& action)
 {
-  TRACE_smpi_comm_in(my_proc_id, "action_allToAll",
-      new simgrid::instr::CollTIData("allToAll", -1, -1.0, args.send_size, args.recv_size,
+  TRACE_smpi_comm_in(my_proc_id, "action_alltoall",
+      new simgrid::instr::CollTIData("alltoall", -1, -1.0, args.send_size, args.recv_size,
         Datatype::encode(args.datatype1),
         Datatype::encode(args.datatype2)));
 
@@ -728,7 +728,7 @@ void smpi_replay_init(int* argc, char*** argv)
   xbt_replay_action_register("bcast",   [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::BcastAction().execute(action); });
   xbt_replay_action_register("reduce",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ReduceAction().execute(action); });
   xbt_replay_action_register("allreduce", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::AllReduceAction().execute(action); });
-  xbt_replay_action_register("allToAll", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::AllToAllAction().execute(action); });
+  xbt_replay_action_register("alltoall", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::AllToAllAction().execute(action); });
   xbt_replay_action_register("alltoallv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::AllToAllVAction().execute(action); });
   xbt_replay_action_register("gather",   [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherAction("gather").execute(action); });
   xbt_replay_action_register("scatter",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ScatterAction().execute(action); });
