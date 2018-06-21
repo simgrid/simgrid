@@ -279,9 +279,9 @@ p Test of AllReduce replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay replay/one_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 5.112775] [smpi_replay/VERBOSE] 0 allReduce 5e4 5e8 5.112775
-> [Jupiter:1:(2) 6.584135] [smpi_replay/VERBOSE] 1 allReduce 5e4 5e8 6.584135
-> [Fafard:2:(3) 6.584775] [smpi_replay/VERBOSE] 2 allReduce 5e4 5e8 6.584775
+> [Tremblay:0:(1) 5.112775] [smpi_replay/VERBOSE] 0 allreduce 5e4 5e8 5.112775
+> [Jupiter:1:(2) 6.584135] [smpi_replay/VERBOSE] 1 allreduce 5e4 5e8 6.584135
+> [Fafard:2:(3) 6.584775] [smpi_replay/VERBOSE] 2 allreduce 5e4 5e8 6.584775
 > [Tremblay:0:(1) 10.209875] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
 > [Jupiter:1:(2) 13.137559] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
 > [Fafard:2:(3) 13.138198] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
