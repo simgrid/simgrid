@@ -14,6 +14,8 @@ TRACE
    identify which request you want to wait for. We do this via the
    triplet (sender, receiver, tag), which needs to be added:
       <rankid> <command> <sender> <receiver> <tag>
+ - We lowercased all actions: For instance, instead of allReduce, we now 
+   use allreduce.
 
 MSG
  - The deprecation of MSG is ongoing (but this should not impact you).
