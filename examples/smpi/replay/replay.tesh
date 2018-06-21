@@ -323,10 +323,10 @@ p Test of AllGatherv replay with SMPI (one trace for all processes)
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 4 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay replay/one_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning
-> [Tremblay:0:(1) 1.397261] [smpi_replay/VERBOSE] 0 allGatherV 275427 275427 275427 275427 204020 0 0 1.397261
-> [Ginette:3:(4) 1.760421] [smpi_replay/VERBOSE] 3 allGatherV 204020 275427 275427 275427 204020 0 0 1.760421
-> [Fafard:2:(3) 1.941986] [smpi_replay/VERBOSE] 2 allGatherV 275427 275427 275427 275427 204020 0 0 1.941986
-> [Jupiter:1:(2) 1.941986] [smpi_replay/VERBOSE] 1 allGatherV 275427 275427 275427 275427 204020 0 0 1.941986
+> [Tremblay:0:(1) 1.397261] [smpi_replay/VERBOSE] 0 allgatherv 275427 275427 275427 275427 204020 0 0 1.397261
+> [Ginette:3:(4) 1.760421] [smpi_replay/VERBOSE] 3 allgatherv 204020 275427 275427 275427 204020 0 0 1.760421
+> [Fafard:2:(3) 1.941986] [smpi_replay/VERBOSE] 2 allgatherv 275427 275427 275427 275427 204020 0 0 1.941986
+> [Jupiter:1:(2) 1.941986] [smpi_replay/VERBOSE] 1 allgatherv 275427 275427 275427 275427 204020 0 0 1.941986
 > [Jupiter:1:(2) 1.941986] [smpi_replay/INFO] Simulation time 1.941986
 
 $ rm -f replay/one_trace
