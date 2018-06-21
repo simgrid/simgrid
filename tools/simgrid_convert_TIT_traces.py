@@ -20,7 +20,6 @@ simple text file that contains path of actual TIT files split by rank.
 import os
 import pathlib
 import shutil
-import copy
 
 
 def insert_elem(split_line, position, elem):
@@ -71,7 +70,6 @@ def convert_trace(trace_path, base_path, output_path):
 
 if __name__ == "__main__":
     import argparse
-    import pathlib
     import sys
 
 
@@ -103,8 +101,8 @@ if __name__ == "__main__":
     trace_list = [x.strip() for x in trace_list]
 
     # process trace files
-    [convert_trace(trace_path, base_path, args.output_path)
-            for trace_path in trace_list]
+    for trace_path in trace_list:
+        convert_trace(trace_path, base_path, args.output_path)
 
     print("Done!")
     print("Result in:\n" + args.output_path)
