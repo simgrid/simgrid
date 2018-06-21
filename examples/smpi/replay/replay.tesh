@@ -275,7 +275,7 @@ $ rm -f replay/one_trace
 
 p Test of AllReduce replay with SMPI (one trace for all processes)
 
-< replay/actions_allReduce.txt
+< replay/actions_allreduce.txt
 $ mkfile replay/one_trace
 
 $ ../../smpi_script/bin/smpirun -no-privatize -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/simulate-computation:no -np 3 -platform ${srcdir:=.}/../platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile ./replay/smpi_replay replay/one_trace --log=smpi_kernel.thres:warning --log=xbt_cfg.thres:warning

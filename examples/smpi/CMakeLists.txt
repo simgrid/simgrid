@@ -52,7 +52,7 @@ set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_termination                 PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allReduce.txt
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allreduce.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allgatherv.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoall.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoallv.txt
