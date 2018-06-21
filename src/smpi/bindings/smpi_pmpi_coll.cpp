@@ -307,7 +307,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
 
     TRACE_smpi_comm_in(rank, __func__,
                        new simgrid::instr::VarCollTIData(
-                           "scatterV", root, dt_size_send, trace_sendcounts,
+                           "scatterv", root, dt_size_send, trace_sendcounts,
                            recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(), nullptr,
                            simgrid::smpi::Datatype::encode(sendtype), simgrid::smpi::Datatype::encode(recvtype)));
 

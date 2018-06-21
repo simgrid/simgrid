@@ -307,7 +307,7 @@ public:
 
 class ScatterVAction : public ReplayAction<ScatterVArgParser> {
 public:
-  explicit ScatterVAction() : ReplayAction("scatterV") {}
+  explicit ScatterVAction() : ReplayAction("scatterv") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
