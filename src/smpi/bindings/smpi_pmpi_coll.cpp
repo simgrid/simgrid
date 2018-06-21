@@ -384,7 +384,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     int rank = simgrid::s4u::this_actor::get_pid();
 
     TRACE_smpi_comm_in(rank, __func__,
-                       new simgrid::instr::CollTIData("allReduce", -1, 0,
+                       new simgrid::instr::CollTIData("allreduce", -1, 0,
                                                       datatype->is_replayable() ? count : count * datatype->size(), -1,
                                                       simgrid::smpi::Datatype::encode(datatype), ""));
 

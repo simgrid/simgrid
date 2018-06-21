@@ -277,7 +277,7 @@ public:
 
 class AllReduceAction : public ReplayAction<AllReduceArgParser> {
 public:
-  explicit AllReduceAction() : ReplayAction("allReduce") {}
+  explicit AllReduceAction() : ReplayAction("allreduce") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
