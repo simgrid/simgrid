@@ -9,8 +9,6 @@
 #include "mc/datatypes.h"
 #include "simgrid/forward.h"
 
-#include <stdint.h>
-
 SG_BEGIN_DECL()
 
 // ***** Environment variables for passing context to the model-checked process

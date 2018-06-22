@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,17 +6,9 @@
 #ifndef SIMGRID_MC_CLIENT_H
 #define SIMGRID_MC_CLIENT_H
 
-#include "src/internal_config.h"
-
-#include <cstddef>
-#include <memory>
-
-#include <xbt/base.h>
-
-#include <simgrid/simix.h>
-
 #include "src/mc/remote/Channel.hpp"
-#include "src/mc/remote/mc_protocol.h"
+
+#include <memory>
 
 namespace simgrid {
 namespace mc {

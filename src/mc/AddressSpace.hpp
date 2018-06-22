@@ -1,20 +1,10 @@
-/* Copyright (c) 2008-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SIMGRID_MC_ADDRESS_SPACE_H
 #define SIMGRID_MC_ADDRESS_SPACE_H
-
-#include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <type_traits>
-
-#include <string>
-#include <vector>
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/remote/RemotePtr.hpp"

@@ -8,7 +8,6 @@
 
 #include "src/xbt/mmalloc/mmprivate.h"
 #include "src/mc/remote/Channel.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/mc/ObjectInformation.hpp"
 
 #include <vector>

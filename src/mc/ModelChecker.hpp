@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,13 +14,10 @@
 
 #include <event2/event.h>
 
-#include "xbt/base.h"
 #include <sys/types.h>
 
 #include "src/mc/PageStore.hpp"
-#include "src/mc/Transition.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
 #include "src/mc/remote/mc_protocol.h"
 
 namespace simgrid {

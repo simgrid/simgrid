@@ -10,7 +10,6 @@
 #define SIMGRID_MMALLOC_H 1
 
 #include "src/internal_config.h"
-#if HAVE_MMALLOC
 
 #include <stdio.h>     /* for NULL */
 #include <sys/types.h> /* for size_t */
@@ -29,6 +28,7 @@ SG_BEGIN_DECL()
 typedef struct mdesc s_xbt_mheap_t;
 typedef s_xbt_mheap_t* xbt_mheap_t;
 
+#if HAVE_MMALLOC
 /* Allocate SIZE bytes of memory (and memset it to 0).  */
 XBT_PUBLIC void* mmalloc(xbt_mheap_t md, size_t size);
 
@@ -63,7 +63,7 @@ ssize_t mmalloc_get_busy_size(xbt_mheap_t, void* ptr);
 
 void* malloc_no_memset(size_t n);
 
+#endif
 SG_END_DECL()
 
-#endif
 #endif /* SIMGRID_MMALLOC_H */

@@ -6,11 +6,7 @@
 #ifndef SIMGRID_MC_REMOTE_PTR_HPP
 #define SIMGRID_MC_REMOTE_PTR_HPP
 
-#include <cstdint>
-#include <cstring>
-
-#include <stdexcept>
-#include <type_traits>
+#include "src/simix/smx_private.hpp"
 
 namespace simgrid {
 namespace mc {

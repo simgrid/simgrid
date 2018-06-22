@@ -8,7 +8,9 @@
 #include "mc/mc.h"
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 #include "src/simix/smx_private.hpp"
 
 #include "src/kernel/activity/MutexImpl.hpp"
