@@ -14,8 +14,8 @@ TRACE
    identify which request you want to wait for. We do this via the
    triplet (sender, receiver, tag), which needs to be added:
       <rankid> <command> <sender> <receiver> <tag>
- - We lowercased all actions: For instance, instead of allReduce, we now 
-   use allreduce.
+ - Actions are now in lower case (e.g., "allReduce" becomes "allreduce").
+   New script simgrid_convert_TI_traces.py: upgrade your TI traces.
 
 MSG
  - The deprecation of MSG is ongoing (but this should not impact you).
