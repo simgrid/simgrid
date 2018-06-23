@@ -132,12 +132,12 @@ private:
   ClusterCreationArgs* cluster_ = nullptr;
 
   void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
-  int getLevelPosition(const unsigned int level);
-  void generateLabels();
-  void generateSwitches();
-  int connectNodeToParents(FatTreeNode* node);
-  bool areRelated(FatTreeNode* parent, FatTreeNode* child);
-  bool isInSubTree(FatTreeNode* root, FatTreeNode* node);
+  int get_level_position(const unsigned int level);
+  void generate_labels();
+  void generate_switches();
+  int connect_node_to_parents(FatTreeNode* node);
+  bool are_related(FatTreeNode* parent, FatTreeNode* child);
+  bool is_in_sub_tree(FatTreeNode* root, FatTreeNode* node);
 };
 } // namespace routing
 } // namespace kernel
