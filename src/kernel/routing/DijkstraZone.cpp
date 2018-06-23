@@ -72,7 +72,7 @@ void DijkstraZone::seal()
   }
 }
 
-xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
+xbt_node_t DijkstraZone::route_graph_new_node(int id, int graph_id)
 {
   graph_node_data_t data = new s_graph_node_data_t;
   data->id       = id;
@@ -84,7 +84,7 @@ xbt_node_t DijkstraZone::routeGraphNewNode(int id, int graph_id)
   return node;
 }
 
-xbt_node_t DijkstraZone::nodeMapSearch(int id)
+xbt_node_t DijkstraZone::node_map_search(int id)
 {
   auto ret = graph_node_map_.find(id);
   return ret == graph_node_map_.end() ? nullptr : ret->second;
@@ -92,14 +92,14 @@ xbt_node_t DijkstraZone::nodeMapSearch(int id)
 
 /* Parsing */
 
-void DijkstraZone::newRoute(int src_id, int dst_id, simgrid::kernel::routing::RouteCreationArgs* e_route)
+void DijkstraZone::new_route(int src_id, int dst_id, simgrid::kernel::routing::RouteCreationArgs* e_route)
 {
   XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
   xbt_node_t src = nullptr;
   xbt_node_t dst = nullptr;
 
-  xbt_node_t src_elm = nodeMapSearch(src_id);
-  xbt_node_t dst_elm = nodeMapSearch(dst_id);
+  xbt_node_t src_elm = node_map_search(src_id);
+  xbt_node_t dst_elm = node_map_search(dst_id);
 
   if (src_elm)
     src = src_elm;
@@ -109,14 +109,14 @@ void DijkstraZone::newRoute(int src_id, int dst_id, simgrid::kernel::routing::Ro
 
   /* add nodes if they don't exist in the graph */
   if (src_id == dst_id && src == nullptr && dst == nullptr) {
-    src = this->routeGraphNewNode(src_id, -1);
+    src = this->route_graph_new_node(src_id, -1);
     dst = src;
   } else {
     if (src == nullptr) {
-      src = this->routeGraphNewNode(src_id, -1);
+      src = this->route_graph_new_node(src_id, -1);
     }
     if (dst == nullptr) {
-      dst = this->routeGraphNewNode(dst_id, -1);
+      dst = this->route_graph_new_node(dst_id, -1);
     }
   }
 
@@ -133,8 +133,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
   xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
-  xbt_node_t src_elm = nodeMapSearch(src_id);
-  xbt_node_t dst_elm = nodeMapSearch(dst_id);
+  xbt_node_t src_elm = node_map_search(src_id);
+  xbt_node_t dst_elm = node_map_search(dst_id);
 
   int src_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(src_elm))->graph_id;
   int dst_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(dst_elm))->graph_id;
@@ -287,7 +287,7 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
 
   /* Add the route to the base */
   RouteCreationArgs* e_route = newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
-  newRoute(src->id(), dst->id(), e_route);
+  new_route(src->id(), dst->id(), e_route);
 
   // Symmetrical YES
   if (symmetrical == true) {
@@ -315,7 +315,7 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
     }
     RouteCreationArgs* link_route_back =
         newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
-    newRoute(dst->id(), src->id(), link_route_back);
+    new_route(dst->id(), src->id(), link_route_back);
   }
 }
 }

@@ -115,7 +115,7 @@ public:
    */
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void add_processing_node(int id);
-  void generate_dot_file(const std::string& filename = "fatTree.dot") const;
+  void generate_dot_file(const std::string& filename = "fat_tree.dot") const;
 
 private:
   // description of a PGFT (TODO : better doc)
