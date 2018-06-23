@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,8 +13,6 @@
 
 #include "xbt/asserts.h"
 #include "xbt/base.h"
-
-#include <dwarf.h>
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/LocationList.hpp"
