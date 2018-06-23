@@ -59,9 +59,7 @@ static std::vector<double>* netpoint_get_coords(NetPoint* np)
   return &coords->coords;
 }
 
-VivaldiZone::VivaldiZone(NetZone* father, std::string name) : ClusterZone(father, name)
-{
-}
+VivaldiZone::VivaldiZone(NetZoneImpl* father, std::string name) : ClusterZone(father, name) {}
 
 void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, std::string coord)
 {

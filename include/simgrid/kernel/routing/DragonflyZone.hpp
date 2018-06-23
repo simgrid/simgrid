@@ -61,7 +61,7 @@ public:
  */
 class XBT_PUBLIC DragonflyZone : public ClusterZone {
 public:
-  explicit DragonflyZone(NetZone* father, std::string name);
+  explicit DragonflyZone(NetZoneImpl* father, std::string name);
   ~DragonflyZone() override;
   //      void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;

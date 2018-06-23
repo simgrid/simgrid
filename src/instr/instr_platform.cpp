@@ -127,9 +127,9 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
     return;
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->get_cname());
-  if (not netzone->get_children()->empty()) {
+  if (not netzone->get_children().empty()) {
     // bottom-up recursion
-    for (auto const& nz_son : *netzone->get_children()) {
+    for (auto const& nz_son : netzone->get_children()) {
       container_t child_container = container->children_.at(nz_son->get_cname());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
@@ -139,7 +139,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
 
-  static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->get_graph(graph, nodes, edges);
+  netzone->get_impl()->get_graph(graph, nodes, edges);
   for (auto elm : *edges) {
     xbt_edge_t edge = elm.second;
     linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
@@ -466,15 +466,15 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
                                         std::map<std::string, xbt_edge_t>* edges, sg_netzone_t netzone,
                                         container_t container)
 {
-  if (not netzone->get_children()->empty()) {
+  if (not netzone->get_children().empty()) {
     // bottom-up recursion
-    for (auto const& netzone_child : *netzone->get_children()) {
+    for (auto const& netzone_child : netzone->get_children()) {
       container_t child_container = container->children_.at(netzone_child->get_cname());
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }
 
-  static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->get_graph(graph, nodes, edges);
+  netzone->get_impl()->get_graph(graph, nodes, edges);
 }
 
 xbt_graph_t instr_routing_platform_graph()

@@ -17,9 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
-ClusterZone::ClusterZone(NetZone* father, std::string name) : NetZoneImpl(father, name)
-{
-}
+ClusterZone::ClusterZone(NetZoneImpl* father, std::string name) : NetZoneImpl(father, name) {}
 
 void ClusterZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {

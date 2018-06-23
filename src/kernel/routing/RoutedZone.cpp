@@ -59,9 +59,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-RoutedZone::RoutedZone(NetZone* father, std::string name) : NetZoneImpl(father, name)
-{
-}
+RoutedZone::RoutedZone(NetZoneImpl* father, std::string name) : NetZoneImpl(father, name) {}
 
 void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                            std::map<std::string, xbt_edge_t>* edges)
@@ -152,8 +150,8 @@ void RoutedZone::get_route_check_params(NetPoint* src, NetPoint* dst)
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->get_cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->get_cname());
 
-  NetZone* src_as = src->get_englobing_zone();
-  NetZone* dst_as = dst->get_englobing_zone();
+  NetZoneImpl* src_as = src->get_englobing_zone();
+  NetZoneImpl* dst_as = dst->get_englobing_zone();
 
   xbt_assert(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same netzone as expected. Please report that bug.",
@@ -201,7 +199,7 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                dstName, gw_dst->get_cname());
   }
 
-  on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
+  piface_.on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
 }
 }
 }

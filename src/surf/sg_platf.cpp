@@ -542,7 +542,7 @@ static void surf_config_models_setup()
  *
  * @param zone the parameters defining the Zone to build.
  */
-simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone)
+simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   if (not surf_parse_models_setup_already_called) {
     simgrid::s4u::on_platform_creation();
@@ -600,18 +600,18 @@ simgrid::s4u::NetZone* sg_platf_new_Zone_begin(simgrid::kernel::routing::ZoneCre
   }
 
   if (current_routing == nullptr) { /* it is the first one */
-    simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone);
+    simgrid::s4u::Engine::get_instance()->set_netzone_root(new_zone->get_iface());
   } else {
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::NetZoneImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::NetZoneImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
-    current_routing->get_children()->push_back(static_cast<simgrid::s4u::NetZone*>(new_zone));
+    current_routing->get_children()->push_back(new_zone);
   }
 
   /* set the new current component of the tree */
   current_routing = new_zone;
-  simgrid::s4u::NetZone::on_creation(*new_zone); // notify the signal
+  simgrid::s4u::NetZone::on_creation(*new_zone->get_iface()); // notify the signal
 
   return new_zone;
 }
@@ -626,7 +626,7 @@ void sg_platf_new_Zone_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();
-  simgrid::s4u::NetZone::on_seal(*current_routing);
+  simgrid::s4u::NetZone::on_seal(*current_routing->get_iface());
   current_routing = static_cast<simgrid::kernel::routing::NetZoneImpl*>(current_routing->get_father());
 }
 

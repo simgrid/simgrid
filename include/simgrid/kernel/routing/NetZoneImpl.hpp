@@ -11,6 +11,7 @@
 #include <xbt/graph.h>
 
 #include <map>
+#include <vector>
 
 namespace simgrid {
 namespace kernel {
@@ -46,20 +47,31 @@ class BypassRoute;
  * called Autonomous Systems in this article).
  *
  */
-class XBT_PUBLIC NetZoneImpl : public s4u::NetZone {
+class XBT_PUBLIC NetZoneImpl {
   friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:
-  explicit NetZoneImpl(NetZone* father, std::string name);
+  explicit NetZoneImpl(NetZoneImpl* father, std::string name);
   virtual ~NetZoneImpl();
 
+  s4u::NetZone piface_;
+
 public:
+  s4u::NetZone* get_iface() { return &piface_; }
+
   /** @brief Make an host within that NetZone */
   simgrid::s4u::Host* create_host(const char* name, std::vector<double>* speed_per_pstate, int core_count,
                                   std::map<std::string, std::string>* props);
   /** @brief Creates a new route in this NetZone */
-  void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                        std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
+  virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                                std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
+
+  /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
+  virtual void seal();
+  virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
+  virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
 
 protected:
   /**
@@ -76,7 +88,35 @@ protected:
   bool get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
                         /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
+private:
+  // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
+  std::vector<kernel::routing::NetPoint*> vertices_;
+
+  NetZoneImpl* father_ = nullptr;
+
+  std::vector<NetZoneImpl*> children_; // sub-netzones
+
 public:
+  unsigned int get_table_size() { return vertices_.size(); }
+  std::vector<kernel::routing::NetPoint*> get_vertices() { return vertices_; }
+
+  NetZoneImpl* get_father();
+
+  std::vector<NetZoneImpl*>* get_children(); // Sub netzones
+
+private:
+  std::string name_;
+  bool sealed_ = false; // We cannot add more content when sealed
+
+public:
+  /** @brief Retrieves the name of that netzone as a C++ string */
+  const std::string& get_name() const { return name_; }
+  /** @brief Retrieves the name of that netzone as a C string */
+  const char* get_cname() const;
+
+  std::vector<s4u::Host*> get_all_hosts();
+  int get_host_count();
+
   /* @brief get the route between two nodes in the full platform
    *
    * @param src where from

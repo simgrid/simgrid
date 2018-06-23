@@ -132,6 +132,8 @@ public:
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones()
   {
+    static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
+                  "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");
     std::vector<T*> res;
     get_filtered_netzones_recursive(get_netzone_root(), &res);
     return res;
@@ -271,10 +273,12 @@ extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
 template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)
 {
-  for (auto const& elem : *(current->get_children())) {
+  static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
+                "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");
+  for (auto const& elem : current->get_children()) {
     get_filtered_netzones_recursive(elem, whereto);
-    if (elem == dynamic_cast<T*>(elem))
-      whereto->push_back(dynamic_cast<T*>(elem));
+    if (elem->get_impl() == dynamic_cast<T*>(elem->get_impl()))
+      whereto->push_back(dynamic_cast<T*>(elem->get_impl()));
   }
 }
 }

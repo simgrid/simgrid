@@ -27,22 +27,23 @@ class XBT_PUBLIC NetZone {
 protected:
   friend simgrid::kernel::routing::NetZoneImpl;
 
-  explicit NetZone(NetZone * father, std::string name);
-  virtual ~NetZone();
+  explicit NetZone(kernel::routing::NetZoneImpl* impl);
+  ~NetZone();
+
+  kernel::routing::NetZoneImpl* pimpl_;
 
 public:
-  /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
-  virtual void seal();
   /** @brief Retrieves the name of that netzone as a C++ string */
-  const std::string& get_name() const { return name_; }
+  const std::string& get_name() const;
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const;
 
   NetZone* get_father();
-  std::vector<NetZone*>* get_children(); // Sub netzones
 
   std::vector<Host*> get_all_hosts();
   int get_host_count();
+
+  kernel::routing::NetZoneImpl* get_impl() { return pimpl_; }
 
 private:
   std::unordered_map<std::string, std::string> properties_;
@@ -51,18 +52,20 @@ public:
   /** Get the properties assigned to a netzone */
   std::unordered_map<std::string, std::string>* get_properties();
 
+  std::vector<NetZone*> get_children();
+
   /** Retrieve the property value (or nullptr if not set) */
   const char* get_property(const char* key);
   void set_property(const char* key, const char* value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
-  virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
-  virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
-  virtual void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                                kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical) = 0;
+  int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
+  void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
+                 kernel::routing::NetPoint* gw_dst, std::vector<kernel::resource::LinkImpl*>& link_list,
+                 bool symmetrical);
+  void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                        kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                        std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
 
   /*** Called on each newly created regular route (not on bypass routes) */
   static simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
@@ -71,22 +74,6 @@ public:
       on_route_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_seal;
-
-private:
-  // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
-  std::vector<kernel::routing::NetPoint*> vertices_;
-
-protected:
-  unsigned int get_table_size() { return vertices_.size(); }
-  std::vector<kernel::routing::NetPoint*> get_vertices() { return vertices_; }
-
-private:
-  NetZone* father_ = nullptr;
-  std::string name_;
-
-  bool sealed_ = false; // We cannot add more content when sealed
-
-  std::vector<NetZone*>* children_ = nullptr; // sub-netzones
 
 public: // Deprecation wrappers
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_father()") NetZone* getFather() { return get_father(); }
@@ -116,21 +103,20 @@ public: // Deprecation wrappers
   {
     set_property(key, value);
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_component()") virtual int addComponent(
-      kernel::routing::NetPoint* elm)
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::add_component()") int addComponent(kernel::routing::NetPoint* elm)
   {
     return add_component(elm);
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_vertices()") std::vector<kernel::routing::NetPoint*> getVertices()
-  {
-    return get_vertices();
-  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_vertices()") std::vector<kernel::routing::NetPoint*> getVertices();
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_host_count()") int getHostCount() { return get_host_count(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_all_hosts()") void getHosts(
       std::vector<s4u::Host*>* whereto); // retrieve my content as a vector of hosts
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_children()") std::vector<NetZone*>* getChildren()
   {
-    return get_children();
+    std::vector<NetZone*>* res = new std::vector<NetZone*>();
+    for (auto child : get_children())
+      res->push_back(child);
+    return res;
   }
 };
 }

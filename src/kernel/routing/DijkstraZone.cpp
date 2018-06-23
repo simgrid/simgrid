@@ -266,7 +266,8 @@ DijkstraZone::~DijkstraZone()
 
 /* Creation routing model functions */
 
-DijkstraZone::DijkstraZone(NetZone* father, std::string name, bool cached) : RoutedZone(father, name), cached_(cached)
+DijkstraZone::DijkstraZone(NetZoneImpl* father, std::string name, bool cached)
+    : RoutedZone(father, name), cached_(cached)
 {
 }
 

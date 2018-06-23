@@ -22,7 +22,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FatTreeZone::FatTreeZone(NetZone* father, std::string name) : ClusterZone(father, name)
+FatTreeZone::FatTreeZone(NetZoneImpl* father, std::string name) : ClusterZone(father, name)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }
