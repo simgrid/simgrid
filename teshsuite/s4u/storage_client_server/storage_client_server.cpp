@@ -103,7 +103,7 @@ static void storage_info(simgrid::s4u::Host* host)
 {
   XBT_INFO("*** Storage info on %s ***", host->get_cname());
 
-  for (auto const& elm : host->getMountedStorages()) {
+  for (auto const& elm : host->get_mounted_storages()) {
     const std::string& mount_name  = elm.first;
     simgrid::s4u::Storage* storage = elm.second;
     XBT_INFO("\tStorage name: %s, mount name: %s", storage->get_cname(), mount_name.c_str());

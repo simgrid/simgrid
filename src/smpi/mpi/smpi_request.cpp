@@ -680,7 +680,7 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   // nsleeps is a multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
   // This can speed up the execution of certain applications by an order of magnitude, such as HPL
   static int nsleeps = 1;
-  double speed        = simgrid::s4u::Actor::self()->get_host()->getSpeed();
+  double speed        = simgrid::s4u::Actor::self()->get_host()->get_speed();
   double maxrate      = simgrid::config::get_value<double>("smpi/iprobe-cpu-usage");
   MPI_Request request = new Request(nullptr, 0, MPI_CHAR,
                                     source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source)->get_pid(),

@@ -33,8 +33,8 @@ int main(int argc, char **argv)
   double comp_amount2 = 1000000;
   double comm_amount12 = 2000000;
   double comm_amount21 = 3000000;
-  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, h1->get_cname(), comp_amount1 / h1->getSpeed());
-  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, h2->get_cname(), comp_amount2 / h2->getSpeed());
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, h1->get_cname(), comp_amount1 / h1->get_speed());
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, h2->get_cname(), comp_amount2 / h2->get_speed());
 
   XBT_INFO("Route between %s and %s:", h1->get_cname(), h2->get_cname());
   std::vector<sg_link_t> route;

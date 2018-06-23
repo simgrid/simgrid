@@ -134,7 +134,7 @@ void MigrationTx::operator()()
 {
   XBT_DEBUG("mig: tx_start");
 
-  double host_speed       = vm_->get_pm()->getSpeed();
+  double host_speed       = vm_->get_pm()->get_speed();
   const sg_size_t ramsize = vm_->get_ramsize();
   const double dp_rate =
       host_speed ? (sg_vm_get_migration_speed(vm_) * sg_vm_get_dirty_page_intensity(vm_)) / host_speed : 1;

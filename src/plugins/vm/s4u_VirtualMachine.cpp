@@ -37,7 +37,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int c
   // Create a VCPU for this VM
   std::vector<double> speeds;
   for (int i = 0; i < physical_host->get_pstate_count(); i++)
-    speeds.push_back(physical_host->getPstateSpeed(i));
+    speeds.push_back(physical_host->get_pstate_speed(i));
 
   surf_cpu_model_vm->create_cpu(this, &speeds, physical_host->get_core_count());
   if (physical_host->get_pstate() != 0)

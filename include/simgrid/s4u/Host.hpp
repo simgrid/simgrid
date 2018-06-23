@@ -108,14 +108,21 @@ public:
     return res;
   }
 
-  double getSpeed();
+  double get_speed();
   double get_available_speed();
   int get_core_count();
+  double get_load();
 
-  double getPstateSpeed(int pstate_index);
+  double get_pstate_speed(int pstate_index);
   int get_pstate_count() const;
   void set_pstate(int pstate_index);
   int get_pstate();
+
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_speed() instead.") double getSpeed() { return get_speed(); }
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_pstate_speed() instead.") double getPstateSpeed(int pstate_index)
+  {
+    return get_pstate_speed(pstate_index);
+  }
 
   std::vector<const char*> get_attached_storages();
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
@@ -125,7 +132,11 @@ public:
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
-  std::unordered_map<std::string, Storage*> const& getMountedStorages();
+  std::unordered_map<std::string, Storage*> const& get_mounted_storages();
+  XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_mounted_storages() instead.") std::unordered_map<std::string, Storage*> const& getMountedStorages()
+  {
+    return get_mounted_storages();
+  }
 
   void route_to(Host* dest, std::vector<Link*>& links, double* latency);
   void route_to(Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency);
@@ -138,13 +149,6 @@ public:
   void execute(double flops);
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
   void execute(double flops, double priority);
-
-  /** @brief Returns the current computation load (in flops per second)
-   * The external load (coming from an availability trace) is not taken in account.
-   *
-   * @return      The number of activities currently running on a host (an activity at priority 2 is counted twice).
-   */
-  double getLoad();
 
   // Deprecated functions
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_name()") simgrid::xbt::string const& getName() const

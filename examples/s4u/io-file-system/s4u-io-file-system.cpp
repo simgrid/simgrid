@@ -30,7 +30,7 @@ public:
   void operator()()
   {
     std::unordered_map<std::string, simgrid::s4u::Storage*> const& mounts =
-        simgrid::s4u::Host::current()->getMountedStorages();
+        simgrid::s4u::Host::current()->get_mounted_storages();
 
     show_info(mounts);
 

@@ -26,7 +26,7 @@ public:
       : host_(ptr)
       , last_updated_(surf_get_clock())
       , last_reset_(surf_get_clock())
-      , current_speed_(host_->getSpeed())
+      , current_speed_(host_->get_speed())
       , current_flops_(host_->pimpl_cpu->get_constraint()->get_usage())
       , theor_max_flops_(0)
       , was_prev_idle_(current_flops_ == 0)
@@ -81,7 +81,7 @@ void HostLoad::update()
   }
 
   theor_max_flops_ += current_speed_ * host_->get_core_count() * (now - last_updated_);
-  current_speed_ = host_->getSpeed();
+  current_speed_ = host_->get_speed();
   last_updated_  = now;
   was_prev_idle_ = (current_flops_ == 0);
 }
@@ -98,7 +98,7 @@ double HostLoad::get_current_load()
 {
   // We don't need to call update() here because it is called every time an action terminates or starts
   // FIXME: Can this happen at the same time? stop -> call to getCurrentLoad, load = 0 -> next action starts?
-  return current_flops_ / static_cast<double>(host_->getSpeed() * host_->get_core_count());
+  return current_flops_ / static_cast<double>(host_->get_speed() * host_->get_core_count());
 }
 
 /*
@@ -112,7 +112,7 @@ void HostLoad::reset()
   computed_flops_  = 0;
   theor_max_flops_ = 0;
   current_flops_   = host_->pimpl_cpu->get_constraint()->get_usage();
-  current_speed_   = host_->getSpeed();
+  current_speed_   = host_->get_speed();
   was_prev_idle_   = (current_flops_ == 0);
 }
 } // namespace plugin

@@ -15,7 +15,7 @@ static int dvfs()
   int nb = host->get_pstate_count();
   XBT_INFO("Count of Processor states=%d", nb);
 
-  XBT_INFO("Current power peak=%f", host->getSpeed());
+  XBT_INFO("Current power peak=%f", host->get_speed());
 
   // Run a task
   simgrid::s4u::this_actor::execute(workload);
@@ -26,11 +26,11 @@ static int dvfs()
   // Change power peak
   int new_pstate = 2;
 
-  XBT_INFO("Changing power peak value to %f (at index %d)", host->getPstateSpeed(new_pstate), new_pstate);
+  XBT_INFO("Changing power peak value to %f (at index %d)", host->get_pstate_speed(new_pstate), new_pstate);
 
   host->set_pstate(new_pstate);
 
-  XBT_INFO("Current power peak=%f", host->getSpeed());
+  XBT_INFO("Current power peak=%f", host->get_speed());
 
   // Run a second task
   simgrid::s4u::this_actor::execute(workload);
@@ -42,7 +42,7 @@ static int dvfs()
   host = simgrid::s4u::Host::by_name_or_null("MyHost2");
   XBT_INFO("Count of Processor states=%d", host->get_pstate_count());
 
-  XBT_INFO("Current power peak=%f", host->getSpeed());
+  XBT_INFO("Current power peak=%f", host->get_speed());
   return 0;
 }
 

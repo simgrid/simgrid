@@ -220,7 +220,7 @@ double HostEnergy::get_current_watts_value()
   if (this->pstate_ == pstate_off_) // The host is off (or was off at the beginning of this time interval)
     return this->watts_off_;
 
-  double current_speed = host_->getSpeed();
+  double current_speed = host_->get_speed();
 
   double cpu_load;
   // We may have start == finish if the past consumption was updated since the simcall was started

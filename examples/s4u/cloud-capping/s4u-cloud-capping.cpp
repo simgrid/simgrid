@@ -63,7 +63,7 @@ static void test_dynamic_change()
   vm1->start();
 
   simgrid::s4u::Actor::create("worker0", vm0, worker_busy_loop, "Task0", -1);
-  simgrid::s4u::Actor::create("worker1", vm1, worker_busy_loop, "Task1", pm0->getSpeed());
+  simgrid::s4u::Actor::create("worker1", vm1, worker_busy_loop, "Task1", pm0->get_speed());
 
   simgrid::s4u::this_actor::sleep_for(3000); // let the tasks end
   vm0->destroy();
@@ -72,7 +72,7 @@ static void test_dynamic_change()
 
 static void test_one_task(simgrid::s4u::Host* host)
 {
-  const double cpu_speed          = host->getSpeed();
+  const double cpu_speed          = host->get_speed();
   const double computation_amount = cpu_speed * 10;
 
   XBT_INFO("### Test: with/without task set_bound");
@@ -105,8 +105,8 @@ static void test_one_task(simgrid::s4u::Host* host)
 
 static void test_two_tasks(simgrid::s4u::Host* hostA, simgrid::s4u::Host* hostB)
 {
-  const double cpu_speed = hostA->getSpeed();
-  xbt_assert(cpu_speed == hostB->getSpeed());
+  const double cpu_speed = hostA->get_speed();
+  xbt_assert(cpu_speed == hostB->get_speed());
   const double computation_amount = cpu_speed * 10;
   const char* hostA_name          = hostA->get_cname();
   const char* hostB_name          = hostB->get_cname();
@@ -189,7 +189,7 @@ static void master_main()
   vm0->destroy();
 
   vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm0->set_bound(pm0->getSpeed() / 10);
+  vm0->set_bound(pm0->get_speed() / 10);
   vm0->start();
 
   XBT_INFO("# 7. Put a single task on the VM capped by 10%%.");
@@ -210,7 +210,7 @@ static void master_main()
   vm0->set_ramsize(1e9); // 1GB
   vm0->start();
 
-  double cpu_speed = pm0->getSpeed();
+  double cpu_speed = pm0->get_speed();
 
   XBT_INFO("# 10. Test migration");
   const double computation_amount = cpu_speed * 10;

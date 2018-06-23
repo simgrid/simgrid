@@ -210,7 +210,7 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::VariableType* power = container->type_->by_name_or_create("power", "");
     power->set_calling_container(container);
-    power->set_event(0, host.getSpeed());
+    power->set_event(0, host.get_speed());
   }
 
   if (TRACE_uncategorized())

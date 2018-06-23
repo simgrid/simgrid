@@ -21,7 +21,7 @@ namespace filter {
 /* First example of thing that we can use as a filtering criteria: a simple boolean function */
 static bool filter_speed_more_than_50Mf(simgrid::s4u::Host* host)
 {
-  return host->getSpeed() > 50E6;
+  return host->get_speed() > 50E6;
 }
 
 /* Second kind of thing that we can use as a filtering criteria: a functor (=function object).
@@ -80,7 +80,8 @@ int main(int argc, char* argv[])
   list = e.get_filtered_hosts(filter);
 
   for (auto& host : list)
-    XBT_INFO("The following hosts changed their frequency: %s (from %.1ff to %.1ff)", host->get_cname(), host->getPstateSpeed(filter.get_old_speed(host)), host->getSpeed());
+    XBT_INFO("The following hosts changed their frequency: %s (from %.1ff to %.1ff)", host->get_cname(),
+             host->get_pstate_speed(filter.get_old_speed(host)), host->get_speed());
 
   /* You can also just use any regular function (namespaced on need) to filter  */
   list = e.get_filtered_hosts(filter::filter_speed_more_than_50Mf);
