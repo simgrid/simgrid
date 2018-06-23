@@ -67,13 +67,14 @@ public:
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void seal() override;
-  void generateRouters();
-  void generateLinks();
-  void createLink(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
 
   void rankId_to_coords(int rank_id, unsigned int coords[4]);
 
 private:
+  void generate_routers();
+  void generate_links();
+  void create_link(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
+
   simgrid::s4u::Link::SharingPolicy sharing_policy_;
   double bw_  = 0;
   double lat_ = 0;
