@@ -384,7 +384,7 @@ static void on_creation(simgrid::s4u::Host& host)
   host.extension_set(new HostEnergy(&host));
 }
 
-static void on_action_state_change(simgrid::surf::CpuAction* action)
+static void on_action_state_change(simgrid::surf::CpuAction* action, simgrid::kernel::resource::Action::State previous)
 {
   for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->get_host();

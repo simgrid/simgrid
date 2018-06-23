@@ -132,7 +132,7 @@ static void on_host_change(simgrid::s4u::Host& host)
 }
 
 /* This callback is called when an action (computation, idle, ...) terminates */
-static void on_action_state_change(simgrid::surf::CpuAction* action)
+static void on_action_state_change(simgrid::surf::CpuAction* action, simgrid::kernel::resource::Action::State /*previous*/)
 {
   for (simgrid::surf::Cpu* const& cpu : action->cpus()) {
     simgrid::s4u::Host* host = cpu->get_host();

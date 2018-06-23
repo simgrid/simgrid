@@ -163,13 +163,13 @@ protected:
 class XBT_PUBLIC CpuAction : public simgrid::kernel::resource::Action {
 public:
   /** @brief Signal emitted when the action state changes (ready/running/done, etc)
-   *  Signature: `void(CpuAction *action)`
+   *  Signature: `void(CpuAction *action, simgrid::kernel::resource::Action::State previous)`
    */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> on_state_change;
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::kernel::resource::Action::State)> on_state_change;
   /** @brief Signal emitted when the action share changes (amount of flops it gets)
    *  Signature: `void(CpuAction *action)`
    */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> on_share_change;
 
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed) : Action(model, cost, failed) {}
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed, kernel::lmm::Variable* var)
