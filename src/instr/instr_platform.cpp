@@ -352,7 +352,7 @@ void instr_define_callbacks()
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
     simgrid::s4u::Link::on_bandwidth_change.connect(instr_link_on_bandwidth_change);
     simgrid::s4u::NetZone::on_seal.connect([](simgrid::s4u::NetZone& /*netzone*/) { currentContainer.pop_back(); });
-    simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
+    simgrid::kernel::routing::NetPoint::on_creation.connect(instr_netpoint_on_creation);
   }
   simgrid::s4u::NetZone::on_creation.connect(instr_netzone_on_creation);
 

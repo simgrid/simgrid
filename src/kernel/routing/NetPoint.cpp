@@ -13,7 +13,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-simgrid::xbt::signal<void(NetPoint*)> NetPoint::onCreation;
+simgrid::xbt::signal<void(NetPoint*)> NetPoint::on_creation;
 
 NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* netzone_p)
     : name_(name), component_type_(componentType), englobing_zone_(netzone_p)
@@ -23,7 +23,7 @@ NetPoint::NetPoint(std::string name, NetPoint::Type componentType, NetZoneImpl* 
   else
     id_ = static_cast<decltype(id_)>(-1);
   simgrid::s4u::Engine::get_instance()->netpoint_register(this);
-  simgrid::kernel::routing::NetPoint::onCreation(this);
+  simgrid::kernel::routing::NetPoint::on_creation(this);
 }
 }
 }
