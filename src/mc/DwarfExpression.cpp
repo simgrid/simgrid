@@ -1,15 +1,10 @@
-/* Copyright (c) 2014-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cstddef>
 #include <cstdint>
-
-#include <dwarf.h>
-#include <elfutils/libdw.h>
-#include <libunwind.h>
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/DwarfExpression.hpp"

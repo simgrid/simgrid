@@ -6,20 +6,15 @@
 #ifndef SIMGRID_MC_OBJECT_LOCATION_H
 #define SIMGRID_MC_OBJECT_LOCATION_H
 
-#include <cstdint>
-
-#include <vector>
-
-#include <libunwind.h>
-#include <dwarf.h>
-#include <elfutils/libdw.h>
-
 #include "xbt/base.h"
 #include "xbt/range.hpp"
 
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/DwarfExpression.hpp"
+
+#include <cstdint>
+#include <vector>
 
 namespace simgrid {
 namespace dwarf {

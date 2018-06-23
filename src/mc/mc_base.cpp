@@ -10,13 +10,13 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/mc/remote/RemoteClient.hpp"
 #include "src/simix/smx_private.hpp"
 
 #include "src/kernel/activity/MutexImpl.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
 using simgrid::mc::remote;
 #endif
