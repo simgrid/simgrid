@@ -48,7 +48,7 @@ void FloydZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs*
 {
   unsigned int table_size = get_table_size();
 
-  getRouteCheckParams(src, dst);
+  get_route_check_params(src, dst);
 
   /* create a result route */
   std::vector<RouteCreationArgs*> route_stack;
@@ -91,7 +91,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
   /* set the size of table routing */
   unsigned int table_size = get_table_size();
 
-  addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   if (not link_table_) {
     /* Create Cost, Predecessor and Link tables */
@@ -119,7 +119,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
                dst->get_cname());
 
   TO_FLOYD_LINK(src->id(), dst->id()) =
-      newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
+      new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
   TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
   TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list.size();
 
@@ -147,7 +147,7 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
                 src->get_cname(), gw_dst->get_cname());
 
     TO_FLOYD_LINK(dst->id(), src->id()) =
-        newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
+        new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
     TO_FLOYD_PRED(dst->id(), src->id()) = dst->id();
     TO_FLOYD_COST(dst->id(), src->id()) =
         (TO_FLOYD_LINK(dst->id(), src->id()))->link_list.size(); /* count of links, old model assume 1 */

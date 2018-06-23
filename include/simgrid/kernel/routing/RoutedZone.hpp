@@ -54,14 +54,33 @@ public:
 
   void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                  std::map<std::string, xbt_edge_t>* edges) override;
-  virtual RouteCreationArgs* newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
-                                              NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
-                                              bool symmetrical, bool change_order);
 
 protected:
-  void getRouteCheckParams(NetPoint* src, NetPoint* dst);
-  void addRouteCheckParams(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                           std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
+  virtual RouteCreationArgs* new_extended_route(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
+                                                NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
+                                                bool symmetrical, bool change_order);
+  void get_route_check_params(NetPoint* src, NetPoint* dst);
+  void add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                              std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
+
+  // deprecated
+  XBT_ATTRIB_DEPRECATED_v323("Please use RoutedZone::new_extended_route()") virtual RouteCreationArgs* newExtendedRoute(
+      RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+      std::vector<resource::LinkImpl*>& link_list, bool symmetrical, bool change_order)
+  {
+    return new_extended_route(hierarchy, src, dst, gw_src, gw_dst, link_list, symmetrical, change_order);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use RoutedZone::get_route_check_params()") void getRouteCheckParams(NetPoint* src,
+                                                                                                         NetPoint* dst)
+  {
+    get_route_check_params(src, dst);
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use RoutedZone::add_route_check_params()") void addRouteCheckParams(
+      NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
+      bool symmetrical)
+  {
+    add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  }
 };
 } // namespace routing
 } // namespace kernel

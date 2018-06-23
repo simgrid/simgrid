@@ -74,7 +74,7 @@ void FullZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* 
 void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                          std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
-  addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   unsigned int table_size = get_table_size();
 
@@ -93,7 +93,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
 
   /* Add the route to the base */
   TO_ROUTE_FULL(src->id(), dst->id()) =
-      newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, true);
+      new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, true);
 
   if (symmetrical == true && src != dst) {
     if (gw_dst && gw_src) {
@@ -112,7 +112,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                  dst->get_cname(), src->get_cname());
 
     TO_ROUTE_FULL(dst->id(), src->id()) =
-        newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, false);
+        new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, false);
   }
 }
 }

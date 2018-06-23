@@ -126,7 +126,7 @@ void DijkstraZone::new_route(int src_id, int dst_id, simgrid::kernel::routing::R
 
 void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
-  getRouteCheckParams(src, dst);
+  get_route_check_params(src, dst);
   int src_id = src->id();
   int dst_id = dst->id();
 
@@ -276,7 +276,7 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();
 
-  addRouteCheckParams(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   /* Create the topology graph */
   if (not route_graph_)
@@ -286,7 +286,7 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
    * nodes */
 
   /* Add the route to the base */
-  RouteCreationArgs* e_route = newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
+  RouteCreationArgs* e_route = new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
   new_route(src->id(), dst->id(), e_route);
 
   // Symmetrical YES
@@ -314,7 +314,7 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
       gw_dst           = gw_tmp;
     }
     RouteCreationArgs* link_route_back =
-        newExtendedRoute(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
+        new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
     new_route(dst->id(), src->id(), link_route_back);
   }
 }

@@ -120,9 +120,9 @@ void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>*
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-RouteCreationArgs* RoutedZone::newExtendedRoute(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
-                                                NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
-                                                bool symmetrical, bool change_order)
+RouteCreationArgs* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* src, NetPoint* dst, NetPoint* gw_src,
+                                                  NetPoint* gw_dst, std::vector<resource::LinkImpl*>& link_list,
+                                                  bool symmetrical, bool change_order)
 {
   RouteCreationArgs* result = new RouteCreationArgs();
 
@@ -147,7 +147,7 @@ RouteCreationArgs* RoutedZone::newExtendedRoute(RoutingMode hierarchy, NetPoint*
   return result;
 }
 
-void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
+void RoutedZone::get_route_check_params(NetPoint* src, NetPoint* dst)
 {
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->get_cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->get_cname());
@@ -164,8 +164,8 @@ void RoutedZone::getRouteCheckParams(NetPoint* src, NetPoint* dst)
              "%s@%s). Please report that bug.",
              src->get_cname(), dst->get_cname(), src_as->get_cname(), dst_as->get_cname(), get_cname());
 }
-void RoutedZone::addRouteCheckParams(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                     std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
+void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                                        std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();
