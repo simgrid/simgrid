@@ -120,7 +120,7 @@ the settings icon of the release you want to change.
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
 - Release the debian package
-  - make -C debian/rules get-orig-source
+  - make -f debian/rules get-orig-source
   - gbp import ../simgrid_XXX+dfsg.orig.tar.xz
   - dch -i "New upstream release" # + copy the NEWS into debian/changelog
   - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
@@ -129,6 +129,7 @@ the settings icon of the release you want to change.
     - libsimgrid3.XY conflicts with libsimgrid3.XX because of smpimain
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Create the template for the next release in ChangeLog and NEWS files
+  Release Target date: https://en.wikipedia.org/wiki/Equinox
 - Change the release number to 3.X.90 in CMakeLists.txt and sonar-project.properties
 - Deal with deprecations:
   - Introduce the XBT_ATTRIB_DEPRECATED_v??? macro for the next release.
