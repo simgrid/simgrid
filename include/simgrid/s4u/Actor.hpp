@@ -328,7 +328,8 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_kill_time()") double getKillTime() { return get_kill_time(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::by_pid()") static ActorPtr byPid(aid_t pid) { return by_pid(pid); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all()") static void killAll() { kill_all(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(int resetPid)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(
+      int XBT_ATTRIB_UNUSED resetPid)
   {
     kill_all();
   }
