@@ -1,14 +1,14 @@
-SimGrid (3.20) NOT RELEASED YET (Release target: June 21. 2018 10:07 UTC)
+SimGrid (3.20) Released June 24. 2018
 
 The proxy snake_case() release.
 
 S4U:
- - The whole API is now using snake_case() instead of mixing it with camelCase. C
-   ompatibility wrappers in place for one year.
+ - The whole API is now using snake_case() instead of mixing it with camelCase.
+   Compatibility wrappers in place for one year.
  - We took the opportunity to increase the consistency of the API.
    Please report any remaining glitches.
- - Introduced new function simgrid::s4u::Host::get_actor_count. This function
-   returns the number of actors running on a specific host.
+ - New function simgrid::s4u::Host::get_actor_count:
+   Returns the number of actors running on a specific host.
 
 SMPI:
  - SMPI is now tested with ~45 proxy apps from various sources, with none or
