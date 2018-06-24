@@ -737,6 +737,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if (req->cancelled_==1){
     if (status!=MPI_STATUS_IGNORE)
       status->cancelled=1;
+    if(req->detached_sender_ != nullptr)
+      unref(&(req->detached_sender_));
+    unref(request);
     return;
   }
 
