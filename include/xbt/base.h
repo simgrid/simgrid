@@ -74,6 +74,8 @@
 #define XBT_ATTRIB_DEPRECATED_v322(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.22 */
 #define XBT_ATTRIB_DEPRECATED_v323(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.23)") /* Will be dropped in v3.23 */
+#define XBT_ATTRIB_DEPRECATED_v324(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.24)") /* Will be dropped in v3.24 */
 
 #if !defined(__APPLE__)
 #  define XBT_ATTRIB_CONSTRUCTOR(prio) __attribute__((__constructor__(prio)))
