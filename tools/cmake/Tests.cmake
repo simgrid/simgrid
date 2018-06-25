@@ -101,6 +101,7 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
            INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	   )
   if (SIMGRID_HAVE_MC)
+    # snapshot
     add_executable       (unit_snapshot src/mc/snapshot/unitTest/mc_snapshot_unit_BOOST.cpp)
     target_link_libraries(unit_snapshot simgrid boost_unit_test_framework)
     ADD_TEST(unit_snapshot ${CMAKE_BINARY_DIR}/unit_snapshot --build_info=yes)
@@ -109,6 +110,16 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
       APPEND PROPERTY
              INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	     )
+    # PAGESTORE
+    add_executable       (unit_PAGESTORE src/mc/snapshot/unitTest/PageStore_unit_BOOST.cpp)
+    target_link_libraries(unit_PAGESTORE simgrid boost_unit_test_framework)
+    ADD_TEST(unit_PAGESTORE ${CMAKE_BINARY_DIR}/unit_PAGESTORE --build_info=yes)
+    set_property(
+      TARGET unit_PAGESTORE
+      APPEND PROPERTY
+             INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
+	     )
+
   endif()
 
 

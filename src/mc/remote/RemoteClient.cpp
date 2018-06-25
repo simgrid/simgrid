@@ -100,7 +100,8 @@ static const std::vector<std::string> filtered_libraries = {
     "libunwind-x86_64",
     "libunwind-x86",
     "libunwind-ptrace",
-    "libz"};
+    "libz",
+    "libboost_unit_test_framework"};
 
 static bool is_simgrid_lib(const std::string& libname)
 {
