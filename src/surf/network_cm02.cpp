@@ -84,7 +84,7 @@ void surf_network_model_init_Reno()
   if (surf_network_model)
     return;
 
-  using namespace simgrid::kernel;
+  namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
@@ -101,7 +101,7 @@ void surf_network_model_init_Reno2()
   if (surf_network_model)
     return;
 
-  using namespace simgrid::kernel;
+  namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno2_f, lmm::func_reno2_fp, lmm::func_reno2_fpi);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
@@ -117,7 +117,7 @@ void surf_network_model_init_Vegas()
   if (surf_network_model)
     return;
 
-  using namespace simgrid::kernel;
+  namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
