@@ -1461,7 +1461,6 @@ PREDEFINED             = XBT_PUBLIC= \
                          XBT_PUBLIC_DATA=extern \
                          XBT_INLINE= \
 			 XBT_PRIVATE= \
-                         XBT_ATTRIB_DEPRECATED_v321(m)= \
                          XBT_ATTRIB_DEPRECATED_v322(m)= \
                          XBT_ATTRIB_DEPRECATED_v323(m)=
 

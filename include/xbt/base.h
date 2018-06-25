@@ -71,7 +71,6 @@
 #define XBT_ATTRIB_DEPRECATED(mesg) __attribute__((deprecated(mesg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v321(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.21 */
 #define XBT_ATTRIB_DEPRECATED_v322(mesg) XBT_ATTRIB_DEPRECATED(mesg) /* Will be dropped in v3.22 */
 #define XBT_ATTRIB_DEPRECATED_v323(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped in v3.23)") /* Will be dropped in v3.23 */
