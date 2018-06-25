@@ -16,8 +16,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-using namespace simgrid::s4u;
-
 static void usage(const char* binaryName, const char* defaultSend, const char* defaultRecv)
 {
   std::fprintf(stderr, "Usage: %s examples/platforms/cluster.xml <send_spec> <recv_spec>\n"
@@ -49,7 +47,7 @@ static void sender(std::vector<std::string> args)
 {
   XBT_INFO("Sender spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
-    this_actor::sleep_until(test * 5 - 5);
+    simgrid::s4u::this_actor::sleep_until(test * 5 - 5);
     std::string* mboxName         = new std::string("Test #" + std::to_string(test));
     simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName->c_str());
 
@@ -96,7 +94,7 @@ static void receiver(std::vector<std::string> args)
 {
   XBT_INFO("Receiver spec: %s", args[0].c_str());
   for (unsigned int test = 1; test <= args[0].size(); test++) {
-    this_actor::sleep_until(test * 5 - 5);
+    simgrid::s4u::this_actor::sleep_until(test * 5 - 5);
     std::string mboxName          = "Test #" + std::to_string(test);
     simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(mboxName.c_str());
     void* received                = nullptr;
@@ -123,24 +121,24 @@ static void receiver(std::vector<std::string> args)
         break;
       case 'p':
         XBT_INFO("Test %u: p (regular receive on permanent mailbox)", test);
-        mbox->set_receiver(Actor::self());
+        mbox->set_receiver(simgrid::s4u::Actor::self());
         received = mbox->get();
         break;
       case 'P':
         XBT_INFO("Test %u: P (sleep + regular receive on permanent mailbox)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->set_receiver(Actor::self());
+        mbox->set_receiver(simgrid::s4u::Actor::self());
         received = mbox->get();
         break;
       case 'j':
         XBT_INFO("Test %u: j (irecv on permanent mailbox)", test);
-        mbox->set_receiver(Actor::self());
+        mbox->set_receiver(simgrid::s4u::Actor::self());
         mbox->get_async(&received)->wait();
         break;
       case 'J':
         XBT_INFO("Test %u: J (sleep + irecv on permanent mailbox)", test);
         simgrid::s4u::this_actor::sleep_for(0.5);
-        mbox->set_receiver(Actor::self());
+        mbox->set_receiver(simgrid::s4u::Actor::self());
         mbox->get_async(&received)->wait();
         break;
       default:
