@@ -17,8 +17,8 @@
 #ifndef SIMGRID_MC_RECORD_HPP
 #define SIMGRID_MC_RECORD_HPP
 
-#include "src/mc/Transition.hpp"
 #include "src/mc/mc_config.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/base.h"
 
 #include <vector>
