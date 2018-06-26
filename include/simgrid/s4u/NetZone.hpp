@@ -74,7 +74,7 @@ public:
   static simgrid::xbt::signal<void(NetZone&)> on_creation;
   static simgrid::xbt::signal<void(NetZone&)> on_seal;
 
-public: // Deprecation wrappers
+  // Deprecation wrappers
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_father()") NetZone* getFather() { return get_father(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_name()") const std::string& getName() const { return get_name(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use NetZone::get_cname()") const char* getCname() const { return get_cname(); }
