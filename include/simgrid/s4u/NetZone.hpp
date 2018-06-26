@@ -30,8 +30,6 @@ protected:
   explicit NetZone(kernel::routing::NetZoneImpl* impl);
   ~NetZone();
 
-  kernel::routing::NetZoneImpl* pimpl_;
-
 public:
   /** @brief Retrieves the name of that netzone as a C++ string */
   const std::string& get_name() const;
@@ -46,6 +44,7 @@ public:
   kernel::routing::NetZoneImpl* get_impl() { return pimpl_; }
 
 private:
+  kernel::routing::NetZoneImpl* pimpl_;
   std::unordered_map<std::string, std::string> properties_;
 
 public:

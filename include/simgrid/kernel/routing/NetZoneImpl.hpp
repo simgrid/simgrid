@@ -54,8 +54,6 @@ protected:
   explicit NetZoneImpl(NetZoneImpl* father, std::string name);
   virtual ~NetZoneImpl();
 
-  s4u::NetZone piface_;
-
 public:
   s4u::NetZone* get_iface() { return &piface_; }
 
@@ -89,6 +87,8 @@ protected:
                         /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
 private:
+  s4u::NetZone piface_;
+
   // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
   std::vector<kernel::routing::NetPoint*> vertices_;
 

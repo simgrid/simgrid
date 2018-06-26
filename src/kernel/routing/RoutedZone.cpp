@@ -199,7 +199,7 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                dstName, gw_dst->get_cname());
   }
 
-  piface_.on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
+  get_iface()->on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
 }
 }
 }
