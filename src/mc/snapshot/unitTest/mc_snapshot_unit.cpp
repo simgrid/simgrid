@@ -1,22 +1,11 @@
-/*************************************************
-TODO: comment
-*************************************************/
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #define BOOST_TEST_MODULE snapshots
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
-
-// /*******************************/
-// /* GENERATED FILE, DO NOT EDIT */
-// /*******************************/
-// 
-// #include <stdio.h>
-// #include "xbt.h"
-// /*******************************/
-// /* GENERATED FILE, DO NOT EDIT */
-// /*******************************/
-// 
-// #line 180 "mc/mc_snapshot.cpp" 
 
 #include <cstdlib>
 #include <cstring>
@@ -50,7 +39,6 @@ BOOST_AUTO_TEST_SUITE_END()
 
 static int test_snapshot(bool sparse_checkpoint) {
 
-  // xbt_test_add("Initialization");
   _sg_mc_sparse_checkpoint = sparse_checkpoint;
   BOOST_CHECK_EQUAL(xbt_pagesize, getpagesize());
   BOOST_CHECK_EQUAL(1 << xbt_pagebits, xbt_pagesize);
@@ -61,12 +49,10 @@ static int test_snapshot(bool sparse_checkpoint) {
 
   for(int n=1; n!=256; ++n) {
 
-    // Store region page(s):
     size_t byte_size = n * xbt_pagesize;
     void* source = mmap(nullptr, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     BOOST_CHECK_MESSAGE(source!=MAP_FAILED, "Could not allocate source memory");
 
-    // Init memory and take snapshots:
     init_memory(source, byte_size);
     simgrid::mc::RegionSnapshot region0 = simgrid::mc::sparse_region(
       simgrid::mc::RegionType::Unknown, source, source, byte_size);
@@ -79,11 +65,9 @@ static int test_snapshot(bool sparse_checkpoint) {
     void* destination = mmap(nullptr, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     BOOST_CHECK_MESSAGE(source!=MAP_FAILED, "Could not allocate destination memory");
 
-    // xbt_test_add("Reading whole region data for %i page(s)", n);
     const void* read = MC_region_read(&region, destination, source, byte_size);
     BOOST_CHECK_MESSAGE(not memcmp(source, read, byte_size), "Mismatch in MC_region_read()");
 
-    // xbt_test_add("Reading parts of region data for %i page(s)", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
@@ -91,12 +75,10 @@ static int test_snapshot(bool sparse_checkpoint) {
       BOOST_CHECK_MESSAGE(not memcmp((char*)source + offset, read, size), "Mismatch in MC_region_read()");
     }
 
-    // xbt_test_add("Compare whole region data for %i page(s)", n);
 
     BOOST_CHECK_MESSAGE(MC_snapshot_region_memcmp(source, &region0, source, &region, byte_size),
       "Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
 
-    // xbt_test_add("Compare parts of region data for %i page(s) with itself", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
@@ -106,7 +88,6 @@ static int test_snapshot(bool sparse_checkpoint) {
     }
 
     if (n==1) {
-      // xbt_test_add("Read pointer for %i page(s)", n);
       memcpy(source, &mc_model_checker, sizeof(void*));
       simgrid::mc::RegionSnapshot region2 = simgrid::mc::sparse_region(
         simgrid::mc::RegionType::Unknown, source, source, byte_size);
@@ -123,8 +104,3 @@ static int test_snapshot(bool sparse_checkpoint) {
 
   return 1; // dummy value, for BOOST unit test
 }
-
-/*******************************/
-/* GENERATED FILE, DO NOT EDIT */
-/*******************************/
-

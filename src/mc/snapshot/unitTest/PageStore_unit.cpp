@@ -1,6 +1,8 @@
-/****************************************************
-TODO: comment
-****************************************************/
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #define BOOST_TEST_MODULE PAGESTORE
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
@@ -41,20 +43,16 @@ static void* getpage()
 }
 
 BOOST_AUTO_TEST_CASE(pageStore) {
-// XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the store")
-// {
 
   using simgrid::mc::PageStore;
 
   std::cout << "Test adding/removing pages in the store" << std::endl;
 
-  // xbt_test_add("Init");
   std::size_t pagesize = (size_t) getpagesize();
   std::unique_ptr<PageStore> store = std::unique_ptr<PageStore>(new simgrid::mc::PageStore(500));
   void* data = getpage();
   BOOST_CHECK_MESSAGE(store->size()==0, "Bad size");
 
-  // xbt_test_add("Store the page once");
   new_content(data, pagesize);
   size_t pageno1 = store->store_page(data);
   BOOST_CHECK_MESSAGE(store->get_ref(pageno1)==1, "Bad refcount");
@@ -62,33 +60,25 @@ BOOST_AUTO_TEST_CASE(pageStore) {
   BOOST_CHECK_MESSAGE(::memcmp(data, copy, pagesize)==0, "Page data should be the same");
   BOOST_CHECK_MESSAGE(store->size()==1, "Bad size");
 
-  // xbt_test_add("Store the same page again");
   size_t pageno2 = store->store_page(data);
   BOOST_CHECK_MESSAGE(pageno1==pageno2, "Page should be the same");
   BOOST_CHECK_MESSAGE(store->get_ref(pageno1)==2, "Bad refcount");
   BOOST_CHECK_MESSAGE(store->size()==1, "Bad size");
 
-  // xbt_test_add("Store a new page");
   new_content(data, pagesize);
   size_t pageno3 = store->store_page(data);
   BOOST_CHECK_MESSAGE(pageno1 != pageno3, "New page should be different");
   BOOST_CHECK_MESSAGE(store->size()==2, "Bad size");
 
-  // xbt_test_add("Unref pages");
   store->unref_page(pageno1);
   BOOST_CHECK_MESSAGE(store->get_ref(pageno1)==1, "Bad refcount");
   BOOST_CHECK_MESSAGE(store->size()==2, "Bad size");
   store->unref_page(pageno2);
   BOOST_CHECK_MESSAGE(store->size()==1, "Bad size");
 
-  // xbt_test_add("Reallocate page");
   new_content(data, pagesize);
   size_t pageno4 = store->store_page(data);
   BOOST_CHECK_MESSAGE(pageno1 == pageno4, "Page was not reused");
   BOOST_CHECK_MESSAGE(store->get_ref(pageno4)==1, "Bad refcount");
   BOOST_CHECK_MESSAGE(store->size()==2, "Bad size");
 }
-
-/*******************************/
-/* GENERATED FILE, DO NOT EDIT */
-/*******************************/

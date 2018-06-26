@@ -74,6 +74,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libboost_context-mt",
     "libboost_system",
     "libboost_thread",
+    "libboost_unit_test_framework",
     "libc",
     "libc++",
     "libcdt",
@@ -100,8 +101,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libunwind-x86_64",
     "libunwind-x86",
     "libunwind-ptrace",
-    "libz",
-    "libboost_unit_test_framework"};
+    "libz"};
 
 static bool is_simgrid_lib(const std::string& libname)
 {
