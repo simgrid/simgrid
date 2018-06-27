@@ -13,6 +13,9 @@ compiler:
 #  - clang 
 addons:
   apt:
+    update: true
+    sources:
+    - sourceline: ppa:samuel-bachmann/boost # Get boost 1.60 for Trusty
     packages:
     - cmake
     - valgrind
