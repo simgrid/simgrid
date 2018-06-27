@@ -48,11 +48,11 @@ static double dichotomy(double func(double), double min, double max, double min_
   double min_func = func(min);
   double max_func = func(max);
 
-  if ((min_func > 0 && max_func > 0))
+  if (min_func > 0 && max_func > 0)
     return min - 1.0;
-  if ((min_func < 0 && max_func < 0))
+  if (min_func < 0 && max_func < 0)
     return max + 1.0;
-  if ((min_func > 0 && max_func < 0))
+  if (min_func > 0 && max_func < 0)
     abort();
 
   SHOW_EXPR(min_error);
