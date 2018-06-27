@@ -528,8 +528,8 @@ static void MC_dwarf_fill_member_location(
  *  \param unit DIE of the compilation unit containing the type DIE
  *  \param type the type
  */
-static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
-                                 Dwarf_Die * unit, simgrid::mc::Type* type)
+static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* /*info*/, Dwarf_Die* die, Dwarf_Die* /*unit*/,
+                                 simgrid::mc::Type* type)
 {
   int res;
   Dwarf_Die child;
@@ -698,10 +698,9 @@ static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf
 
 static int mc_anonymous_variable_index = 0;
 
-static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
-  simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
-  Dwarf_Die * unit, simgrid::mc::Frame* frame,
-  const char *ns)
+static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
+                                                                 Dwarf_Die* /*unit*/, simgrid::mc::Frame* frame,
+                                                                 const char* ns)
 {
   // Skip declarations:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))

@@ -132,7 +132,7 @@ unw_addr_space_t create_addr_space()
   return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 
-void* create_context(unw_addr_space_t as, pid_t pid)
+void* create_context(unw_addr_space_t /*as*/, pid_t pid)
 {
   return _UPT_create(pid);
 }

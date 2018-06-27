@@ -50,7 +50,7 @@ void MC_ignore(void* addr, size_t size)
   simgrid::mc::Client::get()->ignoreMemory(addr, size);
 }
 
-void MC_automaton_new_propositional_symbol(const char* id, int (*fct)())
+void MC_automaton_new_propositional_symbol(const char* /*id*/, int (*/*fct*/)())
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
@@ -86,7 +86,7 @@ void MC_register_stack_area(void* stack, smx_actor_t actor, ucontext_t* context,
   simgrid::mc::Client::get()->declareStack(stack, size, actor, context);
 }
 
-void MC_ignore_global_variable(const char *name)
+void MC_ignore_global_variable(const char* /*name*/)
 {
   xbt_assert(mc_model_checker == nullptr);
   if (not MC_is_active())
