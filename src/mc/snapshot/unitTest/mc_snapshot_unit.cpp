@@ -17,7 +17,6 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_snapshot.hpp"
 
-
 static inline void init_memory(void* mem, size_t size)
 {
   char* dest = (char*) mem;
@@ -30,10 +29,10 @@ static int test_snapshot(bool sparse_checkpoint);
 
 BOOST_AUTO_TEST_SUITE(Snapshots)
 BOOST_AUTO_TEST_CASE(flat_snapshots) {
-  BOOST_CHECK_EQUAL(test_snapshot(0), 1);
+  test_snapshot(0);
 }
 BOOST_AUTO_TEST_CASE(page_snapshots) {
-  BOOST_CHECK_EQUAL(test_snapshot(1), 1);
+  test_snapshot(1);
 }
 BOOST_AUTO_TEST_SUITE_END()
 
