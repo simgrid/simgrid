@@ -17,8 +17,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-using namespace simgrid::kernel;
-
 double date;
 int64_t seedx = 0;
 
@@ -40,12 +38,12 @@ static unsigned int int_random(int max)
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
                  float rate_no_limit, int max_share, int mode)
 {
-  lmm::Constraint* cnst[nb_cnst];
-  lmm::Variable* var[nb_var];
+  simgrid::kernel::lmm::Constraint* cnst[nb_cnst];
+  simgrid::kernel::lmm::Variable* var[nb_var];
   int used[nb_cnst];
 
   /* We cannot activate the selective update as we pass nullptr as an Action when creating the variables */
-  lmm::System* Sys = new lmm::System(false);
+  simgrid::kernel::lmm::System* Sys = new simgrid::kernel::lmm::System(false);
 
   for (int i = 0; i < nb_cnst; i++) {
     cnst[i] = Sys->constraint_new(NULL, float_random(10.0));

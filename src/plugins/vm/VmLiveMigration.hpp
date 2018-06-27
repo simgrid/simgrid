@@ -38,7 +38,7 @@ class MigrationRx {
 public:
   explicit MigrationRx(s4u::VirtualMachine* vm, s4u::Host* dst_pm) : vm_(vm), dst_pm_(dst_pm)
   {
-    src_pm_ = vm_->getPm();
+    src_pm_ = vm_->get_pm();
 
     mbox_ctl = s4u::Mailbox::by_name(std::string("__mbox_mig_ctl:") + vm_->get_cname() + "(" + src_pm_->get_cname() +
                                      "-" + dst_pm_->get_cname() + ")");
@@ -58,7 +58,7 @@ class MigrationTx {
 public:
   explicit MigrationTx(s4u::VirtualMachine* vm, s4u::Host* dst_pm) : vm_(vm), dst_pm_(dst_pm)
   {
-    src_pm_ = vm_->getPm();
+    src_pm_ = vm_->get_pm();
     mbox    = s4u::Mailbox::by_name(std::string("__mbox_mig_src_dst:") + vm_->get_cname() + "(" + src_pm_->get_cname() +
                                  "-" + dst_pm_->get_cname() + ")");
   }

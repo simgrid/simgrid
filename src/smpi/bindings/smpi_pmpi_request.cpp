@@ -203,7 +203,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
 
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Irecv", src,
+                       new simgrid::instr::Pt2PtTIData("irecv", src,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 
@@ -244,7 +244,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MP
     int my_proc_id = simgrid::s4u::this_actor::get_pid();
     int trace_dst = getPid(comm, dst);
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Isend", dst,
+                       new simgrid::instr::Pt2PtTIData("isend", dst,
                                                        datatype->is_replayable() ? count : count * datatype->size(),
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 
@@ -670,7 +670,8 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     int my_proc_id = (*request)->comm() != MPI_COMM_NULL
                          ? simgrid::s4u::this_actor::get_pid()
                          : -1; // TODO: cheinrich: Check if this correct or if it should be MPI_UNDEFINED
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::NoOpTIData("wait"));
+    TRACE_smpi_comm_in(my_proc_id, __func__,
+                       new simgrid::instr::WaitTIData((*request)->src(), (*request)->dst(), (*request)->tag()));
 
     simgrid::smpi::Request::wait(request, status);
     retval = MPI_SUCCESS;
@@ -736,7 +737,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   }
 
   int rank_traced = simgrid::s4u::this_actor::get_pid(); // FIXME: In PMPI_Wait, we check if the comm is null?
-  TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("waitAll", static_cast<double>(count)));
+  TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("waitall", static_cast<double>(count)));
 
   int retval = simgrid::smpi::Request::waitall(count, requests, status);
 

@@ -6,15 +6,10 @@
 #ifndef SIMGRID_MC_SNAPSHOT_HPP
 #define SIMGRID_MC_SNAPSHOT_HPP
 
-#include <memory>
-#include <set>
-#include <string>
-#include <vector>
-
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/RegionSnapshot.hpp"
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_unw.hpp"
+#include "src/mc/remote/RemoteClient.hpp"
 
 // ***** Snapshot region
 

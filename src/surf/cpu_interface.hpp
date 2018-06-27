@@ -36,7 +36,7 @@ public:
    * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core) = 0;
+  virtual Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) = 0;
 
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
@@ -92,7 +92,7 @@ public:
    * @param requestedCores The desired amount of cores. Must be >= 1
    * @return The CpuAction corresponding to the processing
    */
-  virtual simgrid::kernel::resource::Action* execution_start(double size, int requestedCores) = 0;
+  virtual simgrid::kernel::resource::Action* execution_start(double size, int requested_cores) = 0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)
@@ -163,13 +163,13 @@ protected:
 class XBT_PUBLIC CpuAction : public simgrid::kernel::resource::Action {
 public:
   /** @brief Signal emitted when the action state changes (ready/running/done, etc)
-   *  Signature: `void(CpuAction *action)`
+   *  Signature: `void(CpuAction *action, simgrid::kernel::resource::Action::State previous)`
    */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> on_state_change;
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::kernel::resource::Action::State)> on_state_change;
   /** @brief Signal emitted when the action share changes (amount of flops it gets)
    *  Signature: `void(CpuAction *action)`
    */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> on_share_change;
 
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed) : Action(model, cost, failed) {}
   CpuAction(simgrid::kernel::resource::Model * model, double cost, bool failed, kernel::lmm::Variable* var)

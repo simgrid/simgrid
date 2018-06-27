@@ -444,7 +444,6 @@ set(MSG_SRC
   src/msg/msg_global.cpp
   src/msg/msg_gos.cpp
   src/msg/msg_legacy.cpp
-  src/msg/msg_mailbox.cpp
   src/msg/msg_process.cpp
   src/msg/msg_synchro.cpp
   src/msg/msg_task.cpp
@@ -658,6 +657,7 @@ set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
 
 set(headers_to_install
 
+  include/simgrid_config.h
   include/simgrid/actor.h
   include/simgrid/engine.h
   include/simgrid/chrono.hpp
@@ -669,6 +669,7 @@ set(headers_to_install
   include/simgrid/plugins/load_balancer.h
   include/simgrid/smpi/replay.hpp
   include/simgrid/instr.h
+  include/simgrid/mailbox.h
   include/simgrid/msg.h
   include/simgrid/simdag.h
   include/simgrid/modelchecker.h
@@ -718,6 +719,7 @@ set(headers_to_install
   include/smpi/smpi.h
   include/smpi/smpi_main.h
   include/smpi/smpi_helpers.h
+  include/smpi/smpi_helpers_internal.h
   include/smpi/smpi_extended_traces.h
   include/smpi/smpi_extended_traces_fortran.h
   include/smpi/forward.hpp
@@ -763,7 +765,7 @@ set(headers_to_install
   include/xbt/xbt_os_time.h
   )
 set(source_of_generated_headers
-  include/simgrid_config.h.in
+  include/simgrid/config.h.in
   include/smpi/mpif.h.in)
 
 ### depend of some variables setted upper

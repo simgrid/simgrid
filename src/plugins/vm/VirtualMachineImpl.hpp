@@ -53,8 +53,8 @@ public:
   sg_size_t get_ramsize() { return ramsize_; }
   void set_ramsize(sg_size_t ramsize) { ramsize_ = ramsize; }
 
-  e_surf_vm_state_t get_state() { return vm_state_; }
-  void set_state(e_surf_vm_state_t state) { vm_state_ = state; }
+  s4u::VirtualMachine::state get_state() { return vm_state_; }
+  void set_state(s4u::VirtualMachine::state state) { vm_state_ = state; }
 
   int get_core_amount() { return core_amount_; }
 
@@ -69,7 +69,7 @@ private:
   s4u::Host* physical_host_;
   int core_amount_;
   size_t ramsize_            = 0;
-  e_surf_vm_state_t vm_state_ = SURF_VM_STATE_CREATED;
+  s4u::VirtualMachine::state vm_state_ = s4u::VirtualMachine::state::CREATED;
 };
 
 /*********

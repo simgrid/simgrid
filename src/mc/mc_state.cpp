@@ -10,7 +10,6 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#include "src/mc/Transition.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"

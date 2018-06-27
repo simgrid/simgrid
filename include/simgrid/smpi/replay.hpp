@@ -2,9 +2,15 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "private.hpp"
-#include <xbt/replay.hpp>
+#ifndef SMPI_REPLAY_HPP_
+#define SMPI_REPLAY_HPP_
 
+#include <boost/algorithm/string/join.hpp>
+#include <src/smpi/include/smpi_process.hpp>
+#include <xbt/replay.hpp>
+#include <xbt/ex.h>
+
+#include <memory>
 #include <sstream>
 
 #define CHECK_ACTION_PARAMS(action, mandatory, optional)                                                             \
@@ -23,6 +29,13 @@
            ss.str().c_str());                                                                                        \
   }                                                                                                                  \
 }
+
+XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
+XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
+XBT_PRIVATE void smpi_free_tmp_buffer(void* buf);
+XBT_PRIVATE void smpi_free_replay_tmp_buffers();
+
+XBT_PRIVATE void log_timed_action(simgrid::xbt::ReplayAction& action, double clock);
 
 namespace simgrid {
 namespace smpi {
@@ -151,7 +164,7 @@ public:
 /**
  * Base class for all ReplayActions.
  * Note that this class actually implements the behavior of each action
- * while the parsing of the replay arguments is done in the ActionArgParser class.
+ * while the parsing of the replay arguments is done in the @ActionArgParser class.
  * In other words: The logic goes here, the setup is done by the ActionArgParser.
  */
 template <class T> class ReplayAction {
@@ -164,7 +177,16 @@ public:
   explicit ReplayAction(std::string name) : name(name), my_proc_id(simgrid::s4u::this_actor::get_pid()) {}
   virtual ~ReplayAction() = default;
 
-  virtual void execute(simgrid::xbt::ReplayAction& action);
+  void execute(simgrid::xbt::ReplayAction& action)
+  {
+    // Needs to be re-initialized for every action, hence here
+    double start_time = smpi_process()->simulated_elapsed();
+    args.parse(action, name);
+    kernel(action);
+    if (name != "Init")
+      log_timed_action(action, start_time);
+  }
+
   virtual void kernel(simgrid::xbt::ReplayAction& action) = 0;
   void* send_buffer(int size) { return smpi_get_tmp_sendbuffer(size); }
   void* recv_buffer(int size) { return smpi_get_tmp_recvbuffer(size); }
@@ -229,7 +251,7 @@ private:
   RequestStorage& req_storage;
 
 public:
-  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitAll"), req_storage(storage) {}
+  explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitall"), req_storage(storage) {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
@@ -253,13 +275,13 @@ public:
 
 class AllReduceAction : public ReplayAction<AllReduceArgParser> {
 public:
-  explicit AllReduceAction() : ReplayAction("allReduce") {}
+  explicit AllReduceAction() : ReplayAction("allreduce") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
 class AllToAllAction : public ReplayAction<AllToAllArgParser> {
 public:
-  explicit AllToAllAction() : ReplayAction("allToAll") {}
+  explicit AllToAllAction() : ReplayAction("alltoall") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
@@ -283,21 +305,23 @@ public:
 
 class ScatterVAction : public ReplayAction<ScatterVArgParser> {
 public:
-  explicit ScatterVAction() : ReplayAction("scatterV") {}
+  explicit ScatterVAction() : ReplayAction("scatterv") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
 class ReduceScatterAction : public ReplayAction<ReduceScatterArgParser> {
 public:
-  explicit ReduceScatterAction() : ReplayAction("reduceScatter") {}
+  explicit ReduceScatterAction() : ReplayAction("reducescatter") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 
 class AllToAllVAction : public ReplayAction<AllToAllVArgParser> {
 public:
-  explicit AllToAllVAction() : ReplayAction("allToAllV") {}
+  explicit AllToAllVAction() : ReplayAction("alltoallv") {}
   void kernel(simgrid::xbt::ReplayAction& action) override;
 };
 }
 }
 }
+
+#endif

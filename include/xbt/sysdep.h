@@ -14,7 +14,7 @@
 #include <xbt/log.h>
 #include <xbt/misc.h>
 
-#include <simgrid_config.h>
+#include <simgrid/config.h>
 
 #include <string.h>
 #include <stdlib.h>

@@ -164,15 +164,3 @@ inline void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
 
   return cursor->current->content;
 }
-
-/**
- * @brief Set current data
- * @param cursor the cursor
- * @param data the new data
- * @param free_ctn unused parameter (kept for compatibility)
- */
-inline void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor, void* data, XBT_ATTRIB_UNUSED void_f_pvoid_t free_ctn)
-{
-  __cursor_not_null(cursor);
-  xbt_dictelm_set_data(cursor->dict, cursor->current, data);
-}

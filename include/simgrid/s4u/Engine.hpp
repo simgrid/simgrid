@@ -132,6 +132,8 @@ public:
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones()
   {
+    static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
+                  "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");
     std::vector<T*> res;
     get_filtered_netzones_recursive(get_netzone_root(), &res);
     return res;
@@ -204,15 +206,13 @@ public:
   }
 
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_host_count()") size_t getHostCount() { return get_host_count(); }
-  XBT_ATTRIB_DEPRECATED_v322("Engine::getHostList() is deprecated in favor of Engine::get_all_hosts(). Please switch "
-                             "before v3.22") void getHostList(std::vector<Host*>* whereTo);
+  XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_hosts()") void getHostList(std::vector<Host*>* whereTo);
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_hosts()") std::vector<Host*> getAllHosts()
   {
     return get_all_hosts();
   }
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_count()") size_t getLinkCount() { return get_link_count(); }
-  XBT_ATTRIB_DEPRECATED_v322("Engine::getLinkList() is deprecated in favor of Engine::get_all_links(). Please "
-                             "switch before v3.22") void getLinkList(std::vector<Link*>* list);
+  XBT_ATTRIB_DEPRECATED_v322("Please use Engine::get_all_links()") void getLinkList(std::vector<Link*>* list);
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_link_list()") std::vector<Link*> getAllLinks()
   {
     return get_all_links();
@@ -224,8 +224,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_clock()") static double getClock() { return get_clock(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Engine::get_all_netpoints()") void getNetpointList(
       std::vector<simgrid::kernel::routing::NetPoint*>* list);
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netpoint_by_name_or_null()")
-      simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netpoint_by_name_or_null()") simgrid::kernel::routing::NetPoint* getNetpointByNameOrNull(std::string name)
   {
     return netpoint_by_name_or_null(name);
   }
@@ -233,8 +232,7 @@ public:
   {
     return get_netzone_root();
   }
-  XBT_ATTRIB_DEPRECATED_v323(
-      "Please use Engine::netzone_by_name_or_null()") simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netzone_by_name_or_null()") simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name)
   {
     return netzone_by_name_or_null(name);
   }
@@ -270,15 +268,17 @@ extern XBT_PUBLIC xbt::signal<void()> on_simulation_end;
 /** Callback fired when the time jumps into the future */
 extern XBT_PUBLIC xbt::signal<void(double)> on_time_advance;
 
-/** Callback fired when the time cannot jump because of inter-actors deadlock */
+/** Callback fired when the time cannot advance because of inter-actors deadlock */
 extern XBT_PUBLIC xbt::signal<void(void)> on_deadlock;
 
 template <class T> XBT_PRIVATE void get_filtered_netzones_recursive(s4u::NetZone* current, std::vector<T*>* whereto)
 {
-  for (auto const& elem : *(current->get_children())) {
+  static_assert(std::is_base_of<kernel::routing::NetZoneImpl, T>::value,
+                "Filtering netzones is only possible for subclasses of kernel::routing::NetZoneImpl");
+  for (auto const& elem : current->get_children()) {
     get_filtered_netzones_recursive(elem, whereto);
-    if (elem == dynamic_cast<T*>(elem))
-      whereto->push_back(dynamic_cast<T*>(elem));
+    if (elem->get_impl() == dynamic_cast<T*>(elem->get_impl()))
+      whereto->push_back(dynamic_cast<T*>(elem->get_impl()));
   }
 }
 }

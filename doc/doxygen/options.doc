@@ -156,6 +156,7 @@ int main(int argc, char *argv[]) {
 - \c smpi/os: \ref options_model_smpi_os
 - \c smpi/papi-events: \ref options_smpi_papi_events
 - \c smpi/privatization: \ref options_smpi_privatization
+- \c smpi/privatize-libs: \ref options_smpi_privatize_libs
 - \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
 - \c smpi/shared-malloc: \ref options_model_smpi_shared_malloc
 - \c smpi/shared-malloc-hugepage: \ref options_model_smpi_shared_malloc
@@ -1037,6 +1038,24 @@ to choose between them.
 \warning
   This configuration option cannot be set in your platform file. You can only
   pass it as an argument to smpirun.
+  
+\subsection options_smpi_privatize_libs smpi/privatize-libs: Automatic privatization of
+ global variables inside external libraries
+
+Linux/BSD only: When using dlopen (default) privatization, privatize specific 
+shared libraries with internal global variables, if they can't be linked statically. 
+For example libgfortran is usually used for Fortran I/O and indexes in files 
+can be mixed up.
+
+\warning
+  This configuration option can only use either full paths to libraries, or full names.
+  Check with ldd the name of the library you want to use.
+  Example:
+  ldd allpairf90 
+    libgfortran.so.3 => /usr/lib/x86_64-linux-gnu/libgfortran.so.3 (0x00007fbb4d91b000)
+  Then you can use --cfg=smpi/privatize-libs:"libgfortran.so.3" or --cfg=smpi/privatize-libs:"/usr/lib/x86_64-linux-gnu/libgfortran.so.3", but not "libgfortran" or "libgfortran.so".
+  Multiple libraries can be given, semicolon separated.
+
 
 \subsection options_model_smpi_detached Simulating MPI detached send
 

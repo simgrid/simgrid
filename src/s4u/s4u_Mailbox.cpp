@@ -145,3 +145,28 @@ void* Mailbox::get(double timeout)
 }
 } // namespace s4u
 } // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+/** \brief Set the mailbox to receive in asynchronous mode
+ *
+ * All messages sent to this mailbox will be transferred to the receiver without waiting for the receive call.
+ * The receive call will still be necessary to use the received data.
+ * If there is a need to receive some messages asynchronously, and some not, two different mailboxes should be used.
+ *
+ * \param alias The name of the mailbox
+ */
+void sg_mailbox_set_receiver(const char* alias)
+{
+  simgrid::s4u::Mailbox::by_name(alias)->set_receiver(simgrid::s4u::Actor::self());
+  XBT_VERB("%s mailbox set to receive eagerly for myself\n", alias);
+}
+
+/** \brief Check if there is a communication going on in a mailbox.
+ *
+ * \param alias the name of the mailbox to be considered
+ * \return Returns 1 if there is a communication, 0 otherwise
+ */
+int sg_mailbox_listen(const char* alias)
+{
+  return simgrid::s4u::Mailbox::by_name(alias)->listen() ? 1 : 0;
+}

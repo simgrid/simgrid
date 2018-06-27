@@ -45,15 +45,15 @@ class LinkEnergy {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> EXTENSION_ID;
 
-  explicit LinkEnergy(simgrid::s4u::Link* ptr);
-  ~LinkEnergy();
+  explicit LinkEnergy(simgrid::s4u::Link* ptr) : link_(ptr), last_updated_(surf_get_clock()) {}
+  ~LinkEnergy() = default;
 
-  void initWattsRangeList();
-  double getConsumedEnergy();
+  void init_watts_range_list();
+  double get_consumed_energy();
   void update();
 
 private:
-  double getPower();
+  double get_power();
 
   simgrid::s4u::Link* link_{};
 
@@ -61,25 +61,21 @@ private:
   double idle_{0.0};
   double busy_{0.0};
 
-  double totalEnergy_{0.0};
-  double lastUpdated_{0.0}; /*< Timestamp of the last energy update event*/
+  double total_energy_{0.0};
+  double last_updated_{0.0}; /*< Timestamp of the last energy update event*/
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Link, LinkEnergy> LinkEnergy::EXTENSION_ID;
 
-LinkEnergy::LinkEnergy(simgrid::s4u::Link* ptr) : link_(ptr), lastUpdated_(surf_get_clock()) {}
-
-LinkEnergy::~LinkEnergy() = default;
-
 void LinkEnergy::update()
 {
-  double power = getPower();
+  double power = get_power();
   double now   = surf_get_clock();
-  totalEnergy_ += power * (now - lastUpdated_);
-  lastUpdated_ = now;
+  total_energy_ += power * (now - last_updated_);
+  last_updated_ = now;
 }
 
-void LinkEnergy::initWattsRangeList()
+void LinkEnergy::init_watts_range_list()
 {
 
   if (inited_)
@@ -116,7 +112,7 @@ void LinkEnergy::initWattsRangeList()
   }
 }
 
-double LinkEnergy::getPower()
+double LinkEnergy::get_power()
 {
 
   if (!inited_)
@@ -130,11 +126,11 @@ double LinkEnergy::getPower()
   return idle_ + dynamic_power;
 }
 
-double LinkEnergy::getConsumedEnergy()
+double LinkEnergy::get_consumed_energy()
 {
-  if (lastUpdated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
+  if (last_updated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
     simgrid::simix::simcall(std::bind(&LinkEnergy::update, this));
-  return this->totalEnergy_;
+  return this->total_energy_;
 }
 } // namespace plugin
 } // namespace simgrid
@@ -142,8 +138,7 @@ double LinkEnergy::getConsumedEnergy()
 using simgrid::plugin::LinkEnergy;
 
 /* **************************** events  callback *************************** */
-static void onCommunicate(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host* src,
-                          simgrid::s4u::Host* dst)
+static void on_communicate(simgrid::kernel::resource::NetworkAction* action, simgrid::s4u::Host*, simgrid::s4u::Host*)
 {
   XBT_DEBUG("onCommunicate is called");
   for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
@@ -153,18 +148,18 @@ static void onCommunicate(simgrid::kernel::resource::NetworkAction* action, simg
 
     XBT_DEBUG("Update link %s", link->get_cname());
     LinkEnergy* link_energy = link->piface_.extension<LinkEnergy>();
-    link_energy->initWattsRangeList();
+    link_energy->init_watts_range_list();
     link_energy->update();
   }
 }
 
-static void onSimulationEnd()
+static void on_simulation_end()
 {
   std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
 
   double total_energy = 0.0; // Total dissipated energy (whole platform)
   for (const auto link : links) {
-    double link_energy = link->extension<LinkEnergy>()->getConsumedEnergy();
+    double link_energy = link->extension<LinkEnergy>()->get_consumed_energy();
     total_energy += link_energy;
   }
 
@@ -197,7 +192,7 @@ void sg_link_energy_plugin_init()
   simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link& link) {
     if (strcmp(link.get_cname(), "__loopback__"))
       XBT_INFO("Energy consumption of link '%s': %f Joules", link.get_cname(),
-               link.extension<LinkEnergy>()->getConsumedEnergy());
+               link.extension<LinkEnergy>()->get_consumed_energy());
   });
 
   simgrid::s4u::Link::on_communication_state_change.connect([](simgrid::kernel::resource::NetworkAction* action) {
@@ -207,8 +202,8 @@ void sg_link_energy_plugin_init()
     }
   });
 
-  simgrid::s4u::Link::on_communicate.connect(&onCommunicate);
-  simgrid::s4u::on_simulation_end.connect(&onSimulationEnd);
+  simgrid::s4u::Link::on_communicate.connect(&on_communicate);
+  simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
 }
 
 /** @ingroup plugin_energy
@@ -220,5 +215,5 @@ void sg_link_energy_plugin_init()
  */
 double sg_link_get_consumed_energy(sg_link_t link)
 {
-  return link->extension<LinkEnergy>()->getConsumedEnergy();
+  return link->extension<LinkEnergy>()->get_consumed_energy();
 }

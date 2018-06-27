@@ -10,7 +10,6 @@
 
 #include "simgrid/instr.h"
 #include "simgrid/s4u/Actor.hpp"
-#include "simgrid_config.h"
 #include "src/instr/instr_paje_containers.hpp"
 #include "src/instr/instr_paje_events.hpp"
 #include "src/instr/instr_paje_types.hpp"
@@ -62,12 +61,12 @@ public:
 
   // NoOpTI: init, finalize, test, wait, barrier
   explicit TIData(std::string name) : name_(name){};
-  // CPuTI: compute, sleep (+ waitAny and waitAll out of laziness)
+  // CPuTI: compute, sleep (+ waitAny and waitall out of laziness)
   explicit TIData(std::string name, double amount) : name_(name), amount_(amount){};
   // Pt2PtTI: send, isend, sssend, issend, recv, irecv
   explicit TIData(std::string name, int endpoint, int size, std::string datatype)
       : name_(name), endpoint(endpoint), send_size(size), send_type(datatype){};
-  // CollTI: bcast, reduce, allReduce, gather, scatter, allGather, allToAll
+  // CollTI: bcast, reduce, allreduce, gather, scatter, allgather, alltoall
   explicit TIData(std::string name, int root, double amount, int send_size, int recv_size, std::string send_type,
                   std::string recv_type)
       : name_(name)
@@ -77,7 +76,7 @@ public:
       , recv_size(recv_size)
       , send_type(send_type)
       , recv_type(recv_type){};
-  // VarCollTI: gatherV, scatterV, allGatherV, allToAllV (+ reduceScatter out of laziness)
+  // VarCollTI: gatherv, scatterv, allgatherv, alltoallv (+ reducescatter out of laziness)
   explicit TIData(std::string name, int root, int send_size, std::vector<int>* sendcounts, int recv_size,
                   std::vector<int>* recvcounts, std::string send_type, std::string recv_type)
       : TIData(name, root, send_size, std::shared_ptr<std::vector<int>>(sendcounts), recv_size,
@@ -196,6 +195,29 @@ public:
     return stream.str();
   }
   std::string display_size() override { return std::to_string(send_size > 0 ? send_size : recv_size); }
+};
+
+/**
+ * If we want to wait for a request of asynchronous communication, we need to be able
+ * to identify this request. We do this by searching for a request identified by (src, dest, tag).
+ */
+class WaitTIData : public TIData {
+  int src;
+  int dest;
+  int tag;
+
+public:
+  explicit WaitTIData(int src, int dest, int tag) : TIData("wait"), src(src), dest(dest), tag(tag){};
+
+  std::string print() override
+  {
+    std::stringstream stream;
+    stream << getName() << " " << src << " " << dest << " " << tag;
+
+    return stream.str();
+  }
+
+  std::string display_size() override { return ""; }
 };
 }
 }

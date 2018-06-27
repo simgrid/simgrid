@@ -8,14 +8,11 @@
 
 #include "simgrid/msg.h" // msg_bar_t
 #include "smpi/smpi.h"
+#include "smpi/smpi_helpers_internal.h"
 #include "src/instr/instr_smpi.hpp"
 #include "src/internal_config.h"
 #include <unordered_map>
 #include <vector>
-#include <sys/time.h>
-#if _POSIX_TIMERS
-#include <time.h>
-#endif
 
 #define MPI_REQ_PERSISTENT 0x1
 #define MPI_REQ_NON_PERSISTENT 0x2
@@ -407,20 +404,6 @@ void mpi_file_open_(int* comm, char* filename, int* amode, int* info, int* fh, i
 void mpi_file_set_view_(int* fh, long long int* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
 void mpi_file_read_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_write_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
-
-
-XBT_PUBLIC int smpi_usleep(useconds_t usecs);
-#if _POSIX_TIMERS > 0
-XBT_PUBLIC int smpi_nanosleep(const struct timespec* tp, struct timespec* t);
-XBT_PUBLIC int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp);
-#endif
-XBT_PUBLIC unsigned int smpi_sleep(unsigned int secs);
-XBT_PUBLIC int smpi_gettimeofday(struct timeval* tv, struct timezone* tz);
-
-
-struct option;
-XBT_PUBLIC int smpi_getopt_long (int argc,  char *const *argv,  const char *options,  const struct option *long_options, int *opt_index);
-XBT_PUBLIC int smpi_getopt (int argc,  char *const *argv,  const char *options);
 
 } // extern "C"
 

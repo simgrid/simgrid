@@ -129,7 +129,7 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
 {
   std::function<void()> function;
   if (code)
-    function = simgrid::xbt::wrapMain(code, argc, static_cast<const char* const*>(argv));
+    function = simgrid::xbt::wrap_main(code, argc, static_cast<const char* const*>(argv));
 
   std::unordered_map<std::string, std::string> props;
   xbt_dict_cursor_t cursor = nullptr;

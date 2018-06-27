@@ -127,9 +127,9 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
     return;
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->get_cname());
-  if (not netzone->get_children()->empty()) {
+  if (not netzone->get_children().empty()) {
     // bottom-up recursion
-    for (auto const& nz_son : *netzone->get_children()) {
+    for (auto const& nz_son : netzone->get_children()) {
       container_t child_container = container->children_.at(nz_son->get_cname());
       recursiveGraphExtraction(nz_son, child_container, filter);
     }
@@ -139,7 +139,7 @@ static void recursiveGraphExtraction(simgrid::s4u::NetZone* netzone, container_t
   std::map<std::string, xbt_node_t>* nodes = new std::map<std::string, xbt_node_t>;
   std::map<std::string, xbt_edge_t>* edges = new std::map<std::string, xbt_edge_t>;
 
-  static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->get_graph(graph, nodes, edges);
+  netzone->get_impl()->get_graph(graph, nodes, edges);
   for (auto elm : *edges) {
     xbt_edge_t edge = elm.second;
     linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
@@ -210,7 +210,7 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
     simgrid::instr::VariableType* power = container->type_->by_name_or_create("power", "");
     power->set_calling_container(container);
-    power->set_event(0, host.getSpeed());
+    power->set_event(0, host.get_speed());
   }
 
   if (TRACE_uncategorized())
@@ -232,7 +232,8 @@ static void instr_host_on_speed_change(simgrid::s4u::Host& host)
       ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
 }
 
-static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action)
+static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
+                                             simgrid::kernel::resource::Action::State /* previous */)
 {
   simgrid::surf::Cpu* cpu = static_cast<simgrid::surf::Cpu*>(action->get_variable()->get_constraint(0)->get_id());
   TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
@@ -352,7 +353,7 @@ void instr_define_callbacks()
     simgrid::s4u::Link::on_creation.connect(instr_link_on_creation);
     simgrid::s4u::Link::on_bandwidth_change.connect(instr_link_on_bandwidth_change);
     simgrid::s4u::NetZone::on_seal.connect([](simgrid::s4u::NetZone& /*netzone*/) { currentContainer.pop_back(); });
-    simgrid::kernel::routing::NetPoint::onCreation.connect(instr_netpoint_on_creation);
+    simgrid::kernel::routing::NetPoint::on_creation.connect(instr_netpoint_on_creation);
   }
   simgrid::s4u::NetZone::on_creation.connect(instr_netzone_on_creation);
 
@@ -466,15 +467,15 @@ static void recursiveXBTGraphExtraction(xbt_graph_t graph, std::map<std::string,
                                         std::map<std::string, xbt_edge_t>* edges, sg_netzone_t netzone,
                                         container_t container)
 {
-  if (not netzone->get_children()->empty()) {
+  if (not netzone->get_children().empty()) {
     // bottom-up recursion
-    for (auto const& netzone_child : *netzone->get_children()) {
+    for (auto const& netzone_child : netzone->get_children()) {
       container_t child_container = container->children_.at(netzone_child->get_cname());
       recursiveXBTGraphExtraction(graph, nodes, edges, netzone_child, child_container);
     }
   }
 
-  static_cast<simgrid::kernel::routing::NetZoneImpl*>(netzone)->get_graph(graph, nodes, edges);
+  netzone->get_impl()->get_graph(graph, nodes, edges);
 }
 
 xbt_graph_t instr_routing_platform_graph()

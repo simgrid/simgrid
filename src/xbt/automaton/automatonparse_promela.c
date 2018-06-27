@@ -13,6 +13,7 @@
 # include <unistd.h>   /* isatty */
 #endif
 #include <xbt/log.h>
+#include <xbt/sysdep.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_automaton);
 

@@ -21,7 +21,7 @@ namespace routing {
 
 class XBT_PRIVATE EmptyZone : public NetZoneImpl {
 public:
-  explicit EmptyZone(NetZone* father, std::string name);
+  explicit EmptyZone(NetZoneImpl* father, std::string name);
   ~EmptyZone() override;
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override

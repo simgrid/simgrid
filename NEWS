@@ -1,9 +1,24 @@
+                    _               _____  ____  _
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ \/ |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/| |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|_|
+               (not released)
+
+
                     _               _____  ____   ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | | | |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/| |_| |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|\___/
-               (NOT RELEASED)
+               June 24. 2018
+
+The proxy snake_case() release.
+
+ * Sanitize the public API. Compatibility wrappers in place for one year.
+ * More CI: ~45 Proxy Apps + BigDFT + StarPU now tested nightly
+ * MPI: Port the trace replay engine to C++, fix visualization
+ * (+ the classical bug fixes and doc improvement)
 
                     _               _____  _  ___   _
 __   _____ _ __ ___(_) ___  _ __   |___ / / |/ _ \ / |

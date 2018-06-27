@@ -9,7 +9,6 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "src/mc/Transition.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_exit.hpp"

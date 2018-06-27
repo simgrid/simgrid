@@ -932,11 +932,11 @@ void System::remove_all_modified_set()
 /**
  * Returns resource load (in flop per second, or byte per second, or similar)
  *
- * If the resource is shared (the default case), the load is sum of resource usage made by every variables located on
- * this resource.
+ * If the resource is shared (the default case), the load is sum of resource usage made by
+ * every variables located on this resource.
  *
- * If the resource is not shared (ie in FATPIPE mode), then the load is the max (not the sum) of all resource usages
- * located on this resource.
+ * If the resource is not shared (ie in FATPIPE mode), then the load is the max (not the sum)
+ * of all resource usages located on this resource.
  */
 double Constraint::get_usage() const
 {

@@ -511,7 +511,7 @@ char *xbt_automaton_parser_text;
  * under the terms of the license (GNU LGPL) which comes with this package. */
 #line 10 "parserPromela.lex"
 
-#include "simgrid_config.h"
+#include "simgrid/config.h"
 #if !HAVE_UNISTD_H
 #define YY_NO_UNISTD_H /* hello Windows */
 #endif

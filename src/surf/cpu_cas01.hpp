@@ -35,11 +35,11 @@ public:
 
 class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
+  CpuCas01(CpuCas01Model* model, simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core);
   ~CpuCas01() override;
   void apply_event(tmgr_trace_event_t event, double value) override;
   CpuAction* execution_start(double size) override;
-  CpuAction* execution_start(double size, int requestedCore) override;
+  CpuAction* execution_start(double size, int requested_cores) override;
   CpuAction* sleep(double duration) override;
 
   bool is_used() override;
@@ -56,7 +56,7 @@ class CpuCas01Action: public CpuAction {
   friend CpuAction *CpuCas01::sleep(double duration);
 public:
   CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
-                 kernel::lmm::Constraint* constraint, int coreAmount);
+                 kernel::lmm::Constraint* constraint, int core_count);
   CpuCas01Action(kernel::resource::Model* model, double cost, bool failed, double speed,
                  kernel::lmm::Constraint* constraint);
   ~CpuCas01Action() override;

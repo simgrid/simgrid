@@ -22,7 +22,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-FatTreeZone::FatTreeZone(NetZone* father, std::string name) : ClusterZone(father, name)
+FatTreeZone::FatTreeZone(NetZoneImpl* father, std::string name) : ClusterZone(father, name)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }
@@ -37,7 +37,7 @@ FatTreeZone::~FatTreeZone()
   }
 }
 
-bool FatTreeZone::isInSubTree(FatTreeNode* root, FatTreeNode* node)
+bool FatTreeZone::is_in_sub_tree(FatTreeNode* root, FatTreeNode* node)
 {
   XBT_DEBUG("Is %d(%u,%u) in the sub tree of %d(%u,%u) ?", node->id, node->level, node->position, root->id, root->level,
             root->position);
@@ -89,7 +89,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
   FatTreeNode* currentNode = source;
 
   // up part
-  while (not isInSubTree(currentNode, destination)) {
+  while (not is_in_sub_tree(currentNode, destination)) {
     int d = destination->position; // as in d-mod-k
 
     for (unsigned int i = 0; i < currentNode->level; i++)
@@ -135,7 +135,7 @@ void FatTreeZone::seal()
   if (this->levels_ == 0) {
     return;
   }
-  this->generateSwitches();
+  this->generate_switches();
 
   if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
     std::stringstream msgBuffer;
@@ -155,13 +155,13 @@ void FatTreeZone::seal()
     XBT_DEBUG("%s", msgBuffer.str().c_str());
   }
 
-  this->generateLabels();
+  this->generate_labels();
 
   unsigned int k = 0;
   // Nodes are totally ordered, by level and then by position, in this->nodes
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodes_by_level_[i]; j++) {
-      this->connectNodeToParents(this->nodes_[k]);
+      this->connect_node_to_parents(this->nodes_[k]);
       k++;
     }
   }
@@ -176,15 +176,15 @@ void FatTreeZone::seal()
   }
 }
 
-int FatTreeZone::connectNodeToParents(FatTreeNode* node)
+int FatTreeZone::connect_node_to_parents(FatTreeNode* node)
 {
   std::vector<FatTreeNode*>::iterator currentParentNode = this->nodes_.begin();
   int connectionsNumber                                 = 0;
   const int level                                       = node->level;
   XBT_DEBUG("We are connecting node %d(%u,%u) to his parents.", node->id, node->level, node->position);
-  currentParentNode += this->getLevelPosition(level + 1);
+  currentParentNode += this->get_level_position(level + 1);
   for (unsigned int i = 0; i < this->nodes_by_level_[level + 1]; i++) {
-    if (this->areRelated(*currentParentNode, node)) {
+    if (this->are_related(*currentParentNode, node)) {
       XBT_DEBUG("%d(%u,%u) and %d(%u,%u) are related,"
                 " with %u links between them.",
                 node->id, node->level, node->position, (*currentParentNode)->id, (*currentParentNode)->level,
@@ -200,7 +200,7 @@ int FatTreeZone::connectNodeToParents(FatTreeNode* node)
   return connectionsNumber;
 }
 
-bool FatTreeZone::areRelated(FatTreeNode* parent, FatTreeNode* child)
+bool FatTreeZone::are_related(FatTreeNode* parent, FatTreeNode* child)
 {
   std::stringstream msgBuffer;
 
@@ -232,7 +232,7 @@ bool FatTreeZone::areRelated(FatTreeNode* parent, FatTreeNode* child)
   return true;
 }
 
-void FatTreeZone::generateSwitches()
+void FatTreeZone::generate_switches()
 {
   XBT_DEBUG("Generating switches.");
   this->nodes_by_level_.resize(this->levels_ + 1, 0);
@@ -277,7 +277,7 @@ void FatTreeZone::generateSwitches()
   }
 }
 
-void FatTreeZone::generateLabels()
+void FatTreeZone::generate_labels()
 {
   XBT_DEBUG("Generating labels.");
   // TODO : check if nodesByLevel and nodes are filled
@@ -323,7 +323,7 @@ void FatTreeZone::generateLabels()
   }
 }
 
-int FatTreeZone::getLevelPosition(const unsigned int level)
+int FatTreeZone::get_level_position(const unsigned int level)
 {
   xbt_assert(level <= this->levels_, "The impossible did happen. Yet again.");
   int tempPosition = 0;

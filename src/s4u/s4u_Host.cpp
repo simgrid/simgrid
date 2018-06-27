@@ -221,18 +221,35 @@ void Host::set_property(std::string key, std::string value)
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
-double Host::getPstateSpeed(int pstate_index)
+double Host::get_pstate_speed(int pstate_index)
 {
   return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
 }
 
-/** @brief Get the peak processor speed in flops/s, (under full load (=1.0), at the current pstate)
+/** @brief Get the peak computing speed in flops/s at the current pstate, taking the external load into account.
  *
- *  The result also takes the external load into account.
+ *  The amount of flops per second available for computing depends on several things:
+ *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
+ *      computing speed you would get at another pstate)
+ *    - If you declared an external load, then this reduces the available computing speed (see @ref set_speed_trace())
+ *
+ *  The remaining speed is then shared between the executions located on this host.
+ *  You can retrieve the amount of tasks currently running on this host with @ref get_load().
+ *
+ *  The host may have multiple cores, and your executions may be able to use more than a single core.
+ *
+ *  Finally, executions of priority 2 get twice the amount of flops than executions of priority 1.
  */
-double Host::getSpeed()
+double Host::get_speed()
 {
   return this->pimpl_cpu->get_speed(1.0);
+}
+/** @brief Returns the current computation load (in flops per second)
+ * The external load (coming from an availability trace) is not taken in account.
+ */
+double Host::get_load()
+{
+  return this->pimpl_cpu->get_load();
 }
 /** @brief Get the available speed ratio, between 0 and 1.
  *
@@ -278,7 +295,7 @@ void Host::getAttachedStorages(std::vector<const char*>* storages)
     storages->push_back(elm);
 }
 
-std::unordered_map<std::string, Storage*> const& Host::getMountedStorages()
+std::unordered_map<std::string, Storage*> const& Host::get_mounted_storages()
 {
   if (mounts_ == nullptr) {
     mounts_ = new std::unordered_map<std::string, Storage*>();
@@ -297,11 +314,6 @@ void Host::execute(double flops, double priority)
 {
   smx_activity_t s = simcall_execution_start(nullptr, flops, 1 / priority /*priority*/, 0. /*bound*/, this);
   simcall_execution_wait(s);
-}
-
-double Host::getLoad()
-{
-  return this->pimpl_cpu->get_load();
 }
 
 } // namespace s4u
@@ -394,7 +406,7 @@ xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t res = xbt_dict_new_homogeneous(nullptr);
-  for (auto const& elm : host->getMountedStorages()) {
+  for (auto const& elm : host->get_mounted_storages()) {
     const char* mount_name = elm.first.c_str();
     sg_storage_t storage   = elm.second;
     xbt_dict_set(res, mount_name, (void*)storage->get_cname(), nullptr);
@@ -417,7 +429,7 @@ xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host)
 /** @brief Returns the total speed of a host */
 double sg_host_speed(sg_host_t host)
 {
-  return host->getSpeed();
+  return host->get_speed();
 }
 
 /** \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
@@ -428,7 +440,7 @@ double sg_host_speed(sg_host_t host)
  */
 double sg_host_get_pstate_speed(sg_host_t host, int pstate_index)
 {
-  return host->getPstateSpeed(pstate_index);
+  return host->get_pstate_speed(pstate_index);
 }
 
 /** \ingroup m_host_management
@@ -603,7 +615,7 @@ double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 void sg_host_dump(sg_host_t host)
 {
   XBT_INFO("Displaying host %s", host->get_cname());
-  XBT_INFO("  - speed: %.0f", host->getSpeed());
+  XBT_INFO("  - speed: %.0f", host->get_speed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
   std::unordered_map<std::string, std::string>* props = host->get_properties();
 

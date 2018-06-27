@@ -403,7 +403,7 @@ several other tags that are available only in certain contexts.
 \subsubsection pf_router &lt;router/&gt;
 
 As said before, <b>router</b> is used only to give some information
-for routing algorithms. So, it does not have any attributes except :
+for routing algorithms. So, it does not have any attributes except:
 
 #### Attributes ####
 
@@ -1001,7 +1001,7 @@ routing model (the path is given relative to SimGrid's source directory)
 
 \verbinclude example_filelist_routing_dijkstra
 
-Dijkstra example :
+Dijkstra example:
 \verbatim
  <zone id="zone_2" routing="Dijkstra">
      <host id="zone_2_host1" speed="1000000000"/>
@@ -1051,7 +1051,7 @@ if there are no example files listed here, this is likely to be correct.
 \anchor pf_routing_model_full
 ### Full ###
 
-Full example :
+Full example:
 \verbatim
 <zone  id="zone0"  routing="Full">
    <host id="host1" speed="1000000000"/>
@@ -1297,7 +1297,7 @@ to bypass some routes defined in lower level zone at an upper stage:
 <b>bypasszoneroute</b> is the tag you're looking for. It allows to
 bypass routes defined between already defined between zone (if you want
 to bypass route for a specific host, you should just use byPassRoute).
-The principle is the same as zoneroute : <b>bypasszoneroute</b> contains
+The principle is the same as zoneroute: <b>bypasszoneroute</b> contains
 list of links that are in the path between src and dst.
 
 #### Attributes ####
@@ -1330,10 +1330,10 @@ attribute was not given, this route is presumed to be symmetrical.
 As said before, once you choose
 a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
-to bypass some routes defined in lower level zone at an upper stage :
+to bypass some routes defined in lower level zone at an upper stage:
 <b>bypassRoute</b> is the tag you're looking for. It allows to bypass
 routes defined between <b>host/router</b>. The principle is the same
-as route : <b>bypassRoute</b> contains list of links references of
+as route: <b>bypassRoute</b> contains list of links references of
 links that are in the path between src and dst.
 
 #### Attributes ####
@@ -1373,7 +1373,7 @@ and zone_2. If you want to make a host (h1) from zone_1 with another one
     defined inside zone_Big. If you choose some shortest-path model,
     this route will be computed automatically.
 
-As said before, there are mainly 2 tags for routing :
+As said before, there are mainly 2 tags for routing:
 \li <b>zoneroute</b>: to define routes between two  <b>zone</b>
 \li <b>route</b>: to define routes between two <b>host/router</b>
 
@@ -1387,7 +1387,7 @@ say that zone_1 contains full routes, and zone_2 contains some Floyd
 routing (as we don't want to bother with defining all routes). As
 we're using some shortest path algorithms to route into zone_2, we'll
 then have to define some <b>route</b> to gives some topological
-information to SimGrid. Here is a file doing it all :
+information to SimGrid. Here is a file doing it all:
 
 \verbatim
 <zone  id="zone_Big"  routing="Dijkstra">
@@ -1610,7 +1610,7 @@ platforms.
 
 \subsection pf_exit_zone Exit Zone: why and how
 Users that have looked at some of our platforms may have notice a
-non-intuitive schema ... Something like that :
+non-intuitive schema ... Something like that:
 
 
 \verbatim
@@ -1715,7 +1715,7 @@ You may have noted that conveniently, a peer named FOO defines an zone named FOO
 Choosing wisely the routing model to use can significantly fasten your
 simulation/save your time when writing the platform/save tremendous
 disk space. Here is the list of available model and their
-characteristics (lookup : time to resolve a route):
+characteristics (lookup: time to resolve a route):
 
 \li <b>Full</b>: Full routing data (fast, large memory requirements,
     fully expressive)

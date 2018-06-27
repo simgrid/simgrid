@@ -14,8 +14,6 @@
 
 #include <fcntl.h>
 #include <cstdlib>
-#define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */
-#include <dwarf.h>
 #include <elfutils/libdw.h>
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -24,7 +22,7 @@
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
-#include <simgrid_config.h>
+#include <simgrid/config.h>
 
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"

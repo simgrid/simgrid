@@ -38,17 +38,17 @@ static int master(int argc, char* argv[])
   XBT_INFO("kernel, returned");
 
   // Synchronize on a successful Future<void>:
-  simgrid::simix::kernelSync([] {
+  simgrid::simix::kernel_sync([] {
     return kernel_wait_until(10).then([](simgrid::kernel::Future<void> future) {
       future.get();
-      XBT_INFO("kernelSync with void");
+      XBT_INFO("kernel_sync with void");
     });
   });
-  XBT_INFO("kernelSync with void, returned");
+  XBT_INFO("kernel_sync with void, returned");
 
   // Synchronize on a failing Future<void>:
   try {
-    simgrid::simix::kernelSync([] {
+    simgrid::simix::kernel_sync([] {
       return kernel_wait_until(20).then([](simgrid::kernel::Future<void> future) {
         future.get();
         throw example::exception("Exception throwed from kernel_defer");
@@ -60,31 +60,31 @@ static int master(int argc, char* argv[])
   }
 
   // Synchronize on a successul Future<int> and get the value:
-  int res = simgrid::simix::kernelSync([] {
+  int res = simgrid::simix::kernel_sync([] {
     return kernel_wait_until(30).then([](simgrid::kernel::Future<void> future) {
       future.get();
-      XBT_INFO("kernelSync with value");
+      XBT_INFO("kernel_sync with value");
       return 42;
     });
   });
-  XBT_INFO("kernelSync with value returned with %i", res);
+  XBT_INFO("kernel_sync with value returned with %i", res);
 
   // Synchronize on a successul Future<int> and get the value:
-  simgrid::simix::Future<int> future = simgrid::simix::kernelAsync([] {
+  simgrid::simix::Future<int> future = simgrid::simix::kernel_async([] {
     return kernel_wait_until(50).then([](simgrid::kernel::Future<void> future) {
       future.get();
-      XBT_INFO("kernelAsync with value");
+      XBT_INFO("kernel_async with value");
       return 43;
     });
   });
   res = future.get();
-  XBT_INFO("kernelAsync with value returned with %i", res);
+  XBT_INFO("kernel_async with value returned with %i", res);
 
   // Synchronize on a successul Future<int> and get the value:
-  future = simgrid::simix::kernelAsync([] {
+  future = simgrid::simix::kernel_async([] {
     return kernel_wait_until(60).then([](simgrid::kernel::Future<void> future) {
       future.get();
-      XBT_INFO("kernelAsync with value");
+      XBT_INFO("kernel_async with value");
       return 43;
     });
   });
@@ -92,7 +92,7 @@ static int master(int argc, char* argv[])
   future.wait();
   XBT_INFO("The future is %s", future.is_ready() ? "ready" : "not ready");
   res = future.get();
-  XBT_INFO("kernelAsync with value returned with %i", res);
+  XBT_INFO("kernel_async with value returned with %i", res);
 
   return 0;
 }

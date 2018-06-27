@@ -20,8 +20,8 @@ static void wizard()
   XBT_INFO("It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).");
 
   simgrid::s4u::this_actor::sleep_for(0.1);
-  XBT_INFO("Loads in flops/s: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f",
-      boivin->getLoad(), fafard->getLoad(), ginette->getLoad());
+  XBT_INFO("Loads in flops/s: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", boivin->get_load(), fafard->get_load(),
+           ginette->get_load());
 
   exec->wait();
 
@@ -31,14 +31,14 @@ static void wizard()
   exec->start();
 
   simgrid::s4u::this_actor::sleep_for(0.5);
-  XBT_INFO("Loads before the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f",
-      boivin->getLoad(), fafard->getLoad(), ginette->getLoad());
+  XBT_INFO("Loads before the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", boivin->get_load(), fafard->get_load(),
+           ginette->get_load());
 
   exec->set_host(boivin);
 
   simgrid::s4u::this_actor::sleep_for(0.1);
-  XBT_INFO("Loads after the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f",
-      boivin->getLoad(), fafard->getLoad(), ginette->getLoad());
+  XBT_INFO("Loads after the move: Boivin=%.0f; Fafard=%.0f; Ginette=%.0f", boivin->get_load(), fafard->get_load(),
+           ginette->get_load());
 
   exec->wait();
   XBT_INFO("Done!");

@@ -67,7 +67,7 @@ namespace routing {
 
 class ClusterZone : public NetZoneImpl {
 public:
-  explicit ClusterZone(NetZone* father, std::string name);
+  explicit ClusterZone(NetZoneImpl* father, std::string name);
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
   void get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
@@ -80,7 +80,7 @@ public:
   }
 
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
-  /* The pair is {linkUp, linkDown} */
+  /* The pair is {link_up, link_down} */
   std::unordered_map<unsigned int, std::pair<kernel::resource::LinkImpl*, kernel::resource::LinkImpl*>> private_links_;
 
   unsigned int node_pos(int id) { return id * num_links_per_node_; }

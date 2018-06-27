@@ -46,8 +46,7 @@ XBT_PUBLIC void unblock(smx_actor_t process);
  * @return         Value of the kernel future
  * @exception      Exception from the kernel future
  */
-template<class F>
-auto kernelSync(F code) -> decltype(code().get())
+template <class F> auto kernel_sync(F code) -> decltype(code().get())
 {
   typedef decltype(code().get()) T;
   if (SIMIX_is_maestro())
@@ -60,7 +59,7 @@ auto kernelSync(F code) -> decltype(code().get())
     try {
       auto future = code();
       future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
-        simgrid::xbt::setPromise(result, simgrid::kernel::Future<T>(value));
+        simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
         simgrid::simix::unblock(self);
       });
     }
@@ -70,6 +69,11 @@ auto kernelSync(F code) -> decltype(code().get())
     }
   });
   return result.get();
+}
+template <class F>
+XBT_ATTRIB_DEPRECATED_v323("Please use simix::kernel_sync()") auto kernelSync(F code) -> decltype(code().get())
+{
+  return kernel_sync(code);
 }
 
 /** A blocking (`wait()`-based) future for SIMIX processes */
@@ -96,7 +100,7 @@ public:
         // When the kernel future is ready...
         this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>>&& value) {
           // ... wake up the process with the result of the kernel future.
-          simgrid::xbt::setPromise(result, simgrid::kernel::Future<T>(value));
+          simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(value));
           simgrid::simix::unblock(self);
         });
       }
@@ -146,9 +150,7 @@ private:
  *  @param code SimGrid kernel code which returns a simgrid::kernel::Future
  *  @return     Actor future
  */
-template<class F>
-auto kernelAsync(F code)
-  -> Future<decltype(code().get())>
+template <class F> auto kernel_async(F code) -> Future<decltype(code().get())>
 {
   typedef decltype(code().get()) T;
 
@@ -158,7 +160,11 @@ auto kernelAsync(F code)
   // Wrap the kernel future in a actor future:
   return simgrid::simix::Future<T>(std::move(future));
 }
-
+template <class F>
+XBT_ATTRIB_DEPRECATED_v323("Please use simix::kernel_sync()") auto kernelAsync(F code) -> Future<decltype(code().get())>
+{
+  return kernel_async(code);
+}
 }
 }
 

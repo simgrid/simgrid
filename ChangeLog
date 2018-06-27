@@ -1,36 +1,89 @@
-SimGrid (3.20) NOT RELEASED YET (Release target: June 21. 2018 10:07 UTC)
+SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
+
+
+
+
+SimGrid (3.20) Released June 24. 2018
+
+The proxy snake_case() release.
+
+S4U:
+ - The whole API is now using snake_case() instead of mixing it with camelCase.
+   Compatibility wrappers in place for one year.
+ - We took the opportunity to increase the consistency of the API.
+   Please report any remaining glitches.
+ - New function simgrid::s4u::Host::get_actor_count:
+   Returns the number of actors running on a specific host.
+
+SMPI:
+ - SMPI is now tested with ~45 proxy apps from various sources, with none or
+   only minor patching needed: check https://github.com/simgrid/SMPI-proxy-apps
+ - Replay: The replay file has been re-written in C++.
+ - Replay: Tags used for messages sent via MPI_Send / MPI_Recv are now
+   supported. They are stored in the trace and used when replayed.
+ - Basic support of MPI_Cancel. Robustness not guaranteed.
+ - Support of MPI_Win_allocate_shared, MPI_Win_shared_query, MPI_Comm_split_type
+   (only for MPI_COMM_TYPE_SHARED).
+ - New option: smpi/privatize-libs, to add external shared libs to be privatized
+   by SMPI. They will be copied locally and loaded separately by each process.
+   Example --cfg=smpi/privatize-libs:"libgfortran.so.3;libscalapack.so".
+ - Tracing: add tracing for MPI_Start, Startall, Testall, Testany
+ - Interception of getopt, getopt_long and getopt_long_only calls to avoid issues
+   with internal index optind with multiple processes. Only works if MPI_Init has
+   already been called.
+ - Fortran: SMPI builds a mpi.mod file which should allow use of "use mpi"
+   syntax without preprocessing tricks.
 
 TRACE
  - Change --cfg=tracing/msg/vm to --cfg=tracing/vm as virtual machine
    behavior tracing is no longer limited to MSG
+ - TIT (Time Independent Traces): We finally support tags. Unfortunately,
+   this means that traces now need to be updated or re-obtained; both Irecv
+   and Isend lines in your traces have now in total 5 mandatory fields:
+      <rankid> <command> <to/from rankid> <tag> <size>
+   To update your traces, it suffices to add a 0 for the tag here.
+ - TIT now also supports waiting for a distinct request via MPI_Wait.
+   Wait/Test now wait for a specific request, not just the last one that was
+   issued. This unfortunately means another update, because we need to
+   identify which request you want to wait for. We do this via the
+   triplet (sender, receiver, tag), which needs to be added:
+      <rankid> <command> <sender> <receiver> <tag>
+ - Actions are now in lower case (e.g., "allReduce" becomes "allreduce").
+   New script simgrid_convert_TI_traces.py: upgrade your TI traces.
 
-S4U:
- - Introduced new function simgrid::s4u::Host::get_actor_count. This function
-   returns the number of actors running on a specific host.
+MSG
+ - The deprecation of MSG is ongoing (but this should not impact you).
+   Many MSG functions are now simple wrappers on the C API of S4U. If
+   you wish to convert your code to S4U, find the S4U counterparts of
+   your MSG calls in src/msg/msg_legacy.cpp.
+ - MSG can still be used, but won't evolve anymore.
 
 Plugins:
- - Allow to run the Link energy plugin from the command line with 
+ - Allow to run the Link energy plugin from the command line with
    --cfg=plugin:link_energy
  - Rename Energy plugin into host_energy
  - Rename Load plugin into host_load
 
 simix:
  - Add parameter --cfg=simix/breakpoint to raise a SIGTRAP at given time.
-
-SMPI:
- - Replay: The replay file has been re-written in C++.
- - Replay: Tags used for messages sent via MPI_Send / MPI_Recv are now
-   supported. They are stored in the trace and used when replayed.
+ - kill simix::onDeadlock() that was somewhat dupplicating s4u::on_deadlock()
+ - Improve performance when handling timeouts of simix synchros.
 
 XBT:
  - Config: the C API is now deprecated (will be removed in 3.23), and
            the C++ API has been slightly improved.
 
+Other:
+ - Fix several build issues on OSX.
+ - Move simgrid_config.h to simgrid/config.h (old header still working)
+
 Fixed bugs:
  - #143: Setting a breakpoint at a given time
+ - #150: Inconsistent event names in SMPI replay
  - #258: daemonized actors hang after all non-daemonized actors have completed
  - #267: Linker error on unit_tmgr
- - #269: SMPI : tracing of MPI_Wait/all/any broken
+ - #269: SMPI: tracing of MPI_Wait/all/any broken
+ - SMPI: Fix various crashes with combined use of MPI_PROC_NULL and MPI_IGNORE_STATUS 
 
 ----------------------------------------------------------------------------
 
@@ -133,7 +186,9 @@ SimGrid (3.19) Released March 20 2018
  Fixed bugs:
  - #194: Feature request: simgrid::s4u::Comm::test_any()
  - #245: migrating an actor does not migrate its execution
+ - #253: Feature Request: expose clusters as objects
  - #254: Something seems wrong with s4u::Actor::kill(aid_t)
+ - #255: Tesh broken on Windows
  - #256: Modernize FindSimGrid.cmake
  - #257: Fix (ab)use of CMake install
 
@@ -185,7 +240,7 @@ SimGrid (3.18) Released December 24 2017
  Virtual Machines
  - Live migration is getting moved to a plugin. Dirty page tracking is
    the first part of this plugin. This imply that VM migration is now
-   only possible if one this function is called :
+   only possible if one this function is called:
     - C/MSG: MSG_vm_live_migration_plugin_init()
     - C/C++: sg_vm_live_migration_plugin_init()
     - Java:  Msg.liveMigrationInit()
@@ -336,12 +391,12 @@ SimGrid (3.16) Released June 22. 2017.
  SMPI
   - New algorithm to privatize globals: dlopen, with dynamic loading tricks
   - New option: smpi/keep-temps to not cleanup temp files
-  - New option : smpi/shared-malloc-blocksize . Relevant only when global shared
+  - New option: smpi/shared-malloc-blocksize . Relevant only when global shared
     mallocs mode is used, allows to change the size of the fake file used
     (default 1MB), to potentially limit the number of mappings for large runs.
   - Support for sparse privatized malloc with SMPI_PARTIAL_SHARED_MALLOC()
   - Fortran ifort and flang compilers support
-  - New RMA calls supported (experimental) :
+  - New RMA calls supported (experimental):
       - MPI_Win_allocate, MPI_Win_create_dynamic, MPI_Win_attach
       - MPI_Win_detach, MPI_Win_set_info, MPI_Win_get_info
       - MPI_Win_lock_all, MPI_Win_unlock_all, MPI_Win_flush
@@ -502,9 +557,9 @@ SimGrid (3.14) Released December 24. 2016
 
  * smpirun script should be (much) faster for large deployments.
 
- * SMPI tracing : fixed issue with poor matching of send/receives.
+ * SMPI tracing: fixed issue with poor matching of send/receives.
 
- * Replay : Fix broken waitall
+ * Replay: Fix broken waitall
 
  New functions and features
  * MSG_parallel_task_execute_with_timeout, to timeout computations.
@@ -756,7 +811,7 @@ SimGrid (3.12) stable; urgency=low
 
  SMPI:
  * New functions
-   - Onesided early support for : MPI_Win_(create, free, fence, get_name, set_name, get_group), MPI_Get, MPI_Put, MPI_Accumulate, MPI_Alloc_mem, MPI_Free_mem.
+   - Onesided early support for: MPI_Win_(create, free, fence, get_name, set_name, get_group), MPI_Get, MPI_Put, MPI_Accumulate, MPI_Alloc_mem, MPI_Free_mem.
    - MPI_Keyval*, MPI_Attr* functions, as well as MPI_Comm_attr*, MPI_Type_attr* variants (C only, no Fortran support yet)
    - MPI_Type_set_name, MPI_Type_get_name
    - MPI_*_c2f and MPI_*_f2c functions
@@ -765,13 +820,13 @@ SimGrid (3.12) stable; urgency=low
    - Activate a lot of new tests from the mpich 3 testsuite
  * Features
    - Constant times can be injected inside MPI_Wtime and MPI_Test through options smpi/wtime and smpi/test
-   - InfiniBand network model added : Based on the works of Jerome Vienne
+   - InfiniBand network model added: Based on the works of Jerome Vienne
      http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf
    - When smpi/display_timing is set, also display global simulation time and application times
    - Have smpirun, smpicc and friends display the simgrid git hash version on --git-version
  * Collective communications
    - SMP-aware algorithms are now dynamically handled. An internal communicator is created for each node, and an external one to handle communications between "leaders" of each node
-   - MVAPICH2 (1.9) collective algorithms selector : normal and SMP algorithms are handled, and selection logic is based on the one used on TACC's Stampede cluster (https://www.tacc.utexas.edu/stampede/).
+   - MVAPICH2 (1.9) collective algorithms selector: normal and SMP algorithms are handled, and selection logic is based on the one used on TACC's Stampede cluster (https://www.tacc.utexas.edu/stampede/).
    - Support for Rabenseifner Reduce/Allreduce algorithms (https://fs.hlrs.de/projects/par/mpi//myreduce.html)
  * Replay
    - Replay now uses algorithms from wanted collective selector
@@ -779,7 +834,7 @@ SimGrid (3.12) stable; urgency=low
    - Memory occupation of replay should now be contained (temporary buffers allocated in collective algorithms should be shared between processes)
    - Replay can now replay several traces at the same time (check examples/smpi/replay_multiple example), to simulate interactions between several applications on a given platform. User can specify the start time of each instance. This should also allow replay + actual applications to run.
  * Bug fixes
-   - [#17799] : have mpi_group_range_incl and mpi_group_range_excl better test some corner cases
+   - [#17799]: have mpi_group_range_incl and mpi_group_range_excl better test some corner cases
    - Correctly use loopback on fat-tree clusters
    - Asynchronous small messages shouldn't trigger deadlocks anymore
  * Energy/DVFS cleanup and improvement
@@ -805,7 +860,7 @@ SimGrid (3.12) stable; urgency=low
   * New functions
    - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use
    - Add a xbt wrapper for simcall_mutex_trylock (asked in [#17878])
-   - Add two new log appenders : rollfile and splitfile. Patch by Fabien Chaix.
+   - Add two new log appenders: rollfile and splitfile. Patch by Fabien Chaix.
    - xbt_dirname and xbt_basename for non-POSIX systems
  MC
   * The model checker now runs as a separate process.
@@ -906,18 +961,18 @@ SimGrid (3.11) stable; urgency=low
    one node.
  * Collective communication algorithms should not crash if used with
    improper number of nodes and report the error.
- * SMPI now partially supports MPI_Topologies : MPI_Cart_create, MPI_Cart_shift,
+ * SMPI now partially supports MPI_Topologies: MPI_Cart_create, MPI_Cart_shift,
    MPI_Cart_rank, MPI_Cart_get, MPI_Cart_coords, MPI_Cartdim_get,
    MPI_Dims_create, MPI_Cart_sub are supported.
  * New interface to use SMPI programmatically (still depends on MSG for
-   some parts, see examples/smpi/smpi_msg_masterslave) :
+   some parts, see examples/smpi/smpi_msg_masterslave):
    - SMPI_app_instance_register(const char *name, xbt_main_func_t code,
         int num_processes)
    - SMPI_init()
    - SMPI_finalize();
  * Global variables privatization in MPI executables is now performed at runtime
    with the option smpi/privatize_global_variables (default:no).
-   Limitations : Linux/BSD only, with mmap enabled. Global variables inside
+   Limitations: Linux/BSD only, with mmap enabled. Global variables inside
    dynamic libraries loaded by the application are not privatized (static
    linking with these libraries is advised in this case)
 
@@ -992,7 +1047,7 @@ SimGrid (3.10) stable; urgency=low
    - allows to select one in particular with --cfg=smpi/coll_name:algorithm
    - allows to use the decision logic of OpenMPI(1.7) or MPICH(3.0.4) by setting
      --cfg=smpi/coll_selector:(mpich/ompi)
- * Support for new functions : MPI_Issend, MPI_Ssend, Commutative operations in
+ * Support for new functions: MPI_Issend, MPI_Ssend, Commutative operations in
    Reduce
  * Add a --cfg:tracing/smpi/internals option, to trace internal communications
    happening inside a collective SMPI call.
@@ -1203,7 +1258,7 @@ SimGrid (3.8) stable; urgency=low
    by a SD_TASK_COMM_E2E typed task. This rate depends on both the nominal
    bandwidth on the route onto which the task is  scheduled and the amount of
    data to transfer.
-   To divide the nominal bandwidth by 2, the rate then has to be :
+   To divide the nominal bandwidth by 2, the rate then has to be:
                      rate = bandwidth/(2*amount)
  * Compute tasks that have failed can now be rescheduled and executed again
    (from their beginning)
@@ -2279,7 +2334,7 @@ SimGrid (3.3.2) stable; urgency=low
       action_free ~> action_unref
       action_change_state ~> action_state_set
       action_get_state    ~> action_state_get
-    - Change model methods into functions :
+    - Change model methods into functions:
       (model)->common_public->action_use  ~> surf_action_ref
 
   * Implement a generic resource; use it as ancestor to specific ones
@@ -2710,7 +2765,7 @@ SimGrid (3.1) stable; urgency=high
   * After a (long ?) discussion on simgrid-devel, we have decided that the
     convention we had on units was stupid. That is why it has been decided
     to move from (MBits, MFlops, seconds) to (Bits, Flops, seconds).
-    WARNING : This means that all previous platform files will not work as
+    WARNING: This means that all previous platform files will not work as
     such with this version! A warning is issued to ask users to update
     their files. [AL]
     A conversion script can be found in the contrib module of the CVS, under
@@ -3171,7 +3226,7 @@ SimGrid (2.90) unstable; urgency=low
   * REVOLUTION 1: The SimGrid project has merged with the GRAS project
     lead by Martin Quinson. As a consequence SimGrid gains a lot in
     portability, speed, and a lot more but you'll figure it out later.
-    SimGrid now comprises 3 different projects : MSG, GRAS and SMPI.
+    SimGrid now comprises 3 different projects: MSG, GRAS and SMPI.
     I wanted to release the new MSG as soon as possible and I have
     broken GRAS, which is the reason why, for now, only MSG is fully
     functional. A laconic description of these projects is available
@@ -3186,7 +3241,7 @@ SimGrid (2.90) unstable; urgency=low
 
   * REVOLUTION 3: I have tried to change a little as possible the API of
     MSG but a few things really had to disappear. The main differences
-    with the previous version are :
+    with the previous version are:
        1) no more m_links_t and the corresponding functions. Platforms are
          directly read from a XML description and cannot be hard-coded
          anymore. The same format is used for application deployment

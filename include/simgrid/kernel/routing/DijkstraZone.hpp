@@ -33,13 +33,17 @@ namespace routing {
  */
 class XBT_PRIVATE DijkstraZone : public RoutedZone {
 public:
-  DijkstraZone(NetZone* father, std::string name, bool cached);
+  DijkstraZone(NetZoneImpl* father, std::string name, bool cached);
   void seal() override;
 
   ~DijkstraZone() override;
-  xbt_node_t routeGraphNewNode(int id, int graph_id);
-  xbt_node_t nodeMapSearch(int id);
-  void newRoute(int src_id, int dst_id, RouteCreationArgs* e_route);
+
+private:
+  xbt_node_t route_graph_new_node(int id, int graph_id);
+  xbt_node_t node_map_search(int id);
+  void new_route(int src_id, int dst_id, RouteCreationArgs* e_route);
+
+public:
   /* For each vertex (node) already in the graph,
    * make sure it also has a loopback link; this loopback
    * can potentially already be in the graph, and in that

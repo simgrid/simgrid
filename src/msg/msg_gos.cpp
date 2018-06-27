@@ -850,19 +850,6 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
 }
 
 /** \ingroup msg_task_usage
- * \brief Check if there is a communication going on in a mailbox.
- *
- * \param alias the name of the mailbox to be considered
- *
- * \return Returns 1 if there is a communication, 0 otherwise
- */
-int MSG_task_listen(const char *alias)
-{
-  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::by_name(alias);
-  return mbox->listen() ? 1 : 0;
-}
-
-/** \ingroup msg_task_usage
  * \brief Look if there is a communication on a mailbox and return the PID of the sender process.
  *
  * \param alias the name of the mailbox to be considered

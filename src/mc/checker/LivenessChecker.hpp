@@ -16,7 +16,7 @@
 
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_state.hpp"
-#include <simgrid_config.h>
+#include <simgrid/config.h>
 #include <xbt/automaton.h>
 #include <xbt/base.h>
 

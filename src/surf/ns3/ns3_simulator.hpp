@@ -24,13 +24,13 @@ public:
 };
 
 XBT_PUBLIC void ns3_initialize(std::string TcpProtocol);
-XBT_PUBLIC void ns3_simulator(double maxSeconds);
+XBT_PUBLIC void ns3_simulator(double max_seconds);
 XBT_PUBLIC void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat);
 XBT_PUBLIC void ns3_add_cluster(const char* id, double bw, double lat);
 
 class XBT_PRIVATE SgFlow {
 public:
-  SgFlow(uint32_t totalBytes, simgrid::kernel::resource::NetworkNS3Action* action);
+  SgFlow(uint32_t total_bytes, simgrid::kernel::resource::NetworkNS3Action* action);
 
   // private:
   std::uint32_t bufferedBytes_ = 0;
@@ -43,10 +43,10 @@ public:
 
 void StartFlow(ns3::Ptr<ns3::Socket> sock, const char* to, uint16_t port_number);
 
-static inline std::string transformSocketPtr(ns3::Ptr<ns3::Socket> localSocket)
+static inline std::string transformSocketPtr(ns3::Ptr<ns3::Socket> local_socket)
 {
   std::stringstream sstream;
-  sstream << localSocket;
+  sstream << local_socket;
   return sstream.str();
 }
 

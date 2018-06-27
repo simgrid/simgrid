@@ -18,7 +18,8 @@ namespace mc {
  *  in things like waitany and for associating a given value of MC_random()
  *  calls.
  */
-struct Transition {
+class Transition {
+public:
   int pid = 0;
 
   /* Which transition was executed for this simcall

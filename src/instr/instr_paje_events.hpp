@@ -66,8 +66,8 @@ public:
 
 class StateEvent : public PajeEvent {
   EntityValue* value;
-  std::string filename = "(null)";
 #if HAVE_SMPI
+  std::string filename = "(null)";
   int linenumber       = -1;
 #endif
   TIData* extra_;

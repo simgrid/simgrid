@@ -51,7 +51,7 @@ enum trace_type {
 class CpuTiTmgr {
 public:
   CpuTiTmgr(trace_type type, double value) : type_(type), value_(value){};
-  CpuTiTmgr(tmgr_trace_t speedTrace, double value);
+  CpuTiTmgr(tmgr_trace_t speed_trace, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
   ~CpuTiTmgr();
@@ -113,7 +113,7 @@ public:
 
   bool is_used() override;
   CpuAction *execution_start(double size) override;
-  simgrid::kernel::resource::Action* execution_start(double size, int requestedCores) override
+  simgrid::kernel::resource::Action* execution_start(double size, int requested_cores) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;

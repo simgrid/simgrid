@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid_config.h"
 #include "src/instr/instr_private.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.hpp"

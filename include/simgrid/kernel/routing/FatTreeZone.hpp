@@ -98,7 +98,7 @@ public:
  */
 class XBT_PRIVATE FatTreeZone : public ClusterZone {
 public:
-  explicit FatTreeZone(NetZone* father, std::string name);
+  explicit FatTreeZone(NetZoneImpl* father, std::string name);
   ~FatTreeZone() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 
@@ -115,7 +115,7 @@ public:
    */
   void parse_specific_arguments(ClusterCreationArgs* cluster) override;
   void add_processing_node(int id);
-  void generate_dot_file(const std::string& filename = "fatTree.dot") const;
+  void generate_dot_file(const std::string& filename = "fat_tree.dot") const;
 
 private:
   // description of a PGFT (TODO : better doc)
@@ -132,12 +132,12 @@ private:
   ClusterCreationArgs* cluster_ = nullptr;
 
   void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
-  int getLevelPosition(const unsigned int level);
-  void generateLabels();
-  void generateSwitches();
-  int connectNodeToParents(FatTreeNode* node);
-  bool areRelated(FatTreeNode* parent, FatTreeNode* child);
-  bool isInSubTree(FatTreeNode* root, FatTreeNode* node);
+  int get_level_position(const unsigned int level);
+  void generate_labels();
+  void generate_switches();
+  int connect_node_to_parents(FatTreeNode* node);
+  bool are_related(FatTreeNode* parent, FatTreeNode* child);
+  bool is_in_sub_tree(FatTreeNode* root, FatTreeNode* node);
 };
 } // namespace routing
 } // namespace kernel

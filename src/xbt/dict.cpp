@@ -246,12 +246,6 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
   return nullptr;
 }
 
-/** @brief retrieve the key associated to that xbt_dictelm_t. */
-char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
-{
-  return elm->key;
-}
-
 /**
  * \brief Retrieve data from the dict (null-terminated key)
  *
@@ -394,12 +388,6 @@ int xbt_dict_length(xbt_dict_t dict)
   return dict->count;
 }
 
-/** @brief function to be used in xbt_dict_dump as long as the stored values are strings */
-void xbt_dict_dump_output_string(void *s)
-{
-  fputs((char*) s, stdout);
-}
-
 /**
  * \brief test if the dict is empty or not
  */
@@ -442,63 +430,6 @@ void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
   }
 }
 
-xbt_dynar_t all_sizes = nullptr;
-/** @brief shows some debugging info about the bucklet repartition */
-void xbt_dict_dump_sizes(xbt_dict_t dict)
-{
-  unsigned int count;
-  unsigned int size;
-
-  printf("Dict %p: %d bucklets, %d used cells (of %d) ", dict, dict->count, dict->fill, dict->table_size);
-
-  if (not dict) {
-    printf("\n");
-    return;
-  }
-  xbt_dynar_t sizes = xbt_dynar_new(sizeof(int), nullptr);
-
-  for (int i = 0; i < dict->table_size; i++) {
-    xbt_dictelm_t element = dict->table[i];
-    size = 0;
-    if (element) {
-      while (element != nullptr) {
-        size++;
-        element = element->next;
-      }
-    }
-    if (xbt_dynar_length(sizes) <= size) {
-      int prevsize = 1;
-      xbt_dynar_set(sizes, size, &prevsize);
-    } else {
-      int prevsize;
-      xbt_dynar_get_cpy(sizes, size, &prevsize);
-      prevsize++;
-      xbt_dynar_set(sizes, size, &prevsize);
-    }
-  }
-  if (not all_sizes)
-    all_sizes = xbt_dynar_new(sizeof(int), nullptr);
-
-  xbt_dynar_foreach(sizes, count, size) {
-    /* Copy values of this one into all_sizes */
-    int prevcount;
-    if (xbt_dynar_length(all_sizes) <= count) {
-      prevcount = size;
-      xbt_dynar_set(all_sizes, count, &prevcount);
-    } else {
-      xbt_dynar_get_cpy(all_sizes, count, &prevcount);
-      prevcount += size;
-      xbt_dynar_set(all_sizes, count, &prevcount);
-    }
-
-    /* Report current sizes */
-    if (count != 0 && size != 0)
-      printf("%uelm x %u cells; ", count, size);
-  }
-  printf("\n");
-  xbt_dynar_free(&sizes);
-}
-
 /**
  * Create the dict mallocators.
  * This is an internal XBT function called during the lib initialization.
@@ -520,24 +451,6 @@ void xbt_dict_postexit()
   if (dict_elm_mallocator != nullptr) {
     xbt_mallocator_free(dict_elm_mallocator);
     dict_elm_mallocator = nullptr;
-  }
-  if (all_sizes) {
-    unsigned int count;
-    int size;
-    double avg = 0;
-    int total_count = 0;
-    printf("Overall stats:");
-    xbt_dynar_foreach(all_sizes, count, size) {
-      if (count != 0 && size != 0) {
-        printf("%uelm x %d cells; ", count, size);
-        avg += count * size;
-        total_count += size;
-      }
-    }
-    if (total_count > 0)
-      printf("; %f elm per cell\n", avg / (double)total_count);
-    else
-      printf("; 0 elm per cell\n");
   }
 }
 

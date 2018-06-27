@@ -476,12 +476,12 @@ int console_AS_open(lua_State *L) {
  simgrid::kernel::routing::ZoneCreationArgs AS;
  AS.id = id;
  AS.routing = mode_int;
- simgrid::s4u::NetZone* new_as = sg_platf_new_Zone_begin(&AS);
+ simgrid::kernel::routing::NetZoneImpl* new_as = sg_platf_new_Zone_begin(&AS);
 
  /* Build a Lua representation of the new AS on the stack */
  lua_newtable(L);
- simgrid::s4u::NetZone** lua_as =
-     (simgrid::s4u::NetZone**)lua_newuserdata(L, sizeof(simgrid::s4u::NetZone*)); /* table userdatum */
+ simgrid::kernel::routing::NetZoneImpl** lua_as = (simgrid::kernel::routing::NetZoneImpl**)lua_newuserdata(
+     L, sizeof(simgrid::kernel::routing::NetZoneImpl*)); /* table userdatum */
  *lua_as = new_as;
  luaL_getmetatable(L, PLATF_MODULE_NAME); /* table userdatum metatable */
  lua_setmetatable(L, -2);                 /* table userdatum */

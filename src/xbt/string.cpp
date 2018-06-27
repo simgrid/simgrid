@@ -1,16 +1,14 @@
-/* Copyright (c) 2015-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdarg>
-#include <cstdio>
-
-#include <simgrid_config.h>
-
+#include <simgrid/config.h>
 #include <xbt/string.hpp>
 #include <xbt/sysdep.h>
+
+#include <cstdarg>
+#include <cstdio>
 
 namespace simgrid {
 namespace xbt {

@@ -17,6 +17,11 @@ void MSG_launch_application(const char* filename)
 {
   sg_engine_load_deployment(filename);
 }
+msg_error_t MSG_main()
+{
+  sg_engine_run();
+  return MSG_OK;
+}
 void MSG_function_register(const char* name, xbt_main_func_t code)
 {
   sg_engine_register_function(name, code);
@@ -29,6 +34,17 @@ double MSG_get_clock()
 {
   return sg_engine_get_clock();
 }
+
+/* ************************** Mailboxes ************************ */
+void MSG_mailbox_set_async(const char* alias)
+{
+  sg_mailbox_set_receiver(alias);
+}
+int MSG_task_listen(const char* alias)
+{
+  return sg_mailbox_listen(alias);
+}
+
 /* ************************** Actors *************************** */
 int MSG_process_get_PID(sg_actor_t actor)
 {

@@ -32,7 +32,7 @@ File::File(std::string fullpath, sg_host_t host, void* userdata) : fullpath_(ful
   size_t longest_prefix_length = 0;
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath.c_str(), host->get_cname());
 
-  for (auto const& mnt : host->getMountedStorages()) {
+  for (auto const& mnt : host->get_mounted_storages()) {
     XBT_DEBUG("See '%s'", mnt.first.c_str());
     mount_point_ = fullpath.substr(0, mnt.first.length());
 
@@ -246,7 +246,7 @@ int File::remote_copy(sg_host_t host, const char* fullpath)
   Host* dst_host;
   size_t longest_prefix_length = 0;
 
-  for (auto const& elm : host->getMountedStorages()) {
+  for (auto const& elm : host->get_mounted_storages()) {
     std::string mount_point = std::string(fullpath).substr(0, elm.first.size());
     if (mount_point == elm.first && elm.first.length() > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
@@ -492,7 +492,7 @@ xbt_dict_t sg_host_get_storage_content(sg_host_t host)
 {
   xbt_assert((host != nullptr), "Invalid parameters");
   xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
-  for (auto const& elm : host->getMountedStorages())
+  for (auto const& elm : host->get_mounted_storages())
     xbt_dict_set(contents, elm.first.c_str(), sg_storage_get_content(elm.second), nullptr);
 
   return contents;

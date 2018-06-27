@@ -23,7 +23,7 @@ namespace routing {
  */
 class XBT_PRIVATE FloydZone : public RoutedZone {
 public:
-  explicit FloydZone(NetZone* father, std::string name);
+  explicit FloydZone(NetZoneImpl* father, std::string name);
   ~FloydZone() override;
 
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;

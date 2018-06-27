@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-using namespace simgrid::kernel;
+namespace lmm = simgrid::kernel::lmm;
 
 #define PRINT_VAR(var) XBT_DEBUG(#var " = %g", (var)->get_value())
 #define SHOW_EXPR(expr) XBT_DEBUG(#expr " = %g",expr)

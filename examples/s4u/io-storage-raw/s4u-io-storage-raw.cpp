@@ -16,7 +16,7 @@ static void host()
 
   /* - Retrieve all mount points of current host */
   std::unordered_map<std::string, simgrid::s4u::Storage*> const& storage_list =
-      simgrid::s4u::Host::current()->getMountedStorages();
+      simgrid::s4u::Host::current()->get_mounted_storages();
 
   /* - For each disk mounted on host, display disk name and mount point */
   for (auto const& kv : storage_list)

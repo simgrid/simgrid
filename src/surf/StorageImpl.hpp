@@ -64,7 +64,7 @@ public:
 class StorageImpl : public kernel::resource::Resource, public PropertyHolder {
 public:
   /** @brief Storage constructor */
-  StorageImpl(kernel::resource::Model* model, std::string name, kernel::lmm::System* maxminSystem, double bread,
+  StorageImpl(kernel::resource::Model* model, std::string name, kernel::lmm::System* maxmin_system, double bread,
               double bwrite, std::string type_id, std::string content_name, sg_size_t size, std::string attach);
 
   ~StorageImpl() override;

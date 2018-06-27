@@ -26,21 +26,69 @@ public:
   std::vector<resource::LinkImpl*> links;
 };
 
-NetZoneImpl::NetZoneImpl(NetZone* father, std::string name) : NetZone(father, name)
+NetZoneImpl::NetZoneImpl(NetZoneImpl* father, std::string name) : piface_(this), father_(father), name_(name)
 {
   xbt_assert(nullptr == simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(name.c_str()),
              "Refusing to create a second NetZone called '%s'.", name.c_str());
 
-  netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, static_cast<NetZoneImpl*>(father));
+  netpoint_ = new NetPoint(name, NetPoint::Type::NetZone, father);
   XBT_DEBUG("NetZone '%s' created with the id '%u'", name.c_str(), netpoint_->id());
 }
 
 NetZoneImpl::~NetZoneImpl()
 {
+  for (auto const& nz : children_)
+    delete nz;
+
   for (auto const& kv : bypass_routes_)
     delete kv.second;
 
   simgrid::s4u::Engine::get_instance()->netpoint_unregister(netpoint_);
+}
+const char* NetZoneImpl::get_cname() const
+{
+  return name_.c_str();
+}
+NetZoneImpl* NetZoneImpl::get_father()
+{
+  return father_;
+}
+void NetZoneImpl::seal()
+{
+  sealed_ = true;
+}
+/** @brief Returns the list of direct children (no grand-children)
+ *
+ * This returns the internal data, no copy. Don't mess with it.
+ */
+std::vector<NetZoneImpl*>* NetZoneImpl::get_children()
+{
+  return &children_;
+}
+/** @brief Returns the list of the hosts found in this NetZone (not recursively)
+ *
+ * Only the hosts that are directly contained in this NetZone are retrieved,
+ * not the ones contained in sub-netzones.
+ */
+std::vector<s4u::Host*> NetZoneImpl::get_all_hosts()
+{
+  std::vector<s4u::Host*> res;
+  for (auto const& card : get_vertices()) {
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
+    if (host != nullptr)
+      res.push_back(host);
+  }
+  return res;
+}
+int NetZoneImpl::get_host_count()
+{
+  int count = 0;
+  for (auto const& card : get_vertices()) {
+    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
+    if (host != nullptr)
+      count++;
+  }
+  return count;
 }
 
 simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, std::vector<double>* speedPerPstate, int coreAmount,
@@ -62,6 +110,18 @@ simgrid::s4u::Host* NetZoneImpl::create_host(const char* name, std::vector<doubl
   simgrid::s4u::Host::on_creation(*res); // notify the signal
 
   return res;
+}
+
+int NetZoneImpl::add_component(kernel::routing::NetPoint* elm)
+{
+  vertices_.push_back(elm);
+  return vertices_.size() - 1; // The rank of the newly created object
+}
+void NetZoneImpl::add_route(kernel::routing::NetPoint* /*src*/, kernel::routing::NetPoint* /*dst*/,
+                            kernel::routing::NetPoint* /*gw_src*/, kernel::routing::NetPoint* /*gw_dst*/,
+                            std::vector<kernel::resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
+{
+  xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
 }
 
 void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
@@ -230,7 +290,7 @@ bool NetZoneImpl::get_bypass_route(routing::NetPoint* src, routing::NetPoint* ds
 
   /* (1) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
-  NetZone* current = src->get_englobing_zone();
+  NetZoneImpl* current = src->get_englobing_zone();
   while (current != nullptr) {
     path_src.push_back(static_cast<NetZoneImpl*>(current));
     current = current->father_;

@@ -29,9 +29,7 @@ inline void rankId_to_coords(int rankId, std::vector<unsigned int> dimensions, u
 namespace simgrid {
 namespace kernel {
 namespace routing {
-TorusZone::TorusZone(NetZone* father, std::string name) : ClusterZone(father, name)
-{
-}
+TorusZone::TorusZone(NetZoneImpl* father, std::string name) : ClusterZone(father, name) {}
 
 void TorusZone::create_links_for_node(ClusterCreationArgs* cluster, int id, int rank, unsigned int position)
 {

@@ -69,11 +69,9 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     if (size <= BLOCKSIZE / 2) { // Full block -> Fragment; no need to optimize for time
 
       result = mmalloc(mdp, size);
-      if (result != NULL) { // useless (mmalloc never returns NULL), but harmless
-        memcpy(result, ptr, requested_size);
-        mfree(mdp, ptr);
-        return (result);
-      }
+      memcpy(result, ptr, requested_size);
+      mfree(mdp, ptr);
+      return (result);
     }
 
     /* Full blocks -> Full blocks; see if we can hold it in place. */

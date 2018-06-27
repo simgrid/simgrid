@@ -132,8 +132,7 @@ class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<Actor> {
   static std::function<void()> wrap_task(F f, Args... args)
   {
     typedef decltype(f(std::move(args)...)) R;
-    auto task = std::make_shared<simgrid::xbt::Task<R()>>(
-      simgrid::xbt::makeTask(std::move(f), std::move(args)...));
+    auto task = std::make_shared<simgrid::xbt::Task<R()>>(simgrid::xbt::make_task(std::move(f), std::move(args)...));
     return [task] { (*task)(); };
   }
 
@@ -283,25 +282,25 @@ public:
   const char* get_property(const char* key);
   void set_property(const char* key, const char* value);
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
-      createActor(const char* name, s4u::Host* host, std::function<void()> code)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
+      const char* name, s4u::Host* host, std::function<void()> code)
   {
     return create(name, host, code);
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
-      createActor(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
-                  std::vector<std::string>* args)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
+      const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
+      std::vector<std::string>* args)
   {
     return create(name, host, code, args);
   }
   template <class F, class... Args, typename = typename std::result_of<F(Args...)>::type>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
-      createActor(const char* name, s4u::Host* host, F code, Args... args)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
+      const char* name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, code, std::move(args)...);
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr
-      createActor(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
+      const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
   {
     return create(name, host, function, args);
   }
@@ -329,7 +328,8 @@ public:
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_kill_time()") double getKillTime() { return get_kill_time(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::by_pid()") static ActorPtr byPid(aid_t pid) { return by_pid(pid); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all()") static void killAll() { kill_all(); }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(int resetPid)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(
+      int XBT_ATTRIB_UNUSED resetPid)
   {
     kill_all();
   }
@@ -431,8 +431,7 @@ XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_pid()") XBT_PUBLIC aid_t 
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_ppid()") XBT_PUBLIC aid_t getPpid();
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_host()") XBT_PUBLIC Host* getHost();
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_suspended()") XBT_PUBLIC bool isSuspended();
-XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC
-    void onExit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
 }
 
 /** @} */

@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_migration, "Messages specific for this s4
 
 static void worker(simgrid::s4u::Host* first, simgrid::s4u::Host* second)
 {
-  double flopAmount = first->getSpeed() * 5 + second->getSpeed() * 5;
+  double flopAmount = first->get_speed() * 5 + second->get_speed() * 5;
 
   XBT_INFO("Let's move to %s to execute %.2f Mflops (5sec on %s and 5sec on %s)", first->get_cname(), flopAmount / 1e6,
            first->get_cname(), second->get_cname());

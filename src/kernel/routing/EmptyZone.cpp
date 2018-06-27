@@ -15,9 +15,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-EmptyZone::EmptyZone(NetZone* father, std::string name) : NetZoneImpl(father, name)
-{
-}
+EmptyZone::EmptyZone(NetZoneImpl* father, std::string name) : NetZoneImpl(father, name) {}
 
 EmptyZone::~EmptyZone() = default;
 

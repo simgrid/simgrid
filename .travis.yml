@@ -13,13 +13,16 @@ compiler:
 #  - clang 
 addons:
   apt:
+    update: true
+    sources:
+    - sourceline: ppa:samuel-bachmann/boost # Get boost 1.60 for Trusty
     packages:
     - cmake
     - valgrind
     - default-jdk
     - gfortran
-    - libboost-dev
-    - libboost-all-dev
+    - libboost1.60-dev
+    - libboost1.60-all-dev
     - libdw-dev
     - libevent-dev
     - libunwind8-dev

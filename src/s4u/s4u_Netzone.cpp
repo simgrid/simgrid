@@ -21,21 +21,10 @@ simgrid::xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kern
 simgrid::xbt::signal<void(NetZone&)> NetZone::on_creation;
 simgrid::xbt::signal<void(NetZone&)> NetZone::on_seal;
 
-NetZone::NetZone(NetZone* father, std::string name) : father_(father), name_(name)
-{
-  children_ = new std::vector<NetZone*>();
-}
-
-void NetZone::seal()
-{
-  sealed_ = true;
-}
+NetZone::NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}
 
 NetZone::~NetZone()
 {
-  for (auto const& nz : *children_)
-    delete nz;
-  delete children_;
 }
 
 std::unordered_map<std::string, std::string>* NetZone::get_properties()
@@ -53,22 +42,26 @@ void NetZone::set_property(const char* key, const char* value)
   simgrid::simix::simcall([this, key, value] { properties_[key] = value; });
 }
 
-/** @brief Returns the list of direct children (no grand-children)
- *
- * This function returns the internal copy of the children, not a copy. Don't mess with it!
- */
-std::vector<NetZone*>* NetZone::get_children()
+/** @brief Returns the list of direct children (no grand-children) */
+std::vector<NetZone*> NetZone::get_children()
 {
-  return children_;
+  std::vector<NetZone*> res;
+  for (auto child : *(pimpl_->get_children()))
+    res.push_back(child->get_iface());
+  return res;
 }
 
+const std::string& NetZone::get_name() const
+{
+  return pimpl_->get_name();
+}
 const char* NetZone::get_cname() const
 {
-  return name_.c_str();
+  return pimpl_->get_cname();
 }
 NetZone* NetZone::get_father()
 {
-  return father_;
+  return pimpl_->get_father()->get_iface();
 }
 
 /** @brief Returns the list of the hosts found in this NetZone (not recursively)
@@ -78,18 +71,12 @@ NetZone* NetZone::get_father()
  */
 std::vector<Host*> NetZone::get_all_hosts()
 {
-  std::vector<Host*> res;
-  for (auto const& card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
-    if (host != nullptr)
-      res.push_back(host);
-  }
-  return res;
+  return pimpl_->get_all_hosts();
 }
 
 void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
 {
-  for (auto const& card : vertices_) {
+  for (auto const& card : pimpl_->get_vertices()) {
     s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
     if (host != nullptr)
       whereto->push_back(host);
@@ -98,28 +85,30 @@ void NetZone::getHosts(std::vector<s4u::Host*>* whereto)
 
 int NetZone::get_host_count()
 {
-  int count = 0;
-  for (auto const& card : vertices_) {
-    s4u::Host* host = simgrid::s4u::Host::by_name_or_null(card->get_name());
-    if (host != nullptr)
-      count++;
-  }
-  return count;
+  return pimpl_->get_host_count();
 }
 
 int NetZone::add_component(kernel::routing::NetPoint* elm)
 {
-  vertices_.push_back(elm);
-  return vertices_.size() - 1; // The rank of the newly created object
+  return pimpl_->add_component(elm);
 }
 
-void NetZone::add_route(kernel::routing::NetPoint* /*src*/, kernel::routing::NetPoint* /*dst*/,
-                        kernel::routing::NetPoint* /*gw_src*/, kernel::routing::NetPoint* /*gw_dst*/,
-                        std::vector<kernel::resource::LinkImpl*>& /*link_list*/, bool /*symmetrical*/)
+void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                        kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                        std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
 {
-  xbt_die("NetZone '%s' does not accept new routes (wrong class).", name_.c_str());
+  pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
 }
-
+void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                               kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                               std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+{
+  pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
+}
+std::vector<kernel::routing::NetPoint*> NetZone::getVertices()
+{
+  return pimpl_->get_vertices();
+}
 } // namespace s4u
 } // namespace simgrid
 
@@ -142,7 +131,7 @@ sg_netzone_t sg_zone_get_by_name(const char* name)
 
 void sg_zone_get_sons(sg_netzone_t netzone, xbt_dict_t whereto)
 {
-  for (auto const& elem : *netzone->get_children()) {
+  for (auto const& elem : netzone->get_children()) {
     xbt_dict_set(whereto, elem->get_cname(), static_cast<void*>(elem), nullptr);
   }
 }

@@ -32,13 +32,13 @@ void HostModel::ignore_empty_vm_in_pm_LMM()
     int active_tasks = cpu->get_constraint()->get_variable_amount();
 
     /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
-    int impact = std::min(active_tasks, ws_vm->getImpl()->get_core_amount());
+    int impact = std::min(active_tasks, ws_vm->get_impl()->get_core_amount());
 
     XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %d)", ws_vm, impact, active_tasks);
     if (impact > 0)
-      ws_vm->getImpl()->action_->set_priority(1. / impact);
+      ws_vm->get_impl()->action_->set_priority(1. / impact);
     else
-      ws_vm->getImpl()->action_->set_priority(0.);
+      ws_vm->get_impl()->action_->set_priority(0.);
   }
 }
 

@@ -83,8 +83,19 @@ public:
     return backtrace_;
   }
   int pid() const { return pid_; }
-  std::string const& processName() const { return procname_; }
-  ThrowPoint& throwPoint() { return throwpoint_; }
+  std::string const& process_name() const { return procname_; }
+  ThrowPoint& throw_point() { return throwpoint_; }
+
+  // deprecated
+  XBT_ATTRIB_DEPRECATED_v323("Please use WithContextException::process_name()") std::string const& processName() const
+  {
+    return process_name();
+  }
+  XBT_ATTRIB_DEPRECATED_v323("Please use WithContextException::throw_point()") ThrowPoint& throwPoint()
+  {
+    return throw_point();
+  }
+
 private:
   Backtrace backtrace_;
   std::string procname_; /**< Name of the process who thrown this */

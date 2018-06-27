@@ -159,7 +159,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  simgrid::kernel::routing::NetPoint::onCreation.connect([](simgrid::kernel::routing::NetPoint* pt) {
+  simgrid::kernel::routing::NetPoint::on_creation.connect([](simgrid::kernel::routing::NetPoint* pt) {
     pt->extension_set<NetPointNs3>(new NetPointNs3());
     XBT_VERB("SimGrid's %s is known as node %d within NS3", pt->get_cname(), pt->extension<NetPointNs3>()->node_num);
   });

@@ -51,7 +51,7 @@ static inline double euclidean_dist_comp(int index, std::vector<double>* src, st
   return (src_coord - dst_coord) * (src_coord - dst_coord);
 }
 
-static std::vector<double>* getCoordsFromNetpoint(NetPoint* np)
+static std::vector<double>* netpoint_get_coords(NetPoint* np)
 {
   simgrid::kernel::routing::vivaldi::Coords* coords = np->extension<simgrid::kernel::routing::vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
@@ -59,11 +59,9 @@ static std::vector<double>* getCoordsFromNetpoint(NetPoint* np)
   return &coords->coords;
 }
 
-VivaldiZone::VivaldiZone(NetZone* father, std::string name) : ClusterZone(father, name)
-{
-}
+VivaldiZone::VivaldiZone(NetZoneImpl* father, std::string name) : ClusterZone(father, name) {}
 
-void VivaldiZone::setPeerLink(NetPoint* netpoint, double bw_in, double bw_out, std::string coord)
+void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out, std::string coord)
 {
   xbt_assert(netpoint->get_englobing_zone() == this,
              "Cannot add a peer link to a netpoint that is not in this netzone");
@@ -115,8 +113,8 @@ void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArg
 
   /* Compute the extra latency due to the euclidean distance if needed */
   if (lat) {
-    std::vector<double>* srcCoords = getCoordsFromNetpoint(src);
-    std::vector<double>* dstCoords = getCoordsFromNetpoint(dst);
+    std::vector<double>* srcCoords = netpoint_get_coords(src);
+    std::vector<double>* dstCoords = netpoint_get_coords(dst);
 
     double euclidean_dist =
         sqrt(euclidean_dist_comp(0, srcCoords, dstCoords) + euclidean_dist_comp(1, srcCoords, dstCoords)) +

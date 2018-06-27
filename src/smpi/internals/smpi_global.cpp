@@ -15,6 +15,9 @@
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
+#if not defined(__APPLE__)
+#include <link.h>
+#endif
 #include <fstream>
 
 #if HAVE_SENDFILE
@@ -53,6 +56,7 @@ static int smpi_exit_status = 0;
 int smpi_universe_size = 0;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
+static std::vector<std::string> privatize_libs_paths;
 /**
  * Setting MPI_COMM_WORLD to MPI_COMM_UNINITIALIZED (it's a variable)
  * is important because the implementation of MPI_Comm checks
@@ -130,13 +134,6 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
   smpi_comm_copy_data_callback = callback;
 }
 
-static void print(std::vector<std::pair<size_t, size_t>> vec) {
-  std::fprintf(stderr, "{");
-  for (auto const& elt : vec) {
-    std::fprintf(stderr, "(0x%zx, 0x%zx),", elt.first, elt.second);
-  }
-  std::fprintf(stderr, "}\n");
-}
 static void memcpy_private(void* dest, const void* src, std::vector<std::pair<size_t, size_t>>& private_blocks)
 {
   for (auto const& block : private_blocks)
@@ -424,6 +421,7 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   return 0;
 }
 
+
 // TODO, remove the number of functions involved here
 static smpi_entry_point_type smpi_resolve_function(void* handle)
 {
@@ -444,7 +442,172 @@ static smpi_entry_point_type smpi_resolve_function(void* handle)
   return smpi_entry_point_type();
 }
 
-int smpi_main(const char* executable, int argc, char *argv[])
+static void smpi_copy_file(std::string src, std::string target, off_t fdin_size)
+{
+  int fdin = open(src.c_str(), O_RDONLY);
+  xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.", src.c_str());
+  int fdout = open(target.c_str(), O_CREAT | O_RDWR, S_IRWXU);
+  xbt_assert(fdout >= 0, "Cannot write into %s", target.c_str());
+
+  XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target.c_str());
+#if HAVE_SENDFILE
+  ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
+  xbt_assert(sent_size == fdin_size, "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
+             target.c_str(), sent_size, fdin_size, errno, strerror(errno));
+#else
+  const int bufsize = 1024 * 1024 * 4;
+  char buf[bufsize];
+  while (int got = read(fdin, buf, bufsize)) {
+    if (got == -1) {
+      xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
+    } else {
+      char* p  = buf;
+      int todo = got;
+      while (int done = write(fdout, p, todo)) {
+        if (done == -1) {
+          xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
+        } else {
+          p += done;
+          todo -= done;
+        }
+      }
+    }
+  }
+#endif
+  close(fdin);
+  close(fdout);
+}
+
+#if not defined(__APPLE__)
+static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
+{
+  char* libname = (char*)(data);
+  const char *path = info->dlpi_name;
+  if(strstr(path, libname)){
+    strncpy(libname, path, 512);
+    return 1;
+  }
+  
+  return 0;
+}
+#endif
+
+static void smpi_init_privatization_dlopen(const char* executable)
+{
+  std::string executable_copy = executable;
+
+  // Prepare the copy of the binary (get its size)
+  struct stat fdin_stat;
+  stat(executable_copy.c_str(), &fdin_stat);
+  off_t fdin_size         = fdin_stat.st_size;
+  static std::size_t rank = 0;
+
+  std::string libnames = simgrid::config::get_value<std::string>("smpi/privatize-libs");
+  if (not libnames.empty()) {
+    // split option
+    std::vector<std::string> privatize_libs;
+    boost::split(privatize_libs, libnames, boost::is_any_of(";"));
+
+    for (auto const& libname : privatize_libs) {
+      // load the library once to add it to the local libs, to get the absolute path
+      void* libhandle = dlopen(libname.c_str(), RTLD_LAZY);
+      // get library name from path
+      char fullpath[512] = {'\0'};
+      strcpy(fullpath, libname.c_str());
+#if not defined(__APPLE__)
+      int ret = dl_iterate_phdr(visit_libs, fullpath);
+      if (ret == 0)
+        xbt_die("Can't find a linked %s - check the setting you gave to smpi/privatize-libs", fullpath);
+      else
+        XBT_DEBUG("Extra lib to privatize found : %s", fullpath);
+#else
+      xbt_die("smpi/privatize-libs is not (yet) compatible with OSX");
+#endif
+      privatize_libs_paths.push_back(fullpath);
+      dlclose(libhandle);
+    }
+  }
+
+  simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
+    return std::function<void()>([executable_copy, fdin_size, args] {
+
+      // Copy the dynamic library:
+      std::string target_executable =
+          executable_copy + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
+
+      smpi_copy_file(executable_copy, target_executable, fdin_size);
+      // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
+      std::string target_lib;
+      for (auto const& libpath : privatize_libs_paths) {
+        // if we were given a full path, strip it
+        size_t index = libpath.find_last_of("/\\");
+        std::string libname;
+        if (index != std::string::npos)
+          libname = libpath.substr(index + 1);
+
+        if (not libname.empty()) {
+          // load the library to add it to the local libs, to get the absolute path
+          struct stat fdin_stat2;
+          stat(libpath.c_str(), &fdin_stat2);
+          off_t fdin_size2 = fdin_stat2.st_size;
+
+          // Copy the dynamic library, the new name must be the same length as the old one
+          // just replace the name with 7 digits for the rank and the rest of the name.
+          unsigned int pad = 7;
+          if (libname.length() < pad)
+            pad = libname.length();
+          target_lib =
+              std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
+          XBT_DEBUG("copy lib %s to %s, with size %lld", libpath.c_str(), target_lib.c_str(), (long long)fdin_size2);
+          smpi_copy_file(libpath, target_lib, fdin_size2);
+
+          std::string sedcommand = "sed -i -e 's/" + libname + "/" + target_lib + "/g' " + target_executable;
+          int ret                = system(sedcommand.c_str());
+          if (ret != 0)
+            xbt_die("error while applying sed command %s \n", sedcommand.c_str());
+        }
+      }
+
+      rank++;
+      // Load the copy and resolve the entry point:
+      void* handle    = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
+      int saved_errno = errno;
+      if (simgrid::config::get_value<bool>("smpi/keep-temps") == false) {
+        unlink(target_executable.c_str());
+        if (not target_lib.empty())
+          unlink(target_lib.c_str());
+      }
+      if (handle == nullptr)
+        xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno, strerror(saved_errno));
+      smpi_entry_point_type entry_point = smpi_resolve_function(handle);
+      if (not entry_point)
+        xbt_die("Could not resolve entry point");
+      smpi_run_entry_point(entry_point, args);
+    });
+  };
+}
+
+static void smpi_init_privatization_no_dlopen(const char* executable)
+{
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
+    smpi_prepare_global_memory_segment();
+  // Load the dynamic library and resolve the entry point:
+  void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
+  if (handle == nullptr)
+    xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable, dlerror(), errno, strerror(errno));
+  smpi_entry_point_type entry_point = smpi_resolve_function(handle);
+  if (not entry_point)
+    xbt_die("main not found in %s", executable);
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
+    smpi_backup_global_memory_segment();
+
+  // Execute the same entry point for each simulated process:
+  simix_global->default_function = [entry_point](std::vector<std::string> args) {
+    return std::function<void()>([entry_point, args] { smpi_run_entry_point(entry_point, args); });
+  };
+}
+
+int smpi_main(const char* executable, int argc, char* argv[])
 {
   srand(SMPI_RAND_SEED);
 
@@ -457,7 +620,7 @@ int smpi_main(const char* executable, int argc, char *argv[])
   TRACE_global_init();
 
   SIMIX_global_init(&argc, argv);
-  MSG_init(&argc,argv);
+  MSG_init(&argc, argv);
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
@@ -472,94 +635,10 @@ int smpi_main(const char* executable, int argc, char *argv[])
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
-  if (smpi_privatize_global_variables == SmpiPrivStrategies::DLOPEN) {
-
-    std::string executable_copy = executable;
-
-    // Prepare the copy of the binary (get its size)
-    struct stat fdin_stat;
-    stat(executable_copy.c_str(), &fdin_stat);
-    off_t fdin_size = fdin_stat.st_size;
-    static std::size_t rank = 0;
-
-    simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
-      return std::function<void()>([executable_copy, fdin_size, args] {
-
-        // Copy the dynamic library:
-        std::string target_executable = executable_copy
-          + "_" + std::to_string(getpid())
-          + "_" + std::to_string(rank++) + ".so";
-
-        int fdin = open(executable_copy.c_str(), O_RDONLY);
-        xbt_assert(fdin >= 0, "Cannot read from %s. Please make sure that the file exists and is executable.",
-                   executable_copy.c_str());
-        int fdout = open(target_executable.c_str(), O_CREAT | O_RDWR, S_IRWXU);
-        xbt_assert(fdout >= 0, "Cannot write into %s", target_executable.c_str());
-
-        XBT_DEBUG("Copy %ld bytes into %s", static_cast<long>(fdin_size), target_executable.c_str());
-#if HAVE_SENDFILE
-        ssize_t sent_size = sendfile(fdout, fdin, NULL, fdin_size);
-        xbt_assert(sent_size == fdin_size,
-                   "Error while copying %s: only %zd bytes copied instead of %ld (errno: %d -- %s)",
-                   target_executable.c_str(), sent_size, fdin_size, errno, strerror(errno));
-#else
-        const int bufsize = 1024 * 1024 * 4;
-        char buf[bufsize];
-        while (int got = read(fdin, buf, bufsize)) {
-          if (got == -1) {
-            xbt_assert(errno == EINTR, "Cannot read from %s", executable_copy.c_str());
-          } else {
-            char* p  = buf;
-            int todo = got;
-            while (int done = write(fdout, p, todo)) {
-              if (done == -1) {
-                xbt_assert(errno == EINTR, "Cannot write into %s", target_executable.c_str());
-              } else {
-                p += done;
-                todo -= done;
-              }
-            }
-          }
-        }
-#endif
-        close(fdin);
-        close(fdout);
-
-        // Load the copy and resolve the entry point:
-        void* handle = dlopen(target_executable.c_str(), RTLD_LAZY | RTLD_LOCAL | RTLD_DEEPBIND);
-        int saved_errno = errno;
-        if (simgrid::config::get_value<bool>("smpi/keep-temps") == false)
-          unlink(target_executable.c_str());
-        if (handle == nullptr)
-          xbt_die("dlopen failed: %s (errno: %d -- %s)", dlerror(), saved_errno, strerror(saved_errno));
-        smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-        if (not entry_point)
-          xbt_die("Could not resolve entry point");
-
-        smpi_run_entry_point(entry_point, args);
-      });
-    };
-  }
-  else {
-    if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
-      smpi_prepare_global_memory_segment();
-    // Load the dynamic library and resolve the entry point:
-    void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
-    if (handle == nullptr)
-      xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable, dlerror(), errno, strerror(errno));
-    smpi_entry_point_type entry_point = smpi_resolve_function(handle);
-    if (not entry_point)
-      xbt_die("main not found in %s", executable);
-    if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
-      smpi_backup_global_memory_segment();
-
-    // Execute the same entry point for each simulated process:
-    simix_global->default_function = [entry_point](std::vector<std::string> args) {
-      return std::function<void()>([entry_point, args] {
-        smpi_run_entry_point(entry_point, args);
-      });
-    };
-  }
+  if (smpi_privatize_global_variables == SmpiPrivStrategies::DLOPEN)
+    smpi_init_privatization_dlopen(executable);
+  else
+    smpi_init_privatization_no_dlopen(executable);
 
   SMPI_init();
   SIMIX_launch_application(argv[2]);

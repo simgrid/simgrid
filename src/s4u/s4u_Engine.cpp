@@ -249,6 +249,10 @@ std::vector<ActorPtr> Engine::get_filtered_actors(std::function<bool(ActorPtr)> 
 
 void Engine::run()
 {
+  /* Clean IO before the run */
+  fflush(stdout);
+  fflush(stderr);
+
   if (MC_is_active()) {
     MC_run();
   } else {
@@ -259,13 +263,13 @@ void Engine::run()
 /** @brief Retrieve the root netzone, containing all others */
 s4u::NetZone* Engine::get_netzone_root()
 {
-  return pimpl->netzone_root_;
+  return pimpl->netzone_root_->get_iface();
 }
 /** @brief Set the root netzone, containing all others. Once set, it cannot be changed. */
 void Engine::set_netzone_root(s4u::NetZone* netzone)
 {
   xbt_assert(pimpl->netzone_root_ == nullptr, "The root NetZone cannot be changed once set");
-  pimpl->netzone_root_ = static_cast<kernel::routing::NetZoneImpl*>(netzone);
+  pimpl->netzone_root_ = netzone->get_impl();
 }
 
 static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char* name)
@@ -273,7 +277,7 @@ static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char
   if (not strcmp(current->get_cname(), name))
     return current;
 
-  for (auto const& elem : *(current->get_children())) {
+  for (auto const& elem : current->get_children()) {
     simgrid::s4u::NetZone* tmp = netzone_by_name_recursive(elem, name);
     if (tmp != nullptr) {
       return tmp;
@@ -346,7 +350,10 @@ void sg_engine_load_deployment(const char* file)
 {
   simgrid::s4u::Engine::get_instance()->load_deployment(file);
 }
-
+void sg_engine_run()
+{
+  simgrid::s4u::Engine::get_instance()->run();
+}
 void sg_engine_register_function(const char* name, int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);

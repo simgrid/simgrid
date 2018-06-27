@@ -14,9 +14,11 @@
 #include <vector>
 
 #include <elfutils/libdw.h>
+#include <libunwind.h>
 
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/AddressSpace.hpp"
+#include "src/mc/mc_dwarf.hpp"
+#include "src/mc/mc_forward.hpp"
 
 /** @file DwarfExpression.hpp
  *

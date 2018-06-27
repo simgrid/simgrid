@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,11 +6,9 @@
 #ifndef SIMGRID_MC_CHANNEL_HPP
 #define SIMGRID_MC_CHANNEL_HPP
 
-#include <unistd.h>
+#include "src/mc/remote/mc_protocol.h"
 
 #include <type_traits>
-
-#include "src/mc/remote/mc_protocol.h"
 
 namespace simgrid {
 namespace mc {

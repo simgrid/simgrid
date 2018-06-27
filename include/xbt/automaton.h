@@ -1,5 +1,4 @@
-/* Copyright (c) 2011-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,10 +7,6 @@
 #define XBT_AUTOMATON_H
 
 #include <xbt/dynar.h>
-#include <xbt/sysdep.h>
-#include <xbt/graph.h>
-#include <stdlib.h>
-#include <string.h>
 
 SG_BEGIN_DECL()
 

@@ -14,11 +14,10 @@
 #ifndef SIMGRID_MODELCHECKER_H
 #define SIMGRID_MODELCHECKER_H
 
-#include <stddef.h> /* size_t */
-
-#include <simgrid_config.h> /* SIMGRID_HAVE_MC ? */
-
+#include <simgrid/config.h> /* SIMGRID_HAVE_MC ? */
 #include <xbt/base.h>
+
+#include <stddef.h> /* size_t */
 
 SG_BEGIN_DECL()
 

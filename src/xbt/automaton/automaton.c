@@ -8,6 +8,7 @@
 #include "xbt/automaton.h"
 #include <stdio.h> /* printf */
 #include <xbt/log.h>
+#include <xbt/sysdep.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_automaton, xbt, "Automaton");
 

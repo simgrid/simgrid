@@ -44,7 +44,7 @@ static void workerLockGuard(simgrid::s4u::MutexPtr mutex, int& result)
 static void master()
 {
   int result = 0;
-  simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::createMutex();
+  simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::create();
 
   for (int i = 0; i < NB_ACTOR * 2 ; i++) {
     // To create a worker use the static method simgrid::s4u::Actor.
