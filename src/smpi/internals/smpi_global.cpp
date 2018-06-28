@@ -585,17 +585,17 @@ static void smpi_init_privatization_dlopen(std::string executable)
   };
 }
 
-static void smpi_init_privatization_no_dlopen(const char* executable)
+static void smpi_init_privatization_no_dlopen(std::string executable)
 {
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_prepare_global_memory_segment();
   // Load the dynamic library and resolve the entry point:
-  void* handle = dlopen(executable, RTLD_LAZY | RTLD_LOCAL);
+  void* handle = dlopen(executable.c_str(), RTLD_LAZY | RTLD_LOCAL);
   if (handle == nullptr)
-    xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable, dlerror(), errno, strerror(errno));
+    xbt_die("dlopen failed for %s: %s (errno: %d -- %s)", executable.c_str(), dlerror(), errno, strerror(errno));
   smpi_entry_point_type entry_point = smpi_resolve_function(handle);
   if (not entry_point)
-    xbt_die("main not found in %s", executable);
+    xbt_die("main not found in %s", executable.c_str());
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_backup_global_memory_segment();
 
