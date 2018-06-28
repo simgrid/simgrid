@@ -44,7 +44,6 @@ extern int process_count; // How many processes have been allocated over all ins
 /** \ingroup smpi_simulation
  * \brief Registers a running instance of a MPI program.
  *
- * FIXME : remove MSG from the loop at some point.
  * \param name the reference name of the function.
  * \param code the main mpi function (must have a int ..(int argc, char *argv[])) prototype
  * \param num_processes the size of the instance we want to deploy
