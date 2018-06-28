@@ -494,11 +494,9 @@ static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 
 static void smpi_init_privatization_dlopen(std::string executable)
 {
-  std::string executable_copy = executable;
-
   // Prepare the copy of the binary (get its size)
   struct stat fdin_stat;
-  stat(executable_copy.c_str(), &fdin_stat);
+  stat(executable.c_str(), &fdin_stat);
   off_t fdin_size         = fdin_stat.st_size;
   static std::size_t rank = 0;
 
@@ -528,14 +526,14 @@ static void smpi_init_privatization_dlopen(std::string executable)
     }
   }
 
-  simix_global->default_function = [executable_copy, fdin_size](std::vector<std::string> args) {
-    return std::function<void()>([executable_copy, fdin_size, args] {
+  simix_global->default_function = [executable, fdin_size](std::vector<std::string> args) {
+    return std::function<void()>([executable, fdin_size, args] {
 
       // Copy the dynamic library:
       std::string target_executable =
-          executable_copy + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
+          executable + "_" + std::to_string(getpid()) + "_" + std::to_string(rank) + ".so";
 
-      smpi_copy_file(executable_copy, target_executable, fdin_size);
+      smpi_copy_file(executable, target_executable, fdin_size);
       // if smpi/privatize-libs is set, duplicate pointed lib and link each executable copy to a different one.
       std::string target_lib;
       for (auto const& libpath : privatize_libs_paths) {
