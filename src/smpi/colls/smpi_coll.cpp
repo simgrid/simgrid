@@ -98,7 +98,7 @@ void Colls::set_collectives(){
   if (selector_name.empty())
     selector_name = "default";
 
-  std::map<std::string, std::function<void(std::string)>> setter_callbacks = {
+  std::pair<std::string, std::function<void(std::string)>> setter_callbacks[] = {
       {"gather", &Colls::set_gather},         {"allgather", &Colls::set_allgather},
       {"allgatherv", &Colls::set_allgatherv}, {"allreduce", &Colls::set_allreduce},
       {"alltoall", &Colls::set_alltoall},     {"alltoallv", &Colls::set_alltoallv},
@@ -106,26 +106,13 @@ void Colls::set_collectives(){
       {"scatter", &Colls::set_scatter},       {"bcast", &Colls::set_bcast},
       {"barrier", &Colls::set_barrier}};
 
-  // This only prevents code duplication
-  std::function<void(std::string)> setup = [selector_name, &setter_callbacks](std::string coll) {
-    std::string name = simgrid::config::get_value<std::string>(("smpi/" + coll).c_str());
+  for (auto& elem : setter_callbacks) {
+    std::string name = simgrid::config::get_value<std::string>(("smpi/" + elem.first).c_str());
     if (name.empty())
       name = selector_name;
 
-    setter_callbacks[coll](name);
-  };
-
-  setup("gather");
-  setup("allgather");
-  setup("allgatherv");
-  setup("allreduce");
-  setup("alltoall");
-  setup("alltoallv");
-  setup("reduce");
-  setup("reduce_scatter");
-  setup("scatter");
-  setup("bcast");
-  setup("barrier");
+    (elem.second)(name);
+  }
 }
 
 
