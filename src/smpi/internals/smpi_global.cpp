@@ -492,7 +492,7 @@ static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 }
 #endif
 
-static void smpi_init_privatization_dlopen(const char* executable)
+static void smpi_init_privatization_dlopen(std::string executable)
 {
   std::string executable_copy = executable;
 
