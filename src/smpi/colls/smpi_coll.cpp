@@ -25,12 +25,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll
       xbt_die("Collective " #cat " set to nullptr!");                                                                  \
   }
 
-#define SET_COLL(coll)                                                                                                 \
-  name = simgrid::config::get_value<std::string>("smpi/" #coll);                                                       \
-  if (name.empty())                                                                                                    \
-    name = selector_name;                                                                                              \
-  set_##coll(name);
-
 namespace simgrid{
 namespace smpi{
 
@@ -99,25 +93,39 @@ COLL_APPLY(COLL_SETTER,COLL_BCAST_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_ALLTOALL_SIG,"");
 COLL_APPLY(COLL_SETTER,COLL_ALLTOALLV_SIG,"");
 
-
 void Colls::set_collectives(){
   std::string selector_name = simgrid::config::get_value<std::string>("smpi/coll-selector");
   if (selector_name.empty())
     selector_name = "default";
 
-  std::string name;
+  std::map<std::string, std::function<void(std::string)>> setter_callbacks = {
+      {"gather", &Colls::set_gather},         {"allgather", &Colls::set_allgather},
+      {"allgatherv", &Colls::set_allgatherv}, {"allreduce", &Colls::set_allreduce},
+      {"alltoall", &Colls::set_alltoall},     {"alltoallv", &Colls::set_alltoallv},
+      {"reduce", &Colls::set_reduce},         {"reduce_scatter", &Colls::set_reduce_scatter},
+      {"scatter", &Colls::set_scatter},       {"bcast", &Colls::set_bcast},
+      {"barrier", &Colls::set_barrier}};
 
-  SET_COLL(gather);
-  SET_COLL(allgather);
-  SET_COLL(allgatherv);
-  SET_COLL(allreduce);
-  SET_COLL(alltoall);
-  SET_COLL(alltoallv);
-  SET_COLL(reduce);
-  SET_COLL(reduce_scatter);
-  SET_COLL(scatter);
-  SET_COLL(bcast);
-  SET_COLL(barrier);
+  // This only prevents code duplication
+  std::function<void(std::string)> setup = [selector_name, &setter_callbacks](std::string coll) {
+    std::string name = simgrid::config::get_value<std::string>(("smpi/" + coll).c_str());
+    if (name.empty())
+      name = selector_name;
+
+    setter_callbacks[coll](name);
+  };
+
+  setup("gather");
+  setup("allgather");
+  setup("allgatherv");
+  setup("allreduce");
+  setup("alltoall");
+  setup("alltoallv");
+  setup("reduce");
+  setup("reduce_scatter");
+  setup("scatter");
+  setup("bcast");
+  setup("barrier");
 }
 
 
