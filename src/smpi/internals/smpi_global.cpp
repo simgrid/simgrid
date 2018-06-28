@@ -618,7 +618,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   TRACE_global_init();
 
   SIMIX_global_init(&argc, argv);
-  MSG_init(&argc, argv);
+  MSG_init(&argc, argv); // FIXME Remove this MSG call. Once it's removed, we can remove the msg header include as well
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
