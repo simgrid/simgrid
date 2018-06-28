@@ -83,8 +83,8 @@ namespace simgrid{
 namespace smpi{
 
 struct s_mpi_coll_description_t {
-  const char *name;
-  const char *description;
+  std::string name;
+  std::string description;
   void *coll;
 };
 
