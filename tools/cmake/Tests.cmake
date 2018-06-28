@@ -119,17 +119,6 @@ if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
       APPEND PROPERTY
              INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	     )
-    # PAGESTORE_mod
-#    add_executable       (unit_PAGESTORE_mod src/mc/snapshot/unitTest/PageStore_unit_mod.cpp)
-#    target_link_libraries(unit_PAGESTORE_mod simgrid boost_unit_test_framework)
-#    ADD_TEST(unit_PAGESTORE ${CMAKE_BINARY_DIR}/unit_PAGESTORE --build_info=yes)
-#    set_property(
-#      TARGET unit_PAGESTORE_mod
-#      APPEND PROPERTY
-#             INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
-#	     )
-#
-
   endif()
 
 
