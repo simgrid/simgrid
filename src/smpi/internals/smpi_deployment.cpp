@@ -76,9 +76,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 
 void smpi_deployment_register_process(const std::string instance_id, int rank, simgrid::s4u::ActorPtr actor)
 {
-  if (smpi_instances.empty()) // no instance registered, we probably used smpirun.
-    return;
-
   Instance& instance = smpi_instances.at(instance_id);
 
   instance.present_processes++;
