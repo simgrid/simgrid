@@ -275,8 +275,8 @@ double HostEnergy::get_current_watts_value(double cpu_load)
   double power_slope   = 0;
 
   if (cpu_load > 0) { /* Something is going on, the machine is not idle */
-    double min_power = range.min_;
-    double max_power = range.max_;
+    min_power = range.min_;
+    max_power = range.max_;
 
     /**
      * The min_power states how much we consume when only one single
