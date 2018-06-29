@@ -389,9 +389,9 @@ static void smpi_init_options(){
     XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
     smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
   }
-#if HAVE_WORKING_MMAP
+#if !HAVE_WORKING_MMAP
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
-    XBT_INFO("mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
+    XBT_INFO("mmap privatization is broken on this platform, switching to dlopen privatization instead.");
     smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
   }
 #endif
