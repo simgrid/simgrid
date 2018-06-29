@@ -33,7 +33,8 @@ public:
    * @brief Create a Cpu
    *
    * @param host The host that will have this CPU
-   * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
+   * @param speed_per_pstate Processor speed (in Flops) of each pstate.
+   *                         This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
   virtual Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) = 0;
@@ -89,7 +90,7 @@ public:
    * @brief Execute some quantity of computation on more than one core
    *
    * @param size The value of the processing amount (in flop) needed to process
-   * @param requestedCores The desired amount of cores. Must be >= 1
+   * @param requested_cores The desired amount of cores. Must be >= 1
    * @return The CpuAction corresponding to the processing
    */
   virtual simgrid::kernel::resource::Action* execution_start(double size, int requested_cores) = 0;

@@ -400,10 +400,10 @@ int xbt_dict_is_empty(xbt_dict_t dict)
  * \brief Outputs the content of the structure (debugging purpose)
  *
  * \param dict the exibitionist
- * \param output a function to dump each data in the tree (check @ref xbt_dict_dump_output_string)
+ * \param output a function to dump each data in the tree
  *
- * Outputs the content of the structure. (for debugging purpose). \a output is a function to output the data. If nullptr,
- * data won't be displayed.
+ * Outputs the content of the structure. (for debugging purpose).
+ * \a output is a function to output the data. If nullptr, data won't be displayed.
  */
 void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
 {

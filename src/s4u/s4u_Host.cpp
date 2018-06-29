@@ -231,7 +231,8 @@ double Host::get_pstate_speed(int pstate_index) const
  *  The amount of flops per second available for computing depends on several things:
  *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
  *      computing speed you would get at another pstate)
- *    - If you declared an external load, then this reduces the available computing speed (see @ref set_speed_trace())
+ *    - If you declared an external load, then this reduces the available computing speed
+ *      (see @ref simgrid::surf::Cpu::set_speed_trace())
  *
  *  The remaining speed is then shared between the executions located on this host.
  *  You can retrieve the amount of tasks currently running on this host with @ref get_load().
@@ -253,7 +254,7 @@ double Host::get_load() const
 }
 /** @brief Get the available speed ratio, between 0 and 1.
  *
- * This accounts for external load (see @ref set_speed_trace()).
+ * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_trace()).
  */
 double Host::get_available_speed() const
 {

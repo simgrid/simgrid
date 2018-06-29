@@ -118,7 +118,6 @@ sg_size_t File::read(sg_size_t size)
 /** \brief Write into a file (local or remote)
  *
  * \param size of the file to write
- * \param fd is a the file descriptor
  * \return the number of bytes successfully write or -1 if an error occurred
  */
 sg_size_t File::write(sg_size_t size)
