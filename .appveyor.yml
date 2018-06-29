@@ -43,8 +43,8 @@ artifacts:
 - path: simgrid.jar
   name: jarfile
 
-# notifications:
-# - irc: "irc.debian.org#simgrid" # Not implemented by AppVeyor yet :(
-
-
-
+# IRC notifications, even if https://github.com/appveyor/ci/issues/88 is not closed yet
+on_success:
+  - "python tools/appveyor-irc-notify.py simgrid [{project_name}:{branch}] {short_commit}: \"{message}\" ({author}) {color_green}Succeeded,Details: {build_url},Commit: {commit_url}"
+on_failure:
+  - "python tools/appveyor-irc-notify.py simgrid [{project_name}:{branch}] {short_commit}: \"{message}\" ({author}) {color_red}Failed,Details: {build_url},Commit: {commit_url}"
