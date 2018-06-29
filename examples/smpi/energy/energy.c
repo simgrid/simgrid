@@ -9,6 +9,9 @@
 #include <mpi.h>
 #include <smpi/smpi.h>
 
+#include <simgrid/plugins/energy.h>
+#include <simgrid/simix.h>
+
 int main(int argc, char *argv[])
 {
   int rank;
@@ -28,20 +31,20 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  int pstates = smpi_get_host_nb_pstates();
+  int pstates = sg_host_get_nb_pstates(sg_host_self());
 
   char *s = buf;
   size_t sz = sizeof buf;
   size_t x = snprintf(s, sz,
                "[%.6f] [rank %d] Pstates: %d; Powers: %.0f",
-               MPI_Wtime(), rank, pstates, smpi_get_host_power_peak_at(0));
+               MPI_Wtime(), rank, pstates, sg_host_get_pstate_speed(sg_host_self(), 0));
   if (x < sz) {
     s += x;
     sz -= x;
   } else
     sz = 0;
   for (i = 1; i < pstates; i++) {
-    x = snprintf(s, sz, ", %.0f", smpi_get_host_power_peak_at(i));
+    x = snprintf(s, sz, ", %.0f", sg_host_get_pstate_speed(sg_host_self(), i));
     if (x < sz) {
       s += x;
       sz -= x;
@@ -51,16 +54,16 @@ int main(int argc, char *argv[])
   fprintf(stderr, "%s%s\n", buf, (sz ? "" : " [...]"));
 
   for (i = 0; i < pstates; i++) {
-    smpi_set_host_pstate(i);
+    sg_host_set_pstate(sg_host_self(), i);
     fprintf(stderr, "[%.6f] [rank %d] Current pstate: %d; Current power: %.0f\n",
-            MPI_Wtime(), rank, i, smpi_get_host_current_power_peak());
+            MPI_Wtime(), rank, i, sg_host_speed(sg_host_self()));
 
     SMPI_SAMPLE_FLOPS(1e9) {
       /* imagine here some code running for 1e9 flops... */
     }
 
     fprintf(stderr, "[%.6f] [rank %d] Energy consumed: %g Joules.\n",
-            MPI_Wtime(), rank, smpi_get_host_consumed_energy());
+            MPI_Wtime(), rank,  sg_host_get_consumed_energy(sg_host_self()));
   }
 
   err = MPI_Finalize();

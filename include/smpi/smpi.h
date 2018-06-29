@@ -919,13 +919,14 @@ XBT_PUBLIC void smpi_execute_flops(double flops);
 XBT_PUBLIC void smpi_execute(double duration);
 XBT_PUBLIC void smpi_execute_benched(double duration);
 
-XBT_PUBLIC double smpi_get_host_power_peak_at(int pstate_index);
-XBT_PUBLIC double smpi_get_host_current_power_peak();
-XBT_PUBLIC int smpi_get_host_nb_pstates();
-XBT_PUBLIC void smpi_set_host_pstate(int pstate_index);
-XBT_PUBLIC int smpi_get_host_pstate();
+// PLEASE NOTE: If you remove these functions, the entire smpi_dvfs.cpp file can be removed as well!!
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_pstate_speed(sg_host_self(), pstate_index) instead") XBT_PUBLIC double smpi_get_host_power_peak_at(int pstate_index);
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_speed(sg_host_self()) instead") XBT_PUBLIC double smpi_get_host_current_power_peak();
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_nb_pstates(sg_host_self()) instead") XBT_PUBLIC int smpi_get_host_nb_pstates();
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_set_pstate(sg_host_self(), pstate_index) instead") XBT_PUBLIC void smpi_set_host_pstate(int pstate_index);
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_pstate(sg_host_self()) instead") XBT_PUBLIC int smpi_get_host_pstate();
 
-XBT_PUBLIC double smpi_get_host_consumed_energy();
+XBT_ATTRIB_DEPRECATED_v324("Please use sg_host_get_consumed_energy(sg_host_self()) instead") XBT_PUBLIC double smpi_get_host_consumed_energy();
 
 
 XBT_PUBLIC unsigned long long smpi_rastro_resolution();
