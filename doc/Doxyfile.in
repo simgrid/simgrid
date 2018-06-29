@@ -686,23 +686,37 @@ INPUT                  = @CMAKE_HOME_DIRECTORY@/doc/doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/module-trace.doc \
                          @CMAKE_BINARY_DIR@/doc/doxygen/logcategories.doc \
                          @CMAKE_HOME_DIRECTORY@/include/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/jedule/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/kernel/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/kernel/resource/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/kernel/routing/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/plugins/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/s4u/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/simix/ \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/smpi/ \
                          @CMAKE_HOME_DIRECTORY@/include/xbt \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid \
-                         @CMAKE_HOME_DIRECTORY@/include/simgrid/s4u \
+                         @CMAKE_HOME_DIRECTORY@/src/include/simgrid/ \
                          @CMAKE_HOME_DIRECTORY@/src/include/surf \
                          @CMAKE_HOME_DIRECTORY@/src/include/xbt \
-                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
+                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
+                         @CMAKE_HOME_DIRECTORY@/src/instr/jedule/ \
                          @CMAKE_HOME_DIRECTORY@/src/kernel/ \
                          @CMAKE_HOME_DIRECTORY@/src/kernel/activity/ \
                          @CMAKE_HOME_DIRECTORY@/src/kernel/context/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/lmm/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/resource/ \
                          @CMAKE_HOME_DIRECTORY@/src/kernel/routing/ \
-                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
-                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
-                         @CMAKE_HOME_DIRECTORY@/src/surf/plugins/ \
+                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
+                         @CMAKE_HOME_DIRECTORY@/src/plugins/ \
+                         @CMAKE_HOME_DIRECTORY@/src/plugins/file_system/ \
+                         @CMAKE_HOME_DIRECTORY@/src/plugins/vm/ \
                          @CMAKE_HOME_DIRECTORY@/src/s4u/ \
+                         @CMAKE_HOME_DIRECTORY@/src/simdag/ \
+                         @CMAKE_HOME_DIRECTORY@/src/simgrid/ \
+                         @CMAKE_HOME_DIRECTORY@/src/simix/ \
                          @CMAKE_HOME_DIRECTORY@/src/smpi/ \
-                         @CMAKE_HOME_DIRECTORY@/src/simdag \
-                         @CMAKE_HOME_DIRECTORY@/src/simix \
+                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
                          @CMAKE_HOME_DIRECTORY@/src/xbt/ \
                          @CMAKE_BINARY_DIR@/include \
                          @CMAKE_BINARY_DIR@/src \
