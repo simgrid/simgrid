@@ -9,8 +9,8 @@
 #include <mpi.h>
 #include <smpi/smpi.h>
 
+#include <simgrid/host.h>
 #include <simgrid/plugins/energy.h>
-#include <simgrid/simix.h>
 
 int main(int argc, char *argv[])
 {
