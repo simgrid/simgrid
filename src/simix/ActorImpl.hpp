@@ -114,14 +114,14 @@ private:
   bool daemon = false;
 public:
   void daemonize();
-  bool isDaemon() { return daemon; } /** Whether this actor has been daemonized */
-  bool isSuspended() { return suspended; }
+  bool isDaemon() const { return daemon; } /** Whether this actor has been daemonized */
+  bool isSuspended() const { return suspended; }
   simgrid::s4u::Actor* restart();
   smx_activity_t suspend(ActorImpl* issuer);
   void resume();
   smx_activity_t sleep(double duration);
   void setUserData(void* data) { userdata = data; }
-  void* getUserData() { return userdata; }
+  void* getUserData() const { return userdata; }
 };
 
 /* Used to keep the list of actors blocked on a synchro  */
