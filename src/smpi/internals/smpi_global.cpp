@@ -15,10 +15,23 @@
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <fstream>
+
 #if not defined(__APPLE__)
 #include <link.h>
 #endif
-#include <fstream>
+
+#if defined(__APPLE__)
+# include <AvailabilityMacros.h>
+# ifndef MAC_OS_X_VERSION_10_12
+#   define MAC_OS_X_VERSION_10_12 101200
+# endif
+# define HAVE_WORKING_MMAP (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
+#elif defined(__FreeBSD__)
+# define HAVE_WORKING_MMAP 0
+#else
+# define HAVE_WORKING_MMAP 1
+#endif
 
 #if HAVE_SENDFILE
 #include <sys/sendfile.h>
@@ -376,7 +389,7 @@ static void smpi_init_options(){
     XBT_DEBUG("Running without smpi_main(); disable smpi/privatization.");
     smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
   }
-#if defined(__FreeBSD__)
+#if HAVE_WORKING_MMAP
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
     XBT_INFO("mmap privatization is broken on FreeBSD, switching to dlopen privatization instead.");
     smpi_privatize_global_variables = SmpiPrivStrategies::DLOPEN;
