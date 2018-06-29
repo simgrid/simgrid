@@ -90,31 +90,31 @@ struct doublecomplex {
 extern "C" XBT_PUBLIC doublereal smpi_get_host_power_peak_at_(integer* pstate_index);
 doublereal smpi_get_host_power_peak_at_(integer *pstate_index)
 {
-  return static_cast<doublereal>(smpi_get_host_power_peak_at((int)*pstate_index));
+  return static_cast<doublereal>(sg_host_self()->get_pstate_speed((int)*pstate_index));
 }
 
 extern "C" XBT_PUBLIC doublereal smpi_get_host_current_power_peak_();
 doublereal smpi_get_host_current_power_peak_()
 {
-  return smpi_get_host_current_power_peak();
+  return sg_host_self()->get_speed();
 }
 
 extern "C" XBT_PUBLIC integer smpi_get_host_nb_pstates_();
 integer smpi_get_host_nb_pstates_()
 {
-  return static_cast<integer>(smpi_get_host_nb_pstates());
+  return static_cast<integer>(sg_host_self()->get_pstate_count());
 }
 
 extern "C" XBT_PUBLIC void smpi_set_host_pstate_(integer* pstate_index);
 void smpi_set_host_pstate_(integer *pstate_index)
 {
-  smpi_set_host_pstate(static_cast<int>(*pstate_index));
+  sg_host_set_pstate(sg_host_self(), (static_cast<int>(*pstate_index)));
 }
 
 extern "C" XBT_PUBLIC doublereal smpi_get_host_consumed_energy_();
 doublereal smpi_get_host_consumed_energy_()
 {
-  return static_cast<doublereal>(smpi_get_host_consumed_energy());
+  return static_cast<doublereal>(sg_host_get_consumed_energy(sg_host_self()));
 }
 
 #endif
