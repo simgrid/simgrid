@@ -437,7 +437,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   bool auto_restart = actor->on_failure != simgrid::kernel::routing::ActorOnFailure::DIE;
 
   std::string actor_name     = actor->args[0];
-  std::function<void()> code = factory(std::move(actor->args));
+  simgrid::simix::ActorCode code = factory(std::move(actor->args));
   std::shared_ptr<std::unordered_map<std::string, std::string>> properties(actor->properties);
 
   simgrid::kernel::actor::ProcessArg* arg =

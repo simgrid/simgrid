@@ -247,7 +247,7 @@ smx_activity_t ActorImpl::sleep(double duration)
   return synchro;
 }
 
-void create_maestro(std::function<void()> code)
+void create_maestro(simgrid::simix::ActorCode code)
 {
   smx_actor_t maestro = nullptr;
   /* Create maestro process and initialize it */
@@ -257,7 +257,7 @@ void create_maestro(std::function<void()> code)
   maestro->setUserData(nullptr);
 
   if (not code) {
-    maestro->context = SIMIX_context_new(std::function<void()>(), nullptr, maestro);
+    maestro->context = SIMIX_context_new(simgrid::simix::ActorCode(), nullptr, maestro);
   } else {
     if (not simix_global)
       xbt_die("simix is not initialized, please call MSG_init first");
@@ -287,7 +287,7 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  *
  * \return the process created
  */
-smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, simgrid::s4u::Host* host,
+smx_actor_t SIMIX_process_create(const char* name, simgrid::simix::ActorCode code, void* data, simgrid::s4u::Host* host,
                                  std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
 
@@ -810,7 +810,7 @@ smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void*
   return res;
 }
 
-smx_actor_t simcall_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+smx_actor_t simcall_process_create(const char* name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
                                    std::unordered_map<std::string, std::string>* properties)
 {
   if (name == nullptr)

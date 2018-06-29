@@ -163,7 +163,7 @@ simgrid::config::Flag<double> breakpoint{"simix/breakpoint",
 }
 }
 
-static std::function<void()> maestro_code;
+static simgrid::simix::ActorCode maestro_code;
 void SIMIX_set_maestro(void (*code)(void*), void* data)
 {
 #ifdef _WIN32

@@ -26,14 +26,14 @@ namespace actor {
 class ProcessArg {
 public:
   std::string name;
-  std::function<void()> code;
+  simgrid::simix::ActorCode code;
   void* data            = nullptr;
   s4u::Host* host       = nullptr;
   double kill_time      = 0.0;
   std::shared_ptr<std::unordered_map<std::string, std::string>> properties;
   bool auto_restart     = false;
   ProcessArg()          = default;
-  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
+  explicit ProcessArg(std::string name, simgrid::simix::ActorCode code, void* data, s4u::Host* host, double kill_time,
                       std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
       : name(name)
       , code(std::move(code))
@@ -74,7 +74,7 @@ public:
   s_smx_simcall simcall;
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
-  std::function<void()> code;
+  simgrid::simix::ActorCode code;
   smx_timer_t kill_timer = nullptr;
 
 private:
@@ -129,14 +129,14 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
                                                                         &ActorImpl::smx_synchro_hook>>
     SynchroList;
 
-XBT_PUBLIC void create_maestro(std::function<void()> code);
+XBT_PUBLIC void create_maestro(simgrid::simix::ActorCode code);
 }
 } // namespace kernel
 } // namespace simgrid
 
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
-XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
                                              std::unordered_map<std::string, std::string>* properties,
                                              smx_actor_t parent_process);
 
