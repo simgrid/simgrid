@@ -30,8 +30,7 @@ class BOOST_tests {
       RegionSnapshot region0;
       RegionSnapshot region;
     } prologue_return;
-    static prologue_return prologue(int n);
-    static void epilogue(); // common to the below 5 fxs
+    static prologue_return prologue(int n); // common to the below 5 fxs
     static void read_whole_region();
     static void read_region_parts();
     static void compare_whole_region();
@@ -91,7 +90,8 @@ BOOST_tests::prologue_return BOOST_tests::prologue(int n) {
   void* destination = mmap(nullptr, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
   BOOST_CHECK_MESSAGE(source!=MAP_FAILED, "Could not allocate destination memory");
 
-  return {.size = byte_size, .src = source, .dstn = destination, .region0 = std::move(region0), .region = std::move(region)};
+  return {.size = byte_size, .src = source, .dstn = destination, 
+          .region0 = std::move(region0), .region = std::move(region)};
 }
 
 void
