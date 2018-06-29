@@ -1,7 +1,9 @@
 SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
 
 
-
+Fixed bugs:
+ - #271: Dynamic and manual replay of SMPI traces
+ - #279: Breakpoints option uses time deltas instead of absolute time
 
 SimGrid (3.20) Released June 24. 2018
 
