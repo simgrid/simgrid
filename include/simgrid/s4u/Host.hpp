@@ -92,11 +92,11 @@ public:
   /** Turns that host off. All actors are forcefully stopped. */
   void turn_off();
   /** Returns if that host is currently up and running */
-  bool is_on();
+  bool is_on() const;
   /** Returns if that host is currently down and offline */
-  bool is_off() { return not is_on(); }
+  bool is_off() const { return not is_on(); }
 
-  const char* get_property(const char* key);
+  const char* get_property(const char* key) const;
   void set_property(std::string key, std::string value);
   std::unordered_map<std::string, std::string>* get_properties();
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_properties()") std::map<std::string, std::string>* getProperties()
@@ -108,15 +108,15 @@ public:
     return res;
   }
 
-  double get_speed();
-  double get_available_speed();
-  int get_core_count();
-  double get_load();
+  double get_speed() const;
+  double get_available_speed() const;
+  int get_core_count() const;
+  double get_load() const;
 
-  double get_pstate_speed(int pstate_index);
+  double get_pstate_speed(int pstate_index) const;
   int get_pstate_count() const;
   void set_pstate(int pstate_index);
-  int get_pstate();
+  int get_pstate() const;
 
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_speed() instead.") double getSpeed() { return get_speed(); }
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_pstate_speed() instead.") double getPstateSpeed(int pstate_index)
@@ -124,7 +124,7 @@ public:
     return get_pstate_speed(pstate_index);
   }
 
-  std::vector<const char*> get_attached_storages();
+  std::vector<const char*> get_attached_storages() const;
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_attached_storages() instead.") void getAttachedStorages(
       std::vector<const char*>* storages);
 
@@ -191,7 +191,7 @@ public:
   }
 
 private:
-  simgrid::xbt::string name_{"noname"};
+  simgrid::xbt::string name_ {"noname"};
   std::unordered_map<std::string, Storage*>* mounts_ = nullptr; // caching
 
 public:

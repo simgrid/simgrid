@@ -126,7 +126,7 @@ void Host::turn_off()
   }
 }
 
-bool Host::is_on()
+bool Host::is_on() const
 {
   return this->pimpl_cpu->is_on();
 }
@@ -210,7 +210,7 @@ std::unordered_map<std::string, std::string>* Host::get_properties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Host::get_property(const char* key)
+const char* Host::get_property(const char* key) const
 {
   return this->pimpl_->get_property(key);
 }
@@ -221,7 +221,7 @@ void Host::set_property(std::string key, std::string value)
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
-double Host::get_pstate_speed(int pstate_index)
+double Host::get_pstate_speed(int pstate_index) const
 {
   return simgrid::simix::simcall([this, pstate_index] { return this->pimpl_cpu->get_pstate_peak_speed(pstate_index); });
 }
@@ -240,14 +240,14 @@ double Host::get_pstate_speed(int pstate_index)
  *
  *  Finally, executions of priority 2 get twice the amount of flops than executions of priority 1.
  */
-double Host::get_speed()
+double Host::get_speed() const
 {
   return this->pimpl_cpu->get_speed(1.0);
 }
 /** @brief Returns the current computation load (in flops per second)
  * The external load (coming from an availability trace) is not taken in account.
  */
-double Host::get_load()
+double Host::get_load() const
 {
   return this->pimpl_cpu->get_load();
 }
@@ -255,13 +255,13 @@ double Host::get_load()
  *
  * This accounts for external load (see @ref set_speed_trace()).
  */
-double Host::get_available_speed()
+double Host::get_available_speed() const
 {
   return this->pimpl_cpu->get_speed_ratio();
 }
 
 /** @brief Returns the number of core of the processor. */
-int Host::get_core_count()
+int Host::get_core_count() const
 {
   return this->pimpl_cpu->get_core_count();
 }
@@ -272,7 +272,7 @@ void Host::set_pstate(int pstate_index)
   simgrid::simix::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
 }
 /** @brief Retrieve the pstate at which the host is currently running */
-int Host::get_pstate()
+int Host::get_pstate() const
 {
   return this->pimpl_cpu->get_pstate();
 }
@@ -282,7 +282,7 @@ int Host::get_pstate()
  * \brief Returns the list of storages attached to an host.
  * \return a vector containing all storages attached to the host
  */
-std::vector<const char*> Host::get_attached_storages()
+std::vector<const char*> Host::get_attached_storages() const
 {
   return simgrid::simix::simcall([this] { return this->pimpl_->get_attached_storages(); });
 }
