@@ -33,7 +33,7 @@ expanded automatically, replaced with a corresponding Appveyor environment varia
 value. se commas to delineate multiple messages.
 
 Modified by Martin Quinson on June 2018:
-    
+  
  - Use OFTC instead of Freenode
 
 Example:
@@ -62,12 +62,12 @@ in Appveyor's YAML:
 
 """
 
-import os, random, socket, ssl, sys, time
+import random, socket, ssl, sys, time
 
 
 def appveyor_vars():
     """
-    Return a dict of key value carfted from appveyor environment variables.
+    Return a dict of key value crafted from appveyor environment variables.
     """
     from os import environ
 
@@ -93,7 +93,7 @@ def appveyor_vars():
     build_url = '{appveyor_url}/project/{account_name}/{project_slug}/build/{build_version}'.format(**locals())
     commit_url = 'https://{repo_provider}.com/{repo_name}/commit/{commit}'.format(**locals())
 
-    vars = dict(
+    apvy_vars = dict(
         appveyor_url=appveyor_url,
         account_name=account_name,
         project_name=project_name,
@@ -125,7 +125,7 @@ def appveyor_vars():
         underline='\x1f',
         plain='\x0f',
     )
-    return vars
+    return apvy_vars
 
 
 if __name__ == '__main__':
