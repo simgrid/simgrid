@@ -1469,7 +1469,8 @@ INCLUDE_FILE_PATTERNS  =
 # undefined via #undef or recursively expanded use the := operator
 # instead of the = operator.
 
-PREDEFINED             = XBT_PUBLIC= \
+PREDEFINED             = __cplusplus \
+                         XBT_PUBLIC= \
                          XBT_EXPORT_NO_IMPORT= \
                          XBT_IMPORT_NO_EXPORT= \
                          XBT_PUBLIC_DATA=extern \
