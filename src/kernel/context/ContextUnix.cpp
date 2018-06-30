@@ -118,14 +118,14 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
   simgrid::kernel::context::UContext* context;
   memcpy(&context, ctx_addr, sizeof context);
 
-  ASAN_FINISH_SWITCH(nullptr, &context_->asan_ctx_->asan_stack_, &context_->asan_ctx_->asan_stack_size_);
+  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
     context->Context::stop();
   } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
-  ASAN_ONLY(context_->asan_stop_ = true);
+  ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
 

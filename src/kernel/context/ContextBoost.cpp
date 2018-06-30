@@ -77,13 +77,13 @@ BoostContext::BoostContext(std::function<void()> code, void_pfn_smxprocess_t cle
 #endif
     ASAN_ONLY(this->asan_stack_ = stack);
 #if BOOST_VERSION < 106100
-    this->fc_ = boost::context_::make_fcontext(stack, smx_context_usable_stack_size, BoostContext::wrapper);
+    this->fc_ = boost::context::make_fcontext(stack, smx_context_usable_stack_size, BoostContext::wrapper);
 #else
     this->fc_ = boost::context::detail::make_fcontext(stack, smx_context_usable_stack_size, BoostContext::wrapper);
 #endif
   } else {
 #if BOOST_VERSION < 105600
-    this->fc_ = new boost::context_::fcontext_t();
+    this->fc_ = new boost::context::fcontext_t();
 #endif
     if (BoostContext::maestro_context_ == nullptr)
       BoostContext::maestro_context_ = this;
@@ -104,11 +104,11 @@ BoostContext::~BoostContext()
 void BoostContext::wrapper(BoostContext::arg_type arg)
 {
 #if BOOST_VERSION < 106100
-  BoostContext* context_ = reinterpret_cast<BoostContext*>(arg);
+  BoostContext* context = reinterpret_cast<BoostContext*>(arg);
 #else
   BoostContext* context = static_cast<BoostContext**>(arg.data)[1];
-  ASAN_ONLY(xbt_assert(context_->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
-  ASAN_FINISH_SWITCH(nullptr, &context_->asan_ctx_->asan_stack_, &context_->asan_ctx_->asan_stack_size_);
+  ASAN_ONLY(xbt_assert(context->asan_ctx_ == static_cast<BoostContext**>(arg.data)[0]));
+  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
   static_cast<BoostContext**>(arg.data)[0]->fc_ = arg.fctx;
 #endif
   try {
@@ -117,16 +117,16 @@ void BoostContext::wrapper(BoostContext::arg_type arg)
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
-  ASAN_ONLY(context_->asan_stop_ = true);
+  ASAN_ONLY(context->asan_stop_ = true);
   context->suspend();
 }
 
 inline void BoostContext::swap(BoostContext* from, BoostContext* to)
 {
 #if BOOST_VERSION < 105600
-  boost::context_::jump_fcontext(from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
+  boost::context::jump_fcontext(from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
 #elif BOOST_VERSION < 106100
-  boost::context_::jump_fcontext(&from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
+  boost::context::jump_fcontext(&from->fc_, to->fc_, reinterpret_cast<intptr_t>(to));
 #else
   BoostContext* ctx[2] = {from, to};
   ASAN_ONLY(void* fake_stack = nullptr);

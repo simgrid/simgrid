@@ -25,8 +25,8 @@ jfieldID jprocess_field_Process_ppid;
 
 jobject jprocess_from_native(msg_process_t process)
 {
-  simgrid::kernel::context_::JavaContext* context =
-      (simgrid::kernel::context_::JavaContext*)process->get_impl()->context_;
+  simgrid::kernel::context::JavaContext* context =
+      (simgrid::kernel::context::JavaContext*)process->get_impl()->context_;
   return context->jprocess;
 }
 
@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv* env, jobject 
   jstring jname         = (jstring)env->GetObjectField(jprocess, jprocess_field_Process_name);
   const char* name      = env->GetStringUTFChars(jname, 0);
   msg_process_t process =
-      MSG_process_create_from_stdfunc(name, [jprocess]() { simgrid::kernel::context_::java_main_jprocess(jprocess); },
+      MSG_process_create_from_stdfunc(name, [jprocess]() { simgrid::kernel::context::java_main_jprocess(jprocess); },
                                       /*data*/ nullptr, jhost_get_native(env, jhost), /* properties*/ nullptr);
   env->ReleaseStringUTFChars(jname, name);
 
