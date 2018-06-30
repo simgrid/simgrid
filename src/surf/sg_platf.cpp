@@ -456,7 +456,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
       if (arg->kill_time >= 0)
         simcall_process_set_kill_time(actor, arg->kill_time);
       if (auto_restart)
-        SIMIX_process_auto_restart_set(actor, auto_restart);
+        actor->set_auto_restart(auto_restart);
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
@@ -470,7 +470,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
       if (arg->kill_time >= 0)
         simcall_process_set_kill_time(actor, arg->kill_time);
       if (auto_restart)
-        SIMIX_process_auto_restart_set(actor, auto_restart);
+        actor->set_auto_restart(auto_restart);
     }
   }
 }

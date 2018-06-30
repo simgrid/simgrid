@@ -51,6 +51,8 @@ public:
   ActorImpl() : piface_(this) {}
   ~ActorImpl();
 
+  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+
   boost::intrusive::list_member_hook<> host_process_list_hook; /* simgrid::simix::Host::process_list */
   boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->process_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
@@ -147,8 +149,6 @@ XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
-
-XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
 
 extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 

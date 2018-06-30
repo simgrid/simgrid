@@ -71,7 +71,7 @@ void Actor::join(double timeout)
 
 void Actor::set_auto_restart(bool autorestart)
 {
-  simgrid::simix::simcall([this, autorestart]() { pimpl_->auto_restart_ = autorestart; });
+  simgrid::simix::simcall([this, autorestart]() { pimpl_->set_auto_restart(autorestart); });
 }
 
 void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */

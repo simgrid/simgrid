@@ -771,14 +771,6 @@ void SIMIX_process_on_exit(smx_actor_t process, std::function<void(int, void*)> 
   process->on_exit.emplace_back(s_smx_process_exit_fun_t{fun, data});
 }
 
-/**
- * \brief Sets the auto-restart status of the process.
- * If set to 1, the process will be automatically restarted when its host comes back.
- */
-void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart) {
-  process->auto_restart_ = auto_restart;
-}
-
 /** @brief Restart a process, starting it again from the beginning. */
 /**
  * \ingroup simix_process_management
