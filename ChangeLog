@@ -1,9 +1,10 @@
 SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
 
-
 Fixed bugs:
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time
+
+----------------------------------------------------------------------------
 
 SimGrid (3.20) Released June 24. 2018
 
@@ -85,7 +86,7 @@ Fixed bugs:
  - #258: daemonized actors hang after all non-daemonized actors have completed
  - #267: Linker error on unit_tmgr
  - #269: SMPI: tracing of MPI_Wait/all/any broken
- - SMPI: Fix various crashes with combined use of MPI_PROC_NULL and MPI_IGNORE_STATUS 
+ - SMPI: Fix various crashes with combined use of MPI_PROC_NULL and MPI_IGNORE_STATUS
 
 ----------------------------------------------------------------------------
 
