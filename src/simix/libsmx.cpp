@@ -193,7 +193,7 @@ void simcall_process_suspend(smx_actor_t process)
  */
 void simcall_process_set_data(smx_actor_t process, void *data)
 {
-  simgrid::simix::simcall([process, data] { process->setUserData(data); });
+  simgrid::simix::simcall([process, data] { process->set_user_data(data); });
 }
 
 /**
@@ -205,7 +205,7 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 
   if (kill_time <= SIMIX_get_clock() || simix_global->kill_process_function == nullptr)
     return;
-  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->get_cname(), process->host->get_cname());
+  XBT_DEBUG("Set kill time %f for process %s@%s", kill_time, process->get_cname(), process->host_->get_cname());
   process->kill_timer = SIMIX_timer_set(kill_time, [process] {
     simix_global->kill_process_function(process);
     process->kill_timer=nullptr;

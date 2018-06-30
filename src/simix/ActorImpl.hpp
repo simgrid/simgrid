@@ -26,14 +26,14 @@ namespace actor {
 class ProcessArg {
 public:
   std::string name;
-  simgrid::simix::ActorCode code;
+  std::function<void()> code;
   void* data            = nullptr;
   s4u::Host* host       = nullptr;
   double kill_time      = 0.0;
   std::shared_ptr<std::unordered_map<std::string, std::string>> properties;
   bool auto_restart     = false;
   ProcessArg()          = default;
-  explicit ProcessArg(std::string name, simgrid::simix::ActorCode code, void* data, s4u::Host* host, double kill_time,
+  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
                       std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
       : name(name)
       , code(std::move(code))
@@ -55,30 +55,30 @@ public:
   boost::intrusive::list_member_hook<> smx_destroy_list_hook;  /* simix_global->process_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
-  aid_t pid  = 0;
-  aid_t ppid = -1;
-  simgrid::xbt::string name;
-  const simgrid::xbt::string& get_name() const { return name; }
-  const char* get_cname() const { return name.c_str(); }
-  s4u::Host* host       = nullptr; /* the host on which the process is running */
-  smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
+  aid_t pid_  = 0;
+  aid_t ppid_ = -1;
+  simgrid::xbt::string name_;
+  const simgrid::xbt::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
+  s4u::Host* host_       = nullptr; /* the host on which the process is running */
+  smx_context_t context_ = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
   std::exception_ptr exception;
-  bool finished     = false;
-  bool blocked      = false;
-  bool suspended    = false;
-  bool auto_restart = false;
+  bool finished_    = false;
+  bool blocked_     = false;
+  bool suspended_   = false;
+  bool auto_restart_ = false;
 
   smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   std::list<smx_activity_t> comms;          /* the current non-blocking communication synchros */
   s_smx_simcall simcall;
   std::vector<s_smx_process_exit_fun_t> on_exit; /* list of functions executed when the process dies */
 
-  simgrid::simix::ActorCode code;
+  std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
 
 private:
-  void* userdata = nullptr; /* kept for compatibility, it should be replaced with moddata */
+  void* userdata_ = nullptr; /* kept for compatibility, it should be replaced with moddata */
   /* Refcounting */
   std::atomic_int_fast32_t refcount_{0};
 
@@ -111,17 +111,17 @@ public:
 
   /* Daemon actors are automatically killed when the last non-daemon leaves */
 private:
-  bool daemon = false;
+  bool daemon_ = false;
 public:
   void daemonize();
-  bool isDaemon() const { return daemon; } /** Whether this actor has been daemonized */
-  bool isSuspended() const { return suspended; }
+  bool is_daemon() { return daemon_; } /** Whether this actor has been daemonized */
+  bool is_suspended() { return suspended_; }
   simgrid::s4u::Actor* restart();
   smx_activity_t suspend(ActorImpl* issuer);
   void resume();
   smx_activity_t sleep(double duration);
-  void setUserData(void* data) { userdata = data; }
-  void* getUserData() const { return userdata; }
+  void set_user_data(void* data) { userdata_ = data; }
+  void* get_user_data() { return userdata_; }
 };
 
 /* Used to keep the list of actors blocked on a synchro  */
@@ -129,14 +129,14 @@ typedef boost::intrusive::list<ActorImpl, boost::intrusive::member_hook<ActorImp
                                                                         &ActorImpl::smx_synchro_hook>>
     SynchroList;
 
-XBT_PUBLIC void create_maestro(simgrid::simix::ActorCode code);
+XBT_PUBLIC void create_maestro(std::function<void()> code);
 }
 } // namespace kernel
 } // namespace simgrid
 
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
-XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
+XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
                                              std::unordered_map<std::string, std::string>* properties,
                                              smx_actor_t parent_process);
 

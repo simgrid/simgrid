@@ -66,7 +66,7 @@ void Process::set_data(int* argc, char*** argv)
     finalization_barrier_ = barrier;
 
   actor_                                                                        = simgrid::s4u::Actor::self();
-  static_cast<simgrid::msg::ActorExt*>(actor_->get_impl()->getUserData())->data = this;
+  static_cast<simgrid::msg::ActorExt*>(actor_->get_impl()->get_user_data())->data = this;
 
   if (*argc > 3) {
     memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
@@ -243,7 +243,7 @@ void Process::init(int *argc, char ***argv){
   }
   if (argc != nullptr && argv != nullptr) {
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
-    proc->get_impl()->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
+    proc->get_impl()->context_->set_cleanup(&MSG_process_cleanup_from_SIMIX);
 
     char* instance_id = (*argv)[1];
     try {

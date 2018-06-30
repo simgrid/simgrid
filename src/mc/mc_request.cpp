@@ -221,11 +221,11 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     type = "iSend";
     char* p = pointer_to_string(simcall_comm_isend__get__src_buff(req));
     char* bs = buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
-    if (issuer->host)
-      args = bprintf("src=(%ld)%s (%s), buff=%s, size=%s", issuer->pid, MC_smx_actor_get_host_name(issuer),
+    if (issuer->host_)
+      args = bprintf("src=(%ld)%s (%s), buff=%s, size=%s", issuer->pid_, MC_smx_actor_get_host_name(issuer),
                      MC_smx_actor_get_name(issuer), p, bs);
     else
-      args = bprintf("src=(%ld)%s, buff=%s, size=%s", issuer->pid, MC_smx_actor_get_name(issuer), p, bs);
+      args = bprintf("src=(%ld)%s, buff=%s, size=%s", issuer->pid_, MC_smx_actor_get_name(issuer), p, bs);
     xbt_free(bs);
     xbt_free(p);
     break;
@@ -241,11 +241,11 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     type = "iRecv";
     char* p = pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
     char* bs = buff_size_to_string(size);
-    if (issuer->host)
-      args = bprintf("dst=(%ld)%s (%s), buff=%s, size=%s", issuer->pid, MC_smx_actor_get_host_name(issuer),
+    if (issuer->host_)
+      args = bprintf("dst=(%ld)%s (%s), buff=%s, size=%s", issuer->pid_, MC_smx_actor_get_host_name(issuer),
                      MC_smx_actor_get_name(issuer), p, bs);
     else
-      args = bprintf("dst=(%ld)%s, buff=%s, size=%s", issuer->pid, MC_smx_actor_get_name(issuer), p, bs);
+      args = bprintf("dst=(%ld)%s, buff=%s, size=%s", issuer->pid_, MC_smx_actor_get_name(issuer), p, bs);
     xbt_free(bs);
     xbt_free(p);
     break;
@@ -275,9 +275,9 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc));
       smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc));
       args =
-          bprintf("comm=%s [(%ld)%s (%s)-> (%ld)%s (%s)]", p, src_proc ? src_proc->pid : 0,
+          bprintf("comm=%s [(%ld)%s (%s)-> (%ld)%s (%s)]", p, src_proc ? src_proc->pid_ : 0,
                   src_proc ? MC_smx_actor_get_host_name(src_proc) : "", src_proc ? MC_smx_actor_get_name(src_proc) : "",
-                  dst_proc ? dst_proc->pid : 0, dst_proc ? MC_smx_actor_get_host_name(dst_proc) : "",
+                  dst_proc ? dst_proc->pid_ : 0, dst_proc ? MC_smx_actor_get_host_name(dst_proc) : "",
                   dst_proc ? MC_smx_actor_get_name(dst_proc) : "");
     }
     xbt_free(p);
@@ -307,8 +307,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 
       smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->src_proc));
       smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(act->dst_proc));
-      args = bprintf("comm=%s [(%ld)%s (%s) -> (%ld)%s (%s)]", p, src_proc->pid, MC_smx_actor_get_name(src_proc),
-                     MC_smx_actor_get_host_name(src_proc), dst_proc->pid, MC_smx_actor_get_name(dst_proc),
+      args = bprintf("comm=%s [(%ld)%s (%s) -> (%ld)%s (%s)]", p, src_proc->pid_, MC_smx_actor_get_name(src_proc),
+                     MC_smx_actor_get_host_name(src_proc), dst_proc->pid_, MC_smx_actor_get_name(dst_proc),
                      MC_smx_actor_get_host_name(dst_proc));
     }
     xbt_free(p);
@@ -363,7 +363,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     args =
         bprintf("locked = %d, owner = %d, sleeping = n/a", mutex.getBuffer()->locked,
                 mutex.getBuffer()->owner != nullptr
-                    ? (int)mc_model_checker->process().resolveActor(simgrid::mc::remote(mutex.getBuffer()->owner))->pid
+                    ? (int)mc_model_checker->process().resolveActor(simgrid::mc::remote(mutex.getBuffer()->owner))->pid_
                     : -1);
     break;
   }
@@ -381,10 +381,10 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 
   std::string str;
   if (args != nullptr)
-    str = simgrid::xbt::string_printf("[(%ld)%s (%s)] %s(%s)", issuer->pid, MC_smx_actor_get_host_name(issuer),
+    str = simgrid::xbt::string_printf("[(%ld)%s (%s)] %s(%s)", issuer->pid_, MC_smx_actor_get_host_name(issuer),
                                       MC_smx_actor_get_name(issuer), type, args);
   else
-    str = simgrid::xbt::string_printf("[(%ld)%s (%s)] %s ", issuer->pid, MC_smx_actor_get_host_name(issuer),
+    str = simgrid::xbt::string_printf("[(%ld)%s (%s)] %s ", issuer->pid_, MC_smx_actor_get_host_name(issuer),
                                       MC_smx_actor_get_name(issuer), type);
   xbt_free(args);
   return str;
@@ -452,25 +452,25 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
 
   switch (req->call) {
   case SIMCALL_COMM_ISEND:
-    if (issuer->host)
-      label = simgrid::xbt::string_printf("[(%ld)%s] iSend", issuer->pid, MC_smx_actor_get_host_name(issuer));
+    if (issuer->host_)
+      label = simgrid::xbt::string_printf("[(%ld)%s] iSend", issuer->pid_, MC_smx_actor_get_host_name(issuer));
     else
-      label = bprintf("[(%ld)] iSend", issuer->pid);
+      label = bprintf("[(%ld)] iSend", issuer->pid_);
     break;
 
   case SIMCALL_COMM_IRECV:
-    if (issuer->host)
-      label = simgrid::xbt::string_printf("[(%ld)%s] iRecv", issuer->pid, MC_smx_actor_get_host_name(issuer));
+    if (issuer->host_)
+      label = simgrid::xbt::string_printf("[(%ld)%s] iRecv", issuer->pid_, MC_smx_actor_get_host_name(issuer));
     else
-      label = simgrid::xbt::string_printf("[(%ld)] iRecv", issuer->pid);
+      label = simgrid::xbt::string_printf("[(%ld)] iRecv", issuer->pid_);
     break;
 
   case SIMCALL_COMM_WAIT:
     if (value == -1) {
-      if (issuer->host)
-        label = simgrid::xbt::string_printf("[(%ld)%s] WaitTimeout", issuer->pid, MC_smx_actor_get_host_name(issuer));
+      if (issuer->host_)
+        label = simgrid::xbt::string_printf("[(%ld)%s] WaitTimeout", issuer->pid_, MC_smx_actor_get_host_name(issuer));
       else
-        label = simgrid::xbt::string_printf("[(%ld)] WaitTimeout", issuer->pid);
+        label = simgrid::xbt::string_printf("[(%ld)] WaitTimeout", issuer->pid_);
     } else {
       simgrid::kernel::activity::ActivityImpl* remote_act = simcall_comm_wait__getraw__comm(req);
       simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
@@ -480,15 +480,13 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
 
       smx_actor_t src_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->src_proc));
       smx_actor_t dst_proc = mc_model_checker->process().resolveActor(simgrid::mc::remote(comm->dst_proc));
-      if (issuer->host)
-        label = simgrid::xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->pid,
-                                            MC_smx_actor_get_host_name(issuer), src_proc ? src_proc->pid : 0,
-                                            dst_proc ? dst_proc->pid : 0);
+      if (issuer->host_)
+        label = simgrid::xbt::string_printf("[(%ld)%s] Wait [(%ld)->(%ld)]", issuer->pid_,
+                                            MC_smx_actor_get_host_name(issuer), src_proc ? src_proc->pid_ : 0,
+                                            dst_proc ? dst_proc->pid_ : 0);
       else
-        label = simgrid::xbt::string_printf("[(%ld)] Wait [(%ld)->(%ld)]",
-                    issuer->pid,
-                    src_proc ? src_proc->pid : 0,
-                    dst_proc ? dst_proc->pid : 0);
+        label = simgrid::xbt::string_printf("[(%ld)] Wait [(%ld)->(%ld)]", issuer->pid_, src_proc ? src_proc->pid_ : 0,
+                                            dst_proc ? dst_proc->pid_ : 0);
     }
     break;
 
@@ -498,15 +496,15 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
     mc_model_checker->process().read(temp_comm, remote(static_cast<simgrid::kernel::activity::CommImpl*>(remote_act)));
     simgrid::kernel::activity::CommImpl* comm = temp_comm.getBuffer();
     if (comm->src_proc == nullptr || comm->dst_proc == nullptr) {
-      if (issuer->host)
-        label = simgrid::xbt::string_printf("[(%ld)%s] Test FALSE", issuer->pid, MC_smx_actor_get_host_name(issuer));
+      if (issuer->host_)
+        label = simgrid::xbt::string_printf("[(%ld)%s] Test FALSE", issuer->pid_, MC_smx_actor_get_host_name(issuer));
       else
-        label = bprintf("[(%ld)] Test FALSE", issuer->pid);
+        label = bprintf("[(%ld)] Test FALSE", issuer->pid_);
     } else {
-      if (issuer->host)
-        label = simgrid::xbt::string_printf("[(%ld)%s] Test TRUE", issuer->pid, MC_smx_actor_get_host_name(issuer));
+      if (issuer->host_)
+        label = simgrid::xbt::string_printf("[(%ld)%s] Test TRUE", issuer->pid_, MC_smx_actor_get_host_name(issuer));
       else
-        label = simgrid::xbt::string_printf("[(%ld)] Test TRUE", issuer->pid);
+        label = simgrid::xbt::string_printf("[(%ld)] Test TRUE", issuer->pid_);
     }
     break;
   }
@@ -514,55 +512,53 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
   case SIMCALL_COMM_WAITANY: {
     unsigned long comms_size = read_length(
       mc_model_checker->process(), remote(simcall_comm_waitany__get__comms(req)));
-    if (issuer->host)
-      label = simgrid::xbt::string_printf("[(%ld)%s] WaitAny [%d of %lu]", issuer->pid,
+    if (issuer->host_)
+      label = simgrid::xbt::string_printf("[(%ld)%s] WaitAny [%d of %lu]", issuer->pid_,
                                           MC_smx_actor_get_host_name(issuer), value + 1, comms_size);
     else
-      label = simgrid::xbt::string_printf("[(%ld)] WaitAny [%d of %lu]",
-                  issuer->pid, value + 1, comms_size);
+      label = simgrid::xbt::string_printf("[(%ld)] WaitAny [%d of %lu]", issuer->pid_, value + 1, comms_size);
     break;
   }
 
   case SIMCALL_COMM_TESTANY:
     if (value == -1) {
-      if (issuer->host)
-        label = simgrid::xbt::string_printf("[(%ld)%s] TestAny FALSE", issuer->pid, MC_smx_actor_get_host_name(issuer));
+      if (issuer->host_)
+        label =
+            simgrid::xbt::string_printf("[(%ld)%s] TestAny FALSE", issuer->pid_, MC_smx_actor_get_host_name(issuer));
       else
-        label = simgrid::xbt::string_printf("[(%ld)] TestAny FALSE", issuer->pid);
+        label = simgrid::xbt::string_printf("[(%ld)] TestAny FALSE", issuer->pid_);
     } else {
-      if (issuer->host)
-        label = simgrid::xbt::string_printf("[(%ld)%s] TestAny TRUE [%d of %lu]", issuer->pid,
+      if (issuer->host_)
+        label = simgrid::xbt::string_printf("[(%ld)%s] TestAny TRUE [%d of %lu]", issuer->pid_,
                                             MC_smx_actor_get_host_name(issuer), value + 1,
                                             simcall_comm_testany__get__count(req));
       else
-        label = simgrid::xbt::string_printf("[(%ld)] TestAny TRUE [%d of %lu]",
-                    issuer->pid,
-                    value + 1,
-                    simcall_comm_testany__get__count(req));
+        label = simgrid::xbt::string_printf("[(%ld)] TestAny TRUE [%d of %lu]", issuer->pid_, value + 1,
+                                            simcall_comm_testany__get__count(req));
     }
     break;
 
   case SIMCALL_MUTEX_TRYLOCK:
-    label = simgrid::xbt::string_printf("[(%ld)] Mutex TRYLOCK", issuer->pid);
+    label = simgrid::xbt::string_printf("[(%ld)] Mutex TRYLOCK", issuer->pid_);
     break;
 
   case SIMCALL_MUTEX_LOCK:
-    label = simgrid::xbt::string_printf("[(%ld)] Mutex LOCK", issuer->pid);
+    label = simgrid::xbt::string_printf("[(%ld)] Mutex LOCK", issuer->pid_);
     break;
 
   case SIMCALL_MC_RANDOM:
-    if (issuer->host)
-      label = simgrid::xbt::string_printf("[(%ld)%s] MC_RANDOM (%d)", issuer->pid, MC_smx_actor_get_host_name(issuer),
+    if (issuer->host_)
+      label = simgrid::xbt::string_printf("[(%ld)%s] MC_RANDOM (%d)", issuer->pid_, MC_smx_actor_get_host_name(issuer),
                                           value);
     else
-      label = simgrid::xbt::string_printf("[(%ld)] MC_RANDOM (%d)", issuer->pid, value);
+      label = simgrid::xbt::string_printf("[(%ld)] MC_RANDOM (%d)", issuer->pid_, value);
     break;
 
   default:
     THROW_UNIMPLEMENTED;
   }
 
-  const char* color = get_color(issuer->pid - 1);
+  const char* color = get_color(issuer->pid_ - 1);
   return  simgrid::xbt::string_printf(
         "label = \"%s\", color = %s, fontcolor = %s", label.c_str(),
         color, color);

@@ -230,7 +230,7 @@ public:
   void yield();
 
   /** Returns true if the actor is suspended. */
-  int is_suspended();
+  bool is_suspended();
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void set_auto_restart(bool autorestart);

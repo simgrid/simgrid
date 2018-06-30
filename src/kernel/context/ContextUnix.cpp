@@ -118,14 +118,14 @@ void UContext::smx_ctx_sysv_wrapper(int i1, int i2)
   simgrid::kernel::context::UContext* context;
   memcpy(&context, ctx_addr, sizeof context);
 
-  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
+  ASAN_FINISH_SWITCH(nullptr, &context_->asan_ctx_->asan_stack_, &context_->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
     context->Context::stop();
   } catch (simgrid::kernel::context::Context::StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
-  ASAN_ONLY(context->asan_stop_ = true);
+  ASAN_ONLY(context_->asan_stop_ = true);
   context->suspend();
 }
 
@@ -170,7 +170,7 @@ void SerialUContext::suspend()
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<SerialUContext*>(simix_global->process_to_run[i]->context);
+    next_context = static_cast<SerialUContext*>(simix_global->process_to_run[i]->context_);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
@@ -192,7 +192,7 @@ void SerialUContext::run_all()
     return;
   smx_actor_t first_process = simix_global->process_to_run.front();
   process_index_            = 1;
-  static_cast<SerialUContext*>(first_process->context)->resume();
+  static_cast<SerialUContext*>(first_process->context_)->resume();
 }
 
 // ParallelUContext
@@ -233,7 +233,7 @@ void ParallelUContext::run_all()
     parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
   parmap_->apply(
       [](smx_actor_t process) {
-        ParallelUContext* context = static_cast<ParallelUContext*>(process->context);
+        ParallelUContext* context = static_cast<ParallelUContext*>(process->context_);
         context->resume();
       },
       simix_global->process_to_run);
@@ -255,7 +255,7 @@ void ParallelUContext::suspend()
   if (next_work) {
     // There is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelUContext*>(next_work.get()->context);
+    next_context = static_cast<ParallelUContext*>(next_work.get()->context_);
   } else {
     // All processes were run, go to the barrier
     XBT_DEBUG("No more processes to run");

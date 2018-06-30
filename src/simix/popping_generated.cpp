@@ -64,7 +64,7 @@ const char* simcall_names[] = {
 void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
   SIMCALL_SET_MC_VALUE(simcall, value);
-  if (simcall->issuer->context->iwannadie)
+  if (simcall->issuer->context_->iwannadie)
     return;
   switch (simcall->call) {
 case SIMCALL_PROCESS_SUSPEND:
@@ -184,10 +184,8 @@ case SIMCALL_RUN_BLOCKING:
     case NUM_SIMCALLS:
       break;
     case SIMCALL_NONE:
-      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
-          simcall->issuer->name.c_str(),
-          sg_host_get_name(simcall->issuer->host)
-          );
+      THROWF(arg_error, 0, "Asked to do the noop syscall on %s@%s", simcall->issuer->get_cname(),
+             sg_host_get_name(simcall->issuer->host_));
       break;
     default:
       THROW_IMPOSSIBLE;

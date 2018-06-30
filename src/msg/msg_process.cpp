@@ -40,7 +40,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
     msg_actor = (simgrid::msg::ActorExt*)SIMIX_process_self_get_data();
     SIMIX_process_self_set_data(nullptr);
   } else {
-    msg_actor = (simgrid::msg::ActorExt*)smx_actor->getUserData();
+    msg_actor = (simgrid::msg::ActorExt*)smx_actor->get_user_data();
     simcall_process_set_data(smx_actor, nullptr);
   }
 
@@ -210,7 +210,7 @@ void* MSG_process_get_data(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simgrid::msg::ActorExt* msgExt = (simgrid::msg::ActorExt*)process->get_impl()->getUserData();
+  simgrid::msg::ActorExt* msgExt = (simgrid::msg::ActorExt*)process->get_impl()->get_user_data();
   if (msgExt)
     return msgExt->data;
   else
@@ -226,7 +226,7 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
-  static_cast<simgrid::msg::ActorExt*>(process->get_impl()->getUserData())->data = data;
+  static_cast<simgrid::msg::ActorExt*>(process->get_impl()->get_user_data())->data = data;
 
   return MSG_OK;
 }
@@ -264,7 +264,7 @@ int MSG_process_get_number()
 int MSG_process_self_PID()
 {
   smx_actor_t self = SIMIX_process_self();
-  return self == nullptr ? 0 : self->pid;
+  return self == nullptr ? 0 : self->pid_;
 }
 
 /** \ingroup m_process_management
@@ -296,7 +296,7 @@ msg_process_t MSG_process_self()
 }
 
 smx_context_t MSG_process_get_smx_ctx(msg_process_t process) { // deprecated -- smx_context_t should die afterward
-  return process->get_impl()->context;
+  return process->get_impl()->context_;
 }
 /**
  * \ingroup m_process_management

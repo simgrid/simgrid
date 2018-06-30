@@ -322,7 +322,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
     SIMIX_comm_finish(synchro);
   } else { /* we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host
               fails */
-    simgrid::kernel::resource::Action* sleep = simcall->issuer->host->pimpl_cpu->sleep(timeout);
+    simgrid::kernel::resource::Action* sleep = simcall->issuer->host_->pimpl_cpu->sleep(timeout);
     sleep->set_data(synchro.get());
 
     simgrid::kernel::activity::CommImplPtr comm =
@@ -455,8 +455,8 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
   /* If both the sender and the receiver are already there, start the communication */
   if (comm->state_ == SIMIX_READY) {
 
-    simgrid::s4u::Host* sender   = comm->src_proc->host;
-    simgrid::s4u::Host* receiver = comm->dst_proc->host;
+    simgrid::s4u::Host* sender   = comm->src_proc->host_;
+    simgrid::s4u::Host* receiver = comm->dst_proc->host_;
 
     comm->surfAction_ = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
     comm->surfAction_->set_data(comm.get());
@@ -475,15 +475,15 @@ static inline void SIMIX_comm_start(simgrid::kernel::activity::CommImplPtr comm)
 
     /* If any of the process is suspended, create the synchro but stop its execution,
        it will be restarted when the sender process resume */
-    if (comm->src_proc->isSuspended() || comm->dst_proc->isSuspended()) {
-      if (comm->src_proc->isSuspended())
+    if (comm->src_proc->is_suspended() || comm->dst_proc->is_suspended()) {
+      if (comm->src_proc->is_suspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->src_proc->get_cname(), comm->src_proc->host->get_cname());
+                  comm->src_proc->get_cname(), comm->src_proc->host_->get_cname());
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the "
                   "communication",
-                  comm->dst_proc->get_cname(), comm->dst_proc->host->get_cname());
+                  comm->dst_proc->get_cname(), comm->dst_proc->host_->get_cname());
 
       comm->surfAction_->suspend();
     }
@@ -528,8 +528,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
     /* Check out for errors */
 
-    if (simcall->issuer->host->is_off()) {
-      simcall->issuer->context->iwannadie = 1;
+    if (simcall->issuer->host_->is_off()) {
+      simcall->issuer->context_->iwannadie = 1;
       SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
     } else {
       switch (comm->state_) {
@@ -549,14 +549,14 @@ void SIMIX_comm_finish(smx_activity_t synchro)
 
         case SIMIX_SRC_HOST_FAILURE:
           if (simcall->issuer == comm->src_proc)
-            simcall->issuer->context->iwannadie = 1;
+            simcall->issuer->context_->iwannadie = 1;
           else
             SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
           break;
 
         case SIMIX_DST_HOST_FAILURE:
           if (simcall->issuer == comm->dst_proc)
-            simcall->issuer->context->iwannadie = 1;
+            simcall->issuer->context_->iwannadie = 1;
           else
             SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
           break;
@@ -564,8 +564,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
         case SIMIX_LINK_FAILURE:
           XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) "
                     "detached:%d",
-                    synchro.get(), comm->src_proc ? comm->src_proc->host->get_cname() : nullptr,
-                    comm->dst_proc ? comm->dst_proc->host->get_cname() : nullptr, simcall->issuer->get_cname(),
+                    synchro.get(), comm->src_proc ? comm->src_proc->host_->get_cname() : nullptr,
+                    comm->dst_proc ? comm->dst_proc->host_->get_cname() : nullptr, simcall->issuer->get_cname(),
                     simcall->issuer, comm->detached);
           if (comm->src_proc == simcall->issuer) {
             XBT_DEBUG("I'm source");
@@ -616,8 +616,8 @@ void SIMIX_comm_finish(smx_activity_t synchro)
       }
     }
 
-    if (simcall->issuer->host->is_off()) {
-      simcall->issuer->context->iwannadie = 1;
+    if (simcall->issuer->host_->is_off()) {
+      simcall->issuer->context_->iwannadie = 1;
     }
 
     simcall->issuer->waiting_synchro = nullptr;
@@ -688,8 +688,8 @@ void SIMIX_comm_copy_data(smx_activity_t synchro)
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)", comm.get(),
-            comm->src_proc ? comm->src_proc->host->get_cname() : "a finished process", comm->src_buff,
-            comm->dst_proc ? comm->dst_proc->host->get_cname() : "a finished process", comm->dst_buff, buff_size);
+            comm->src_proc ? comm->src_proc->host_->get_cname() : "a finished process", comm->src_buff,
+            comm->dst_proc ? comm->dst_proc->host_->get_cname() : "a finished process", comm->dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */
   if (comm->dst_buff_size)

@@ -80,8 +80,8 @@ void SIMIX_io_finish(smx_activity_t synchro)
         xbt_die("Internal error in SIMIX_io_finish: unexpected synchro state %d", static_cast<int>(synchro->state_));
     }
 
-    if (simcall->issuer->host->is_off()) {
-      simcall->issuer->context->iwannadie = 1;
+    if (simcall->issuer->host_->is_off()) {
+      simcall->issuer->context_->iwannadie = 1;
     }
 
     simcall->issuer->waiting_synchro = nullptr;

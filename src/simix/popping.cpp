@@ -22,7 +22,7 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
 {
   if (simcall->issuer != simix_global->maestro_process){
     XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall->call), (int)simcall->call,
-        simcall->issuer->name.c_str(), simcall->issuer);
+              simcall->issuer->get_cname(), simcall->issuer);
     simcall->issuer->simcall.call = SIMCALL_NONE;
 #if 0
     /* This check should be useless and slows everyone. Reactivate if you see something weird in process scheduling. */

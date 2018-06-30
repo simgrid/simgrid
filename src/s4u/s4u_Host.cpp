@@ -86,7 +86,7 @@ Host* Host::current()
   smx_actor_t smx_proc = SIMIX_process_self();
   if (smx_proc == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
-  return smx_proc->host;
+  return smx_proc->host_;
 }
 
 void Host::turn_on()
@@ -117,7 +117,7 @@ void Host::turn_off()
         for (auto& process : host->process_list) {
           SIMIX_process_kill(&process, self);
           XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.get_cname(),
-                    process.host->get_cname(), self->get_cname());
+                    process.host_->get_cname(), self->get_cname());
         }
       }
 
@@ -644,5 +644,5 @@ void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 sg_host_t sg_host_self()
 {
   smx_actor_t process = SIMIX_process_self();
-  return (process == nullptr) ? nullptr : process->host;
+  return (process == nullptr) ? nullptr : process->host_;
 }

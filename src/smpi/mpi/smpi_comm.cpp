@@ -310,7 +310,7 @@ void Comm::init_smp(){
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : process_list) {
-    int index = actor.pid;
+    int index = actor.pid_;
     if (this->group()->rank(actor.iface()) != MPI_UNDEFINED) { // Is this process in the current group?
       intra_comm_size++;
       if (index < min_index)

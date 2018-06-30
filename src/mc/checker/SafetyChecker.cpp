@@ -230,7 +230,7 @@ void SafetyChecker::backtrack()
               state->num);
           }
 
-          if (not prev_state->actorStates[issuer->pid].isDone())
+          if (not prev_state->actorStates[issuer->pid_].isDone())
             prev_state->addInterleavingSet(issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer);
@@ -246,11 +246,8 @@ void SafetyChecker::backtrack()
 
           const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
           XBT_DEBUG("Simcall %d, process %ld (state %d) and simcall %d, process %ld (state %d) are independent",
-                    req->call, issuer->pid, state->num,
-                    prev_state->internal_req.call,
-                    previous_issuer->pid,
+                    req->call, issuer->pid_, state->num, prev_state->internal_req.call, previous_issuer->pid_,
                     prev_state->num);
-
         }
       }
     }

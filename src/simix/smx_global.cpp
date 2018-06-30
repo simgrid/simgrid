@@ -284,8 +284,8 @@ void SIMIX_clean()
 #endif
 
   /* Let's free maestro now */
-  delete simix_global->maestro_process->context;
-  simix_global->maestro_process->context = nullptr;
+  delete simix_global->maestro_process->context_;
+  simix_global->maestro_process->context_ = nullptr;
   delete simix_global->maestro_process;
   simix_global->maestro_process = nullptr;
 
@@ -648,12 +648,12 @@ void SIMIX_display_process_status()
       if (boost::dynamic_pointer_cast<simgrid::kernel::activity::IoImpl>(process->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid,
-               process->get_cname(), process->host->get_cname(), synchro_description, process->waiting_synchro.get(),
+      XBT_INFO("Process %ld (%s@%s): waiting for %s synchro %p (%s) in state %d to finish", process->pid_,
+               process->get_cname(), process->host_->get_cname(), synchro_description, process->waiting_synchro.get(),
                process->waiting_synchro->name_.c_str(), (int)process->waiting_synchro->state_);
     }
     else {
-      XBT_INFO("Process %ld (%s@%s)", process->pid, process->get_cname(), process->host->get_cname());
+      XBT_INFO("Process %ld (%s@%s)", process->pid_, process->get_cname(), process->host_->get_cname());
     }
   }
 }

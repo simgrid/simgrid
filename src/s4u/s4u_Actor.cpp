@@ -71,7 +71,7 @@ void Actor::join(double timeout)
 
 void Actor::set_auto_restart(bool autorestart)
 {
-  simgrid::simix::simcall([this, autorestart]() { pimpl_->auto_restart = autorestart; });
+  simgrid::simix::simcall([this, autorestart]() { pimpl_->auto_restart_ = autorestart; });
 }
 
 void Actor::on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
@@ -114,7 +114,7 @@ void Actor::migrate(Host* new_host)
 
 s4u::Host* Actor::get_host()
 {
-  return this->pimpl_->host;
+  return this->pimpl_->host_;
 }
 
 void Actor::daemonize()
@@ -124,7 +124,7 @@ void Actor::daemonize()
 
 bool Actor::is_daemon() const
 {
-  return this->pimpl_->isDaemon();
+  return this->pimpl_->is_daemon();
 }
 
 const simgrid::xbt::string& Actor::get_name() const
@@ -139,12 +139,12 @@ const char* Actor::get_cname() const
 
 aid_t Actor::get_pid() const
 {
-  return this->pimpl_->pid;
+  return this->pimpl_->pid_;
 }
 
 aid_t Actor::get_ppid() const
 {
-  return this->pimpl_->ppid;
+  return this->pimpl_->ppid_;
 }
 
 void Actor::suspend()
@@ -159,9 +159,9 @@ void Actor::resume()
   s4u::Actor::on_resume(this);
 }
 
-int Actor::is_suspended()
+bool Actor::is_suspended()
 {
-  return simgrid::simix::simcall([this] { return pimpl_->suspended; });
+  return simgrid::simix::simcall([this] { return pimpl_->suspended_; });
 }
 
 void Actor::set_kill_time(double time)
@@ -321,12 +321,12 @@ ExecPtr exec_async(double flops)
 
 aid_t get_pid()
 {
-  return SIMIX_process_self()->pid;
+  return SIMIX_process_self()->pid_;
 }
 
 aid_t get_ppid()
 {
-  return SIMIX_process_self()->ppid;
+  return SIMIX_process_self()->ppid_;
 }
 
 std::string get_name()
@@ -341,7 +341,7 @@ const char* get_cname()
 
 Host* get_host()
 {
-  return SIMIX_process_self()->host;
+  return SIMIX_process_self()->host_;
 }
 
 void suspend()
@@ -362,7 +362,7 @@ void resume()
 bool is_suspended()
 {
   smx_actor_t process = SIMIX_process_self();
-  return simgrid::simix::simcall([process] { return process->suspended; });
+  return simgrid::simix::simcall([process] { return process->suspended_; });
 }
 
 void kill()

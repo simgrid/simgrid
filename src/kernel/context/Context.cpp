@@ -77,7 +77,7 @@ void Context::stop()
 {
   if (this->cleanup_func_)
     this->cleanup_func_(this->process_);
-  this->process_->suspended = 0;
+  this->process_->suspended_ = 0;
 
   this->iwannadie = false;
   simgrid::simix::simcall([this] { SIMIX_process_cleanup(this->process_); });

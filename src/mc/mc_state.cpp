@@ -70,7 +70,7 @@ Transition State::getTransition() const
 static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State* state, smx_actor_t actor)
 {
   /* reset the outgoing transition */
-  simgrid::mc::ProcessState* procstate = &state->actorStates[actor->pid];
+  simgrid::mc::ProcessState* procstate = &state->actorStates[actor->pid_];
   state->transition.pid                = -1;
   state->transition.argument           = -1;
   state->executed_req.call             = SIMCALL_NONE;
@@ -152,7 +152,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(simgrid::mc::State*
   if (not req)
     return nullptr;
 
-  state->transition.pid = actor->pid;
+  state->transition.pid = actor->pid_;
   state->executed_req = *req;
   // Fetch the data of the request and translate it:
   state->internal_req = *req;
@@ -212,7 +212,7 @@ smx_simcall_t MC_state_get_request(simgrid::mc::State* state)
 {
   for (auto& actor : mc_model_checker->process().actors()) {
     /* Only consider the actors that were marked as interleaving by the checker algorithm */
-    if (not state->actorStates[actor.copy.getBuffer()->pid].isTodo())
+    if (not state->actorStates[actor.copy.getBuffer()->pid_].isTodo())
       continue;
 
     smx_simcall_t res = MC_state_get_request_for_process(state, actor.copy.getBuffer());

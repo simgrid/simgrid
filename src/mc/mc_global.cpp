@@ -175,11 +175,11 @@ double MC_process_clock_get(smx_actor_t process)
   if (simgrid::mc::processes_time.empty())
     return 0;
   if (process != nullptr)
-    return simgrid::mc::processes_time[process->pid];
+    return simgrid::mc::processes_time[process->pid_];
   return -1;
 }
 
 void MC_process_clock_add(smx_actor_t process, double amount)
 {
-  simgrid::mc::processes_time[process->pid] += amount;
+  simgrid::mc::processes_time[process->pid_] += amount;
 }

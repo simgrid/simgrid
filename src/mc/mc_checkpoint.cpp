@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -549,7 +548,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
   std::shared_ptr<simgrid::mc::Snapshot> snapshot = std::make_shared<simgrid::mc::Snapshot>(mc_process, num_state);
 
   for (auto const& p : mc_model_checker->process().actors())
-    snapshot->enabled_processes.insert(p.copy.getBuffer()->pid);
+    snapshot->enabled_processes.insert(p.copy.getBuffer()->pid_);
 
   snapshot_handle_ignore(snapshot.get());
 

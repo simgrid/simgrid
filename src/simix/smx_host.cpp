@@ -55,7 +55,7 @@ namespace simgrid {
         if (arg->kill_time >= 0)
           simcall_process_set_kill_time(actor, arg->kill_time);
         if (arg->auto_restart)
-          actor->auto_restart = arg->auto_restart;
+          actor->auto_restart_ = arg->auto_restart;
       }
     }
 
@@ -107,7 +107,7 @@ void SIMIX_host_autorestart(sg_host_t host)
     if (arg->kill_time >= 0)
       simcall_process_set_kill_time(actor, arg->kill_time);
     if (arg->auto_restart)
-      actor->auto_restart = arg->auto_restart;
+      actor->auto_restart_ = arg->auto_restart;
   }
   process_list.clear();
 }
@@ -213,8 +213,8 @@ void SIMIX_execution_finish(smx_activity_t synchro)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host->get_cname());
-        simcall->issuer->context->iwannadie = 1;
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host_->get_cname());
+        simcall->issuer->context_->iwannadie = 1;
         SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
 
@@ -232,8 +232,8 @@ void SIMIX_execution_finish(smx_activity_t synchro)
         xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d", (int)exec->state_);
     }
     /* Fail the process if the host is down */
-    if (simcall->issuer->host->is_off())
-      simcall->issuer->context->iwannadie = 1;
+    if (simcall->issuer->host_->is_off())
+      simcall->issuer->context_->iwannadie = 1;
 
     simcall->issuer->waiting_synchro = nullptr;
     simcall_execution_wait__set__result(simcall, exec->state_);

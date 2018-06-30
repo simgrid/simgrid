@@ -258,14 +258,14 @@ RawContext::~RawContext()
 void RawContext::wrapper(void* arg)
 {
   RawContext* context = static_cast<RawContext*>(arg);
-  ASAN_FINISH_SWITCH(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
+  ASAN_FINISH_SWITCH(nullptr, &context_->asan_ctx_->asan_stack_, &context_->asan_ctx_->asan_stack_size_);
   try {
     (*context)();
     context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
   }
-  ASAN_ONLY(context->asan_stop_ = true);
+  ASAN_ONLY(context_->asan_stop_ = true);
   context->suspend();
 }
 
@@ -297,7 +297,7 @@ void SerialRawContext::suspend()
   if (i < simix_global->process_to_run.size()) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<SerialRawContext*>(simix_global->process_to_run[i]->context);
+    next_context = static_cast<SerialRawContext*>(simix_global->process_to_run[i]->context_);
   } else {
     /* all processes were run, return to maestro */
     XBT_DEBUG("No more process to run");
@@ -319,7 +319,7 @@ void SerialRawContext::run_all()
     return;
   smx_actor_t first_process = simix_global->process_to_run.front();
   process_index_            = 1;
-  static_cast<SerialRawContext*>(first_process->context)->resume();
+  static_cast<SerialRawContext*>(first_process->context_)->resume();
 }
 
 // ParallelRawContext
@@ -355,7 +355,7 @@ void ParallelRawContext::run_all()
     parmap_ = new simgrid::xbt::Parmap<smx_actor_t>(SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
   parmap_->apply(
       [](smx_actor_t process) {
-        ParallelRawContext* context = static_cast<ParallelRawContext*>(process->context);
+        ParallelRawContext* context = static_cast<ParallelRawContext*>(process->context_);
         context->resume();
       },
       simix_global->process_to_run);
@@ -369,7 +369,7 @@ void ParallelRawContext::suspend()
   if (next_work) {
     /* there is a next process to resume */
     XBT_DEBUG("Run next process");
-    next_context = static_cast<ParallelRawContext*>(next_work.get()->context);
+    next_context = static_cast<ParallelRawContext*>(next_work.get()->context_);
   } else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
