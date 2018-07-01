@@ -4,16 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.hpp"
-#include "xbt/xbt_os_thread.h"
-#if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.hpp"
-#endif
-
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
-#include "src/kernel/activity/IoImpl.hpp"
-#include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_popping, simix,
                                 "Popping part of SIMIX (transmuting from user request into kernel handlers)");

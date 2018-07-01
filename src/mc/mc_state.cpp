@@ -3,20 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cassert>
-
-#include <boost/range/algorithm.hpp>
-
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
-
 #include "src/mc/mc_comm_pattern.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_state.hpp"
 #include "src/mc/mc_xbt.hpp"
-#include "src/simix/smx_private.hpp"
+
+#include <boost/range/algorithm.hpp>
 
 using simgrid::mc::remote;
 

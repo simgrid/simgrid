@@ -4,21 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_comm.hpp"
-#include "private.hpp"
-#include "simgrid/s4u/Host.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_process.hpp"
 #include "smpi_request.hpp"
-#include "smpi_status.hpp"
 #include "smpi_win.hpp"
-#include "src/simix/smx_host_private.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/surf/HostImpl.hpp"
 
-#include <algorithm>
 #include <climits>
-#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 

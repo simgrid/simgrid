@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/vm.h"
+#include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmHostExt.hpp"
 #include "src/simix/smx_host_private.hpp"

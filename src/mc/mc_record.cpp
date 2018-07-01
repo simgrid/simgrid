@@ -3,27 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
-
-#include <stdexcept>
-#include <sstream>
-#include <string>
-
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
-
-#include "simgrid/simix.h"
-
-#include "src/kernel/context/Context.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/context/Context.hpp"
+#include "src/mc/Transition.hpp"
+#include "src/mc/mc_base.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_private.hpp"
-
-#include "src/mc/mc_base.h"
-#include "src/mc/Transition.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/checker/Checker.hpp"

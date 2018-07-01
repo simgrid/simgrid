@@ -5,8 +5,8 @@
 
 #include "src/kernel/activity/CommImpl.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
-
 #include "simgrid/modelchecker.h"
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_network_private.hpp"
 #include "src/surf/surf_interface.hpp"

@@ -5,6 +5,7 @@
 
 #include <xbt/ex.hpp>
 
+#include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/msg/msg_private.hpp"

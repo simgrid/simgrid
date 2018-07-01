@@ -3,24 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <algorithm>
-
-#include <boost/range/algorithm.hpp>
-
-#include "src/kernel/activity/CommImpl.hpp"
-#include <xbt/ex.hpp>
-
-#include "simgrid/s4u/Host.hpp"
-
 #include "mc/mc.h"
-#include "simgrid/s4u/Activity.hpp"
-#include "simgrid/s4u/Mailbox.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_interface.hpp"
-
 #include "src/surf/network_interface.hpp"
+#include "xbt/ex.hpp"
+
+#include <boost/circular_buffer.hpp>
+#include <boost/range/algorithm.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 

@@ -6,14 +6,9 @@
 #ifndef SIMIX_HOST_PRIVATE_HPP
 #define SIMIX_HOST_PRIVATE_HPP
 
-#include <boost/intrusive/list.hpp>
-#include <functional>
-#include <unordered_map>
-#include <vector>
-
 #include "src/simix/ActorImpl.hpp"
-#include "src/simix/popping_private.hpp"
-#include "xbt/Extendable.hpp"
+
+#include <boost/intrusive/list.hpp>
 
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor::ActorImpl* actor);
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);

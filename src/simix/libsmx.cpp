@@ -5,29 +5,20 @@
 /*                                                                            */
 /* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cmath>         /* std::isfinite() */
-
-#include <functional>
-
 #include "mc/mc.h"
-#include "simgrid/s4u/VirtualMachine.hpp"
-#include "simgrid/simix.hpp"
 #include "simgrid/simix/blocking_simcall.hpp"
-#include "smx_private.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-#include "xbt/ex.h"
-#include "xbt/functional.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 

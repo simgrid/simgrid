@@ -7,7 +7,9 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/simix/smx_private.hpp"
+
 #include <sstream>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor, "S4U actors");

@@ -3,14 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdint>
-
-#include <xbt/dynar.h>
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
-
-#include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/mc/VisitedState.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
@@ -20,6 +15,8 @@
 #include "src/mc/remote/Client.hpp"
 
 #include "smpi_request.hpp"
+
+#include <cstdint>
 
 using simgrid::mc::remote;
 

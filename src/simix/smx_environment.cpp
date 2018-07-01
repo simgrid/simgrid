@@ -1,13 +1,10 @@
-/* Copyright (c) 2007-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.hpp"
-#include "xbt/config.hpp"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
+#include "src/include/surf/surf.hpp"
 #include "xbt/xbt_os_time.h"
 #include <xbt/ex.hpp>
 

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/live_migration.h"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 
 namespace simgrid {

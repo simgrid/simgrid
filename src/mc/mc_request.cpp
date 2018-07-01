@@ -3,12 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cassert>
-
+#include "src/mc/mc_request.hpp"
 #include "src/include/mc/mc.h"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_request.hpp"
 #include "src/mc/mc_smx.hpp"
 #include "src/mc/mc_xbt.hpp"
 

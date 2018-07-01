@@ -16,6 +16,7 @@
 #include "simgrid/kernel/routing/VivaldiZone.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/include/simgrid/sg_config.hpp"
+#include "src/include/surf/surf.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"

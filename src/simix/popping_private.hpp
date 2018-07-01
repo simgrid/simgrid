@@ -6,12 +6,8 @@
 #ifndef SG_POPPING_PRIVATE_HPP
 #define SG_POPPING_PRIVATE_HPP
 
-#include <simgrid/simix.h>
-#include <xbt/base.h>
-
-#include <src/kernel/activity/ActivityImpl.hpp>
-#include <src/kernel/activity/CommImpl.hpp>
-#include <src/kernel/activity/ExecImpl.hpp>
+#include "simgrid/forward.h"
+#include "src/kernel/activity/ActivityImpl.hpp"
 
 #include <boost/intrusive_ptr.hpp>
 

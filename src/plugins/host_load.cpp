@@ -3,9 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/s4u.hpp>
 #include "simgrid/plugins/load.h"
+#include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include <simgrid/s4u.hpp>
 
 /** @addtogroup plugin_load
 

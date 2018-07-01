@@ -7,8 +7,10 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 
-#include "../kernel/activity/IoImpl.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_record.hpp"
@@ -20,17 +22,10 @@
 #include "src/surf/xml/platf.hpp"
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_private.hpp"
 #include "src/mc/remote/Client.hpp"
-#include "src/mc/remote/mc_protocol.h"
-#endif
-
-#if HAVE_SMPI
-#include "src/smpi/include/private.hpp"
 #endif
 
 #include <boost/heap/fibonacci_heap.hpp>
-#include <csignal>
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");

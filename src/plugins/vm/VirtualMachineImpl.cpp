@@ -4,10 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/include/surf/surf.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_host_private.hpp"
-
-#include <xbt/asserts.h> // xbt_log_no_loc
+#include "xbt/asserts.h" // xbt_log_no_loc
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 

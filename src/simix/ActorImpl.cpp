@@ -5,6 +5,8 @@
 
 #include "mc/mc.h"
 #include "smx_private.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"

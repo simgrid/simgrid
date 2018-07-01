@@ -5,10 +5,8 @@
 
 #include "simgrid/s4u/Comm.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
-#include "src/msg/msg_private.hpp"
-#include "src/simix/ActorImpl.hpp"
-#include "src/simix/smx_network_private.hpp"
-#include "xbt/log.h"
+#include "src/kernel/activity/MailboxImpl.hpp"
+#include <simgrid/mailbox.h>
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel, s4u, "S4U Communication Mailboxes");

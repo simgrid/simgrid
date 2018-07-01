@@ -3,13 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_synchro_private.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 

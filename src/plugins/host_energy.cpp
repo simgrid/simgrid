@@ -6,6 +6,7 @@
 #include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/load.h"
 #include "simgrid/s4u/Engine.hpp"
+#include "src/include/surf/surf.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 

@@ -3,20 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/ex.hpp>
-#include <xbt/sysdep.h>
-#include <xbt/log.h>
-
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/Storage.hpp"
+#include "xbt/ex.hpp"
 
 #include "smx_private.hpp"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/simix/smx_io_private.hpp"
-#include "src/surf/HostImpl.hpp"
 #include "src/surf/StorageImpl.hpp"
-#include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 

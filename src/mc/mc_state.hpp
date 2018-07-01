@@ -12,6 +12,7 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_snapshot.hpp"
 
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/Transition.hpp"
 
 namespace simgrid {
