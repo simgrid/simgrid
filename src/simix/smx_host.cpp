@@ -13,54 +13,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
-namespace simgrid {
-  namespace simix {
-    simgrid::xbt::Extension<simgrid::s4u::Host, Host> Host::EXTENSION_ID;
-
-    Host::Host()
-    {
-      if (not Host::EXTENSION_ID.valid())
-        Host::EXTENSION_ID = s4u::Host::extension_create<simix::Host>();
-    }
-
-    Host::~Host()
-    {
-      /* All processes should be gone when the host is turned off (by the end of the simulation). */
-      if (not process_list.empty()) {
-        std::string msg     = std::string("Shutting down host, but it's not empty:");
-        for (auto const& process : process_list)
-          msg += "\n\t" + std::string(process.get_name());
-
-        SIMIX_display_process_status();
-        THROWF(arg_error, 0, "%s", msg.c_str());
-      }
-      for (auto const& arg : auto_restart_processes)
-        delete arg;
-      auto_restart_processes.clear();
-      for (auto const& arg : boot_processes)
-        delete arg;
-      boot_processes.clear();
-    }
-
-    /** Re-starts all the actors that are marked as restartable.
-     *
-     * Weird things will happen if you turn on an host that is already on. S4U is fool-proof, not this.
-     */
-    void Host::turnOn()
-    {
-      for (auto const& arg : boot_processes) {
-        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-        smx_actor_t actor = simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host,
-                                                                  arg->properties.get(), nullptr);
-        if (arg->kill_time >= 0)
-          simcall_process_set_kill_time(actor, arg->kill_time);
-        if (arg->auto_restart)
-          actor->auto_restart_ = arg->auto_restart;
-      }
-    }
-
-}} // namespaces
-
 /* needs to be public and without simcall for exceptions and logging events */
 const char* sg_host_self_get_name()
 {
@@ -87,14 +39,13 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor:
     XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
   }
   XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->get_cname());
-  host->extension<simgrid::simix::Host>()->auto_restart_processes.push_back(arg);
+  host->pimpl_->auto_restart_processes.push_back(arg);
 }
 
 /** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
-  std::vector<simgrid::kernel::actor::ProcessArg*> process_list =
-      host->extension<simgrid::simix::Host>()->auto_restart_processes;
+  std::vector<simgrid::kernel::actor::ProcessArg*> process_list = host->pimpl_->auto_restart_processes;
 
   for (auto const& arg : process_list) {
     XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->get_cname());

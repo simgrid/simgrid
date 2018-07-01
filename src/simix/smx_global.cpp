@@ -9,12 +9,12 @@
 
 #include "../kernel/activity/IoImpl.hpp"
 #include "simgrid/sg_config.hpp"
-#include "smx_private.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_host_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_process.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/xml/platf.hpp"
@@ -208,10 +208,6 @@ void SIMIX_global_init(int *argc, char **argv)
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
     simgrid::s4u::on_platform_created.connect(SIMIX_post_create_environment);
-    simgrid::s4u::Host::on_creation.connect([](simgrid::s4u::Host& host) {
-      if (host.extension<simgrid::simix::Host>() == nullptr) // another callback to the same signal may have created it
-        host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
-    });
 
     simgrid::s4u::Storage::on_creation.connect([](simgrid::s4u::Storage& storage) {
       sg_storage_t s = simgrid::s4u::Storage::by_name(storage.get_cname());

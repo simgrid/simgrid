@@ -13,6 +13,7 @@
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_io_private.hpp"
 #include "src/simix/smx_synchro_private.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "xbt/ex.hpp"
 
@@ -101,7 +102,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
   XBT_DEBUG("%p should not be run anymore",process);
   simix_global->process_list.erase(process->pid_);
   if (process->host_ && process->host_process_list_hook.is_linked())
-    simgrid::xbt::intrusive_erase(process->host_->extension<simgrid::simix::Host>()->process_list, *process);
+    simgrid::xbt::intrusive_erase(process->host_->pimpl_->process_list, *process);
   if (not process->smx_destroy_list_hook.is_linked()) {
 #if SIMGRID_HAVE_MC
     xbt_dynar_push_as(simix_global->dead_actors_vector, smx_actor_t, process);
@@ -312,12 +313,8 @@ smx_actor_t SIMIX_process_create(const char* name, simgrid::simix::ActorCode cod
     for (auto const& kv : *properties)
       process->set_property(kv.first, kv.second);
 
-  /* Make sure that the process is initialized for simix, in case we are called from the Host::onCreation signal */
-  if (host->extension<simgrid::simix::Host>() == nullptr)
-    host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
-
   /* Add the process to its host's process list */
-  host->extension<simgrid::simix::Host>()->process_list.push_back(*process);
+  host->pimpl_->process_list.push_back(*process);
 
   XBT_DEBUG("Start context '%s'", process->get_cname());
 
@@ -374,7 +371,7 @@ smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostn
       process->set_property(kv.first, kv.second);
 
   /* Add the process to it's host process list */
-  host->extension<simgrid::simix::Host>()->process_list.push_back(*process);
+  host->pimpl_->process_list.push_back(*process);
 
   /* Now insert it in the global process list and in the process to run list */
   simix_global->process_list[process->pid_] = process;
@@ -567,9 +564,9 @@ void SIMIX_process_killall(smx_actor_t issuer)
 void SIMIX_process_change_host(smx_actor_t actor, sg_host_t dest)
 {
   xbt_assert((actor != nullptr), "Invalid parameters");
-  simgrid::xbt::intrusive_erase(actor->host_->extension<simgrid::simix::Host>()->process_list, *actor);
+  simgrid::xbt::intrusive_erase(actor->host_->pimpl_->process_list, *actor);
   actor->host_ = dest;
-  dest->extension<simgrid::simix::Host>()->process_list.push_back(*actor);
+  dest->pimpl_->process_list.push_back(*actor);
 }
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process)

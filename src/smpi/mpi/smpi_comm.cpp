@@ -14,6 +14,7 @@
 #include "smpi_win.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/surf/HostImpl.hpp"
 
 #include <algorithm>
 #include <climits>
@@ -306,7 +307,7 @@ void Comm::init_smp(){
   }
   //identify neighbours in comm
   //get the indices of all processes sharing the same simix host
-  auto& process_list      = sg_host_self()->extension<simgrid::simix::Host>()->process_list;
+  auto& process_list      = sg_host_self()->pimpl_->process_list;
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : process_list) {

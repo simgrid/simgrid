@@ -15,29 +15,6 @@
 #include "src/simix/popping_private.hpp"
 #include "xbt/Extendable.hpp"
 
-/** @brief Host datatype from SIMIX POV */
-namespace simgrid {
-namespace simix {
-
-class Host {
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
-
-  explicit Host();
-  virtual ~Host();
-
-  boost::intrusive::list<kernel::actor::ActorImpl,
-                         boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
-                                                       &kernel::actor::ActorImpl::host_process_list_hook>>
-      process_list;
-  std::vector<kernel::actor::ProcessArg*> auto_restart_processes;
-  std::vector<kernel::actor::ProcessArg*> boot_processes;
-
-  void turnOn();
-};
-}
-}
-
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor::ActorImpl* actor);
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 

@@ -3,21 +3,23 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "cpu_interface.hpp"
-#include "network_interface.hpp"
-#include "src/surf/PropertyHolder.hpp"
-
-#include "StorageImpl.hpp"
-
 #ifndef SURF_HOST_INTERFACE_HPP_
 #define SURF_HOST_INTERFACE_HPP_
+
+#include "StorageImpl.hpp"
+#include "cpu_interface.hpp"
+#include "network_interface.hpp"
+#include "src/simix/ActorImpl.hpp"
+#include "src/surf/PropertyHolder.hpp"
+
+#include <vector>
+
+namespace simgrid {
+namespace surf {
 
 /*********
  * Model *
  *********/
-
-namespace simgrid {
-namespace surf {
 
 /** @ingroup SURF_host_interface
  * @brief SURF Host model interface class
@@ -43,13 +45,29 @@ class XBT_PRIVATE HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
   explicit HostImpl(s4u::Host* host);
-  virtual ~HostImpl() = default;
+  virtual ~HostImpl();
 
   /** @brief Get the vector of storages (by names) attached to the Host */
   virtual std::vector<const char*> get_attached_storages();
 
   std::map<std::string, simgrid::surf::StorageImpl*> storage_;
   simgrid::s4u::Host* piface_ = nullptr;
+
+  void turn_on();
+  void turn_off();
+  std::vector<s4u::ActorPtr> get_all_actors();
+  int get_actor_count();
+
+  typedef boost::intrusive::list<
+      kernel::actor::ActorImpl,
+      boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
+                                    &kernel::actor::ActorImpl::host_process_list_hook>>
+      ActorList;
+
+  // FIXME: make these private
+  ActorList process_list;
+  std::vector<kernel::actor::ProcessArg*> auto_restart_processes;
+  std::vector<kernel::actor::ProcessArg*> boot_processes;
 };
 }
 }

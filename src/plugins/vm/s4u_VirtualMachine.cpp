@@ -42,9 +42,6 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int c
   surf_cpu_model_vm->create_cpu(this, &speeds, physical_host->get_core_count());
   if (physical_host->get_pstate() != 0)
     set_pstate(physical_host->get_pstate());
-
-  /* Make a process container */
-  extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 }
 
 VirtualMachine::~VirtualMachine()
@@ -52,14 +49,6 @@ VirtualMachine::~VirtualMachine()
   on_destruction(*this);
 
   XBT_DEBUG("destroy %s", get_cname());
-
-  /* FIXME: this is really strange that everything fails if the next line is removed.
-   * This is as if we shared these data with the PM, which definitely should not be the case...
-   *
-   * We need to test that suspending a VM does not suspends the processes running on its PM, for example.
-   * Or we need to simplify this code enough to make it actually readable (but this sounds harder than testing)
-   */
-  extension_set<simgrid::simix::Host>(nullptr);
 
   /* Don't free these things twice: they are the ones of my physical host */
   pimpl_netpoint = nullptr;

@@ -93,7 +93,7 @@ void Host::turn_on()
 {
   if (is_off()) {
     simgrid::simix::simcall([this] {
-      this->extension<simgrid::simix::Host>()->turnOn();
+      this->pimpl_->turn_on();
       this->pimpl_cpu->turn_on();
       on_state_change(*this);
     });
@@ -106,20 +106,8 @@ void Host::turn_off()
   if (is_on()) {
     smx_actor_t self = SIMIX_process_self();
     simgrid::simix::simcall([this, self] {
-      simgrid::simix::Host* host = this->extension<simgrid::simix::Host>();
-
-      xbt_assert((host != nullptr), "Invalid parameters");
-
       this->pimpl_cpu->turn_off();
-
-      /* Clean Simulator data */
-      if (not host->process_list.empty()) {
-        for (auto& process : host->process_list) {
-          SIMIX_process_kill(&process, self);
-          XBT_DEBUG("Killing %s@%s on behalf of %s which turned off that host.", process.get_cname(),
-                    process.host_->get_cname(), self->get_cname());
-        }
-      }
+      this->pimpl_->turn_off();
 
       on_state_change(*this);
     });
@@ -143,32 +131,29 @@ int Host::get_pstate_count() const
  */
 std::vector<ActorPtr> Host::get_all_actors()
 {
-  std::vector<ActorPtr> res;
-  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list)
-    res.push_back(actor.ciface());
-  return res;
+  return pimpl_->get_all_actors();
 }
 
 /** @brief Returns how many actors (daemonized or not) have been launched on this host */
 int Host::get_actor_count()
 {
-  return this->extension<simgrid::simix::Host>()->process_list.size();
+  return pimpl_->get_actor_count();
 }
 
 /** @deprecated */
 void Host::getProcesses(std::vector<ActorPtr>* list)
 {
-  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
-    list->push_back(actor.iface());
-  }
+  auto actors = get_all_actors();
+  for (auto& actor : actors)
+    list->push_back(actor);
 }
 
 /** @deprecated */
 void Host::actorList(std::vector<ActorPtr>* whereto)
 {
-  for (auto& actor : this->extension<simgrid::simix::Host>()->process_list) {
-    whereto->push_back(actor.ciface());
-  }
+  auto actors = get_all_actors();
+  for (auto& actor : actors)
+    whereto->push_back(actor);
 }
 
 /**
@@ -635,10 +620,9 @@ void sg_host_dump(sg_host_t host)
  */
 void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 {
-  for (auto& actor : host->extension<simgrid::simix::Host>()->process_list) {
-    s4u_Actor* p = actor.ciface();
-    xbt_dynar_push(whereto, &p);
-  }
+  auto actors = host->get_all_actors();
+  for (auto& actor : actors)
+    xbt_dynar_push(whereto, &actor);
 }
 
 sg_host_t sg_host_self()
