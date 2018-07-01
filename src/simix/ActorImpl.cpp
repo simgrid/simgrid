@@ -168,15 +168,7 @@ simgrid::s4u::Actor* ActorImpl::restart()
   XBT_DEBUG("Restarting process %s on %s", get_cname(), host_->get_cname());
 
   // retrieve the arguments of the old process
-  // FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
-  simgrid::kernel::actor::ProcessArg arg;
-  arg.name         = name_;
-  arg.code         = code;
-  arg.host         = host_;
-  arg.kill_time    = SIMIX_timer_get_date(kill_timer);
-  arg.data         = userdata_;
-  arg.properties   = nullptr;
-  arg.auto_restart = auto_restart_;
+  simgrid::kernel::actor::ProcessArg arg = ProcessArg(host_, this);
 
   // kill the old process
   SIMIX_process_kill(this, (this == simix_global->maestro_process) ? this : SIMIX_process_self());
@@ -184,10 +176,8 @@ simgrid::s4u::Actor* ActorImpl::restart()
   // start the new process
   ActorImpl* actor = simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
                                                            arg.properties.get(), nullptr);
-  if (arg.kill_time >= 0)
-    simcall_process_set_kill_time(actor, arg.kill_time);
-  if (arg.auto_restart)
-    actor->auto_restart_ = arg.auto_restart;
+  simcall_process_set_kill_time(actor, arg.kill_time);
+  actor->set_auto_restart(arg.auto_restart);
 
   return actor->ciface();
 }
