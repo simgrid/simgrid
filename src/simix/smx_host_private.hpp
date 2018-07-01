@@ -38,11 +38,7 @@ public:
 }
 }
 
-XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, std::function<void()> code,
-                                                     void* data, double kill_time,
-                                                     std::unordered_map<std::string, std::string>* properties,
-                                                     int auto_restart);
-
+XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor::ActorImpl* actor);
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 
 XBT_PRIVATE void SIMIX_execution_finish(smx_activity_t synchro);

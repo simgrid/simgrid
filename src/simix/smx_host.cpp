@@ -78,13 +78,9 @@ const char* sg_host_self_get_name()
  * The processes will only be restarted once, meaning that you will have to register the process
  * again to restart the process again.
  */
-void SIMIX_host_add_auto_restart_process(sg_host_t host, const char* name, simgrid::simix::ActorCode code, void* data,
-                                         double kill_time, std::unordered_map<std::string, std::string>* properties,
-                                         int auto_restart)
+void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor::ActorImpl* actor)
 {
-  simgrid::kernel::actor::ProcessArg* arg =
-      new simgrid::kernel::actor::ProcessArg(name, code, data, host, kill_time, nullptr, auto_restart);
-  arg->properties.reset(properties, [](decltype(properties)) {});
+  simgrid::kernel::actor::ProcessArg* arg = new simgrid::kernel::actor::ProcessArg(host, actor);
 
   if (host->is_off() && watched_hosts.find(host->get_cname()) == watched_hosts.end()) {
     watched_hosts.insert(host->get_cname());

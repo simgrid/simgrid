@@ -23,29 +23,6 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-class ProcessArg {
-public:
-  std::string name;
-  std::function<void()> code;
-  void* data            = nullptr;
-  s4u::Host* host       = nullptr;
-  double kill_time      = 0.0;
-  std::shared_ptr<std::unordered_map<std::string, std::string>> properties;
-  bool auto_restart     = false;
-  ProcessArg()          = default;
-  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
-                      std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
-      : name(name)
-      , code(std::move(code))
-      , data(data)
-      , host(host)
-      , kill_time(kill_time)
-      , properties(properties)
-      , auto_restart(auto_restart)
-  {
-  }
-};
-
 class ActorImpl : public simgrid::surf::PropertyHolder {
 public:
   ActorImpl() : piface_(this) {}
@@ -124,6 +101,41 @@ public:
   smx_activity_t sleep(double duration);
   void set_user_data(void* data) { userdata_ = data; }
   void* get_user_data() { return userdata_; }
+};
+
+class ProcessArg {
+public:
+  std::string name;
+  std::function<void()> code;
+  void* data                                                               = nullptr;
+  s4u::Host* host                                                          = nullptr;
+  double kill_time                                                         = 0.0;
+  std::shared_ptr<std::unordered_map<std::string, std::string>> properties = nullptr;
+  bool auto_restart                                                        = false;
+  ProcessArg()                                                             = default;
+
+  explicit ProcessArg(std::string name, std::function<void()> code, void* data, s4u::Host* host, double kill_time,
+                      std::shared_ptr<std::unordered_map<std::string, std::string>> properties, bool auto_restart)
+      : name(name)
+      , code(std::move(code))
+      , data(data)
+      , host(host)
+      , kill_time(kill_time)
+      , properties(properties)
+      , auto_restart(auto_restart)
+  {
+  }
+
+  explicit ProcessArg(s4u::Host* host, ActorImpl* actor)
+      : name(actor->get_name())
+      , code(std::move(actor->code))
+      , data(actor->get_user_data())
+      , host(host)
+      , kill_time(SIMIX_timer_get_date(actor->kill_timer))
+      , auto_restart(actor->auto_restart_)
+  {
+    properties.reset(actor->get_properties(), [](decltype(actor->get_properties())) {});
+  }
 };
 
 /* Used to keep the list of actors blocked on a synchro  */

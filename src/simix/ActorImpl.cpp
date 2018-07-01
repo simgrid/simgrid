@@ -709,9 +709,7 @@ void SIMIX_process_yield(smx_actor_t self)
     SIMIX_process_on_exit_runall(self);
     /* Add the process to the list of process to restart, only if the host is down */
     if (self->auto_restart_ && self->host_->is_off()) {
-      SIMIX_host_add_auto_restart_process(self->host_, self->get_cname(), self->code, self->get_user_data(),
-                                          SIMIX_timer_get_date(self->kill_timer), self->get_properties(),
-                                          self->auto_restart_);
+      SIMIX_host_add_auto_restart_process(self->host_, self);
     }
     XBT_DEBUG("Process %s@%s is dead", self->get_cname(), self->host_->get_cname());
     self->context_->stop();
