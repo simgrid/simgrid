@@ -795,9 +795,6 @@ endif()
 
 ### Simgrid Lib sources
 set(simgrid_sources
-  ${PLUGINS_SRC}
-  ${BINDINGS_SRC}
-  ${MC_SRC_BASE}
   ${MSG_SRC}
   ${S4U_SRC}
   ${SIMDAG_SRC}
@@ -806,6 +803,9 @@ set(simgrid_sources
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
+  ${PLUGINS_SRC}
+  ${BINDINGS_SRC}
+  ${MC_SRC_BASE}
   )
 
 if(${SIMGRID_HAVE_JEDULE})
