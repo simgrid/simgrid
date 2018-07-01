@@ -104,8 +104,7 @@ void Host::turn_on()
 void Host::turn_off()
 {
   if (is_on()) {
-    smx_actor_t self = SIMIX_process_self();
-    simgrid::simix::simcall([this, self] {
+    simgrid::simix::simcall([this] {
       this->pimpl_cpu->turn_off();
       this->pimpl_->turn_off();
 
