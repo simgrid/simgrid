@@ -439,8 +439,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
     return;
   }
 
-  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", issuer->get_cname(), issuer->host_->get_cname(),
-            process->get_cname(), process->host_->get_cname());
+  XBT_DEBUG("Actor '%s'@%s is killing actor '%s'@%s", issuer->get_cname(),
+            (issuer->host_ == nullptr ? "(null)" : issuer->host_->get_cname()), process->get_cname(),
+            process->host_->get_cname());
 
   process->context_->iwannadie = 1;
   process->blocked_           = 0;
