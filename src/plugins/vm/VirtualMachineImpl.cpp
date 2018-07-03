@@ -147,7 +147,6 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
     THROWF(vm_error, 0, "Actor %s cannot suspend the VM %s in which it runs", issuer->get_cname(),
            piface_->get_cname());
 
-  auto& process_list = piface_->pimpl_->process_list;
   XBT_DEBUG("suspend VM(%s), where %zu processes exist", piface_->get_cname(), process_list.size());
 
   action_->suspend();
@@ -167,7 +166,6 @@ void VirtualMachineImpl::resume()
   if (get_state() != s4u::VirtualMachine::state::SUSPENDED)
     THROWF(vm_error, 0, "Cannot resume VM %s: it was not suspended", piface_->get_cname());
 
-  auto& process_list = piface_->pimpl_->process_list;
   XBT_DEBUG("Resume VM %s, containing %zu processes.", piface_->get_cname(), process_list.size());
 
   action_->resume();
@@ -208,7 +206,6 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
     XBT_VERB("Shutting down the VM %s even if it's not running but %s", piface_->get_cname(), stateName);
   }
 
-  auto& process_list = piface_->pimpl_->process_list;
   XBT_DEBUG("shutdown VM %s, that contains %zu processes", piface_->get_cname(), process_list.size());
 
   for (auto& smx_process : process_list) {
