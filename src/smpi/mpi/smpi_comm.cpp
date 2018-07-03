@@ -300,7 +300,7 @@ void Comm::init_smp(){
   }
   //identify neighbours in comm
   //get the indices of all processes sharing the same simix host
-  auto& process_list      = sg_host_self()->pimpl_->process_list;
+  auto& process_list      = sg_host_self()->pimpl_->process_list_;
   int intra_comm_size     = 0;
   int min_index           = INT_MAX; // the minimum index will be the leader
   for (auto& actor : process_list) {

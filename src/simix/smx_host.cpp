@@ -40,13 +40,13 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host, simgrid::kernel::actor:
     XBT_DEBUG("Push host %s to watched_hosts because state == SURF_RESOURCE_OFF", host->get_cname());
   }
   XBT_DEBUG("Adding Process %s to the auto-restart list of Host %s", arg->name.c_str(), arg->host->get_cname());
-  host->pimpl_->auto_restart_processes.push_back(arg);
+  host->pimpl_->auto_restart_processes_.push_back(arg);
 }
 
 /** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
-  std::vector<simgrid::kernel::actor::ProcessArg*> process_list = host->pimpl_->auto_restart_processes;
+  std::vector<simgrid::kernel::actor::ProcessArg*> process_list = host->pimpl_->auto_restart_processes_;
 
   for (auto const& arg : process_list) {
     XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->get_cname());

@@ -65,9 +65,9 @@ public:
       ActorList;
 
   // FIXME: make these private
-  ActorList process_list;
-  std::vector<kernel::actor::ProcessArg*> auto_restart_processes;
-  std::vector<kernel::actor::ProcessArg*> boot_processes;
+  ActorList process_list_;
+  std::vector<kernel::actor::ProcessArg*> auto_restart_processes_;
+  std::vector<kernel::actor::ProcessArg*> boot_processes_;
 };
 }
 }
