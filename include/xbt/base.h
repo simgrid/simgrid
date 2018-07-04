@@ -85,10 +85,12 @@
 #  define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__))
 #endif
 
-#if defined(__GNUC__)
-#  define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
-#else
-#  define XBT_ALWAYS_INLINE inline
+#ifndef XBT_ALWAYS_INLINE /* defined also in libsosp */
+#  if defined(__GNUC__)
+#    define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
+#  else
+#    define XBT_ALWAYS_INLINE inline
+#  endif
 #endif
 
 #if defined(__GNUC__)

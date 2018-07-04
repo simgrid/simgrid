@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2018. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,10 +12,12 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "xbt/base.h"
-
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_mmu.hpp"
+
+#ifndef XBT_ALWAYS_INLINE
+#define XBT_ALWAYS_INLINE inline __attribute__((always_inline))
+#endif
 
 namespace simgrid {
 namespace mc {
