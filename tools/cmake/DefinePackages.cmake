@@ -423,6 +423,7 @@ endif()
 set(S4U_SRC
   src/s4u/s4u_Actor.cpp
   src/s4u/s4u_Activity.cpp
+  src/s4u/s4u_Barrier.cpp
   src/s4u/s4u_ConditionVariable.cpp
   src/s4u/s4u_Comm.cpp
   src/s4u/s4u_Engine.cpp
@@ -687,6 +688,7 @@ set(headers_to_install
   include/simgrid/zone.h
   include/simgrid/s4u/Activity.hpp
   include/simgrid/s4u/Actor.hpp
+  include/simgrid/s4u/Barrier.hpp
   include/simgrid/s4u/Comm.hpp
   include/simgrid/s4u/ConditionVariable.hpp
   include/simgrid/s4u/Engine.hpp

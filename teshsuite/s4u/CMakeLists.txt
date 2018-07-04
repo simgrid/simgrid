@@ -1,4 +1,4 @@
-foreach(x actor actor-autorestart
+foreach(x actor actor-autorestart actor-migration
         comm-pt2pt
         cloud-interrupt-migration
         concurrent_rw storage_client_server host_on_off_wait listen_async pid )
@@ -11,7 +11,7 @@ endforeach()
 
 ## Add the tests.
 ## Some need to be run with all factories, some need not tesh to run
-foreach(x actor actor-autorestart cloud-interrupt-migration concurrent_rw)
+foreach(x actor actor-autorestart actor-migration cloud-interrupt-migration concurrent_rw)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH_FACTORIES(tesh-s4u-${x} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
