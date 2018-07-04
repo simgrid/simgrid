@@ -10,7 +10,6 @@ set(EXTRA_DIST
   src/include/xbt/mmalloc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
-  src/mc/PageStore.hpp
   src/msg/msg_private.hpp
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c

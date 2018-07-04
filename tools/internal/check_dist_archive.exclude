@@ -24,6 +24,7 @@
 
 + contrib/.*
 
++ tools/appveyor-irc-notify.py
 + tools/git-hooks/.*
 + tools/internal/.*
 + tools/jenkins/.*
