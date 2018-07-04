@@ -9,7 +9,7 @@
 
 #include <sys/mman.h>
 #ifdef __FreeBSD__
-# define MAP_POPULATE MAP_PREFAULT_READ
+#define MAP_POPULATE MAP_PREFAULT_READ
 #endif
 
 #include "xbt/base.h"
@@ -18,7 +18,7 @@
 
 #include "src/internal_config.h"
 
-#include "src/mc/PageStore.hpp"
+#include "src/mc/sosp/PageStore.hpp"
 
 #include "src/mc/mc_mmu.hpp"
 
@@ -37,8 +37,8 @@ namespace mc {
  */
 static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 {
-  const std::uint64_t* values = (const uint64_t*) data;
-  std::size_t n = xbt_pagesize / sizeof(uint64_t);
+  const std::uint64_t* values = (const uint64_t*)data;
+  std::size_t n               = xbt_pagesize / sizeof(uint64_t);
 
   // This djb2:
   std::uint64_t hash = 5381;
@@ -52,12 +52,13 @@ static XBT_ALWAYS_INLINE PageStore::hash_type mc_hash_page(const void* data)
 PageStore::PageStore(size_t size) : memory_(nullptr), capacity_(size), top_index_(0)
 {
   // Using mmap in order to be able to expand the region by relocating it somewhere else in the virtual memory space:
-  void* memory = ::mmap(nullptr, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+  void* memory =
+      ::mmap(nullptr, size << xbt_pagebits, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
   if (memory == MAP_FAILED)
     xbt_die("Could not mmap initial snapshot pages.");
 
   this->top_index_ = 0;
-  this->memory_ = memory;
+  this->memory_    = memory;
   this->page_counts_.resize(size);
 }
 
@@ -70,7 +71,7 @@ void PageStore::resize(std::size_t size)
 {
   size_t old_bytesize = this->capacity_ << xbt_pagebits;
   size_t new_bytesize = size << xbt_pagebits;
-  void *new_memory;
+  void* new_memory;
 
   // Expand the memory region by moving it into another
   // virtual memory address if necessary:
@@ -81,30 +82,23 @@ void PageStore::resize(std::size_t size)
 #else
   if (new_bytesize > old_bytesize) {
     // Grow: first try to add new space after current map
-    new_memory = mmap((char *)this->memory_ + old_bytesize,
-                      new_bytesize-old_bytesize,
-                      PROT_READ|PROT_WRITE,
-                      MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE,
-                      -1, 0);
+    new_memory = mmap((char*)this->memory_ + old_bytesize, new_bytesize - old_bytesize, PROT_READ | PROT_WRITE,
+                      MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
     if (new_memory == MAP_FAILED)
       xbt_die("Could not mremap snapshot pages.");
     // Check if expanding worked
-    if (new_memory != (char *)this->memory_ + old_bytesize) {
+    if (new_memory != (char*)this->memory_ + old_bytesize) {
       // New memory segment could not be put at the end of this->memory_,
       // so cancel this one and try to rellocate everything and copy data
-      munmap(new_memory, new_bytesize-old_bytesize);
-      new_memory = mmap(nullptr,
-                        new_bytesize,
-                        PROT_READ|PROT_WRITE,
-                        MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE,
-                        -1, 0);
+      munmap(new_memory, new_bytesize - old_bytesize);
+      new_memory =
+          mmap(nullptr, new_bytesize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
       if (new_memory == MAP_FAILED)
         xbt_die("Could not mremap snapshot pages.");
       memcpy(new_memory, this->memory_, old_bytesize);
       munmap(this->memory_, old_bytesize);
     }
-  }
-  else {
+  } else {
     // We don't have functions to shrink a mapping, so leave memory as
     // it is for now
     new_memory = this->memory_;
@@ -112,7 +106,7 @@ void PageStore::resize(std::size_t size)
 #endif
 
   this->capacity_ = size;
-  this->memory_ = new_memory;
+  this->memory_   = new_memory;
   this->page_counts_.resize(size, 0);
 }
 
@@ -145,7 +139,7 @@ void PageStore::remove_page(std::size_t pageno)
 {
   this->free_pages_.push_back(pageno);
   const void* page = this->get_page(pageno);
-  hash_type hash = mc_hash_page(page);
+  hash_type hash   = mc_hash_page(page);
   this->hash_index_[hash].erase(pageno);
 }
 
@@ -169,30 +163,29 @@ std::size_t PageStore::store_page(void* page)
       // If a page with the same content is already in the page store it's reused and its refcount is incremented.
       page_counts_[pageno]++;
       return pageno;
-
     }
   }
 
   // Otherwise, a new page is allocated in the page store and the content of the page is `memcpy()`-ed to this new page.
   std::size_t pageno = alloc_page();
-  xbt_assert(this->page_counts_[pageno]==0, "Allocated page is already used");
-  void* snapshot_page = (void*) this->get_page(pageno);
+  xbt_assert(this->page_counts_[pageno] == 0, "Allocated page is already used");
+  void* snapshot_page = (void*)this->get_page(pageno);
   memcpy(snapshot_page, page, xbt_pagesize);
   page_set.insert(pageno);
   page_counts_[pageno]++;
   return pageno;
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #ifdef SIMGRID_TEST
 
-#include <cstring>
 #include <cstdint>
+#include <cstring>
 
-#include <unistd.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #include <memory>
 
@@ -207,7 +200,7 @@ static void new_content(void* data, std::size_t size)
 
 static void* getpage()
 {
-  return mmap(nullptr, getpagesize(), PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+  return mmap(nullptr, getpagesize(), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
 XBT_TEST_SUITE("mc_page_store", "Page store");
@@ -217,44 +210,44 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
   using simgrid::mc::PageStore;
 
   xbt_test_add("Init");
-  std::size_t pagesize = (size_t) getpagesize();
+  std::size_t pagesize             = (size_t)getpagesize();
   std::unique_ptr<PageStore> store = std::unique_ptr<PageStore>(new simgrid::mc::PageStore(500));
-  void* data = getpage();
-  xbt_test_assert(store->size()==0, "Bad size");
+  void* data                       = getpage();
+  xbt_test_assert(store->size() == 0, "Bad size");
 
   xbt_test_add("Store the page once");
   new_content(data, pagesize);
   size_t pageno1 = store->store_page(data);
-  xbt_test_assert(store->get_ref(pageno1)==1, "Bad refcount");
+  xbt_test_assert(store->get_ref(pageno1) == 1, "Bad refcount");
   const void* copy = store->get_page(pageno1);
-  xbt_test_assert(::memcmp(data, copy, pagesize)==0, "Page data should be the same");
-  xbt_test_assert(store->size()==1, "Bad size");
+  xbt_test_assert(::memcmp(data, copy, pagesize) == 0, "Page data should be the same");
+  xbt_test_assert(store->size() == 1, "Bad size");
 
   xbt_test_add("Store the same page again");
   size_t pageno2 = store->store_page(data);
-  xbt_test_assert(pageno1==pageno2, "Page should be the same");
-  xbt_test_assert(store->get_ref(pageno1)==2, "Bad refcount");
-  xbt_test_assert(store->size()==1, "Bad size");
+  xbt_test_assert(pageno1 == pageno2, "Page should be the same");
+  xbt_test_assert(store->get_ref(pageno1) == 2, "Bad refcount");
+  xbt_test_assert(store->size() == 1, "Bad size");
 
   xbt_test_add("Store a new page");
   new_content(data, pagesize);
   size_t pageno3 = store->store_page(data);
   xbt_test_assert(pageno1 != pageno3, "New page should be different");
-  xbt_test_assert(store->size()==2, "Bad size");
+  xbt_test_assert(store->size() == 2, "Bad size");
 
   xbt_test_add("Unref pages");
   store->unref_page(pageno1);
-  xbt_assert(store->get_ref(pageno1)==1, "Bad refcount");
-  xbt_assert(store->size()==2, "Bad size");
+  xbt_assert(store->get_ref(pageno1) == 1, "Bad refcount");
+  xbt_assert(store->size() == 2, "Bad size");
   store->unref_page(pageno2);
-  xbt_test_assert(store->size()==1, "Bad size");
+  xbt_test_assert(store->size() == 1, "Bad size");
 
   xbt_test_add("Reallocate page");
   new_content(data, pagesize);
   size_t pageno4 = store->store_page(data);
   xbt_test_assert(pageno1 == pageno4, "Page was not reused");
-  xbt_test_assert(store->get_ref(pageno4)==1, "Bad refcount");
-  xbt_test_assert(store->size()==2, "Bad size");
+  xbt_test_assert(store->get_ref(pageno4) == 1, "Bad refcount");
+  xbt_test_assert(store->size() == 2, "Bad size");
 }
 
 #endif /* SIMGRID_TEST */

@@ -158,7 +158,6 @@ public:
    *  The capacity is expanded by a system call (mremap).
    * */
   std::size_t capacity();
-
 };
 
 XBT_ALWAYS_INLINE void PageStore::unref_page(std::size_t pageno)
@@ -174,7 +173,7 @@ XBT_ALWAYS_INLINE void PageStore::ref_page(size_t pageno)
 
 XBT_ALWAYS_INLINE const void* PageStore::get_page(std::size_t pageno) const
 {
-  return (void*) simgrid::mc::mmu::join(pageno, (std::uintptr_t) this->memory_);
+  return (void*)simgrid::mc::mmu::join(pageno, (std::uintptr_t)this->memory_);
 }
 
 XBT_ALWAYS_INLINE std::size_t PageStore::get_ref(std::size_t pageno)
@@ -192,7 +191,7 @@ XBT_ALWAYS_INLINE std::size_t PageStore::capacity()
   return this->capacity_;
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

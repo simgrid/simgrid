@@ -594,6 +594,17 @@ set(MC_SRC
   src/mc/remote/mc_protocol.h
   src/mc/remote/mc_protocol.cpp
 
+  src/mc/sosp/PageStore.hpp
+  src/mc/sosp/PageStore.cpp
+  src/mc/sosp/ChunkedData.hpp
+  src/mc/sosp/ChunkedData.cpp
+  src/mc/sosp/RegionSnapshot.cpp
+  src/mc/sosp/RegionSnapshot.hpp
+  src/mc/sosp/mc_checkpoint.cpp
+  src/mc/sosp/mc_snapshot.hpp
+  src/mc/sosp/mc_snapshot.cpp
+  src/mc/sosp/mc_page_snapshot.cpp
+  
   src/mc/AddressSpace.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
@@ -601,12 +612,6 @@ set(MC_SRC
   src/mc/ModelChecker.cpp
   src/mc/ObjectInformation.hpp
   src/mc/ObjectInformation.cpp
-  src/mc/PageStore.hpp
-  src/mc/PageStore.cpp
-  src/mc/ChunkedData.hpp
-  src/mc/ChunkedData.cpp
-  src/mc/RegionSnapshot.cpp
-  src/mc/RegionSnapshot.hpp
   src/mc/Type.hpp
   src/mc/Variable.hpp
   src/mc/mc_forward.hpp
@@ -615,10 +620,6 @@ set(MC_SRC
   src/mc/mc_unw.hpp
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
-  src/mc/mc_checkpoint.cpp
-  src/mc/mc_snapshot.hpp
-  src/mc/mc_snapshot.cpp
-  src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.cpp
   src/mc/mc_comm_pattern.hpp
   src/mc/compare.cpp
@@ -795,17 +796,17 @@ endif()
 
 ### Simgrid Lib sources
 set(simgrid_sources
-  ${MSG_SRC}
   ${S4U_SRC}
-  ${SIMDAG_SRC}
   ${SIMGRID_SRC}
+  ${MC_SRC_BASE}
   ${SIMIX_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   ${PLUGINS_SRC}
   ${BINDINGS_SRC}
-  ${MC_SRC_BASE}
+  ${MSG_SRC}
+  ${SIMDAG_SRC}
   )
 
 if(${SIMGRID_HAVE_JEDULE})

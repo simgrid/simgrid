@@ -35,8 +35,8 @@
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_snapshot.hpp"
 #include "src/mc/mc_unw.hpp"
+#include "src/mc/sosp/mc_snapshot.hpp"
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ObjectInformation.hpp"

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,12 +6,11 @@
 #ifndef SIMGRID_MC_VISITED_STATE_HPP
 #define SIMGRID_MC_VISITED_STATE_HPP
 
-#include <cstddef>
-
-#include <memory>
-
-#include "src/mc/mc_snapshot.hpp"
 #include "src/mc/mc_state.hpp"
+#include "src/mc/sosp/mc_snapshot.hpp"
+
+#include <cstddef>
+#include <memory>
 
 namespace simgrid {
 namespace mc {

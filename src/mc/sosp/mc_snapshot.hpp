@@ -7,9 +7,9 @@
 #define SIMGRID_MC_SNAPSHOT_HPP
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/RegionSnapshot.hpp"
 #include "src/mc/mc_unw.hpp"
 #include "src/mc/remote/RemoteClient.hpp"
+#include "src/mc/sosp/RegionSnapshot.hpp"
 
 // ***** Snapshot region
 
@@ -120,8 +120,8 @@ public:
   std::vector<s_mc_snapshot_ignored_data_t> ignored_data;
   std::vector<s_fd_infos_t> current_fds;
 };
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 static XBT_ALWAYS_INLINE mc_mem_region_t mc_get_region_hinted(void* addr, simgrid::mc::Snapshot* snapshot,
                                                               int process_index, mc_mem_region_t region)
@@ -139,8 +139,8 @@ namespace mc {
 
 XBT_PRIVATE std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state);
 XBT_PRIVATE void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot);
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 XBT_PRIVATE void mc_restore_page_snapshot_region(simgrid::mc::RemoteClient* process, void* start_addr,
                                                  simgrid::mc::ChunkedData const& pagenos);

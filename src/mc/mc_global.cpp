@@ -35,8 +35,8 @@
 #include "src/mc/mc_request.hpp"
 #include "src/mc/mc_safety.hpp"
 #include "src/mc/mc_smx.hpp"
-#include "src/mc/mc_snapshot.hpp"
 #include "src/mc/mc_unw.hpp"
+#include "src/mc/sosp/mc_snapshot.hpp"
 #include <libunwind.h>
 #endif
 
