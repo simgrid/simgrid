@@ -1,9 +1,5 @@
 SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
 
-Other:
- - Bump our requirement on Boost to 1.59 (released August 2015) to get
-   Boost.test v3
-
 Fixed bugs:
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time
