@@ -427,6 +427,11 @@ XBT_PRIVATE smpi_privatization_region_t smpi_init_global_memory_segment_process(
 
 #if HAVE_PAPI
 typedef std::vector<std::pair</* counter name */ std::string, /* counter value */ long long>> papi_counter_t;
+struct papi_process_data {
+  papi_counter_t counter_data;
+  int event_set;
+};
+extern std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 #endif
 
 extern std::unordered_map<std::string, double> location2speedup;

@@ -51,12 +51,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 
 #if HAVE_PAPI
 #include "papi.h"
-const char* papi_default_config_name = "default";
-
-struct papi_process_data {
-  papi_counter_t counter_data;
-  int event_set;
-};
+std::string papi_default_config_name = "default";
+std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 #endif
 
 using simgrid::s4u::Actor;
@@ -279,13 +275,11 @@ void smpi_global_init()
   // This map holds for each computation unit (such as "default" or "process1" etc.)
   // the configuration as given by the user (counter data as a pair of (counter_name, counter_counter))
   // and the (computed) event_set.
-  std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
 
   if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
     if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
       XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
-                " Expected version is %i",
-                PAPI_VER_CURRENT);
+                " Expected version is %u", PAPI_VER_CURRENT);
 
     typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
     boost::char_separator<char> separator_units(";");
