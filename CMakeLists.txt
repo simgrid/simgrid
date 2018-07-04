@@ -257,11 +257,11 @@ if(enable_smpi_papi)
 endif()
 
 # Not finding this is perfectly OK
-find_package(Boost COMPONENTS unit_test_framework)
+find_package(Boost 1.59 COMPONENTS unit_test_framework)
 if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
   message(STATUS "Enabling the Boost-based unit tests.")
 else()
-  message(STATUS "Disabling the Boost-based unit tests -- please install libboost-test-dev.")
+  message(STATUS "Disabling the Boost-based unit tests -- please install libboost-test-dev (>= v1.59).")
 endif()
 
 
