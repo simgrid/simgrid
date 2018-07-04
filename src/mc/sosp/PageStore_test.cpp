@@ -105,7 +105,8 @@ void BOOST_tests::reallocate_page()
 
 void BOOST_tests::new_content(void* data, std::size_t size)
 {
-  ::memset(data, ++value, size);
+  value++;
+  ::memset(data, value, size);
 }
 
 void* BOOST_tests::getpage()
