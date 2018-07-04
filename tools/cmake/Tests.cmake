@@ -90,37 +90,37 @@ ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
 # New tests should use the Boost Unit Test Framework
 if(Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  add_executable       (unit_tmgr src/surf/trace_mgr_test.cpp)
   add_library(boost_unit_test_framework SHARED IMPORTED)
   set_target_properties(boost_unit_test_framework PROPERTIES IMPORTED_LOCATION ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-  target_link_libraries(unit_tmgr simgrid boost_unit_test_framework)
-  ADD_TEST(unit_tmgr ${CMAKE_BINARY_DIR}/unit_tmgr --build_info=yes)
+  
+  add_executable       (unit-tmgr src/surf/trace_mgr_test.cpp)
+  target_link_libraries(unit-tmgr simgrid boost_unit_test_framework)
+  ADD_TEST(unit-tmgr ${CMAKE_BINARY_DIR}/unit-tmgr --build_info=yes)
   set_property(
-    TARGET unit_tmgr
+    TARGET unit-tmgr
     APPEND PROPERTY
            INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	   )
   if (SIMGRID_HAVE_MC)
     # snapshot
-    add_executable       (unit_snapshot src/mc/snapshot/unitTest/mc_snapshot_unit.cpp)
-    target_link_libraries(unit_snapshot simgrid boost_unit_test_framework)
-    ADD_TEST(unit_snapshot ${CMAKE_BINARY_DIR}/unit_snapshot --build_info=yes)
+    add_executable       (unit-mc-snapshot src/mc/sosp/mc_snapshot_test.cpp)
+    target_link_libraries(unit-mc-snapshot simgrid boost_unit_test_framework)
+    ADD_TEST(unit-mc-snapshot ${CMAKE_BINARY_DIR}/unit-mc-snapshot --build_info=yes)
     set_property(
-      TARGET unit_snapshot
+      TARGET unit-mc-snapshot
       APPEND PROPERTY
              INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	     )
-    # PAGESTORE
-    add_executable       (unit_PAGESTORE src/mc/snapshot/unitTest/PageStore_unit.cpp)
-    target_link_libraries(unit_PAGESTORE simgrid boost_unit_test_framework)
-    ADD_TEST(unit_PAGESTORE ${CMAKE_BINARY_DIR}/unit_PAGESTORE --build_info=yes)
+    # pagestore
+    add_executable       (unit-mc-pagestore src/mc/sosp/PageStore_test.cpp)
+    target_link_libraries(unit-mc-pagestore simgrid boost_unit_test_framework)
+    ADD_TEST(unit-mc-pagestore ${CMAKE_BINARY_DIR}/unit-mc-pagestore --build_info=yes)
     set_property(
-      TARGET unit_PAGESTORE
+      TARGET unit-mc-pagestore
       APPEND PROPERTY
              INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}"
 	     )
   endif()
-
 
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       src/surf/trace_mgr_test.cpp)

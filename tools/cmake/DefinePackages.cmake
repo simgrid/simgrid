@@ -43,6 +43,8 @@ set(EXTRA_DIST
   src/surf/network_ib.hpp
   src/surf/ns3/ns3_simulator.hpp
   src/surf/trace_mgr_test.cpp
+  src/mc/sosp/mc_snapshot_test.cpp
+  src/mc/sosp/PageStore_test.cpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
