@@ -29,7 +29,7 @@ public:
   static std::size_t pagesize;
   static std::unique_ptr<PageStore> store;
   static void* data;
-  static size_t pageno1, pageno2, pageno3, pageno4;
+  static size_t pageno[4];
   static int value;
 
 public: // member functions used by the test suite(s)
@@ -48,10 +48,7 @@ public: // member functions used by the test suite(s)
 std::size_t BOOST_tests::pagesize             = 0;
 std::unique_ptr<PageStore> BOOST_tests::store = nullptr;
 void* BOOST_tests::data                       = nullptr;
-size_t BOOST_tests::pageno1                   = 0;
-size_t BOOST_tests::pageno2                   = 0;
-size_t BOOST_tests::pageno3                   = 0;
-size_t BOOST_tests::pageno4                   = 0;
+size_t BOOST_tests::pageno[4]                 = {0, 0, 0, 0};
 int BOOST_tests::value                        = 0;
 
 void BOOST_tests::Init()
@@ -65,44 +62,44 @@ void BOOST_tests::Init()
 void BOOST_tests::store_page_once()
 {
   new_content(data, pagesize);
-  pageno1 = store->store_page(data);
-  BOOST_CHECK_MESSAGE(store->get_ref(pageno1) == 1, "Bad refcount");
-  const void* copy = store->get_page(pageno1);
+  pageno[0] = store->store_page(data);
+  BOOST_CHECK_MESSAGE(store->get_ref(pageno[0]) == 1, "Bad refcount");
+  const void* copy = store->get_page(pageno[0]);
   BOOST_CHECK_MESSAGE(::memcmp(data, copy, pagesize) == 0, "Page data should be the same");
   BOOST_CHECK_MESSAGE(store->size() == 1, "Bad size");
 }
 
 void BOOST_tests::store_same_page()
 {
-  pageno2 = store->store_page(data);
-  BOOST_CHECK_MESSAGE(pageno1 == pageno2, "Page should be the same");
-  BOOST_CHECK_MESSAGE(store->get_ref(pageno1) == 2, "Bad refcount");
+  pageno[1] = store->store_page(data);
+  BOOST_CHECK_MESSAGE(pageno[0] == pageno[1], "Page should be the same");
+  BOOST_CHECK_MESSAGE(store->get_ref(pageno[0]) == 2, "Bad refcount");
   BOOST_CHECK_MESSAGE(store->size() == 1, "Bad size");
 }
 
 void BOOST_tests::store_new_page()
 {
   new_content(data, pagesize);
-  pageno3 = store->store_page(data);
-  BOOST_CHECK_MESSAGE(pageno1 != pageno3, "New page should be different");
+  pageno[2] = store->store_page(data);
+  BOOST_CHECK_MESSAGE(pageno[0] != pageno[2], "New page should be different");
   BOOST_CHECK_MESSAGE(store->size() == 2, "Bad size");
 }
 
 void BOOST_tests::unref_pages()
 {
-  store->unref_page(pageno1);
-  BOOST_CHECK_MESSAGE(store->get_ref(pageno1) == 1, "Bad refcount");
+  store->unref_page(pageno[0]);
+  BOOST_CHECK_MESSAGE(store->get_ref(pageno[0]) == 1, "Bad refcount");
   BOOST_CHECK_MESSAGE(store->size() == 2, "Bad size");
-  store->unref_page(pageno2);
+  store->unref_page(pageno[1]);
   BOOST_CHECK_MESSAGE(store->size() == 1, "Bad size");
 }
 
 void BOOST_tests::reallocate_page()
 {
   new_content(data, pagesize);
-  pageno4 = store->store_page(data);
-  BOOST_CHECK_MESSAGE(pageno1 == pageno4, "Page was not reused");
-  BOOST_CHECK_MESSAGE(store->get_ref(pageno4) == 1, "Bad refcount");
+  pageno[3] = store->store_page(data);
+  BOOST_CHECK_MESSAGE(pageno[0] == pageno[3], "Page was not reused");
+  BOOST_CHECK_MESSAGE(store->get_ref(pageno[3]) == 1, "Bad refcount");
   BOOST_CHECK_MESSAGE(store->size() == 2, "Bad size");
 }
 
