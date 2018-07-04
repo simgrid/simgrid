@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_S4U_BARRIERHPP
+#ifndef SIMGRID_S4U_BARRIER_HPP
 #define SIMGRID_S4U_BARRIER_HPP
 
 #include "simgrid/s4u/ConditionVariable.hpp"
