@@ -5,6 +5,7 @@
 
 #define BOOST_TEST_MODULE snapshots
 #define BOOST_TEST_DYN_LINK
+bool init_unit_test(); // boost sometimes forget to give this prototype (NetBSD and other), which does not fit our paranoid flags
 #include <boost/test/unit_test.hpp>
 
 #include <cstdlib>
