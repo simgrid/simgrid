@@ -256,35 +256,29 @@ if(enable_smpi_papi)
   endif()
 endif()
 
-# Not finding this is perfectly OK
-find_package(Boost COMPONENTS unit_test_framework)
-if (Boost_UNIT_TEST_FRAMEWORK_FOUND)
-  message(STATUS "Enabling the Boost-based unit tests.")
-else()
-  message(STATUS "Disabling the Boost-based unit tests -- please install libboost-test-dev.")
-endif()
-
-
-find_package(Boost 1.48)
+find_package(Boost 1.59
+             OPTIONAL_COMPONENTS "context;unit_test_framework")
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
   if(APPLE)
     message(FATAL_ERROR "Boost libraries not found. Try to install them with 'sudo fink install boost1.53.nopython' (check the exact name with 'fink list boost') or 'sudo brew install boost'")
   else()
-    message(FATAL_ERROR "Boost libraries not found. Install libboost-dev (>= 1.48.0).")
+    message(FATAL_ERROR "Boost libraries not found. Install libboost-dev (>= 1.54.0).")
   endif()
 endif()
 
-find_package(Boost COMPONENTS context)
-set(Boost_FOUND 1) # This component is optional
+if((NOT Boost_CONTEXT_FOUND) OR (NOT Boost_UNIT_TEST_FRAMEWORK_FOUND))
+  message (STATUS "Missing optional boost libraries:")
+endif()
 if(Boost_CONTEXT_FOUND)
-  message(STATUS "Found Boost.Context")
   set(HAVE_BOOST_CONTEXTS 1)
 else()
-  message ("   boost        : found.")
-  message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
+  message (STATUS "  context: Install libboost-context-dev.")
   set(HAVE_BOOST_CONTEXTS 0)
+endif()
+if (NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
+  message(STATUS "  test: Install libboost-test-dev.")
 endif()
 
 # Checks for header libraries functions.
