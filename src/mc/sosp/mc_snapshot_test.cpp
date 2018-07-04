@@ -44,7 +44,6 @@ public:
     mc_model_checker = nullptr;
   }
 
-public:
   static bool sparse_checkpoint;
   static std::unique_ptr<simgrid::mc::RemoteClient> process;
 };

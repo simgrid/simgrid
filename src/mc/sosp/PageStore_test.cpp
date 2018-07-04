@@ -32,7 +32,7 @@ public:
   static size_t pageno[4];
   static int value;
 
-public: // member functions used by the test suite(s)
+  // member functions used by the test suite(s)
   static void Init();
   static void store_page_once();
   static void store_same_page();
