@@ -148,7 +148,6 @@ void BOOST_tests::compare_region_parts()
 
     prologue_return ret = prologue(n);
 
-    // xbt_test_add("Compare parts of region data for %i page(s) with itself", n);
     for (int j = 0; j != 100; ++j) {
       size_t offset = rand() % ret.size;
       size_t size   = rand() % (ret.size - offset);
@@ -165,7 +164,6 @@ void BOOST_tests::read_pointer()
 {
 
   prologue_return ret = prologue(1);
-  // xbt_test_add("Read pointer for %i page(s)", n);
   memcpy(ret.src, &mc_model_checker, sizeof(void*));
   simgrid::mc::RegionSnapshot region2 =
       simgrid::mc::sparse_region(simgrid::mc::RegionType::Unknown, ret.src, ret.src, ret.size);
