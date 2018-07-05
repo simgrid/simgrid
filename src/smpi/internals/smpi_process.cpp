@@ -18,7 +18,7 @@ namespace smpi{
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 
-Process::Process(ActorPtr actor, msg_bar_t finalization_barrier)
+Process::Process(ActorPtr actor, simgrid::s4u::Barrier* finalization_barrier)
     : finalization_barrier_(finalization_barrier), actor_(actor)
 {
   mailbox_         = simgrid::s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
@@ -61,7 +61,7 @@ void Process::set_data(int* argc, char*** argv)
 {
   instance_id_      = std::string((*argv)[1]);
   comm_world_       = smpi_deployment_comm_world(instance_id_);
-  msg_bar_t barrier = smpi_deployment_finalization_barrier(instance_id_);
+  simgrid::s4u::Barrier* barrier = smpi_deployment_finalization_barrier(instance_id_);
   if (barrier != nullptr) // don't overwrite the current one if the instance has none
     finalization_barrier_ = barrier;
 
@@ -91,7 +91,7 @@ void Process::finalize()
   if(MC_is_active() || MC_record_replay_is_active())
     return;
   // wait for all pending asynchronous comms to finish
-  MSG_barrier_wait(finalization_barrier_);
+  finalization_barrier_->wait();
 }
 
 /** @brief Check if a process is finalized */

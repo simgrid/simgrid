@@ -32,7 +32,7 @@ class Process {
     int sampling_                   = 0; /* inside an SMPI_SAMPLE_ block? */
     std::string instance_id_;
     bool replaying_                 = false; /* is the process replaying a trace */
-    msg_bar_t finalization_barrier_;
+    simgrid::s4u::Barrier* finalization_barrier_;
     smpi_trace_call_location_t trace_call_loc_;
     simgrid::s4u::ActorPtr actor_ = nullptr;
     smpi_privatization_region_t privatized_region_;
@@ -43,7 +43,7 @@ class Process {
     papi_counter_t papi_counter_data_;
 #endif
   public:
-    explicit Process(simgrid::s4u::ActorPtr actor, msg_bar_t barrier);
+    explicit Process(simgrid::s4u::ActorPtr actor, simgrid::s4u::Barrier* barrier);
     ~Process();
     void set_data(int* argc, char*** argv);
     void finalize();

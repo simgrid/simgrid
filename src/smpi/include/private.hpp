@@ -6,7 +6,7 @@
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
-#include "simgrid/msg.h" // msg_bar_t
+#include "simgrid/s4u/Barrier.hpp"
 #include "smpi/smpi.h"
 #include "smpi/smpi_helpers_internal.h"
 #include "src/instr/instr_smpi.hpp"
@@ -66,7 +66,7 @@ XBT_PRIVATE int smpi_process_count();
 XBT_PRIVATE void smpi_deployment_register_process(const std::string instance_id, int rank,
                                                   simgrid::s4u::ActorPtr actor);
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string instance_id);
-XBT_PRIVATE msg_bar_t smpi_deployment_finalization_barrier(const std::string instance_id);
+XBT_PRIVATE simgrid::s4u::Barrier* smpi_deployment_finalization_barrier(const std::string instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);

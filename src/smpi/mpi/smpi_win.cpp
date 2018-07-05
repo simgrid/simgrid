@@ -39,7 +39,7 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   connected_wins_[rank_] = this;
   count_                 = 0;
   if(rank_==0){
-    bar_ = MSG_barrier_init(comm_size);
+    bar_ = new simgrid::s4u::Barrier(comm_size);
   }
   mode_=0;
 
@@ -49,14 +49,14 @@ Win::Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   Colls::allgather(&(connected_wins_[rank_]), sizeof(MPI_Win), MPI_BYTE, connected_wins_, sizeof(MPI_Win),
                          MPI_BYTE, comm);
 
-  Colls::bcast(&(bar_), sizeof(msg_bar_t), MPI_BYTE, 0, comm);
+  Colls::bcast(&(bar_), sizeof(simgrid::s4u::Barrier*), MPI_BYTE, 0, comm);
 
   Colls::barrier(comm);
 }
 
 Win::~Win(){
   //As per the standard, perform a barrier to ensure every async comm is finished
-  MSG_barrier_wait(bar_);
+  bar_->wait();
 
   int finished = finish_comms();
   XBT_DEBUG("Win destructor - Finished %d RMA calls", finished);
@@ -76,7 +76,7 @@ Win::~Win(){
   Comm::unref(comm_);
   
   if (rank_ == 0)
-    MSG_barrier_destroy(bar_);
+    delete bar_;
   xbt_mutex_destroy(mut_);
   xbt_mutex_destroy(lock_mut_);
   xbt_mutex_destroy(atomic_mut_);
@@ -163,7 +163,7 @@ int Win::fence(int assert)
     opened_=1;
   if (assert != MPI_MODE_NOPRECEDE) {
     // This is not the first fence => finalize what came before
-    MSG_barrier_wait(bar_);
+    bar_->wait();
     xbt_mutex_acquire(mut_);
     // This (simulated) mutex ensures that no process pushes to the vector of requests during the waitall.
     // Without this, the vector could get redimensionned when another process pushes.
@@ -184,7 +184,7 @@ int Win::fence(int assert)
     opened_=0;
   assert_ = assert;
 
-  MSG_barrier_wait(bar_);
+  bar_->wait();
   XBT_DEBUG("Leaving fence");
 
   return MPI_SUCCESS;
@@ -629,9 +629,9 @@ int Win::unlock_all(){
   int i=0;
   int retval = MPI_SUCCESS;
   for (i=0; i<comm_->size();i++){
-      int ret = this->unlock(i);
-      if(ret != MPI_SUCCESS)
-        retval = ret;
+    int ret = this->unlock(i);
+    if (ret != MPI_SUCCESS)
+      retval = ret;
   }
   return retval;
 }
@@ -652,11 +652,9 @@ int Win::flush_local(int rank){
 }
 
 int Win::flush_all(){
-  int i=0;
-  int finished = 0;
-  finished = finish_comms();
+  int finished = finish_comms();
   XBT_DEBUG("Win_flush_all on local - Finished %d RMA calls", finished);
-  for (i=0; i<comm_->size();i++){
+  for (int i = 0; i < comm_->size(); i++) {
     finished = connected_wins_[i]->finish_comms(rank_);
     XBT_DEBUG("Win_flush_all on %d - Finished %d RMA calls", i, finished);
   }
@@ -672,7 +670,6 @@ int Win::flush_local_all(){
 Win* Win::f2c(int id){
   return static_cast<Win*>(F2C::f2c(id));
 }
-
 
 int Win::finish_comms(){
   xbt_mutex_acquire(mut_);
