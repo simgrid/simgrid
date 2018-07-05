@@ -166,7 +166,7 @@ void smpi_bench_end()
 
     for (auto const& pair : counter_data) {
       simgrid::instr::VariableType* variable = static_cast<simgrid::instr::VariableType*>(container->type_->by_name(pair.first));
-      variable->set_event(surf_get_clock(), pair.second);
+      variable->set_event(SIMIX_get_clock(), pair.second);
     }
   }
 #endif
