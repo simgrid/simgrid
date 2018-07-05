@@ -446,6 +446,9 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::declare_flag<std::string>("smpi/alltoallv", "Which collective to use for alltoallv", "");
   simgrid::config::declare_flag<std::string>("smpi/bcast", "Which collective to use for bcast", "");
   simgrid::config::declare_flag<std::string>("smpi/reduce", "Which collective to use for reduce", "");
+
+  simgrid::config::declare_flag<int>("smpi/plugin/lb/migration-frequency", "After how many migrations should the load balancer"
+                                                        "compute a new mapping?", 10);
 #endif // HAVE_SMPI
 
   /* Others */
