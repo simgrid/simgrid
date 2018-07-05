@@ -366,7 +366,7 @@ static void smpi_init_options(){
   simgrid::smpi::Colls::smpi_coll_cleanup_callback = nullptr;
   smpi_cpu_threshold                               = simgrid::config::get_value<double>("smpi/cpu-threshold");
   smpi_host_speed                                  = simgrid::config::get_value<double>("smpi/host-speed");
-  xbt_assert(smpi_host_speed >= 0, "You're trying to set the host_speed to a negative value (%f)", smpi_host_speed);
+  xbt_assert(smpi_host_speed > 0.0, "You're trying to set the host_speed to a non-positive value (given: %f)", smpi_host_speed);
   std::string smpi_privatize_option = simgrid::config::get_value<std::string>("smpi/privatization");
   if (smpi_privatize_option == "no" || smpi_privatize_option == "0")
     smpi_privatize_global_variables = SmpiPrivStrategies::NONE;
