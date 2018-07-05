@@ -36,12 +36,14 @@ std::vector<simgrid::s4u::Host*> host_that_restart;
 std::set<std::string> watched_hosts;
 extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
+#include <simgrid/plugins/dvfs.h>   // FIXME: this plug-in should not be linked to the core
 #include <simgrid/plugins/energy.h> // FIXME: this plug-in should not be linked to the core
 #include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
 
 s_surf_model_description_t surf_plugin_description[] = {
     {"host_energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
     {"link_energy", "Link energy consumption.", &sg_link_energy_plugin_init},
+    {"host_dvfs", "Dvfs support", &sg_host_dvfs_plugin_init},
     {"host_load", "Cpu load.", &sg_host_load_plugin_init},
     {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
 };
