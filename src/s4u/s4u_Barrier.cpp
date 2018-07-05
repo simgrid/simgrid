@@ -9,6 +9,7 @@
 #include <xbt/ex.hpp>
 #include <xbt/log.hpp>
 
+#include "simgrid/barrier.h"
 #include "simgrid/s4u/Barrier.hpp"
 #include "simgrid/simix.h"
 
@@ -44,3 +45,22 @@ int Barrier::wait()
 }
 } // namespace s4u
 } // namespace simgrid
+
+/* **************************** Public C interface *************************** */
+
+sg_bar_t sg_barrier_init(unsigned int count)
+{
+  return new simgrid::s4u::Barrier(count);
+}
+
+/** @brief Initializes a barrier, with count elements */
+void sg_barrier_destroy(sg_bar_t bar)
+{
+  delete bar;
+}
+
+/** @brief Performs a barrier already initialized */
+int sg_barrier_wait(sg_bar_t bar)
+{
+  return bar->wait();
+}

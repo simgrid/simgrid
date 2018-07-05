@@ -358,3 +358,18 @@ void MSG_vm_destroy(sg_vm_t vm)
 {
   sg_vm_destroy(vm);
 }
+/********* barriers ************/
+sg_bar_t MSG_barrier_init(unsigned int count)
+{
+  return sg_barrier_init(count);
+}
+
+void MSG_barrier_destroy(sg_bar_t bar)
+{
+  sg_barrier_destroy(bar);
+}
+
+int MSG_barrier_wait(sg_bar_t bar)
+{
+  return sg_barrier_wait(bar);
+}

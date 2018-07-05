@@ -20,6 +20,7 @@ class Actor;
 using ActorPtr = boost::intrusive_ptr<Actor>;
 XBT_PUBLIC void intrusive_ptr_release(Actor* actor);
 XBT_PUBLIC void intrusive_ptr_add_ref(Actor* actor);
+class Barrier;
 class Comm;
 using CommPtr = boost::intrusive_ptr<Comm>;
 XBT_PUBLIC void intrusive_ptr_release(Comm* c);
@@ -128,6 +129,7 @@ class VirtualMachineImpl;
 } // namespace simgrid
 
 typedef simgrid::s4u::Actor s4u_Actor;
+typedef simgrid::s4u::Barrier s4u_Barrier;
 typedef simgrid::s4u::Host s4u_Host;
 typedef simgrid::s4u::Link s4u_Link;
 typedef simgrid::s4u::File s4u_File;
@@ -147,6 +149,7 @@ typedef simgrid::surf::StorageImpl* surf_storage_t;
 #else
 
 typedef struct s4u_Actor s4u_Actor;
+typedef struct s4u_Barrier s4u_Barrier;
 typedef struct s4u_Host s4u_Host;
 typedef struct s4u_Link s4u_Link;
 typedef struct s4u_File s4u_File;
@@ -164,6 +167,7 @@ typedef struct s_surf_storage* surf_storage_t;
 
 #endif
 
+typedef s4u_Barrier* sg_bar_t;
 typedef s4u_NetZone* sg_netzone_t;
 typedef s4u_Host* sg_host_t;
 typedef s4u_Link* sg_link_t;
