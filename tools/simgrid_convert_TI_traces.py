@@ -74,7 +74,7 @@ def convert_trace(trace_path, base_path, output_path, trace_version="1.0"):
                     #        " processed\n:OLD: " + line + "\n:NEW: " + new_line)
                     new_trace.write(new_line + "\n")
                 else:
-                    new_trace.write(line)
+                    new_trace.write(line.lower())
 
 
 if __name__ == "__main__":
@@ -98,8 +98,18 @@ if __name__ == "__main__":
     pathlib.Path(args.output_path).mkdir(
             parents=True, exist_ok=True)
 
+    assert trace_list_file_path != args.output_path, (
+            "Inplace replacement of the trace is not supported: select "
+            "another output path")
+
     # copy trace list file
-    shutil.copy(trace_list_file_path, args.output_path)
+    try:
+        shutil.copy(trace_list_file_path, args.output_path)
+    except shutil.SameFileError:
+        print("ERROR: Inplace replacement of the trace is not supported: "
+            "Please, select another output path")
+        sys.exit(-1)
+
 
     with open(trace_list_file_path) as tracelist_file:
         trace_list = tracelist_file.readlines()
@@ -111,6 +121,8 @@ if __name__ == "__main__":
 
     # process trace files
     for trace_path in trace_list:
+        assert not os.path.isabs(trace_path), (
+                "Absolute path in the trace list file is not supported")
         convert_trace(trace_path, base_path, args.output_path)
 
     print("Traces converted!")
