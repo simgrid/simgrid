@@ -157,7 +157,12 @@ void HostEnergy::update()
 {
   double start_time  = this->last_updated_;
   double finish_time = surf_get_clock();
-
+  //
+  // We may have start == finish if the past consumption was updated since the simcall was started
+  // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
+  //
+  // Even in this case, we need to save the pstate for the next call (after this if),
+  // which may have changed since that recent update.
   if (start_time < finish_time) {
     double previous_energy = this->total_energy_;
 
@@ -224,11 +229,6 @@ double HostEnergy::get_current_watts_value()
   double current_speed = host_->get_speed();
 
   double cpu_load;
-  // We may have start == finish if the past consumption was updated since the simcall was started
-  // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
-  //
-  // Even in this case, we need to save the pstate for the next call (after this big if),
-  // which may have changed since that recent update.
 
   if (current_speed <= 0)
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).

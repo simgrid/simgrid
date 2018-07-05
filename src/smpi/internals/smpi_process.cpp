@@ -10,6 +10,11 @@
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
 
+#if HAVE_PAPI
+#include "papi.h"
+extern std::string papi_default_config_name;
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
 namespace simgrid{
@@ -30,7 +35,7 @@ Process::Process(ActorPtr actor, simgrid::s4u::Barrier* finalization_barrier)
     MC_ignore_heap(timer_, xbt_os_timer_size());
 
 #if HAVE_PAPI
-  if (simgrid::config::get_value<std::string>("smpi/papi-events")[0] != '\0') {
+  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
     // TODO: Implement host/process/thread based counters. This implementation
     // just always takes the values passed via "default", like this:
     // "default:COUNTER1:COUNTER2:COUNTER3;".
@@ -38,10 +43,10 @@ Process::Process(ActorPtr actor, simgrid::s4u::Barrier* finalization_barrier)
     if (it != units2papi_setup.end()) {
       papi_event_set_    = it->second.event_set;
       papi_counter_data_ = it->second.counter_data;
-      XBT_DEBUG("Setting PAPI set for process %i", i);
+      XBT_DEBUG("Setting PAPI set for process %li", actor->get_pid());
     } else {
       papi_event_set_ = PAPI_NULL;
-      XBT_DEBUG("No PAPI set for process %i", i);
+      XBT_DEBUG("No PAPI set for process %li", actor->get_pid());
     }
   }
 #endif

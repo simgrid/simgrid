@@ -119,7 +119,7 @@ void smpi_bench_end()
    * An MPI function has been called and now is the right time to update
    * our PAPI counters for this process.
    */
-  if (simgrid::config::get_value<std::string>("smpi/papi-events")[0] != '\0') {
+  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty()) {
     papi_counter_t& counter_data        = smpi_process()->papi_counters();
     int event_set                       = smpi_process()->papi_event_set();
     std::vector<long long> event_values = std::vector<long long>(counter_data.size());
@@ -159,14 +159,14 @@ void smpi_bench_end()
   }
 
 #if HAVE_PAPI
-  if (simgrid::config::get_value<std::string>("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
+  if (not simgrid::config::get_value<std::string>("smpi/papi-events").empty() && TRACE_smpi_is_enabled()) {
     container_t container =
-        new simgrid::instr::Container(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
+        simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
     papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& pair : counter_data) {
-      new simgrid::instr::SetVariableEvent(
-          surf_get_clock(), container, PJ_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
+      simgrid::instr::VariableType* variable = static_cast<simgrid::instr::VariableType*>(container->type_->by_name(pair.first));
+      variable->set_event(surf_get_clock(), pair.second);
     }
   }
 #endif

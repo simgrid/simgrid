@@ -187,7 +187,7 @@ void TRACE_smpi_init(int rank)
 
   TRACE_smpi_setup_container(rank, sg_host_self());
 #if HAVE_PAPI
-  container_t container   = simgrid::instr::Container::by_name(str);
+  container_t container   = smpi_container(rank);
   papi_counter_t counters = smpi_process()->papi_counters();
 
   for (auto const& it : counters) {
@@ -195,9 +195,7 @@ void TRACE_smpi_init(int rank)
      * Check whether this variable already exists or not. Otherwise, it will be created
      * multiple times but only the last one would be used...
      */
-    if (s_type::getOrNull(it.first.c_str(), container->type_) == nullptr) {
-      Type::variableNew(it.first.c_str(), "", container->type_);
-    }
+    container->type_->by_name_or_create(it.first, "");
   }
 #endif
 }
