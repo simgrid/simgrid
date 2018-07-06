@@ -32,10 +32,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
     XBT_VERB("SMPI - Entering %s", __func__);                                                                          \
     type ret = P##name args2;					                                                       \
     if(ret!=MPI_SUCCESS) {                                                                                             \
-      char error_string[MPI_MAX_ERROR_STRING];                                                                                               \
-      int error_size;                                                                                                        \
-      PMPI_Error_string(ret, error_string, &error_size);                                                                      \
-      XBT_DEBUG("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size,error_string);                                      \
+      char error_string[MPI_MAX_ERROR_STRING];                                                                         \
+      int error_size;                                                                                                  \
+      PMPI_Error_string(ret, error_string, &error_size);                                                               \
+      XBT_DEBUG("%s - returned %.*s instead of MPI_SUCCESS", __func__, error_size,error_string);                       \
     }                                                                                                                  \
     XBT_VERB("SMPI - Leaving %s", __func__);                                                                           \
     return ret;                                                                                                        \
