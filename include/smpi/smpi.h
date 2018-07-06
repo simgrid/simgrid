@@ -130,10 +130,6 @@ enum ERROR_ENUM {
     FOREACH_ERROR(GENERATE_ENUM)
 };
 
-static const char *smpi_error_string[] = {
-    FOREACH_ERROR(GENERATE_STRING)
-};
-
 #define MPI_ERRCODES_IGNORE (int *)0
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1

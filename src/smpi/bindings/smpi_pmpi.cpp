@@ -209,6 +209,9 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
 }
 
 int PMPI_Error_string(int errorcode, char* string, int* resultlen){
+  static const char *smpi_error_string[] = {
+    FOREACH_ERROR(GENERATE_STRING)
+  };
   *resultlen = strlen(smpi_error_string[errorcode]);
   strncpy(string, smpi_error_string[errorcode], *resultlen);
   return MPI_SUCCESS;  
