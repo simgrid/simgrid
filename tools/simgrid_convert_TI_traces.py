@@ -98,16 +98,12 @@ if __name__ == "__main__":
     pathlib.Path(args.output_path).mkdir(
             parents=True, exist_ok=True)
 
-    assert trace_list_file_path != args.output_path, (
-            "Inplace replacement of the trace is not supported: select "
-            "another output path")
-
     # copy trace list file
     try:
         shutil.copy(trace_list_file_path, args.output_path)
     except shutil.SameFileError:
         print("ERROR: Inplace replacement of the trace is not supported: "
-            "Please, select another output path")
+              "Please, select another output path")
         sys.exit(-1)
 
 
@@ -121,8 +117,10 @@ if __name__ == "__main__":
 
     # process trace files
     for trace_path in trace_list:
-        assert not os.path.isabs(trace_path), (
-                "Absolute path in the trace list file is not supported")
+        if os.path.isabs(trace_path):
+            print("ERROR: Absolute path in the trace list file is not "
+                  "supported")
+            sys.exit(-1)
         convert_trace(trace_path, base_path, args.output_path)
 
     print("Traces converted!")
