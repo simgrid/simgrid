@@ -224,7 +224,7 @@ typedef SMPI_Info* MPI_Info;
 #define MPI_STATUS_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
 
-#define MPI_DATATYPE_NULL ((const MPI_Datatype)NULL)
+XBT_PUBLIC_DATA const MPI_Datatype MPI_DATATYPE_NULL;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_CHAR;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_SHORT;
 XBT_PUBLIC_DATA const MPI_Datatype MPI_INT;
