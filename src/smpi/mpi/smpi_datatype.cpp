@@ -206,9 +206,6 @@ bool Datatype::is_basic()
 
 const char* Datatype::encode(MPI_Datatype dt)
 {
-  if (dt == MPI_DATATYPE_NULL)
-    return "-1";
-
   return dt->id.c_str();
 }
 
