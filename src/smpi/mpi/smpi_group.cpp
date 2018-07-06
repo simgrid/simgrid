@@ -25,7 +25,7 @@ Group::Group()
   refcount_          = 1;       /* refcount_: start > 0 so that this group never gets freed */
 }
 
-Group::Group(int n) : size_(n), rank_to_actor_map_(size_, nullptr), index_to_rank_map_(size_, MPI_UNDEFINED)
+Group::Group(int n) : size_(n), rank_to_actor_map_(size_, nullptr)
 {
   refcount_ = 1;
 }
@@ -35,8 +35,6 @@ Group::Group(Group* origin)
   if (origin != MPI_GROUP_NULL && origin != MPI_GROUP_EMPTY) {
     size_              = origin->size();
     refcount_          = 1;
-    // FIXME: cheinrich: There is no such thing as an index any more; the two maps should be removed
-    index_to_rank_map_ = origin->index_to_rank_map_;
     rank_to_actor_map_ = origin->rank_to_actor_map_;
     actor_to_rank_map_ = origin->actor_to_rank_map_;
   }
@@ -46,28 +44,12 @@ void Group::set_mapping(simgrid::s4u::ActorPtr actor, int rank)
 {
   if (0 <= rank && rank < size_) {
     int index                = actor->get_pid();
-    if (index != MPI_UNDEFINED) {
-      if ((unsigned)index >= index_to_rank_map_.size())
-        index_to_rank_map_.resize(index + 1, MPI_UNDEFINED);
-      index_to_rank_map_[index] = rank;
-    }
 
     rank_to_actor_map_[rank] = actor;
     if (actor != nullptr) {
       actor_to_rank_map_.insert({actor, rank});
     }
   }
-}
-
-int Group::rank(int index)
-{
-  int rank;
-  if (0 <= index && (unsigned)index < index_to_rank_map_.size())
-    rank = index_to_rank_map_[index];
-  else
-    rank = MPI_UNDEFINED;
-
-  return rank;
 }
 
 simgrid::s4u::ActorPtr Group::actor(int rank) {

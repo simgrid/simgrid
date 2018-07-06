@@ -24,7 +24,6 @@ class Group : public F2C{
      */
     std::vector<simgrid::s4u::ActorPtr> rank_to_actor_map_;
     std::map<simgrid::s4u::ActorPtr, int> actor_to_rank_map_;
-    std::vector<int> index_to_rank_map_;
 
     int refcount_;
   public:
@@ -33,7 +32,6 @@ class Group : public F2C{
     explicit Group(Group* origin);
 
     void set_mapping(simgrid::s4u::ActorPtr actor, int rank);
-    int rank(int index);
     simgrid::s4u::ActorPtr actor(int rank);
     int rank(const simgrid::s4u::ActorPtr process);
     void ref();
