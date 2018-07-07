@@ -72,11 +72,11 @@ void DijkstraZone::seal()
   }
 }
 
-xbt_node_t DijkstraZone::route_graph_new_node(int id, int graph_id)
+xbt_node_t DijkstraZone::route_graph_new_node(int id)
 {
   graph_node_data_t data = new s_graph_node_data_t;
   data->id       = id;
-  data->graph_id = graph_id;
+  data->graph_id         = -1;
 
   xbt_node_t node = xbt_graph_new_node(route_graph_, data);
   graph_node_map_.emplace(id, node);
@@ -91,38 +91,6 @@ xbt_node_t DijkstraZone::node_map_search(int id)
 }
 
 /* Parsing */
-
-void DijkstraZone::new_route(int src_id, int dst_id, simgrid::kernel::routing::RouteCreationArgs* e_route)
-{
-  XBT_DEBUG("Load Route from \"%d\" to \"%d\"", src_id, dst_id);
-  xbt_node_t src = nullptr;
-  xbt_node_t dst = nullptr;
-
-  xbt_node_t src_elm = node_map_search(src_id);
-  xbt_node_t dst_elm = node_map_search(dst_id);
-
-  if (src_elm)
-    src = src_elm;
-
-  if (dst_elm)
-    dst = dst_elm;
-
-  /* add nodes if they don't exist in the graph */
-  if (src_id == dst_id && src == nullptr && dst == nullptr) {
-    src = this->route_graph_new_node(src_id, -1);
-    dst = src;
-  } else {
-    if (src == nullptr) {
-      src = this->route_graph_new_node(src_id, -1);
-    }
-    if (dst == nullptr) {
-      dst = this->route_graph_new_node(dst_id, -1);
-    }
-  }
-
-  /* add link as edge to graph */
-  xbt_graph_new_edge(route_graph_, src, dst, e_route);
-}
 
 void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* route, double* lat)
 {
@@ -274,50 +242,41 @@ DijkstraZone::DijkstraZone(NetZoneImpl* father, std::string name, bool cached)
 void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                              std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
 {
-  const char* srcName = src->get_cname();
-  const char* dstName = dst->get_cname();
-
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
-  /* Create the topology graph */
   if (not route_graph_)
     route_graph_ = xbt_graph_new_graph(1, nullptr);
 
-  /* we don't check whether the route already exist, because the algorithm may find another path through some other
-   * nodes */
+  new_edge(src->id(), dst->id(), new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1));
 
-  /* Add the route to the base */
-  RouteCreationArgs* e_route = new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 1);
-  new_route(src->id(), dst->id(), e_route);
+  if (symmetrical == true)
+    new_edge(dst->id(), src->id(), new_extended_route(hierarchy_, dst, src, gw_dst, gw_src, link_list, symmetrical, 0));
+}
 
-  // Symmetrical YES
-  if (symmetrical == true) {
+void DijkstraZone::new_edge(int src_id, int dst_id, simgrid::kernel::routing::RouteCreationArgs* route)
+{
+  XBT_DEBUG("Create Route from '%d' to '%d'", src_id, dst_id);
 
-    xbt_dynar_t nodes   = xbt_graph_get_nodes(route_graph_);
-    xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src->id(), xbt_node_t);
-    xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst->id(), xbt_node_t);
-    xbt_edge_t edge     = xbt_graph_get_edge(route_graph_, node_e_v, node_s_v);
+  // Get the extremities, or create them if they don't exist yet
+  xbt_node_t src = node_map_search(src_id);
+  if (src == nullptr)
+    src = this->route_graph_new_node(src_id);
 
-    if (not gw_dst || not gw_src) {
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
-      if (edge)
-        THROWF(arg_error, 0, "Route from %s to %s already exists", dstName, srcName);
-    } else {
-      XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", dstName, gw_dst->get_cname(), srcName, gw_src->get_cname());
-      if (edge)
-        THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, gw_dst->get_cname(), srcName,
-               gw_src->get_cname());
-    }
+  xbt_node_t dst = node_map_search(dst_id);
+  if (dst == nullptr)
+    dst = this->route_graph_new_node(dst_id);
 
-    if (gw_dst && gw_src) {
-      NetPoint* gw_tmp = gw_src;
-      gw_src           = gw_dst;
-      gw_dst           = gw_tmp;
-    }
-    RouteCreationArgs* link_route_back =
-        new_extended_route(hierarchy_, src, dst, gw_src, gw_dst, link_list, symmetrical, 0);
-    new_route(dst->id(), src->id(), link_route_back);
+  // Make sure that this graph edge was not already added to the graph
+  if (xbt_graph_get_edge(route_graph_, src, dst) != nullptr) {
+    if (route->gw_dst == nullptr || route->gw_src == nullptr)
+      THROWF(arg_error, 0, "Route from %s to %s already exists", route->src->get_cname(), route->dst->get_cname());
+    else
+      THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", route->src->get_cname(),
+             route->gw_src->get_cname(), route->dst->get_cname(), route->gw_dst->get_cname());
   }
+
+  // Finally add it
+  xbt_graph_new_edge(route_graph_, src, dst, route);
 }
 }
 }

@@ -39,9 +39,9 @@ public:
   ~DijkstraZone() override;
 
 private:
-  xbt_node_t route_graph_new_node(int id, int graph_id);
+  xbt_node_t route_graph_new_node(int id);
   xbt_node_t node_map_search(int id);
-  void new_route(int src_id, int dst_id, RouteCreationArgs* e_route);
+  void new_edge(int src_id, int dst_id, RouteCreationArgs* e_route);
 
 public:
   /* For each vertex (node) already in the graph,
