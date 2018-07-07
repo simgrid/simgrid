@@ -31,7 +31,7 @@ public:
   double next_occuring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  LinkImpl* createLink(const std::string& name, double bw, double lat, s4u::Link::SharingPolicy policy) override;
+  LinkImpl* create_link(const std::string& name, double bw, double lat, s4u::Link::SharingPolicy policy) override;
 };
 
 /**********

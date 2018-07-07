@@ -57,7 +57,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys)
     : NetworkModel(Model::UpdateAlgo::FULL), hostModel_(hmodel)
 {
   set_maxmin_system(sys);
-  loopback_ = NetworkL07Model::createLink("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
+  loopback_ = NetworkL07Model::create_link("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
 }
 
 NetworkL07Model::~NetworkL07Model()
@@ -228,8 +228,8 @@ Cpu* CpuL07Model::create_cpu(simgrid::s4u::Host* host, std::vector<double>* spee
   return new CpuL07(this, host, speed_per_pstate, core);
 }
 
-kernel::resource::LinkImpl* NetworkL07Model::createLink(const std::string& name, double bandwidth, double latency,
-                                                        s4u::Link::SharingPolicy policy)
+kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, double bandwidth, double latency,
+                                                         s4u::Link::SharingPolicy policy)
 {
   return new LinkL07(this, name, bandwidth, latency, policy);
 }

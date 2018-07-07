@@ -38,17 +38,17 @@ simgrid::config::Flag<bool> NetworkModel::cfg_crosstraffic(
 
 NetworkModel::~NetworkModel() = default;
 
-double NetworkModel::latencyFactor(double /*size*/)
+double NetworkModel::get_latency_factor(double /*size*/)
 {
   return sg_latency_factor;
 }
 
-double NetworkModel::bandwidthFactor(double /*size*/)
+double NetworkModel::get_bandwidth_factor(double /*size*/)
 {
   return sg_bandwidth_factor;
 }
 
-double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /*size*/)
+double NetworkModel::get_bandwidth_constraint(double rate, double /*bound*/, double /*size*/)
 {
   return rate;
 }
@@ -89,7 +89,7 @@ LinkImpl::LinkImpl(NetworkModel* model, const std::string& name, lmm::Constraint
 /** @brief use destroy() instead of this destructor */
 LinkImpl::~LinkImpl()
 {
-  xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
+  xbt_assert(currently_destroying_, "Don't delete Links directly. Call destroy() instead.");
 }
 /** @brief Fire the required callbacks and destroy the object
  *
@@ -97,8 +97,8 @@ LinkImpl::~LinkImpl()
  */
 void LinkImpl::destroy()
 {
-  if (not currentlyDestroying_) {
-    currentlyDestroying_ = true;
+  if (not currently_destroying_) {
+    currently_destroying_ = true;
     s4u::Link::on_destruction(this->piface_);
     delete this;
   }

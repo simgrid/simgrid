@@ -146,11 +146,11 @@ NetworkCm02Model::NetworkCm02Model(kernel::lmm::System* (*make_new_lmm_system)(b
   }
 
   set_maxmin_system(make_new_lmm_system(select));
-  loopback_ = NetworkCm02Model::createLink("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
+  loopback_ = NetworkCm02Model::create_link("__loopback__", 498000000, 0.000015, s4u::Link::SharingPolicy::FATPIPE);
 }
 
-LinkImpl* NetworkCm02Model::createLink(const std::string& name, double bandwidth, double latency,
-                                       s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkCm02Model::create_link(const std::string& name, double bandwidth, double latency,
+                                        s4u::Link::SharingPolicy policy)
 {
   return new NetworkCm02Link(this, name, bandwidth, latency, policy, get_maxmin_system());
 }
@@ -253,14 +253,14 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
         });
   }
 
-  double bandwidth_bound = route.empty() ? -1.0 : bandwidthFactor(size) * route.front()->get_bandwidth();
+  double bandwidth_bound = route.empty() ? -1.0 : get_bandwidth_factor(size) * route.front()->get_bandwidth();
 
   for (auto const& link : route)
-    bandwidth_bound = std::min(bandwidth_bound, bandwidthFactor(size) * link->get_bandwidth());
+    bandwidth_bound = std::min(bandwidth_bound, get_bandwidth_factor(size) * link->get_bandwidth());
 
   action->lat_current_ = action->latency_;
-  action->latency_ *= latencyFactor(size);
-  action->rate_ = bandwidthConstraint(action->rate_, bandwidth_bound, size);
+  action->latency_ *= get_latency_factor(size);
+  action->rate_ = get_bandwidth_constraint(action->rate_, bandwidth_bound, size);
 
   int constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();

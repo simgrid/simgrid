@@ -57,8 +57,8 @@ class NetworkL07Model : public kernel::resource::NetworkModel {
 public:
   NetworkL07Model(HostL07Model* hmodel, kernel::lmm::System* sys);
   ~NetworkL07Model();
-  kernel::resource::LinkImpl* createLink(const std::string& name, double bandwidth, double latency,
-                                         s4u::Link::SharingPolicy policy) override;
+  kernel::resource::LinkImpl* create_link(const std::string& name, double bandwidth, double latency,
+                                          s4u::Link::SharingPolicy policy) override;
 
   kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
 

@@ -173,8 +173,8 @@ NetworkNS3Model::~NetworkNS3Model() {
   IPV4addr.clear();
 }
 
-LinkImpl* NetworkNS3Model::createLink(const std::string& name, double bandwidth, double latency,
-                                      s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkNS3Model::create_link(const std::string& name, double bandwidth, double latency,
+                                       s4u::Link::SharingPolicy policy)
 {
   return new LinkNS3(this, name, bandwidth, latency);
 }

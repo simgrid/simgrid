@@ -22,8 +22,8 @@ void surf_network_model_init_Constant()
 namespace simgrid {
 namespace kernel {
 namespace resource {
-LinkImpl* NetworkConstantModel::createLink(const std::string& name, double bw, double lat,
-                                           s4u::Link::SharingPolicy policy)
+LinkImpl* NetworkConstantModel::create_link(const std::string& name, double bw, double lat,
+                                            s4u::Link::SharingPolicy policy)
 {
 
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "

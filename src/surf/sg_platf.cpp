@@ -123,7 +123,7 @@ void sg_platf_new_link(simgrid::kernel::routing::LinkCreationArgs* link)
   }
   for (auto const& link_name : names) {
     simgrid::kernel::resource::LinkImpl* l =
-        surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy);
+        surf_network_model->create_link(link_name, link->bandwidth, link->latency, link->policy);
 
     if (link->properties) {
       for (auto const& elm : *link->properties)
