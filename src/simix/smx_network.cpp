@@ -312,8 +312,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
   /* otherwise set up a waiting timeout on the right side          */
   if (synchro->state_ != SIMIX_WAITING && synchro->state_ != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
-  } else { /* we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host
-              fails */
+  } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
     simgrid::kernel::resource::Action* sleep = simcall->issuer->host_->pimpl_cpu->sleep(timeout);
     sleep->set_data(synchro.get());
 
