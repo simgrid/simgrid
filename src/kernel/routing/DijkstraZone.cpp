@@ -15,11 +15,25 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 
-/* Free functions */
+namespace simgrid {
+namespace kernel {
+namespace routing {
+
+class GraphNodeData {
+public:
+  GraphNodeData(int id) : id_(id) {}
+  int id_;
+  int graph_id_ = -1; /* used for caching internal graph id's */
+};
+
+DijkstraZone::DijkstraZone(NetZoneImpl* father, std::string name, bool cached)
+    : RoutedZone(father, name), cached_(cached)
+{
+}
 
 static void graph_node_data_free(void* n)
 {
-  delete static_cast<graph_node_data_t>(n);
+  delete static_cast<simgrid::kernel::routing::GraphNodeData*>(n);
 }
 
 static void graph_edge_data_free(void* e)
@@ -27,11 +41,11 @@ static void graph_edge_data_free(void* e)
   delete static_cast<simgrid::kernel::routing::RouteCreationArgs*>(e);
 }
 
-/* Utility functions */
+DijkstraZone::~DijkstraZone()
+{
+  xbt_graph_free_graph(route_graph_, &graph_node_data_free, &graph_edge_data_free, nullptr);
+}
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
 void DijkstraZone::seal()
 {
   unsigned int cursor;
@@ -67,18 +81,14 @@ void DijkstraZone::seal()
   xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_);
 
   xbt_dynar_foreach (nodes, cursor, node) {
-    graph_node_data_t data = static_cast<graph_node_data_t>(xbt_graph_node_get_data(node));
-    data->graph_id         = cursor;
+    GraphNodeData* data = static_cast<GraphNodeData*>(xbt_graph_node_get_data(node));
+    data->graph_id_     = cursor;
   }
 }
 
 xbt_node_t DijkstraZone::route_graph_new_node(int id)
 {
-  graph_node_data_t data = new s_graph_node_data_t;
-  data->id       = id;
-  data->graph_id         = -1;
-
-  xbt_node_t node = xbt_graph_new_node(route_graph_, data);
+  xbt_node_t node = xbt_graph_new_node(route_graph_, new GraphNodeData(id));
   graph_node_map_.emplace(id, node);
 
   return node;
@@ -104,8 +114,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
   xbt_node_t src_elm = node_map_search(src_id);
   xbt_node_t dst_elm = node_map_search(dst_id);
 
-  int src_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(src_elm))->graph_id;
-  int dst_node_id = static_cast<graph_node_data_t>(xbt_graph_node_get_data(dst_elm))->graph_id;
+  int src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
+  int dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
@@ -160,8 +170,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
 
       xbt_dynar_foreach (xbt_graph_node_get_outedges(v_node), cursor, edge) {
         xbt_node_t u_node                  = xbt_graph_edge_get_target(edge);
-        graph_node_data_t data             = static_cast<graph_node_data_t>(xbt_graph_node_get_data(u_node));
-        int u_id                           = data->graph_id;
+        GraphNodeData* data                = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
+        int u_id                           = data->graph_id_;
         RouteCreationArgs* tmp_e_route     = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
         int cost_v_u                       = tmp_e_route->link_list.size(); /* count of links, old model assume 1 */
 
@@ -225,18 +235,6 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
 
   if (not cached_)
     route_cache_.clear();
-}
-
-DijkstraZone::~DijkstraZone()
-{
-  xbt_graph_free_graph(route_graph_, &graph_node_data_free, &graph_edge_data_free, nullptr);
-}
-
-/* Creation routing model functions */
-
-DijkstraZone::DijkstraZone(NetZoneImpl* father, std::string name, bool cached)
-    : RoutedZone(father, name), cached_(cached)
-{
 }
 
 void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,

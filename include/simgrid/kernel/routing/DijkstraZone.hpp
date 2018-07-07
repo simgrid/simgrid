@@ -8,19 +8,10 @@
 
 #include <simgrid/kernel/routing/RoutedZone.hpp>
 
-struct s_graph_node_data_t {
-  int id;
-  int graph_id; /* used for caching internal graph id's */
-};
-typedef s_graph_node_data_t* graph_node_data_t;
 
 namespace simgrid {
 namespace kernel {
 namespace routing {
-
-/***********
- * Classes *
- ***********/
 
 /** @ingroup ROUTING_API
  *  @brief NetZone with an explicit routing computed on need with Dijsktra
