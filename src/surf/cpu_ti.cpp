@@ -383,21 +383,17 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
 void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 {
   if (event == speed_.event) {
-    XBT_DEBUG("Finish trace date: value %f", value);
+    XBT_DEBUG("Speed changed in trace! New fixed value: %f", value);
+
     /* update remaining of actions and put in modified cpu list */
     update_remaining_amount(surf_get_clock());
 
     set_modified(true);
 
-    trace_mgr::DatedValue val = speed_integrated_trace_->speed_trace_->event_list.back();
     delete speed_integrated_trace_;
-    speed_.scale = val.value_;
+    speed_integrated_trace_ = new CpuTiTmgr(value);
 
-    CpuTiTmgr* trace = new CpuTiTmgr(val.value_);
-    XBT_DEBUG("New fixed value: %f", val.value_);
-
-    speed_integrated_trace_ = trace;
-
+    speed_.scale = value;
     tmgr_trace_event_unref(&speed_.event);
 
   } else if (event == state_event_) {

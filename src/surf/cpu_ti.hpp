@@ -57,6 +57,7 @@ public:
   double solve(double a, double amount);
   double get_power_scale(double a);
 
+private:
   Type type_;
   double value_;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
