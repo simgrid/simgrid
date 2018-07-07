@@ -257,7 +257,7 @@ refer to the <a href="https://wiki.inria.fr/ciportal/">CI documentation</a>.
 The result can be seen here: https://ci.inria.fr/simgrid/
 
 We have 2 interesting projects on Jenkins:
-\li <a href="https://ci.inria.fr/simgrid/job/SimGrid-Multi/">SimGrid-Multi</a>
+\li <a href="https://ci.inria.fr/simgrid/job/SimGrid/">SimGrid</a>
     is the main project, running the tests that we spoke about.\n It is
     configured (on Jenkins) to run the script <tt>tools/jenkins/build.sh</tt>
 \li <a href="https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/">SimGrid-DynamicAnalysis</a>
@@ -269,7 +269,7 @@ We have 2 interesting projects on Jenkins:
 
 In each case, SimGrid gets built in
 /builds/workspace/$PROJECT/build_mode/$CONFIG/label/$SERVER/build 
-with $PROJECT being for instance "SimGrid-Multi", $CONFIG "DEBUG" or
+with $PROJECT being for instance "SimGrid", $CONFIG "DEBUG" or
 "ModelChecker" and $SERVER for instance "simgrid-fedora20-64-clang".
 
 If some configurations are known to fail on some systems (such as

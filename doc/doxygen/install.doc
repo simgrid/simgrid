@@ -37,7 +37,7 @@ For Windows, head to [AppVeyor](https://ci.appveyor.com/project/simgrid/simgrid)
 Click on the artefact link on the right, and grab your file. If the latest build failed, there will be no artefact. Then
 you will need to first click on "History" on the top and search for the last successful build.
 
-For non-Windows systems (Linux, Mac or FreeBSD), head to [Jenkins](https://ci.inria.fr/simgrid/job/SimGrid-Multi).
+For non-Windows systems (Linux, Mac or FreeBSD), head to [Jenkins](https://ci.inria.fr/simgrid/job/SimGrid).
 In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under 
 build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact 
 will appear on the top of the resulting page.

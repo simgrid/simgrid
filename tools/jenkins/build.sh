@@ -2,7 +2,7 @@
 
 # This script is used by various build projects on Jenkins
 
-# See https://ci.inria.fr/simgrid/job/SimGrid-Multi/configure
+# See https://ci.inria.fr/simgrid/job/SimGrid/configure
 # See https://ci.inria.fr/simgrid/job/Simgrid-Windows/configure
 
 set -e
@@ -13,7 +13,7 @@ export LC_ALL=C
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
 rm -rf /tmp/jvm-*
-find /builds/workspace/SimGrid-Multi/ -name "hs_err_pid*.log" | xargs rm -f
+find /builds/workspace/SimGrid/ -name "hs_err_pid*.log" | xargs rm -f
 ls /tmp
 df -h
 echo "XXXX Let's go"
