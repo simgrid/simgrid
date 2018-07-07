@@ -90,13 +90,6 @@ XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_vm;
 XBT_PUBLIC void surf_cpu_model_init_Cas01();
 
 /** \ingroup SURF_models
- *  \brief Initializes the CPU model with trace integration [Deprecated]
- *
- *  You shouldn't have to call it by yourself.
- */
-XBT_PUBLIC void surf_cpu_model_init_ti();
-
-/** \ingroup SURF_models
  *  \brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:...
  */

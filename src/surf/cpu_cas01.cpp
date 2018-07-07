@@ -5,6 +5,7 @@
 
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.hpp"
+#include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
@@ -34,11 +35,11 @@ static simgrid::config::Flag<std::string>
  *********/
 void surf_cpu_model_init_Cas01()
 {
-  xbt_assert(not surf_cpu_model_pm);
-  xbt_assert(not surf_cpu_model_vm);
+  xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
+  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
 
   if (cpu_optim_opt == "TI") {
-    surf_cpu_model_init_ti();
+    simgrid::surf::CpuTiModel::create_pm_vm_models();
     return;
   }
 

@@ -8,8 +8,7 @@
 #include "src/surf/trace_mgr.hpp"
 #include "surf/surf.hpp"
 
-#ifndef SURF_MODEL_CPUTI_H_
-#define SURF_MODEL_CPUTI_H_
+#define EPSILON 0.000000001
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
 
@@ -292,21 +291,22 @@ int CpuTiTrace::binary_search(double* array, double a, int low, int high)
 /*********
  * Model *
  *********/
-
-void surf_cpu_model_init_ti()
-{
-  xbt_assert(not surf_cpu_model_pm, "CPU model already initialized. This should not happen.");
-  xbt_assert(not surf_cpu_model_vm, "CPU model already initialized. This should not happen.");
-
-  surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
-  all_existing_models->push_back(surf_cpu_model_pm);
-
-  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
-  all_existing_models->push_back(surf_cpu_model_vm);
-}
-
 namespace simgrid {
 namespace surf {
+
+void CpuTiModel::create_pm_vm_models()
+{
+  xbt_assert(surf_cpu_model_pm == nullptr, "CPU model already initialized. This should not happen.");
+  xbt_assert(surf_cpu_model_vm == nullptr, "CPU model already initialized. This should not happen.");
+
+  surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
+  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+}
+
+CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
+{
+  all_existing_models->push_back(this);
+}
 
 CpuTiModel::~CpuTiModel()
 {
@@ -673,5 +673,3 @@ double CpuTiAction::get_remains()
 
 }
 }
-
-#endif /* SURF_MODEL_CPUTI_H_ */

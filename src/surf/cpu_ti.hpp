@@ -3,15 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SURF_MODEL_CPUTI_H_
+#define SURF_MODEL_CPUTI_H_
+
 #include <boost/intrusive/list.hpp>
 
-#include <xbt/base.h>
+//#include <xbt/base.h>
 
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
-
-/* Epsilon */
-#define EPSILON 0.000000001
 
 namespace simgrid {
 namespace surf {
@@ -139,7 +139,9 @@ typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
  *********/
 class CpuTiModel : public CpuModel {
 public:
-  CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL){};
+  static void create_pm_vm_models(); // Make both models be TI models
+
+  CpuTiModel();
   ~CpuTiModel() override;
   Cpu* create_cpu(simgrid::s4u::Host* host, std::vector<double>* speed_per_pstate, int core) override;
   double next_occuring_event(double now) override;
@@ -150,3 +152,5 @@ public:
 
 }
 }
+
+#endif /* SURF_MODEL_CPUTI_H_ */
