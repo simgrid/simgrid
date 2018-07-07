@@ -41,12 +41,13 @@ public:
 };
 
 class CpuTiTmgr {
-public:
   enum class Type {
     FIXED,  /*< Trace fixed, no availability file */
     DYNAMIC /*< Dynamic, have an availability file */
   };
-  CpuTiTmgr(Type type, double value) : type_(type), value_(value){};
+
+public:
+  CpuTiTmgr(double value) : type_(Type::FIXED), value_(value){};
   CpuTiTmgr(tmgr_trace_t speed_trace, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;

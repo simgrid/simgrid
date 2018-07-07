@@ -61,19 +61,18 @@ CpuTiTmgr::~CpuTiTmgr()
 */
 double CpuTiTmgr::integrate(double a, double b)
 {
-  int a_index;
-
   if ((a < 0.0) || (a > b)) {
     xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
         "You probably have a task executing with negative computation amount. Check your code.", a, b);
   }
-  if (fabs(a -b) < EPSILON)
+  if (fabs(a - b) < EPSILON)
     return 0.0;
 
   if (type_ == Type::FIXED) {
-    return ((b - a) * value_);
+    return (b - a) * value_;
   }
 
+  int a_index;
   if (fabs(ceil(a / last_time_) - a / last_time_) < EPSILON)
     a_index = 1 + static_cast<int>(ceil(a / last_time_));
   else
@@ -390,13 +389,12 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
 
     set_modified(true);
 
-    tmgr_trace_t speedTrace   = speed_integrated_trace_->speed_trace_;
-    trace_mgr::DatedValue val = speedTrace->event_list.back();
+    trace_mgr::DatedValue val = speed_integrated_trace_->speed_trace_->event_list.back();
     delete speed_integrated_trace_;
     speed_.scale = val.value_;
 
-    CpuTiTmgr* trace = new CpuTiTmgr(CpuTiTmgr::Type::FIXED, val.value_);
-    XBT_DEBUG("value %f", val.value_);
+    CpuTiTmgr* trace = new CpuTiTmgr(val.value_);
+    XBT_DEBUG("New fixed value: %f", val.value_);
 
     speed_integrated_trace_ = trace;
 
@@ -503,8 +501,7 @@ double CpuTi::get_speed_ratio()
 /** @brief Update the remaining amount of actions */
 void CpuTi::update_remaining_amount(double now)
 {
-
-  /* already updated */
+  /* already up to date */
   if (last_update_ >= now)
     return;
 
