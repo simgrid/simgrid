@@ -51,19 +51,18 @@ void DijkstraZone::seal()
   unsigned int cursor;
   xbt_node_t node = nullptr;
 
-  /* Create the topology graph */
   if (not route_graph_)
     route_graph_ = xbt_graph_new_graph(1, nullptr);
 
   /* Add the loopback if needed */
   if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
-    xbt_dynar_foreach (xbt_graph_get_nodes(route_graph_), cursor, node) {
 
+    xbt_dynar_foreach (xbt_graph_get_nodes(route_graph_), cursor, node) {
       bool found = false;
       xbt_edge_t edge = nullptr;
       unsigned int cursor2;
       xbt_dynar_foreach (xbt_graph_node_get_outedges(node), cursor2, edge) {
-        if (xbt_graph_edge_get_target(edge) == node) {
+        if (xbt_graph_edge_get_target(edge) == node) { // There is an edge from node to itself
           found = true;
           break;
         }
@@ -185,9 +184,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
   }
 
   /* compose route path with links */
-  NetPoint* gw_src = nullptr;
-  NetPoint* gw_dst;
-  NetPoint* first_gw            = nullptr;
+  NetPoint* gw_src   = nullptr;
+  NetPoint* first_gw = nullptr;
 
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
@@ -199,9 +197,9 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, RouteCreationAr
 
     RouteCreationArgs* e_route = static_cast<RouteCreationArgs*>(xbt_graph_edge_get_data(edge));
 
-    NetPoint* prev_gw_src          = gw_src;
-    gw_src                         = e_route->gw_src;
-    gw_dst                         = e_route->gw_dst;
+    NetPoint* prev_gw_src = gw_src;
+    gw_src                = e_route->gw_src;
+    NetPoint* gw_dst      = e_route->gw_dst;
 
     if (v == dst_node_id)
       first_gw = gw_dst;
@@ -258,11 +256,11 @@ void DijkstraZone::new_edge(int src_id, int dst_id, simgrid::kernel::routing::Ro
   // Get the extremities, or create them if they don't exist yet
   xbt_node_t src = node_map_search(src_id);
   if (src == nullptr)
-    src = this->route_graph_new_node(src_id);
+    src = route_graph_new_node(src_id);
 
   xbt_node_t dst = node_map_search(dst_id);
   if (dst == nullptr)
-    dst = this->route_graph_new_node(dst_id);
+    dst = route_graph_new_node(dst_id);
 
   // Make sure that this graph edge was not already added to the graph
   if (xbt_graph_get_edge(route_graph_, src, dst) != nullptr) {
