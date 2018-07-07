@@ -70,7 +70,7 @@ double CpuTiTmgr::integrate(double a, double b)
   if (fabs(a -b) < EPSILON)
     return 0.0;
 
-  if (type_ == TRACE_FIXED) {
+  if (type_ == Type::FIXED) {
     return ((b - a) * value_);
   }
 
@@ -158,7 +158,7 @@ double CpuTiTmgr::solve(double a, double amount)
     return a;
 
   /* Is the trace fixed ? */
-  if (type_ == TRACE_FIXED) {
+  if (type_ == Type::FIXED) {
     return (a + (amount / value_));
   }
 
@@ -232,7 +232,7 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
 
   /* no availability file, fixed trace */
   if (not speed_trace) {
-    type_ = TRACE_FIXED;
+    type_  = Type::FIXED;
     value_ = value;
     XBT_DEBUG("No availability trace. Constant value = %f", value);
     return;
@@ -240,12 +240,12 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
 
   /* only one point available, fixed trace */
   if (speed_trace->event_list.size() == 1) {
-    type_  = TRACE_FIXED;
+    type_  = Type::FIXED;
     value_ = speed_trace->event_list.front().value_;
     return;
   }
 
-  type_ = TRACE_DYNAMIC;
+  type_ = Type::DYNAMIC;
 
   /* count the total time of trace file */
   for (auto const& val : speed_trace->event_list)
@@ -395,7 +395,7 @@ void CpuTi::apply_event(tmgr_trace_event_t event, double value)
     delete speed_integrated_trace_;
     speed_.scale = val.value_;
 
-    CpuTiTmgr* trace = new CpuTiTmgr(TRACE_FIXED, val.value_);
+    CpuTiTmgr* trace = new CpuTiTmgr(CpuTiTmgr::Type::FIXED, val.value_);
     XBT_DEBUG("value %f", val.value_);
 
     speed_integrated_trace_ = trace;

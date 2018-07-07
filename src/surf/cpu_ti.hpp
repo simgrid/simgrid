@@ -6,12 +6,10 @@
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
-#include <boost/intrusive/list.hpp>
-
-//#include <xbt/base.h>
-
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
+
+#include <boost/intrusive/list.hpp>
 
 namespace simgrid {
 namespace surf {
@@ -42,15 +40,13 @@ public:
   int binary_search(double* array, double a, int low, int high);
 };
 
-enum trace_type {
-
-  TRACE_FIXED,                /*< Trace fixed, no availability file */
-  TRACE_DYNAMIC               /*< Dynamic, have an availability file */
-};
-
 class CpuTiTmgr {
 public:
-  CpuTiTmgr(trace_type type, double value) : type_(type), value_(value){};
+  enum class Type {
+    FIXED,  /*< Trace fixed, no availability file */
+    DYNAMIC /*< Dynamic, have an availability file */
+  };
+  CpuTiTmgr(Type type, double value) : type_(type), value_(value){};
   CpuTiTmgr(tmgr_trace_t speed_trace, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
@@ -60,7 +56,7 @@ public:
   double solve(double a, double amount);
   double get_power_scale(double a);
 
-  trace_type type_;
+  Type type_;
   double value_;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
