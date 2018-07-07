@@ -122,11 +122,29 @@ double surf_get_clock()
   return NOW;
 }
 
+/* returns whether #file_path is a absolute file path. Surprising, isn't it ? */
+static bool is_absolute_file_path(const char* file_path)
+{
+#ifdef _WIN32
+  WIN32_FIND_DATA wfd = {0};
+  HANDLE hFile        = FindFirstFile(file_path, &wfd);
+
+  if (INVALID_HANDLE_VALUE == hFile)
+    return false;
+
+  FindClose(hFile);
+  return true;
+#else
+  return (file_path[0] == '/');
+#endif
+}
+
 std::ifstream* surf_ifsopen(std::string name)
 {
-  std::ifstream* fs = new std::ifstream();
   xbt_assert(not name.empty());
-  if (__surf_is_absolute_file_path(name.c_str())) { /* don't mess with absolute file names */
+
+  std::ifstream* fs = new std::ifstream();
+  if (is_absolute_file_path(name.c_str())) { /* don't mess with absolute file names */
     fs->open(name.c_str(), std::ifstream::in);
   }
 
@@ -150,7 +168,7 @@ FILE *surf_fopen(const char *name, const char *mode)
 
   xbt_assert(name);
 
-  if (__surf_is_absolute_file_path(name))       /* don't mess with absolute file names */
+  if (is_absolute_file_path(name)) /* don't mess with absolute file names */
     return fopen(name, mode);
 
   /* search relative files in the path */
@@ -162,26 +180,6 @@ FILE *surf_fopen(const char *name, const char *mode)
       return file;
   }
   return nullptr;
-}
-
-/* The __surf_is_absolute_file_path() returns 1 if
- * file_path is a absolute file path, in the other
- * case the function returns 0.
- */
-int __surf_is_absolute_file_path(const char *file_path)
-{
-#ifdef _WIN32
-  WIN32_FIND_DATA wfd = { 0 };
-  HANDLE hFile = FindFirstFile(file_path, &wfd);
-
-  if (INVALID_HANDLE_VALUE == hFile)
-    return 0;
-
-  FindClose(hFile);
-  return 1;
-#else
-  return (file_path[0] == '/');
-#endif
 }
 
 /** Displays the long description of all registered models, and quit */
