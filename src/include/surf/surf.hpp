@@ -9,18 +9,6 @@
 #include "simgrid/forward.h"
 #include "xbt/graph.h"
 
-/** \brief Resource model description
- */
-struct surf_model_description {
-  const char* name;
-  const char* description;
-  void_f_void_t model_init_preparse;
-};
-typedef struct surf_model_description s_surf_model_description_t;
-
-XBT_PUBLIC int find_model_description(s_surf_model_description_t* table, std::string name);
-XBT_PUBLIC void model_help(const char* category, s_surf_model_description_t* table);
-
 /***************************/
 /* Generic model object */
 /***************************/
@@ -78,33 +66,6 @@ XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_pm;
  */
 XBT_PUBLIC_DATA simgrid::surf::CpuModel* surf_cpu_model_vm;
 
-/** \ingroup SURF_models
- *  \brief The list of all available optimization modes (both for cpu and networks).
- *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:...
- */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_optimization_mode_description[];
-
-/** \ingroup SURF_plugins
- *  \brief The list of all available surf plugins
- */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_plugin_description[];
-
-/** \ingroup SURF_models
- *  \brief The list of all available cpu model models
- */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_cpu_model_description[];
-
-/** \ingroup SURF_models
- *  \brief The list of all available network model models
- */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_network_model_description[];
-
-/** \ingroup SURF_models
- *  \brief The list of all available storage modes.
- *  This storage mode can be set using --cfg=storage/model:...
- */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_storage_model_description[];
-
 XBT_PUBLIC_DATA simgrid::surf::StorageModel* surf_storage_model;
 
 /** \ingroup SURF_models
@@ -115,10 +76,6 @@ XBT_PUBLIC_DATA simgrid::surf::StorageModel* surf_storage_model;
  */
 XBT_PUBLIC_DATA simgrid::surf::HostModel* surf_host_model;
 
-/** \ingroup SURF_models
- *  \brief The list of all available host model models
- */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_host_model_description[];
 
 /*** SURF Globals **************************/
 
