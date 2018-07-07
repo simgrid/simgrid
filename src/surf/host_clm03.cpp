@@ -3,19 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "host_clm03.hpp"
+#include "src/surf/host_clm03.hpp"
 #include "simgrid/sg_config.hpp"
 #include "surf/surf.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
-
-/*************
- * CallBacks *
- *************/
-
-/*********
- * Model *
- *********/
 
 void surf_host_model_init_current_default()
 {
@@ -23,22 +15,21 @@ void surf_host_model_init_current_default()
   simgrid::config::set_default<bool>("network/crosstraffic", true);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
-
-  all_existing_models->push_back(surf_host_model);
 }
 
 void surf_host_model_init_compound()
 {
   xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
-
   surf_host_model = new simgrid::surf::HostCLM03Model();
-  all_existing_models->push_back(surf_host_model);
 }
 
 namespace simgrid {
 namespace surf {
-
+HostCLM03Model::HostCLM03Model()
+{
+  all_existing_models->push_back(this);
+}
 double HostCLM03Model::next_occuring_event(double now)
 {
   ignore_empty_vm_in_pm_LMM();
@@ -65,7 +56,7 @@ double HostCLM03Model::next_occuring_event(double now)
 
 void HostCLM03Model::update_actions_state(double /*now*/, double /*delta*/)
 {
-  /* I won't do what you tell me */
+  /* I've no action to update */
 }
 
 }
