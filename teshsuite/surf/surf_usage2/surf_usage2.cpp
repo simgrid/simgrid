@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     XBT_INFO("Next Event : %g", now);
 
     for (auto const& model : *all_existing_models) {
-      if (surf_model_running_action_set_size(model)) {
+      if (model->get_started_action_set()->size() != 0) {
         XBT_DEBUG("\t Running that model");
         running = 1;
       }

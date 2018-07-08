@@ -16,14 +16,6 @@
 /** @{ @ingroup SURF_c_bindings */
 
 /**
- * @brief Get the size of the running action set of a model
- *
- * @param model The model
- * @return The size of the running action set
- */
-XBT_PUBLIC int surf_model_running_action_set_size(simgrid::kernel::resource::Model* model);
-
-/**
  * @brief [brief description]
  * @details [long description]
  *

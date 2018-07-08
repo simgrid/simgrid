@@ -152,11 +152,6 @@ double surf_solve(double max_date)
 /*********
  * MODEL *
  *********/
-int surf_model_running_action_set_size(simgrid::kernel::resource::Model* model)
-{
-  return model->get_started_action_set()->size();
-}
-
 void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* action, double bound)
 {
   static_cast<simgrid::surf::CpuAction*>(action)->set_bound(bound);
