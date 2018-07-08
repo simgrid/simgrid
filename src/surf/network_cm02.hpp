@@ -58,7 +58,6 @@ public:
  **********/
 class NetworkCm02Action : public NetworkAction {
   friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
-  friend NetworkSmpiModel;
 
 public:
   NetworkCm02Action(Model* model, double cost, bool failed) : NetworkAction(model, cost, failed){};
