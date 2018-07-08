@@ -279,4 +279,8 @@ XBT_PRIVATE void dump_comment(std::string comment);
 
 XBT_PRIVATE std::string TRACE_get_filename();
 
+/* instr_platform */
+xbt_graph_t instr_routing_platform_graph();
+void instr_routing_platform_graph_export_graphviz(xbt_graph_t g, const char* filename);
+
 #endif
