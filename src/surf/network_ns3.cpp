@@ -136,8 +136,7 @@ static void postparse_cb()
  *********/
 void surf_network_model_init_NS3()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkNS3Model();
   all_existing_models->push_back(surf_network_model);

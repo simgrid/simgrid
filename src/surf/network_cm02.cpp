@@ -34,8 +34,7 @@ double sg_weight_S_parameter = 0.0;     /* default value; can be set by model or
 /*  } */
 void surf_network_model_init_LegrandVelho()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
   all_existing_models->push_back(surf_network_model);
@@ -58,8 +57,7 @@ void surf_network_model_init_LegrandVelho()
 /* } */
 void surf_network_model_init_CM02()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   simgrid::config::set_default<double>("network/latency-factor", 1.0);
   simgrid::config::set_default<double>("network/bandwidth-factor", 1.0);
@@ -81,8 +79,7 @@ void surf_network_model_init_CM02()
 /*  }                                                                      */
 void surf_network_model_init_Reno()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno_f, lmm::func_reno_fp, lmm::func_reno_fpi);
@@ -98,8 +95,7 @@ void surf_network_model_init_Reno()
 
 void surf_network_model_init_Reno2()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_reno2_f, lmm::func_reno2_fp, lmm::func_reno2_fpi);
@@ -114,8 +110,7 @@ void surf_network_model_init_Reno2()
 
 void surf_network_model_init_Vegas()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   namespace lmm = simgrid::kernel::lmm;
   lmm::Lagrange::set_default_protocol_function(lmm::func_vegas_f, lmm::func_vegas_fp, lmm::func_vegas_fpi);

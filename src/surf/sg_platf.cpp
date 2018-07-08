@@ -549,11 +549,11 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
     simgrid::s4u::on_platform_creation();
 
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect
      *
      * I'm not sure for <trace> and <trace_connect>, there may be a bug here
      * (FIXME: check it out by creating a file beginning with one of these tags)
-     * but cluster and peer create ASes internally, so putting the code in there is ok.
+     * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */
     surf_parse_models_setup_already_called = 1;
     surf_config_models_setup();

@@ -18,8 +18,8 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg,"Switching to the L07 model to handle parallel tasks.");
-  xbt_assert(not surf_cpu_model_pm, "CPU model type already defined");
-  xbt_assert(not surf_network_model, "network model type already defined");
+  xbt_assert(not surf_cpu_model_pm, "Cannot switch to ptasks: CPU model already defined");
+  xbt_assert(not surf_network_model, "Cannot switch to ptasks: network model already defined");
 
   surf_host_model = new simgrid::surf::HostL07Model();
   all_existing_models->push_back(surf_host_model);

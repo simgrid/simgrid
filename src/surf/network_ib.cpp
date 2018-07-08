@@ -85,8 +85,7 @@ static void IB_action_init_callback(simgrid::kernel::resource::NetworkAction* ac
 /*  } */
 void surf_network_model_init_IB()
 {
-  if (surf_network_model)
-    return;
+  xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkIBModel();
   all_existing_models->push_back(surf_network_model);
