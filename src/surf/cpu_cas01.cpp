@@ -50,10 +50,10 @@ void surf_cpu_model_init_Cas01()
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
   surf_cpu_model_pm = new simgrid::surf::CpuCas01Model(algo);
-  all_existing_models->push_back(surf_cpu_model_pm);
+  all_existing_models.push_back(surf_cpu_model_pm);
 
   surf_cpu_model_vm = new simgrid::surf::CpuCas01Model(algo);
-  all_existing_models->push_back(surf_cpu_model_vm);
+  all_existing_models.push_back(surf_cpu_model_vm);
 }
 
 namespace simgrid {

@@ -37,7 +37,7 @@ void surf_presolve()
   }
 
   XBT_DEBUG ("Set every models in the right state by updating them to 0.");
-  for (auto const& model : *all_existing_models)
+  for (auto const& model : all_existing_models)
     model->update_actions_state(NOW, 0.0);
 }
 
@@ -68,7 +68,7 @@ double surf_solve(double max_date)
       time_delta = next_event_virt;
   }
 
-  for (auto const& model : *all_existing_models) {
+  for (auto const& model : all_existing_models) {
     if (model != surf_host_model && model != surf_vm_model && model != surf_network_model &&
         model != surf_storage_model) {
       double next_event_model = model->next_occuring_event(NOW);
@@ -139,7 +139,7 @@ double surf_solve(double max_date)
   NOW = NOW + time_delta;
 
   // Inform the models of the date change
-  for (auto const& model : *all_existing_models)
+  for (auto const& model : all_existing_models)
     model->update_actions_state(NOW, time_delta);
 
   simgrid::s4u::on_time_advance(time_delta);

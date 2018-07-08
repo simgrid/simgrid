@@ -37,7 +37,7 @@ void surf_network_model_init_LegrandVelho()
   xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
-  all_existing_models->push_back(surf_network_model);
+  all_existing_models.push_back(surf_network_model);
 
   simgrid::config::set_default<double>("network/latency-factor", 13.01);
   simgrid::config::set_default<double>("network/bandwidth-factor", 0.97);
@@ -64,7 +64,7 @@ void surf_network_model_init_CM02()
   simgrid::config::set_default<double>("network/weight-S", 0.0);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model();
-  all_existing_models->push_back(surf_network_model);
+  all_existing_models.push_back(surf_network_model);
 }
 
 /***************************************************************************/
@@ -89,7 +89,7 @@ void surf_network_model_init_Reno()
   simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-  all_existing_models->push_back(surf_network_model);
+  all_existing_models.push_back(surf_network_model);
 }
 
 
@@ -105,7 +105,7 @@ void surf_network_model_init_Reno2()
   simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-  all_existing_models->push_back(surf_network_model);
+  all_existing_models.push_back(surf_network_model);
 }
 
 void surf_network_model_init_Vegas()
@@ -120,7 +120,7 @@ void surf_network_model_init_Vegas()
   simgrid::config::set_default<double>("network/weight-S", 20537);
 
   surf_network_model = new simgrid::kernel::resource::NetworkCm02Model(&simgrid::kernel::lmm::make_new_lagrange_system);
-  all_existing_models->push_back(surf_network_model);
+  all_existing_models.push_back(surf_network_model);
 }
 
 namespace simgrid {

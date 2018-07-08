@@ -56,7 +56,7 @@ std::set<SD_task_t>* simulate(double how_long){
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    for (auto const& model : *all_existing_models) {
+    for (auto const& model : all_existing_models) {
       simgrid::kernel::resource::Action* action = model->extract_done_action();
       while (action != nullptr && action->get_data() != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->get_data());

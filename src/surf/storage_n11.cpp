@@ -36,7 +36,7 @@ void check_disk_attachment()
 void surf_storage_model_init_default()
 {
   surf_storage_model = new simgrid::surf::StorageN11Model();
-  all_existing_models->push_back(surf_storage_model);
+  all_existing_models.push_back(surf_storage_model);
 }
 
 namespace simgrid {

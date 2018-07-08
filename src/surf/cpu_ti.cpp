@@ -304,7 +304,7 @@ void CpuTiModel::create_pm_vm_models()
 
 CpuTiModel::CpuTiModel() : CpuModel(Model::UpdateAlgo::FULL)
 {
-  all_existing_models->push_back(this);
+  all_existing_models.push_back(this);
 }
 
 CpuTiModel::~CpuTiModel()

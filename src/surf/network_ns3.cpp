@@ -139,7 +139,7 @@ void surf_network_model_init_NS3()
   xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkNS3Model();
-  all_existing_models->push_back(surf_network_model);
+  all_existing_models.push_back(surf_network_model);
 }
 
 static simgrid::config::Flag<std::string>

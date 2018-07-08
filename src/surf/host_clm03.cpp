@@ -28,7 +28,7 @@ namespace simgrid {
 namespace surf {
 HostCLM03Model::HostCLM03Model()
 {
-  all_existing_models->push_back(this);
+  all_existing_models.push_back(this);
 }
 double HostCLM03Model::next_occuring_event(double now)
 {

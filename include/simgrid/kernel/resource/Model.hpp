@@ -114,6 +114,6 @@ private:
 /** \ingroup SURF_models
  *  \brief List of initialized models
  */
-XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*>* all_existing_models;
+XBT_PUBLIC_DATA std::vector<simgrid::kernel::resource::Model*> all_existing_models;
 
 #endif
