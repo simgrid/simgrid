@@ -15,6 +15,8 @@
 #include <simgrid/s4u/Host.hpp>
 #include <string>
 #include <vector>
+#include "smpi_process.hpp"
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
