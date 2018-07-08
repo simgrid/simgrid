@@ -81,15 +81,14 @@ if [ -f Testing/TAG ] ; then
     i=$((i + 1))
   done
 
+   cd $WORKSPACE
    #convert all gcov reports to xml cobertura reports
-   gcovr -r .. --xml-pretty -e teshsuite -u -o $WORKSPACE/xml_coverage.xml
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults_memcheck.xml
-   mv CTestResults_memcheck.xml $WORKSPACE
+   gcovr -r . --xml-pretty -e teshsuite -u -o $WORKSPACE/xml_coverage.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl build/Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults_memcheck.xml
 
    #generate sloccount report
    sloccount --duplicates --wide --details $WORKSPACE | grep -v -e '.git' -e 'mpich3-test' -e 'sloccount.sc' -e 'isp/umpire' -e 'build/' -e 'xml_coverage.xml' -e 'CTestResults_memcheck.xml' -e 'DynamicAnalysis.xml' > $WORKSPACE/sloccount.sc
 
-   cd $WORKSPACE
    #upload files to codacy. CODACY_PROJECT_TOKEN must be setup !
    if ! [ -z $CODACY_PROJECT_TOKEN ]
    then 
