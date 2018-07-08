@@ -148,11 +148,3 @@ double surf_solve(double max_date)
 
   return time_delta;
 }
-
-/*********
- * MODEL *
- *********/
-void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* action, double bound)
-{
-  static_cast<simgrid::surf::CpuAction*>(action)->set_bound(bound);
-}

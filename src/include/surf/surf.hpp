@@ -7,28 +7,6 @@
 #define SURF_SURF_H
 
 #include "simgrid/forward.h"
-#include "xbt/graph.h"
-
-/***************************/
-/* Generic model object */
-/***************************/
-
-/** @{ @ingroup SURF_c_bindings */
-
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param action The surf cpu action
- * @param bound [description]
- */
-XBT_PUBLIC void surf_cpu_action_set_bound(simgrid::kernel::resource::Action* action, double bound);
-
-/** @} */
-
-/**************************************/
-/* Implementations of model object */
-/**************************************/
 
 /** \ingroup SURF_models
  *  \brief The CPU model object for the physical machine layer
