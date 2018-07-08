@@ -35,7 +35,7 @@ public:
       /* - Select a @ref worker in a round-robin way */
       mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(i % workers_count));
 
-      if (number_of_tasks < 10000 || i % 10000 == 0)
+      if (number_of_tasks < 10000 || (number_of_tasks < 100000 && i % 10000 == 0) || i % 100000 == 0)
         XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", (std::string("Task_") + std::to_string(i)).c_str(),
                  number_of_tasks, mailbox->get_cname());
 
