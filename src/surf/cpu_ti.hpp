@@ -47,7 +47,7 @@ class CpuTiTmgr {
   };
 
 public:
-  CpuTiTmgr(double value) : type_(Type::FIXED), value_(value){};
+  explicit CpuTiTmgr(double value) : type_(Type::FIXED), value_(value){};
   CpuTiTmgr(tmgr_trace_t speed_trace, double value);
   CpuTiTmgr(const CpuTiTmgr&) = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;

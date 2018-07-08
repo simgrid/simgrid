@@ -21,7 +21,7 @@ namespace routing {
 
 class GraphNodeData {
 public:
-  GraphNodeData(int id) : id_(id) {}
+  explicit GraphNodeData(int id) : id_(id) {}
   int id_;
   int graph_id_ = -1; /* used for caching internal graph id's */
 };
