@@ -91,7 +91,7 @@ if [ -f Testing/TAG ] ; then
 
 
    #upload files to codacy. CODACY_PROJECT_TOKEN must be setup !
-   if ! [-z $CODACY_PROJECT_TOKEN ]
+   if ! [ -z $CODACY_PROJECT_TOKEN ]
    then 
      for report in $WORKSPACE/java_cov*
      do
