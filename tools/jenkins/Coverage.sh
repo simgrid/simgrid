@@ -84,7 +84,7 @@ if [ -f Testing/TAG ] ; then
    cd $WORKSPACE
    #convert all gcov reports to xml cobertura reports
    gcovr -r . --xml-pretty -e teshsuite -u -o $WORKSPACE/xml_coverage.xml
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl build/Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults_memcheck.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl build/Testing/$( head -n 1 < build/Testing/TAG )/Test.xml > CTestResults_memcheck.xml
 
    #generate sloccount report
    sloccount --duplicates --wide --details $WORKSPACE | grep -v -e '.git' -e 'mpich3-test' -e 'sloccount.sc' -e 'isp/umpire' -e 'build/' -e 'xml_coverage.xml' -e 'CTestResults_memcheck.xml' -e 'DynamicAnalysis.xml' > $WORKSPACE/sloccount.sc
