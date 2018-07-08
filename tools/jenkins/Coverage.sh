@@ -47,6 +47,8 @@ NUMPROC="$(nproc)" || NUMPROC=1
 
 
 cd $BUILDFOLDER
+rm -rf java_cov*
+rm -rf xml_coverage.xml
 
 ctest -D ExperimentalStart || true
 
@@ -80,7 +82,19 @@ if [ -f Testing/TAG ] ; then
   done
 
    #convert all gcov reports to xml cobertura reports
-   gcovr -r .. --xml-pretty -e teshsuite.* -u -o $WORKSPACE/xml_coverage.xml
+   gcovr -r .. --xml-pretty -e teshsuite -u -o $WORKSPACE/xml_coverage.xml
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults_memcheck.xml
    mv CTestResults_memcheck.xml $WORKSPACE
+
+   #upload files to codacy. CODACY_PROJECT_TOKEN must be setup !
+   if ! [-z $CODACY_PROJECT_TOKEN ]
+   then 
+     for report in java_cov*
+     do
+       java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l Java -r $report --partial
+     done
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar final
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l C -f -r xml_coverage.xml
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l CPP -f -r xml_coverage.xml
+   fi
 fi
