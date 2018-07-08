@@ -86,15 +86,19 @@ if [ -f Testing/TAG ] ; then
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/$( head -n 1 < Testing/TAG )/Test.xml > CTestResults_memcheck.xml
    mv CTestResults_memcheck.xml $WORKSPACE
 
+   #generate sloccount report
+   sloccount --duplicates --wide --details $WORKSPACE | grep -v -e '.git' -e 'mpich3-test' -e 'sloccount.sc' -e 'isp/umpire' -e 'build/' -e 'xml_coverage.xml' -e 'CTestResults_memcheck.xml' -e 'DynamicAnalysis.xml' > $WORKSPACE/sloccount.sc
+
+
    #upload files to codacy. CODACY_PROJECT_TOKEN must be setup !
    if ! [-z $CODACY_PROJECT_TOKEN ]
    then 
-     for report in java_cov*
+     for report in $WORKSPACE/java_cov*
      do
        java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l Java -r $report --partial
      done
      java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar final
-     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l C -f -r xml_coverage.xml
-     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l CPP -f -r xml_coverage.xml
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l C -f -r $WORKSPACE/xml_coverage.xml
+     java -jar /home/ci/codacy-coverage-reporter-4.0.1-assembly.jar report -l CPP -f -r $WORKSPACE/xml_coverage.xml
    fi
 fi
