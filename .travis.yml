@@ -14,6 +14,7 @@ compiler:
 addons:
   apt:
     update: true
+    allow_unauthenticated: yes
     sources:
     - sourceline: ppa:samuel-bachmann/boost # Get boost 1.60 for Trusty
     packages:
