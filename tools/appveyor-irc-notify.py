@@ -33,7 +33,7 @@ expanded automatically, replaced with a corresponding Appveyor environment varia
 value. se commas to delineate multiple messages.
 
 Modified by Martin Quinson on June 2018:
-  
+
  - Use OFTC instead of Freenode
 
 Example:
