@@ -8,6 +8,8 @@
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include <simgrid/s4u.hpp>
 
+SIMGRID_REGISTER_PLUGIN(host_load, "Cpu load", &sg_host_load_plugin_init)
+
 /** @addtogroup plugin_load
 
 This plugin makes it very simple for users to obtain the current load for each host.

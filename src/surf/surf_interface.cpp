@@ -36,17 +36,21 @@ std::vector<simgrid::s4u::Host*> host_that_restart;
 std::set<std::string> watched_hosts;
 extern std::map<std::string, simgrid::surf::StorageType*> storage_types;
 
-#include <simgrid/plugins/dvfs.h>   // FIXME: this plug-in should not be linked to the core
-#include <simgrid/plugins/energy.h> // FIXME: this plug-in should not be linked to the core
-#include <simgrid/plugins/load.h>   // FIXME: this plug-in should not be linked to the core
+s_surf_model_description_t* surf_plugin_description = nullptr;
+XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun)
+{
+  static int plugin_amount = 0;
 
-s_surf_model_description_t surf_plugin_description[] = {
-    {"host_energy", "Cpu energy consumption.", &sg_host_energy_plugin_init},
-    {"link_energy", "Link energy consumption.", &sg_link_energy_plugin_init},
-    {"host_dvfs", "Dvfs support", &sg_host_dvfs_plugin_init},
-    {"host_load", "Cpu load.", &sg_host_load_plugin_init},
-    {nullptr, nullptr, nullptr} /* this array must be nullptr terminated */
-};
+  /* no need to check for plugin name conflict: the compiler already ensures that the generated
+   * simgrid_##id##_plugin_register() is unique */
+
+  plugin_amount++;
+  surf_plugin_description = static_cast<s_surf_model_description_t*>(
+      xbt_realloc(surf_plugin_description, sizeof(s_surf_model_description_t) * (plugin_amount + 2)));
+
+  surf_plugin_description[plugin_amount - 1] = {name, description, init_fun};
+  surf_plugin_description[plugin_amount]     = {nullptr, nullptr, nullptr}; // this array must be null terminated
+}
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {

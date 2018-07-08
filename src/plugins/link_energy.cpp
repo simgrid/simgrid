@@ -6,10 +6,13 @@
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+
+SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy_plugin_init)
 
 /** @addtogroup SURF_plugin_energy
 

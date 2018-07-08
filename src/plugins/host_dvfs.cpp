@@ -10,6 +10,8 @@
 
 #include <boost/algorithm/string.hpp>
 
+SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
+
 /** @addtogroup SURF_plugin_load
 
   This plugin makes it very simple for users to obtain the current load for each host.

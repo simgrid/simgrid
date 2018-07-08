@@ -221,8 +221,16 @@ typedef struct surf_model_description s_surf_model_description_t;
 XBT_PUBLIC int find_model_description(s_surf_model_description_t* table, std::string name);
 XBT_PUBLIC void model_help(const char* category, s_surf_model_description_t* table);
 
+#define SIMGRID_REGISTER_PLUGIN(id, desc, init)                       \
+  void simgrid_##id##_plugin_register();                              \
+  void XBT_ATTRIB_CONSTRUCTOR(800) simgrid_##id##_plugin_register() { \
+    simgrid_add_plugin_description(#id, desc, init);                  \
+  }
+
+XBT_PUBLIC void simgrid_add_plugin_description(const char* name, const char* description, void_f_void_t init_fun);
+
 /** @brief The list of all available plugins */
-XBT_PUBLIC_DATA s_surf_model_description_t surf_plugin_description[];
+XBT_PUBLIC_DATA s_surf_model_description_t* surf_plugin_description;
 /** @brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
 XBT_PUBLIC_DATA s_surf_model_description_t surf_optimization_mode_description[];

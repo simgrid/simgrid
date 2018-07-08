@@ -13,6 +13,8 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
+SIMGRID_REGISTER_PLUGIN(host_energy, "Cpu energy consumption.", &sg_host_energy_plugin_init)
+
 /** @addtogroup plugin_energy
 
 This is the energy plugin, enabling to account not only for computation time, but also for the dissipated energy in the
