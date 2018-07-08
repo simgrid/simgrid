@@ -55,7 +55,7 @@ void DijkstraZone::seal()
     route_graph_ = xbt_graph_new_graph(1, nullptr);
 
   /* Add the loopback if needed */
-  if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (network_model_->loopback_ && hierarchy_ == RoutingMode::base) {
 
     xbt_dynar_foreach (xbt_graph_get_nodes(route_graph_), cursor, node) {
       bool found = false;
@@ -69,9 +69,9 @@ void DijkstraZone::seal()
       }
 
       if (not found) {
-        RouteCreationArgs* e_route = new simgrid::kernel::routing::RouteCreationArgs();
-        e_route->link_list.push_back(surf_network_model->loopback_);
-        xbt_graph_new_edge(route_graph_, node, node, e_route);
+        RouteCreationArgs* route = new simgrid::kernel::routing::RouteCreationArgs();
+        route->link_list.push_back(network_model_->loopback_);
+        xbt_graph_new_edge(route_graph_, node, node, route);
       }
     }
   }
