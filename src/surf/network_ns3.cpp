@@ -139,7 +139,6 @@ void surf_network_model_init_NS3()
   xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkNS3Model();
-  all_existing_models.push_back(surf_network_model);
 }
 
 static simgrid::config::Flag<std::string>
@@ -153,6 +152,8 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel(Model::UpdateAlgo::FULL)
 {
   xbt_assert(not sg_link_energy_is_inited(),
              "LinkEnergy plugin and NS3 network models are not compatible. Are you looking for Ecofen, maybe?");
+
+  all_existing_models.push_back(this);
 
   NetPointNs3::EXTENSION_ID = simgrid::kernel::routing::NetPoint::extension_create<NetPointNs3>();
 

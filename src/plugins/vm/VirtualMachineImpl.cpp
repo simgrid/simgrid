@@ -15,10 +15,8 @@ simgrid::vm::VMModel* surf_vm_model = nullptr;
 
 void surf_vm_model_init_HL13()
 {
-  if (surf_cpu_model_vm) {
+  if (surf_cpu_model_vm != nullptr)
     surf_vm_model = new simgrid::vm::VMModel();
-    all_existing_models.push_back(surf_vm_model);
-  }
 }
 
 namespace simgrid {
@@ -56,6 +54,7 @@ static void hostStateChange(s4u::Host& host)
 
 VMModel::VMModel()
 {
+  all_existing_models.push_back(this);
   s4u::Host::on_state_change.connect(hostStateChange);
 }
 

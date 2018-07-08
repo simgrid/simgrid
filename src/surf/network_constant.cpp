@@ -16,12 +16,16 @@ void surf_network_model_init_Constant()
 {
   xbt_assert(surf_network_model == nullptr);
   surf_network_model = new simgrid::kernel::resource::NetworkConstantModel();
-  all_existing_models.push_back(surf_network_model);
 }
 
 namespace simgrid {
 namespace kernel {
 namespace resource {
+NetworkConstantModel::NetworkConstantModel() : NetworkModel(Model::UpdateAlgo::FULL)
+{
+  all_existing_models.push_back(this);
+}
+
 LinkImpl* NetworkConstantModel::create_link(const std::string& name, double bw, double lat,
                                             s4u::Link::SharingPolicy policy)
 {

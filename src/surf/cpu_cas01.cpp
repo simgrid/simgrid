@@ -50,10 +50,7 @@ void surf_cpu_model_init_Cas01()
     algo = simgrid::kernel::resource::Model::UpdateAlgo::FULL;
 
   surf_cpu_model_pm = new simgrid::surf::CpuCas01Model(algo);
-  all_existing_models.push_back(surf_cpu_model_pm);
-
   surf_cpu_model_vm = new simgrid::surf::CpuCas01Model(algo);
-  all_existing_models.push_back(surf_cpu_model_vm);
 }
 
 namespace simgrid {
@@ -61,6 +58,8 @@ namespace surf {
 
 CpuCas01Model::CpuCas01Model(kernel::resource::Model::UpdateAlgo algo) : simgrid::surf::CpuModel(algo)
 {
+  all_existing_models.push_back(this);
+
   bool select = simgrid::config::get_value<bool>("cpu/maxmin-selective-update");
 
   if (algo == Model::UpdateAlgo::LAZY) {

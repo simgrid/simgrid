@@ -88,7 +88,6 @@ void surf_network_model_init_IB()
   xbt_assert(surf_network_model == nullptr, "Cannot set the network model twice");
 
   surf_network_model = new simgrid::kernel::resource::NetworkIBModel();
-  all_existing_models.push_back(surf_network_model);
   simgrid::s4u::Link::on_communication_state_change.connect(IB_action_state_changed_callback);
   simgrid::s4u::Link::on_communicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::on_creation.connect(IB_create_host_callback);
@@ -101,6 +100,8 @@ namespace resource {
 
 NetworkIBModel::NetworkIBModel() : NetworkSmpiModel()
 {
+  /* Do not add this into all_existing_models: our ancestor already does so */
+
   std::string IB_factors_string = simgrid::config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
