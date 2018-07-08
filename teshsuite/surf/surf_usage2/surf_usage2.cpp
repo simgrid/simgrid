@@ -51,20 +51,20 @@ int main(int argc, char **argv)
         running = 1;
       }
 
-      action = surf_model_extract_failed_action_set(model);
+      action = model->extract_failed_action();
       while (action != nullptr) {
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Failed Action: %p", action);
         action->unref();
-        action = surf_model_extract_failed_action_set(model);
+        action = model->extract_failed_action();
       }
 
-      action = surf_model_extract_done_action_set(model);
+      action = model->extract_done_action();
       while (action != nullptr){
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Done Action: %p", action);
         action->unref();
-        action = surf_model_extract_done_action_set(model);
+        action = model->extract_done_action();
       }
     }
   } while (running && surf_solve(-1.0) >= 0.0);

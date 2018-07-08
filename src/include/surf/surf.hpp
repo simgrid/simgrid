@@ -16,24 +16,6 @@
 /** @{ @ingroup SURF_c_bindings */
 
 /**
- * @brief Pop an action from the done actions set
- *
- * @param model The model from which the action is extracted
- * @return An action in done state
- */
-XBT_PUBLIC simgrid::kernel::resource::Action*
-surf_model_extract_done_action_set(simgrid::kernel::resource::Model* model);
-
-/**
- * @brief Pop an action from the failed actions set
- *
- * @param model The model from which the action is extracted
- * @return An action in failed state
- */
-XBT_PUBLIC simgrid::kernel::resource::Action*
-surf_model_extract_failed_action_set(simgrid::kernel::resource::Model* model);
-
-/**
  * @brief Get the size of the running action set of a model
  *
  * @param model The model

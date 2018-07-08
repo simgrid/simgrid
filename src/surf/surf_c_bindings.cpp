@@ -152,25 +152,6 @@ double surf_solve(double max_date)
 /*********
  * MODEL *
  *********/
-static simgrid::kernel::resource::Action* ActionListExtract(simgrid::kernel::resource::Action::StateSet* list)
-{
-  if (list->empty())
-    return nullptr;
-  simgrid::kernel::resource::Action* res = &list->front();
-  list->pop_front();
-  return res;
-}
-
-simgrid::kernel::resource::Action* surf_model_extract_done_action_set(simgrid::kernel::resource::Model* model)
-{
-  return ActionListExtract(model->get_finished_action_set());
-}
-
-simgrid::kernel::resource::Action* surf_model_extract_failed_action_set(simgrid::kernel::resource::Model* model)
-{
-  return ActionListExtract(model->get_failed_action_set());
-}
-
 int surf_model_running_action_set_size(simgrid::kernel::resource::Model* model)
 {
   return model->get_started_action_set()->size();

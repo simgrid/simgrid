@@ -71,6 +71,13 @@ public:
   virtual double next_occuring_event_lazy(double now);
   virtual double next_occuring_event_full(double now);
 
+private:
+  Action* extract_action(Action::StateSet* list);
+
+public:
+  Action* extract_done_action();
+  Action* extract_failed_action();
+
   /**
    * @brief Update action to the current time
    *

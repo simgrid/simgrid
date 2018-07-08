@@ -141,6 +141,28 @@ void Model::update_actions_state(double now, double delta)
     xbt_die("Invalid cpu update mechanism!");
 }
 
+/** Pops and returns the first action of that state set (or nullptr if none exist) */
+Action* Model::extract_action(Action::StateSet* list)
+{
+  if (list->empty())
+    return nullptr;
+  simgrid::kernel::resource::Action* res = &list->front();
+  list->pop_front();
+  return res;
+}
+
+/** Pops and returns the first finished action (or nullptr if none exist) */
+Action* Model::extract_done_action()
+{
+  return extract_action(get_finished_action_set());
+}
+
+/** Pops and returns the failed finished action (or nullptr if none exist) */
+Action* Model::extract_failed_action()
+{
+  return extract_action(get_failed_action_set());
+}
+
 void Model::update_actions_state_lazy(double /*now*/, double /*delta*/)
 {
   THROW_UNIMPLEMENTED;
