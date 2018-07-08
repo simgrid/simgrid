@@ -89,7 +89,7 @@ if [ -f Testing/TAG ] ; then
    #generate sloccount report
    sloccount --duplicates --wide --details $WORKSPACE | grep -v -e '.git' -e 'mpich3-test' -e 'sloccount.sc' -e 'isp/umpire' -e 'build/' -e 'xml_coverage.xml' -e 'CTestResults_memcheck.xml' -e 'DynamicAnalysis.xml' > $WORKSPACE/sloccount.sc
 
-
+   cd $WORKSPACE
    #upload files to codacy. CODACY_PROJECT_TOKEN must be setup !
    if ! [ -z $CODACY_PROJECT_TOKEN ]
    then 
