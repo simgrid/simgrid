@@ -98,7 +98,7 @@ public:
  */
 class XBT_PRIVATE FatTreeZone : public ClusterZone {
 public:
-  explicit FatTreeZone(NetZoneImpl* father, std::string name);
+  explicit FatTreeZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel);
   ~FatTreeZone() override;
   void get_local_route(NetPoint* src, NetPoint* dst, RouteCreationArgs* into, double* latency) override;
 

@@ -564,36 +564,38 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
 
   /* search the routing model */
   simgrid::kernel::routing::NetZoneImpl* new_zone = nullptr;
+  simgrid::kernel::resource::NetworkModel* netmodel =
+      current_routing == nullptr ? surf_network_model : current_routing->network_model_;
   switch (zone->routing) {
     case A_surfxml_AS_routing_Cluster:
-      new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::ClusterZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_ClusterDragonfly:
-      new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::DragonflyZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_ClusterTorus:
-      new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::TorusZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_ClusterFatTree:
-      new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::FatTreeZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_Dijkstra:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, false);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, false);
       break;
     case A_surfxml_AS_routing_DijkstraCache:
-      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, true);
+      new_zone = new simgrid::kernel::routing::DijkstraZone(current_routing, zone->id, netmodel, true);
       break;
     case A_surfxml_AS_routing_Floyd:
-      new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::FloydZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_Full:
-      new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::FullZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_None:
-      new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::EmptyZone(current_routing, zone->id, netmodel);
       break;
     case A_surfxml_AS_routing_Vivaldi:
-      new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id);
+      new_zone = new simgrid::kernel::routing::VivaldiZone(current_routing, zone->id, netmodel);
       break;
     default:
       xbt_die("Not a valid model!");

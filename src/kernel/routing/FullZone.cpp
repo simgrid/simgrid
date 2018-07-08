@@ -16,7 +16,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 namespace simgrid {
 namespace kernel {
 namespace routing {
-FullZone::FullZone(NetZoneImpl* father, std::string name) : RoutedZone(father, name) {}
+FullZone::FullZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
+    : RoutedZone(father, name, netmodel)
+{
+}
 
 void FullZone::seal()
 {

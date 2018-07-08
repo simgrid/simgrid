@@ -18,7 +18,10 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-DragonflyZone::DragonflyZone(NetZoneImpl* father, std::string name) : ClusterZone(father, name) {}
+DragonflyZone::DragonflyZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
+    : ClusterZone(father, name, netmodel)
+{
+}
 
 DragonflyZone::~DragonflyZone()
 {

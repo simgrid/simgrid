@@ -59,7 +59,10 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-RoutedZone::RoutedZone(NetZoneImpl* father, std::string name) : NetZoneImpl(father, name) {}
+RoutedZone::RoutedZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel)
+    : NetZoneImpl(father, name, netmodel)
+{
+}
 
 void RoutedZone::get_graph(xbt_graph_t graph, std::map<std::string, xbt_node_t>* nodes,
                            std::map<std::string, xbt_edge_t>* edges)

@@ -94,6 +94,7 @@ namespace resource {
 class Action;
 class Model;
 class Resource;
+class NetworkModel;
 class TraceEvent;
 class LinkImpl;
 class NetworkAction;

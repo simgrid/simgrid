@@ -26,8 +26,8 @@ public:
   int graph_id_ = -1; /* used for caching internal graph id's */
 };
 
-DijkstraZone::DijkstraZone(NetZoneImpl* father, std::string name, bool cached)
-    : RoutedZone(father, name), cached_(cached)
+DijkstraZone::DijkstraZone(NetZoneImpl* father, std::string name, resource::NetworkModel* netmodel, bool cached)
+    : RoutedZone(father, name, netmodel), cached_(cached)
 {
 }
 

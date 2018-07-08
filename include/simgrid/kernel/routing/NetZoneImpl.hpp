@@ -51,7 +51,7 @@ class XBT_PUBLIC NetZoneImpl {
   friend simgrid::kernel::EngineImpl; // it destroys netRoot_
 
 protected:
-  explicit NetZoneImpl(NetZoneImpl* father, std::string name);
+  explicit NetZoneImpl(NetZoneImpl* father, std::string name, resource::NetworkModel* network_model);
   virtual ~NetZoneImpl();
 
 public:
@@ -85,6 +85,9 @@ protected:
   /* returns whether we found a bypass path */
   bool get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
                         /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
+
+public:
+  resource::NetworkModel* network_model_;
 
 private:
   s4u::NetZone piface_;
