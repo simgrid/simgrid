@@ -209,12 +209,16 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
 }
 
 int PMPI_Error_string(int errorcode, char* string, int* resultlen){
-  static const char *smpi_error_string[] = {
-    FOREACH_ERROR(GENERATE_STRING)
-  };
-  *resultlen = strlen(smpi_error_string[errorcode]);
-  strncpy(string, smpi_error_string[errorcode], *resultlen);
-  return MPI_SUCCESS;  
+  if (errorcode<0 || string ==nullptr){
+    return MPI_ERR_ARG;
+  } else {
+    static const char *smpi_error_string[] = {
+      FOREACH_ERROR(GENERATE_STRING)
+    };
+    *resultlen = strlen(smpi_error_string[errorcode]);
+    strncpy(string, smpi_error_string[errorcode], *resultlen);
+    return MPI_SUCCESS;  
+  }
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
