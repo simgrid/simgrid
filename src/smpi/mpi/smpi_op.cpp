@@ -77,8 +77,8 @@ APPLY_OP_LOOP(MPI_DOUBLE, double,op)\
 APPLY_OP_LOOP(MPI_LONG_DOUBLE, long double,op)\
 APPLY_OP_LOOP(MPI_REAL, float,op)\
 APPLY_OP_LOOP(MPI_REAL4, float,op)\
-APPLY_OP_LOOP(MPI_REAL8, float,op)\
-APPLY_OP_LOOP(MPI_REAL16, double,op)
+APPLY_OP_LOOP(MPI_REAL8, double,op)\
+APPLY_OP_LOOP(MPI_REAL16, long double,op)
 
 #define APPLY_COMPLEX_OP_LOOP(op)\
 APPLY_OP_LOOP(MPI_C_FLOAT_COMPLEX, float _Complex,op)\
