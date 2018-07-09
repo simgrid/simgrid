@@ -27,7 +27,8 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
   ((NetworkIBModel*)surf_network_model)->active_nodes.insert({host.get_name(), act});
 }
 
-static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkAction* action)
+static void IB_action_state_changed_callback(simgrid::kernel::resource::NetworkAction* action,
+                                             simgrid::kernel::resource::Action::State /*previous*/)
 {
   using simgrid::kernel::resource::IBNode;
   using simgrid::kernel::resource::NetworkIBModel;

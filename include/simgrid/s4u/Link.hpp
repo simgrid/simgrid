@@ -6,6 +6,7 @@
 #ifndef S4U_LINK_HPP_
 #define S4U_LINK_HPP_
 
+#include <simgrid/kernel/resource/Action.hpp>
 #include <simgrid/link.h>
 #include <string>
 #include <unordered_map>
@@ -91,7 +92,8 @@ public:
   static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, s4u::Host* src, s4u::Host* dst)> on_communicate;
 
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
-  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> on_communication_state_change;
+  static simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+      on_communication_state_change;
 
   // Deprecated methods
   XBT_ATTRIB_DEPRECATED_v323("Please use Link::by_name()") static Link* byName(const char* name) { return by_name(name); }

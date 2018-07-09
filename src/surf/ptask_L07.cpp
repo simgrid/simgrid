@@ -25,7 +25,6 @@ void surf_host_model_init_ptask_L07()
   all_existing_models.push_back(surf_host_model);
 }
 
-
 namespace simgrid {
 namespace surf {
 
@@ -146,6 +145,7 @@ L07Action::L07Action(kernel::resource::Model* model, int host_nb, sg_host_t* hos
   int nb_link = 0;
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
+  this->set_last_update();
 
   this->hostList_->reserve(host_nb);
   for (int i = 0; i < host_nb; i++) {

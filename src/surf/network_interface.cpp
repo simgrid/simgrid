@@ -166,7 +166,7 @@ void NetworkAction::set_state(Action::State state)
   Action::State previous = get_state();
   Action::set_state(state);
   if (previous != state) // Trigger only if the state changed
-    s4u::Link::on_communication_state_change(this);
+    s4u::Link::on_communication_state_change(this, previous);
 }
 
 /** @brief returns a list of all Links that this action is using */

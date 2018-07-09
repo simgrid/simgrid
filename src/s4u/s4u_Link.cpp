@@ -23,7 +23,8 @@ simgrid::xbt::signal<void(Link&)> Link::on_destruction;
 simgrid::xbt::signal<void(Link&)> Link::on_state_change;
 simgrid::xbt::signal<void(Link&)> Link::on_bandwidth_change;
 simgrid::xbt::signal<void(kernel::resource::NetworkAction*, Host* src, Host* dst)> Link::on_communicate;
-simgrid::xbt::signal<void(kernel::resource::NetworkAction*)> Link::on_communication_state_change;
+simgrid::xbt::signal<void(kernel::resource::NetworkAction*, kernel::resource::Action::State)>
+    Link::on_communication_state_change;
 
 Link* Link::by_name(std::string name)
 {

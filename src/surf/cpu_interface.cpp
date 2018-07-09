@@ -186,6 +186,7 @@ void CpuAction::set_state(Action::State state)
   Action::set_state(state);
   on_state_change(this, previous);
 }
+
 /** @brief returns a list of all CPUs that this action is using */
 std::list<Cpu*> CpuAction::cpus() {
   std::list<Cpu*> retlist;

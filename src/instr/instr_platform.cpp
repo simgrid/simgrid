@@ -232,27 +232,31 @@ static void instr_host_on_speed_change(simgrid::s4u::Host& host)
       ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
 }
 
-static void instr_cpu_action_on_state_change(simgrid::surf::CpuAction* action,
-                                             simgrid::kernel::resource::Action::State /* previous */)
-{
-  simgrid::surf::Cpu* cpu = static_cast<simgrid::surf::Cpu*>(action->get_variable()->get_constraint(0)->get_id());
-  TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
-                                      action->get_variable()->get_value(), action->get_last_update(),
-                                      SIMIX_get_clock() - action->get_last_update());
-}
-
-static void instr_link_on_communication_state_change(simgrid::kernel::resource::NetworkAction* action)
+static void instr_action_on_state_change(simgrid::kernel::resource::Action* action,
+                                         simgrid::kernel::resource::Action::State /* previous */)
 {
   int n = action->get_variable()->get_number_of_constraint();
 
   for (int i = 0; i < n; i++) {
-    simgrid::kernel::lmm::Constraint* constraint = action->get_variable()->get_constraint(i);
-    simgrid::kernel::resource::LinkImpl* link = static_cast<simgrid::kernel::resource::LinkImpl*>(constraint->get_id());
-    double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
-    TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(), value,
-                                        action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
+    /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
+    simgrid::kernel::resource::Resource* resource =
+        static_cast<simgrid::kernel::resource::Resource*>(action->get_variable()->get_constraint(i)->get_id());
+    simgrid::surf::Cpu* cpu = dynamic_cast<simgrid::surf::Cpu*>(resource);
+
+    if (cpu != nullptr)
+      TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
+                                          action->get_variable()->get_value(), action->get_last_update(),
+                                          SIMIX_get_clock() - action->get_last_update());
+    simgrid::kernel::resource::LinkImpl* link = dynamic_cast<simgrid::kernel::resource::LinkImpl*>(resource);
+
+    if (link != nullptr) {
+      double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
+      TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(), value,
+                                          action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
+    }
   }
 }
+
 static void instr_link_on_bandwidth_change(simgrid::s4u::Link& link)
 {
   simgrid::instr::Container::by_name(link.get_cname())
@@ -357,8 +361,8 @@ void instr_define_callbacks()
   }
   simgrid::s4u::NetZone::on_creation.connect(instr_netzone_on_creation);
 
-  simgrid::surf::CpuAction::on_state_change.connect(instr_cpu_action_on_state_change);
-  simgrid::s4u::Link::on_communication_state_change.connect(instr_link_on_communication_state_change);
+  simgrid::surf::CpuAction::on_state_change.connect(instr_action_on_state_change);
+  simgrid::s4u::Link::on_communication_state_change.connect(instr_action_on_state_change);
 
   if (TRACE_actor_is_enabled()) {
     simgrid::s4u::Actor::on_creation.connect(instr_actor_on_creation);

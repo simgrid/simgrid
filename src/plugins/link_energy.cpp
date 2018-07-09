@@ -198,12 +198,13 @@ void sg_link_energy_plugin_init()
                link.extension<LinkEnergy>()->get_consumed_energy());
   });
 
-  simgrid::s4u::Link::on_communication_state_change.connect([](simgrid::kernel::resource::NetworkAction* action) {
-    for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
-      if (link != nullptr)
-        link->piface_.extension<LinkEnergy>()->update();
-    }
-  });
+  simgrid::s4u::Link::on_communication_state_change.connect(
+      [](simgrid::kernel::resource::NetworkAction* action, simgrid::kernel::resource::Action::State /* previous */) {
+        for (simgrid::kernel::resource::LinkImpl* link : action->links()) {
+          if (link != nullptr)
+            link->piface_.extension<LinkEnergy>()->update();
+        }
+      });
 
   simgrid::s4u::Link::on_communicate.connect(&on_communicate);
   simgrid::s4u::on_simulation_end.connect(&on_simulation_end);
