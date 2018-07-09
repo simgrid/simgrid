@@ -7,6 +7,7 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "smpi_coll.hpp"
+#include "smpi_f2c.hpp"
 #include "smpi_process.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
@@ -356,6 +357,8 @@ void smpi_global_destroy()
   if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
+  if(simgrid::smpi::F2C::lookup() != nullptr)
+    simgrid::smpi::F2C::delete_lookup();
 }
 
 static void smpi_init_options(){
@@ -707,6 +710,7 @@ void SMPI_finalize(){
 }
 
 void smpi_mpi_init() {
+  smpi_init_fortran_types();
   if(smpi_init_sleep > 0)
     simcall_process_sleep(smpi_init_sleep);
 }

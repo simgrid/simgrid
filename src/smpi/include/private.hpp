@@ -404,7 +404,7 @@ void mpi_file_open_(int* comm, char* filename, int* amode, int* info, int* fh, i
 void mpi_file_set_view_(int* fh, long long int* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
 void mpi_file_read_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_write_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
-
+void smpi_init_fortran_types();
 } // extern "C"
 
 struct s_smpi_privatization_region_t {

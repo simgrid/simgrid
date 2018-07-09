@@ -13,7 +13,7 @@
 
 static int running_processes = 0;
 
-static void smpi_init_fortran_types(){
+void smpi_init_fortran_types(){
    if(simgrid::smpi::F2C::lookup() == nullptr){
      MPI_COMM_WORLD->add_f();
      MPI_BYTE->add_f();//MPI_BYTE
@@ -79,9 +79,6 @@ void mpi_init_(int* ierr) {
 void mpi_finalize_(int* ierr) {
    *ierr = MPI_Finalize();
    running_processes--;
-   if(running_processes==0){
-      simgrid::smpi::F2C::delete_lookup();
-   }
 }
 
 void mpi_abort_(int* comm, int* errorcode, int* ierr) {
