@@ -414,7 +414,7 @@ XBT_PUBLIC void resume();
 XBT_PUBLIC bool is_suspended();
 
 /** @brief kill the actor. */
-XBT_PUBLIC void kill();
+XBT_PUBLIC void exit();
 
 /** @brief Add a function to the list of "on_exit" functions. */
 XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
@@ -432,6 +432,7 @@ XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_ppid()") XBT_PUBLIC aid_t
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_host()") XBT_PUBLIC Host* getHost();
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_suspended()") XBT_PUBLIC bool isSuspended();
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
+XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill();
 }
 
 /** @} */

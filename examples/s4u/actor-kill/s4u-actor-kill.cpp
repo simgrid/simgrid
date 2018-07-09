@@ -57,7 +57,7 @@ static void killer()
   simgrid::s4u::Actor::kill_all();
 
   XBT_INFO("OK, goodbye now. I commit a suicide.");
-  simgrid::s4u::this_actor::kill();
+  simgrid::s4u::this_actor::exit();
 
   XBT_INFO("This line will never get displayed: I'm already dead since the previous line.");
 }

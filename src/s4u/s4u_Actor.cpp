@@ -367,7 +367,7 @@ bool is_suspended()
   return simgrid::simix::simcall([process] { return process->suspended_; });
 }
 
-void kill()
+void exit()
 {
   smx_actor_t process = SIMIX_process_self();
   simgrid::simix::simcall([process] { SIMIX_process_kill(process, process); });
@@ -422,6 +422,10 @@ void on_exit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 void onExit(int_f_pvoid_pvoid_t fun, void* data) /* deprecated */
 {
   on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
+}
+void kill() /* deprecated */
+{
+  exit();
 }
 
 } // namespace this_actor
