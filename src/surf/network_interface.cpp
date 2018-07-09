@@ -148,13 +148,13 @@ void LinkImpl::on_bandwidth_change()
 void LinkImpl::set_bandwidth_trace(tmgr_trace_t trace)
 {
   xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", get_cname());
-  bandwidth_.event = future_evt_set->add_trace(trace, this);
+  bandwidth_.event = future_evt_set.add_trace(trace, this);
 }
 
 void LinkImpl::set_latency_trace(tmgr_trace_t trace)
 {
   xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", get_cname());
-  latency_.event = future_evt_set->add_trace(trace, this);
+  latency_.event = future_evt_set.add_trace(trace, this);
 }
 
 /**********

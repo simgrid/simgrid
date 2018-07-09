@@ -26,11 +26,11 @@ void surf_presolve()
   simgrid::kernel::resource::Resource* resource = nullptr;
 
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
-  while ((next_event_date = future_evt_set->next_date()) != -1.0) {
+  while ((next_event_date = future_evt_set.next_date()) != -1.0) {
     if (next_event_date > NOW)
       break;
 
-    while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
+    while ((event = future_evt_set.pop_leq(next_event_date, &value, &resource))) {
       if (value >= 0)
         resource->apply_event(event, value);
     }
@@ -82,7 +82,7 @@ double surf_solve(double max_date)
   XBT_DEBUG("Looking for next trace event");
 
   while (1) { // Handle next occurring events until none remains
-    double next_event_date = future_evt_set->next_date();
+    double next_event_date = future_evt_set.next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
     if (not surf_network_model->next_occuring_event_is_idempotent()) { // NS3, I see you
@@ -109,7 +109,7 @@ double surf_solve(double max_date)
 
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
-    while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
+    while ((event = future_evt_set.pop_leq(next_event_date, &value, &resource))) {
       if (resource->is_used() || (watched_hosts.find(resource->get_cname()) != watched_hosts.end())) {
         time_delta = next_event_date - NOW;
         XBT_DEBUG("This event invalidates the next_occuring_event() computation of models. Next event set to %f", time_delta);

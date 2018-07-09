@@ -138,7 +138,7 @@ void Cpu::set_speed_trace(tmgr_trace_t trace)
 {
   xbt_assert(speed_.event == nullptr, "Cannot set a second speed trace to Host %s", host_->get_cname());
 
-  speed_.event = future_evt_set->add_trace(trace, this);
+  speed_.event = future_evt_set.add_trace(trace, this);
 }
 
 

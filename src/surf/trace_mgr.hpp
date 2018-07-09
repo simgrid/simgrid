@@ -28,7 +28,7 @@ public:
 } // namespace kernel
 } // namespace simgrid
 typedef simgrid::kernel::resource::TraceEvent* tmgr_trace_event_t;
-extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set* future_evt_set;
+extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set future_evt_set;
 
 /**
  * \brief Free a trace event structure

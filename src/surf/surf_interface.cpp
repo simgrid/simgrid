@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
 
 std::vector<simgrid::kernel::resource::Model*> all_existing_models; /* to destroy models correctly */
 
-simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
+simgrid::trace_mgr::future_evt_set future_evt_set;
 std::vector<std::string> surf_path;
 std::vector<simgrid::s4u::Host*> host_that_restart;
 /**  set of hosts for which one want to be notified if they ever restart. */
@@ -296,8 +296,6 @@ void surf_init(int *argc, char **argv)
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   xbt_init(argc, argv);
-  if (not future_evt_set)
-    future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
   sg_config_init(argc, argv);
 
@@ -319,9 +317,6 @@ void surf_exit()
     delete model;
 
   xbt_free(surf_plugin_description);
-
-  delete future_evt_set;
-  future_evt_set = nullptr;
 
   tmgr_finalize();
   sg_platf_exit();

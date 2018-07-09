@@ -67,7 +67,7 @@ void Resource::set_state_trace(tmgr_trace_t trace)
 {
   xbt_assert(state_event_ == nullptr, "Cannot set a second state trace to %s", get_cname());
 
-  state_event_ = future_evt_set->add_trace(trace, this);
+  state_event_ = future_evt_set.add_trace(trace, this);
 }
 
 kernel::lmm::Constraint* Resource::get_constraint() const
