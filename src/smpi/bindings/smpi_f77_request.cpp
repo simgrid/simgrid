@@ -171,9 +171,12 @@ void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
   *ierr = MPI_Waitany(*count, reqs, index, status);
-  if(reqs[*index]==MPI_REQUEST_NULL){
-      simgrid::smpi::Request::free_f(requests[*index]);
-      requests[*index]=MPI_FORTRAN_REQUEST_NULL;
+  if(*index!=MPI_UNDEFINED){
+    if(reqs[*index]==MPI_REQUEST_NULL){
+        simgrid::smpi::Request::free_f(requests[*index]);
+        requests[*index]=MPI_FORTRAN_REQUEST_NULL;
+    }
+  *index=*index+1;
   }
   xbt_free(reqs);
 }
@@ -251,9 +254,12 @@ void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status*
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
   *ierr = MPI_Testany(*count, reqs, index, flag, FORT_STATUS_IGNORE(status));
-  if(*index!=MPI_UNDEFINED && reqs[*index]==MPI_REQUEST_NULL){
+  if(*index!=MPI_UNDEFINED){
+    if(reqs[*index]==MPI_REQUEST_NULL){
     simgrid::smpi::Request::free_f(requests[*index]);
     requests[*index]=MPI_FORTRAN_REQUEST_NULL;
+    }
+  *index=*index+1;
   }
   xbt_free(reqs);
 }
