@@ -59,7 +59,7 @@ static void killer()
   XBT_INFO("OK, goodbye now. I commit a suicide.");
   simgrid::s4u::this_actor::exit();
 
-  XBT_INFO("This line will never get displayed: I'm already dead since the previous line.");
+  XBT_INFO("This line never gets displayed: I'm already dead since the previous line.");
 }
 
 int main(int argc, char* argv[])
