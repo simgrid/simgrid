@@ -280,14 +280,14 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  *
  * \return the process created
  */
-smx_actor_t SIMIX_process_create(const char* name, simgrid::simix::ActorCode code, void* data, simgrid::s4u::Host* host,
+smx_actor_t SIMIX_process_create(std::string name, simgrid::simix::ActorCode code, void* data, simgrid::s4u::Host* host,
                                  std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process)
 {
 
-  XBT_DEBUG("Start process %s on host '%s'", name, host->get_cname());
+  XBT_DEBUG("Start process %s on host '%s'", name.c_str(), host->get_cname());
 
   if (host->is_off()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->get_cname());
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name.c_str(), host->get_cname());
     return nullptr;
   }
 
@@ -776,11 +776,9 @@ void SIMIX_process_on_exit(smx_actor_t process, std::function<void(int, void*)> 
  * \param argv second argument passed to \a code
  * \param properties the properties of the process
  */
-smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
+smx_actor_t simcall_process_create(std::string name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
                                    char** argv, std::unordered_map<std::string, std::string>* properties)
 {
-  if (name == nullptr)
-    name = "";
   auto wrapped_code = simgrid::xbt::wrap_main(code, argc, argv);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
@@ -789,11 +787,9 @@ smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void*
   return res;
 }
 
-smx_actor_t simcall_process_create(const char* name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
+smx_actor_t simcall_process_create(std::string name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
                                    std::unordered_map<std::string, std::string>* properties)
 {
-  if (name == nullptr)
-    name = "";
   smx_actor_t self = SIMIX_process_self();
   return simgrid::simix::simcall([name, code, data, host, properties, self] {
     return SIMIX_process_create(name, std::move(code), data, host, properties, self);

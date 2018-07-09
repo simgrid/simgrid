@@ -36,13 +36,13 @@ ActorPtr Actor::self()
   return self_context->process()->iface();
 }
 
-ActorPtr Actor::create(const char* name, s4u::Host* host, std::function<void()> code)
+ActorPtr Actor::create(std::string name, s4u::Host* host, std::function<void()> code)
 {
   simgrid::kernel::actor::ActorImpl* actor = simcall_process_create(name, std::move(code), nullptr, host, nullptr);
   return actor->iface();
 }
 
-ActorPtr Actor::create(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
+ActorPtr Actor::create(std::string name, s4u::Host* host, std::string function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   simgrid::simix::ActorCode code            = factory(std::move(args));
@@ -225,12 +225,12 @@ std::unordered_map<std::string, std::string>* Actor::get_properties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Actor::get_property(const char* key)
+const char* Actor::get_property(std::string key)
 {
   return simgrid::simix::simcall([this, key] { return pimpl_->get_property(key); });
 }
 
-void Actor::set_property(const char* key, const char* value)
+void Actor::set_property(std::string key, std::string value)
 {
   simgrid::simix::simcall([this, key, value] { pimpl_->set_property(key, value); });
 }

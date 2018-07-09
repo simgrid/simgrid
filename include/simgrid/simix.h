@@ -186,7 +186,7 @@ XBT_PUBLIC e_smx_state_t simcall_execution_test(smx_activity_t execution);
 SG_BEGIN_DECL()
 /* Constructor and Destructor */
 #ifdef __cplusplus
-XBT_PUBLIC smx_actor_t simcall_process_create(const char* name, xbt_main_func_t code, void* data, sg_host_t host,
+XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, xbt_main_func_t code, void* data, sg_host_t host,
                                               int argc, char** argv,
                                               std::unordered_map<std::string, std::string>* properties);
 #endif

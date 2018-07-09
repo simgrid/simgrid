@@ -96,7 +96,7 @@ void SIMIX_function_register_default(xbt_main_func_t code)
  * \param name the reference name of the function.
  * \return The #smx_actor_t or nullptr.
  */
-simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name)
+simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(std::string name)
 {
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_get_actor_code_factory.");

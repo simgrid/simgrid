@@ -150,7 +150,7 @@ XBT_PUBLIC void create_maestro(std::function<void()> code);
 
 typedef simgrid::kernel::actor::ActorImpl* smx_actor_t;
 
-XBT_PRIVATE smx_actor_t SIMIX_process_create(const char* name, std::function<void()> code, void* data, sg_host_t host,
+XBT_PRIVATE smx_actor_t SIMIX_process_create(std::string name, std::function<void()> code, void* data, sg_host_t host,
                                              std::unordered_map<std::string, std::string>* properties,
                                              smx_actor_t parent_process);
 

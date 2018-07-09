@@ -57,7 +57,7 @@ void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-smx_actor_t MSG_process_create_from_SIMIX(const char* name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
+smx_actor_t MSG_process_create_from_SIMIX(std::string name, simgrid::simix::ActorCode code, void* data, sg_host_t host,
                                           std::unordered_map<std::string, std::string>* properties,
                                           smx_actor_t /*parent_process*/)
 {
@@ -74,7 +74,7 @@ smx_actor_t MSG_process_create_from_SIMIX(const char* name, simgrid::simix::Acto
  */
 msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
 {
-  return MSG_process_create_with_environment(name, code, data, host, 0, nullptr, nullptr);
+  return MSG_process_create_with_environment(name == nullptr ? "" : name, code, data, host, 0, nullptr, nullptr);
 }
 
 /** \ingroup m_process_management
@@ -146,8 +146,8 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
   return res;
 }
 
-msg_process_t MSG_process_create_from_stdfunc(const char* name, simgrid::simix::ActorCode code, void* data, msg_host_t host,
-                                              std::unordered_map<std::string, std::string>* properties)
+msg_process_t MSG_process_create_from_stdfunc(std::string name, simgrid::simix::ActorCode code, void* data,
+                                              msg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
   simgrid::msg::ActorExt* msgExt = new simgrid::msg::ActorExt(data);

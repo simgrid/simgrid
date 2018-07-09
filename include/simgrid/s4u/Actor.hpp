@@ -173,9 +173,9 @@ public:
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static ActorPtr create(const char* name, s4u::Host* host, std::function<void()> code);
+  static ActorPtr create(std::string name, s4u::Host* host, std::function<void()> code);
 
-  static ActorPtr create(const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
+  static ActorPtr create(std::string name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
                          std::vector<std::string>* args)
   {
     return create(name, host, [code](std::vector<std::string>* args) { code(args); }, args);
@@ -191,13 +191,13 @@ public:
   template <class F, class... Args,
             // This constructor is enabled only if the call code(args...) is valid:
             typename = typename std::result_of<F(Args...)>::type>
-  static ActorPtr create(const char* name, s4u::Host* host, F code, Args... args)
+  static ActorPtr create(std::string name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, wrap_task(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:
-  static ActorPtr create(const char* name, s4u::Host* host, const char* function, std::vector<std::string> args);
+  static ActorPtr create(std::string name, s4u::Host* host, std::string function, std::vector<std::string> args);
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon actor finishes **/
@@ -279,8 +279,8 @@ public:
   /** Retrieve the property value (or nullptr if not set) */
   std::unordered_map<std::string, std::string>*
   get_properties(); // FIXME: do not export the map, but only the keys or something
-  const char* get_property(const char* key);
-  void set_property(const char* key, const char* value);
+  const char* get_property(std::string key);
+  void set_property(std::string key, std::string value);
 
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, std::function<void()> code)
