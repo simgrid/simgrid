@@ -118,9 +118,7 @@ if __name__ == "__main__":
     # process trace files
     for trace_path in trace_list:
         if os.path.isabs(trace_path):
-            print("ERROR: Absolute path in the trace list file is not "
-                  "supported")
-            sys.exit(-1)
+            sys.exit("ERROR: Absolute path in the trace list file is not supported")
         convert_trace(trace_path, base_path, args.output_path)
 
     print("Traces converted!")
