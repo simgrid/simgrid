@@ -318,6 +318,8 @@ void surf_exit()
   for (auto const& model : all_existing_models)
     delete model;
 
+  xbt_free(surf_plugin_description);
+
   delete future_evt_set;
   future_evt_set = nullptr;
 
