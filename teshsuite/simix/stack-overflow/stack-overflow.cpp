@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 
   SIMIX_function_register("master", master);
   SIMIX_create_environment(argv[1]);
-  simcall_process_create("master", master, NULL, sg_host_by_name("Tremblay"), 0, NULL, NULL);
+  simcall_process_create(std::string("master"), master, NULL, sg_host_by_name("Tremblay"), 0, NULL, NULL);
   SIMIX_run();
 
   return 0;
