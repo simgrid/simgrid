@@ -74,6 +74,7 @@ static const std::vector<std::string> filtered_libraries = {
     "libboost_context-mt",
     "libboost_system",
     "libboost_thread",
+    "libboost_timer",
     "libboost_unit_test_framework",
     "libc",
     "libc++",
