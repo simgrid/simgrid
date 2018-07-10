@@ -9,6 +9,8 @@
 #include "simgrid/simix.h"
 #include "xbt/log.h"
 
+#include <string>
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "my log messages");
 
 static unsigned collatz(unsigned c0, unsigned n)
