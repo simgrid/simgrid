@@ -243,10 +243,11 @@ static void instr_action_on_state_change(simgrid::kernel::resource::Action* acti
         static_cast<simgrid::kernel::resource::Resource*>(action->get_variable()->get_constraint(i)->get_id());
     simgrid::surf::Cpu* cpu = dynamic_cast<simgrid::surf::Cpu*>(resource);
 
-    if (cpu != nullptr)
-      TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(),
-                                          action->get_variable()->get_value(), action->get_last_update(),
-                                          SIMIX_get_clock() - action->get_last_update());
+    if (cpu != nullptr) {
+      double value = action->get_variable()->get_value() * action->get_variable()->get_constraint_weight(i);
+      TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(), value,
+                                          action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
+    }
     simgrid::kernel::resource::LinkImpl* link = dynamic_cast<simgrid::kernel::resource::LinkImpl*>(resource);
 
     if (link != nullptr) {
