@@ -20,6 +20,8 @@
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
 
+#include <string>
+
 XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
 
 namespace simgrid {
@@ -69,12 +71,12 @@ double Engine::get_clock()
   return SIMIX_get_clock();
 }
 
-void Engine::load_platform(const char* platf)
+void Engine::load_platform(std::string platf)
 {
   SIMIX_create_environment(platf);
 }
 
-void Engine::register_function(const char* name, int (*code)(int, char**))
+void Engine::register_function(std::string name, int (*code)(int, char**))
 {
   SIMIX_function_register(name, code);
 }
@@ -82,7 +84,7 @@ void Engine::register_default(int (*code)(int, char**))
 {
   SIMIX_function_register_default(code);
 }
-void Engine::load_deployment(const char* deploy)
+void Engine::load_deployment(std::string deploy)
 {
   SIMIX_launch_application(deploy);
 }
@@ -272,9 +274,9 @@ void Engine::set_netzone_root(s4u::NetZone* netzone)
   pimpl->netzone_root_ = netzone->get_impl();
 }
 
-static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char* name)
+static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, std::string name)
 {
-  if (not strcmp(current->get_cname(), name))
+  if (current->get_name() == name)
     return current;
 
   for (auto const& elem : current->get_children()) {
@@ -287,7 +289,7 @@ static s4u::NetZone* netzone_by_name_recursive(s4u::NetZone* current, const char
 }
 
 /** @brief Retrieve the NetZone of the given name (or nullptr if not found) */
-NetZone* Engine::netzone_by_name_or_null(const char* name)
+NetZone* Engine::netzone_by_name_or_null(std::string name)
 {
   return netzone_by_name_recursive(get_netzone_root(), name);
 }

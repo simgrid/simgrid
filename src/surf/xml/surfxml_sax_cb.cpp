@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF 
 
 #include "simgrid_dtd.c"
 
-static const char* surf_parsed_filename; // Currently parsed file (for the error messages)
+static std::string surf_parsed_filename; // Currently parsed file (for the error messages)
 std::vector<simgrid::kernel::resource::LinkImpl*>
     parsed_link_list; /* temporary store of current list link of a route */
 
@@ -36,7 +36,7 @@ void surf_parse_assert(bool cond, std::string msg)
   if (not cond) {
     int lineno = surf_parse_lineno;
     cleanup();
-    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
+    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename.c_str(), lineno, msg.c_str());
     surf_exit();
     xbt_die("Exiting now");
   }
@@ -46,7 +46,7 @@ void surf_parse_error(std::string msg)
 {
   int lineno = surf_parse_lineno;
   cleanup();
-  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg.c_str());
+  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename.c_str(), lineno, msg.c_str());
   surf_exit();
   xbt_die("Exiting now");
 }
@@ -377,19 +377,20 @@ void STag_surfxml_platform() {
              "Use simgrid_update_xml to update your file automatically. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
-             surf_parsed_filename, version);
+             surf_parsed_filename.c_str(), version);
   if (version < 4.1) {
     XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
              "That's fine, the new version is backward compatible. \n\n"
              "Use simgrid_update_xml to update your file automatically to get rid of this warning. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
-             version, surf_parsed_filename);
+             version, surf_parsed_filename.c_str());
   }
-  xbt_assert(version <= 4.1, "******* FILE %s COMES FROM THE FUTURE (v:%.1f) *********\n "
-                             "The most recent formalism that this version of SimGrid understands is v4.1.\n"
-                             "Please update your code, or use another, more adapted, file.",
-             surf_parsed_filename, version);
+  xbt_assert(version <= 4.1,
+             "******* FILE %s COMES FROM THE FUTURE (v:%.1f) *********\n "
+             "The most recent formalism that this version of SimGrid understands is v4.1.\n"
+             "Please update your code, or use another, more adapted, file.",
+             surf_parsed_filename.c_str(), version);
 }
 void ETag_surfxml_platform(){
   simgrid::s4u::on_platform_created();
@@ -406,7 +407,7 @@ void STag_surfxml_prop()
     XBT_DEBUG("Set zone property %s -> %s", A_surfxml_prop_id, A_surfxml_prop_value);
     simgrid::s4u::NetZone* netzone = simgrid::s4u::Engine::get_instance()->netzone_by_name_or_null(A_surfxml_zone_id);
 
-    netzone->set_property(A_surfxml_prop_id, A_surfxml_prop_value);
+    netzone->set_property(std::string(A_surfxml_prop_id), A_surfxml_prop_value);
   } else {
     if (not current_property_set)
       current_property_set = new std::unordered_map<std::string, std::string>; // Maybe, it should raise an error
@@ -962,17 +963,15 @@ void ETag_surfxml_model___prop(){/* Nothing to do */}
 /* Open and Close parse file */
 YY_BUFFER_STATE surf_input_buffer;
 
-void surf_parse_open(const char *file)
+void surf_parse_open(std::string file)
 {
-  xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
-
   surf_parsed_filename = file;
   std::string dir      = simgrid::xbt::Path(file).get_dir_name();
   surf_path.push_back(dir);
 
   surf_file_to_parse = surf_fopen(file, "r");
   if (surf_file_to_parse == nullptr)
-    xbt_die("Unable to open '%s'\n", file);
+    xbt_die("Unable to open '%s'\n", file.c_str());
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse__switch_to_buffer(surf_input_buffer);
   surf_parse_lineno = 1;

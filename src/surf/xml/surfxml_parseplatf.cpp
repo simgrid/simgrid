@@ -60,11 +60,12 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
 }
 
 /* This function acts as a main in the parsing area. */
-void parse_platform_file(const char *file)
+void parse_platform_file(std::string file)
 {
 #if SIMGRID_HAVE_LUA
-  int len    = (file == nullptr ? 0 : strlen(file));
-  int is_lua = (file != nullptr && len > 3 && file[len - 3] == 'l' && file[len - 2] == 'u' && file[len - 1] == 'a');
+  const char* cfile = file.c_str();
+  int len           = strlen(cfile);
+  int is_lua        = len > 3 && file[len - 3] == 'l' && file[len - 2] == 'u' && file[len - 1] == 'a';
 #endif
 
   sg_platf_init();
@@ -78,7 +79,7 @@ void parse_platform_file(const char *file)
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
-    luaL_loadfile(L, file); // This loads the file without executing it.
+    luaL_loadfile(L, cfile); // This loads the file without executing it.
 
     /* Run the script */
     if (lua_pcall(L, 0, 0, 0)) {

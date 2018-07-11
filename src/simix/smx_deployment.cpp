@@ -35,7 +35,7 @@ void SIMIX_init_application()
  *     \include small_deployment.xml
  *
  */
-void SIMIX_launch_application(const char *file)
+void SIMIX_launch_application(std::string file)
 {
   XBT_ATTRIB_UNUSED int parse_status;
   xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_launch_application.");
@@ -46,11 +46,12 @@ void SIMIX_launch_application(const char *file)
   try {
     parse_status = surf_parse();
     surf_parse_close();
-    xbt_assert(not parse_status, "Parse error at %s:%d", file, surf_parse_lineno);
+    xbt_assert(not parse_status, "Parse error at %s:%d", file.c_str(), surf_parse_lineno);
   }
   catch (xbt_ex& e) {
-    XBT_ERROR("Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
-        file, surf_parse_lineno);
+    XBT_ERROR(
+        "Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
+        file.c_str(), surf_parse_lineno);
     throw;
   }
 }
@@ -69,7 +70,7 @@ static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
  * \param name the reference name of the function.
  * \param code the function
  */
-void SIMIX_function_register(const char *name, xbt_main_func_t code)
+void SIMIX_function_register(std::string name, xbt_main_func_t code)
 {
   xbt_assert(simix_global,
     "SIMIX_global_init has to be called before SIMIX_function_register.");
@@ -144,7 +145,7 @@ void SIMIX_process_set_function(const char* process_host, const char* process_fu
 namespace simgrid {
 namespace simix {
 
-void register_function(const char* name, ActorCodeFactory factory)
+void register_function(std::string name, ActorCodeFactory factory)
 {
   simix_global->registered_functions[name] = std::move(factory);
 }
