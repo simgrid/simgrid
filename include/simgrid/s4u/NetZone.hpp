@@ -54,8 +54,8 @@ public:
   std::vector<NetZone*> get_children();
 
   /** Retrieve the property value (or nullptr if not set) */
-  const char* get_property(const char* key);
-  void set_property(const char* key, const char* value);
+  const char* get_property(std::string key);
+  void set_property(std::string key, std::string value);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
   int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */

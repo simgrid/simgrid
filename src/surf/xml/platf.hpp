@@ -12,7 +12,7 @@
 XBT_PUBLIC void sg_platf_init();
 XBT_PUBLIC void sg_platf_exit();
 
-XBT_PUBLIC void surf_parse_open(const char* file);
+XBT_PUBLIC void surf_parse_open(std::string file);
 XBT_PUBLIC void surf_parse_close();
 XBT_PUBLIC void surf_parse_assert(bool cond, std::string msg);
 XBT_ATTRIB_NORETURN XBT_PUBLIC void surf_parse_error(std::string msg);

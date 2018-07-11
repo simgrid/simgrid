@@ -111,14 +111,14 @@ XBT_PUBLIC double SIMIX_timer_get_date(smx_timer_t timer);
 XBT_PUBLIC void SIMIX_display_process_status();
 
 /******************************* Environment **********************************/
-XBT_PUBLIC void SIMIX_create_environment(const char* file);
+XBT_PUBLIC void SIMIX_create_environment(std::string file);
 
 /******************************** Deployment **********************************/
 
-XBT_PUBLIC void SIMIX_function_register(const char* name, xbt_main_func_t code);
+XBT_PUBLIC void SIMIX_function_register(std::string name, xbt_main_func_t code);
 XBT_PUBLIC void SIMIX_function_register_default(xbt_main_func_t code);
 XBT_PUBLIC void SIMIX_init_application();
-XBT_PUBLIC void SIMIX_launch_application(const char* file);
+XBT_PUBLIC void SIMIX_launch_application(std::string file);
 
 XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char* process_function,
                                            xbt_dynar_t arguments, double process_start_time, double process_kill_time);

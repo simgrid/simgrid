@@ -49,11 +49,10 @@ public:
    * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
    * Some examples can be found in the directory examples/platforms.
    */
-  void load_platform(const char* platf);
+  void load_platform(std::string platf);
 
   /** Registers the main function of an actor that will be launched from the deployment file */
-  void register_function(const char* name, int (*code)(int, char**));
-  // FIXME: provide a register_function(std::string, void (*code)(int, char**)) and deprecate the int returning one
+  void register_function(std::string name, int (*code)(int, char**));
   // FIXME: provide a register_function(std::string, std::vector<std::string>)
 
   /** Registers a function as the default main function of actors
@@ -63,7 +62,7 @@ public:
    */
   void register_default(int (*code)(int, char**));
 
-  template <class F> void register_actor(const char* name)
+  template <class F> void register_actor(std::string name)
   {
     simgrid::simix::register_function(name, [](std::vector<std::string> args) {
       return simgrid::simix::ActorCode([args] {
@@ -73,7 +72,7 @@ public:
     });
   }
 
-  template <class F> void register_actor(const char* name, F code)
+  template <class F> void register_actor(std::string name, F code)
   {
     simgrid::simix::register_function(name, [code](std::vector<std::string> args) {
       return simgrid::simix::ActorCode([code, args] { code(std::move(args)); });
@@ -81,7 +80,7 @@ public:
   }
 
   /** @brief Load a deployment file and launch the actors that it contains */
-  void load_deployment(const char* deploy);
+  void load_deployment(std::string deploy);
 
 protected:
   friend s4u::Host;
@@ -127,7 +126,7 @@ public:
   simgrid::s4u::NetZone* get_netzone_root();
   void set_netzone_root(s4u::NetZone* netzone);
 
-  simgrid::s4u::NetZone* netzone_by_name_or_null(const char* name);
+  simgrid::s4u::NetZone* netzone_by_name_or_null(std::string name);
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
   template <class T> std::vector<T*> get_filtered_netzones()
@@ -157,11 +156,11 @@ private:
 
   //////////////// Deprecated functions
 public:
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(const char* platf)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_platform()") void loadPlatform(std::string platf)
   {
     load_platform(platf);
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_function()") void registerFunction(const char* name,
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_function()") void registerFunction(std::string name,
                                                                                              int (*code)(int, char**))
   {
     register_function(name, code);
@@ -171,17 +170,17 @@ public:
     register_default(code);
   }
   template <class F>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const char* name)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(std::string name)
   {
     register_actor<F>(name);
   }
   template <class F>
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(const char* name, F code)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::register_actor()") void registerFunction(std::string name, F code)
   {
     register_actor<F>(name, code);
   }
 
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_deployment()") void loadDeployment(const char* deploy)
+  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::load_deployment()") void loadDeployment(std::string deploy)
   {
     load_deployment(deploy);
   }
@@ -232,7 +231,8 @@ public:
   {
     return get_netzone_root();
   }
-  XBT_ATTRIB_DEPRECATED_v323("Please use Engine::netzone_by_name_or_null()") simgrid::s4u::NetZone* getNetzoneByNameOrNull(const char* name)
+  XBT_ATTRIB_DEPRECATED_v323(
+      "Please use Engine::netzone_by_name_or_null()") simgrid::s4u::NetZone* getNetzoneByNameOrNull(std::string name)
   {
     return netzone_by_name_or_null(name);
   }

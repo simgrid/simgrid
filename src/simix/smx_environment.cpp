@@ -27,7 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix, "Logging specific to S
  *     \include small_platform.xml
  *
  */
-void SIMIX_create_environment(const char *file)
+void SIMIX_create_environment(std::string file)
 {
   double start = 0;
   double end = 0;
@@ -37,7 +37,7 @@ void SIMIX_create_environment(const char *file)
     parse_platform_file(file);
   }
   catch (xbt_ex& e) {
-    xbt_die("Error while loading %s: %s", file, e.what());
+    xbt_die("Error while loading %s: %s", file.c_str(), e.what());
   }
   if(XBT_LOG_ISENABLED(simix_environment, xbt_log_priority_debug))
     end = xbt_os_time();
