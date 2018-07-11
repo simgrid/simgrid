@@ -1,7 +1,6 @@
-/* stack_overflow -- simple program generating a stack overflow          */
+/* stack_overflow -- simple program generating a stack overflow             */
 
-/* Copyright (c) 2014-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -48,7 +47,7 @@ int main(int argc, char* argv[])
 
   SIMIX_function_register("master", master);
   SIMIX_create_environment(argv[1]);
-  simcall_process_create(std::string("master"), master, NULL, sg_host_by_name("Tremblay"), 0, NULL, NULL);
+  simcall_process_create("master", master, NULL, sg_host_by_name("Tremblay"), 0, NULL, NULL);
   SIMIX_run();
 
   return 0;
