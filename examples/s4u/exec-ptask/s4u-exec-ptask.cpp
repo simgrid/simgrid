@@ -71,6 +71,12 @@ static void runner()
     computation_amounts[i] = 1e9; // 1 Gflop
   simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, nullptr /* no comm */);
 
+  XBT_INFO("Then, build a parallel task involving only heterogeneous computations and no communication");
+  computation_amounts = new double[hosts_count]();
+  for (int i               = 0; i < hosts_count; i++)
+    computation_amounts[i] = 5 * (i + 1) * 1e8; // 500Mflop, 1Gflop, 1.5Gflop
+  simgrid::s4u::this_actor::parallel_execute(hosts_count, hosts.data(), computation_amounts, nullptr /* no comm */);
+
   XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
   computation_amounts   = new double[hosts_count]();
   communication_amounts = new double[hosts_count * hosts_count]();
