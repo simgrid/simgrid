@@ -5,8 +5,11 @@ Tracing:
  - New host variable: 'core_count'
 
 Fixed bugs:
+ - #264: Add ptask L07 resource tracing
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time
+ - #282: TIT convertor erase traces when using absolute path in the trace list file
+ - #285: segfault when a s4u actor kills itself with msg process tracing activated
  - #286: Pajé traces are not exposing the number of cores
 
 ----------------------------------------------------------------------------
