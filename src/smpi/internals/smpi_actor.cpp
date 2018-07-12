@@ -70,8 +70,6 @@ void ActorExt::set_data(int* argc, char*** argv)
   if (barrier != nullptr) // don't overwrite the current one if the instance has none
     finalization_barrier_ = barrier;
 
-  static_cast<simgrid::msg::ActorExt*>(actor_->get_impl()->get_user_data())->data = this;
-
   if (*argc > 3) {
     memmove(&(*argv)[0], &(*argv)[2], sizeof(char*) * (*argc - 2));
     (*argv)[(*argc) - 1] = nullptr;

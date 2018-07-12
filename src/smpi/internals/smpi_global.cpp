@@ -3,16 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi_host.hpp"
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_f2c.hpp"
-#include "src/msg/msg_private.hpp"
+#include "smpi_host.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/simix/smx_private.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
 
-#include "src/smpi/include/smpi_actor.hpp"
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -99,10 +99,11 @@ int smpi_process_count()
 simgrid::smpi::ActorExt* smpi_process()
 {
   ActorPtr me = Actor::self();
+
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
-  simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->get_impl()->get_user_data());
-  return static_cast<simgrid::smpi::ActorExt*>(msgExt->data);
+
+  return process_data.at(me);
 }
 
 simgrid::smpi::ActorExt* smpi_process_remote(ActorPtr actor)
@@ -626,9 +627,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   }
 
   TRACE_global_init();
-
   SIMIX_global_init(&argc, argv);
-  MSG_init(&argc, argv); // FIXME Remove this MSG call. Once it's removed, we can remove the msg header include as well
 
   SMPI_switch_data_segment = &smpi_switch_data_segment;
 
