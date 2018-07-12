@@ -295,12 +295,10 @@ void LinkNS3::set_latency_trace(tmgr_trace_t trace)
  **********/
 
 NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalBytes, s4u::Host* src, s4u::Host* dst)
-    : NetworkAction(model, totalBytes, false)
+    : NetworkAction(model, totalBytes, false), src_(src), dst_(dst)
 {
   XBT_DEBUG("Communicate from %s to %s", src->get_cname(), dst->get_cname());
 
-  src_ = src;
-  dst_ = dst;
   static int port_number = 1025; // Port number is limited from 1025 to 65 000
 
   unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
