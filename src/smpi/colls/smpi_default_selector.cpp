@@ -1,13 +1,12 @@
 /* selector with default/naive Simgrid algorithms. These should not be trusted for performance evaluations */
 
-/* Copyright (c) 2009-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "colls_private.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 namespace simgrid{
 namespace smpi{

@@ -4,11 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/modelchecker.h"
 #include "private.hpp"
+#include "simgrid/modelchecker.h"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
+
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_datatype, smpi, "Logging specific to SMPI (datatype)");

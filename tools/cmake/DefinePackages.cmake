@@ -224,7 +224,7 @@ set(SMPI_SRC
   src/smpi/internals/smpi_global.cpp
   src/smpi/internals/smpi_host.cpp
   src/smpi/internals/smpi_replay.cpp
-  src/smpi/internals/smpi_process.cpp
+  src/smpi/internals/smpi_actor.cpp
   src/smpi/internals/smpi_utils.cpp
   src/smpi/mpi/smpi_comm.cpp
   src/smpi/mpi/smpi_datatype.cpp
@@ -248,7 +248,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_keyvals.hpp
   src/smpi/include/smpi_datatype_derived.hpp
   src/smpi/include/smpi_op.hpp
-  src/smpi/include/smpi_process.hpp
+  src/smpi/include/smpi_actor.hpp
   src/smpi/include/smpi_request.hpp
   src/smpi/include/smpi_status.hpp
   src/smpi/include/smpi_win.hpp

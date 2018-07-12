@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 #include "mc/mc.h"
 #include "smpi_comm.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -17,13 +17,13 @@ extern std::string papi_default_config_name;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid {
+namespace smpi {
 
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 
-Process::Process(ActorPtr actor, simgrid::s4u::Barrier* finalization_barrier)
+ActorExt::ActorExt(ActorPtr actor, simgrid::s4u::Barrier* finalization_barrier)
     : finalization_barrier_(finalization_barrier), actor_(actor)
 {
   mailbox_         = simgrid::s4u::Mailbox::by_name("SMPI-" + std::to_string(actor_->get_pid()));
@@ -52,7 +52,7 @@ Process::Process(ActorPtr actor, simgrid::s4u::Barrier* finalization_barrier)
 #endif
 }
 
-Process::~Process()
+ActorExt::~ActorExt()
 {
   if (comm_self_ != MPI_COMM_NULL)
     simgrid::smpi::Comm::destroy(comm_self_);
@@ -62,10 +62,10 @@ Process::~Process()
   xbt_mutex_destroy(mailboxes_mutex_);
 }
 
-void Process::set_data(int* argc, char*** argv)
+void ActorExt::set_data(int* argc, char*** argv)
 {
-  instance_id_      = std::string((*argv)[1]);
-  comm_world_       = smpi_deployment_comm_world(instance_id_);
+  instance_id_                   = std::string((*argv)[1]);
+  comm_world_                    = smpi_deployment_comm_world(instance_id_);
   simgrid::s4u::Barrier* barrier = smpi_deployment_finalization_barrier(instance_id_);
   if (barrier != nullptr) // don't overwrite the current one if the instance has none
     finalization_barrier_ = barrier;
@@ -86,26 +86,26 @@ void Process::set_data(int* argc, char*** argv)
 }
 
 /** @brief Prepares the current process for termination. */
-void Process::finalize()
+void ActorExt::finalize()
 {
   state_ = SmpiProcessState::FINALIZED;
   XBT_DEBUG("<%ld> Process left the game", actor_->get_pid());
 
   // This leads to an explosion of the search graph which cannot be reduced:
-  if(MC_is_active() || MC_record_replay_is_active())
+  if (MC_is_active() || MC_record_replay_is_active())
     return;
   // wait for all pending asynchronous comms to finish
   finalization_barrier_->wait();
 }
 
 /** @brief Check if a process is finalized */
-int Process::finalized()
+int ActorExt::finalized()
 {
   return (state_ == SmpiProcessState::FINALIZED);
 }
 
 /** @brief Check if a process is initialized */
-int Process::initialized()
+int ActorExt::initialized()
 {
   // TODO cheinrich: Check if we still need this. This should be a global condition, not for a
   // single process ... ?
@@ -113,32 +113,34 @@ int Process::initialized()
 }
 
 /** @brief Mark a process as initialized (=MPI_Init called) */
-void Process::mark_as_initialized()
+void ActorExt::mark_as_initialized()
 {
   if (state_ != SmpiProcessState::FINALIZED)
     state_ = SmpiProcessState::INITIALIZED;
 }
 
-void Process::set_replaying(bool value){
+void ActorExt::set_replaying(bool value)
+{
   if (state_ != SmpiProcessState::FINALIZED)
     replaying_ = value;
 }
 
-bool Process::replaying(){
+bool ActorExt::replaying()
+{
   return replaying_;
 }
 
-void Process::set_user_data(void *data)
+void ActorExt::set_user_data(void* data)
 {
   data_ = data;
 }
 
-void *Process::get_user_data()
+void* ActorExt::get_user_data()
 {
   return data_;
 }
 
-ActorPtr Process::get_actor()
+ActorPtr ActorExt::get_actor()
 {
   return actor_;
 }
@@ -148,102 +150,104 @@ ActorPtr Process::get_actor()
  *
  * \see smpi_trace_set_call_location
  */
-smpi_trace_call_location_t* Process::call_location()
+smpi_trace_call_location_t* ActorExt::call_location()
 {
   return &trace_call_loc_;
 }
 
-void Process::set_privatized_region(smpi_privatization_region_t region)
+void ActorExt::set_privatized_region(smpi_privatization_region_t region)
 {
   privatized_region_ = region;
 }
 
-smpi_privatization_region_t Process::privatized_region()
+smpi_privatization_region_t ActorExt::privatized_region()
 {
   return privatized_region_;
 }
 
-MPI_Comm Process::comm_world()
+MPI_Comm ActorExt::comm_world()
 {
-  return comm_world_==nullptr ? MPI_COMM_NULL : *comm_world_;
+  return comm_world_ == nullptr ? MPI_COMM_NULL : *comm_world_;
 }
 
-smx_mailbox_t Process::mailbox()
+smx_mailbox_t ActorExt::mailbox()
 {
   return mailbox_->get_impl();
 }
 
-smx_mailbox_t Process::mailbox_small()
+smx_mailbox_t ActorExt::mailbox_small()
 {
   return mailbox_small_->get_impl();
 }
 
-xbt_mutex_t Process::mailboxes_mutex()
+xbt_mutex_t ActorExt::mailboxes_mutex()
 {
   return mailboxes_mutex_;
 }
 
 #if HAVE_PAPI
-int Process::papi_event_set()
+int ActorExt::papi_event_set()
 {
   return papi_event_set_;
 }
 
-papi_counter_t& Process::papi_counters()
+papi_counter_t& ActorExt::papi_counters()
 {
   return papi_counter_data_;
 }
 #endif
 
-xbt_os_timer_t Process::timer()
+xbt_os_timer_t ActorExt::timer()
 {
   return timer_;
 }
 
-void Process::simulated_start()
+void ActorExt::simulated_start()
 {
   simulated_ = SIMIX_get_clock();
 }
 
-double Process::simulated_elapsed()
+double ActorExt::simulated_elapsed()
 {
   return SIMIX_get_clock() - simulated_;
 }
 
-MPI_Comm Process::comm_self()
+MPI_Comm ActorExt::comm_self()
 {
-  if(comm_self_==MPI_COMM_NULL){
-    MPI_Group group = new  Group(1);
-    comm_self_ = new  Comm(group, nullptr);
+  if (comm_self_ == MPI_COMM_NULL) {
+    MPI_Group group = new Group(1);
+    comm_self_      = new Comm(group, nullptr);
     group->set_mapping(actor_, 0);
   }
   return comm_self_;
 }
 
-MPI_Comm Process::comm_intra()
+MPI_Comm ActorExt::comm_intra()
 {
   return comm_intra_;
 }
 
-void Process::set_comm_intra(MPI_Comm comm)
+void ActorExt::set_comm_intra(MPI_Comm comm)
 {
   comm_intra_ = comm;
 }
 
-void Process::set_sampling(int s)
+void ActorExt::set_sampling(int s)
 {
   sampling_ = s;
 }
 
-int Process::sampling()
+int ActorExt::sampling()
 {
   return sampling_;
 }
 
-void Process::init(int *argc, char ***argv){
+void ActorExt::init(int* argc, char*** argv)
+{
 
   if (smpi_process_count() == 0) {
-    xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
+    xbt_die("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process "
+            "and use smpirun\n");
   }
   if (argc != nullptr && argv != nullptr) {
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
@@ -259,7 +263,7 @@ void Process::init(int *argc, char ***argv){
 
     // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
     // this up here so that I can set the privatized region before the switch.
-    Process* process = smpi_process_remote(proc);
+    ActorExt* process = smpi_process_remote(proc);
     if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
       /* Now using the segment index of this process  */
       process->set_privatized_region(smpi_init_global_memory_segment_process());
@@ -274,12 +278,14 @@ void Process::init(int *argc, char ***argv){
                              "Please use MPI_Init(&argc, &argv) as usual instead.");
 }
 
-int Process::get_optind(){
+int ActorExt::get_optind()
+{
   return optind;
 }
-void Process::set_optind(int new_optind){
-  optind=new_optind;
+void ActorExt::set_optind(int new_optind)
+{
+  optind = new_optind;
 }
 
-}
-}
+} // namespace smpi
+} // namespace simgrid

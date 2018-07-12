@@ -5,16 +5,16 @@
 
 #include "smpi_request.hpp"
 
-#include "smpi_host.hpp"
 #include "mc/mc.h"
 #include "private.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
+#include "smpi_host.hpp"
 #include "smpi_op.hpp"
-#include "smpi_process.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
 #include <xbt/ex.hpp>
 
@@ -370,7 +370,7 @@ void Request::start()
   if ((flags_ & MPI_REQ_RECV) != 0) {
     this->print_request("New recv");
 
-    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
 
     int async_small_thresh = simgrid::config::get_value<int>("smpi/async-small-thresh");
 
@@ -421,7 +421,7 @@ void Request::start()
     if (async_small_thresh != 0 || (flags_ & MPI_REQ_RMA) != 0)
       xbt_mutex_release(mut);
   } else { /* the RECV flag was not set, so this is a send */
-    simgrid::smpi::Process* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
+    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     int rank = src_;
     if (TRACE_smpi_view_internals()) {
       TRACE_smpi_send(rank, rank, dst_, tag_, size_);

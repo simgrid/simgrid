@@ -8,9 +8,9 @@
 #include "simgrid/s4u/Host.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
-#include "smpi_process.hpp"
 #include "smpi_status.hpp"
 #include "src/simix/ActorImpl.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi, "Logging specific to SMPI (pmpi)");
 
@@ -34,7 +34,7 @@ int PMPI_Init(int *argc, char ***argv)
   int already_init;
   MPI_Initialized(&already_init);
   if(already_init == 0){
-    simgrid::smpi::Process::init(argc, argv);
+    simgrid::smpi::ActorExt::init(argc, argv);
     smpi_process()->mark_as_initialized();
     int rank = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_init(rank);

@@ -6,6 +6,7 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
@@ -17,7 +18,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/smx_host_private.hpp"
 #include "src/simix/smx_private.hpp"
-#include "src/smpi/include/smpi_process.hpp"
 #include "src/surf/StorageImpl.hpp"
 #include "src/surf/xml/platf.hpp"
 

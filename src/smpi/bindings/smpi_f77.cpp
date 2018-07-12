@@ -7,9 +7,9 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_op.hpp"
-#include "smpi_process.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 static int running_processes = 0;
 

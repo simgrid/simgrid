@@ -8,11 +8,11 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_f2c.hpp"
-#include "smpi_process.hpp"
 #include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
 #include "xbt/config.hpp"
 
+#include "src/smpi/include/smpi_actor.hpp"
 #include <cfloat> /* DBL_MAX */
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -60,7 +60,7 @@ using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 std::unordered_map<std::string, double> location2speedup;
 
-static std::map</*process_id*/ ActorPtr, simgrid::smpi::Process*> process_data;
+static std::map</*process_id*/ ActorPtr, simgrid::smpi::ActorExt*> process_data;
 int process_count = 0;
 static int smpi_exit_status = 0;
 int smpi_universe_size = 0;
@@ -96,16 +96,16 @@ int smpi_process_count()
   return process_count;
 }
 
-simgrid::smpi::Process* smpi_process()
+simgrid::smpi::ActorExt* smpi_process()
 {
   ActorPtr me = Actor::self();
   if (me == nullptr) // This happens sometimes (eg, when linking against NS3 because it pulls openMPI...)
     return nullptr;
   simgrid::msg::ActorExt* msgExt = static_cast<simgrid::msg::ActorExt*>(me->get_impl()->get_user_data());
-  return static_cast<simgrid::smpi::Process*>(msgExt->data);
+  return static_cast<simgrid::smpi::ActorExt*>(msgExt->data);
 }
 
-simgrid::smpi::Process* smpi_process_remote(ActorPtr actor)
+simgrid::smpi::ActorExt* smpi_process_remote(ActorPtr actor)
 {
   return process_data.at(actor);
 }
@@ -115,7 +115,7 @@ MPI_Comm smpi_process_comm_self(){
 }
 
 void smpi_process_init(int *argc, char ***argv){
-  simgrid::smpi::Process::init(argc, argv);
+  simgrid::smpi::ActorExt::init(argc, argv);
 }
 
 int smpi_process_index(){
@@ -688,7 +688,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 void SMPI_init(){
   simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::ActorPtr actor) {
     if (not actor->is_daemon()) {
-      process_data.insert({actor, new simgrid::smpi::Process(actor, nullptr)});
+      process_data.insert({actor, new simgrid::smpi::ActorExt(actor, nullptr)});
     }
   });
   simgrid::s4u::Actor::on_destruction.connect([](simgrid::s4u::ActorPtr actor) {

@@ -4,14 +4,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_win.hpp"
+
 #include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_info.hpp"
 #include "smpi_keyvals.hpp"
-#include "smpi_process.hpp"
 #include "smpi_request.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 

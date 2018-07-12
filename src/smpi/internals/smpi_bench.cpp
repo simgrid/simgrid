@@ -7,13 +7,13 @@
 #include "simgrid/host.h"
 #include "simgrid/modelchecker.h"
 #include "smpi_comm.hpp"
-#include "smpi_process.hpp"
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "xbt/config.hpp"
 #include "getopt.h"
 
+#include "src/smpi/include/smpi_actor.hpp"
 #include <unordered_map>
 
 #ifndef WIN32

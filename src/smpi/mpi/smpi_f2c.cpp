@@ -5,7 +5,7 @@
 
 #include "smpi_f2c.hpp"
 #include "private.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 #include <cstdio>
 

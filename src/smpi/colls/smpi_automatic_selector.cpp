@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +7,7 @@
 #include <exception>
 
 #include "colls_private.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 //attempt to do a quick autotuning version of the collective,
 #define TRACE_AUTO_COLL(cat)                                                                                           \

@@ -8,7 +8,7 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_op.hpp"
-#include "smpi_process.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
