@@ -132,22 +132,37 @@ void Engine::host_unregister(std::string name)
   pimpl->hosts_.erase(name);
 }
 
+/** @brief Find an host from its name.
+ *
+ *  @throw std::invalid_argument if the searched host does not exist.
+ */
 simgrid::s4u::Host* Engine::host_by_name(std::string name)
 {
-  return pimpl->hosts_.at(name); // Will raise a std::out_of_range if the host does not exist
+  if (pimpl->hosts_.find(name) == pimpl->hosts_.end())
+    throw std::invalid_argument(std::string("Host not found: ") + name);
+  return pimpl->hosts_.at(name);
 }
 
+/** @brief Find an host from its name (or nullptr if that host does not exist) */
 simgrid::s4u::Host* Engine::host_by_name_or_null(std::string name)
 {
   auto host = pimpl->hosts_.find(name);
   return host == pimpl->hosts_.end() ? nullptr : host->second;
 }
 
+/** @brief Find a link from its name.
+ *
+ *  @throw std::invalid_argument if the searched link does not exist.
+ */
 simgrid::s4u::Link* Engine::link_by_name(std::string name)
 {
-  return pimpl->links_.at(name); // Will raise a std::out_of_range if the host does not exist
+  if (pimpl->links_.find(name) == pimpl->links_.end())
+    throw std::invalid_argument(std::string("Link not found: ") + name);
+
+  return pimpl->links_.at(name);
 }
 
+/** @brief Find an link from its name (or nullptr if that link does not exist) */
 simgrid::s4u::Link* Engine::link_by_name_or_null(std::string name)
 {
   auto link = pimpl->links_.find(name);
@@ -179,11 +194,19 @@ std::vector<Storage*> Engine::get_all_storages()
   return res;
 }
 
+/** @brief Find a storage from its name.
+ *
+ *  @throw std::invalid_argument if the searched storage does not exist.
+ */
 simgrid::s4u::Storage* Engine::storage_by_name(std::string name)
 {
-  return pimpl->storages_.at(name); // Will raise a std::out_of_range if the host does not exist
+  if (pimpl->links_.find(name) == pimpl->links_.end())
+    throw std::invalid_argument(std::string("Storage not found: ") + name);
+
+  return pimpl->storages_.at(name);
 }
 
+/** @brief Find a storage from its name (or nullptr if that storage does not exist) */
 simgrid::s4u::Storage* Engine::storage_by_name_or_null(std::string name)
 {
   auto storage = pimpl->storages_.find(name);
