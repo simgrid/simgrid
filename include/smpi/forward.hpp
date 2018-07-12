@@ -38,7 +38,6 @@ typedef simgrid::smpi::Datatype SMPI_Datatype;
 typedef simgrid::smpi::Group SMPI_Group;
 typedef simgrid::smpi::Info SMPI_Info;
 typedef simgrid::smpi::Op SMPI_Op;
-typedef simgrid::smpi::ActorExt SMPI_Process;
 typedef simgrid::smpi::Request SMPI_Request;
 typedef simgrid::smpi::Topo SMPI_Topology;
 typedef simgrid::smpi::Topo_Cart SMPI_Cart_topology;
