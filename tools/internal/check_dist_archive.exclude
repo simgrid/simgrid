@@ -9,22 +9,23 @@
 - Makefile
 - doc/html/.*
 
-+ BuildSimGrid.sh
-+ COPYRIGHT.template
++ BuildSimGrid\.sh
++ COPYRIGHT\.template
 + README\.(coding|git)
-+ \.appveyor.yml
++ \.appveyor\.yml
 + \.circleci/.*
 + \.clang-format
 + \.classpath
++ \.codacy\.yml
 + \.cproject
 + \.editorconfig
 + \.project
-+ \.travis.yml
-+ sonar-project.properties
++ \.travis\.yml
++ sonar-project\.properties
 
 + contrib/.*
 
-+ tools/appveyor-irc-notify.py
++ tools/appveyor-irc-notify\.py
 + tools/git-hooks/.*
 + tools/internal/.*
 + tools/jenkins/.*
