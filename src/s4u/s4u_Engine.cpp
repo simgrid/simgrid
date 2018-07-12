@@ -200,7 +200,7 @@ std::vector<Storage*> Engine::get_all_storages()
  */
 simgrid::s4u::Storage* Engine::storage_by_name(std::string name)
 {
-  if (pimpl->links_.find(name) == pimpl->links_.end())
+  if (pimpl->storages_.find(name) == pimpl->storages_.end())
     throw std::invalid_argument(std::string("Storage not found: ") + name);
 
   return pimpl->storages_.at(name);

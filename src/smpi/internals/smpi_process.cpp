@@ -70,7 +70,6 @@ void Process::set_data(int* argc, char*** argv)
   if (barrier != nullptr) // don't overwrite the current one if the instance has none
     finalization_barrier_ = barrier;
 
-  actor_                                                                        = simgrid::s4u::Actor::self();
   static_cast<simgrid::msg::ActorExt*>(actor_->get_impl()->get_user_data())->data = this;
 
   if (*argc > 3) {

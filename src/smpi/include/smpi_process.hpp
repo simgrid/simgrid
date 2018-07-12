@@ -35,7 +35,7 @@ class Process {
     simgrid::s4u::Barrier* finalization_barrier_;
     smpi_trace_call_location_t trace_call_loc_;
     simgrid::s4u::ActorPtr actor_ = nullptr;
-    smpi_privatization_region_t privatized_region_;
+    smpi_privatization_region_t privatized_region_ = nullptr;
     int optind=0; /*for getopt replacement */
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
