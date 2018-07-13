@@ -10,21 +10,21 @@
 /* ************************** Engine *************************** */
 void MSG_create_environment(const char* filename)
 {
-  sg_engine_load_platform(filename);
+  simgrid_load_platform(filename);
 }
 
 void MSG_launch_application(const char* filename)
 {
-  sg_engine_load_deployment(filename);
+  simgrid_load_deployment(filename);
 }
 msg_error_t MSG_main()
 {
-  sg_engine_run();
+  simgrid_run();
   return MSG_OK;
 }
 void MSG_function_register(const char* name, xbt_main_func_t code)
 {
-  sg_engine_register_function(name, code);
+  simgrid_register_function(name, code);
 }
 void MSG_function_register_default(xbt_main_func_t code)
 {
@@ -32,7 +32,7 @@ void MSG_function_register_default(xbt_main_func_t code)
 }
 double MSG_get_clock()
 {
-  return sg_engine_get_clock();
+  return simgrid_get_clock();
 }
 
 /* ************************** Mailboxes ************************ */

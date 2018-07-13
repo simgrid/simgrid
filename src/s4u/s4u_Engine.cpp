@@ -370,20 +370,20 @@ void simgrid_init(int* argc, char** argv)
 {
   simgrid::s4u::Engine e(argc, argv);
 }
-void sg_engine_load_platform(const char* file)
+void simgrid_load_platform(const char* file)
 {
   simgrid::s4u::Engine::get_instance()->load_platform(file);
 }
 
-void sg_engine_load_deployment(const char* file)
+void simgrid_load_deployment(const char* file)
 {
   simgrid::s4u::Engine::get_instance()->load_deployment(file);
 }
-void sg_engine_run()
+void simgrid_run()
 {
   simgrid::s4u::Engine::get_instance()->run();
 }
-void sg_engine_register_function(const char* name, int (*code)(int, char**))
+void simgrid_register_function(const char* name, int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);
 }
@@ -391,7 +391,7 @@ void sg_engine_register_default(int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_default(code);
 }
-double sg_engine_get_clock()
+double simgrid_get_clock()
 {
   return simgrid::s4u::Engine::get_clock();
 }
