@@ -109,19 +109,32 @@ XBT_PUBLIC double SIMIX_timer_next();
 XBT_PUBLIC double SIMIX_timer_get_date(smx_timer_t timer);
 
 XBT_PUBLIC void SIMIX_display_process_status();
+SG_END_DECL()
 
 /******************************* Environment **********************************/
+SG_BEGIN_DECL()
+XBT_PUBLIC void SIMIX_create_environment(const char* file);
+SG_END_DECL()
+
+#ifdef __cplusplus
 XBT_PUBLIC void SIMIX_create_environment(std::string file);
+#endif
 
 /******************************** Deployment **********************************/
-
-XBT_PUBLIC void SIMIX_function_register(std::string name, xbt_main_func_t code);
+SG_BEGIN_DECL()
+XBT_PUBLIC void SIMIX_function_register(const char* name, xbt_main_func_t code);
 XBT_PUBLIC void SIMIX_function_register_default(xbt_main_func_t code);
 XBT_PUBLIC void SIMIX_init_application();
-XBT_PUBLIC void SIMIX_launch_application(std::string file);
+XBT_PUBLIC void SIMIX_launch_application(const char* file);
 
 XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char* process_function,
                                            xbt_dynar_t arguments, double process_start_time, double process_kill_time);
+SG_END_DECL()
+
+#ifdef __cplusplus
+XBT_PUBLIC void SIMIX_function_register(std::string name, xbt_main_func_t code);
+XBT_PUBLIC void SIMIX_launch_application(std::string file);
+#endif
 
 /*********************************** Host *************************************/
 /* Functions for running a process in main()
@@ -132,15 +145,20 @@ XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char*
  *  4. detach (this waits for the simulation to terminate)
  */
 
+SG_BEGIN_DECL()
 XBT_PUBLIC void SIMIX_maestro_create(void (*code)(void*), void* data);
+SG_END_DECL()
 #ifdef __cplusplus
 XBT_PUBLIC smx_actor_t SIMIX_process_attach(const char* name, void* data, const char* hostname,
                                             std::unordered_map<std::string, std::string>* properties,
                                             smx_actor_t parent_process);
 #endif
+SG_BEGIN_DECL()
 XBT_PUBLIC void SIMIX_process_detach();
+SG_END_DECL()
 
 /********************************* Process ************************************/
+SG_BEGIN_DECL()
 XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
@@ -149,7 +167,6 @@ XBT_PUBLIC void* SIMIX_process_self_get_data();
 XBT_PUBLIC int SIMIX_process_has_pending_comms(smx_actor_t process);
 XBT_PUBLIC void SIMIX_process_on_exit_runall(smx_actor_t process);
 XBT_PUBLIC void SIMIX_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data);
-
 SG_END_DECL()
 
 #ifdef __cplusplus
@@ -183,7 +200,6 @@ XBT_PUBLIC e_smx_state_t simcall_execution_wait(smx_activity_t execution);
 XBT_PUBLIC e_smx_state_t simcall_execution_test(smx_activity_t execution);
 
 /**************************** Process simcalls ********************************/
-SG_BEGIN_DECL()
 /* Constructor and Destructor */
 #ifdef __cplusplus
 XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, xbt_main_func_t code, void* data, sg_host_t host,
@@ -191,6 +207,7 @@ XBT_PUBLIC smx_actor_t simcall_process_create(std::string name, xbt_main_func_t 
                                               std::unordered_map<std::string, std::string>* properties);
 #endif
 
+SG_BEGIN_DECL()
 XBT_PUBLIC void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const char* mesg);
 
 /* Process handling */

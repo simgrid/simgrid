@@ -56,6 +56,11 @@ void SIMIX_launch_application(std::string file)
   }
 }
 
+void SIMIX_launch_application(const char* file)
+{
+  SIMIX_launch_application(std::string(file));
+}
+
 // Wrap a main() function into a ActorCodeFactory:
 static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 {
@@ -75,6 +80,11 @@ void SIMIX_function_register(std::string name, xbt_main_func_t code)
   xbt_assert(simix_global,
     "SIMIX_global_init has to be called before SIMIX_function_register.");
   simix_global->registered_functions[name] = toActorCodeFactory(code);
+}
+
+void SIMIX_function_register(const char* name, xbt_main_func_t code)
+{
+  SIMIX_function_register(std::string(name), code);
 }
 
 /**

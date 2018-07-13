@@ -44,6 +44,11 @@ void SIMIX_create_environment(std::string file)
   XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
+void SIMIX_create_environment(const char* file)
+{
+  SIMIX_create_environment(std::string(file));
+}
+
 void SIMIX_post_create_environment()
 {
   surf_presolve();
