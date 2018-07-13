@@ -19,7 +19,7 @@ static void task_cleanup_handler(void* task)
     MSG_task_destroy(static_cast<msg_task_t>(task));
 }
 
-static int process_daemon(int argc, char* argv[])
+static int process_daemon(int /*argc*/, char** /*argv*/)
 {
   msg_process_t self = MSG_process_self();
   XBT_INFO("  Start daemon on %s (%f)", MSG_host_get_name(MSG_host_self()), MSG_host_get_speed(MSG_host_self()));
@@ -36,7 +36,7 @@ static int process_daemon(int argc, char* argv[])
   return 0;
 }
 
-static int process_sleep(int argc, char* argv[])
+static int process_sleep(int /*argc*/, char** /*argv*/)
 {
   for (;;) {
     XBT_INFO("  I'm alive but I should sleep");
@@ -46,7 +46,7 @@ static int process_sleep(int argc, char* argv[])
   return 0;
 }
 
-static int commTX(int argc, char* argv[])
+static int commTX(int /*argc*/, char** /*argv*/)
 {
   const char* mailbox = "comm";
   XBT_INFO("  Start TX");
@@ -67,7 +67,7 @@ static int commTX(int argc, char* argv[])
   return 0;
 }
 
-static int commRX(int argc, char* argv[])
+static int commRX(int /*argc*/, char** /*argv*/)
 {
   msg_task_t task     = NULL;
   const char* mailbox = "comm";
@@ -87,7 +87,7 @@ static int commRX(int argc, char* argv[])
   return 0;
 }
 
-static int test_launcher(int argc, char* argv[])
+static int test_launcher(int /*argc*/, char** /*argv*/)
 {
   int test = 0;
   char** argvF;
