@@ -57,6 +57,8 @@ public:
   static simgrid::xbt::signal<void(VirtualMachine&)> on_shutdown;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_suspend;
   static simgrid::xbt::signal<void(VirtualMachine&)> on_resume;
+  static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_start;
+  static simgrid::xbt::signal<void(VirtualMachine&)> on_migration_end;
 
   // Deprecated methods
   XBT_ATTRIB_DEPRECATED_v323("Please use VirtualMachine::get_state()") VirtualMachine::state getState()

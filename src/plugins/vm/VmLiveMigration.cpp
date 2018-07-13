@@ -344,6 +344,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
     THROWF(vm_error, 0, "Cannot migrate VM '%s' that is already migrating.", vm->get_cname());
 
   vm->get_impl()->is_migrating_ = true;
+  simgrid::s4u::VirtualMachine::on_migration_start(*vm);
 
   std::string rx_name =
       std::string("__pr_mig_rx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
@@ -366,4 +367,5 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   rx->join();
 
   vm->get_impl()->is_migrating_ = false;
+  simgrid::s4u::VirtualMachine::on_migration_end(*vm);
 }
