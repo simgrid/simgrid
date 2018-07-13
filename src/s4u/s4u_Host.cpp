@@ -28,9 +28,9 @@ simgrid::xbt::signal<void(Host&)> Host::on_destruction;
 simgrid::xbt::signal<void(Host&)> Host::on_state_change;
 simgrid::xbt::signal<void(Host&)> Host::on_speed_change;
 
-Host::Host(const char* name) : name_(name)
+Host::Host(std::string name) : name_(name)
 {
-  xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name);
+  xbt_assert(Host::by_name_or_null(name) == nullptr, "Refusing to create a second host named '%s'.", name.c_str());
   Engine::get_instance()->host_register(std::string(name_), this);
   new simgrid::surf::HostImpl(this);
 }
@@ -67,14 +67,6 @@ void Host::destroy()
 Host* Host::by_name(std::string name)
 {
   return Engine::get_instance()->host_by_name(name);
-}
-Host* Host::by_name(const char* name)
-{
-  return Engine::get_instance()->host_by_name(std::string(name));
-}
-Host* Host::by_name_or_null(const char* name)
-{
-  return Engine::get_instance()->host_by_name_or_null(std::string(name));
 }
 Host* Host::by_name_or_null(std::string name)
 {
@@ -194,7 +186,7 @@ std::unordered_map<std::string, std::string>* Host::get_properties()
 }
 
 /** Retrieve the property value (or nullptr if not set) */
-const char* Host::get_property(const char* key) const
+const char* Host::get_property(std::string key) const
 {
   return this->pimpl_->get_property(key);
 }

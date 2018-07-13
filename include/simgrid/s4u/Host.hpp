@@ -39,7 +39,7 @@ class XBT_PUBLIC Host : public simgrid::xbt::Extendable<Host> {
   friend simgrid::vm::VirtualMachineImpl; // creates the the pimpl_cpu
 
 public:
-  explicit Host(const char* name);
+  explicit Host(std::string name);
 
   /** Host destruction logic */
 protected:
@@ -65,11 +65,7 @@ public:
   Host& operator=(Host const&) = delete;
 
   /** Retrieves an host from its name, or return nullptr */
-  static Host* by_name_or_null(const char* name);
-  /** Retrieves an host from its name, or return nullptr */
   static Host* by_name_or_null(std::string name);
-  /** Retrieves an host from its name, or die */
-  static s4u::Host* by_name(const char* name);
   /** Retrieves an host from its name, or die */
   static s4u::Host* by_name(std::string name);
   /** Retrieves the host on which the current actor is running */
@@ -96,7 +92,7 @@ public:
   /** Returns if that host is currently down and offline */
   bool is_off() const { return not is_on(); }
 
-  const char* get_property(const char* key) const;
+  const char* get_property(std::string key) const;
   void set_property(std::string key, std::string value);
   std::unordered_map<std::string, std::string>* get_properties();
   XBT_ATTRIB_DEPRECATED_v323("Please use Host::get_properties()") std::map<std::string, std::string>* getProperties()
