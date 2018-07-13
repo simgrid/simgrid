@@ -79,9 +79,9 @@ static int commRX(int argc, char* argv[])
   } else if (error == MSG_HOST_FAILURE) {
     XBT_INFO("  Receive message: HOST_FAILURE");
   } else if (error == MSG_TRANSFER_FAILURE) {
-    XBT_INFO("  Receive message: TRANSFERT_FAILURE");
+    XBT_INFO("  Receive message: TRANSFER_FAILURE");
   } else {
-    XBT_INFO("  Receive message: %u", error);
+    XBT_INFO("  Receive message: %u", static_cast<unsigned int>(error));
   }
   XBT_INFO("  RX Done");
   return 0;
