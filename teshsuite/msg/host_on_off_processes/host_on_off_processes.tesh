@@ -49,8 +49,10 @@ $ ${bindir}/host_on_off_processes ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Jupiter:commTX:(3) 10.000000] [msg_test/INFO]   Start TX
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   number of processes: 3
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
-> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 4 seems ok  (number of Process : 2, it should be 1 or 2 if RX has not been satisfied) cool, you can now turn off a node that has a process paused by a sleep call
+> [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 4 is ok.  (number of Process : 2, it should be 1 or 2 if RX has not been satisfied). An exception is raised when we turn off a node that has a process sleeping
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
+> [Jupiter:commTX:(3) 20.000000] [msg_test/INFO] The host has died ... as expected.
+> [Jupiter:commTX:(3) 20.000000] [msg_test/INFO]   TX done
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   Receive message: TRANSFERT_FAILURE
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [20.000000] [msg_test/INFO] Simulation time 20

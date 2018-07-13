@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
+#include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
@@ -21,9 +22,16 @@ static void master()
 static void worker()
 {
   XBT_INFO("Worker waiting");
-  // TODO, This should really be MSG_HOST_FAILURE
-  simgrid::s4u::this_actor::sleep_for(5);
-  XBT_ERROR("Worker should be off already.");
+  try {
+    simgrid::s4u::this_actor::sleep_for(5);
+  } catch (xbt_ex& e) {
+    if (e.category == host_error) {
+      XBT_INFO("The host has died ... as expected.");
+    } else {
+      XBT_ERROR("An unexpected exception has been raised.");
+      throw;
+    }
+  }
 }
 
 int main(int argc, char* argv[])

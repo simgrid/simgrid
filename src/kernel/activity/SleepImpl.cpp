@@ -11,7 +11,9 @@
 
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/popping_private.hpp"
+#include "src/simix/smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "xbt/ex.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
@@ -30,12 +32,18 @@ void simgrid::kernel::activity::SleepImpl::post()
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
-
     e_smx_state_t result;
+    if (host && host->is_off()) {
+      /* If the host running the synchro failed, notice it. This way, the asking
+       * actor can be killed if it runs on that host itself */
+      result = SIMIX_SRC_HOST_FAILURE;
+      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+    }
+
     switch (surf_sleep->get_state()) {
       case simgrid::kernel::resource::Action::State::FAILED:
         simcall->issuer->context_->iwannadie = 1;
-        result                              = SIMIX_SRC_HOST_FAILURE;
+        result                               = SIMIX_FAILED;
         break;
 
       case simgrid::kernel::resource::Action::State::FINISHED:

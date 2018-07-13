@@ -476,8 +476,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
       if (i != process->waiting_synchro->simcalls_.end())
         process->waiting_synchro->simcalls_.remove(&process->simcall);
     } else if (sleep != nullptr) {
-      SIMIX_process_sleep_destroy(process->waiting_synchro);
-
+      if (sleep->surf_sleep)
+        sleep->surf_sleep->cancel();
+      sleep->post();
     } else if (raw != nullptr) {
       SIMIX_synchro_stop_waiting(process, &process->simcall);
 

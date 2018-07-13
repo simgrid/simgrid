@@ -2,7 +2,7 @@
 foreach(x app-pingpong app-token-ring
           async-wait async-waitall async-waitany
           cloud-capping cloud-migration cloud-sharing cloud-two-tasks cloud-simple
-          get_sender host_on_off host_on_off_recv host_on_off_processes	  
+          get_sender host_on_off host_on_off_recv
           process-daemon process-kill process-join process-lifetime process-migration process-suspend process-yield
           energy-consumption energy-ptask energy-pstate platform-properties
           io-file io-raw-storage io-file-remote
@@ -18,7 +18,7 @@ foreach(x app-pingpong app-token-ring
 endforeach()
 
 # CPP examples
-foreach(x task_destroy_cancel task_listen_from task_progress)
+foreach(x task_destroy_cancel task_listen_from task_progress host_on_off_processes)
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
