@@ -209,6 +209,7 @@ examples/smpi/NAS/ep
 examples/smpi/NAS/is
 examples/smpi/replay_multiple/deployment.xml
 examples/smpi/replay_multiple/replay_multiple
+examples/smpi/replay_multiple_manual_deploy/replay_multiple_manual
 examples/smpi/replay/one_trace
 examples/smpi/replay/smpi_replay
 examples/smpi/smpi_msg_masterslave/masterslave_mailbox_smpi
@@ -259,6 +260,8 @@ teshsuite/msg/task-priority/task-priority
 teshsuite/msg/task_progress/task_progress
 teshsuite/msg/trace_integration/trace_integration
 teshsuite/s4u/actor/actor
+teshsuite/s4u/actor-autorestart/actor-autorestart
+teshsuite/s4u/actor-migration/actor-migration
 teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration
 teshsuite/s4u/comm-pt2pt/comm-pt2pt
 teshsuite/s4u/concurrent_rw/concurrent_rw
@@ -912,6 +915,7 @@ teshsuite/surf/lmm_usage/lmm_usage
 teshsuite/surf/maxmin_bench/maxmin_bench
 teshsuite/surf/surf_usage/surf_usage
 teshsuite/surf/surf_usage2/surf_usage2
+teshsuite/xbt/cmdline/cmdline
 teshsuite/xbt/log_large/log_large
 teshsuite/xbt/log_usage/log_usage
 teshsuite/xbt/mallocator/mallocator
