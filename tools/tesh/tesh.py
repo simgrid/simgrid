@@ -329,6 +329,10 @@ class Cmd(object):
         except FileNotFoundError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
             tesh_exit(3)
+        except NotADirectoryError:
+            print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': The path to binary does not exist.")
+            print("["+FileReader().filename+":"+str(self.linenumber)+"] Current dir: "+os.getcwd())
+            tesh_exit(3)
         except OSError as osE:
             if osE.errno == 8:
                 osE.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/usr/bin/env sh)"
