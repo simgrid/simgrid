@@ -206,21 +206,9 @@ public:
  *  these values globally. Using them within the \<host\> will overwrite this
  *  global configuration
  */
-class HostDvfs {
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, HostDvfs> EXTENSION_ID;
-
-  explicit HostDvfs(simgrid::s4u::Host*){};
-  ~HostDvfs() = default;
-};
-
-simgrid::xbt::Extension<simgrid::s4u::Host, HostDvfs> HostDvfs::EXTENSION_ID;
-
 } // namespace dvfs
 } // namespace plugin
 } // namespace simgrid
-
-using simgrid::plugin::dvfs::HostDvfs;
 
 /* **************************** events  callback *************************** */
 static void on_host_added(simgrid::s4u::Host& host)
@@ -296,11 +284,6 @@ static void on_host_added(simgrid::s4u::Host& host)
  */
 void sg_host_dvfs_plugin_init()
 {
-  if (HostDvfs::EXTENSION_ID.valid())
-    return;
-
-  HostDvfs::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostDvfs>();
-
   sg_host_load_plugin_init();
 
   simgrid::s4u::Host::on_creation.connect(&on_host_added);
