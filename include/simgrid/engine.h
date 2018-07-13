@@ -10,6 +10,7 @@
 
 /* C interface */
 SG_BEGIN_DECL()
+XBT_PUBLIC void simgrid_init(int* argc, char** argv);
 XBT_PUBLIC void sg_engine_load_platform(const char* filename);
 XBT_PUBLIC void sg_engine_load_deployment(const char* filename);
 XBT_PUBLIC void sg_engine_run();

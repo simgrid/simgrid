@@ -366,6 +366,10 @@ void Engine::set_config(std::string str)
 } // namespace simgrid
 
 /* **************************** Public C interface *************************** */
+void simgrid_init(int* argc, char** argv)
+{
+  simgrid::s4u::Engine e(argc, argv);
+}
 void sg_engine_load_platform(const char* file)
 {
   simgrid::s4u::Engine::get_instance()->load_platform(file);
