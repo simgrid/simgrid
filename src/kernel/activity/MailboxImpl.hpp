@@ -21,7 +21,7 @@ namespace activity {
 /** @brief Implementation of the simgrid::s4u::Mailbox */
 
 class MailboxImpl {
-  explicit MailboxImpl(const char* name)
+  explicit MailboxImpl(std::string name)
       : piface_(this), name_(name), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE)
   {
   }
@@ -29,8 +29,8 @@ class MailboxImpl {
 public:
   const simgrid::xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
-  static MailboxImpl* byNameOrNull(const char* name);
-  static MailboxImpl* byNameOrCreate(const char* name);
+  static MailboxImpl* byNameOrNull(std::string name);
+  static MailboxImpl* byNameOrCreate(std::string name);
   void setReceiver(s4u::ActorPtr actor);
   void push(activity::CommImplPtr comm);
   void remove(smx_activity_t activity);

@@ -25,7 +25,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 /** @brief Returns the mailbox of that name, or nullptr */
-MailboxImpl* MailboxImpl::byNameOrNull(const char* name)
+MailboxImpl* MailboxImpl::byNameOrNull(std::string name)
 {
   auto mbox = mailboxes->find(name);
   if (mbox != mailboxes->end())
@@ -34,14 +34,13 @@ MailboxImpl* MailboxImpl::byNameOrNull(const char* name)
     return nullptr;
 }
 /** @brief Returns the mailbox of that name, newly created on need */
-MailboxImpl* MailboxImpl::byNameOrCreate(const char* name)
+MailboxImpl* MailboxImpl::byNameOrCreate(std::string name)
 {
-  xbt_assert(name, "Mailboxes must have a name");
   /* two processes may have pushed the same mbox_create simcall at the same time */
   auto m = mailboxes->find(name);
   if (m == mailboxes->end()) {
     smx_mailbox_t mbox = new MailboxImpl(name);
-    XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
+    XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name.c_str());
     (*mailboxes)[mbox->name_] = mbox;
     return mbox;
   } else

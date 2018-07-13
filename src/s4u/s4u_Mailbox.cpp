@@ -24,18 +24,13 @@ const char* Mailbox::get_cname() const
   return pimpl_->get_cname();
 }
 
-MailboxPtr Mailbox::by_name(const char* name)
+MailboxPtr Mailbox::by_name(std::string name)
 {
   kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::byNameOrNull(name);
   if (mbox == nullptr) {
     mbox = simix::simcall([name] { return kernel::activity::MailboxImpl::byNameOrCreate(name); });
   }
   return MailboxPtr(&mbox->piface_, true);
-}
-
-MailboxPtr Mailbox::by_name(std::string name)
-{
-  return by_name(name.c_str());
 }
 
 bool Mailbox::empty()

@@ -122,10 +122,7 @@ public:
   /** @brief Retrieves the name of that mailbox as a C string */
   const char* get_cname() const;
 
-  /** Retrieve the mailbox associated to the given C string */
-  static MailboxPtr by_name(const char* name);
-
-  /** Retrieve the mailbox associated to the given C++ string */
+  /** Retrieve the mailbox associated to the given name */
   static MailboxPtr by_name(std::string name);
 
   /** Returns whether the mailbox contains queued communications */
