@@ -32,27 +32,15 @@ std::string instr_pid(msg_process_t proc)
  */
 void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_actor)
 {
-  simgrid::msg::ActorExt* msg_actor;
-
-  // get the MSG process from the SIMIX process
-  if (smx_actor == SIMIX_process_self()) {
-    /* avoid a SIMIX request if this function is called by the process itself */
-    msg_actor = (simgrid::msg::ActorExt*)SIMIX_process_self_get_data();
-    SIMIX_process_self_set_data(nullptr);
-  } else {
-    msg_actor = (simgrid::msg::ActorExt*)smx_actor->get_user_data();
-    simcall_process_set_data(smx_actor, nullptr);
-  }
-
   if (TRACE_actor_is_enabled())
     simgrid::instr::Container::by_name(instr_pid(smx_actor->ciface()))->remove_from_parent();
 
   // free the data if a function was provided
-  if (msg_actor && msg_actor->data && msg_global->process_data_cleanup) {
-    msg_global->process_data_cleanup(msg_actor->data);
+  void* userdata = smx_actor->get_user_data();
+  if (userdata && msg_global->process_data_cleanup) {
+    msg_global->process_data_cleanup(userdata);
   }
 
-  delete msg_actor;
   SIMIX_process_cleanup(smx_actor);
 }
 
@@ -150,14 +138,12 @@ msg_process_t MSG_process_create_from_stdfunc(std::string name, simgrid::simix::
                                               msg_host_t host, std::unordered_map<std::string, std::string>* properties)
 {
   xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
-  simgrid::msg::ActorExt* msgExt = new simgrid::msg::ActorExt(data);
 
-  smx_actor_t process = simcall_process_create(name, std::move(code), msgExt, host, properties);
+  smx_actor_t process = simcall_process_create(name, std::move(code), data, host, properties);
 
-  if (not process) { /* Undo everything */
-    delete msgExt;
+  if (process == nullptr)
     return nullptr;
-  }
+
   MSG_process_yield();
   return process->ciface();
 }
@@ -181,8 +167,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
   xbt_dict_free(&properties);
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t process =
-      SIMIX_process_attach(name, new simgrid::msg::ActorExt(data), host->get_cname(), &props, nullptr);
+  smx_actor_t process = SIMIX_process_attach(name, data, host->get_cname(), &props, nullptr);
   if (not process)
     xbt_die("Could not attach");
   MSG_process_yield();
@@ -210,11 +195,7 @@ void* MSG_process_get_data(msg_process_t process)
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simgrid::msg::ActorExt* msgExt = (simgrid::msg::ActorExt*)process->get_impl()->get_user_data();
-  if (msgExt)
-    return msgExt->data;
-  else
-    return nullptr;
+  return process->get_impl()->get_user_data();
 }
 
 /** \ingroup m_process_management
@@ -226,7 +207,7 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
-  static_cast<simgrid::msg::ActorExt*>(process->get_impl()->get_user_data())->data = data;
+  process->get_impl()->set_user_data(data);
 
   return MSG_OK;
 }

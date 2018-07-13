@@ -51,11 +51,6 @@ private:
 
 namespace simgrid {
 namespace msg {
-class ActorExt {
-public:
-  explicit ActorExt(void* d) : data(d) {}
-  void* data         = nullptr; /* user data */
-};
 
 class Comm {
 public:
