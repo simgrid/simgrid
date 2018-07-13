@@ -1,0 +1,9 @@
+One app alone
+alone0 compute_only.txt 2 0 0,1
+
+Another app alone
+alone1 compute_only.txt 2 1000 2,3
+
+And again ...
+alone2 compute_only.txt 2 2000 0,2
+alone3 compute_only.txt 2 3000 1,3

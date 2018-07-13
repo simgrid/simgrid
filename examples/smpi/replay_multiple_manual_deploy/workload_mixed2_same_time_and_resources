@@ -1,0 +1,4 @@
+Two jobs not at the same time but on different resources
+job0 mixed.txt 2 0 0,1
+job1 mixed.txt 2 0 0,1
+

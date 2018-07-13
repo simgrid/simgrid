@@ -1,0 +1,7 @@
+# comment
+p Workload without any job
+! timeout 120
+! output sort 19
+$ ./replay_multiple_manual ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/workload_nojob --log=smpi.:info --cfg=smpi/host-speed:100 "--log=root.fmt:[%11.6r]%e(%P@%h)%e%m%n" 7 13
+> [   0.000000] (maestro@) Configuration change: Set 'smpi/host-speed' to '100'
+> [   7.000000] (maestro@) Simulation finished! Final time: 7
