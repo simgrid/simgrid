@@ -744,9 +744,8 @@ void smpi_replay_init(int* argc, char*** argv)
     XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
     smpi_execute_flops(value);
   } else {
-    //UGLY: force a context switch to be sure that all MSG_processes begin initialization
-    XBT_DEBUG("Force context switch by smpi_execute_flops  - Sleeping for 0.0 flops ");
-    smpi_execute_flops(0.0);
+    // Wait for the other actors to initialize also
+    simgrid::s4u::this_actor::yield();
   }
 }
 
