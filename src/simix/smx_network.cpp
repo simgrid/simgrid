@@ -98,16 +98,16 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(
    *
    * If it is not found then push our communication into the rendez-vous point */
   simgrid::kernel::activity::CommImplPtr other_comm =
-      _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_comm, /*remove_matching*/ true);
+      _find_matching_comm(&mbox->comm_queue_, SIMIX_COMM_RECEIVE, match_fun, data, this_comm, /*remove_matching*/ true);
 
   if (not other_comm) {
     other_comm = std::move(this_comm);
 
-    if (mbox->permanent_receiver != nullptr) {
+    if (mbox->permanent_receiver_ != nullptr) {
       //this mailbox is for small messages, which have to be sent right now
       other_comm->state_  = SIMIX_READY;
-      other_comm->dst_proc=mbox->permanent_receiver.get();
-      mbox->done_comm_queue.push_back(other_comm);
+      other_comm->dst_proc = mbox->permanent_receiver_.get();
+      mbox->done_comm_queue_.push_back(other_comm);
       XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
 
     }else{
@@ -181,11 +181,11 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
 
   simgrid::kernel::activity::CommImplPtr other_comm;
   //communication already done, get it inside the list of completed comms
-  if (mbox->permanent_receiver != nullptr && not mbox->done_comm_queue.empty()) {
+  if (mbox->permanent_receiver_ != nullptr && not mbox->done_comm_queue_.empty()) {
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the list of already received comms
-    other_comm = _find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
+    other_comm = _find_matching_comm(&mbox->done_comm_queue_, SIMIX_COMM_SEND, match_fun, data, this_synchro,
                                      /*remove_matching*/ true);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (not other_comm) {
@@ -207,11 +207,11 @@ SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void* dst_buff, size_
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_comm = _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,
+    other_comm = _find_matching_comm(&mbox->comm_queue_, SIMIX_COMM_SEND, match_fun, data, this_synchro,
                                      /*remove_matching*/ true);
 
     if (other_comm == nullptr) {
-      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->comm_queue.size());
+      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->comm_queue_.size());
       other_comm = std::move(this_synchro);
       mbox->push(other_comm);
     } else {
@@ -253,7 +253,7 @@ smx_activity_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t 
 smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int type, simix_match_func_t match_fun,
                                  void* data)
 {
-  XBT_DEBUG("iprobe from %p %p", mbox, &mbox->comm_queue);
+  XBT_DEBUG("iprobe from %p %p", mbox, &mbox->comm_queue_);
   simgrid::kernel::activity::CommImplPtr this_comm;
   int smx_type;
   if(type == 1){
@@ -264,15 +264,15 @@ smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int t
     smx_type = SIMIX_COMM_SEND;
   }
   smx_activity_t other_synchro=nullptr;
-  if (mbox->permanent_receiver != nullptr && not mbox->done_comm_queue.empty()) {
+  if (mbox->permanent_receiver_ != nullptr && not mbox->done_comm_queue_.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
-    other_synchro = _find_matching_comm(&mbox->done_comm_queue,
-      (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
+    other_synchro = _find_matching_comm(&mbox->done_comm_queue_, (e_smx_comm_type_t)smx_type, match_fun, data,
+                                        this_comm, /*remove_matching*/ false);
   }
   if (not other_synchro) {
     XBT_DEBUG("check if we have more luck in the normal mailbox");
-    other_synchro = _find_matching_comm(&mbox->comm_queue,
-      (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
+    other_synchro = _find_matching_comm(&mbox->comm_queue_, (e_smx_comm_type_t)smx_type, match_fun, data, this_comm,
+                                        /*remove_matching*/ false);
   }
 
   return other_synchro;

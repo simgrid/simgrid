@@ -21,25 +21,31 @@ namespace activity {
 /** @brief Implementation of the simgrid::s4u::Mailbox */
 
 class MailboxImpl {
+  friend s4u::Mailbox;
+
   explicit MailboxImpl(std::string name)
-      : piface_(this), name_(name), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE)
+      : piface_(this), name_(name), comm_queue_(MAX_MAILBOX_SIZE), done_comm_queue_(MAX_MAILBOX_SIZE)
   {
   }
 
 public:
   const simgrid::xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
-  static MailboxImpl* byNameOrNull(std::string name);
-  static MailboxImpl* byNameOrCreate(std::string name);
-  void setReceiver(s4u::ActorPtr actor);
+  static MailboxImpl* by_name_or_null(std::string name);
+  static MailboxImpl* by_name_or_create(std::string name);
+  void set_receiver(s4u::ActorPtr actor);
   void push(activity::CommImplPtr comm);
   void remove(smx_activity_t activity);
-  simgrid::s4u::Mailbox piface_; // Our interface
+
+private:
+  simgrid::s4u::Mailbox piface_;
   simgrid::xbt::string name_;
 
-  simgrid::kernel::actor::ActorImplPtr permanent_receiver; // actor to which the mailbox is attached
-  boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
-  boost::circular_buffer_space_optimized<smx_activity_t> done_comm_queue; // messages already received in the permanent receive mode
+public:
+  simgrid::kernel::actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
+  boost::circular_buffer_space_optimized<smx_activity_t> comm_queue_;
+  boost::circular_buffer_space_optimized<smx_activity_t>
+      done_comm_queue_; // messages already received in the permanent receive mode
 };
 }
 }

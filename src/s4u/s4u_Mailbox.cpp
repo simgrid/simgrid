@@ -26,39 +26,39 @@ const char* Mailbox::get_cname() const
 
 MailboxPtr Mailbox::by_name(std::string name)
 {
-  kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::byNameOrNull(name);
+  kernel::activity::MailboxImpl* mbox = kernel::activity::MailboxImpl::by_name_or_null(name);
   if (mbox == nullptr) {
-    mbox = simix::simcall([name] { return kernel::activity::MailboxImpl::byNameOrCreate(name); });
+    mbox = simix::simcall([name] { return kernel::activity::MailboxImpl::by_name_or_create(name); });
   }
   return MailboxPtr(&mbox->piface_, true);
 }
 
 bool Mailbox::empty()
 {
-  return pimpl_->comm_queue.empty();
+  return pimpl_->comm_queue_.empty();
 }
 
 bool Mailbox::listen()
 {
-  return not this->empty() || (pimpl_->permanent_receiver && not pimpl_->done_comm_queue.empty());
+  return not this->empty() || (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty());
 }
 
 smx_activity_t Mailbox::front()
 {
-  return pimpl_->comm_queue.empty() ? nullptr : pimpl_->comm_queue.front();
+  return pimpl_->comm_queue_.empty() ? nullptr : pimpl_->comm_queue_.front();
 }
 
 void Mailbox::set_receiver(ActorPtr actor)
 {
-  simix::simcall([this, actor]() { this->pimpl_->setReceiver(actor); });
+  simix::simcall([this, actor]() { this->pimpl_->set_receiver(actor); });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
 ActorPtr Mailbox::get_receiver()
 {
-  if (pimpl_->permanent_receiver == nullptr)
+  if (pimpl_->permanent_receiver_ == nullptr)
     return ActorPtr();
-  return pimpl_->permanent_receiver->iface();
+  return pimpl_->permanent_receiver_->iface();
 }
 
 CommPtr Mailbox::put_init()
