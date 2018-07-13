@@ -26,12 +26,12 @@
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
 #include <simgrid/msg.h>
 #include <simgrid/s4u.hpp>
 #include <smpi/smpi.h>
+#include <xbt/file.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_multiple_manual, "Messages specific for this example");
 
@@ -174,8 +174,8 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
   xbt_assert(f.is_open(), "Cannot open file '%s'.", workload_file.c_str());
   std::vector<Job*> jobs;
 
-  boost::filesystem::path path(workload_file);
-  std::string dir = path.parent_path().native();
+  simgrid::xbt::Path path(workload_file);
+  std::string dir = path.get_dir_name();
 
   boost::regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
   std::string line;
