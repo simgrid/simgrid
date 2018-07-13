@@ -1,11 +1,8 @@
 if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  # Boost regex dependency
-  find_package(Boost COMPONENTS regex REQUIRED)
-
   add_executable       (replay_multiple_manual replay_multiple_manual.cpp)
-  target_link_libraries(replay_multiple_manual simgrid ${Boost_LIBRARIES})
+  target_link_libraries(replay_multiple_manual simgrid)
 
   # Define a list of a tesh files
   list(APPEND tesh_filename_list replay_multiple_manual_nojob)

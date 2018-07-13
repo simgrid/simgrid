@@ -22,11 +22,11 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/regex.hpp>
 
 #include <simgrid/msg.h>
 #include <simgrid/s4u.hpp>
@@ -177,21 +177,23 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
   simgrid::xbt::Path path(workload_file);
   std::string dir = path.get_dir_name();
 
-  boost::regex r(R"(^\s*(\S+)\s+(\S+\.txt)\s+(\d+)\s+(\d+)\s+(\d+(?:,\d+)*).*$)");
   std::string line;
   while (std::getline(f, line)) {
-    boost::smatch m;
+    std::string app_name;
+    std::string filename_unprefixed;
+    int app_size;
+    int starting_time;
+    std::string alloc;
 
-    if (boost::regex_match(line, m, r)) {
+    std::istringstream is(line);
+    if (is >> app_name >> filename_unprefixed >> app_size >> starting_time >> alloc) {
       try {
-        Job* job           = new Job;
-        job->smpi_app_name = m[1];
-        job->filename      = dir + "/" + std::string(m[2]);
-        job->app_size      = stoi(m[3]);
-        job->starting_time = stoi(m[4]);
-        std::string alloc  = m[5];
 
-        std::string filename_unprefixed = m[2];
+        Job* job           = new Job;
+        job->smpi_app_name = app_name;
+        job->filename      = dir + "/" + filename_unprefixed;
+        job->app_size      = app_size;
+        job->starting_time = starting_time;
 
         std::vector<std::string> subparts;
         boost::split(subparts, alloc, boost::is_any_of(","), boost::token_compress_on);
