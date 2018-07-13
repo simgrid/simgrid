@@ -110,21 +110,11 @@ static int job_executor_process(Job* job)
   XBT_INFO("Executing job %d (smpi_app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
 
   for (int i = 0; i < job->app_size; ++i) {
-    char *str_instance_name, *str_rank, *str_pname, *str_tfname;
-    int err = asprintf(&str_instance_name, "%s", job->smpi_app_name.c_str());
-    xbt_assert(err != -1, "asprintf error");
-    err = asprintf(&str_rank, "%d", i);
-    xbt_assert(err != -1, "asprintf error");
-    err = asprintf(&str_pname, "%d_%d", job->unique_job_number, i);
-    xbt_assert(err != -1, "asprintf error");
-    err = asprintf(&str_tfname, "%s", job->traces_filenames[i].c_str());
-    xbt_assert(err != -1, "asprintf error");
-
     char** argv = xbt_new(char*, 5);
-    argv[0]     = xbt_strdup("1");   // log only?
-    argv[1]     = str_instance_name; // application instance
-    argv[2]     = str_rank;          // rank
-    argv[3]     = str_tfname;        // smpi trace file for this rank
+    argv[0]     = xbt_strdup("1");                              // log only?
+    argv[1]     = xbt_strdup(job->smpi_app_name.c_str());       // application instance
+    argv[2]     = bprintf("%d", i);                             // rank
+    argv[3]     = xbt_strdup(job->traces_filenames[i].c_str()); // smpi trace file for this rank
     argv[4]     = xbt_strdup("0");   // ?
 
     s_smpi_replay_process_args* args = new s_smpi_replay_process_args;
@@ -135,8 +125,9 @@ static int job_executor_process(Job* job)
     if (i == 0)
       args->semaphore = job_semaphore;
 
+    char* str_pname = bprintf("%d_%d", job->unique_job_number, i);
     MSG_process_create_with_arguments(str_pname, smpi_replay_process, (void*)args, hosts[job->allocation[i]], 5, argv);
-    free(str_pname);
+    xbt_free(str_pname);
   }
 
   MSG_sem_acquire(job_semaphore);
