@@ -32,7 +32,7 @@ VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int c
 VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount, size_t ramsize)
     : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
-  XBT_DEBUG("Create VM %s", name);
+  XBT_DEBUG("Create VM %s", name.c_str());
 
   /* Currently, a VM uses the network resource of its physical host */
   pimpl_netpoint = physical_host->pimpl_netpoint;
