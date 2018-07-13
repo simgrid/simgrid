@@ -22,7 +22,6 @@ namespace activity {
 class XBT_PUBLIC ActivityImpl {
 public:
   ActivityImpl();
-  explicit ActivityImpl(std::string name) : name_(name) {}
   virtual ~ActivityImpl();
   e_smx_state_t state_ = SIMIX_WAITING; /* State of the activity */
   std::string name_;                    /* Activity name if any */

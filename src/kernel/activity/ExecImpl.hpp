@@ -17,7 +17,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl {
   ~ExecImpl() override;
 
 public:
-  explicit ExecImpl(std::string name, resource::Action* surf_action, resource::Action* timeout_detector,
+  explicit ExecImpl(const char* name, resource::Action* surf_action, resource::Action* timeout_detector,
                     s4u::Host* host);
   void suspend() override;
   void resume() override;
@@ -36,9 +36,10 @@ private:
   resource::Action* timeout_detector_ = nullptr;
 
 public:
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_creation;
-  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> on_completion;
-  static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> on_migration;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCreation;
+  static simgrid::xbt::signal<void(kernel::activity::ExecImplPtr)> onCompletion;
+  static simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> onMigration;
+
 };
 }
 }
