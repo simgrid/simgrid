@@ -21,7 +21,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -199,7 +198,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
         boost::split(subparts, alloc, boost::is_any_of(","), boost::token_compress_on);
 
         if ((int)subparts.size() != job->app_size)
-          throw std::runtime_error("size/alloc inconsistency");
+          throw std::invalid_argument("size/alloc inconsistency");
 
         job->allocation.resize(subparts.size());
         for (unsigned int i = 0; i < subparts.size(); ++i)
@@ -208,7 +207,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
         // Let's read the filename
         std::ifstream traces_file(job->filename);
         if (!traces_file.is_open())
-          throw std::runtime_error("Cannot open file " + job->filename);
+          throw std::invalid_argument("Cannot open file " + job->filename);
 
         std::string traces_line;
         while (std::getline(traces_file, traces_line)) {
@@ -217,7 +216,7 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
         }
 
         if (static_cast<int>(job->traces_filenames.size()) < job->app_size)
-          throw std::runtime_error("size/tracefiles inconsistency");
+          throw std::invalid_argument("size/tracefiles inconsistency");
         job->traces_filenames.resize(job->app_size);
 
         XBT_INFO("Job read: app='%s', file='%s', size=%d, start=%d, "
@@ -225,8 +224,8 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
                  job->smpi_app_name.c_str(), filename_unprefixed.c_str(), job->app_size, job->starting_time,
                  alloc.c_str());
         jobs.push_back(job);
-      } catch (const std::exception& e) {
-        printf("Bad line '%s' of file '%s': %s.\n", line.c_str(), workload_file.c_str(), e.what());
+      } catch (const std::invalid_argument& e) {
+        xbt_die("Bad line '%s' of file '%s': %s.\n", line.c_str(), workload_file.c_str(), e.what());
       }
     }
   }
