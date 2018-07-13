@@ -119,6 +119,9 @@ namespace surf {
   class StorageType;
   class StorageModel;
 }
+namespace mc {
+class CommunicationDeterminismChecker;
+}
 namespace trace_mgr {
   class trace;
   class future_evt_set;
