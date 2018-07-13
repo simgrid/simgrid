@@ -7,7 +7,6 @@
 #include "mc/mc.h"
 #include "smpi_comm.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/msg/msg_private.hpp"
 #include "src/simix/smx_private.hpp"
 
 #if HAVE_PAPI
@@ -249,7 +248,7 @@ void ActorExt::init(int* argc, char*** argv)
   }
   if (argc != nullptr && argv != nullptr) {
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
-    proc->get_impl()->context_->set_cleanup(&MSG_process_cleanup_from_SIMIX);
+    proc->get_impl()->context_->set_cleanup(&SIMIX_process_cleanup);
 
     char* instance_id = (*argv)[1];
     try {
