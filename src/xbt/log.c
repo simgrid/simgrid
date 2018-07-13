@@ -109,17 +109,21 @@ void xbt_log_init(int *argc, char **argv)
 {
   unsigned help_requested = 0;  /* 1: logs; 2: categories */
   int j                   = 1;
+  int parse_args          = 1; // Stop parsing the parameters once we found '--'
 
   /* Set logs and init log submodule */
   for (int i = 1; i < *argc; i++) {
-    if (!strncmp(argv[i], "--log=", strlen("--log="))) {
+    if (!strcmp("--", argv[i])) {
+      parse_args = 0;
+      argv[j++]  = argv[i]; // Keep the '--' for sg_config
+    } else if (parse_args && !strncmp(argv[i], "--log=", strlen("--log="))) {
       char* opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
-    } else if (!strcmp(argv[i], "--help-logs")) {
+    } else if (parse_args && !strcmp(argv[i], "--help-logs")) {
       help_requested |= 1U;
-    } else if (!strcmp(argv[i], "--help-log-categories")) {
+    } else if (parse_args && !strcmp(argv[i], "--help-log-categories")) {
       help_requested |= 2U;
     } else {
       argv[j++] = argv[i];

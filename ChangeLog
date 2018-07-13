@@ -11,6 +11,7 @@ Fixed bugs:
  - #282: TIT convertor erase traces when using absolute path in the trace list file
  - #285: segfault when a s4u actor kills itself with msg process tracing activated
  - #286: Pajé traces are not exposing the number of cores
+ - #287: Command-line parsing should stop when encountering '--'
 
 ----------------------------------------------------------------------------
 
