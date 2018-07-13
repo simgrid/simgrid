@@ -76,7 +76,7 @@ SIMIX_execution_start(const char* name, double flops_amount, double priority, do
       new simgrid::kernel::activity::ExecImpl(name, surf_action, /*timeout_detector*/ nullptr, host));
 
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name_.c_str());
-  simgrid::kernel::activity::ExecImpl::onCreation(exec);
+  simgrid::kernel::activity::ExecImpl::on_creation(exec);
 
   return exec;
 }
