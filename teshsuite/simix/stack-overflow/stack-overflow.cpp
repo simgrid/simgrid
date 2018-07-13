@@ -7,6 +7,7 @@
 
 #include "simgrid/simix.h"
 #include "xbt/log.h"
+#include <simgrid/engine.h>
 
 #include <string>
 
@@ -45,8 +46,8 @@ int main(int argc, char* argv[])
 
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
 
-  SIMIX_function_register("master", master);
-  SIMIX_create_environment(argv[1]);
+  simgrid_register_function("master", master);
+  simgrid_load_platform(argv[1]);
   simcall_process_create("master", master, NULL, sg_host_by_name("Tremblay"), 0, NULL, NULL);
   SIMIX_run();
 

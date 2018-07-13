@@ -50,7 +50,7 @@ extern int process_count; // How many processes have been allocated over all ins
 void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes)
 {
   if (code != nullptr) { // When started with smpirun, we will not execute a function
-    SIMIX_function_register(name, code);
+    simgrid::s4u::Engine::get_instance()->register_function(name, code);
   }
 
   static int already_called = 0;

@@ -633,12 +633,12 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
   // TODO This will not be executed in the case where smpi_main is not called,
   // e.g., not for smpi_msg_masterslave. This should be moved to another location
-  // that is always called -- maybe close to Actor::onCreation?
+  // that is always called -- maybe close to Actor::on_creation?
   simgrid::s4u::Host::on_creation.connect(
       [](simgrid::s4u::Host& host) { host.extension_set(new simgrid::smpi::Host(&host)); });
 
   // parse the platform file: get the host list
-  SIMIX_create_environment(argv[1]);
+  simgrid::s4u::Engine::get_instance()->load_platform(argv[1]);
   SIMIX_comm_set_copy_data_callback(smpi_comm_copy_buffer_callback);
 
   smpi_init_options();
@@ -648,7 +648,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
     smpi_init_privatization_no_dlopen(executable);
 
   SMPI_init();
-  SIMIX_launch_application(argv[2]);
+  simgrid::s4u::Engine::get_instance()->load_deployment(argv[2]);
   SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr,
                              process_data.size()); // This call has a side effect on process_count...
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);

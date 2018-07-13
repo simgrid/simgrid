@@ -113,7 +113,8 @@ SG_END_DECL()
 
 /******************************* Environment **********************************/
 SG_BEGIN_DECL()
-XBT_PUBLIC void SIMIX_create_environment(const char* file);
+XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_load_platform()") XBT_PUBLIC
+    void SIMIX_create_environment(const char* file);
 SG_END_DECL()
 
 #ifdef __cplusplus
@@ -122,11 +123,13 @@ XBT_PUBLIC void SIMIX_create_environment(std::string file);
 
 /******************************** Deployment **********************************/
 SG_BEGIN_DECL()
-XBT_PUBLIC void SIMIX_function_register(const char* name, xbt_main_func_t code);
+XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_register_function()") XBT_PUBLIC
+    void SIMIX_function_register(const char* name, xbt_main_func_t code);
+XBT_ATTRIB_DEPRECATED_v324("Please use simgrid_load_deployment()") XBT_PUBLIC
+    void SIMIX_launch_application(const char* file);
 XBT_PUBLIC void SIMIX_function_register_default(xbt_main_func_t code);
-XBT_PUBLIC void SIMIX_init_application();
-XBT_PUBLIC void SIMIX_launch_application(const char* file);
 
+XBT_PUBLIC void SIMIX_init_application();
 XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char* process_function,
                                            xbt_dynar_t arguments, double process_start_time, double process_kill_time);
 SG_END_DECL()

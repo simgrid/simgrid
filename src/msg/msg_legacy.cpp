@@ -28,7 +28,7 @@ void MSG_function_register(const char* name, xbt_main_func_t code)
 }
 void MSG_function_register_default(xbt_main_func_t code)
 {
-  sg_engine_register_default(code);
+  simgrid_register_default(code);
 }
 double MSG_get_clock()
 {

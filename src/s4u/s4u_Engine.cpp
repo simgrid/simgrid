@@ -387,7 +387,7 @@ void simgrid_register_function(const char* name, int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);
 }
-void sg_engine_register_default(int (*code)(int, char**))
+void simgrid_register_default(int (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_default(code);
 }

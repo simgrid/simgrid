@@ -15,7 +15,7 @@ XBT_PUBLIC void simgrid_load_platform(const char* filename);
 XBT_PUBLIC void simgrid_load_deployment(const char* filename);
 XBT_PUBLIC void simgrid_run();
 XBT_PUBLIC void simgrid_register_function(const char* name, int (*code)(int, char**));
-XBT_PUBLIC void sg_engine_register_default(int (*code)(int, char**));
+XBT_PUBLIC void simgrid_register_default(int (*code)(int, char**));
 XBT_PUBLIC double simgrid_get_clock();
 SG_END_DECL()
 

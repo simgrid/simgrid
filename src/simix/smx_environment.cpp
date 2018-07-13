@@ -6,6 +6,8 @@
 #include "smx_private.hpp"
 #include "src/include/surf/surf.hpp"
 #include "xbt/xbt_os_time.h"
+
+#include <simgrid/engine.h>
 #include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix, "Logging specific to SIMIX (environment)");
@@ -44,9 +46,9 @@ void SIMIX_create_environment(std::string file)
   XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
-void SIMIX_create_environment(const char* file)
+void SIMIX_create_environment(const char* file) // deprecated
 {
-  SIMIX_create_environment(std::string(file));
+  simgrid_load_platform(file);
 }
 
 void SIMIX_post_create_environment()

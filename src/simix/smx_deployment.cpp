@@ -9,6 +9,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "smx_private.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
+#include <simgrid/engine.h>
 #include <xbt/ex.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix, "Logging specific to SIMIX (deployment)");
@@ -56,9 +57,9 @@ void SIMIX_launch_application(std::string file)
   }
 }
 
-void SIMIX_launch_application(const char* file)
+void SIMIX_launch_application(const char* file) // deprecated
 {
-  SIMIX_launch_application(std::string(file));
+  simgrid_load_deployment(file);
 }
 
 // Wrap a main() function into a ActorCodeFactory:
@@ -82,9 +83,9 @@ void SIMIX_function_register(std::string name, xbt_main_func_t code)
   simix_global->registered_functions[name] = toActorCodeFactory(code);
 }
 
-void SIMIX_function_register(const char* name, xbt_main_func_t code)
+void SIMIX_function_register(const char* name, xbt_main_func_t code) // deprecated
 {
-  SIMIX_function_register(std::string(name), code);
+  simgrid_register_function(name, code);
 }
 
 /**
