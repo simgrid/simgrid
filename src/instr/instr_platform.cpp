@@ -208,13 +208,17 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
   container_t root      = simgrid::instr::Container::get_root();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    simgrid::instr::VariableType* power = container->type_->by_name_or_create("power", "");
-    power->set_calling_container(container);
-    power->set_event(0, host.get_speed());
+    simgrid::instr::VariableType* speed = container->type_->by_name_or_create("speed", "");
+    speed->set_calling_container(container);
+    speed->set_event(0, host.get_speed());
+
+    simgrid::instr::VariableType* cores = container->type_->by_name_or_create("core_count", "");
+    cores->set_calling_container(container);
+    cores->set_event(0, host.get_core_count());
   }
 
   if (TRACE_uncategorized())
-    container->type_->by_name_or_create("power_used", "0.5 0.5 0.5");
+    container->type_->by_name_or_create("speed_used", "0.5 0.5 0.5");
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
     simgrid::instr::ContainerType* mpi = container->type_->by_name_or_create<simgrid::instr::ContainerType>("MPI");
@@ -228,7 +232,7 @@ static void instr_host_on_creation(simgrid::s4u::Host& host)
 static void instr_host_on_speed_change(simgrid::s4u::Host& host)
 {
   simgrid::instr::Container::by_name(host.get_cname())
-      ->get_variable("power")
+      ->get_variable("speed")
       ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
 }
 
@@ -245,7 +249,7 @@ static void instr_action_on_state_change(simgrid::kernel::resource::Action* acti
     simgrid::surf::Cpu* cpu = dynamic_cast<simgrid::surf::Cpu*>(resource);
 
     if (cpu != nullptr)
-      TRACE_surf_resource_set_utilization("HOST", "power_used", cpu->get_cname(), action->get_category(), value,
+      TRACE_surf_resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action->get_category(), value,
                                           action->get_last_update(), SIMIX_get_clock() - action->get_last_update());
 
     simgrid::kernel::resource::LinkImpl* link = dynamic_cast<simgrid::kernel::resource::LinkImpl*>(resource);

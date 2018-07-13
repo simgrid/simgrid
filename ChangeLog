@@ -1,8 +1,13 @@
 SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
 
+Tracing:
+ - Rename 'power' and 'power_used' variables into 'speed' and 'speed_used'
+ - New host variable: 'core_count'
+
 Fixed bugs:
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time
+ - #286: Pajé traces are not exposing the number of cores
 
 ----------------------------------------------------------------------------
 
