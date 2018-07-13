@@ -187,43 +187,42 @@ static std::vector<Job*> all_jobs(const std::string& workload_file)
     std::istringstream is(line);
     if (is >> app_name >> filename_unprefixed >> app_size >> starting_time >> alloc) {
       try {
-
-        Job* job           = new Job;
-        job->smpi_app_name = app_name;
-        job->filename      = dir + "/" + filename_unprefixed;
-        job->app_size      = app_size;
-        job->starting_time = starting_time;
+        Job job;
+        job.smpi_app_name = app_name;
+        job.filename      = dir + "/" + filename_unprefixed;
+        job.app_size      = app_size;
+        job.starting_time = starting_time;
 
         std::vector<std::string> subparts;
         boost::split(subparts, alloc, boost::is_any_of(","), boost::token_compress_on);
 
-        if ((int)subparts.size() != job->app_size)
+        if ((int)subparts.size() != job.app_size)
           throw std::invalid_argument("size/alloc inconsistency");
 
-        job->allocation.resize(subparts.size());
+        job.allocation.resize(subparts.size());
         for (unsigned int i = 0; i < subparts.size(); ++i)
-          job->allocation[i] = stoi(subparts[i]);
+          job.allocation[i] = stoi(subparts[i]);
 
         // Let's read the filename
-        std::ifstream traces_file(job->filename);
+        std::ifstream traces_file(job.filename);
         if (!traces_file.is_open())
-          throw std::invalid_argument("Cannot open file " + job->filename);
+          throw std::invalid_argument("Cannot open file " + job.filename);
 
         std::string traces_line;
         while (std::getline(traces_file, traces_line)) {
           boost::trim_right(traces_line);
-          job->traces_filenames.push_back(dir + "/" + traces_line);
+          job.traces_filenames.push_back(dir + "/" + traces_line);
         }
 
-        if (static_cast<int>(job->traces_filenames.size()) < job->app_size)
+        if (static_cast<int>(job.traces_filenames.size()) < job.app_size)
           throw std::invalid_argument("size/tracefiles inconsistency");
-        job->traces_filenames.resize(job->app_size);
+        job.traces_filenames.resize(job.app_size);
 
         XBT_INFO("Job read: app='%s', file='%s', size=%d, start=%d, "
                  "alloc='%s'",
-                 job->smpi_app_name.c_str(), filename_unprefixed.c_str(), job->app_size, job->starting_time,
+                 job.smpi_app_name.c_str(), filename_unprefixed.c_str(), job.app_size, job.starting_time,
                  alloc.c_str());
-        jobs.push_back(job);
+        jobs.push_back(new Job(std::move(job)));
       } catch (const std::invalid_argument& e) {
         xbt_die("Bad line '%s' of file '%s': %s.\n", line.c_str(), workload_file.c_str(), e.what());
       }
