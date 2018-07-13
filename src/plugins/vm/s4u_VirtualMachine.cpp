@@ -24,12 +24,12 @@ simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_resume;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_start;
 simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_migration_end;
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount)
+VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount)
     : VirtualMachine(name, physical_host, core_amount, 1024)
 {
 }
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount, size_t ramsize)
+VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount, size_t ramsize)
     : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
   XBT_DEBUG("Create VM %s", name);

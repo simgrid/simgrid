@@ -24,8 +24,8 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
   virtual ~VirtualMachine();
 
 public:
-  explicit VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount);
-  explicit VirtualMachine(const char* name, s4u::Host* physical_host, int core_amount, size_t ramsize);
+  explicit VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount);
+  explicit VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount, size_t ramsize);
 
   // No copy/move
   VirtualMachine(VirtualMachine const&) = delete;
