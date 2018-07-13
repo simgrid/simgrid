@@ -72,7 +72,7 @@ public:
   void set_latency_trace(tmgr_trace_t trace);   /*< setup the trace file with latency events (peak latency changes due to
                                                   external load). Trace must contain absolute values */
 
-  const char* get_property(const char* key);
+  const char* get_property(std::string key);
   void set_property(std::string key, std::string value);
 
   /* The signals */

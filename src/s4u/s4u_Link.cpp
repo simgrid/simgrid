@@ -100,7 +100,7 @@ void Link::set_latency_trace(tmgr_trace_t trace)
   simgrid::simix::simcall([this, trace]() { this->pimpl_->set_latency_trace(trace); });
 }
 
-const char* Link::get_property(const char* key)
+const char* Link::get_property(std::string key)
 {
   return this->pimpl_->get_property(key);
 }
