@@ -38,7 +38,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
  * \param host host where the synchro will be executed
  * \return A new SIMIX execution synchronization
  */
-smx_activity_t simcall_execution_start(const char* name, double flops_amount, double priority, double bound,
+smx_activity_t simcall_execution_start(std::string name, double flops_amount, double priority, double bound,
                                        simgrid::s4u::Host* host)
 {
   /* checking for infinite values */
@@ -65,7 +65,7 @@ smx_activity_t simcall_execution_start(const char* name, double flops_amount, do
  * \param timeout timeout
  * \return A new SIMIX execution synchronization
  */
-smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
+smx_activity_t simcall_execution_parallel_start(std::string name, int host_nb, sg_host_t* host_list,
                                                 double* flops_amount, double* bytes_amount, double rate, double timeout)
 {
   /* checking for infinite values */

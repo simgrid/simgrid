@@ -191,9 +191,9 @@ XBT_PUBLIC void SIMIX_comm_finish(smx_activity_t synchro);
 /******************************************************************************/
 
 /******************************* Host simcalls ********************************/
-XBT_PUBLIC smx_activity_t simcall_execution_start(const char* name, double flops_amount, double priority, double bound,
+XBT_PUBLIC smx_activity_t simcall_execution_start(std::string name, double flops_amount, double priority, double bound,
                                                   sg_host_t host);
-XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
+XBT_PUBLIC smx_activity_t simcall_execution_parallel_start(std::string name, int host_nb, sg_host_t* host_list,
                                                            double* flops_amount, double* bytes_amount, double rate,
                                                            double timeout);
 XBT_PUBLIC void simcall_execution_cancel(smx_activity_t execution);

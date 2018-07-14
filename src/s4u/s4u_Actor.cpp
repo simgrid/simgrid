@@ -296,7 +296,7 @@ void execute(double flops, double priority)
 void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount, double timeout)
 {
   smx_activity_t s =
-      simcall_execution_parallel_start(nullptr, host_nb, host_list, flops_amount, bytes_amount, /* rate */ -1, timeout);
+      simcall_execution_parallel_start("", host_nb, host_list, flops_amount, bytes_amount, /* rate */ -1, timeout);
   simcall_execution_wait(s);
 }
 

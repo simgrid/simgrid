@@ -2,11 +2,11 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "xbt/log.h"
 
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous executions");
 
@@ -15,7 +15,7 @@ namespace s4u {
 
 Activity* Exec::start()
 {
-  pimpl_ = simcall_execution_start(nullptr, flops_amount_, 1. / priority_, 0., host_);
+  pimpl_ = simcall_execution_start("", flops_amount_, 1. / priority_, 0., host_);
   boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_bound(bound_);
   state_ = State::STARTED;
   return this;

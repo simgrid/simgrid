@@ -15,20 +15,15 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-simgrid::kernel::activity::ExecImpl::ExecImpl(const char* name, resource::Action* surf_action,
+simgrid::kernel::activity::ExecImpl::ExecImpl(std::string name, resource::Action* surf_action,
                                               resource::Action* timeout_detector, s4u::Host* host)
-    : host_(host)
+    : ActivityImpl(name), host_(host), surf_action_(surf_action), timeout_detector_(timeout_detector)
 {
-  if (name)
-    this->name_ = name;
   this->state_ = SIMIX_RUNNING;
 
-  surf_action_ = surf_action;
   surf_action_->set_data(this);
-  if (timeout_detector != nullptr) {
+  if (timeout_detector != nullptr)
     timeout_detector->set_data(this);
-    timeout_detector_ = timeout_detector;
-  }
 
   XBT_DEBUG("Create exec %p", this);
 }
@@ -116,7 +111,7 @@ void simgrid::kernel::activity::ExecImpl::post()
     timeout_detector_ = nullptr;
   }
 
-  onCompletion(this);
+  on_completion(this);
   /* If there are simcalls associated with the synchro, then answer them */
   if (not simcalls_.empty())
     SIMIX_execution_finish(this);
@@ -142,13 +137,14 @@ simgrid::kernel::activity::ExecImpl::migrate(simgrid::s4u::Host* to)
     this->surf_action_ = new_action;
   }
 
-  onMigration(this, to);
+  on_migration(this, to);
   return this;
 }
 
 /*************
  * Callbacks *
  *************/
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onCreation;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::onCompletion;
-simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)> simgrid::kernel::activity::ExecImpl::onMigration;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_creation;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr)> simgrid::kernel::activity::ExecImpl::on_completion;
+simgrid::xbt::signal<void(simgrid::kernel::activity::ExecImplPtr, simgrid::s4u::Host*)>
+    simgrid::kernel::activity::ExecImpl::on_migration;

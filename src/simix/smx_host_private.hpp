@@ -18,9 +18,9 @@ XBT_PRIVATE void SIMIX_execution_finish(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char* category);
 
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-SIMIX_execution_start(const char* name, double flops_amount, double priority, double bound, sg_host_t host);
+SIMIX_execution_start(std::string name, double flops_amount, double priority, double bound, sg_host_t host);
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
+SIMIX_execution_parallel_start(std::string name, int host_nb, sg_host_t* host_list, double* flops_amount,
                                double* bytes_amount, double rate, double timeout);
 
 #endif
