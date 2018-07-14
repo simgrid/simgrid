@@ -431,7 +431,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     xbt_die("%s", msg.c_str());
   }
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(actor->function);
-  xbt_assert(factory, "Function '%s' unknown", actor->function);
+  xbt_assert(factory, "Error while creating an actor from the XML file: Function '%s' not registered", actor->function);
 
   double start_time = actor->start_time;
   double kill_time  = actor->kill_time;
