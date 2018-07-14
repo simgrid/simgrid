@@ -8,9 +8,7 @@ if(enable_smpi)
   list(APPEND tesh_filename_list replay_multiple_manual_nojob)
   list(APPEND tesh_filename_list replay_multiple_manual_nojob_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty1)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty1_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty2_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_sr)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_sr_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2_st)
@@ -33,6 +31,7 @@ if(enable_smpi)
       string(REPLACE "_" "-" dash_separated ${rm_tesh_file})
       ADD_TESH("smpi-${dash_separated}"
         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy
+        --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
         --cd ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy
         ${CMAKE_CURRENT_SOURCE_DIR}/${rm_tesh_file}.tesh)
     endforeach()
@@ -52,8 +51,6 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/compute_only.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_compute_consecutive
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_compute_consecutive2
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_compute_simple
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty1
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty2
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty2_same_resources
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty2_same_time
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty2_same_time_and_resources
@@ -66,9 +63,7 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/compute_only.txt
 set(tesh_files  ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_nojob.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_nojob_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty1.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty1_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_sr.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_sr_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st.tesh

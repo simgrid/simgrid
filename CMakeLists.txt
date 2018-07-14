@@ -763,8 +763,6 @@ configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_depl
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive COPYONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive2 ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_consecutive2 COPYONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_compute_simple ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_compute_simple COPYONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_empty1 ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty1 COPYONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_empty2 ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2 COPYONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_resources ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_resources COPYONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time COPYONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time_and_resources ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple_manual_deploy/workload_empty2_same_time_and_resources COPYONLY)
