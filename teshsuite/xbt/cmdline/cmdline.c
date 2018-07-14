@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/engine.h"
+#include "simgrid/simix.h" // we don't need it, but someone must check that this file is actually usable in plain C
 #include <xbt.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this test");
