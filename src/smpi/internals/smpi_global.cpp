@@ -124,11 +124,11 @@ int smpi_process_index(){
 }
 
 void * smpi_process_get_user_data(){
-  return smpi_process()->get_user_data();
+  return Actor::self()->get_impl()->get_user_data();
 }
 
 void smpi_process_set_user_data(void *data){
-  return smpi_process()->set_user_data(data);
+  Actor::self()->get_impl()->set_user_data(data);
 }
 
 

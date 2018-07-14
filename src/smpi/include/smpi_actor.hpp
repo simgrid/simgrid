@@ -26,7 +26,6 @@ private:
   MPI_Comm comm_self_   = MPI_COMM_NULL;
   MPI_Comm comm_intra_  = MPI_COMM_NULL;
   MPI_Comm* comm_world_ = nullptr;
-  void* data_           = nullptr; /* user data */
   SmpiProcessState state_;
   int sampling_ = 0; /* inside an SMPI_SAMPLE_ block? */
   std::string instance_id_;
@@ -51,8 +50,6 @@ public:
   void mark_as_initialized();
   void set_replaying(bool value);
   bool replaying();
-  void set_user_data(void* data);
-  void* get_user_data();
   smpi_trace_call_location_t* call_location();
   void set_privatized_region(smpi_privatization_region_t region);
   smpi_privatization_region_t privatized_region();

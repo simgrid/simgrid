@@ -127,16 +127,6 @@ bool ActorExt::replaying()
   return replaying_;
 }
 
-void ActorExt::set_user_data(void* data)
-{
-  data_ = data;
-}
-
-void* ActorExt::get_user_data()
-{
-  return data_;
-}
-
 ActorPtr ActorExt::get_actor()
 {
   return actor_;
