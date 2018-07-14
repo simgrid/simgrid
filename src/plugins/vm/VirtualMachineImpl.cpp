@@ -224,9 +224,9 @@ void VirtualMachineImpl::shutdown(smx_actor_t issuer)
  */
 void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 {
-  const char* vm_name     = piface_->get_cname();
-  const char* pm_name_src = physical_host_->get_cname();
-  const char* pm_name_dst = destination->get_cname();
+  std::string vm_name     = piface_->get_name();
+  std::string pm_name_src = physical_host_->get_name();
+  std::string pm_name_dst = destination->get_name();
 
   /* update net_elm with that of the destination physical host */
   piface_->pimpl_netpoint = destination->pimpl_netpoint;
@@ -244,7 +244,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   /* keep the bound value of the cpu action of the VM. */
   double old_bound = action_->get_bound();
   if (old_bound > 0) {
-    XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
+    XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name.c_str(), old_bound, pm_name_dst.c_str());
     new_cpu_action->set_bound(old_bound);
   }
 
@@ -253,7 +253,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   action_ = new_cpu_action;
 
-  XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
+  XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name.c_str(), pm_name_src.c_str(), pm_name_dst.c_str());
 }
 
 void VirtualMachineImpl::set_bound(double bound)

@@ -20,8 +20,8 @@ SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_dvfs, surf, "Logging specific to the SURF HostDvfs plugin");
 
-static const char* property_sampling_rate = "plugin/dvfs/sampling_rate";
-static const char* property_governor      = "plugin/dvfs/governor";
+static std::string property_sampling_rate = "plugin/dvfs/sampling_rate";
+static std::string property_governor      = "plugin/dvfs/governor";
 
 namespace simgrid {
 namespace plugin {

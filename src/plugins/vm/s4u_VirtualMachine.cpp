@@ -32,6 +32,9 @@ VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int c
 VirtualMachine::VirtualMachine(std::string name, s4u::Host* physical_host, int core_amount, size_t ramsize)
     : Host(name), pimpl_vm_(new vm::VirtualMachineImpl(this, physical_host, core_amount, ramsize))
 {
+  // xbt_assert(s4u::Host::by_name(name) == nullptr,
+  //           "Cannot create a VM named %s: this name is already used by an host or a VM", name.c_str());
+
   XBT_DEBUG("Create VM %s", name.c_str());
 
   /* Currently, a VM uses the network resource of its physical host */
@@ -194,9 +197,6 @@ sg_vm_t sg_vm_create_core(sg_host_t pm, const char* name)
  */
 sg_vm_t sg_vm_create_multicore(sg_host_t pm, const char* name, int coreAmount)
 {
-  xbt_assert(sg_host_by_name(name) == nullptr,
-             "Cannot create a VM named %s: this name is already used by an host or a VM", name);
-
   return new simgrid::s4u::VirtualMachine(name, pm, coreAmount);
 }
 
