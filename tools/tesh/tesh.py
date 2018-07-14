@@ -326,12 +326,12 @@ class Cmd(object):
             except OSError:
                 # os.getpgid failed. OK. No cleanup.
                 pass
-        except FileNotFoundError:
-            print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
-            tesh_exit(3)
         except NotADirectoryError:
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': The path to binary does not exist.")
             print("["+FileReader().filename+":"+str(self.linenumber)+"] Current dir: "+os.getcwd())
+            tesh_exit(3)
+        except FileNotFoundError:
+            print("["+FileReader().filename+":"+str(self.linenumber)+"] Cannot start '"+args[0]+"': File not found")
             tesh_exit(3)
         except OSError as osE:
             if osE.errno == 8:
