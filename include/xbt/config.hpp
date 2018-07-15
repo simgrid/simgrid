@@ -175,6 +175,15 @@ bind_flag(T& value, const char* name, const char* description, std::map<T, std::
                  value = std::move(val);
                }));
 }
+template <class T, class F>
+typename std::enable_if<std::is_same<void, decltype(std::declval<F>()(std::declval<const T&>()))>::value, void>::type
+bind_flag(T& value, const char* name, std::initializer_list<const char*> aliases, const char* description,
+          std::map<T, std::string> valid_values, F callback)
+{
+  bind_flag(value, name, description, std::move(valid_values), std::move(callback));
+  alias(name, std::move(aliases));
+}
+
 /** Bind a variable to configuration flag
  *
  *  <pre><code>
@@ -247,6 +256,15 @@ public:
   Flag(const char* name, const char* desc, T value, std::map<T, std::string> valid_values, F callback) : value_(value)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(valid_values), std::move(callback));
+  }
+
+  /* A constructor with everything */
+  template <class F>
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value,
+       std::map<T, std::string> valid_values, F callback)
+      : value_(value)
+  {
+    simgrid::config::bind_flag(value_, name, std::move(aliases), desc, std::move(valid_values), std::move(callback));
   }
 
   // No copy:
