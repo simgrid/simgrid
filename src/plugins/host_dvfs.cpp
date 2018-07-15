@@ -20,7 +20,6 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
     "Which Governor should be used that adapts the CPU frequency?", "performance",
 
     std::map<std::string, std::string>({
-        {"performance", "TODO: add some doc"},
         {"conservative", "TODO: Doc"},
         {"ondemand", "TODO: Doc"},
         {"performance", "TODO: Doc"},
