@@ -12,6 +12,23 @@
 
 SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
 
+static simgrid::config::Flag<double> cfg_sampling_rate("plugin/dvfs/sampling-rate", {"plugin/dvfs/sampling_rate"},
+    "How often should the dvfs plugin check whether the frequency needs to be changed?", 0.1,
+    [](double val){if (val != 0.1) sg_host_dvfs_plugin_init();});
+
+static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
+    "Which Governor should be used that adapts the CPU frequency?", "performance",
+
+    std::map<std::string, std::string>({
+        {"performance", "TODO: add some doc"},
+        {"conservative", "TODO: Doc"},
+        {"ondemand", "TODO: Doc"},
+        {"performance", "TODO: Doc"},
+        {"powersave", "TODO: Doc"},
+    }),
+
+    [](std::string val){if (val != "performance") sg_host_dvfs_plugin_init();});
+
 /** @addtogroup SURF_plugin_load
 
   This plugin makes it very simple for users to obtain the current load for each host.
@@ -19,9 +36,6 @@ SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
 */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_dvfs, surf, "Logging specific to the SURF HostDvfs plugin");
-
-static std::string property_sampling_rate = "plugin/dvfs/sampling-rate";
-static std::string property_governor      = "plugin/dvfs/governor";
 
 namespace simgrid {
 namespace plugin {
@@ -44,8 +58,8 @@ public:
 
   void init()
   {
-    const char* local_sampling_rate_config = host_->get_property(property_sampling_rate);
-    double global_sampling_rate_config     = simgrid::config::get_value<double>(property_sampling_rate);
+    const char* local_sampling_rate_config = host_->get_property("plugin/dvfs/sampling-rate");
+    double global_sampling_rate_config     = cfg_sampling_rate;
     if (local_sampling_rate_config != nullptr) {
       sampling_rate_ = std::stod(local_sampling_rate_config);
     } else {
@@ -197,7 +211,7 @@ public:
  *
  *  For the sampling rate, use this:
  *
- *    - \<prop id="plugin/dvfs/sampling_rate" value="2" /\>
+ *    - \<prop id="plugin/dvfs/sampling-rate" value="2" /\>
  *
  *  This will run the update() method of the specified governor every 2 seconds
  *  on that host.
@@ -228,12 +242,12 @@ static void on_host_added(simgrid::s4u::Host& host)
     XBT_DEBUG("DVFS process on %s is a daemon: %d", daemon_proc->get_host()->get_cname(), daemon_proc->is_daemon());
 
     std::string dvfs_governor;
-    const char* host_conf = daemon_proc->get_host()->get_property(property_governor);
+    const char* host_conf = daemon_proc->get_host()->get_property("plugin/dvfs/governor");
     if (host_conf != nullptr) {
-      dvfs_governor = std::string(daemon_proc->get_host()->get_property(property_governor));
+      dvfs_governor = std::string(host_conf);
       boost::algorithm::to_lower(dvfs_governor);
     } else {
-      dvfs_governor = simgrid::config::get_value<std::string>(property_governor);
+      dvfs_governor = cfg_governor;
       boost::algorithm::to_lower(dvfs_governor);
     }
 
@@ -278,17 +292,19 @@ static void on_host_added(simgrid::s4u::Host& host)
 
 /* **************************** Public interface *************************** */
 
+
 /** \ingroup SURF_plugin_load
  * \brief Initializes the HostDvfs plugin
  * \details The HostDvfs plugin provides an API to get the current load of each host.
  */
 void sg_host_dvfs_plugin_init()
 {
+  static bool inited = false;
+  if (inited)
+    return;
+  inited = true;
+
   sg_host_load_plugin_init();
 
   simgrid::s4u::Host::on_creation.connect(&on_host_added);
-  simgrid::config::declare_flag<double>(
-      property_sampling_rate, "How often should the dvfs plugin check whether the frequency needs to be changed?", 0.1);
-  simgrid::config::declare_flag<std::string>(
-      property_governor, "Which Governor should be used that adapts the CPU frequency?", "performance");
 }
