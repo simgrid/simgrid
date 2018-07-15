@@ -58,7 +58,7 @@ public:
 
   void init()
   {
-    const char* local_sampling_rate_config = host_->get_property("plugin/dvfs/sampling-rate");
+    const char* local_sampling_rate_config = host_->get_property(cfg_sampling_rate.get_name());
     double global_sampling_rate_config     = cfg_sampling_rate;
     if (local_sampling_rate_config != nullptr) {
       sampling_rate_ = std::stod(local_sampling_rate_config);

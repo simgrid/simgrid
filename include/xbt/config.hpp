@@ -214,6 +214,8 @@ bind_flag(T& value, const char* name, const char* description, F callback)
 template<class T>
 class Flag {
   T value_;
+  std::string name_;
+
 public:
 
   /** Constructor
@@ -222,13 +224,14 @@ public:
    *  @param desc  Flag description
    *  @param value Flag initial/default value
    */
-  Flag(const char* name, const char* desc, T value) : value_(value)
+  Flag(const char* name, const char* desc, T value) : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc);
   }
 
   /** Constructor taking also an array of aliases for name */
-  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value) : value_(value)
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value)
+      : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, std::move(aliases), desc);
   }
@@ -236,15 +239,14 @@ public:
   /* A constructor accepting a callback that will be passed the parameter.
    * It can either return a boolean (informing whether the parameter is valid), or returning void.
    */
-  template<class F>
-  Flag(const char* name, const char* desc, T value, F callback) : value_(value)
+  template <class F> Flag(const char* name, const char* desc, T value, F callback) : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(callback));
   }
 
   template <class F>
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value, F callback)
-      : value_(value)
+      : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, std::move(aliases), desc, std::move(callback));
   }
@@ -253,7 +255,8 @@ public:
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
   template <class F>
-  Flag(const char* name, const char* desc, T value, std::map<T, std::string> valid_values, F callback) : value_(value)
+  Flag(const char* name, const char* desc, T value, std::map<T, std::string> valid_values, F callback)
+      : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(valid_values), std::move(callback));
   }
@@ -262,7 +265,7 @@ public:
   template <class F>
   Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value,
        std::map<T, std::string> valid_values, F callback)
-      : value_(value)
+      : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, std::move(aliases), desc, std::move(valid_values), std::move(callback));
   }
@@ -275,6 +278,7 @@ public:
   T& get() { return value_; }
   T const& get() const { return value_; }
 
+  std::string get_name() { return name_; }
   // Implicit conversion to the underlying type:
   operator T&() { return value_; }
   operator T const&() const{ return value_; }
