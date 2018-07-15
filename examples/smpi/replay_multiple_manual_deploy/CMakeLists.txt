@@ -6,17 +6,9 @@ if(enable_smpi)
 
   # Define a list of a tesh files
   list(APPEND tesh_filename_list replay_multiple_manual_nojob)
-  list(APPEND tesh_filename_list replay_multiple_manual_nojob_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_empty1)
   list(APPEND tesh_filename_list replay_multiple_manual_empty2)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty2_sr)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty2_sr_noise)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty2_st)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty2_st_noise)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty2_st_sr)
-  list(APPEND tesh_filename_list replay_multiple_manual_empty2_st_sr_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed1)
-  list(APPEND tesh_filename_list replay_multiple_manual_mixed1_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed2)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed2_noise)
   list(APPEND tesh_filename_list replay_multiple_manual_mixed2_sr)
@@ -51,27 +43,14 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/compute_only.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_compute_consecutive
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_compute_consecutive2
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_compute_simple
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty2_same_resources
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty2_same_time
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_empty2_same_time_and_resources
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed1
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_resources
                                    ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_time
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_time_and_resources
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_nojob PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/workload_mixed2_same_time_and_resources PARENT_SCOPE)
 set(tesh_files  ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_nojob.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_nojob_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty1.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_sr.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_sr_noise.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st_noise.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st_sr.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_empty2_st_sr_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed1.tesh
-                                ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed1_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_noise.tesh
                                 ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple_manual_mixed2_sr.tesh
