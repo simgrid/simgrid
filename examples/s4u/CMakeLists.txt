@@ -10,7 +10,7 @@ foreach (example actor-create actor-daemon actor-join actor-kill
                  exec-async exec-basic exec-dvfs exec-monitor exec-ptask exec-remote
                  io-file-system io-file-remote io-storage-raw
                  mutex
-                 platform-properties plugin-hostload 
+                 platform-failures platform-properties plugin-hostload 
                  replay-comm replay-storage
                  routing-get-clusters
                  trace-platform)
