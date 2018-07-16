@@ -138,6 +138,8 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
   } else {
     key = it->second->front();
     it->second->pop_front();
+    if (it->second->empty())
+      keys.erase(it);
   }
   return key;
 }
