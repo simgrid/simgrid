@@ -55,6 +55,7 @@ public:
   bool try_lock();
 
   // deprecated
+  /** @deprecated Mutex::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mutex::create()") static Ptr createMutex() { return create(); }
 };
 

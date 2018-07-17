@@ -78,16 +78,21 @@ public:
   /** Retrieve the user data of the Activity */
   void* get_user_data() { return user_data_; }
 
+  /** @deprecated See Activity::get_state()*/
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_state()") Activity::State getState() { return state_; }
+  /** @deprecated See Activity::get_remaining() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_remaining()") double getRemains() { return get_remaining(); }
+  /** @deprecated See Activity::set_remaining() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_remaining()") Activity* setRemains(double remains)
   {
     return set_remaining(remains);
   }
+  /** @deprecated See Activity::set_user_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::set_user_data()") Activity* setUserData(void* data)
   {
     return set_user_data(data);
   }
+  /** @deprecated See Activity::get_user_data() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Activity::get_user_data()") void* getUserData() { return user_data_; }
 
 private:

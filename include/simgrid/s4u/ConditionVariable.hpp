@@ -36,6 +36,7 @@ public:
 
   static Ptr create();
 
+  /** @deprecated See Comm::get_mailbox() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Comm::get_mailbox()") Ptr createConditionVariable() { return create(); }
 
   //  Wait functions without time:

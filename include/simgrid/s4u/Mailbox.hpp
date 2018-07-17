@@ -168,24 +168,31 @@ public:
   void* get(double timeout);
 
   // Deprecated functions
+  /** @deprecated Mailbox::set_receiver() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::set_receiver()") void setReceiver(ActorPtr actor)
   {
     set_receiver(actor);
   }
+  /** @deprecated Mailbox::get_receiver() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_receiver()") ActorPtr getReceiver() { return get_receiver(); }
+  /** @deprecated Mailbox::get_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_name()") const simgrid::xbt::string& getName() const
   {
     return get_name();
   }
+  /** @deprecated Mailbox::get_cname() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_cname()") const char* getCname() const { return get_cname(); }
+  /** @deprecated Mailbox::get_impl() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::get_impl()") kernel::activity::MailboxImpl* getImpl()
   {
     return get_impl();
   }
+  /** @deprecated Mailbox::by_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(const char* name)
   {
     return by_name(name);
   }
+  /** @deprecated Mailbox::by_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Mailbox::by_name()") static MailboxPtr byName(std::string name)
   {
     return by_name(name);

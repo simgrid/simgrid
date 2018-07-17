@@ -282,62 +282,84 @@ public:
   const char* get_property(std::string key);
   void set_property(std::string key, std::string value);
 
+  /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, std::function<void()> code)
   {
     return create(name, host, code);
   }
+  /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, std::function<void(std::vector<std::string>*)> code,
       std::vector<std::string>* args)
   {
     return create(name, host, code, args);
   }
+  /** @deprecated See Actor::create() */
   template <class F, class... Args, typename = typename std::result_of<F(Args...)>::type>
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, code, std::move(args)...);
   }
+  /** @deprecated See Actor::create() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::create()") static ActorPtr createActor(
       const char* name, s4u::Host* host, const char* function, std::vector<std::string> args)
   {
     return create(name, host, function, args);
   }
+  /** @deprecated See Actor::is_daemon() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_daemon()") bool isDaemon() const;
+  /** @deprecated See Actor::get_name() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_name()") const simgrid::xbt::string& getName() const
   {
     return get_name();
   }
+  /** @deprecated See Actor::get_cname() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_cname()") const char* getCname() const { return get_cname(); }
+  /** @deprecated See Actor::get_host() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_host()") Host* getHost() { return get_host(); }
+  /** @deprecated See Actor::get_pid() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_pid()") aid_t getPid() { return get_pid(); }
+  /** @deprecated See Actor::get_ppid() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_ppid()") aid_t getPpid() { return get_ppid(); }
+  /** @deprecated See Actor::is_suspended() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::is_suspended()") int isSuspended() { return is_suspended(); }
+  /** @deprecated See Actor::set_auto_restart() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_auto_restart()") void setAutoRestart(bool a)
   {
     set_auto_restart(a);
   }
+  /** @deprecated Please use a std::function<void(int, void*)> for first parameter */
   XBT_ATTRIB_DEPRECATED_v323("Please use a std::function<void(int, void*)> for first parameter.") void on_exit(
       int_f_pvoid_pvoid_t fun, void* data);
+  /** @deprecated See Actor::on_exit() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::on_exit()") void onExit(int_f_pvoid_pvoid_t fun, void* data)
   {
     on_exit([fun](int a, void* b) { fun((void*)(intptr_t)a, b); }, data);
   }
+  /** @deprecated See Actor::set_kill_time() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::set_kill_time()") void setKillTime(double time) { set_kill_time(time); }
+  /** @deprecated See Actor::get_kill_time() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_kill_time()") double getKillTime() { return get_kill_time(); }
+  /** @deprecated See Actor::by_pid() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::by_pid()") static ActorPtr byPid(aid_t pid) { return by_pid(pid); }
+  /** @deprecated See Actor::kill_all() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all()") static void killAll() { kill_all(); }
+  /** @deprecated See Actor::kill_all() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::kill_all() with no parameter") static void killAll(
       int XBT_ATTRIB_UNUSED resetPid)
   {
     kill_all();
   }
+  /** @deprecated See Actor::get_impl() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_impl()") kernel::actor::ActorImpl* getImpl() { return get_impl(); }
+  /** @deprecated See Actor::get_property() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_property()") const char* getProperty(const char* key)
   {
     return get_property(key);
   }
+  /** @deprecated See Actor::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") std::map<std::string, std::string>* getProperties()
   {
     std::map<std::string, std::string>* res             = new std::map<std::string, std::string>();
@@ -346,6 +368,7 @@ public:
       res->insert(kv);
     return res;
   }
+  /** @deprecated See Actor::get_properties() */
   XBT_ATTRIB_DEPRECATED_v323("Please use Actor::get_properties()") void setProperty(const char* key, const char* value)
   {
     set_property(key, value);
@@ -416,22 +439,32 @@ XBT_PUBLIC bool is_suspended();
 /** @brief kill the actor. */
 XBT_PUBLIC void exit();
 
-/** @brief Add a function to the list of "on_exit" functions. */
+/** @deprecated Please use std::function<void(int, void*)> for first parameter */
 XBT_ATTRIB_DEPRECATED_v323("Please use std::function<void(int, void*)> for first parameter.") XBT_PUBLIC
     void on_exit(int_f_pvoid_pvoid_t fun, void* data);
+/** @brief Add a function to the list of "on_exit" functions. */
 XBT_PUBLIC void on_exit(std::function<void(int, void*)> fun, void* data);
 
 /** @brief Migrate the actor to a new host. */
 XBT_PUBLIC void migrate(Host* new_host);
 
+/** @deprecated See this_actor::get_name() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_name()") XBT_PUBLIC std::string getName();
+/** @deprecated See this_actor::get_cname() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_cname()") XBT_PUBLIC const char* getCname();
+/** @deprecated See this_actor::is_maestro() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_maestro()") XBT_PUBLIC bool isMaestro();
+/** @deprecated See this_actor::get_pid() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_pid()") XBT_PUBLIC aid_t getPid();
+/** @deprecated See this_actor::get_ppid() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_ppid()") XBT_PUBLIC aid_t getPpid();
+/** @deprecated See this_actor::get_host() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::get_host()") XBT_PUBLIC Host* getHost();
+/** @deprecated See this_actor::is_suspended() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::is_suspended()") XBT_PUBLIC bool isSuspended();
+/** @deprecated See this_actor::on_exit() */
 XBT_ATTRIB_DEPRECATED_v323("Please use this_actor::on_exit()") XBT_PUBLIC void onExit(int_f_pvoid_pvoid_t fun, void* data);
+/** @deprecated See this_actor::exit() */
 XBT_ATTRIB_DEPRECATED_v324("Please use this_actor::exit()") XBT_PUBLIC void kill();
 }
 
