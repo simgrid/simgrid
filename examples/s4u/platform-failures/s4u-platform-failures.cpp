@@ -78,7 +78,7 @@ static int worker(int argc, char* argv[])
   long id                          = xbt_str_parse_int(argv[1], "Invalid argument %s");
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(id));
   double* payload                  = nullptr;
-  double comp_size;
+  double comp_size                 = -1;
   while (1) {
     try {
       payload   = static_cast<double*>(mailbox->get());
