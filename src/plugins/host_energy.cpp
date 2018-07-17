@@ -341,12 +341,15 @@ void HostEnergy::init_watts_range_list()
         // In this case, 1core == AllCores
         current_power_values.push_back(current_power_values.at(1));
       } else { // size == 3
-        xbt_assert((current_power_values.at(1)) == (current_power_values.at(2)),
-                   "Power properties incorrectly defined for host %s.\n"
-                   "The energy profile of mono-cores should be formatted as 'Idle:FullSpeed' only.\n"
-                   "If you go for a 'Idle:OneCore:AllCores' power profile on mono-cores, then OneCore and AllCores "
-                   "must be equal.",
-                   host_->get_cname());
+        current_power_values[2] = current_power_values.at(1);
+        static thread_local bool displayed_warning = false; 
+        if (not displayed_warning) { // Otherwise we get in the worst case no_pstate*no_hosts warnings
+          XBT_WARN("Host %s is a single-core machine and part of the power profile is '%s'"
+                   ", which is in the 'Idle:OneCore:AllCores' format."
+                   " Since this is a single-core machine, AllCores and OneCore are identical."
+                   " Here, only the value for 'OneCore' is used.", host_->get_cname(), current_power_values_str.c_str());
+          displayed_warning = true;
+        }
       }
     } else {
       xbt_assert(current_power_values.size() == 3,
