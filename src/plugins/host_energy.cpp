@@ -177,9 +177,8 @@ void HostEnergy::update()
     this->total_energy_ = previous_energy + energy_this_step;
     this->last_updated_ = finish_time;
 
-    XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> "
-              "%.2f J",
-              host_->get_cname(), start_time, finish_time, host_->pimpl_cpu->get_speed(1.0), previous_energy,
+    XBT_DEBUG("[update_energy of %s] period=[%.8f-%.8f]; current speed=%.2E flop/s (pstate %i); total consumption before: consumption change: %.8f J -> added now: %.8f J",
+              host_->get_cname(), start_time, finish_time, host_->pimpl_cpu->get_pstate_peak_speed(this->pstate_), this->pstate_, previous_energy,
               energy_this_step);
   }
 
@@ -304,7 +303,7 @@ double HostEnergy::get_current_watts_value(double cpu_load)
     current_power = range.idle_;
   }
 
-  XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
+  XBT_DEBUG("[get_current_watts] pstate=%i, min_power=%f, max_power=%f, slope=%f", this->pstate_, min_power, max_power, power_slope);
   XBT_DEBUG("[get_current_watts] Current power (watts) = %f, load = %f", current_power, cpu_load);
 
   return current_power;
