@@ -2,6 +2,8 @@
 #ifndef HAVE_SG_PLUGIN_LB
 #define HAVE_SG_PLUGIN_LB
 
+#include <simgrid/s4u.hpp>
+
 namespace simgrid {
 namespace plugin {
 namespace loadbalancer {
@@ -52,8 +54,8 @@ public:
 
 class LoadBalancer
 {
-  std::map<int, double> actor_computation;
-  std::map<simgrid::s4u::ActorPtr, simgrid::s4u::Host*> new_mapping;
+  Mapping new_mapping;
+  std::map</*proc id*/int, double> actor_computation;
 
 public:
   LoadBalancer();
