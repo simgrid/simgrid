@@ -44,6 +44,7 @@ public:
   double get_average_load() { return (theor_max_flops_ == 0) ? 0 : computed_flops_ / theor_max_flops_; };
   double get_computed_flops() { return computed_flops_; }
   double get_idle_time() { return idle_time_; } /** Return idle time since last reset */
+  double get_total_idle_time() { return total_idle_time_; } /** Return idle time over the whole simulation */
   void update();
   void reset();
 
@@ -62,6 +63,7 @@ private:
   double current_flops_     = 0;
   double computed_flops_    = 0;
   double idle_time_         = 0;
+  double total_idle_time_   = 0; /* This gets never reset */
   double theor_max_flops_   = 0;
   bool was_prev_idle_       = true; /* A host is idle at the beginning */
 };
@@ -81,6 +83,7 @@ void HostLoad::update()
 
   if (was_prev_idle_) {
     idle_time_ += (now - last_updated_);
+    total_idle_time_ += (now - last_updated_);
   }
 
   theor_max_flops_ += current_speed_ * host_->get_core_count() * (now - last_updated_);
@@ -217,6 +220,14 @@ double sg_host_get_idle_time(sg_host_t host)
              "The Load plugin is not active. Please call sg_host_load_plugin_init() during initialization.");
 
   return host->extension<HostLoad>()->get_idle_time();
+}
+
+double sg_host_get_total_idle_time(sg_host_t host)
+{
+  xbt_assert(HostLoad::EXTENSION_ID.valid(),
+             "The Load plugin is not active. Please call sg_host_load_plugin_init() during initialization.");
+
+  return host->extension<HostLoad>()->get_total_idle_time();
 }
 
 double sg_host_get_computed_flops(sg_host_t host)
