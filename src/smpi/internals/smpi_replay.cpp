@@ -134,7 +134,10 @@ public:
     /* Sometimes we need to re-insert MPI_REQUEST_NULL but we still need src,dst and tag */
     void addNullRequest(int src, int dst, int tag)
     {
-      store.insert({req_key_t(src, dst, tag), MPI_REQUEST_NULL});
+      store.insert({req_key_t(
+            MPI_COMM_WORLD->group()->actor(src)->get_pid()-1,
+            MPI_COMM_WORLD->group()->actor(dst)->get_pid()-1,
+            tag), MPI_REQUEST_NULL});
     }
 };
 
