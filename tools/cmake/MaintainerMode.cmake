@@ -46,6 +46,9 @@ endif()
 if(enable_maintainer_mode AND NOT WIN32)
   add_custom_command(OUTPUT ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h
                             ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h
+    DEPENDS
+    ${CMAKE_HOME_DIRECTORY}/tools/smpi/generate_smpi_defines.pl
+    ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi.h
 
     COMMENT "Generating header files for call-location tracing with SMPI"
     # Make sure there is no space after the redirection operator (>). I received
