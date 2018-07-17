@@ -49,8 +49,8 @@ void MutexImpl::lock(smx_actor_t issuer)
 
 /** Tries to lock the mutex for a process
  *
- * \param  issuer  the process that tries to acquire the mutex
- * \return whether we managed to lock the mutex
+ * @param  issuer  the process that tries to acquire the mutex
+ * @return whether we managed to lock the mutex
  */
 bool MutexImpl::try_lock(smx_actor_t issuer)
 {

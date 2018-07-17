@@ -50,15 +50,15 @@ CpuTiTmgr::~CpuTiTmgr()
 }
 
 /**
-* \brief Integrate trace
-*
-* Wrapper around surf_cpu_integrate_trace_simple() to get
-* the cyclic effect.
-*
-* \param a      Begin of interval
-* \param b      End of interval
-* \return the integrate value. -1 if an error occurs.
-*/
+ * @brief Integrate trace
+ *
+ * Wrapper around surf_cpu_integrate_trace_simple() to get
+ * the cyclic effect.
+ *
+ * @param a      Begin of interval
+ * @param b      End of interval
+ * @return the integrate value. -1 if an error occurs.
+ */
 double CpuTiTmgr::integrate(double a, double b)
 {
   if ((a < 0.0) || (a > b)) {
@@ -94,19 +94,19 @@ double CpuTiTmgr::integrate(double a, double b)
 }
 
 /**
- * \brief Auxiliary function to compute the integral between a and b.
+ * @brief Auxiliary function to compute the integral between a and b.
  *     It simply computes the integrals at point a and b and returns the difference between them.
- * \param a  Initial point
- * \param b  Final point
-*/
+ * @param a  Initial point
+ * @param b  Final point
+ */
 double CpuTiTrace::integrate_simple(double a, double b)
 {
   return integrate_simple_point(b) - integrate_simple_point(a);
 }
 
 /**
- * \brief Auxiliary function to compute the integral at point a.
- * \param a        point
+ * @brief Auxiliary function to compute the integral at point a.
+ * @param a        point
  */
 double CpuTiTrace::integrate_simple_point(double a)
 {
@@ -127,14 +127,14 @@ double CpuTiTrace::integrate_simple_point(double a)
 }
 
 /**
-* \brief Computes the time needed to execute "amount" on cpu.
-*
-* Here, amount can span multiple trace periods
-*
-* \param a        Initial time
-* \param amount  Amount to be executed
-* \return  End time
-*/
+ * @brief Computes the time needed to execute "amount" on cpu.
+ *
+ * Here, amount can span multiple trace periods
+ *
+ * @param a        Initial time
+ * @param amount  Amount to be executed
+ * @return  End time
+ */
 double CpuTiTmgr::solve(double a, double amount)
 {
   /* Fix very small negative numbers */
@@ -185,12 +185,12 @@ double CpuTiTmgr::solve(double a, double amount)
 }
 
 /**
- * \brief Auxiliary function to solve integral.
+ * @brief Auxiliary function to solve integral.
  *  It returns the date when the requested amount of flops is available
- * \param a        Initial point
- * \param amount  Amount of flops
- * \return The date when amount is available.
-*/
+ * @param a        Initial point
+ * @param amount  Amount of flops
+ * @return The date when amount is available.
+ */
 double CpuTiTrace::solve_simple(double a, double amount)
 {
   double integral_a = integrate_simple_point(a);
@@ -203,12 +203,12 @@ double CpuTiTrace::solve_simple(double a, double amount)
 }
 
 /**
-* \brief Auxiliary function to update the CPU speed scale.
-*
-*  This function uses the trace structure to return the speed scale at the determined time a.
-* \param a        Time
-* \return CPU speed scale
-*/
+ * @brief Auxiliary function to update the CPU speed scale.
+ *
+ *  This function uses the trace structure to return the speed scale at the determined time a.
+ * @param a        Time
+ * @return CPU speed scale
+ */
 double CpuTiTmgr::get_power_scale(double a)
 {
   double reduced_a          = a - floor(a / last_time_) * last_time_;
@@ -218,11 +218,11 @@ double CpuTiTmgr::get_power_scale(double a)
 }
 
 /**
- * \brief Creates a new integration trace from a tmgr_trace_t
+ * @brief Creates a new integration trace from a tmgr_trace_t
  *
- * \param  speed_trace    CPU availability trace
- * \param  value          Percentage of CPU speed available (useful to fixed tracing)
- * \return  Integration trace structure
+ * @param  speed_trace    CPU availability trace
+ * @param  value          Percentage of CPU speed available (useful to fixed tracing)
+ * @return  Integration trace structure
  */
 CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(speed_trace)
 {
@@ -258,14 +258,14 @@ CpuTiTmgr::CpuTiTmgr(tmgr_trace_t speed_trace, double value) : speed_trace_(spee
 }
 
 /**
- * \brief Binary search in array.
+ * @brief Binary search in array.
  *  It returns the first point of the interval in which "a" is.
- * \param array    Array
- * \param a        Value to search
- * \param low     Low bound to search in array
- * \param high    Upper bound to search in array
- * \return Index of point
-*/
+ * @param array    Array
+ * @param a        Value to search
+ * @param low     Low bound to search in array
+ * @param high    Upper bound to search in array
+ * @return Index of point
+ */
 int CpuTiTrace::binary_search(double* array, double a, int low, int high)
 {
   xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);

@@ -158,7 +158,7 @@ static void get_memory_regions(simgrid::mc::RemoteClient* process, simgrid::mc::
     snapshot->privatization_index = simgrid::mc::ProcessIndexMissing;
 }
 
-/** \brief Fills the position of the segments (executable, read-only, read/write).
+/** @brief Fills the position of the segments (executable, read-only, read/write).
  * */
 // TODO, use the ELF segment information for more robustness
 void find_object_address(std::vector<simgrid::xbt::VmMap> const& maps, simgrid::mc::ObjectInformation* result)
@@ -226,14 +226,14 @@ void find_object_address(std::vector<simgrid::xbt::VmMap> const& maps, simgrid::
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-/** \brief Checks whether the variable is in scope for a given IP.
+/** @brief Checks whether the variable is in scope for a given IP.
  *
  *  A variable may be defined only from a given value of IP.
  *
- *  \param var   Variable description
- *  \param scope Scope description
- *  \param ip    Instruction pointer
- *  \return      true if the variable is valid
+ *  @param var   Variable description
+ *  @param scope Scope description
+ *  @param ip    Instruction pointer
+ *  @return      true if the variable is valid
  * */
 static bool valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope, const void* ip)
 {

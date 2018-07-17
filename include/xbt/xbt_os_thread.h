@@ -28,7 +28,7 @@ typedef pthread_key_t xbt_os_thread_key_t;
 
 XBT_PUBLIC int xbt_os_get_numcores(void);
 
-/** \brief Thread data type (opaque structure) */
+/** @brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
 XBT_PUBLIC xbt_os_thread_t xbt_os_thread_create(const char* name, pvoid_f_pvoid_t start_routine, void* param,
                                                 void* data);
@@ -50,14 +50,14 @@ XBT_PUBLIC void xbt_os_thread_setguardsize(int guard_size);
 XBT_PUBLIC int xbt_os_thread_bind(xbt_os_thread_t thread, int core);
 XBT_PUBLIC int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void));
 
-/** \brief Thread mutex data type (opaque structure) */
+/** @brief Thread mutex data type (opaque structure) */
 typedef struct xbt_os_mutex_ *xbt_os_mutex_t;
 XBT_PUBLIC xbt_os_mutex_t xbt_os_mutex_init(void);
 XBT_PUBLIC void xbt_os_mutex_acquire(xbt_os_mutex_t mutex);
 XBT_PUBLIC void xbt_os_mutex_release(xbt_os_mutex_t mutex);
 XBT_PUBLIC void xbt_os_mutex_destroy(xbt_os_mutex_t mutex);
 
-/** \brief Thread condition data type (opaque structure) */
+/** @brief Thread condition data type (opaque structure) */
 typedef struct xbt_os_cond_ *xbt_os_cond_t;
 XBT_PUBLIC xbt_os_cond_t xbt_os_cond_init(void);
 XBT_PUBLIC void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex);
@@ -65,7 +65,7 @@ XBT_PUBLIC void xbt_os_cond_signal(xbt_os_cond_t cond);
 XBT_PUBLIC void xbt_os_cond_broadcast(xbt_os_cond_t cond);
 XBT_PUBLIC void xbt_os_cond_destroy(xbt_os_cond_t cond);
 
-/** \brief Semaphore data type (opaque structure) */
+/** @brief Semaphore data type (opaque structure) */
 typedef struct xbt_os_sem_ *xbt_os_sem_t;
 XBT_PUBLIC xbt_os_sem_t xbt_os_sem_init(unsigned int value);
 XBT_PUBLIC void xbt_os_sem_acquire(xbt_os_sem_t sem);

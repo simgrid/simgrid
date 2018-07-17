@@ -115,10 +115,10 @@ sg_size_t File::read(sg_size_t size)
   return read_size;
 }
 
-/** \brief Write into a file (local or remote)
+/** @brief Write into a file (local or remote)
  *
- * \param size of the file to write
- * \return the number of bytes successfully write or -1 if an error occurred
+ * @param size of the file to write
+ * @return the number of bytes successfully write or -1 if an error occurred
  */
 sg_size_t File::write(sg_size_t size)
 {
@@ -404,12 +404,12 @@ void sg_file_set_data(sg_file_t fd, void* data)
 }
 
 /**
- * \brief Set the file position indicator in the sg_file_t by adding offset bytes
+ * @brief Set the file position indicator in the sg_file_t by adding offset bytes
  * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
  *
- * \param fd : file object that identifies the stream
- * \param offset : number of bytes to offset from origin
- * \param origin : Position used as reference for the offset. It is specified by one of the following constants defined
+ * @param fd : file object that identifies the stream
+ * @param offset : number of bytes to offset from origin
+ * @param origin : Position used as reference for the offset. It is specified by one of the following constants defined
  *                 in \<stdio.h\> exclusively to be used as arguments for this function (SEEK_SET = beginning of file,
  *                 SEEK_CUR = current position of the file pointer, SEEK_END = end of file)
  */
@@ -435,11 +435,11 @@ void sg_file_unlink(sg_file_t fd)
 }
 
 /**
- * \brief Copy a file to another location on a remote host.
- * \param file : the file to move
- * \param host : the remote host where the file has to be copied
- * \param fullpath : the complete path destination on the remote host
- * \return If successful, the function returns 0. Otherwise, it returns -1.
+ * @brief Copy a file to another location on a remote host.
+ * @param file : the file to move
+ * @param host : the remote host where the file has to be copied
+ * @param fullpath : the complete path destination on the remote host
+ * @return If successful, the function returns 0. Otherwise, it returns -1.
  */
 int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
 {
@@ -447,11 +447,11 @@ int sg_file_rcopy(sg_file_t file, sg_host_t host, const char* fullpath)
 }
 
 /**
- * \brief Move a file to another location on a remote host.
- * \param file : the file to move
- * \param host : the remote host where the file has to be moved
- * \param fullpath : the complete path destination on the remote host
- * \return If successful, the function returns 0. Otherwise, it returns -1.
+ * @brief Move a file to another location on a remote host.
+ * @param file : the file to move
+ * @param host : the remote host where the file has to be moved
+ * @param fullpath : the complete path destination on the remote host
+ * @return If successful, the function returns 0. Otherwise, it returns -1.
  */
 int sg_file_rmove(sg_file_t file, sg_host_t host, const char* fullpath)
 {

@@ -63,7 +63,7 @@ XBT_PUBLIC void xbt_test_exit();
  * so why should we bother switching?)
  *
  * Unit testing is not intended to write integration tests.
- * Please refer to \ref inside_tests_add_integration for that instead.
+ * Please refer to @ref inside_tests_add_integration for that instead.
  *
  * @{
  */

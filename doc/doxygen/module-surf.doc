@@ -1,40 +1,40 @@
-/** \addtogroup SURF_API
+/** @addtogroup SURF_API
   
-  \section SURF_doc Surf documentation
+  @section SURF_doc Surf documentation
    Surf is composed several components:
-   - \ref SURF_simulation
-   - \ref SURF_models
-   - \ref SURF_build_api
-   - \ref SURF_c_bindings
-   - \ref SURF_interface
-   - \ref SURF_cpu_interface
-   - \ref SURF_network_interface
-   - \ref SURF_storage_interface
-   - \ref SURF_host_interface
-   - \ref SURF_vm_interface
-   - \ref SURF_lmm
-   - \ref SURF_callbacks
-   - \ref plugin_energy
+   - @ref SURF_simulation
+   - @ref SURF_models
+   - @ref SURF_build_api
+   - @ref SURF_c_bindings
+   - @ref SURF_interface
+   - @ref SURF_cpu_interface
+   - @ref SURF_network_interface
+   - @ref SURF_storage_interface
+   - @ref SURF_host_interface
+   - @ref SURF_vm_interface
+   - @ref SURF_lmm
+   - @ref SURF_callbacks
+   - @ref plugin_energy
    
 
 */
 
-/** \defgroup SURF_models Simulation Models
-    \ingroup SURF_API
-    \brief Functions to declare the kind of models that you want to use
+/** @defgroup SURF_models Simulation Models
+    @ingroup SURF_API
+    @brief Functions to declare the kind of models that you want to use
     */
 
-/** \defgroup SURF_simulation Simulation
-    \ingroup SURF_API
-    \brief Functions for creating the environment and launching the simulation
+/** @defgroup SURF_simulation Simulation
+    @ingroup SURF_API
+    @brief Functions for creating the environment and launching the simulation
 
     This section describes the functions for initializing SURF, performing
     the simulation and exiting SURF.
 */
 
-/** \defgroup SURF_build_api Create a new API
-    \ingroup SURF_API
-    \brief How to build a new API on top of SURF
+/** @defgroup SURF_build_api Create a new API
+    @ingroup SURF_API
+    @brief How to build a new API on top of SURF
 
     SURF provides the functionalities to simulate the platform. There are two main data types in SURF:
     the actions and the resources. Several types of resources exist:
@@ -46,35 +46,35 @@
     The implementation of these resources depends on the platform
     models you choose.  You can select your model by calling
     #surf_host_model_init_current_default() (which will give you a
-    CLM03 model), or similar (see \ref SURF_models).
+    CLM03 model), or similar (see @ref SURF_models).
 
     To initialize SURF, call #surf_init(). Then
     #surf_host_model_init_current_default() or #surf_host_model_init_ptask_L07() 
     to create the platform.
 
-    Then you can access the hosts with the \ref simgrid::s4u::Engine::get_all_hosts.
-    Some functions of the \ref SURF_host_interface and similar can give
+    Then you can access the hosts with the @ref simgrid::s4u::Engine::get_all_hosts.
+    Some functions of the @ref SURF_host_interface and similar can give
     you some information about:
 	- a host: get_speed(), get_available_speed();
 	- a network link: get_link_name(), get_link_latency(), get_link_bandwith();
 	- a route: get_route(), get_route_size().
 
-    During the simulation, call \a surf_host_model->execute() to schedule a
-    computation task on a host, or \a surf_host_model->communicate()
+    During the simulation, call @a surf_host_model->execute() to schedule a
+    computation task on a host, or @a surf_host_model->communicate()
     to schedule a communication task between two hosts. You can also create parallel task
-    with \a surf_host_model->extension_public->execute_parallel_task(). These functions return
+    with @a surf_host_model->extension_public->execute_parallel_task(). These functions return
     a new action that represents the task you have just created.
 
-    To execute the actions created with \a execute(), \a communicate() or \a execute_parallel_task(), call
+    To execute the actions created with @a execute(), @a communicate() or @a execute_parallel_task(), call
     surf_solve(). The function surf_solve() is where the simulation takes place. It returns the
     time elapsed to execute the actions. You can know what actions have changed their state thanks
     to the states sets. For example, if your want to know what actions are finished,
-    extract them from \a surf_host_model->common_public->states.done_action_set.
+    extract them from @a surf_host_model->common_public->states.done_action_set.
     Depending on these results, you can schedule other tasks and call surf_solve() again.
 
     When the simulation is over, just call surf_exit() to clean the memory.
 
-    Have a look at the implementation of \ref MSG_API "MSG" and \ref SD_API "Simdag" to see how these module
+    Have a look at the implementation of @ref MSG_API "MSG" and @ref SD_API "Simdag" to see how these module
     interact with SURF. But if you want to create a new API on top of SURF,
     we strongly recommend you to contact us before anyway.
 

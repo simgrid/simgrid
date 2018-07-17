@@ -23,17 +23,17 @@ void SIMIX_init_application()
 }
 
 /**
- * \brief An application deployer.
+ * @brief An application deployer.
  *
- * Creates the process described in \a file.
- * \param file a filename of a xml description of the application. This file
+ * Creates the process described in @a file.
+ * @param file a filename of a xml description of the application. This file
  * follows this DTD :
  *
- *     \include surfxml.dtd
+ *     @include surfxml.dtd
  *
  * Here is a small example of such a platform
  *
- *     \include small_deployment.xml
+ *     @include small_deployment.xml
  *
  */
 void SIMIX_launch_application(std::string file)
@@ -69,12 +69,12 @@ static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 }
 
 /**
- * \brief Registers a #xbt_main_func_t code in a global table.
+ * @brief Registers a #xbt_main_func_t code in a global table.
  *
  * Registers a code function in a global table.
  * This table is then used by #SIMIX_launch_application.
- * \param name the reference name of the function.
- * \param code the function
+ * @param name the reference name of the function.
+ * @param code the function
  */
 void SIMIX_function_register(std::string name, xbt_main_func_t code)
 {
@@ -89,10 +89,11 @@ void SIMIX_function_register(const char* name, xbt_main_func_t code) // deprecat
 }
 
 /**
- * \brief Registers a #xbt_main_func_t code as default value.
+ * @brief Registers a #xbt_main_func_t code as default value.
  *
- * Registers a code function as being the default value. This function will get used by SIMIX_launch_application() when there is no registered function of the requested name in.
- * \param code the function
+ * Registers a code function as being the default value. This function will get used by SIMIX_launch_application() when
+ * there is no registered function of the requested name in.
+ * @param code the function
  */
 void SIMIX_function_register_default(xbt_main_func_t code)
 {
@@ -101,12 +102,12 @@ void SIMIX_function_register_default(xbt_main_func_t code)
 }
 
 /**
- * \brief Gets a #smx_actor_t code from the global table.
+ * @brief Gets a #smx_actor_t code from the global table.
  *
  * Gets a code function from the global table. Returns nullptr if there are no function registered with the name.
  * This table is then used by #SIMIX_launch_application.
- * \param name the reference name of the function.
- * \return The #smx_actor_t or nullptr.
+ * @param name the reference name of the function.
+ * @return The #smx_actor_t or nullptr.
  */
 simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(std::string name)
 {
@@ -120,9 +121,7 @@ simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(std::string name)
     return i->second;
 }
 
-/**
- * \brief Bypass the parser, get arguments, and set function to each process
- */
+/** @brief Bypass the parser, get arguments, and set function to each process */
 
 void SIMIX_process_set_function(const char* process_host, const char* process_function, xbt_dynar_t arguments,
                                 double process_start_time, double process_kill_time)

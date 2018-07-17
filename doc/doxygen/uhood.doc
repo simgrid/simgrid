@@ -1,13 +1,13 @@
 /*! @page uhood Under the Hood
 
-\tableofcontents
+@tableofcontents
 
 TBD
 
  - Simulation Loop, LMM, sharing -> papers
  - Context Switching, privatization -> papers
 
-\section simgrid_uhood_s4u S4U
+@section simgrid_uhood_s4u S4U
 
 S4U classes are designed to be user process interfaces to Maestro resources.
 We provide an uniform interface to them:
@@ -129,9 +129,9 @@ void SIMIX_process_unref(smx_process_t process)
 }
 ~~~
 
-\section simgrid_uhood_async Asynchronous operations
+@section simgrid_uhood_async Asynchronous operations
 
-\subsection simgrid_uhood_futures Futures
+@subsection simgrid_uhood_futures Futures
 
 The `simgrid::kernel::Future` class has been added to SimGrid as an abstraction
 to represent asynchronous operations in the SimGrid maestro. Its API is based
@@ -197,9 +197,9 @@ futures are currently not implemented in our futures however such as
 [`shared_future`](http://en.cppreference.com/w/cpp/thread/shared_future),
 [`when_any()`](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html#futures.when_any).
 
-\subsection simgrid_uhood_timer Timers
+@subsection simgrid_uhood_timer Timers
 
-\section simgrid_uhood_mc Model Checker
+@section simgrid_uhood_mc Model Checker
 
 The current implementation of the model-checker uses two distinct processes:
 
@@ -226,7 +226,7 @@ process using the following techniques:
 - a custom heap is enabled in the model-checked process which allows the model
   checker to know which chunks are allocated and which are freed.
 
-\subsection simgrid_uhood_mc_address_space Address space
+@subsection simgrid_uhood_mc_address_space Address space
 
 The `AddressSpace` is a base class used for both the model-checked process
 and its snapshots and has methods to read in the corresponding address space:
@@ -243,7 +243,7 @@ Additional helper class include:
  - `RemotePtr<T>` represents the address of an object of type `T` in some
     remote `AddressSpace` (it could be an alias to `Remote<T*>`).
 
-\subsection simgrid_uhood_mc_address_elf_dwarf ELF and DWARF
+@subsection simgrid_uhood_mc_address_elf_dwarf ELF and DWARF
 
 [ELF](http://refspecs.linuxbase.org/elf/elf.pdf) is a standard executable file
 and dynamic libraries file format.

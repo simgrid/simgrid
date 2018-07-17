@@ -83,8 +83,8 @@ void xbt_dynar_dump(xbt_dynar_t dynar)
 
 /** @brief Constructor
  *
- * \param elmsize size of each element in the dynar
- * \param free_f function to call each time we want to get rid of an element (or nullptr if nothing to do).
+ * @param elmsize size of each element in the dynar
+ * @param free_f function to call each time we want to get rid of an element (or nullptr if nothing to do).
  *
  * Creates a new dynar. If a free_func is provided, the elements have to be pointer of pointer. That is to say that
  * dynars can contain either base types (int, char, double, etc) or pointer of pointers (struct **).
@@ -124,9 +124,9 @@ void xbt_dynar_free_data(xbt_dynar_t dynar)
 
 /** @brief Destructor of the structure not touching to the content
  *
- * \param dynar poor victim
+ * @param dynar poor victim
  *
- * kilkil a dynar BUT NOT its content. Ie, the array is freed, but the content is not touched (the \a free_f function
+ * kilkil a dynar BUT NOT its content. Ie, the array is freed, but the content is not touched (the @a free_f function
  * is not used)
  */
 void xbt_dynar_free_container(xbt_dynar_t* dynar)
@@ -141,7 +141,7 @@ void xbt_dynar_free_container(xbt_dynar_t* dynar)
 
 /** @brief Frees the content and set the size to 0
  *
- * \param dynar who to squeeze
+ * @param dynar who to squeeze
  */
 void xbt_dynar_reset(xbt_dynar_t const dynar)
 {
@@ -156,8 +156,8 @@ void xbt_dynar_reset(xbt_dynar_t const dynar)
 
 /** @brief Merge dynar d2 into d1
  *
- * \param d1 dynar to keep
- * \param d2 dynar to merge into d1. This dynar is free at end.
+ * @param d1 dynar to keep
+ * @param d2 dynar to merge into d1. This dynar is free at end.
  */
 void xbt_dynar_merge(xbt_dynar_t* d1, xbt_dynar_t* d2)
 {
@@ -177,15 +177,15 @@ void xbt_dynar_merge(xbt_dynar_t* d1, xbt_dynar_t* d2)
 }
 
 /**
- * \brief Shrink the dynar by removing empty slots at the end of the internal array
- * \param dynar a dynar
- * \param empty_slots_wanted number of empty slots you want to keep at the end of the internal array for further
+ * @brief Shrink the dynar by removing empty slots at the end of the internal array
+ * @param dynar a dynar
+ * @param empty_slots_wanted number of empty slots you want to keep at the end of the internal array for further
  * insertions
  *
- * Reduces the internal array size of the dynar to the number of elements plus \a empty_slots_wanted.
+ * Reduces the internal array size of the dynar to the number of elements plus @a empty_slots_wanted.
  * After removing elements from the dynar, you can call this function to make the dynar use less memory.
- * Set \a empty_slots_wanted to zero to reduce the dynar internal array as much as possible.
- * Note that if \a empty_slots_wanted is greater than the array size, the internal array is expanded instead of shrunk.
+ * Set @a empty_slots_wanted to zero to reduce the dynar internal array as much as possible.
+ * Note that if @a empty_slots_wanted is greater than the array size, the internal array is expanded instead of shrunk.
  */
 void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
 {
@@ -194,7 +194,7 @@ void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
 
 /** @brief Destructor
  *
- * \param dynar poor victim
+ * @param dynar poor victim
  *
  * kilkil a dynar and its content
  */
@@ -206,7 +206,7 @@ void xbt_dynar_free(xbt_dynar_t* dynar)
   }
 }
 
-/** \brief free a dynar passed as void* (handy to store dynar in dynars or dict) */
+/** @brief free a dynar passed as void* (handy to store dynar in dynars or dict) */
 void xbt_dynar_free_voidp(void* d)
 {
   xbt_dynar_t dynar = (xbt_dynar_t)d;
@@ -215,16 +215,16 @@ void xbt_dynar_free_voidp(void* d)
 
 /** @brief Count of dynar's elements
  *
- * \param dynar the dynar we want to mesure
+ * @param dynar the dynar we want to mesure
  */
 unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
 {
   return (dynar ? (unsigned long) dynar->used : (unsigned long) 0);
 }
 
- /**@brief check if a dynar is empty
+/**@brief check if a dynar is empty
  *
- *\param dynar the dynat we want to check
+ *@param dynar the dynat we want to check
  */
 int xbt_dynar_is_empty(const xbt_dynar_t dynar)
 {
@@ -233,9 +233,9 @@ int xbt_dynar_is_empty(const xbt_dynar_t dynar)
 
 /** @brief Retrieve a copy of the Nth element of a dynar.
  *
- * \param dynar information dealer
- * \param idx index of the slot we want to retrieve
- * \param[out] dst where to put the result to.
+ * @param dynar information dealer
+ * @param idx index of the slot we want to retrieve
+ * @param[out] dst where to put the result to.
  */
 void xbt_dynar_get_cpy(const xbt_dynar_t dynar, const unsigned long idx, void* const dst)
 {
@@ -247,11 +247,11 @@ void xbt_dynar_get_cpy(const xbt_dynar_t dynar, const unsigned long idx, void* c
 
 /** @brief Retrieve a pointer to the Nth element of a dynar.
  *
- * \param dynar information dealer
- * \param idx index of the slot we want to retrieve
- * \return the \a idx-th element of \a dynar.
+ * @param dynar information dealer
+ * @param idx index of the slot we want to retrieve
+ * @return the @a idx-th element of @a dynar.
  *
- * \warning The returned value is the actual content of the dynar.
+ * @warning The returned value is the actual content of the dynar.
  * Make a copy before fooling with it.
  */
 void* xbt_dynar_get_ptr(const xbt_dynar_t dynar, const unsigned long idx)
@@ -280,9 +280,9 @@ void* xbt_dynar_set_at_ptr(const xbt_dynar_t dynar, const unsigned long idx)
 
 /** @brief Set the Nth element of a dynar (expanded if needed). Previous value at this position is NOT freed
  *
- * \param dynar information dealer
- * \param idx index of the slot we want to modify
- * \param src What will be feeded to the dynar
+ * @param dynar information dealer
+ * @param idx index of the slot we want to modify
+ * @param src What will be feeded to the dynar
  *
  * If you want to free the previous content, use xbt_dynar_replace().
  */
@@ -293,9 +293,9 @@ void xbt_dynar_set(xbt_dynar_t dynar, const int idx, const void* const src)
 
 /** @brief Set the Nth element of a dynar (expanded if needed). Previous value is freed
  *
- * \param dynar
- * \param idx
- * \param object
+ * @param dynar
+ * @param idx
+ * @param object
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, AND DO free the previous value at this position. If
  * you don't want to free the previous content, use xbt_dynar_set().
@@ -421,7 +421,7 @@ void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned int n, const 
  * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function compares the
  * pointer value, not what's pointed. The only solution to search for a pointed value is then to write the foreach loop
  * yourself:
- * \code
+ * @code
  * signed int position = -1;
  * xbt_dynar_foreach(dynar, iter, elem) {
  *    if (not memcmp(elem, searched_element, sizeof(*elem))) {
@@ -429,7 +429,7 @@ void xbt_dynar_remove_n_at(xbt_dynar_t const dynar, const unsigned int n, const 
  *        break;
  *    }
  * }
- * \endcode
+ * @endcode
  *
  * Raises not_found_error if not found. If you have less than 2 millions elements, you probably want to use
  * #xbt_dynar_search_or_negative() instead, so that you don't have to TRY/CATCH on element not found.
@@ -594,8 +594,8 @@ void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int* const cursor)
  * }
  * @endverbatim
  *
- * \param dynar the dynar to sort
- * \param compar_fn comparison function of type (int (compar_fn*) (const void*) (const void*)).
+ * @param dynar the dynar to sort
+ * @param compar_fn comparison function of type (int (compar_fn*) (const void*) (const void*)).
  */
 void xbt_dynar_sort(xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
 {
@@ -616,8 +616,8 @@ xbt_dynar_t xbt_dynar_sort_strings(xbt_dynar_t dynar)
 
 /** @brief Transform a dynar into a nullptr terminated array.
  *
- *  \param dynar the dynar to transform
- *  \return pointer to the first element of the array
+ *  @param dynar the dynar to transform
+ *  @return pointer to the first element of the array
  *
  *  Note: The dynar won't be usable afterwards.
  */
@@ -633,10 +633,10 @@ void* xbt_dynar_to_array(xbt_dynar_t dynar)
 
 /** @brief Compare two dynars
  *
- *  \param d1 first dynar to compare
- *  \param d2 second dynar to compare
- *  \param compar function to use to compare elements
- *  \return 0 if d1 and d2 are equal and 1 if not equal
+ *  @param d1 first dynar to compare
+ *  @param d2 second dynar to compare
+ *  @param compar function to use to compare elements
+ *  @return 0 if d1 and d2 are equal and 1 if not equal
  *
  *  d1 and d2 should be dynars of pointers. The compar function takes two  elements and returns 0 when they are
  *  considered equal, and a value different of zero when they are considered different. Finally, d2 is destroyed

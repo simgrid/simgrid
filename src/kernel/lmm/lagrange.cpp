@@ -217,7 +217,7 @@ void Lagrange::lagrange_solve()
       obj = new_obj;
     }
 
-    /* Now computes the values of each variable (\rho) based on the values of \lambda and \mu. */
+    /* Now computes the values of each variable (@rho) based on the values of @lambda and @mu. */
     XBT_DEBUG("-------------- Check convergence ----------");
     overall_modification = 0;
     for (Variable& var : variable_set) {
@@ -255,10 +255,10 @@ void Lagrange::lagrange_solve()
 
 /*
  * Returns a double value corresponding to the result of a dichotomy process with respect to a given
- * variable/constraint (\mu in the case of a variable or \lambda in case of a constraint) and a initial value init.
+ * variable/constraint (@mu in the case of a variable or @lambda in case of a constraint) and a initial value init.
  *
- * @param init initial value for \mu or \lambda
- * @param diff a function that computes the differential of with respect a \mu or \lambda
+ * @param init initial value for @mu or @lambda
+ * @param diff a function that computes the differential of with respect a @mu or @lambda
  * @param var_cnst a pointer to a variable or constraint
  * @param min_erro a minimum error tolerated
  *
@@ -401,11 +401,11 @@ double Lagrange::partial_diff_lambda(double lambda, const Constraint& cnst)
   return diff;
 }
 
-/** \brief Attribute the value bound to var->bound.
+/** @brief Attribute the value bound to var->bound.
  *
- *  \param func_f    function (f)
- *  \param func_fp   partial differential of f (f prime, (f'))
- *  \param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
+ *  @param func_f    function (f)
+ *  @param func_fp   partial differential of f (f prime, (f'))
+ *  @param func_fpi  inverse of the partial differential of f (f prime inverse, (f')^{-1})
  *
  *  Set default functions to the ones passed as parameters.
  */
@@ -426,9 +426,9 @@ double (*Lagrange::func_fpi)(const Variable&, double);
 /* NOTE for Reno: all functions consider the network coefficient (alpha) equal to 1. */
 
 /*
- * For Vegas: $f(x) = \alpha D_f\ln(x)$
- * Therefore: $fp(x) = \frac{\alpha D_f}{x}$
- * Therefore: $fpi(x) = \frac{\alpha D_f}{x}$
+ * For Vegas: $f(x) = @alpha D_f@ln(x)$
+ * Therefore: $fp(x) = @frac{@alpha D_f}{x}$
+ * Therefore: $fpi(x) = @frac{@alpha D_f}{x}$
  */
 double func_vegas_f(const Variable& var, double x)
 {
@@ -449,9 +449,9 @@ double func_vegas_fpi(const Variable& var, double x)
 }
 
 /*
- * For Reno:  $f(x) = \frac{\sqrt{3/2}}{D_f} atan(\sqrt{3/2}D_f x)$
- * Therefore: $fp(x)  = \frac{3}{3 D_f^2 x^2+2}$
- * Therefore: $fpi(x)  = \sqrt{\frac{1}{{D_f}^2 x} - \frac{2}{3{D_f}^2}}$
+ * For Reno:  $f(x) = @frac{@sqrt{3/2}}{D_f} atan(@sqrt{3/2}D_f x)$
+ * Therefore: $fp(x)  = @frac{3}{3 D_f^2 x^2+2}$
+ * Therefore: $fpi(x)  = @sqrt{@frac{1}{{D_f}^2 x} - @frac{2}{3{D_f}^2}}$
  */
 double func_reno_f(const Variable& var, double x)
 {
@@ -480,7 +480,7 @@ double func_reno_fpi(const Variable& var, double x)
 }
 
 /* Implementing new Reno-2
- * For Reno-2:  $f(x)   = U_f(x_f) = \frac{{2}{D_f}}*ln(2+x*D_f)$
+ * For Reno-2:  $f(x)   = U_f(x_f) = @frac{{2}{D_f}}*ln(2+x*D_f)$
  * Therefore:   $fp(x)  = 2/(Weight*x + 2)
  * Therefore:   $fpi(x) = (2*Weight)/x - 4
  */

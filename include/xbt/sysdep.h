@@ -34,7 +34,7 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
 
 /**
  * @brief Kill the program with an error message
- * \param ... a format string and its arguments
+ * @param ... a format string and its arguments
  *
  * Things are so messed up that the only thing to do now, is to stop the program.
  *
@@ -54,7 +54,7 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt);
 #endif
 
 /** @addtogroup XBT_syscall
- *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)
+ *  @brief Malloc and associated functions, killing the program on error (with @ref XBT_ex)
  *
  *  @{
  */

@@ -72,7 +72,7 @@ void HostLoad::update()
 {
   double now = surf_get_clock();
 
-  /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k \in {0, 1, ..., cores}
+  /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k @in {0, 1, ..., cores}
    * number of active cores */
   current_flops_ = host_->pimpl_cpu->get_constraint()->get_usage();
 
@@ -151,9 +151,9 @@ static void on_action_state_change(simgrid::surf::CpuAction* action, simgrid::ke
 
 /* **************************** Public interface *************************** */
 
-/** \ingroup plugin_load
- * \brief Initializes the HostLoad plugin
- * \details The HostLoad plugin provides an API to get the current load of each host.
+/** @ingroup plugin_load
+ * @brief Initializes the HostLoad plugin
+ * @details The HostLoad plugin provides an API to get the current load of each host.
  */
 void sg_host_load_plugin_init()
 {

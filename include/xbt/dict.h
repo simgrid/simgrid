@@ -25,7 +25,7 @@ SG_BEGIN_DECL()
  *
  *  Here is a little example of use:
 
-\verbatim
+@verbatim
  xbt_dict_t mydict = xbt_dict_new_homogeneous(free);
  char buff[512];
 
@@ -34,7 +34,7 @@ SG_BEGIN_DECL()
 
  sprintf(buff,"another good stuff");
  xbt_dict_set(mydict,"my data", strdup(buff), NULL); // previous data gets erased (and freed) by second add
-\endverbatim
+@endverbatim
  */
 
 /** @defgroup XBT_dict_cons Dict constructor and destructor
@@ -43,7 +43,7 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-  /** \brief Dictionary data type (opaque structure) */
+/** @brief Dictionary data type (opaque structure) */
 typedef struct s_xbt_dict *xbt_dict_t;
 typedef struct s_xbt_dictelm *xbt_dictelm_t;
 typedef struct s_xbt_dictelm {
@@ -111,15 +111,15 @@ struct s_xbt_dict_cursor {
  *
  *  Here is an example (assuming that the dictionary contains strings, i.e., that the <tt>data</tt> argument of
  *  xbt_dict_set was always a null-terminated char*):
-\verbatim xbt_dict_cursor_t cursor=NULL;
+@verbatim xbt_dict_cursor_t cursor=NULL;
  char *key,*data;
 
  xbt_dict_foreach(dict,cursor,key,data) {
     printf("   - Seen:  %s->%s\n",key,data);
- }\endverbatim
+ }@endverbatim
 
  *
- *  \warning Do not add or remove entries to the cache while traversing !!
+ *  @warning Do not add or remove entries to the cache while traversing !!
  *
  *  @{ */
 
@@ -142,14 +142,14 @@ XBT_PUBLIC void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t* 
 XBT_PUBLIC void xbt_dict_cursor_step(xbt_dict_cursor_t cursor);
 XBT_PUBLIC int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t* cursor, char** key, void** data);
 /** @def xbt_dict_foreach
- *  @param dict a \ref xbt_dict_t iterator
- *  @param cursor an \ref xbt_dict_cursor_t used as cursor
+ *  @param dict a @ref xbt_dict_t iterator
+ *  @param cursor an @ref xbt_dict_cursor_t used as cursor
  *  @param key a char*
  *  @param data a void** output
  *  @hideinitializer
  *
- * \note An example of usage:
- * \code
+ * @note An example of usage:
+ * @code
 xbt_dict_cursor_t cursor = NULL;
 char *key;
 char *data;
@@ -157,7 +157,7 @@ char *data;
 xbt_dict_foreach(head, cursor, key, data) {
  printf("Key %s with data %s\n",key,data);
 }
-\endcode
+@endcode
  */
 #  define xbt_dict_foreach(dict,cursor,key,data)                       \
     for (cursor=NULL, xbt_dict_cursor_first((dict),&(cursor)) ;        \

@@ -11,7 +11,7 @@
 #include "private.hpp"
 #include "xbt/base.h"
 
-/** \brief MPI collective description */
+/** @brief MPI collective description */
 
 #define COLL_DEFS(cat, ret, args, args2)                                                                               \
   static void set_##cat(std::string name);                                                                             \

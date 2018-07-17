@@ -116,7 +116,7 @@ int Host::get_pstate_count() const
 }
 
 /**
- * \brief Return a copy of the list of actors that are executing on this host.
+ * @brief Return a copy of the list of actors that are executing on this host.
  *
  * Daemons and regular actors are all mixed in this list.
  */
@@ -148,13 +148,13 @@ void Host::actorList(std::vector<ActorPtr>* whereto)
 }
 
 /**
- * \brief Find a route toward another host
+ * @brief Find a route toward another host
  *
- * \param dest [IN] where to
- * \param links [OUT] where to store the list of links (must exist, cannot be nullptr).
- * \param latency [OUT] where to store the latency experienced on the path (or nullptr if not interested)
+ * @param dest [IN] where to
+ * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
+ * @param latency [OUT] where to store the latency experienced on the path (or nullptr if not interested)
  *                It is the caller responsibility to initialize latency to 0 (we add to provided route)
- * \pre links!=nullptr
+ * @pre links!=nullptr
  *
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
@@ -255,9 +255,9 @@ int Host::get_pstate() const
 }
 
 /**
- * \ingroup simix_storage_management
- * \brief Returns the list of storages attached to an host.
- * \return a vector containing all storages attached to the host
+ * @ingroup simix_storage_management
+ * @brief Returns the list of storages attached to an host.
+ * @return a vector containing all storages attached to the host
  */
 std::vector<const char*> Host::get_attached_storages() const
 {
@@ -305,11 +305,11 @@ size_t sg_host_count()
  *
  * Uses sg_host_count() to know the array size.
  *
- * \return an array of \ref sg_host_t containing all the hosts in the platform.
- * \remark The host order in this array is generally different from the
+ * @return an array of @ref sg_host_t containing all the hosts in the platform.
+ * @remark The host order in this array is generally different from the
  * creation/declaration order in the XML platform (we use a hash table
  * internally).
- * \see sg_host_count()
+ * @see sg_host_count()
  */
 sg_host_t* sg_host_list()
 {
@@ -409,22 +409,22 @@ double sg_host_speed(sg_host_t host)
   return host->get_speed();
 }
 
-/** \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
+/** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
  *
- * \param  host host to test
- * \param pstate_index pstate to test
- * \return Returns the processor speed associated with pstate_index
+ * @param  host host to test
+ * @param pstate_index pstate to test
+ * @return Returns the processor speed associated with pstate_index
  */
 double sg_host_get_pstate_speed(sg_host_t host, int pstate_index)
 {
   return host->get_pstate_speed(pstate_index);
 }
 
-/** \ingroup m_host_management
- * \brief Return the number of cores.
+/** @ingroup m_host_management
+ * @brief Return the number of cores.
  *
- * \param host a host
- * \return the number of cores
+ * @param host a host
+ * @return the number of cores
  */
 int sg_host_core_count(sg_host_t host)
 {
@@ -462,9 +462,9 @@ void sg_host_set_pstate(sg_host_t host, int pstate)
   host->set_pstate(pstate);
 }
 
-/** \ingroup m_host_management
+/** @ingroup m_host_management
  *
- * \brief Start the host if it is off
+ * @brief Start the host if it is off
  *
  * See also #sg_host_is_on() and #sg_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
@@ -474,9 +474,9 @@ void sg_host_turn_on(sg_host_t host)
   host->turn_on();
 }
 
-/** \ingroup m_host_management
+/** @ingroup m_host_management
  *
- * \brief Stop the host if it is on
+ * @brief Stop the host if it is on
  *
  * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref plugin_energy
  * for more info on DVFS.
@@ -524,13 +524,13 @@ xbt_dict_t sg_host_get_properties(sg_host_t host)
   return as_dict;
 }
 
-/** \ingroup m_host_management
- * \brief Returns the value of a given host property
+/** @ingroup m_host_management
+ * @brief Returns the value of a given host property
  *
- * \param host a host
- * \param name a property name
- * \return value of a property (or nullptr if property not set)
-*/
+ * @param host a host
+ * @param name a property name
+ * @return value of a property (or nullptr if property not set)
+ */
 const char* sg_host_get_property_value(sg_host_t host, const char* name)
 {
   return host->get_property(name);
@@ -542,11 +542,11 @@ void sg_host_set_property_value(sg_host_t host, const char* name, const char* va
 }
 
 /**
- * \brief Find a route between two hosts
+ * @brief Find a route between two hosts
  *
- * \param from where from
- * \param to where to
- * \param links [OUT] where to store the list of links (must exist, cannot be nullptr).
+ * @param from where from
+ * @param to where to
+ * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
  */
 void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
 {
@@ -556,10 +556,10 @@ void sg_host_route(sg_host_t from, sg_host_t to, xbt_dynar_t links)
     xbt_dynar_push(links, &link);
 }
 /**
- * \brief Find the latency of the route between two hosts
+ * @brief Find the latency of the route between two hosts
  *
- * \param from where from
- * \param to where to
+ * @param from where from
+ * @param to where to
  */
 double sg_host_route_latency(sg_host_t from, sg_host_t to)
 {
@@ -569,10 +569,10 @@ double sg_host_route_latency(sg_host_t from, sg_host_t to)
   return res;
 }
 /**
- * \brief Find the bandwitdh of the route between two hosts
+ * @brief Find the bandwitdh of the route between two hosts
  *
- * \param from where from
- * \param to where to
+ * @param from where from
+ * @param to where to
  */
 double sg_host_route_bandwidth(sg_host_t from, sg_host_t to)
 {
@@ -604,10 +604,10 @@ void sg_host_dump(sg_host_t host)
   }
 }
 
-/** \brief Return the list of actors attached to an host.
+/** @brief Return the list of actors attached to an host.
  *
- * \param host a host
- * \param whereto a dynar in which we should push actors living on that host
+ * @param host a host
+ * @param whereto a dynar in which we should push actors living on that host
  */
 void sg_host_get_actor_list(sg_host_t host, xbt_dynar_t whereto)
 {

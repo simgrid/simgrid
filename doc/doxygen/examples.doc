@@ -1,22 +1,22 @@
-/*! \page examples SimGrid Examples
+/*! @page examples SimGrid Examples
 
-\tableofcontents
+@tableofcontents
 
 SimGrid comes with many examples provided in the examples/ directory.
-Those examples are described in section \ref msg_examples. Those
+Those examples are described in section @ref msg_examples. Those
 examples are commented and should be easy to understand. for a first
 step into SimGrid we also provide some more detailed examples in the
 sections below. 
 
-\htmlonly
+@htmlonly
 You should also check our online <a href="http://simgrid.gforge.inria.fr/documentation.html"> tutorial section</a> that contains a generic tutorial about using SimGrid. 
-\endhtmlonly
+@endhtmlonly
 
-\section using_msg Using MSG
+@section using_msg Using MSG
 
-\htmlonly
+@htmlonly
 You should also check our online <a href="http://simgrid.gforge.inria.fr/documentation.html"> tutorial section</a> that contains a dedicated tutorial. 
-\endhtmlonly
+@endhtmlonly
 
 Here are some examples on how to use MSG, the most used API.
 
@@ -24,32 +24,32 @@ MSG comes with an extensive set of examples. It is sometimes difficult
 to find the one you need. This list aims at helping you finding the
 example from which you can learn what you want to.
 
-\subsection MSG_ex_basics Basic examples and features
+@subsection MSG_ex_basics Basic examples and features
 
-\subsubsection MSG_ex_master_worker Basic Master/Workers
+@subsubsection MSG_ex_master_worker Basic Master/Workers
 
 Simulation of a master-worker application using a realistic platform and an external description of the deployment.
 
-\paragraph MSG_ex_mw_TOC Table of contents:
+@paragraph MSG_ex_mw_TOC Table of contents:
 
-   - \ref MSG_ext_mw_preliminary
-   - \ref MSG_ext_mw_master
-   - \ref MSG_ext_mw_worker
-   - \ref MSG_ext_mw_core
-     - \ref MSG_ext_mw_platform
-     - \ref MSG_ext_mw_application
+   - @ref MSG_ext_mw_preliminary
+   - @ref MSG_ext_mw_master
+   - @ref MSG_ext_mw_worker
+   - @ref MSG_ext_mw_core
+     - @ref MSG_ext_mw_platform
+     - @ref MSG_ext_mw_application
 
 <hr>
 
-\dontinclude msg/app-masterworker/app-masterworker.c
+@dontinclude msg/app-masterworker/app-masterworker.c
 
-\paragraph MSG_ext_mw_preliminary Preliminary declarations
+@paragraph MSG_ext_mw_preliminary Preliminary declarations
 
-\skip include
-\until example");
-\skipline Master expects
+@skip include
+@until example");
+@skipline Master expects
 
-\paragraph MSG_ext_mw_master Master code
+@paragraph MSG_ext_mw_master Master code
 
 This function has to be assigned to a #msg_process_t that will behave as the master. It should not be called directly 
 but either given as a parameter to #MSG_process_create() or registered as a public function through 
@@ -63,14 +63,14 @@ C style arguments (argc/argv) are interpreted as:
 
 Tasks are evenly sent in a round-robin style.
 
-\until return 0;
-\until }
-\skipline Worker expects
+@until return 0;
+@until }
+@skipline Worker expects
 
-\paragraph MSG_ext_mw_worker Worker code
+@paragraph MSG_ext_mw_worker Worker code
 
 This function has to be assigned to a #msg_process_t that has to behave as a worker. Just like the master function 
-(described in \ref MSG_ext_mw_master), it should not be called directly.
+(described in @ref MSG_ext_mw_master), it should not be called directly.
 
 C style arguments (argc/argv) are interpreted as:
    - a unique id used to build the mailbox name of the worker
@@ -78,10 +78,10 @@ C style arguments (argc/argv) are interpreted as:
 This function keeps waiting for tasks and executes them as it receives them. When a special task named 'finalize' is
 received from the master, the process ends its execution.
 
-\until return 0;
-\until }
+@until return 0;
+@until }
 
-\paragraph MSG_ext_mw_core Main function
+@paragraph MSG_ext_mw_core Main function
 
 This function is the core of the simulation and is divided only into 3 parts:
    -# Simulation settings : #MSG_create_environment() creates a realistic
@@ -93,20 +93,20 @@ This function is the core of the simulation and is divided only into 3 parts:
 Its arguments are:
    - <i>platform_file</i>: the name of a file containing an valid platform description.
    - <i>deployment_file</i>: the name of a file containing a valid application description
-\line main
-\until OK;
-\until }
+@line main
+@until OK;
+@until }
 
-\paragraph MSG_ext_mw_platform Example of a platform file
+@paragraph MSG_ext_mw_platform Example of a platform file
 
-The following platform description can be found in \c examples/msg/platforms/small_platform.xml
-\include platforms/small_platform.xml
+The following platform description can be found in @c examples/msg/platforms/small_platform.xml
+@include platforms/small_platform.xml
 
-\paragraph MSG_ext_mw_application Example of a deployment file
+@paragraph MSG_ext_mw_application Example of a deployment file
 
-The following application description can be found in \c examples/msg/app-masterworker/app-masterworker_d.xml:
+The following application description can be found in @c examples/msg/app-masterworker/app-masterworker_d.xml:
 
-\include msg/app-masterworker/app-masterworker_d.xml
+@include msg/app-masterworker/app-masterworker_d.xml
 
 */
 

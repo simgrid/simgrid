@@ -29,26 +29,26 @@ abnormality when all the cores are idle. The full details are in
 
 As a result, our energy model takes 4 parameters:
 
-  - \b Idle: instantaneous consumption (in Watt) when your host is up and running, but without anything to do.
-  - \b OneCore: instantaneous consumption (in Watt) when only one core is active, at 100%.
-  - \b AllCores: instantaneous consumption (in Watt) when all cores of the host are at 100%.
-  - \b Off: instantaneous consumption (in Watt) when the host is turned off.
+  - @b Idle: instantaneous consumption (in Watt) when your host is up and running, but without anything to do.
+  - @b OneCore: instantaneous consumption (in Watt) when only one core is active, at 100%.
+  - @b AllCores: instantaneous consumption (in Watt) when all cores of the host are at 100%.
+  - @b Off: instantaneous consumption (in Watt) when the host is turned off.
 
 Here is an example of XML declaration:
 
-\code{.xml}
+@code{.xml}
 <host id="HostA" power="100.0Mf" cores="4">
     <prop id="watt_per_state" value="100.0:120.0:200.0" />
     <prop id="watt_off" value="10" />
 </host>
-\endcode
+@endcode
 
-This example gives the following parameters: \b Off is 10 Watts; \b Idle is 100 Watts; \b OneCore is 120 Watts and \b
+This example gives the following parameters: @b Off is 10 Watts; @b Idle is 100 Watts; @b OneCore is 120 Watts and @b
 AllCores is 200 Watts.
 This is enough to compute the consumption as a function of the amount of loaded cores:
 
 <table>
-<tr><th>\#Cores loaded</th><th>Consumption</th><th>Explanation</th></tr>
+<tr><th>@#Cores loaded</th><th>Consumption</th><th>Explanation</th></tr>
 <tr><td>0</td><td> 100 Watts</td><td>Idle value</td></tr>
 <tr><td>1</td><td> 120 Watts</td><td>OneCore value</td></tr>
 <tr><td>2</td><td> 147 Watts</td><td>linear extrapolation between OneCore and AllCores</td></tr>
@@ -64,27 +64,27 @@ the time, and our model holds.
 
 ### What if the host has only one core?
 
-In this case, the parameters \b OneCore and \b AllCores are obviously the same.
+In this case, the parameters @b OneCore and @b AllCores are obviously the same.
 Actually, SimGrid expect an energetic profile formatted as 'Idle:Running' for mono-cores hosts.
-If you insist on passing 3 parameters in this case, then you must have the same value for \b OneCore and \b AllCores.
+If you insist on passing 3 parameters in this case, then you must have the same value for @b OneCore and @b AllCores.
 
-\code{.xml}
+@code{.xml}
 <host id="HostC" power="100.0Mf" cores="1">
     <prop id="watt_per_state" value="95.0:200.0" /> <!-- we may have used '95:200:200' instead -->
     <prop id="watt_off" value="10" />
 </host>
-\endcode
+@endcode
 
 ### How does DVFS interact with the host energy model?
 
 If your host has several DVFS levels (several pstates), then you should give the energetic profile of each pstate level:
 
-\code{.xml}
+@code{.xml}
 <host id="HostC" power="100.0Mf,50.0Mf,20.0Mf" cores="4">
     <prop id="watt_per_state" value="95.0:120.0:200.0, 93.0:115.0:170.0, 90.0:110.0:150.0" />
     <prop id="watt_off" value="10" />
 </host>
-\endcode
+@endcode
 
 This encodes the following values
 <table>
@@ -450,9 +450,9 @@ static void on_simulation_end()
 
 /* **************************** Public interface *************************** */
 
-/** \ingroup plugin_energy
- * \brief Enable host energy plugin
- * \details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
+/** @ingroup plugin_energy
+ * @brief Enable host energy plugin
+ * @details Enable energy plugin to get joules consumption of each cpu. Call this function before #MSG_init().
  */
 void sg_host_energy_plugin_init()
 {

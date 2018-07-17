@@ -15,18 +15,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix, "Logging specific to S
 /********************************* SIMIX **************************************/
 
 /**
- * \brief A platform constructor.
+ * @brief A platform constructor.
  *
  * Creates a new platform, including hosts, links and the
  * routing_table.
- * \param file a filename of a xml description of a platform. This file
+ * @param file a filename of a xml description of a platform. This file
  * follows this DTD :
  *
- *     \include surfxml.dtd
+ *     @include surfxml.dtd
  *
  * Here is a small example of such a platform
  *
- *     \include small_platform.xml
+ *     @include small_platform.xml
  *
  */
 void SIMIX_create_environment(std::string file)

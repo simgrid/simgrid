@@ -1,12 +1,12 @@
 /*! @page tutorial_msg SimGrid Tutorial with MSG
 
-\tableofcontents
+@tableofcontents
 
-\section tuto-msg-intro Introduction
+@section tuto-msg-intro Introduction
 
-\subsection tuto-msg-intro-settings Settings
+@subsection tuto-msg-intro-settings Settings
 
-\warning Before you take this tutorial, you should remember that the
+@warning Before you take this tutorial, you should remember that the
 MSG interface is currently deprecated. It means that it will remain as
 is, inchanged, for a few years, but that new developments should use
 the new S4U interface instead. Unfortunately, the S4U tutorial is not
@@ -22,15 +22,15 @@ simulator. Let's consider the following scenario:
 > large) set of worker machines. What is the best way to organize the
 > computations ?
 
-\htmlonly
+@htmlonly
 <div align="center">
-\endhtmlonly
-\htmlinclude tuto-msg/overview.svg
-\htmlonly
+@endhtmlonly
+@htmlinclude tuto-msg/overview.svg
+@htmlonly
 </div>
-\endhtmlonly
+@endhtmlonly
 
-\subsection tuto-msg-intro-questions Raised Questions
+@subsection tuto-msg-intro-questions Raised Questions
 
 Although this looks like a very simple setting it raises several
 interesting questions:
@@ -103,7 +103,7 @@ With SimGrid, you can forget about most technical details (but not
 all), and focus on your algorithm. The whole simulation mechanism is
 already working.
 
-\subsection tuto-msg-intro-goal Envisionned Study
+@subsection tuto-msg-intro-goal Envisionned Study
 
 
 The following figure is a screenshot of [triva][fn:1] visualizing a [SimGrid
@@ -113,9 +113,9 @@ usage over a long period of time.
 
 ![Test](./sc3-description.png)
 
-\section tuto-msg-starting Getting Started
+@section tuto-msg-starting Getting Started
 
-\subsection tuto-msg-prerequesite Prerequisite
+@subsection tuto-msg-prerequesite Prerequisite
 
 In this example, we use Pajeng and Vite to visualize the result of
 SimGrid simulations. These external tools are usually very easy to
@@ -125,7 +125,7 @@ install. On Debian and Ubuntu for example, you can get them as follows:
 sudo apt-get install pajeng vite
 ~~~~
 
-\subsection tuto-msg-setup Setting up and Compiling
+@subsection tuto-msg-setup Setting up and Compiling
 
 The corresponding source files can be obtained
 [online on GitLab](https://gitlab.inria.fr/simgrid/simgrid/tree/master/doc/tuto-msg/src). 
@@ -138,7 +138,7 @@ everything for you. If you struggle with the compilation, then you should double
 your @ref install "SimGrid installation". 
 On need, please refer to the @ref install_yours_trouble section.
 
-\section tuto-msg-ex0 Discovering the provided simulator
+@section tuto-msg-ex0 Discovering the provided simulator
 
 Please compile and execute the provided simulator as follows:
 
@@ -155,8 +155,8 @@ For a more "fancy" output, you can use simgrid-colorizer.
 
 If you installed SimGrid to a non-standard path, you may have to
 specify the full path to simgrid-colorizer on the above line, such as
-\c /opt/simgrid/bin/simgrid-colorizer. If you did not install it at all,
-you can find it in \<simgrid_root_directory\>/bin/colorize.
+@c /opt/simgrid/bin/simgrid-colorizer. If you did not install it at all,
+you can find it in @<simgrid_root_directory@>/bin/colorize.
 
 For a classical Gantt-Chart visualization, you can produce a [Paje][fn:5] trace:
 
@@ -174,25 +174,25 @@ Alternatively, you can use [vite][fn:6].
 vite simgrid.trace
 ~~~~
 
-\subsection tuto-msg-exo0-source Understanding this source code
+@subsection tuto-msg-exo0-source Understanding this source code
 
-Explore the \ref doc/tuto-msg/masterworker.c source file. It contains 3 functions:
- - \c master: that's the code executed by the master process.<br>
+Explore the @ref doc/tuto-msg/masterworker.c source file. It contains 3 functions:
+ - @c master: that's the code executed by the master process.<br>
    It creates a large array containing all tasks,
    dispatches all tasks to the workers and then dispatch
    specific tasks which name is "finalize". 
- - \c worker: each workers will execute this function.<br>
+ - @c worker: each workers will execute this function.<br>
    That's an infinite loop waiting for incomming tasks.
    We exit the loop if the name of the received task is "finalize", or process the task otherwise.
- - \c main: this setups the simulation.
+ - @c main: this setups the simulation.
 
 How does SimGrid know that we need one master and several workers?
-Because it's written in the deployment file (called \c
+Because it's written in the deployment file (called @c
 deployment0.xml), that we pass to MSG_create_environment() during the setup.
 
-\include doc/tuto-msg/deployment0.xml
+@include doc/tuto-msg/deployment0.xml
 
-\section tuto-msg-exo1 Exercise 1: Simplifying the deployment file
+@section tuto-msg-exo1 Exercise 1: Simplifying the deployment file
 
 In the provided example, the deployment file `deployment0.xml` is
 tightly connected to the platform file `small_platform.xml` and adding
@@ -205,7 +205,7 @@ so that the master launches a worker process on all the other machines
 at startup. The new deployment file `deployment1.xml` should be as
 simple as:
 
-\include doc/tuto-msg/deployment1.xml
+@include doc/tuto-msg/deployment1.xml
 
 For that, the master needs to retrieve the list of hosts declared in
 the platform, with the following functions (follow the links for their
@@ -223,7 +223,7 @@ Then, the master should start the worker processes with the following function:
 msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host);
 ~~~~
 
-\subsection tuto-msg-exo1-config Increasing configurability
+@subsection tuto-msg-exo1-config Increasing configurability
 
 The worker processes wait for incomming messages on a channel which
 name they need to know beforehand. In the provided code, each worker
@@ -256,7 +256,7 @@ A third possibility would be to inverse the communication architecture
 and have the workers pulling work from the master. This require to
 pass the master's channel to the workers.
 
-\subsection tuto-msg-exo1-wrapup Wrap up 
+@subsection tuto-msg-exo1-wrapup Wrap up 
 
 In this exercise, we reduced the amount of configuration that our
 simulator requests. This is both a good idea, and a dangerous
@@ -274,10 +274,10 @@ separation of concerns between things that are of very different
 nature.
 
 If you struggle with this exercise, have a look at
-our solution in \ref doc/tuto-msg/masterworker-sol1.c
+our solution in @ref doc/tuto-msg/masterworker-sol1.c
 This is not perfect at all, and many other solutions would have been possible, of course.
 
-\section tuto-msg-exo2 Exercise 2: Infinite amount of work, fixed experiment duration
+@section tuto-msg-exo2 Exercise 2: Infinite amount of work, fixed experiment duration
 
 In the current version, the number of tasks is defined through the
 worker arguments. Hence, tasks are created at the very beginning of
@@ -304,9 +304,9 @@ int MSG_process_killall(int reset_PIDs);
 Anyway, the new deployment `deployment2.xml` file should thus look
 like this:
 
-\include doc/tuto-msg/deployment2.xml
+@include doc/tuto-msg/deployment2.xml
 
-\subsection tuto-msg-exo2-verbosity Controlling the message verbosity
+@subsection tuto-msg-exo2-verbosity Controlling the message verbosity
 
 Not all messages are equally informative, so you probably want to
 change most of the `XBT_INFO` into `XBT_DEBUG` so that they are hidden
@@ -317,16 +317,16 @@ processed by default. You can still see the debug messages as follows:
 ./masterworker examples/platforms/small_platform.xml deployment2.xml --log=msg_test.thres:debug
 ~~~~
 
-\subsection tuto-msg-exo2-wrapup Wrap up
+@subsection tuto-msg-exo2-wrapup Wrap up
 
 Our imperfect solution to this exercise is available as @ref doc/tuto-msg/masterworker-sol2.c
 But there is still much to improve in that code.
 
-\section tuto-msg-exo3 Exercise 3: Understanding how competing applications behave
+@section tuto-msg-exo3 Exercise 3: Understanding how competing applications behave
 
 It is now time to start several applications at once, with the following `deployment3.xml` file.
 
-\include doc/tuto-msg/deployment3.xml
+@include doc/tuto-msg/deployment3.xml
 
 Things happen when you do so, but it remains utterly difficult to
 understand what's happening exactely. Even visualizations with pajeng
@@ -345,7 +345,7 @@ The outcome can then be visualized as a Gantt-chart as follows:
 vite simgrid.trace
 ~~~~
 
-\subsection tuto-msg-exo3-further Going further
+@subsection tuto-msg-exo3-further Going further
 
 vite is not enough to understand the situation, because it does not
 deal with categorization. That is why you should switch to R to
@@ -355,7 +355,7 @@ page</a>.
 
 As usual, you can explore our imperfect solution, in @ref doc/tuto-msg/masterworker-sol3.c.
 
-\section tuto-msg-exo4 Exercise 4: Better scheduling: FCFS
+@section tuto-msg-exo4 Exercise 4: Better scheduling: FCFS
 
 You don't need a very advanced visualization solution to notice that
 round-robin is completely suboptimal: most of the workers keep waiting
@@ -378,7 +378,7 @@ time is up, and answer with a terminating task.
 Once it works, you will see that such as simple FCFS schema allows to
 double the amount of tasks handled over time in this case.
 
-\subsection tuto-msg-exo4-further Going further
+@subsection tuto-msg-exo4-further Going further
 
 From this, many things can easily be added. For example, you could:
 - Allow workers to have several pending requests so as to overlap
@@ -391,12 +391,12 @@ From this, many things can easily be added. For example, you could:
 - Optimize not only for the amount of tasks handled, but also for the total energy dissipated.
 - And so on. If you come up with a really nice extension, please share it with us so that we can extend this tutorial.
 
-\section tuto-msg-further Where to go from here?
+@section tuto-msg-further Where to go from here?
 
 This tutorial is now terminated. You could keep reading the [online documentation][fn:4] or
 [tutorials][fn:7], or you could head up to the example section to read some code.
 
-\subsection tuto-msg-further-todo TODO: Points to improve for the next time
+@subsection tuto-msg-further-todo TODO: Points to improve for the next time
 
 - Propose equivalent exercises and skeleton in java.
 - Propose a virtualbox image with everything (simgrid, pajeng, ...) already set

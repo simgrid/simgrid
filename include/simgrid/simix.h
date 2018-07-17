@@ -26,7 +26,7 @@
     some <em>private data</em> that can be only accessed by local
     process.
 
-    \see m_host_management
+    @see m_host_management
   @{ */
 typedef enum {
   SIMIX_WAITING,
@@ -46,9 +46,7 @@ typedef enum {
 
 /* ******************************** Synchro ************************************ */
 
-/**
- * \ingroup simix_synchro_management
- */
+/** @ingroup simix_synchro_management */
 typedef struct s_smx_sem_t* smx_sem_t;
 
 /* ****************************** Process *********************************** */

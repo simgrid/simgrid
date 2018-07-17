@@ -25,18 +25,18 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 #include "popping_bodies.cpp"
 
 /**
- * \ingroup simix_process_management
- * \brief Creates a synchro that executes some computation of an host.
+ * @ingroup simix_process_management
+ * @brief Creates a synchro that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
  * to create the SIMIX synchro. It can raise a host_error exception if the host crashed.
  *
- * \param name Name of the execution synchro to create
- * \param flops_amount amount Computation amount (in flops)
- * \param priority computation priority
- * \param bound
- * \param host host where the synchro will be executed
- * \return A new SIMIX execution synchronization
+ * @param name Name of the execution synchro to create
+ * @param flops_amount amount Computation amount (in flops)
+ * @param priority computation priority
+ * @param bound
+ * @param host host where the synchro will be executed
+ * @return A new SIMIX execution synchronization
  */
 smx_activity_t simcall_execution_start(std::string name, double flops_amount, double priority, double bound,
                                        simgrid::s4u::Host* host)
@@ -51,19 +51,19 @@ smx_activity_t simcall_execution_start(std::string name, double flops_amount, do
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Creates a synchro that may involve parallel computation on
+ * @ingroup simix_process_management
+ * @brief Creates a synchro that may involve parallel computation on
  * several hosts and communication between them.
  *
- * \param name Name of the execution synchro to create
- * \param host_nb Number of hosts where the synchro will be executed
- * \param host_list Array (of size host_nb) of hosts where the synchro will be executed
- * \param flops_amount Array (of size host_nb) of computation amount of hosts (in bytes)
- * \param bytes_amount Array (of size host_nb * host_nb) representing the communication
+ * @param name Name of the execution synchro to create
+ * @param host_nb Number of hosts where the synchro will be executed
+ * @param host_list Array (of size host_nb) of hosts where the synchro will be executed
+ * @param flops_amount Array (of size host_nb) of computation amount of hosts (in bytes)
+ * @param bytes_amount Array (of size host_nb * host_nb) representing the communication
  * amount between each pair of hosts
- * \param rate the SURF action rate
- * \param timeout timeout
- * \return A new SIMIX execution synchronization
+ * @param rate the SURF action rate
+ * @param timeout timeout
+ * @return A new SIMIX execution synchronization
  */
 smx_activity_t simcall_execution_parallel_start(std::string name, int host_nb, sg_host_t* host_list,
                                                 double* flops_amount, double* bytes_amount, double rate, double timeout)
@@ -87,11 +87,11 @@ smx_activity_t simcall_execution_parallel_start(std::string name, int host_nb, s
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Cancels an execution synchro.
+ * @ingroup simix_process_management
+ * @brief Cancels an execution synchro.
  *
  * This functions stops the execution. It calls a surf function.
- * \param execution The execution synchro to cancel
+ * @param execution The execution synchro to cancel
  */
 void simcall_execution_cancel(smx_activity_t execution)
 {
@@ -103,12 +103,12 @@ void simcall_execution_cancel(smx_activity_t execution)
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Changes the priority of an execution synchro.
+ * @ingroup simix_process_management
+ * @brief Changes the priority of an execution synchro.
  *
  * This functions changes the priority only. It calls a surf function.
- * \param execution The execution synchro
- * \param priority The new priority
+ * @param execution The execution synchro
+ * @param priority The new priority
  */
 void simcall_execution_set_priority(smx_activity_t execution, double priority)
 {
@@ -123,12 +123,12 @@ void simcall_execution_set_priority(smx_activity_t execution, double priority)
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Changes the capping (the maximum CPU utilization) of an execution synchro.
+ * @ingroup simix_process_management
+ * @brief Changes the capping (the maximum CPU utilization) of an execution synchro.
  *
  * This functions changes the capping only. It calls a surf function.
- * \param execution The execution synchro
- * \param bound The new bound
+ * @param execution The execution synchro
+ * @param bound The new bound
  */
 void simcall_execution_set_bound(smx_activity_t execution, double bound)
 {
@@ -140,10 +140,10 @@ void simcall_execution_set_bound(smx_activity_t execution, double bound)
 }
 
 /**
- * \ingroup simix_host_management
- * \brief Waits for the completion of an execution synchro and destroy it.
+ * @ingroup simix_host_management
+ * @brief Waits for the completion of an execution synchro and destroy it.
  *
- * \param execution The execution synchro
+ * @param execution The execution synchro
  */
 e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 {
@@ -161,13 +161,13 @@ void simcall_process_join(smx_actor_t process, double timeout)
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Suspends a process.
+ * @ingroup simix_process_management
+ * @brief Suspends a process.
  *
  * This function suspends the process by suspending the synchro
  * it was waiting for completion.
  *
- * \param process a SIMIX process
+ * @param process a SIMIX process
  */
 void simcall_process_suspend(smx_actor_t process)
 {
@@ -175,12 +175,12 @@ void simcall_process_suspend(smx_actor_t process)
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Set the user data of a #smx_actor_t.
+ * @ingroup simix_process_management
+ * @brief Set the user data of a #smx_actor_t.
  *
- * This functions sets the user data associated to \a process.
- * \param process SIMIX process
- * \param data User data
+ * This functions sets the user data associated to @a process.
+ * @param process SIMIX process
+ * @param data User data
  */
 void simcall_process_set_data(smx_actor_t process, void *data)
 {
@@ -188,8 +188,8 @@ void simcall_process_set_data(smx_actor_t process, void *data)
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Set the kill time of a process.
+ * @ingroup simix_process_management
+ * @brief Set the kill time of a process.
  */
 void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 {
@@ -204,15 +204,15 @@ void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Creates a new sleep SIMIX synchro.
+ * @ingroup simix_process_management
+ * @brief Creates a new sleep SIMIX synchro.
  *
  * This function creates a SURF action and allocates the data necessary
  * to create the SIMIX synchro. It can raise a host_error exception if the
  * host crashed. The default SIMIX name of the synchro is "sleep".
  *
- *   \param duration Time duration of the sleep.
- *   \return A result telling whether the sleep was successful
+ *   @param duration Time duration of the sleep.
+ *   @return A result telling whether the sleep was successful
  */
 e_smx_state_t simcall_process_sleep(double duration)
 {
@@ -222,7 +222,7 @@ e_smx_state_t simcall_process_sleep(double duration)
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                        size_t src_buff_size, int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -250,7 +250,7 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                                   size_t src_buff_size,
@@ -270,7 +270,7 @@ smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
                        int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -293,7 +293,7 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
   }
 }
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
                                   int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -306,7 +306,7 @@ smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
                                    int (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data)
@@ -317,7 +317,7 @@ smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type,
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 void simcall_comm_cancel(smx_activity_t synchro)
 {
@@ -329,7 +329,7 @@ void simcall_comm_cancel(smx_activity_t synchro)
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout)
 {
@@ -337,7 +337,7 @@ unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout)
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 int simcall_comm_testany(smx_activity_t* comms, size_t count)
 {
@@ -347,7 +347,7 @@ int simcall_comm_testany(smx_activity_t* comms, size_t count)
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  */
 void simcall_comm_wait(smx_activity_t comm, double timeout)
 {
@@ -356,11 +356,11 @@ void simcall_comm_wait(smx_activity_t comm, double timeout)
 }
 
 /**
- * \brief Set the category of an synchro.
+ * @brief Set the category of an synchro.
  *
  * This functions changes the category only. It calls a surf function.
- * \param synchro The execution synchro
- * \param category The tracing category
+ * @param synchro The execution synchro
+ * @param category The tracing category
  */
 void simcall_set_category(smx_activity_t synchro, const char *category)
 {
@@ -371,7 +371,7 @@ void simcall_set_category(smx_activity_t synchro, const char *category)
 }
 
 /**
- * \ingroup simix_comm_management
+ * @ingroup simix_comm_management
  *
  */
 int simcall_comm_test(smx_activity_t comm)
@@ -380,7 +380,7 @@ int simcall_comm_test(smx_activity_t comm)
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 smx_mutex_t simcall_mutex_init()
@@ -393,7 +393,7 @@ smx_mutex_t simcall_mutex_init()
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 void simcall_mutex_lock(smx_mutex_t mutex)
@@ -402,7 +402,7 @@ void simcall_mutex_lock(smx_mutex_t mutex)
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 int simcall_mutex_trylock(smx_mutex_t mutex)
@@ -411,7 +411,7 @@ int simcall_mutex_trylock(smx_mutex_t mutex)
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 void simcall_mutex_unlock(smx_mutex_t mutex)
@@ -420,7 +420,7 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 smx_cond_t simcall_cond_init()
@@ -429,7 +429,7 @@ smx_cond_t simcall_cond_init()
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
@@ -438,7 +438,7 @@ void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout)
@@ -448,7 +448,7 @@ int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 void simcall_sem_acquire(smx_sem_t sem)
@@ -457,7 +457,7 @@ void simcall_sem_acquire(smx_sem_t sem)
 }
 
 /**
- * \ingroup simix_synchro_management
+ * @ingroup simix_synchro_management
  *
  */
 int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)

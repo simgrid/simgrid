@@ -1,4 +1,4 @@
-/*! \page outcomes_vizu Visualization and Statistical Analysis
+/*! @page outcomes_vizu Visualization and Statistical Analysis
 
 SimGrid comes with an extensive support to trace and register what
 happens during the simulation, so that it can be either visualized or
@@ -15,7 +15,7 @@ and analyze them. This part of the user manual explains how the
 tracing-related features can be enabled and used during the
 development of simulators using the SimGrid library.
 
-\section instr_category_functions Tracing categories functions
+@section instr_category_functions Tracing categories functions
 
 The SimGrid library is instrumented so users can trace the platform
 utilization using MSG, SimDAG and SMPI interfaces. It registers how
@@ -33,192 +33,192 @@ below let the user declare a category and apply it to tasks. <em>The
 tasks that are not classified according to a category are not
 traced</em>. Even if the user does not specify any category, the
 simulations can still be traced in terms of resource utilization by
-using a special parameter that is detailed below (see section \ref
+using a special parameter that is detailed below (see section @ref
 tracing_tracing_options).
 
-\li \c TRACE_category(const char *category)
-\li \c TRACE_category_with_color(const char *category, const char *color)
-\li \c MSG_task_set_category(msg_task_t task, const char *category)
-\li \c MSG_task_get_category(msg_task_t task)
-\li \c SD_task_set_category(SD_task_t task, const char *category)
-\li \c SD_task_get_category(SD_task_t task)
+@li @c TRACE_category(const char *category)
+@li @c TRACE_category_with_color(const char *category, const char *color)
+@li @c MSG_task_set_category(msg_task_t task, const char *category)
+@li @c MSG_task_get_category(msg_task_t task)
+@li @c SD_task_set_category(SD_task_t task, const char *category)
+@li @c SD_task_get_category(SD_task_t task)
 
-\section instr_mark_functions Tracing marks functions
-\li \c TRACE_declare_mark(const char *mark_type)
-\li \c TRACE_mark(const char *mark_type, const char *mark_value)
+@section instr_mark_functions Tracing marks functions
+@li @c TRACE_declare_mark(const char *mark_type)
+@li @c TRACE_mark(const char *mark_type, const char *mark_value)
 
-\section instr_uservariables_functions Tracing user variables functions
+@section instr_uservariables_functions Tracing user variables functions
 
 For hosts:
 
-\li \c TRACE_host_variable_declare(const char *variable)
-\li \c TRACE_host_variable_declare_with_color(const char *variable, const char *color)
-\li \c TRACE_host_variable_set(const char *host, const char *variable, double value)
-\li \c TRACE_host_variable_add(const char *host, const char *variable, double value)
-\li \c TRACE_host_variable_sub(const char *host, const char *variable, double value)
-\li \c TRACE_host_variable_set_with_time(double time, const char *host, const char *variable, double value)
-\li \c TRACE_host_variable_add_with_time(double time, const char *host, const char *variable, double value)
-\li \c TRACE_host_variable_sub_with_time(double time, const char *host, const char *variable, double value)
+@li @c TRACE_host_variable_declare(const char *variable)
+@li @c TRACE_host_variable_declare_with_color(const char *variable, const char *color)
+@li @c TRACE_host_variable_set(const char *host, const char *variable, double value)
+@li @c TRACE_host_variable_add(const char *host, const char *variable, double value)
+@li @c TRACE_host_variable_sub(const char *host, const char *variable, double value)
+@li @c TRACE_host_variable_set_with_time(double time, const char *host, const char *variable, double value)
+@li @c TRACE_host_variable_add_with_time(double time, const char *host, const char *variable, double value)
+@li @c TRACE_host_variable_sub_with_time(double time, const char *host, const char *variable, double value)
 
 For links:
 
-\li \c TRACE_link_variable_declare(const char *variable)
-\li \c TRACE_link_variable_declare_with_color(const char *variable, const char *color)
-\li \c TRACE_link_variable_set(const char *link, const char *variable, double value)
-\li \c TRACE_link_variable_add(const char *link, const char *variable, double value)
-\li \c TRACE_link_variable_sub(const char *link, const char *variable, double value)
-\li \c TRACE_link_variable_set_with_time(double time, const char *link, const char *variable, double value)
-\li \c TRACE_link_variable_add_with_time(double time, const char *link, const char *variable, double value)
-\li \c TRACE_link_variable_sub_with_time(double time, const char *link, const char *variable, double value)
+@li @c TRACE_link_variable_declare(const char *variable)
+@li @c TRACE_link_variable_declare_with_color(const char *variable, const char *color)
+@li @c TRACE_link_variable_set(const char *link, const char *variable, double value)
+@li @c TRACE_link_variable_add(const char *link, const char *variable, double value)
+@li @c TRACE_link_variable_sub(const char *link, const char *variable, double value)
+@li @c TRACE_link_variable_set_with_time(double time, const char *link, const char *variable, double value)
+@li @c TRACE_link_variable_add_with_time(double time, const char *link, const char *variable, double value)
+@li @c TRACE_link_variable_sub_with_time(double time, const char *link, const char *variable, double value)
 
 For links, but use source and destination to get route:
 
-\li \c TRACE_link_srcdst_variable_set(const char *src, const char *dst, const char *variable, double value)
-\li \c TRACE_link_srcdst_variable_add(const char *src, const char *dst, const char *variable, double value)
-\li \c TRACE_link_srcdst_variable_sub(const char *src, const char *dst, const char *variable, double value)
-\li \c TRACE_link_srcdst_variable_set_with_time(double time, const char *src, const char *dst, const char *variable, double value)
-\li \c TRACE_link_srcdst_variable_add_with_time(double time, const char *src, const char *dst, const char *variable, double value)
-\li \c TRACE_link_srcdst_variable_sub_with_time(double time, const char *src, const char *dst, const char *variable, double value)
+@li @c TRACE_link_srcdst_variable_set(const char *src, const char *dst, const char *variable, double value)
+@li @c TRACE_link_srcdst_variable_add(const char *src, const char *dst, const char *variable, double value)
+@li @c TRACE_link_srcdst_variable_sub(const char *src, const char *dst, const char *variable, double value)
+@li @c TRACE_link_srcdst_variable_set_with_time(double time, const char *src, const char *dst, const char *variable, double value)
+@li @c TRACE_link_srcdst_variable_add_with_time(double time, const char *src, const char *dst, const char *variable, double value)
+@li @c TRACE_link_srcdst_variable_sub_with_time(double time, const char *src, const char *dst, const char *variable, double value)
 
-\section tracing_tracing_options Tracing configuration Options
+@section tracing_tracing_options Tracing configuration Options
 
 To check which tracing options are available for your simulator, you
-can just run it with the option \verbatim --help-tracing \endverbatim
+can just run it with the option @verbatim --help-tracing @endverbatim
 to get a very detailed and updated explanation of each tracing
 parameter. These are some of the options accepted by the tracing
 system of SimGrid, you can use them by running your simulator with the
 <b>--cfg=</b> switch:
 
-\li <b>\c
+@li <b>@c
 tracing
 </b>:
   Safe switch. It activates (or deactivates) the tracing system.
   No other tracing options take effect if this one is not activated.
-\verbatim
+@verbatim
 --cfg=tracing:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/categorized
 </b>:
   It activates the categorized resource utilization tracing. It should
   be enabled if tracing categories are used by this simulator.
-\verbatim
+@verbatim
 --cfg=tracing/categorized:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/uncategorized
 </b>:
   It activates the uncategorized resource utilization tracing. Use it if
   this simulator do not use tracing categories and resource use have to be
   traced.
-\verbatim
+@verbatim
 --cfg=tracing/uncategorized:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/filename
 </b>:
   A file with this name will be created to register the simulation. The file
   is in the Paje format and can be analyzed using Paje visualization
   tools. More information can be found in these webpages:
      <a href="http://github.com/schnorr/pajeng/">http://github.com/schnorr/pajeng/</a>
-\verbatim
+@verbatim
 --cfg=tracing/filename:mytracefile.trace
-\endverbatim
+@endverbatim
   If you do not provide this parameter, the trace file will be named simgrid.trace.
 
-\li <b>\c
+@li <b>@c
 tracing/smpi
 </b>:
   This option only has effect if this simulator is SMPI-based. Traces the MPI
   interface and generates a trace that can be analyzed using Gantt-like
   visualizations. Every MPI function (implemented by SMPI) is transformed in a
   state, and point-to-point communications can be analyzed with arrows.
-\verbatim
+@verbatim
 --cfg=tracing/smpi:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/smpi/group
 </b>:
   This option only has effect if this simulator is SMPI-based. The processes
   are grouped by the hosts where they were executed.
-\verbatim
+@verbatim
 --cfg=tracing/smpi/group:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/smpi/computing
 </b>:
   This option only has effect if this simulator is SMPI-based. The parts external
 to SMPI are also outputted to the trace. Provides better way to analyze the data automatically.
-\verbatim
+@verbatim
 --cfg=tracing/smpi/computing:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/smpi/internals
 </b>:
   This option only has effect if this simulator is SMPI-based. Display internal communications
 happening during a collective MPI call.
-\verbatim
+@verbatim
 --cfg=tracing/smpi/internals:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/smpi/display-sizes
 </b>:
   This option only has effect if this simulator is SMPI-based. Display the sizes of the messages
 exchanged in the trace, both in the links and on the states. For collective, size means the global size of data sent by the process in general.
-\verbatim
+@verbatim
 --cfg=tracing/smpi/display-sizes:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/smpi/sleeping
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/smpi/format
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/smpi/format/ti-one-file
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/vm
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/msg/process
 </b>:
   This option only has effect if this simulator is MSG-based. It traces the
   behavior of all categorized MSG processes, grouping them by hosts. This option
   can be used to track process location if this simulator has process migration.
-\verbatim
+@verbatim
 --cfg=tracing/msg/process:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/buffer
 </b>:
  This option put some events in a time-ordered buffer using the
@@ -227,11 +227,11 @@ tracing/buffer
  make this process slow. The simulator performance can be severely
  impacted if this option is activated, but you are sure to get a trace
  file with events sorted.
-\verbatim
+@verbatim
 --cfg=tracing/buffer:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/onelink-only
 </b>:
 This option changes the way SimGrid register its platform on the trace
@@ -240,131 +240,131 @@ size) on the platform file to re-create the resource topology. If this
 option is activated, only the routes with one link are used to
 register the topology within a netzone. Routes among netzones continue to be
 traced as usual.
-\verbatim
+@verbatim
 --cfg=tracing/onelink-only:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/disable-link
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/disable-power
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/disable-destroy
 </b>:
 Disable the destruction of containers at the end of simulation. This
 can be used with simulators that have a different notion of time
 (different from the simulated time).
-\verbatim
+@verbatim
 --cfg=tracing/disable-destroy:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/basic
 </b>:
 Some visualization tools are not able to parse correctly the Paje file format.
 Use this option if you are using one of these tools to visualize the simulation
 trace. Keep in mind that the trace might be incomplete, without all the
 information that would be registered otherwise.
-\verbatim
+@verbatim
 --cfg=tracing/basic:yes
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/comment
 </b>:
 Use this to add a comment line to the top of the trace file.
-\verbatim
+@verbatim
 --cfg=tracing/comment:my_string
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/comment-file
 </b>:
 Use this to add the contents of a file to the top of the trace file as comment.
-\verbatim
+@verbatim
 --cfg=tracing/comment-file:textual_file.txt
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/precision
 </b>:
 This option determines the precision of timings stored in the trace file. Make sure
-you set \ref options_model_precision to at least the same value as this option! (Traces
+you set @ref options_model_precision to at least the same value as this option! (Traces
 cannot be more accurate than the simulation; they can be less accurate, though.)
 
 The following example will give you a precision of E-10 in the trace file:
-\verbatim
+@verbatim
 --cfg=tracing/precision:10
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/platform
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-\li <b>\c
+@li <b>@c
 tracing/platform/topology
 </b>:
 TODO
-\verbatim
+@verbatim
 TODO
-\endverbatim
+@endverbatim
 
-Please pass \verbatim --help-tracing \endverbatim to your simulator
+Please pass @verbatim --help-tracing @endverbatim to your simulator
 for the updated list of tracing options.
 
-\section tracing_tracing_example_parameters Case studies
+@section tracing_tracing_example_parameters Case studies
 
 Some scenarios that might help you decide which tracing options
 you should use to analyze your simulator.
 
-\li I want to trace the resource utilization of all hosts
+@li I want to trace the resource utilization of all hosts
 and links of the platform, and my simulator <b>does not</b> use
 the tracing API. For that, you can run a uncategorized trace
 with the following parameters (it will work with <b>any</b> Simgrid
 simulator):
-\verbatim
-./your_simulator \
-          --cfg=tracing:yes \
-          --cfg=tracing/uncategorized:yes \
-          --cfg=tracing/filename:mytracefile.trace \
-\endverbatim
+@verbatim
+./your_simulator @
+          --cfg=tracing:yes @
+          --cfg=tracing/uncategorized:yes @
+          --cfg=tracing/filename:mytracefile.trace @
+@endverbatim
 
-\li I want to trace only a subset of my MSG (or SimDAG) tasks.
+@li I want to trace only a subset of my MSG (or SimDAG) tasks.
 For that, you will need to create tracing categories using the
 <b>TRACE_category (...)</b> function (as explained above),
 and then classify your tasks to a previously declared category
 using the <b>MSG_task_set_category (...)</b>
 (or <b>SD_task_set_category (...)</b> for SimDAG tasks). After
 recompiling, run your simulator with the following parameters:
-\verbatim
-./your_simulator \
-          --cfg=tracing:yes \
-          --cfg=tracing/categorized:yes \
-          --cfg=tracing/filename:mytracefile.trace \
-\endverbatim
+@verbatim
+./your_simulator @
+          --cfg=tracing:yes @
+          --cfg=tracing/categorized:yes @
+          --cfg=tracing/filename:mytracefile.trace @
+@endverbatim
 
 
-\section tracing_tracing_example Example of Instrumentation
+@section tracing_tracing_example Example of Instrumentation
 
 A simplified example using the tracing mandatory functions.
 
-\verbatim
+@verbatim
 int main (int argc, char **argv)
 {
   MSG_init (&argc, &argv);
@@ -396,9 +396,9 @@ int main (int argc, char **argv)
   MSG_clean();
   return 0;
 }
-\endverbatim
+@endverbatim
 
-\section tracing_tracing_analyzing Analyzing SimGrid Simulation Traces
+@section tracing_tracing_analyzing Analyzing SimGrid Simulation Traces
 
 A SimGrid-based simulator, when executed with the correct parameters
 (see above) creates a trace file in the Paje file format holding the

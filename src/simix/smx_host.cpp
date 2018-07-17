@@ -25,7 +25,7 @@ const char* sg_host_self_get_name()
 }
 
 /**
- * \brief Add a process to the list of the processes that the host will restart when it comes back
+ * @brief Add a process to the list of the processes that the host will restart when it comes back
  * This function add a process to the list of the processes that will be restarted when the host comes
  * back. It is expected that this function is called when the host is down.
  * The processes will only be restarted once, meaning that you will have to register the process

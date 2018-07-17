@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2018. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2018. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -115,8 +114,8 @@ static void handle_action(ReplayAction& action)
 }
 
 /**
- * \ingroup XBT_replay
- * \brief function used internally to actually run the replay
+ * @ingroup XBT_replay
+ * @brief function used internally to actually run the replay
  */
 int replay_runner(int argc, char* argv[])
 {
@@ -154,16 +153,16 @@ int replay_runner(int argc, char* argv[])
 }
 
 /**
- * \ingroup XBT_replay
- * \brief Registers a function to handle a kind of action
+ * @ingroup XBT_replay
+ * @brief Registers a function to handle a kind of action
  *
  * Registers a function to handle a kind of action
- * This table is then used by \ref simgrid::xbt::replay_runner
+ * This table is then used by @ref simgrid::xbt::replay_runner
  *
  * The argument of the function is the line describing the action, fields separated by spaces.
  *
- * \param action_name the reference name of the action.
- * \param function prototype given by the type: void...(const char** action)
+ * @param action_name the reference name of the action.
+ * @param function prototype given by the type: void...(const char** action)
  */
 void xbt_replay_action_register(const char* action_name, action_fun function)
 {
@@ -171,8 +170,8 @@ void xbt_replay_action_register(const char* action_name, action_fun function)
 }
 
 /**
- * \ingroup XBT_replay
- * \brief Get the function that was previously registered to handle a kind of action
+ * @ingroup XBT_replay
+ * @brief Get the function that was previously registered to handle a kind of action
  *
  * This can be useful if you want to override and extend an existing action.
  */

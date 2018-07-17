@@ -17,10 +17,10 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_dvfs, smpi, "Logging specific to SMPI (experimental DVFS support)");
 
 /**
- * \brief Return the speed of the processor (in flop/s) at a given pstate
+ * @brief Return the speed of the processor (in flop/s) at a given pstate
  *
- * \param pstate_index pstate to test
- * \return Returns the processor speed associated with pstate_index
+ * @param pstate_index pstate to test
+ * @return Returns the processor speed associated with pstate_index
  */
 double smpi_get_host_power_peak_at(int pstate_index)
 {
@@ -28,9 +28,9 @@ double smpi_get_host_power_peak_at(int pstate_index)
 }
 
 /**
- * \brief Return the current speed of the processor (in flop/s)
+ * @brief Return the current speed of the processor (in flop/s)
  *
- * \return Returns the current processor speed
+ * @return Returns the current processor speed
  */
 double smpi_get_host_current_power_peak()
 {
@@ -38,7 +38,7 @@ double smpi_get_host_current_power_peak()
 }
 
 /**
- * \brief Return the number of pstates defined for the current host
+ * @brief Return the number of pstates defined for the current host
  */
 int smpi_get_host_nb_pstates()
 {
@@ -46,9 +46,9 @@ int smpi_get_host_nb_pstates()
 }
 
 /**
- * \brief Sets the pstate at which the processor should run
+ * @brief Sets the pstate at which the processor should run
  *
- * \param pstate_index pstate to switch to
+ * @param pstate_index pstate to switch to
  */
 void smpi_set_host_pstate(int pstate_index)
 {
@@ -60,9 +60,9 @@ int smpi_get_host_pstate() {
 }
 
 /**
- * \brief Return the total energy consumed by a host (in Joules)
+ * @brief Return the total energy consumed by a host (in Joules)
  *
- * \return Returns the consumed energy
+ * @return Returns the consumed energy
  */
 double smpi_get_host_consumed_energy() {
   return sg_host_get_consumed_energy(sg_host_self());

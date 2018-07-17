@@ -1,20 +1,20 @@
 /*! 
 @page inside_cmake Adding source files or examples
 
-\tableofcontents
+@tableofcontents
 
 SimGrid uses CMake which is a family of tools designed to build, test, and package software. CMake is used to control the software 
 compilation process using simple platform- and compiler-independent configuration files. CMake generates native 
 makefiles and workspaces that can be used in the compiler environment of your choice. For more information see
 the <a href="http://www.cmake.org/">official CMake web site</a>.
 
-\section inside_cmake_addsrc How to add source files?
+@section inside_cmake_addsrc How to add source files?
 
 If you want to rename, add, or delete source file(s) in the SimGrid distribution, you have to edit the 
 $SIMGRID_INSTALL_PATH/tools/cmake/DefinePackages.cmake configuration file. Files are organized in sections, then find 
 the section you are interested in and modify it. For instance, a new S4U source file will have to be listed in:
 
-\verbatim
+@verbatim
 set(S4U_SRC
   src/s4u/s4u_actor.cpp
   src/s4u/s4u_as.cpp
@@ -26,14 +26,14 @@ set(S4U_SRC
   src/s4u/s4u_mailbox.cpp
   src/s4u/s4u_storage.cpp
 )
-\endverbatim
+@endverbatim
 
 If sources file always have to be included into the library, you are all set. However, ther inclusion may depend on 
 specific compiling options. For instance, if Boost contexts are not available, you don't want to compile the 
 src/simix/ContextBoost.* files but still add them to the source distribution. This is done by adding those files to the
  EXTRA_DIST list, as follows:
 
-\verbatim
+@verbatim
 if (HAVE_BOOST_CONTEXTS)
   set(SIMIX_SRC   ${SIMIX_SRC}  src/simix/ContextBoost.hpp
                                 src/simix/ContextBoost.cpp)
@@ -41,14 +41,14 @@ else()
   set(EXTRA_DIST  ${EXTRA_DIST} src/simix/ContextBoost.hpp
                                 src/simix/ContextBoost.cpp)
 endif()
-\endverbatim
+@endverbatim
 
 Once you're done, you must run "make distcheck" to ensure that you did not forget to add any file to the distributed 
 archives. This ensures that everything was commited correctly, so you have to first commit before running 
 "make distcheck". If you forgot something, you want to "git commit --amend". But never amend a commit that you already 
 pushed to public repositories! Do a second commit in that case.
 
-\section inside_cmake_examples How to add an example?
+@section inside_cmake_examples How to add an example?
 
 The first rule is that the content of examples/ must be interesting to the users. It is expected that the users will 
 take one of these examples and start editing it to make it fit their needs. So, it should be self-contained, 
@@ -76,7 +76,7 @@ instance, examples/msg/CMakeLists.txt starts with a loop over all the (currently
  - compile and link the source file (which has to be named as the directory
  - add the source and tesh files to the distribution.
 
-\verbatim
+@verbatim
 foreach(x app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
           async-waitany cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple 
           cloud-two-tasks dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm
@@ -90,42 +90,42 @@ foreach(x app-masterworker app-pingpong app-pmm app-token-ring async-wait async-
   set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
-\endverbatim
+@endverbatim
 
 Some more complex examples may require more than one source file. If it is the case for your example, you will find 
 inspiration in the following example
 
-\verbatim
+@verbatim
 add_executable       (bittorrent app-bittorrent/bittorrent.c app-bittorrent/messages.c app-bittorrent/peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
 target_link_libraries(bittorrent simgrid)
 set_target_properties(bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
 foreach (file bittorrent connection messages peer tracker)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
 endforeach()
-\endverbatim
+@endverbatim
 
 If your example require a deployment file (see @ref deployment for details), name it as the source file adding "_d.xml".
 Then add the name of your example to this foreach loop.
 
-\verbatim
+@verbatim
 foreach (file app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
          async-waitall async-waitany dht-chord dht-kademlia dht-pastry io-remote platform-properties maestro-set 
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
-\endverbatim
+@endverbatim
 
 If your example includes extra source, text, XML, or tesh files, add them to the existing lists. Finally, register your 
-example to the testing infrastructure. See \ref inside_tests_add_integration for more details.
+example to the testing infrastructure. See @ref inside_tests_add_integration for more details.
 
-\verbatim
+@verbatim
 foreach(x app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
           async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
           cloud-two-tasks dht-chord dht-kademlia platform-failures io-file io-remote io-storage task-priority 
           process-kill process-migration process-suspend platform-properties synchro-semaphore process-startkilltime)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
-\endverbatim
+@endverbatim
 
 Note that the structure of the CMakeLists.txt file may vary from one directory to another, but there are enough existing
 examples to find one that can be adapted to your own example.

@@ -39,7 +39,7 @@ union u_smx_scalar {
 };
 
 /**
- * \brief Represents a simcall to the kernel.
+ * @brief Represents a simcall to the kernel.
  */
 struct s_smx_simcall {
   e_smx_simcall_t call;

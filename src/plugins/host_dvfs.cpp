@@ -291,10 +291,9 @@ static void on_host_added(simgrid::s4u::Host& host)
 
 /* **************************** Public interface *************************** */
 
-
-/** \ingroup SURF_plugin_load
- * \brief Initializes the HostDvfs plugin
- * \details The HostDvfs plugin provides an API to get the current load of each host.
+/** @ingroup SURF_plugin_load
+ * @brief Initializes the HostDvfs plugin
+ * @details The HostDvfs plugin provides an API to get the current load of each host.
  */
 void sg_host_dvfs_plugin_init()
 {

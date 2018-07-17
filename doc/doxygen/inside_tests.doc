@@ -4,7 +4,7 @@
 This page will teach you how to run the tests, selecting the ones you
 want, and how to add new tests to the archive.
 
-\tableofcontents
+@tableofcontents
 
 SimGrid code coverage is usually between 70% and 80%, which is much
 more than most projects out there. This is because we consider SimGrid
@@ -22,13 +22,13 @@ every logged line, this ensures that every change of the models'
 prediction will be noticed. All these tests should ensure that SimGrid
 is safe to use and to depend on.
 
-\section inside_tests_runintegration Running the tests
+@section inside_tests_runintegration Running the tests
 
 Running the tests is done using the ctest binary that comes with
 cmake. These tests are run for every commit and the result is publicly
 <a href="https://ci.inria.fr/simgrid/">available</a>.
 
-\verbatim
+@verbatim
 ctest		 	  # Launch all tests
 ctest -R msg              # Launch only the tests which name match the string "msg"
 ctest -j4                 # Launch all tests in parallel, at most 4 at the same time
@@ -37,14 +37,14 @@ ctest --output-on-failure # Only get verbose for the tests that fail
 
 ctest -R msg- -j5 --output-on-failure # You changed MSG and want to check that you didn't break anything, huh?
                                       # That's fine, I do so all the time myself.
-\endverbatim
+@endverbatim
 
-\section inside_tests_rununit Running the unit tests
+@section inside_tests_rununit Running the unit tests
 
 All unit tests are packed into the testall binary, that lives at the
 source root. These tests are run when you launch ctest, don't worry.
 
-\verbatim
+@verbatim
 make testall                    # Rebuild the test runner on need
 ./testall                       # Launch all tests
 ./testall --help                # revise how it goes if you forgot
@@ -52,12 +52,12 @@ make testall                    # Rebuild the test runner on need
 ./testall --dump-only           # Display all existing test suites
 ./testall --tests=-all,+dict    # Only launch the tests from the dict test suite
 ./testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
-\endverbatim
+@endverbatim
 
 
-\section inside_tests_add_units Adding unit tests
+@section inside_tests_add_units Adding unit tests
 
-\warning this section is outdated. New unit tests should be written
+@warning this section is outdated. New unit tests should be written
 using the unit_test_framework component of Boost. There is no such
 example so far in our codebase, but that's definitely the way to go
 for the future. STOP USING XBT.
@@ -68,7 +68,7 @@ add your source file to the FILES_CONTAINING_UNITTESTS list. For
 example, if you want to create unit tests in the file src/xbt/plouf.c,
 your changes should look like that:
 
-\verbatim
+@verbatim
 --- a/tools/cmake/UnitTesting.cmake
 +++ b/tools/cmake/UnitTesting.cmake
 @@ -11,6 +11,7 @@ set(FILES_CONTAINING_UNITTESTS
@@ -78,7 +78,7 @@ your changes should look like that:
    )
 
  if(SIMGRID_HAVE_MC)
-\endverbatim
+@endverbatim
 
 Then, you want to actually add your tests in the source file. All the
 tests must be protected by "#ifdef SIMGRID_TEST" so that they don't
@@ -167,7 +167,7 @@ not upset the other developers. Do not hesitate to stress test your
 code with such unit tests, but make sure that it runs reasonably fast,
 or nobody will run "ctest" before commiting code.
 
-\section inside_tests_add_integration Adding integration tests
+@section inside_tests_add_integration Adding integration tests
 
 TESH (the TEsting SHell) is the test runner that we wrote for our
 integration tests. It is distributed with the SimGrid source file, and
@@ -182,7 +182,7 @@ To add a new integration test, you thus have 3 things to do:
    strive to make this code clear, well documented and informative for
    the users. If you manage to do so, put this somewhere under
    examples/ and modify the cmake files as explained on this page:
-   \ref inside_cmake_examples. If you feel like you should write a
+   @ref inside_cmake_examples. If you feel like you should write a
    torture test that is not interesting to the users (because nobody
    would sanely write something similar in user code), then put it under 
    teshsuite/ somewhere.
@@ -190,7 +190,7 @@ To add a new integration test, you thus have 3 things to do:
  - <b>Write the tesh file</b>, containing the command to run, the
    provided input (if any, but almost no SimGrid test provide such an
    input) and the expected output. Check the tesh man page for more
-   details.\n
+   details.@n
    Tesh is sometimes annoying as you have to ensure that the expected
    output will always be exactly the same. In particular, your should
    not output machine dependent informations such as absolute data
@@ -198,7 +198,7 @@ To add a new integration test, you thus have 3 things to do:
    steps can be used here, such as the obfucation of the memory
    adresses unless the verbose logs are displayed (using the
    #XBT_LOG_ISENABLED() macro), or the modification of the log formats
-   to hide the timings when they depend on the host machine.\n
+   to hide the timings when they depend on the host machine.@n
    The script located in <project/directory>/tools/tesh/generate_tesh can
    help you a lot in particular if the output is large (though a smaller output is preferable). 
    There are also example tesh files in the <project/directory>/tools/tesh/ directory, that can be useful to understand the tesh syntax.
@@ -218,7 +218,7 @@ To add a new integration test, you thus have 3 things to do:
 Once the name is chosen, create a new test by adding a line similar to
 the following (assuming that you use tesh as expected).
 
-\verbatim
+@verbatim
 # Usage: ADD_TEST(test-name ${CMAKE_BINARY_DIR}/bin/tesh <options> <tesh-file>)
 #  option --setenv bindir set the directory containing the binary
 #         --setenv srcdir set the directory containing the source file
@@ -229,12 +229,12 @@ ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh
          --cd ${CMAKE_HOME_DIRECTORY}/examples/my-test/
          ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh
 )
-\endverbatim             
+@endverbatim             
 
 As usual, you must run "make distcheck" after modifying the cmake files,
 to ensure that you did not forget any files in the distributed archive.
 
-\section inside_tests_ci Continous Integration
+@section inside_tests_ci Continous Integration
 
 We use several systems to automatically test SimGrid with a large set
 of parameters, across as many platforms as possible. 
@@ -247,7 +247,7 @@ quickly run some tests on Linux and Mac. It answers quickly but may
 miss issues. And we use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
 to build and somehow test SimGrid on windows. 
 
-\subsection inside_tests_jenkins Jenkins on the Inria CI servers
+@subsection inside_tests_jenkins Jenkins on the Inria CI servers
 
 You should not have to change the configuration of the Jenkins tool
 yourself, although you could have to change the slaves' configuration
@@ -257,14 +257,14 @@ refer to the <a href="https://wiki.inria.fr/ciportal/">CI documentation</a>.
 The result can be seen here: https://ci.inria.fr/simgrid/
 
 We have 2 interesting projects on Jenkins:
-\li <a href="https://ci.inria.fr/simgrid/job/SimGrid/">SimGrid</a>
-    is the main project, running the tests that we spoke about.\n It is
+@li <a href="https://ci.inria.fr/simgrid/job/SimGrid/">SimGrid</a>
+    is the main project, running the tests that we spoke about.@n It is
     configured (on Jenkins) to run the script <tt>tools/jenkins/build.sh</tt>
-\li <a href="https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/">SimGrid-DynamicAnalysis</a>
+@li <a href="https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/">SimGrid-DynamicAnalysis</a>
     should be called "nightly" because it does not only run dynamic
     tests, but a whole bunch of long lasting tests: valgrind (memory
     errors), gcovr (coverage), Sanitizers (bad pointer usage, threading
-    errors, use of unspecified C constructs) and the clang static analyzer.\n It is configured
+    errors, use of unspecified C constructs) and the clang static analyzer.@n It is configured
     (on Jenkins) to run the script <tt>tools/jenkins/DynamicAnalysis.sh</tt>
 
 In each case, SimGrid gets built in
@@ -280,13 +280,13 @@ groovy-expression to disable a specific configuration. For example, in
 order to disable the "ModelChecker" build on host
 "small-netbsd-64-clang", use:
 
-\verbatim
+@verbatim
 (label=="small-netbsd-64-clang").implies(build_mode!="ModelChecker")
-\endverbatim
+@endverbatim
 
 Just for the record, the slaves were created from the available
 template with the following commands:
-\verbatim
+@verbatim
 #debian/ubuntu
 apt-get install gcc g++ gfortran automake cmake libboost-dev openjdk-8-jdk openjdk-8-jre libxslt-dev libxml2-dev libevent-dev libunwind-dev libdw-dev htop git python3 xsltproc libboost-context-dev
 #for dynamicanalysis: 
@@ -307,9 +307,9 @@ pkg install boost-libs cmake openjdk8 automake libxslt libxml2 libunwind git hto
 
 #osx
 brew install cmake boost libunwind-headers libxslt git python3 
-\endverbatim
+@endverbatim
 
-\subsection inside_tests_travis Travis
+@subsection inside_tests_travis Travis
 
 Travis is a free (as in free beer) Continuous Integration system that
 open-sourced project can use freely. It is very well integrated in the
@@ -318,24 +318,24 @@ configuration is in the file .travis.yml as it should be, and the
 result is here: https://travis-ci.org/simgrid/simgrid
 
 The .travis.yml configuration file can be useful if you fail to get
-SimGrid to compile on modern mac systems. We use the \c brew package
+SimGrid to compile on modern mac systems. We use the @c brew package
 manager there, and it works like a charm.
 
-\subsection inside_tests_appveyor AppVeyor
+@subsection inside_tests_appveyor AppVeyor
 
 AppVeyor aims at becoming the Travis of Windows. It is maybe less
 mature than Travis, or maybe it is just that I'm less trained in
 Windows. Our configuration is in the file appveyor.yml as it should
 be, and the result is here: https://ci.appveyor.com/project/mquinson/simgrid
 
-We use \c Choco as a package manager on AppVeyor, and it is sufficient
+We use @c Choco as a package manager on AppVeyor, and it is sufficient
 for us. In the future, we will probably move to the ubuntu subsystem
 of Windows 10: SimGrid performs very well under these settings, as
 tested on Inria's CI servers. For the time being having a native
 library is still useful for the Java users that don't want to install
 anything beyond Java on their windows.
 
-\subsection inside_tests_debian Debian builders
+@subsection inside_tests_debian Debian builders
 
 Since SimGrid is packaged in Debian, we benefit from their huge
 testing infrastructure. That's an interesting torture test for our
@@ -347,7 +347,7 @@ only the most important breakages.
 The build results are here:
 https://buildd.debian.org/status/package.php?p=simgrid
 
-\subsection inside_tests_sonarqube SonarQube
+@subsection inside_tests_sonarqube SonarQube
 
 SonarQube is an open-source code quality analysis solution. Their nice
 code scanners are provided as plugin. The one for C++ is not free, but

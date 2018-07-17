@@ -40,12 +40,12 @@ using simgrid::smpi::app::Instance;
 static std::map<std::string, Instance> smpi_instances;
 extern int process_count; // How many processes have been allocated over all instances?
 
-/** \ingroup smpi_simulation
- * \brief Registers a running instance of a MPI program.
+/** @ingroup smpi_simulation
+ * @brief Registers a running instance of a MPI program.
  *
- * \param name the reference name of the function.
- * \param code the main mpi function (must have a int ..(int argc, char *argv[])) prototype
- * \param num_processes the size of the instance we want to deploy
+ * @param name the reference name of the function.
+ * @param code the main mpi function (must have a int ..(int argc, char *argv[])) prototype
+ * @param num_processes the size of the instance we want to deploy
  */
 void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes)
 {

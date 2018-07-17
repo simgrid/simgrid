@@ -24,14 +24,14 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-/** @brief Command-line option 'network/TCP-gamma' -- see \ref options_model_network_gamma */
+/** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
 simgrid::config::Flag<double> NetworkModel::cfg_tcp_gamma(
     "network/TCP-gamma", {"network/TCP_gamma"},
     "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; "
     "Use the last given value, which is the max window size)",
     4194304.0);
 
-/** @brief Command-line option 'network/crosstraffic' -- see \ref options_model_network_crosstraffic */
+/** @brief Command-line option 'network/crosstraffic' -- see @ref options_model_network_crosstraffic */
 simgrid::config::Flag<bool> NetworkModel::cfg_crosstraffic(
     "network/crosstraffic",
     "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)", "yes");

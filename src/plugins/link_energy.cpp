@@ -22,12 +22,12 @@ SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy
  The energy consumption of a link depends directly on its current traffic load. Specify that consumption in your
  platform file as follows:
 
- \verbatim
+ @verbatim
  <link id="SWITCH1" bandwidth="125Mbps" latency="5us" sharing_policy="SHARED" >
  <prop id="watt_range" value="100.0:200.0" />
  <prop id="watt_off" value="10" />
  </link>
- \endverbatim
+ @endverbatim
 
  The first property means that when your link is switched on, but without anything to do, it will dissipate 100 Watts.
  If it's fully loaded, it will dissipate 200 Watts. If its load is at 50%, then it will dissipate 150 Watts.
@@ -178,9 +178,9 @@ int sg_link_energy_is_inited()
 {
   return LinkEnergy::EXTENSION_ID.valid();
 }
-/** \ingroup SURF_plugin_energy
- * \brief Enable energy plugin
- * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before
+/** @ingroup SURF_plugin_energy
+ * @brief Enable energy plugin
+ * @details Enable energy plugin to get joules consumption of each cpu. You should call this function before
  * #MSG_init().
  */
 void sg_link_energy_plugin_init()

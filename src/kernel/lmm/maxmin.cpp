@@ -681,10 +681,10 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
   delete[] cnst_light_tab;
 }
 
-/** \brief Attribute the value bound to var->bound.
+/** @brief Attribute the value bound to var->bound.
  *
- *  \param var the Variable*
- *  \param bound the new bound to associate with var
+ *  @param var the Variable*
+ *  @param bound the new bound to associate with var
  *
  *  Makes var->bound equal to bound. Whenever this function is called a change is  signed in the system. To
  *  avoid false system changing detection it is a good idea to test (bound != 0) before calling it.
@@ -832,7 +832,7 @@ void System::on_disabled_var(Constraint* cnstr)
   // Anyway, caller functions all call check_concurrency() in the end.
 }
 
-/* \brief update the weight of a variable, and enable/disable it.
+/* @brief update the weight of a variable, and enable/disable it.
  * @return Returns whether a change was made
  */
 void System::update_variable_weight(Variable* var, double weight)
@@ -880,10 +880,10 @@ void System::update_constraint_bound(Constraint* cnst, double bound)
   cnst->bound = bound;
 }
 
-/** \brief Update the constraint set propagating recursively to other constraints so the system should not be entirely
+/** @brief Update the constraint set propagating recursively to other constraints so the system should not be entirely
  *  computed.
  *
- *  \param cnst the Constraint* affected by the change
+ *  @param cnst the Constraint* affected by the change
  *
  *  A recursive algorithm to optimize the system recalculation selecting only constraints that have changed. Each
  *  constraint change is propagated to the list of constraints for each variable.

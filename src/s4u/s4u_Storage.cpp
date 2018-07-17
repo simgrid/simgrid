@@ -81,9 +81,9 @@ void getStorageList(std::map<std::string, Storage*>* whereTo)
  * (#sg_storage_t) and the functions for managing it.
  */
 
-/** \ingroup sg_storage_management
+/** @ingroup sg_storage_management
  *
- * \brief Returns the name of the #sg_storage_t.
+ * @brief Returns the name of the #sg_storage_t.
  *
  * This functions checks whether a storage is a valid pointer or not and return its name.
  */
@@ -99,10 +99,10 @@ const char* sg_storage_get_host(sg_storage_t storage)
   return storage->get_host()->get_cname();
 }
 
-/** \ingroup sg_storage_management
- * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this storage
- * \param storage a storage
- * \return a dict containing the properties
+/** @ingroup sg_storage_management
+ * @brief Returns a xbt_dict_t consisting of the list of properties assigned to this storage
+ * @param storage a storage
+ * @return a dict containing the properties
  */
 xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
 {
@@ -117,42 +117,42 @@ xbt_dict_t sg_storage_get_properties(sg_storage_t storage)
   return as_dict;
 }
 
-/** \ingroup sg_storage_management
- * \brief Change the value of a given storage property
+/** @ingroup sg_storage_management
+ * @brief Change the value of a given storage property
  *
- * \param storage a storage
- * \param name a property name
- * \param value what to change the property to
+ * @param storage a storage
+ * @param name a property name
+ * @param value what to change the property to
  */
 void sg_storage_set_property_value(sg_storage_t storage, const char* name, const char* value)
 {
   storage->set_property(name, value);
 }
 
-/** \ingroup sg_storage_management
- * \brief Returns the value of a given storage property
+/** @ingroup sg_storage_management
+ * @brief Returns the value of a given storage property
  *
- * \param storage a storage
- * \param name a property name
- * \return value of a property (or nullptr if property not set)
+ * @param storage a storage
+ * @param name a property name
+ * @return value of a property (or nullptr if property not set)
  */
 const char* sg_storage_get_property_value(sg_storage_t storage, const char* name)
 {
   return storage->get_property(name);
 }
 
-/** \ingroup sg_storage_management
- * \brief Finds a sg_storage_t using its name.
- * \param name the name of a storage
- * \return the corresponding storage
+/** @ingroup sg_storage_management
+ * @brief Finds a sg_storage_t using its name.
+ * @param name the name of a storage
+ * @return the corresponding storage
  */
 sg_storage_t sg_storage_get_by_name(const char* name)
 {
   return simgrid::s4u::Storage::by_name(name);
 }
 
-/** \ingroup sg_storage_management
- * \brief Returns a dynar containing all the storage elements declared at a given point of time
+/** @ingroup sg_storage_management
+ * @brief Returns a dynar containing all the storage elements declared at a given point of time
  */
 xbt_dynar_t sg_storages_as_dynar()
 {

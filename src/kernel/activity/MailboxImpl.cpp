@@ -47,7 +47,7 @@ MailboxImpl* MailboxImpl::by_name_or_create(std::string name)
     return m->second;
 }
 /** @brief set the receiver of the mailbox to allow eager sends
- *  \param actor The receiving dude
+ *  @param actor The receiving dude
  */
 void MailboxImpl::set_receiver(s4u::ActorPtr actor)
 {

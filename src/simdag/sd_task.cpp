@@ -24,13 +24,13 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
 }
 
 /**
- * \brief Creates a new task.
+ * @brief Creates a new task.
  *
- * \param name the name of the task (can be \c nullptr)
- * \param data the user data you want to associate with the task (can be \c nullptr)
- * \param amount amount of the task
- * \return the new task
- * \see SD_task_destroy()
+ * @param name the name of the task (can be @c nullptr)
+ * @param data the user data you want to associate with the task (can be @c nullptr)
+ * @param amount amount of the task
+ * @return the new task
+ * @see SD_task_destroy()
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
@@ -92,10 +92,10 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data, double amount)
  *
  * A sequential computation must be scheduled on 1 host, and the amount specified at creation to be run on hosts[0].
  *
- * \param name the name of the task (can be \c nullptr)
- * \param data the user data you want to associate with the task (can be \c nullptr)
- * \param flops_amount amount of compute work to be done by the task
- * \return the new SD_TASK_COMP_SEQ typed task
+ * @param name the name of the task (can be @c nullptr)
+ * @param data the user data you want to associate with the task (can be @c nullptr)
+ * @param flops_amount amount of compute work to be done by the task
+ * @return the new SD_TASK_COMP_SEQ typed task
  */
 SD_task_t SD_task_create_comp_seq(const char *name, void *data, double flops_amount)
 {
@@ -114,12 +114,12 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data, double flops_amo
  *
  * A parallel computation can be scheduled on any number of host.
  * The underlying speedup model is Amdahl's law.
- * To be auto-scheduled, \see SD_task_distribute_comp_amdahl has to be called first.
- * \param name the name of the task (can be \c nullptr)
- * \param data the user data you want to associate with the task (can be \c nullptr)
- * \param flops_amount amount of compute work to be done by the task
- * \param alpha purely serial fraction of the work to be done (in [0.;1.[)
- * \return the new task
+ * To be auto-scheduled, @see SD_task_distribute_comp_amdahl has to be called first.
+ * @param name the name of the task (can be @c nullptr)
+ * @param data the user data you want to associate with the task (can be @c nullptr)
+ * @param flops_amount amount of compute work to be done by the task
+ * @param alpha purely serial fraction of the work to be done (in [0.;1.[)
+ * @return the new task
  */
 SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double flops_amount, double alpha)
 {
@@ -139,12 +139,12 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double fl
  * specify which resource should communicate.
  *
  * A data redistribution can be scheduled on any number of host.
- * The assumed distribution is a 1D block distribution. Each host owns the same share of the \see amount.
- * To be auto-scheduled, \see SD_task_distribute_comm_mxn_1d_block has to be  called first.
- * \param name the name of the task (can be \c nullptr)
- * \param data the user data you want to associate with the task (can be \c nullptr)
- * \param amount amount of data to redistribute by the task
- * \return the new task
+ * The assumed distribution is a 1D block distribution. Each host owns the same share of the @see amount.
+ * To be auto-scheduled, @see SD_task_distribute_comm_mxn_1d_block has to be  called first.
+ * @param name the name of the task (can be @c nullptr)
+ * @param data the user data you want to associate with the task (can be @c nullptr)
+ * @param amount amount of data to redistribute by the task
+ * @return the new task
  */
 SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, double amount)
 {
@@ -155,12 +155,12 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, dou
 }
 
 /**
- * \brief Destroys a task.
+ * @brief Destroys a task.
  *
  * The user data (if any) should have been destroyed first.
  *
- * \param task the task you want to destroy
- * \see SD_task_create()
+ * @param task the task you want to destroy
+ * @see SD_task_create()
  */
 void SD_task_destroy(SD_task_t task)
 {
@@ -197,11 +197,11 @@ void SD_task_destroy(SD_task_t task)
 }
 
 /**
- * \brief Returns the user data of a task
+ * @brief Returns the user data of a task
  *
- * \param task a task
- * \return the user data associated with this task (can be \c nullptr)
- * \see SD_task_set_data()
+ * @param task a task
+ * @return the user data associated with this task (can be @c nullptr)
+ * @see SD_task_set_data()
  */
 void *SD_task_get_data(SD_task_t task)
 {
@@ -209,13 +209,13 @@ void *SD_task_get_data(SD_task_t task)
 }
 
 /**
- * \brief Sets the user data of a task
+ * @brief Sets the user data of a task
  *
- * The new data can be \c nullptr. The old data should have been freed first, if it was not \c nullptr.
+ * The new data can be @c nullptr. The old data should have been freed first, if it was not @c nullptr.
  *
- * \param task a task
- * \param data the new data you want to associate with this task
- * \see SD_task_get_data()
+ * @param task a task
+ * @param data the new data you want to associate with this task
+ * @see SD_task_get_data()
  */
 void SD_task_set_data(SD_task_t task, void *data)
 {
@@ -223,17 +223,17 @@ void SD_task_set_data(SD_task_t task, void *data)
 }
 
 /**
- * \brief Sets the rate of a task
+ * @brief Sets the rate of a task
  *
  * This will change the network bandwidth a task can use. This rate  cannot be dynamically changed. Once the task has
  * started, this call is ineffective. This rate depends on both the nominal bandwidth on the route onto which the task
- * is scheduled (\see SD_task_get_current_bandwidth) and the amount of data to transfer.
+ * is scheduled (@see SD_task_get_current_bandwidth) and the amount of data to transfer.
  *
  * To divide the nominal bandwidth by 2, the rate then has to be :
  *    rate = bandwidth/(2*amount)
  *
- * \param task a \see SD_TASK_COMM_E2E task (end-to-end communication)
- * \param rate the new rate you want to associate with this task.
+ * @param task a @see SD_TASK_COMM_E2E task (end-to-end communication)
+ * @param rate the new rate you want to associate with this task.
  */
 void SD_task_set_rate(SD_task_t task, double rate)
 {
@@ -246,12 +246,12 @@ void SD_task_set_rate(SD_task_t task, double rate)
 }
 
 /**
- * \brief Returns the state of a task
+ * @brief Returns the state of a task
  *
- * \param task a task
- * \return the current \ref e_SD_task_state_t "state" of this task:
+ * @param task a task
+ * @return the current @ref e_SD_task_state_t "state" of this task:
  * #SD_NOT_SCHEDULED, #SD_SCHEDULED, #SD_RUNNABLE, #SD_RUNNING, #SD_DONE or #SD_FAILED
- * \see e_SD_task_state_t
+ * @see e_SD_task_state_t
  */
 e_SD_task_state_t SD_task_get_state(SD_task_t task)
 {
@@ -310,10 +310,10 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 }
 
 /**
- * \brief Returns the name of a task
+ * @brief Returns the name of a task
  *
- * \param task a task
- * \return the name of this task (can be \c nullptr)
+ * @param task a task
+ * @return the name of this task (can be @c nullptr)
  */
 const char *SD_task_get_name(SD_task_t task)
 {
@@ -329,8 +329,8 @@ void SD_task_set_name(SD_task_t task, const char *name)
 
 /** @brief Returns the dynar of the parents of a task
  *
- * \param task a task
- * \return a newly allocated dynar comprising the parents of this task
+ * @param task a task
+ * @return a newly allocated dynar comprising the parents of this task
  */
 
 xbt_dynar_t SD_task_get_parents(SD_task_t task)
@@ -347,8 +347,8 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
 
 /** @brief Returns the dynar of the parents of a task
  *
- * \param task a task
- * \return a newly allocated dynar comprising the parents of this task
+ * @param task a task
+ * @return a newly allocated dynar comprising the parents of this task
  */
 xbt_dynar_t SD_task_get_children(SD_task_t task)
 {
@@ -363,10 +363,10 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
 }
 
 /**
- * \brief Returns the number of workstations involved in a task
+ * @brief Returns the number of workstations involved in a task
  *
  * Only call this on already scheduled tasks!
- * \param task a task
+ * @param task a task
  */
 int SD_task_get_workstation_count(SD_task_t task)
 {
@@ -374,10 +374,10 @@ int SD_task_get_workstation_count(SD_task_t task)
 }
 
 /**
- * \brief Returns the list of workstations involved in a task
+ * @brief Returns the list of workstations involved in a task
  *
  * Only call this on already scheduled tasks!
- * \param task a task
+ * @param task a task
  */
 sg_host_t *SD_task_get_workstation_list(SD_task_t task)
 {
@@ -385,11 +385,11 @@ sg_host_t *SD_task_get_workstation_list(SD_task_t task)
 }
 
 /**
- * \brief Returns the total amount of work contained in a task
+ * @brief Returns the total amount of work contained in a task
  *
- * \param task a task
- * \return the total amount of work (computation or data transfer) for this task
- * \see SD_task_get_remaining_amount()
+ * @param task a task
+ * @return the total amount of work (computation or data transfer) for this task
+ * @see SD_task_get_remaining_amount()
  */
 double SD_task_get_amount(SD_task_t task)
 {
@@ -401,8 +401,8 @@ double SD_task_get_amount(SD_task_t task)
  * bytes_amount arrays respectively. Nothing more than modifying task->amount is done for parallel  typed tasks
  * (COMP_PAR_AMDAHL and COMM_PAR_MXN_1D_BLOCK) as the distribution of the amount of work is done at scheduling time.
  *
- * \param task a task
- * \param amount the new amount of work to execute
+ * @param task a task
+ * @param amount the new amount of work to execute
  */
 void SD_task_set_amount(SD_task_t task, double amount)
 {
@@ -414,10 +414,10 @@ void SD_task_set_amount(SD_task_t task, double amount)
 }
 
 /**
- * \brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAHL task
+ * @brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAHL task
  *
- * \param task a parallel task assuming Amdahl's law as speedup model
- * \return the alpha parameter (serial part of a task in percent) for this task
+ * @param task a parallel task assuming Amdahl's law as speedup model
+ * @return the alpha parameter (serial part of a task in percent) for this task
  */
 double SD_task_get_alpha(SD_task_t task)
 {
@@ -426,11 +426,11 @@ double SD_task_get_alpha(SD_task_t task)
 }
 
 /**
- * \brief Returns the remaining amount work to do till the completion of a task
+ * @brief Returns the remaining amount work to do till the completion of a task
  *
- * \param task a task
- * \return the remaining amount of work (computation or data transfer) of this task
- * \see SD_task_get_amount()
+ * @param task a task
+ * @return the remaining amount of work (computation or data transfer) of this task
+ * @see SD_task_get_amount()
  */
 double SD_task_get_remaining_amount(SD_task_t task)
 {
@@ -522,14 +522,14 @@ void SD_task_dotty(SD_task_t task, void *out)
 }
 
 /**
- * \brief Adds a dependency between two tasks
+ * @brief Adds a dependency between two tasks
  *
- * \a dst will depend on \a src, ie \a dst will not start before \a src is finished.
- * Their \ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_RUNNABLE.
+ * @a dst will depend on @a src, ie @a dst will not start before @a src is finished.
+ * Their @ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_RUNNABLE.
  *
- * \param src the task which must be executed first
- * \param dst the task you want to make depend on \a src
- * \see SD_task_dependency_remove()
+ * @param src the task which must be executed first
+ * @param dst the task you want to make depend on @a src
+ * @see SD_task_dependency_remove()
  */
 void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
 {
@@ -572,10 +572,10 @@ void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
 }
 
 /**
- * \brief Indicates whether there is a dependency between two tasks.
+ * @brief Indicates whether there is a dependency between two tasks.
  *
- * \param src a task
- * \param dst a task depending on \a src
+ * @param src a task
+ * @param dst a task depending on @a src
  *
  * If src is nullptr, checks whether dst has any pre-dependency.
  * If dst is nullptr, checks whether src has any post-dependency.
@@ -597,11 +597,11 @@ int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
 }
 
 /**
- * \brief Remove a dependency between two tasks
+ * @brief Remove a dependency between two tasks
  *
- * \param src a task
- * \param dst a task depending on \a src
- * \see SD_task_dependency_add()
+ * @param src a task
+ * @param dst a task depending on @a src
+ * @see SD_task_dependency_add()
  */
 void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 {
@@ -631,14 +631,14 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 }
 
 /**
- * \brief Adds a watch point to a task
+ * @brief Adds a watch point to a task
  *
- * SD_simulate() will stop as soon as the \ref e_SD_task_state_t "state" of this task becomes the one given in argument.
+ * SD_simulate() will stop as soon as the @ref e_SD_task_state_t "state" of this task becomes the one given in argument.
  * The watch point is then automatically removed.
  *
- * \param task a task
- * \param state the \ref e_SD_task_state_t "state" you want to watch (cannot be #SD_NOT_SCHEDULED)
- * \see SD_task_unwatch()
+ * @param task a task
+ * @param state the @ref e_SD_task_state_t "state" you want to watch (cannot be #SD_NOT_SCHEDULED)
+ * @see SD_task_unwatch()
  */
 void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 {
@@ -649,11 +649,11 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 }
 
 /**
- * \brief Removes a watch point from a task
+ * @brief Removes a watch point from a task
  *
- * \param task a task
- * \param state the \ref e_SD_task_state_t "state" you no longer want to watch
- * \see SD_task_watch()
+ * @param task a task
+ * @param state the @ref e_SD_task_state_t "state" you no longer want to watch
+ * @see SD_task_watch()
  */
 void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
 {
@@ -662,16 +662,16 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
 }
 
 /**
- * \brief Returns an approximative estimation of the execution time of a task.
+ * @brief Returns an approximative estimation of the execution time of a task.
  *
  * The estimation is very approximative because the value returned is the time the task would take if it was executed
  * now and if it was the only task.
  *
- * \param host_count number of hosts on which the task would be executed
- * \param host_list the hosts on which the task would be executed
- * \param flops_amount computation amount for each host(i.e., an array of host_count doubles)
- * \param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
- * \see SD_schedule()
+ * @param host_count number of hosts on which the task would be executed
+ * @param host_list the hosts on which the task would be executed
+ * @param flops_amount computation amount for each host(i.e., an array of host_count doubles)
+ * @param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
+ * @see SD_schedule()
  */
 double SD_task_get_execution_time(SD_task_t /*task*/, int host_count, const sg_host_t* host_list,
                                   const double* flops_amount, const double* bytes_amount)
@@ -709,18 +709,18 @@ static inline void SD_task_do_schedule(SD_task_t task)
 }
 
 /**
- * \brief Schedules a task
+ * @brief Schedules a task
  *
  * The task state must be #SD_NOT_SCHEDULED.
- * Once scheduled, a task is executed as soon as possible in \see SD_simulate, i.e. when its dependencies are satisfied.
+ * Once scheduled, a task is executed as soon as possible in @see SD_simulate, i.e. when its dependencies are satisfied.
  *
- * \param task the task you want to schedule
- * \param host_count number of hosts on which the task will be executed
- * \param host_list the hosts on which the task will be executed
- * \param flops_amount computation amount for each hosts (i.e., an array of host_count doubles)
- * \param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
- * \param rate task execution speed rate
- * \see SD_task_unschedule()
+ * @param task the task you want to schedule
+ * @param host_count number of hosts on which the task will be executed
+ * @param host_list the hosts on which the task will be executed
+ * @param flops_amount computation amount for each hosts (i.e., an array of host_count doubles)
+ * @param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
+ * @param rate task execution speed rate
+ * @see SD_task_unschedule()
  */
 void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * host_list,
                       const double *flops_amount, const double *bytes_amount, double rate)
@@ -753,14 +753,14 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * host_lis
 }
 
 /**
- * \brief Unschedules a task
+ * @brief Unschedules a task
  *
  * The task state must be #SD_SCHEDULED, #SD_RUNNABLE, #SD_RUNNING or #SD_FAILED.
  * If you call this function, the task state becomes #SD_NOT_SCHEDULED.
  * Call SD_task_schedule() to schedule it again.
  *
- * \param task the task you want to unschedule
- * \see SD_task_schedule()
+ * @param task the task you want to unschedule
+ * @see SD_task_schedule()
  */
 void SD_task_unschedule(SD_task_t task)
 {
@@ -819,12 +819,12 @@ void SD_task_run(SD_task_t task)
 }
 
 /**
- * \brief Returns the start time of a task
+ * @brief Returns the start time of a task
  *
  * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
  *
- * \param task: a task
- * \return the start time of this task
+ * @param task: a task
+ * @return the start time of this task
  */
 double SD_task_get_start_time(SD_task_t task)
 {
@@ -835,14 +835,14 @@ double SD_task_get_start_time(SD_task_t task)
 }
 
 /**
- * \brief Returns the finish time of a task
+ * @brief Returns the finish time of a task
  *
  * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
  * If the state is not completed yet, the returned value is an estimation of the task finish time. This value can
  * vary until the task is completed.
  *
- * \param task: a task
- * \return the start time of this task
+ * @param task: a task
+ * @return the start time of this task
  */
 double SD_task_get_finish_time(SD_task_t task)
 {

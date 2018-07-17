@@ -534,7 +534,7 @@ static void surf_config_models_setup()
 }
 
 /**
- * \brief Add a Zone to the platform
+ * @brief Add a Zone to the platform
  *
  * Add a new autonomous system to the platform. Any elements (such as host, router or sub-Zone) added after this call
  * and before the corresponding call to sg_platf_new_Zone_seal() will be added to this Zone.
@@ -620,7 +620,7 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(simgrid::kernel::
 }
 
 /**
- * \brief Specify that the description of the current AS is finished
+ * @brief Specify that the description of the current AS is finished
  *
  * Once you've declared all the content of your AS, you have to seal
  * it with this call. Your AS is not usable until you call this function.

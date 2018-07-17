@@ -33,7 +33,7 @@
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
 static xbt_os_mutex_t log_cat_init_mutex = NULL;
 
-/** \addtogroup XBT_log
+/** @addtogroup XBT_log
  *
  *  For more information, please refer to @ref outcomes_logs Section.
  */
@@ -537,14 +537,14 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, char *n
 }
 
 /**
- * \ingroup XBT_log
- * \param control_string What to parse
+ * @ingroup XBT_log
+ * @param control_string What to parse
  *
  * Typically passed a command-line argument. The string has the syntax:
  *
  *      ( [category] "." [keyword] ":" value (" ")... )...
  *
- * where [category] is one the category names (see \ref XBT_log_cats for a complete list of the ones defined in the
+ * where [category] is one the category names (see @ref XBT_log_cats for a complete list of the ones defined in the
  * SimGrid library) and keyword is one of the following:
  *
  *    - thres: category's threshold priority. Possible values:
@@ -552,8 +552,8 @@ static xbt_log_category_t _xbt_log_cat_searchsub(xbt_log_category_t cat, char *n
  *    - add or additivity: whether the logging actions must be passed to the parent category.
  *      Possible values: 0, 1, no, yes, on, off.
  *      Default value: yes.
- *    - fmt: the format to use. See \ref log_use_conf_fmt for more information.
- *    - app or appender: the appender to use. See \ref log_use_conf_app for more information.
+ *    - fmt: the format to use. See @ref log_use_conf_fmt for more information.
+ *    - app or appender: the appender to use. See @ref log_use_conf_app for more information.
  */
 void xbt_log_control_set(const char *control_string)
 {

@@ -84,7 +84,7 @@ inline void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cur
   }
 }
 
-/** \brief Move to the next element. */
+/** @brief Move to the next element. */
 inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
 {
   xbt_dictelm_t current;

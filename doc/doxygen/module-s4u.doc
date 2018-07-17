@@ -15,7 +15,7 @@ bugs.
 Unsurprisingly, the S4U interface matches the concepts presented in 
 @ref starting_components "the introduction". You should read this page
 first, to not get lost in the amount of classes provided here. Or you
-could jump to the \ref s4u_examples directly if you prefer.
+could jump to the @ref s4u_examples directly if you prefer.
 
 @section s4u_raii Memory Management of S4U objects
 

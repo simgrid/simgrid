@@ -133,9 +133,9 @@ ActorPtr ActorExt::get_actor()
 }
 
 /**
- * \brief Returns a structure that stores the location (filename + linenumber) of the last calls to MPI_* functions.
+ * @brief Returns a structure that stores the location (filename + linenumber) of the last calls to MPI_* functions.
  *
- * \see smpi_trace_set_call_location
+ * @see smpi_trace_set_call_location
  */
 smpi_trace_call_location_t* ActorExt::call_location()
 {

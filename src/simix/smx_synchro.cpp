@@ -157,7 +157,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
 }
 
 /**
- * \brief Handles a sem acquire simcall without timeout.
+ * @brief Handles a sem acquire simcall without timeout.
  */
 void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 {
@@ -167,7 +167,7 @@ void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 }
 
 /**
- * \brief Handles a sem acquire simcall with timeout.
+ * @brief Handles a sem acquire simcall with timeout.
  */
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
 {

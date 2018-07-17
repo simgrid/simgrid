@@ -168,8 +168,8 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
 }
 
 /**
- * \ingroup SIMIX_API
- * \brief Initialize SIMIX internal data.
+ * @ingroup SIMIX_API
+ * @brief Initialize SIMIX internal data.
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
@@ -219,8 +219,8 @@ void SIMIX_global_init(int *argc, char **argv)
 
 int smx_cleaned = 0;
 /**
- * \ingroup SIMIX_API
- * \brief Clean the SIMIX simulation
+ * @ingroup SIMIX_API
+ * @brief Clean the SIMIX simulation
  *
  * This functions remove the memory used by SIMIX
  */
@@ -288,12 +288,11 @@ void SIMIX_clean()
   simix_global = nullptr;
 }
 
-
 /**
- * \ingroup SIMIX_API
- * \brief A clock (in second).
+ * @ingroup SIMIX_API
+ * @brief A clock (in second).
  *
- * \return Return the clock.
+ * @return Return the clock.
  */
 double SIMIX_get_clock()
 {
@@ -373,8 +372,8 @@ static bool SIMIX_execute_tasks()
 }
 
 /**
- * \ingroup SIMIX_API
- * \brief Run the main simulation loop.
+ * @ingroup SIMIX_API
+ * @brief Run the main simulation loop.
  */
 void SIMIX_run()
 {
@@ -538,12 +537,12 @@ void SIMIX_run()
 }
 
 /**
- *   \brief Set the date to execute a function
+ *   @brief Set the date to execute a function
  *
  * Set the date to execute the function on the surf.
- *   \param date Date to execute function
- *   \param callback Function to be executed
- *   \param arg Parameters of the function
+ *   @param date Date to execute function
+ *   @param callback Function to be executed
+ *   @param arg Parameters of the function
  *
  */
 smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
@@ -572,12 +571,12 @@ double SIMIX_timer_get_date(smx_timer_t timer) {
 }
 
 /**
- * \brief Registers a function to create a process.
+ * @brief Registers a function to create a process.
  *
  * This function registers a function to be called
  * when a new process is created. The function has
  * to call SIMIX_process_create().
- * \param function create process function
+ * @param function create process function
  */
 void SIMIX_function_register_process_create(smx_creation_func_t function)
 {
@@ -585,12 +584,12 @@ void SIMIX_function_register_process_create(smx_creation_func_t function)
 }
 
 /**
- * \brief Registers a function to kill a process.
+ * @brief Registers a function to kill a process.
  *
  * This function registers a function to be called when a process is killed. The function has to call the
  * SIMIX_process_kill().
  *
- * \param function Kill process function
+ * @param function Kill process function
  */
 void SIMIX_function_register_process_kill(void_pfn_smxprocess_t function)
 {
@@ -598,11 +597,11 @@ void SIMIX_function_register_process_kill(void_pfn_smxprocess_t function)
 }
 
 /**
- * \brief Registers a function to cleanup a process.
+ * @brief Registers a function to cleanup a process.
  *
  * This function registers a user function to be called when a process ends properly.
  *
- * \param function cleanup process function
+ * @param function cleanup process function
  */
 void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function)
 {

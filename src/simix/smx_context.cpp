@@ -251,21 +251,21 @@ int SIMIX_context_is_parallel() {
 
 /**
  * @brief Returns the number of parallel threads used for the user contexts.
- * \return the number of threads (1 means no parallelism)
+ * @return the number of threads (1 means no parallelism)
  */
 int SIMIX_context_get_nthreads() {
   return smx_parallel_contexts;
 }
 
 /**
- * \brief Sets the number of parallel threads to use
+ * @brief Sets the number of parallel threads to use
  * for the user contexts.
  *
  * This function should be called before initializing SIMIX.
  * A value of 1 means no parallelism (1 thread only).
  * If the value is greater than 1, the thread support must be enabled.
  *
- * \param nb_threads the number of threads to use
+ * @param nb_threads the number of threads to use
  */
 void SIMIX_context_set_nthreads(int nb_threads) {
   if (nb_threads<=0) {
@@ -279,12 +279,12 @@ void SIMIX_context_set_nthreads(int nb_threads) {
 }
 
 /**
- * \brief Returns the threshold above which user processes are run in parallel.
+ * @brief Returns the threshold above which user processes are run in parallel.
  *
  * If the number of threads is set to 1, there is no parallelism and this
  * threshold has no effect.
  *
- * \return when the number of user processes ready to run is above
+ * @return when the number of user processes ready to run is above
  * this threshold, they are run in parallel
  */
 int SIMIX_context_get_parallel_threshold() {
@@ -292,12 +292,12 @@ int SIMIX_context_get_parallel_threshold() {
 }
 
 /**
- * \brief Sets the threshold above which user processes are run in parallel.
+ * @brief Sets the threshold above which user processes are run in parallel.
  *
  * If the number of threads is set to 1, there is no parallelism and this
  * threshold has no effect.
  *
- * \param threshold when the number of user processes ready to run is above
+ * @param threshold when the number of user processes ready to run is above
  * this threshold, they are run in parallel
  */
 void SIMIX_context_set_parallel_threshold(int threshold) {
@@ -305,26 +305,26 @@ void SIMIX_context_set_parallel_threshold(int threshold) {
 }
 
 /**
- * \brief Returns the synchronization mode used when processes are run in
+ * @brief Returns the synchronization mode used when processes are run in
  * parallel.
- * \return how threads are synchronized if processes are run in parallel
+ * @return how threads are synchronized if processes are run in parallel
  */
 e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode() {
   return smx_parallel_synchronization_mode;
 }
 
 /**
- * \brief Sets the synchronization mode to use when processes are run in
+ * @brief Sets the synchronization mode to use when processes are run in
  * parallel.
- * \param mode how to synchronize threads if processes are run in parallel
+ * @param mode how to synchronize threads if processes are run in parallel
  */
 void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
   smx_parallel_synchronization_mode = mode;
 }
 
 /**
- * \brief Returns the current context of this thread.
- * \return the current context of this thread
+ * @brief Returns the current context of this thread.
+ * @return the current context of this thread
  */
 smx_context_t SIMIX_context_get_current()
 {
@@ -341,8 +341,8 @@ smx_context_t SIMIX_context_get_current()
 }
 
 /**
- * \brief Sets the current context of this thread.
- * \param context the context to set
+ * @brief Sets the current context of this thread.
+ * @param context the context to set
  */
 void SIMIX_context_set_current(smx_context_t context)
 {

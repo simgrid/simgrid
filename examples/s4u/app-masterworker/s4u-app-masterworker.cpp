@@ -67,7 +67,7 @@ public:
 
   void operator()()
   {
-    while (1) { /* The worker waits in an infinite loop for tasks sent by the \ref master */
+    while (1) { /* The worker waits in an infinite loop for tasks sent by the @ref master */
       double* task = static_cast<double*>(mailbox->get());
       xbt_assert(task != nullptr, "mailbox->get() failed");
       double comp_size = *task;

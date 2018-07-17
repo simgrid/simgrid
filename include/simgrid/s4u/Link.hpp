@@ -20,7 +20,7 @@
 
 namespace simgrid {
 namespace s4u {
-/** @brief A Link represents the network facilities between [hosts](\ref simgrid::s4u::Host) */
+/** @brief A Link represents the network facilities between [hosts](@ref simgrid::s4u::Host) */
 class XBT_PUBLIC Link : public simgrid::xbt::Extendable<Link> {
   friend simgrid::kernel::resource::LinkImpl;
 

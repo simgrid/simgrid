@@ -19,9 +19,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua Host module");
 
 /** @brief Ensures that the pointed stack value is an host userdatum and returns it.
  *
- * \param L a Lua state
- * \param index an index in the Lua stack
- * \return the C host corresponding to this Lua host
+ * @param L a Lua state
+ * @param index an index in the Lua stack
+ * @return the C host corresponding to this Lua host
  */
 sg_host_t sglua_check_host(lua_State * L, int index)
 {
@@ -38,10 +38,10 @@ sg_host_t sglua_check_host(lua_State * L, int index)
 }
 
 /**
- * \brief Returns a host given its name. This is a lua function.
+ * @brief Returns a host given its name. This is a lua function.
  *
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (string): name of a host
  * - Return value (host): the corresponding host will be pushed onto the stack
@@ -65,9 +65,9 @@ static int l_host_get_by_name(lua_State * L)
 }
 
 /**
- * \brief Returns the name of a host.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Returns the name of a host.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (host): a host
  * - Return value (string): name of this host
@@ -80,9 +80,9 @@ static int l_host_get_name(lua_State * L)
 }
 
 /**
- * \brief Returns the number of existing hosts.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Returns the number of existing hosts.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Return value (number): number of hosts
  */
@@ -95,9 +95,9 @@ static int l_host_number(lua_State * L)
 }
 
 /**
- * \brief Returns the host given its index.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Returns the host given its index.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (number): an index (1 is the first)
  * - Return value (host): the host at this index
@@ -118,9 +118,9 @@ static int l_host_at(lua_State * L)
 }
 
 /**
- * \brief Returns the value of a host property.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Returns the value of a host property.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (host): a host
  * - Argument 2 (string): name of the property to get
@@ -135,9 +135,9 @@ static int l_host_get_property_value(lua_State * L)
 }
 
 /**
- * \brief Destroys a host.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Destroys a host.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (host): the host to destroy
  */
@@ -161,9 +161,9 @@ static const luaL_Reg host_functions[] = {
 };
 
 /**
- * \brief Returns a string representation of a host.
- * \param L a Lua state
- * \return number of values returned to Lua
+ * @brief Returns a string representation of a host.
+ * @param L a Lua state
+ * @return number of values returned to Lua
  *
  * - Argument 1 (userdata): a host
  * - Return value (string): a string describing this host
@@ -180,11 +180,11 @@ static const luaL_Reg host_meta[] = {
 };
 
 /**
- * \brief Registers the host functions into the table simgrid.host.
+ * @brief Registers the host functions into the table simgrid.host.
  *
  * Also initialize the metatable of the host userdata type.
  *
- * \param L a lua state
+ * @param L a lua state
  */
 void sglua_register_host_functions(lua_State* L)
 {

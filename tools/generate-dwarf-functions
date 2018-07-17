@@ -29,10 +29,10 @@ $(cat "$1" | grep DW_TAG_ | sed 's/.*\(DW_TAG_[^ ]*\) = \(0x[0-9a-f]*\).*/    {\
 namespace simgrid {
 namespace dwarf {
 
-/** \brief Get the name of a dwarf tag (DW_TAG_*) from its code
+/** @brief Get the name of a dwarf tag (DW_TAG_*) from its code
  *
- *  \param tag tag code (see the DWARF specification)
- *  \return name of the tag
+ *  @param tag tag code (see the DWARF specification)
+ *  @return name of the tag
  */
 XBT_PRIVATE
 const char *tagname(int tag)
@@ -57,10 +57,10 @@ $(cat "$1" | grep DW_AT_ | sed 's/.*\(DW_AT_[^ ]*\) = \(0x[0-9a-f]*\).*/    {\2,
 namespace simgrid {
 namespace dwarf  {
 
-/** \brief Get the name of an attribute (DW_AT_*) from its code
+/** @brief Get the name of an attribute (DW_AT_*) from its code
  *
- *  \param attr attribute code (see the DWARF specification)
- *  \return name of the attribute
+ *  @param attr attribute code (see the DWARF specification)
+ *  @return name of the attribute
  */
 XBT_PRIVATE
 const char *attrname(int attr)

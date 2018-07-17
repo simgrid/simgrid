@@ -12,7 +12,7 @@ struct s_smpi_static_t {
 };
 
 /**
- * \brief Holds a reference to all static variables that were registered
+ * @brief Holds a reference to all static variables that were registered
  *        via smpi_register_static(). This helps to free them when
  *        SMPI shuts down.
  */

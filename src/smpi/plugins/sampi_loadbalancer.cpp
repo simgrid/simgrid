@@ -19,9 +19,9 @@ namespace plugin {
 }
 }
 
-/** \ingroup plugin_loadbalancer
- * \brief Initializes the load balancer plugin
- * \details The load balancer plugin supports several AMPI load balancers that move ranks
+/** @ingroup plugin_loadbalancer
+ * @brief Initializes the load balancer plugin
+ * @details The load balancer plugin supports several AMPI load balancers that move ranks
  * around, based on their host's load.
  */
 void sg_load_balancer_plugin_init()

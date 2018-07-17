@@ -30,11 +30,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX
 unsigned long simix_process_maxpid = 0;
 
 /**
- * \brief Returns the current agent.
+ * @brief Returns the current agent.
  *
  * This functions returns the currently running SIMIX process.
  *
- * \return The SIMIX process
+ * @return The SIMIX process
  */
 smx_actor_t SIMIX_process_self()
 {
@@ -44,8 +44,8 @@ smx_actor_t SIMIX_process_self()
 }
 
 /**
- * \brief Returns whether a process has pending asynchronous communications.
- * \return true if there are asynchronous communications in this process
+ * @brief Returns whether a process has pending asynchronous communications.
+ * @return true if there are asynchronous communications in this process
  */
 int SIMIX_process_has_pending_comms(smx_actor_t process) {
 
@@ -53,7 +53,7 @@ int SIMIX_process_has_pending_comms(smx_actor_t process) {
 }
 
 /**
- * \brief Moves a process to the list of processes to destroy.
+ * @brief Moves a process to the list of processes to destroy.
  */
 void SIMIX_process_cleanup(smx_actor_t process)
 {
@@ -272,13 +272,13 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
 }
 
 /**
- * \brief Internal function to create a process.
+ * @brief Internal function to create a process.
  *
  * This function actually creates the process.
  * It may be called when a SIMCALL_PROCESS_CREATE simcall occurs,
  * or directly for SIMIX internal purposes. The sure thing is that it's called from maestro context.
  *
- * \return the process created
+ * @return the process created
  */
 smx_actor_t SIMIX_process_create(std::string name, simgrid::simix::ActorCode code, void* data, simgrid::s4u::Host* host,
                                  std::unordered_map<std::string, std::string>* properties, smx_actor_t parent_process)
@@ -406,7 +406,7 @@ void SIMIX_process_detach()
 }
 
 /**
- * \brief Executes the processes from simix_global->process_to_run.
+ * @brief Executes the processes from simix_global->process_to_run.
  *
  * The processes of simix_global->process_to_run are run (in parallel if
  * possible).  On exit, simix_global->process_to_run is empty, and
@@ -423,13 +423,13 @@ void SIMIX_process_runall()
 }
 
 /**
- * \brief Internal function to kill a SIMIX process.
+ * @brief Internal function to kill a SIMIX process.
  *
  * This function may be called when a SIMCALL_PROCESS_KILL simcall occurs,
  * or directly for SIMIX internal purposes.
  *
- * \param process poor victim
- * \param issuer the process which has sent the PROCESS_KILL. Important to not schedule twice the same process.
+ * @param process poor victim
+ * @param issuer the process which has sent the PROCESS_KILL. Important to not schedule twice the same process.
  */
 void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
 
@@ -555,8 +555,8 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
 }
 
 /**
- * \brief Kills all running processes.
- * \param issuer this one will not be killed
+ * @brief Kills all running processes.
+ * @param issuer this one will not be killed
  */
 void SIMIX_process_killall(smx_actor_t issuer)
 {
@@ -677,11 +677,11 @@ void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 }
 
 /**
- * \brief Calling this function makes the process to yield.
+ * @brief Calling this function makes the process to yield.
  *
  * Only the current process can call this function, giving back the control to maestro.
  *
- * \param self the current process
+ * @param self the current process
  */
 void SIMIX_process_yield(smx_actor_t self)
 {
@@ -762,20 +762,20 @@ void SIMIX_process_on_exit(smx_actor_t process, std::function<void(int, void*)> 
 
 /** @brief Restart a process, starting it again from the beginning. */
 /**
- * \ingroup simix_process_management
- * \brief Creates and runs a new SIMIX process.
+ * @ingroup simix_process_management
+ * @brief Creates and runs a new SIMIX process.
  *
  * The structure and the corresponding thread are created and put in the list of ready processes.
  *
- * \param name a name for the process. It is for user-level information and can be nullptr.
- * \param code the main function of the process
- * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can
+ * @param name a name for the process. It is for user-level information and can be nullptr.
+ * @param code the main function of the process
+ * @param data a pointer to any data one may want to attach to the new object. It is for user-level information and can
  * be nullptr.
  * It can be retrieved with the method ActorImpl::getUserData().
- * \param host where the new agent is executed.
- * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code
- * \param properties the properties of the process
+ * @param host where the new agent is executed.
+ * @param argc first argument passed to @a code
+ * @param argv second argument passed to @a code
+ * @param properties the properties of the process
  */
 smx_actor_t simcall_process_create(std::string name, xbt_main_func_t code, void* data, sg_host_t host, int argc,
                                    char** argv, std::unordered_map<std::string, std::string>* properties)

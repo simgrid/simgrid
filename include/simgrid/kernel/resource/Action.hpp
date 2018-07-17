@@ -104,13 +104,13 @@ public:
   /**
    * @brief Mark that the action is now finished
    *
-   * @param state the new [state](\ref simgrid::kernel::resource::Action::State) of the current Action
+   * @param state the new [state](@ref simgrid::kernel::resource::Action::State) of the current Action
    */
   void finish(Action::State state);
 
-  /** @brief Get the [state](\ref simgrid::kernel::resource::Action::State) of the current Action */
+  /** @brief Get the [state](@ref simgrid::kernel::resource::Action::State) of the current Action */
   Action::State get_state() const; /**< get the state*/
-  /** @brief Set the [state](\ref simgrid::kernel::resource::Action::State) of the current Action */
+  /** @brief Set the [state](@ref simgrid::kernel::resource::Action::State) of the current Action */
   virtual void set_state(Action::State state);
 
   /** @brief Get the bound of the current Action */

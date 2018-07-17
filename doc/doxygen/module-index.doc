@@ -19,7 +19,7 @@ The API enables the declaration of categories and a function to
 associate them to the tasks (MSG and SD). The tasks that are not
 classified according to a category are not traced. If no categories
 are specified, simulations can still be traced using a special
-parameter in the command line (see \ref outcomes_vizu for details).
+parameter in the command line (see @ref outcomes_vizu for details).
 */
 
 /** @defgroup ROUTING_API  Routing: Determining the communication paths
@@ -55,12 +55,12 @@ The price to pay is that this representation of networks is very
 specific to SimGrid, so you will have to read further to understand
 it, even if you already know how real networks work.
 
-The central notion here are \b Networking \b Zones. NetZones represent
+The central notion here are @b Networking @b Zones. NetZones represent
 network areas in which the routing is done in an homogeneous way.
 Conceptually, netzones generalize from the ideas of local networks
 (such as Ethernet switched networks) and Autonomous System. The 
 network as a whole is represented as a single hierarchy of netzones,
-meaning that every netzone is part of another netzone (but the \c
+meaning that every netzone is part of another netzone (but the @c
 NetRoot, which is the top-level netzone).
 
 The main goal of the routing module is to provide a list of links
@@ -96,12 +96,12 @@ given processes.
 
 For now, you can only declare a platform from an XML file, but we are
 working to make it possible from the C++ code (or even from bindings
-in other languages). Until then, please head to \ref platform.
+in other languages). Until then, please head to @ref platform.
 
 */
 
-/** \defgroup SIMIX_API      SIMIX
-    \brief POSIX-like interface for building simulation
+/** @defgroup SIMIX_API      SIMIX
+    @brief POSIX-like interface for building simulation
 
     This is a developer-level interface that should be useful only if you
     plan to design a new interface for SimGrid.

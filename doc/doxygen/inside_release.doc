@@ -1,9 +1,9 @@
 /*! 
-\page inside_release Releasing SimGrid
+@page inside_release Releasing SimGrid
 
-\section inside_release_c Releasing the main library
+@section inside_release_c Releasing the main library
 
-\subsection inside_release_c_preconditions Before releasing
+@subsection inside_release_c_preconditions Before releasing
 
 Please apply the following checklist before releasing.
 
@@ -30,25 +30,25 @@ Please apply the following checklist before releasing.
   - The release date is indicated right below the version name
   - The release dub name matches the one given in ChangeLog file
 
-\subsection inside_release_c_source Building the source archive
+@subsection inside_release_c_source Building the source archive
 
 This should be done from a clean git repository because some files are
 included through globbing. The best is to use a clean checkout:
-\verbatim
+@verbatim
 cd /tmp
 git clone --depth=1 ~/Code/simgrid
 cd simgrid
 cmake . && make dist
-\endverbatim
+@endverbatim
 
 If you prefer, you can clean your repository the hard way:
-\verbatim
+@verbatim
 git reset --hard master # remove all uncommited changes to the files tracked by git
 git clean -dfx          # delete all files and directories that are not tracked by git
 cmake . && make dist
-\endverbatim
+@endverbatim
 
-\subsection inside_release_c_jarfile Building the binary jarfile
+@subsection inside_release_c_jarfile Building the binary jarfile
 
 Get the jarfiles for several OSes on the CI slaves. Use Save under to
 give a separate name to each of them.
@@ -58,7 +58,7 @@ give a separate name to each of them.
 - Linux: it is safer to rebuild them in a chroot (to avoid
   boost-context and all other optional dependencies):
   
-\verbatim
+@verbatim
 mkdir /tmp/build-amd64
 cp SimGrid-3.*.tar.gz /tmp/build-amd64
 sudo debootstrap --arch amd64 --variant=buildd testing /tmp/build-amd64 http://deb.debian.org/debian/
@@ -70,11 +70,11 @@ cd tmp
 tar xfz ../SimGrid*tar.gz && cd SimGrid-*
 cmake . -Denable_documentation=ON -Denable_java=ON
 make -j4 && LC_ALL=C ctest -R java
-\endverbatim
+@endverbatim
 
 Once all jarfiles are in a separate directory, run the following to
 merge them:
-\verbatim
+@verbatim
 mkdir content ; cd content
 
 for j in  ../simgrid-linux64.jar ../simgrid*.jar ; do unzip -n $j ; done
@@ -89,13 +89,13 @@ x86_64-linux-gnu-strip NATIVE/*/*/lib*dll # Gets Windows, down to 22M
 
 rm ../simgrid-3_*.jar
 zip -r ../simgrid-3_XX.jar *              # Produced ../simgrid-3_XX.jar is 7.7M
-\endverbatim
+@endverbatim
 
 To upload the file on gforge, you need to go to Files/Admin then clic
 on the Settings icon near to the "Add a version" button, and then on
 the settings icon of the release you want to change.
 
-\subsection inside_release_c_postchecks Check list after releasing
+@subsection inside_release_c_postchecks Check list after releasing
 
 - Tag the git repository (don't forget to push the tags to the main repo)
 - Push the archive files (tar.gz and jar) on gforge
@@ -103,7 +103,7 @@ the settings icon of the release you want to change.
 - Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
   (and create the directory of the next version)
 - Rebuild and resynchronize the website so that the file gets visible
-  from our download page.\n
+  from our download page.@n
   - Edit org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
   - emacs org/site/index.org and C-c C-c the first source block to refresh the news; fake the date in the result.
   - emacs org/site/download.org and C-c C-c the first source block to refresh the download.
@@ -114,7 +114,7 @@ the settings icon of the release you want to change.
  - Document the tag on https://github.com/simgrid/simgrid/releases
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
-    - Hall of Fame in the mail\n
+    - Hall of Fame in the mail@n
       git shortlog -sne v3.18..
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk

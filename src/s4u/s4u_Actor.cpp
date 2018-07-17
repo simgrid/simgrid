@@ -171,7 +171,7 @@ void Actor::set_kill_time(double time)
   simcall_process_set_kill_time(pimpl_, time);
 }
 
-/** \brief Get the kill time of an actor(or 0 if unset). */
+/** @brief Get the kill time of an actor(or 0 if unset). */
 double Actor::get_kill_time()
 {
   return SIMIX_timer_get_date(pimpl_->kill_timer);
@@ -434,10 +434,10 @@ void kill() /* deprecated */
 
 /* **************************** Public C interface *************************** */
 
-/** \ingroup m_actor_management
- * \brief Returns the process ID of \a actor.
+/** @ingroup m_actor_management
+ * @brief Returns the process ID of @a actor.
  *
- * This function checks whether \a actor is a valid pointer and return its PID (or 0 in case of problem).
+ * This function checks whether @a actor is a valid pointer and return its PID (or 0 in case of problem).
  */
 int sg_actor_get_PID(sg_actor_t actor)
 {
@@ -448,10 +448,10 @@ int sg_actor_get_PID(sg_actor_t actor)
   return actor->get_pid();
 }
 
-/** \ingroup m_actor_management
- * \brief Returns the process ID of the parent of \a actor.
+/** @ingroup m_actor_management
+ * @brief Returns the process ID of the parent of @a actor.
  *
- * This function checks whether \a actor is a valid pointer and return its parent's PID.
+ * This function checks whether @a actor is a valid pointer and return its parent's PID.
  * Returns -1 if the actor has not been created by any other actor.
  */
 int sg_actor_get_PPID(sg_actor_t actor)
@@ -459,12 +459,12 @@ int sg_actor_get_PPID(sg_actor_t actor)
   return actor->get_ppid();
 }
 
-/** \ingroup m_actor_management
+/** @ingroup m_actor_management
  *
- * \brief Return a #sg_actor_t given its PID.
+ * @brief Return a #sg_actor_t given its PID.
  *
- * This function search in the list of all the created sg_actor_t for a sg_actor_t  whose PID is equal to \a PID.
- * If none is found, \c nullptr is returned.
+ * This function search in the list of all the created sg_actor_t for a sg_actor_t  whose PID is equal to @a PID.
+ * If none is found, @c nullptr is returned.
    Note that the PID are unique in the whole simulation, not only on a given host.
  */
 sg_actor_t sg_actor_by_PID(aid_t pid)
@@ -472,8 +472,8 @@ sg_actor_t sg_actor_by_PID(aid_t pid)
   return simgrid::s4u::Actor::by_pid(pid).get();
 }
 
-/** \ingroup m_actor_management
- * \brief Return the name of an actor.
+/** @ingroup m_actor_management
+ * @brief Return the name of an actor.
  */
 const char* sg_actor_get_name(sg_actor_t actor)
 {
@@ -485,20 +485,20 @@ sg_host_t sg_actor_get_host(sg_actor_t actor)
   return actor->get_host();
 }
 
-/** \ingroup m_actor_management
- * \brief Returns the value of a given actor property
+/** @ingroup m_actor_management
+ * @brief Returns the value of a given actor property
  *
- * \param actor an actor
- * \param name a property name
- * \return value of a property (or nullptr if the property is not set)
+ * @param actor an actor
+ * @param name a property name
+ * @return value of a property (or nullptr if the property is not set)
  */
 const char* sg_actor_get_property_value(sg_actor_t actor, const char* name)
 {
   return actor->get_property(name);
 }
 
-/** \ingroup m_actor_management
- * \brief Return the list of properties
+/** @ingroup m_actor_management
+ * @brief Return the list of properties
  *
  * This function returns all the parameters associated with an actor
  */
@@ -515,8 +515,8 @@ xbt_dict_t sg_actor_get_properties(sg_actor_t actor)
   return as_dict;
 }
 
-/** \ingroup m_actor_management
- * \brief Suspend the actor.
+/** @ingroup m_actor_management
+ * @brief Suspend the actor.
  *
  * This function suspends the actor by suspending the task on which it was waiting for the completion.
  */
@@ -526,8 +526,8 @@ void sg_actor_suspend(sg_actor_t actor)
   actor->suspend();
 }
 
-/** \ingroup m_actor_management
- * \brief Resume a suspended actor.
+/** @ingroup m_actor_management
+ * @brief Resume a suspended actor.
  *
  * This function resumes a suspended actor by resuming the task on which it was waiting for the completion.
  */
@@ -537,8 +537,8 @@ void sg_actor_resume(sg_actor_t actor)
   actor->resume();
 }
 
-/** \ingroup m_actor_management
- * \brief Returns true if the actor is suspended .
+/** @ingroup m_actor_management
+ * @brief Returns true if the actor is suspended .
  *
  * This checks whether an actor is suspended or not by inspecting the task on which it was waiting for the completion.
  */
@@ -548,8 +548,8 @@ int sg_actor_is_suspended(sg_actor_t actor)
 }
 
 /**
- * \ingroup m_actor_management
- * \brief Restarts an actor from the beginning.
+ * @ingroup m_actor_management
+ * @brief Restarts an actor from the beginning.
  */
 sg_actor_t sg_actor_restart(sg_actor_t actor)
 {
@@ -557,8 +557,8 @@ sg_actor_t sg_actor_restart(sg_actor_t actor)
 }
 
 /**
- * \ingroup m_actor_management
- * \brief Sets the "auto-restart" flag of the actor.
+ * @ingroup m_actor_management
+ * @brief Sets the "auto-restart" flag of the actor.
  * If the flag is set to 1, the actor will be automatically restarted when its host comes back up.
  */
 void sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
@@ -574,21 +574,21 @@ void sg_actor_daemonize(sg_actor_t actor)
   actor->daemonize();
 }
 
-/** \ingroup m_actor_management
- * \brief Migrates an actor to another location.
+/** @ingroup m_actor_management
+ * @brief Migrates an actor to another location.
  *
- * This function changes the value of the #sg_host_t on  which \a actor is running.
+ * This function changes the value of the #sg_host_t on  which @a actor is running.
  */
 void sg_actor_migrate(sg_actor_t process, sg_host_t host)
 {
   process->migrate(host);
 }
 
-/** \ingroup m_actor_management
- * \brief Wait for the completion of a #sg_actor_t.
+/** @ingroup m_actor_management
+ * @brief Wait for the completion of a #sg_actor_t.
  *
- * \param actor the actor to wait for
- * \param timeout wait until the actor is over, or the timeout expires
+ * @param actor the actor to wait for
+ * @param timeout wait until the actor is over, or the timeout expires
  */
 void sg_actor_join(sg_actor_t actor, double timeout)
 {
@@ -605,11 +605,11 @@ void sg_actor_kill_all()
   simgrid::s4u::Actor::kill_all();
 }
 
-/** \ingroup m_actor_management
- * \brief Set the kill time of an actor.
+/** @ingroup m_actor_management
+ * @brief Set the kill time of an actor.
  *
- * \param actor an actor
- * \param kill_time the time when the actor is killed.
+ * @param actor an actor
+ * @param kill_time the time when the actor is killed.
  */
 void sg_actor_set_kill_time(sg_actor_t actor, double kill_time)
 {

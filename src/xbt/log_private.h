@@ -20,9 +20,9 @@ struct xbt_log_layout_s {
 };
 
 /**
- * \ingroup XBT_log_implem
- * \param cat the category (not only its name, but the variable)
- * \param parent the parent cat
+ * @ingroup XBT_log_implem
+ * @param cat the category (not only its name, but the variable)
+ * @param parent the parent cat
  *
  * Programatically alter a category's parent (don't use).
  */

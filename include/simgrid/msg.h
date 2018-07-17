@@ -151,12 +151,12 @@ XBT_PUBLIC void MSG_process_killall();
 XBT_PUBLIC void MSG_process_set_kill_time(msg_process_t process, double kill_time);
 XBT_PUBLIC void MSG_process_yield();
 
-
 /**
- * \brief @brief Communication action.
- * \ingroup msg_task_usage
+ * @brief @brief Communication action.
+ * @ingroup msg_task_usage
  *
- * Object representing an ongoing communication between processes. Such beast is usually obtained by using #MSG_task_isend, #MSG_task_irecv or friends.
+ * Object representing an ongoing communication between processes. Such beast is usually obtained by using
+ * #MSG_task_isend, #MSG_task_irecv or friends.
  */
 typedef sg_msg_Comm* msg_comm_t;
 
@@ -182,8 +182,8 @@ typedef struct msg_task {
 
 typedef struct msg_task* msg_task_t;
 
-/** \brief Default value for an uninitialized #msg_task_t.
-    \ingroup m_task_management
+/** @brief Default value for an uninitialized #msg_task_t.
+    @ingroup m_task_management
 */
 #define MSG_TASK_UNINITIALIZED NULL
 
@@ -206,9 +206,9 @@ typedef enum {
 
 /************************** Global ******************************************/
 XBT_PUBLIC void MSG_config(const char* key, const char* value);
-/** \ingroup msg_simulation
- *  \brief Initialize the MSG internal data.
- *  \hideinitializer
+/** @ingroup msg_simulation
+ *  @brief Initialize the MSG internal data.
+ *  @hideinitializer
  *
  *  It also check that the link-time and compile-time versions of SimGrid do
  *  match, so you should use this version instead of the #MSG_init_nocheck
@@ -216,9 +216,10 @@ XBT_PUBLIC void MSG_config(const char* key, const char* value);
  *
  *  We allow to link against compiled versions that differ in the patch level.
  */
-#define MSG_init(argc,argv)  do {                                                          \
-  sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
-    MSG_init_nocheck(argc,argv);                                                        \
+#define MSG_init(argc, argv)                                                                                           \
+  do {                                                                                                                 \
+    sg_version_check(SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);                             \
+    MSG_init_nocheck(argc, argv);                                                                                      \
   } while (0)
 
 XBT_PUBLIC void MSG_init_nocheck(int* argc, char** argv);

@@ -18,8 +18,8 @@
  *  All modules of the SimGrid toolkit can be configured with this API.
  *  User modules and libraries can also use these facilities to handle their own configuration.
  *
- *  A configuration set contain several \e variables which have a unique name in the set and can take a given type of
- *  value. For example, it may contain a \a size variable, accepting \e int values.
+ *  A configuration set contain several @e variables which have a unique name in the set and can take a given type of
+ *  value. For example, it may contain a @a size variable, accepting @e int values.
  *
  *  It is impossible to set a value to a variable which has not been registered before.
  *  Usually, the module registers all the options it accepts in the configuration set, during its initialization and
@@ -27,17 +27,17 @@
  *
  *  The easiest way to register a variable is to use the xbt_str_register_str function, which accepts a string
  *  representation of the config element descriptor. The syntax is the following:
- *  \verbatim <name>:<min nb>_to_<max nb>_<type>\endverbatim
+ *  @verbatim <name>:<min nb>_to_<max nb>_<type>@endverbatim
  *
- *  For example, <tt>size:1_to_1_int</tt> describes a variable called \e size which must take exactly one value, and
+ *  For example, <tt>size:1_to_1_int</tt> describes a variable called @e size which must take exactly one value, and
  *  the value being an integer. Set the maximum to 0 to disable the upper bound on data count.
  *
- *  Another example could be <tt>outputfiles:0_to_10_string</tt> which describes a variable called \e outputfiles and
+ *  Another example could be <tt>outputfiles:0_to_10_string</tt> which describes a variable called @e outputfiles and
  *  which can take between 0 and 10 strings as value.
  *
  *  To some extend, configuration sets can be seen as typed hash structures.
  *
- *  \section XBT_cfg_ex Example of use
+ *  @section XBT_cfg_ex Example of use
  *
  *  TBD
  */
@@ -66,7 +66,7 @@ SG_BEGIN_DECL()
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_parse") XBT_PUBLIC
     void xbt_cfg_set_parse(const char* options);
 
-/* Set the value of the cell \a name in \a cfg with the provided value.*/
+/* Set the value of the cell @a name in @a cfg with the provided value.*/
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_value<int>") XBT_PUBLIC
     void xbt_cfg_set_int(const char* name, int val);
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_value<double>") XBT_PUBLIC
@@ -79,7 +79,7 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_as_string") XBT_PUBL
     void xbt_cfg_set_as_string(const char* name, const char* val);
 
 /*
-  Set the default value of the cell \a name in \a cfg with the provided value.
+  Set the default value of the cell @a name in @a cfg with the provided value.
   If it was already set to something (possibly from the command line), do nothing.
  */
 XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::set_default<int>") XBT_PUBLIC
@@ -103,7 +103,7 @@ XBT_ATTRIB_DEPRECATED_v323("Please use simgrid::config::is_default") XBT_PUBLIC
  *  @{
  */
 
-/** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
+/** @brief Callback types. They get the name of the modified entry, and the position of the changed value */
 typedef void (*xbt_cfg_cb_t)(const char* name);
 
 XBT_ATTRIB_DEPRECATED_v323("Please don't use it") XBT_PUBLIC xbt_cfg_t xbt_cfg_new();

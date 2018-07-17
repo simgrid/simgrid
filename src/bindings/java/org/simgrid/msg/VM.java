@@ -134,14 +134,14 @@ public class VM extends Host {
 
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
-	 * No suspension cost occurs. If you want to simulate this too, you want to use a \ref File.write() before or
+	 * No suspension cost occurs. If you want to simulate this too, you want to use a @ref File.write() before or
 	 * after, depending on the exact semantic of VM suspend to you.
 	 */	
 	public native void suspend();
 
 	/** Immediately resumes the execution of all processes within the given VM
 	 *
-	 * No resume cost occurs. If you want to simulate this too, you want to use a \ref File.read() before or after,
+	 * No resume cost occurs. If you want to simulate this too, you want to use a @ref File.read() before or after,
 	 * depending on the exact semantic of VM resume to you.
 	 */
 	public native void resume();

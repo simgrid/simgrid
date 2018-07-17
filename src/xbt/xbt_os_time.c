@@ -104,8 +104,8 @@ void xbt_os_sleep(double sec)
 
 /* TSC (tick-level) timers are said to be unreliable on SMP hosts and thus  disabled in SDL source code */
 
-/* \defgroup XBT_sysdep All system dependency
- * \brief This section describes many macros/functions that can serve as  an OS abstraction.
+/* @defgroup XBT_sysdep All system dependency
+ * @brief This section describes many macros/functions that can serve as  an OS abstraction.
  */
 struct s_xbt_os_timer {
 #if HAVE_POSIX_GETTIME

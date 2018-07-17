@@ -108,7 +108,7 @@ public:
  ************/
 /** @ingroup SURF_network_interface
  * @brief SURF network link interface class
- * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
+ * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
  */
 class LinkImpl : public Resource, public simgrid::surf::PropertyHolder {
 protected:
@@ -169,7 +169,7 @@ private:
  **********/
 /** @ingroup SURF_network_interface
  * @brief SURF network action interface class
- * @details A NetworkAction represents a communication between two [hosts](\ref simgrid::surf::HostImpl)
+ * @details A NetworkAction represents a communication between two [hosts](@ref simgrid::surf::HostImpl)
  */
 class NetworkAction : public Action {
 public:
@@ -202,8 +202,8 @@ public:
 }
 }
 } // namespace simgrid
-/** \ingroup SURF_models
- *  \brief The network model
+/** @ingroup SURF_models
+ *  @brief The network model
  */
 XBT_PUBLIC_DATA simgrid::kernel::resource::NetworkModel* surf_network_model;
 
