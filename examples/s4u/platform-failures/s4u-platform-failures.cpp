@@ -11,6 +11,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static int master(int argc, char* argv[])
 {
+  xbt_assert(argc == 5, "Expecting one parameter");
+
   simgrid::s4u::MailboxPtr mailbox;
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double comp_size     = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
@@ -75,6 +77,7 @@ static int master(int argc, char* argv[])
 
 static int worker(int argc, char* argv[])
 {
+  xbt_assert(argc == 2, "Expecting one parameter");
   long id                          = xbt_str_parse_int(argv[1], "Invalid argument %s");
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::by_name(std::string("worker-") + std::to_string(id));
   double* payload                  = nullptr;
