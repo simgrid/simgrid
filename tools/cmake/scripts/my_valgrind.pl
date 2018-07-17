@@ -14,7 +14,7 @@ my $count = 0;
 while (defined(my $arg = shift)) {
 #    print "arg($count)$arg\n";
     if ($arg =~ m!/smpirun$!) {
-        @argv = ( $arg, "-wrapper", "@argv" );
+        @argv = ( $arg, "-keep-temps", "-wrapper", "@argv" );
     } elsif ($arg eq "--cd") {
         $arg = shift;
         print "cd $arg\n";
