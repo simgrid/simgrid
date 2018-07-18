@@ -331,18 +331,6 @@ if(MINGW)
   set(HAVE_VASPRINTF 1)
 endif()
 
-#Check if __thread is defined
-execute_process(
-  COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c -o testprog"
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-  RESULT_VARIABLE HAVE_thread_storage_run)
-file(REMOVE testprog)
-if(HAVE_thread_storage_run)
-  set(HAVE_THREAD_LOCAL_STORAGE 1)
-else()
-  set(HAVE_THREAD_LOCAL_STORAGE 0)
-endif()
-
 CHECK_INCLUDE_FILE("sys/sendfile.h" HAVE_SENDFILE_H)
 CHECK_FUNCTION_EXISTS(sendfile HAVE_SENDFILE)
 if(HAVE_SENDFILE_H AND HAVE_SENDFILE)
@@ -356,7 +344,7 @@ if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
   set(enable_model-checking FALSE)
 endif()
 
-if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
+if(HAVE_MMAP)
   SET(HAVE_MMALLOC 1)
 else()
   SET(HAVE_MMALLOC 0)

@@ -80,11 +80,7 @@ unsigned smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
 unsigned smx_context_guard_size;
 int smx_context_guard_size_was_set = 0;
-#if HAVE_THREAD_LOCAL_STORAGE
-static XBT_THREAD_LOCAL smx_context_t smx_current_context_parallel;
-#else
-static xbt_os_thread_key_t smx_current_context_key = 0;
-#endif
+static thread_local smx_context_t smx_current_context_parallel;
 static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
@@ -99,12 +95,6 @@ void SIMIX_context_mod_init()
 
   smx_context_stack_size_was_set = not simgrid::config::is_default("contexts/stack-size");
   smx_context_guard_size_was_set = not simgrid::config::is_default("contexts/guard-size");
-
-#if HAVE_THREAD_CONTEXTS && not HAVE_THREAD_LOCAL_STORAGE
-  /* the __thread storage class is not available on this platform:
-   * use getspecific/setspecific instead to store the current context in each thread */
-  xbt_os_thread_key_create(&smx_current_context_key);
-#endif
 
 #if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
   std::string priv = simgrid::config::get_value<std::string>("smpi/privatization");
@@ -329,11 +319,7 @@ void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
 smx_context_t SIMIX_context_get_current()
 {
   if (SIMIX_context_is_parallel()) {
-#if HAVE_THREAD_LOCAL_STORAGE
     return smx_current_context_parallel;
-#else
-    return xbt_os_thread_get_specific(smx_current_context_key);
-#endif
   }
   else {
     return smx_current_context_serial;
@@ -347,11 +333,7 @@ smx_context_t SIMIX_context_get_current()
 void SIMIX_context_set_current(smx_context_t context)
 {
   if (SIMIX_context_is_parallel()) {
-#if HAVE_THREAD_LOCAL_STORAGE
     smx_current_context_parallel = context;
-#else
-    xbt_os_thread_set_specific(smx_current_context_key, context);
-#endif
   }
   else {
     smx_current_context_serial = context;

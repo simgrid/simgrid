@@ -93,12 +93,6 @@
 #  endif
 #endif
 
-#if defined(__GNUC__)
-#  define XBT_THREAD_LOCAL __thread
-#else
-#  define XBT_THREAD_LOCAL No thread local on this architecture
-#endif
-
 /*
  * Expands to `one' if there is only one argument for the variadic part.
  * Otherwise, expands to `more'.

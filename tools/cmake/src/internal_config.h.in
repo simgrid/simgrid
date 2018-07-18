@@ -47,8 +47,6 @@
 #cmakedefine01 HAVE_PTHREAD
 /* Does not seems defined on Mac nor Windows */
 #cmakedefine01 HAVE_PTHREAD_SETAFFINITY
-/* If __thread is available */
-#cmakedefine01 HAVE_THREAD_LOCAL_STORAGE
 
 /* Variables for the raw contexts (to select the right assembly code) */
 #cmakedefine01 SIMGRID_PROCESSOR_i686
