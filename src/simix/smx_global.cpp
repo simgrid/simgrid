@@ -185,7 +185,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->create_process_function = &SIMIX_process_create;
     simix_global->kill_process_function = &kill_process;
     simix_global->cleanup_process_function = &SIMIX_process_cleanup;
-    simix_global->mutex = xbt_os_mutex_init();
 
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
@@ -267,8 +266,6 @@ void SIMIX_clean()
   simix_global->process_to_destroy.clear();
   simix_global->process_list.clear();
 
-  xbt_os_mutex_destroy(simix_global->mutex);
-  simix_global->mutex = nullptr;
 #if SIMGRID_HAVE_MC
   xbt_dynar_free(&simix_global->actors_vector);
   xbt_dynar_free(&simix_global->dead_actors_vector);

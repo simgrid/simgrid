@@ -69,7 +69,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
     process->kill_timer = nullptr;
   }
 
-  xbt_os_mutex_acquire(simix_global->mutex);
+  simix_global->mutex.lock();
 
   /* cancel non-blocking communications */
   while (not process->comms.empty()) {
@@ -113,7 +113,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
   }
   process->context_->iwannadie = 0;
 
-  xbt_os_mutex_release(simix_global->mutex);
+  simix_global->mutex.unlock();
 }
 
 /**
