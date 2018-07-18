@@ -174,7 +174,7 @@ also the tesh files in the example directories for details.
     @ref examples/s4u/exec-dvfs/s4u-exec-dvfs.cpp and 
     @ref examples/platforms/energy_platform.xml @n
     Show how define a set of pstatesfor a host in the XML, and how the current
-    pstate can be accessed/changed with @ref simgrid::s4u::Host::getPstateSpeed and @ref simgrid::s4u::Host::setPstate.
+    pstate can be accessed/changed with @ref simgrid::s4u::Host::get_pstate_speed and @ref simgrid::s4u::Host::set_pstate.
 
   - <b>Parallel tasks</b>
     @ref examples/s4u/exec-ptask/s4u-exec-ptask.cpp@n
@@ -223,12 +223,13 @@ result in short reads and short write, as in reality.
    @ref examples/platforms/prop.xml @n
    You can attach arbitrary information to most platform elements from
    the XML file, and then interact with these values from your
-   program. Note that the changes are not written into the XML file: they
-   will only last until the end of your simulation.
-   - simgrid::s4u::Actor::getProperty() and simgrid::s4u::Actor::setProperty()
-   - simgrid::s4u::Host::getProperty() and simgrid::s4u::Host::setProperty()
-   - simgrid::s4u::Link::getProperty() and simgrid::s4u::Link::setProperty()
-   - simgrid::s4u::NetZone::getProperty() and simgrid::s4u::NetZone::setProperty()
+   program. Note that the changes are not written permanently on disk,
+   in the XML file nor anywhere else. They only last until the end of
+   your simulation. 
+   - simgrid::s4u::Actor::get_property() and simgrid::s4u::Actor::set_property()
+   - simgrid::s4u::Host::get_property() and simgrid::s4u::Host::set_property()
+   - simgrid::s4u::Link::get_property() and simgrid::s4u::Link::set_property()
+   - simgrid::s4u::NetZone::get_property() and simgrid::s4u::NetZone::set_property()
 
 @section s4u_ex_energy Simulating the energy consumption
 
