@@ -25,7 +25,7 @@ public:
   void attach_start() override;
   void attach_stop() override;
 
-  bool isMaestro() const { return is_maestro_; }
+  bool is_maestro() const { return is_maestro_; }
   void release(); // unblock context's start()
   void wait();    // wait for context's yield()
 

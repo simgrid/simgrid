@@ -115,11 +115,11 @@ void *ThreadContext::wrapper(void *param)
 
   try {
     (*context)();
-    if (not context->isMaestro()) // really?
+    if (not context->is_maestro()) // really?
       context->Context::stop();
   } catch (StopRequest const&) {
     XBT_DEBUG("Caught a StopRequest");
-    xbt_assert(not context->isMaestro(), "I'm not supposed to be maestro here.");
+    xbt_assert(not context->is_maestro(), "I'm not supposed to be maestro here.");
   }
 
   // Signal to the caller (normally the maestro) that we have finished:
@@ -171,13 +171,13 @@ void ThreadContext::attach_start()
   // We're breaking the layers here by depending on the upper layer:
   ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
   xbt_os_sem_release(maestro->begin_);
-  xbt_assert(not this->isMaestro());
+  xbt_assert(not this->is_maestro());
   this->start();
 }
 
 void ThreadContext::attach_stop()
 {
-  xbt_assert(not this->isMaestro());
+  xbt_assert(not this->is_maestro());
   this->yield();
 
   ThreadContext* maestro = (ThreadContext*)simix_global->maestro_process->context_;
@@ -223,13 +223,13 @@ void ParallelThreadContext::run_all()
 
 void ParallelThreadContext::start_hook()
 {
-  if (not isMaestro()) /* parallel run */
+  if (not is_maestro()) /* parallel run */
     xbt_os_sem_acquire(thread_sem_);
 }
 
 void ParallelThreadContext::yield_hook()
 {
-  if (not isMaestro()) /* parallel run */
+  if (not is_maestro()) /* parallel run */
     xbt_os_sem_release(thread_sem_);
 }
 
