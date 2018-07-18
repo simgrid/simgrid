@@ -295,47 +295,6 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
   free(mutex);
 }
 
-/***** condition related functions *****/
-typedef struct xbt_os_cond_ {
-  pthread_cond_t c;
-} s_xbt_os_cond_t;
-
-xbt_os_cond_t xbt_os_cond_init(void)
-{
-  xbt_os_cond_t res = xbt_new(s_xbt_os_cond_t, 1);
-  int errcode = pthread_cond_init(&(res->c), NULL);
-  xbt_assert(errcode==0, "pthread_cond_init() failed: %s", strerror(errcode));
-  return res;
-}
-
-void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
-{
-  int errcode = pthread_cond_wait(&(cond->c), &(mutex->m));
-  xbt_assert(errcode==0, "pthread_cond_wait(%p,%p) failed: %s", cond, mutex, strerror(errcode));
-}
-
-void xbt_os_cond_signal(xbt_os_cond_t cond)
-{
-  int errcode = pthread_cond_signal(&(cond->c));
-  xbt_assert(errcode==0, "pthread_cond_signal(%p) failed: %s", cond, strerror(errcode));
-}
-
-void xbt_os_cond_broadcast(xbt_os_cond_t cond)
-{
-  int errcode = pthread_cond_broadcast(&(cond->c));
-  xbt_assert(errcode==0, "pthread_cond_broadcast(%p) failed: %s", cond, strerror(errcode));
-}
-
-void xbt_os_cond_destroy(xbt_os_cond_t cond)
-{
-  if (!cond)
-    return;
-
-  int errcode = pthread_cond_destroy(&(cond->c));
-  xbt_assert(errcode==0, "pthread_cond_destroy(%p) failed: %s", cond, strerror(errcode));
-  free(cond);
-}
-
 typedef struct xbt_os_sem_ {
 #if !HAVE_SEM_INIT
   char *name;

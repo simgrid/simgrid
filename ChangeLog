@@ -6,6 +6,7 @@ Tracing:
  
 XBT:
  - Remove xbt_os_thread_specific features
+ - Remove portability wrapper to condition variables
 
 Fixed bugs:
  - #264: Add ptask L07 resource tracing
