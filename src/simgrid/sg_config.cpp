@@ -38,7 +38,7 @@ bool _sg_cfg_exit_asap = false;
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
 {
-  int shall_exit = 0;
+  bool shall_exit = false;
   int i;
   int j;
   bool parse_args = true; // Stop parsing the parameters once we found '--'
@@ -55,7 +55,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       XBT_DEBUG("Did apply '%s' as config setting", opt);
     } else if (parse_args && not strcmp(argv[i], "--version")) {
       printf("%s\n", SIMGRID_VERSION_STRING);
-      shall_exit = 1;
+      shall_exit = true;
     } else if (parse_args && (not strcmp(argv[i], "--cfg-help") || not strcmp(argv[i], "--help"))) {
       printf("Description of the configuration accepted by this simulator:\n");
       simgrid::config::help();
@@ -73,12 +73,12 @@ static void sg_config_cmd_line(int *argc, char **argv)
           "   --version to get SimGrid version information.\n"
           "\n"
         );
-      shall_exit = 1;
+      shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
       simgrid::config::show_aliases();
       printf("Please consider using the recent names\n");
-      shall_exit = 1;
+      shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-models")) {
       model_help("host", surf_host_model_description);
       printf("\n");
@@ -91,10 +91,10 @@ static void sg_config_cmd_line(int *argc, char **argv)
                surf_optimization_mode_description[k].name,
                surf_optimization_mode_description[k].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
-      shall_exit = 1;
+      shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-tracing")) {
       TRACE_help();
-      shall_exit = 1;
+      shall_exit = true;
     } else {
       argv[j++] = argv[i];
     }
