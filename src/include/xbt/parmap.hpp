@@ -15,6 +15,7 @@
 #include <boost/optional.hpp>
 #include <condition_variable>
 #include <mutex>
+#include <thread>
 
 #if HAVE_FUTEX_H
 #include <linux/futex.h>
@@ -411,7 +412,7 @@ template <typename T> void Parmap<T>::BusyWaitSynchro::master_signal()
 template <typename T> void Parmap<T>::BusyWaitSynchro::master_wait()
 {
   while (__atomic_load_n(&this->parmap.thread_counter, __ATOMIC_SEQ_CST) < this->parmap.num_workers) {
-    xbt_os_thread_yield();
+    std::this_thread::yield();
   }
 }
 
@@ -424,7 +425,7 @@ template <typename T> void Parmap<T>::BusyWaitSynchro::worker_wait(unsigned roun
 {
   /* wait for more work */
   while (__atomic_load_n(&this->parmap.work_round, __ATOMIC_SEQ_CST) != round) {
-    xbt_os_thread_yield();
+    std::this_thread::yield();
   }
 }
 

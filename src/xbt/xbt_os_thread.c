@@ -246,12 +246,6 @@ xbt_os_thread_t xbt_os_thread_self(void )
   return pthread_getspecific(xbt_self_thread_key);
 }
 
-#include <sched.h>
-void xbt_os_thread_yield(void)
-{
-  sched_yield();
-}
-
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
   pthread_mutex_t m;
