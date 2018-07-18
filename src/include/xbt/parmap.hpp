@@ -13,6 +13,8 @@
 #include "xbt/xbt_os_thread.h"
 
 #include <boost/optional.hpp>
+#include <condition_variable>
+#include <mutex>
 
 #if HAVE_FUTEX_H
 #include <linux/futex.h>
@@ -98,10 +100,10 @@ private:
     void worker_wait(unsigned round);
 
   private:
-    xbt_os_cond_t ready_cond;
-    xbt_os_mutex_t ready_mutex;
-    xbt_os_cond_t done_cond;
-    xbt_os_mutex_t done_mutex;
+    std::condition_variable ready_cond;
+    std::mutex ready_mutex;
+    std::condition_variable done_cond;
+    std::mutex done_mutex;
   };
 
 #if HAVE_FUTEX_H
@@ -306,59 +308,47 @@ template <typename T> void* Parmap<T>::worker_main(void* arg)
 
 template <typename T> Parmap<T>::PosixSynchro::PosixSynchro(Parmap<T>& parmap) : Synchro(parmap)
 {
-  ready_cond  = xbt_os_cond_init();
-  ready_mutex = xbt_os_mutex_init();
-  done_cond   = xbt_os_cond_init();
-  done_mutex  = xbt_os_mutex_init();
 }
 
 template <typename T> Parmap<T>::PosixSynchro::~PosixSynchro()
 {
-  xbt_os_cond_destroy(ready_cond);
-  xbt_os_mutex_destroy(ready_mutex);
-  xbt_os_cond_destroy(done_cond);
-  xbt_os_mutex_destroy(done_mutex);
 }
 
 template <typename T> void Parmap<T>::PosixSynchro::master_signal()
 {
-  xbt_os_mutex_acquire(ready_mutex);
+  std::unique_lock<std::mutex> lk(ready_mutex);
   this->parmap.thread_counter = 1;
   this->parmap.work_round++;
   /* wake all workers */
-  xbt_os_cond_broadcast(ready_cond);
-  xbt_os_mutex_release(ready_mutex);
+  ready_cond.notify_all();
 }
 
 template <typename T> void Parmap<T>::PosixSynchro::master_wait()
 {
-  xbt_os_mutex_acquire(done_mutex);
+  std::unique_lock<std::mutex> lk(done_mutex);
   while (this->parmap.thread_counter < this->parmap.num_workers) {
     /* wait for all workers to be ready */
-    xbt_os_cond_wait(done_cond, done_mutex);
+    done_cond.wait(lk);
   }
-  xbt_os_mutex_release(done_mutex);
 }
 
 template <typename T> void Parmap<T>::PosixSynchro::worker_signal()
 {
-  xbt_os_mutex_acquire(done_mutex);
+  std::unique_lock<std::mutex> lk(done_mutex);
   this->parmap.thread_counter++;
   if (this->parmap.thread_counter == this->parmap.num_workers) {
     /* all workers have finished, wake the controller */
-    xbt_os_cond_signal(done_cond);
+    done_cond.notify_one();
   }
-  xbt_os_mutex_release(done_mutex);
 }
 
 template <typename T> void Parmap<T>::PosixSynchro::worker_wait(unsigned round)
 {
-  xbt_os_mutex_acquire(ready_mutex);
+  std::unique_lock<std::mutex> lk(ready_mutex);
   /* wait for more work */
   while (this->parmap.work_round != round) {
-    xbt_os_cond_wait(ready_cond, ready_mutex);
+    ready_cond.wait(lk);
   }
-  xbt_os_mutex_release(ready_mutex);
 }
 
 #if HAVE_FUTEX_H
