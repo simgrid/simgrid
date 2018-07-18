@@ -19,7 +19,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
-static std::unordered_map<std::string, std::deque<std::string>*> keys;
+static std::unordered_map<std::string, std::deque<std::string>> keys;
 
 static std::map<std::string, std::string> smpi_colors = {{"recv", "1 0 0"},
   {"irecv", "1 0.52 0.52"},
@@ -102,18 +102,6 @@ XBT_PRIVATE container_t smpi_container(int rank)
 
 static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
 {
-  // get the deque for src#dst
-  std::string aux =
-      std::to_string(src) + "#" + std::to_string(dst) + "#" + std::to_string(tag) + "#" + std::to_string(send);
-  auto it = keys.find(aux);
-  std::deque<std::string>* d;
-
-  if (it == keys.end()) {
-    d         = new std::deque<std::string>;
-    keys[aux] = d;
-  } else
-    d = it->second;
-
   //generate the key
   static unsigned long long counter = 0;
   counter++;
@@ -121,7 +109,9 @@ static std::string TRACE_smpi_put_key(int src, int dst, int tag, int send)
       std::to_string(src) + "_" + std::to_string(dst) + "_" + std::to_string(tag) + "_" + std::to_string(counter);
 
   //push it
-  d->push_back(key);
+  std::string aux =
+      std::to_string(src) + "#" + std::to_string(dst) + "#" + std::to_string(tag) + "#" + std::to_string(send);
+  keys[aux].push_back(key);
 
   return key;
 }
@@ -136,12 +126,10 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
     // first posted
     key = TRACE_smpi_put_key(src, dst, tag, send);
   } else {
-    key = it->second->front();
-    it->second->pop_front();
-    if (it->second->empty()) {
-      delete it->second;
+    key = it->second.front();
+    it->second.pop_front();
+    if (it->second.empty())
       keys.erase(it);
-    }
   }
   return key;
 }
@@ -167,12 +155,6 @@ const char *TRACE_internal_smpi_get_category ()
 
   auto it = process_category.find(SIMIX_process_self());
   return (it == process_category.end()) ? nullptr : it->second.c_str();
-}
-
-void TRACE_smpi_release()
-{
-  for (auto const& elm : keys)
-    delete elm.second;
 }
 
 void TRACE_smpi_setup_container(int rank, sg_host_t host)
