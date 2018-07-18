@@ -196,7 +196,7 @@ bool Action::is_suspended()
 double Action::get_remains()
 {
   XBT_IN("(%p)", this);
-  /* update remains before return it */
+  /* update remains before returning it */
   if (get_model()->get_update_algorithm() == Model::UpdateAlgo::LAZY) /* update remains before return it */
     update_remains_lazy(surf_get_clock());
   XBT_OUT();
