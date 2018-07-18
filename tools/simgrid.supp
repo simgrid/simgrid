@@ -20,7 +20,6 @@
    Memcheck:Leak
    match-leak-kinds:reachable
    ...
-   fun:_Znwm
    fun:_ZN4Json5Value13nullSingletonEv
    obj:*/libjsoncpp.so*
    ...
