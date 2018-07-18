@@ -10,6 +10,7 @@ XBT:
  - Remove xbt_os_thread_yield()
 
 Fixed bugs:
+ - #93: simgrid should not eat --help
  - #264: Add ptask L07 resource tracing
  - #271: Dynamic and manual replay of SMPI traces
  - #279: Breakpoints option uses time deltas instead of absolute time

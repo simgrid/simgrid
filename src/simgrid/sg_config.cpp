@@ -18,6 +18,21 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
+static simgrid::config::Flag<bool> cfg_continue_after_help
+  {"help-nostop", "Do not stop the execution when --help is found", false};
+
+/** @brief Allow other libraries to react to the --help flag, too
+ *
+ * When finding --help on the command line, simgrid usually stops right after displaying its help message.
+ * If you are writing a library using simgrid, you may want to display your own help message before everything stops.
+ * If so, just call this function before having simgrid parsing the command line, and you will be given the control
+ * even if the user is asking for help.
+ */
+void sg_config_continue_after_help()
+{
+  cfg_continue_after_help = true;
+}
+
 /* 0: beginning of time (config cannot be changed yet)
  * 1: initialized: cfg_set created (config can now be changed)
  * 2: configured: command line parsed and config part of platform file was
@@ -73,7 +88,8 @@ static void sg_config_cmd_line(int *argc, char **argv)
           "   --version to get SimGrid version information.\n"
           "\n"
         );
-      shall_exit = true;
+      shall_exit = not cfg_continue_after_help;
+      argv[j++]  = argv[i]; // Preserve the --help in argv just in case someone else wants to see it
     } else if (parse_args && not strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
       simgrid::config::show_aliases();

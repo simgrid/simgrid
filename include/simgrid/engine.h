@@ -17,6 +17,8 @@ XBT_PUBLIC void simgrid_run();
 XBT_PUBLIC void simgrid_register_function(const char* name, int (*code)(int, char**));
 XBT_PUBLIC void simgrid_register_default(int (*code)(int, char**));
 XBT_PUBLIC double simgrid_get_clock();
+
+XBT_PUBLIC void sg_config_continue_after_help();
 SG_END_DECL()
 
 #endif /* INCLUDE_SIMGRID_ENGINE_H_ */
