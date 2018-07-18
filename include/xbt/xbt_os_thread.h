@@ -15,8 +15,6 @@
 
 SG_BEGIN_DECL()
 
-typedef pthread_key_t xbt_os_thread_key_t;
-
 /** @addtogroup XBT_thread
  *  @brief Thread portability layer
  *
@@ -38,10 +36,6 @@ XBT_PUBLIC xbt_os_thread_t xbt_os_thread_self(void);
 XBT_PUBLIC const char* xbt_os_thread_self_name(void);
 XBT_PUBLIC void xbt_os_thread_set_extra_data(void* data);
 XBT_PUBLIC void* xbt_os_thread_get_extra_data(void);
-XBT_PUBLIC void xbt_os_thread_key_create(xbt_os_thread_key_t* key);
-XBT_PUBLIC void xbt_os_thread_key_destroy(xbt_os_thread_key_t key);
-XBT_PUBLIC void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value);
-XBT_PUBLIC void* xbt_os_thread_get_specific(xbt_os_thread_key_t key);
 /* xbt_os_thread_join frees the joined thread (ie the XBT wrapper around it, the OS frees the rest) */
 XBT_PUBLIC void xbt_os_thread_join(xbt_os_thread_t thread, void** thread_return);
 XBT_PUBLIC void xbt_os_thread_yield(void);

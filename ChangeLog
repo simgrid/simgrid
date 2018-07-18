@@ -3,6 +3,9 @@ SimGrid (3.21) NOT RELEASED (Release Target: September 23. 2018, 1:54 UTC)
 Tracing:
  - Rename 'power' and 'power_used' variables into 'speed' and 'speed_used'
  - New host variable: 'core_count'
+ 
+XBT:
+ - Remove xbt_os_thread_specific features
 
 Fixed bugs:
  - #264: Add ptask L07 resource tracing

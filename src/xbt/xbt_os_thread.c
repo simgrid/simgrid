@@ -246,29 +246,6 @@ xbt_os_thread_t xbt_os_thread_self(void )
   return pthread_getspecific(xbt_self_thread_key);
 }
 
-void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
-{
-  int errcode = pthread_key_create(key, NULL);
-  xbt_assert(errcode==0 , "pthread_key_create failed");
-}
-
-void xbt_os_thread_key_destroy(xbt_os_thread_key_t key)
-{
-  int errcode = pthread_key_delete(key);
-  xbt_assert(errcode == 0, "pthread_key_delete failed");
-}
-
-void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value)
-{
-  int errcode = pthread_setspecific(key, value);
-  xbt_assert(errcode==0, "pthread_setspecific failed");
-}
-
-void* xbt_os_thread_get_specific(xbt_os_thread_key_t key)
-{
-  return pthread_getspecific(key);
-}
-
 #include <sched.h>
 void xbt_os_thread_yield(void)
 {
