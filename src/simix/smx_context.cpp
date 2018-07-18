@@ -5,12 +5,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cerrno>
-#include <cstring>
-
-#include <utility>
-#include <string>
-
 #include <xbt/config.hpp>
 #include <xbt/log.h>
 #include <xbt/range.hpp>
@@ -22,6 +16,12 @@
 #include "src/internal_config.h"
 #include "xbt/log.h"
 #include "xbt/xbt_os_thread.h"
+
+#include <cerrno>
+#include <cstring>
+#include <string>
+#include <thread>
+#include <utility>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -259,8 +259,8 @@ int SIMIX_context_get_nthreads() {
  */
 void SIMIX_context_set_nthreads(int nb_threads) {
   if (nb_threads<=0) {
-     nb_threads = xbt_os_get_numcores();
-     XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
+    nb_threads = std::thread::hardware_concurrency();
+    XBT_INFO("Auto-setting contexts/nthreads to %d", nb_threads);
   }
 #if !HAVE_THREAD_CONTEXTS
   xbt_assert(nb_threads == 1, "Parallel runs are impossible when the pthreads are missing.");

@@ -24,8 +24,6 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-XBT_PUBLIC int xbt_os_get_numcores(void);
-
 /** @brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
 XBT_PUBLIC xbt_os_thread_t xbt_os_thread_create(const char* name, pvoid_f_pvoid_t start_routine, void* param,

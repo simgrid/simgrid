@@ -366,31 +366,6 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
   xbt_free(sem);
 }
 
-/** @brief Returns the amount of cores on the current host */
-int xbt_os_get_numcores(void) {
-#ifdef WIN32
-    SYSTEM_INFO sysinfo;
-    GetSystemInfo(&sysinfo);
-    return sysinfo.dwNumberOfProcessors;
-#elif defined(__APPLE__) && defined(__MACH__)
-    int nm[2];
-    size_t len = 4;
-    uint32_t count;
-
-    nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
-    sysctl(nm, 2, &count, &len, NULL, 0);
-
-    if(count < 1) {
-        nm[1] = HW_NCPU;
-        sysctl(nm, 2, &count, &len, NULL, 0);
-        if(count < 1) { count = 1; }
-    }
-    return count;
-#else
-    return sysconf(_SC_NPROCESSORS_ONLN);
-#endif
-}
-
 void xbt_os_thread_set_extra_data(void *data)
 {
   xbt_os_thread_self()->extra_data = data;
