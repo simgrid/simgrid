@@ -83,7 +83,7 @@ private:
   static simgrid::xbt::Parmap<smx_actor_t>* parmap_;
   static std::vector<ParallelRawContext*> workers_context_;
   static std::atomic<uintptr_t> threads_working_;
-  static xbt_os_thread_key_t worker_id_key_;
+  static uintptr_t thread_local worker_id_;
 };
 #endif
 

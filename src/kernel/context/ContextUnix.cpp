@@ -201,7 +201,7 @@ void SerialUContext::run_all()
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelUContext::parmap_;
 std::atomic<uintptr_t> ParallelUContext::threads_working_;         /* number of threads that have started their work */
-xbt_os_thread_key_t ParallelUContext::worker_id_key_;              /* thread-specific storage for the thread id */
+thread_local uintptr_t ParallelUContext::worker_id_;               /* thread-specific storage for the thread id */
 std::vector<ParallelUContext*> ParallelUContext::workers_context_; /* space to save the worker's context
                                                                     * in each thread */
 
@@ -210,7 +210,6 @@ void ParallelUContext::initialize()
   parmap_ = nullptr;
   workers_context_.clear();
   workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-  xbt_os_thread_key_create(&worker_id_key_);
 }
 
 void ParallelUContext::finalize()
@@ -218,7 +217,6 @@ void ParallelUContext::finalize()
   delete parmap_;
   parmap_ = nullptr;
   workers_context_.clear();
-  xbt_os_thread_key_destroy(worker_id_key_);
 }
 
 void ParallelUContext::run_all()
@@ -259,10 +257,9 @@ void ParallelUContext::suspend()
   } else {
     // All processes were run, go to the barrier
     XBT_DEBUG("No more processes to run");
-    // Get back the identity of my body that was stored when starting the scheduling round
-    uintptr_t worker_id = reinterpret_cast<uintptr_t>(xbt_os_thread_get_specific(worker_id_key_));
+    // worker_id_ is the identity of my body, stored in thread_local when starting the scheduling round
     // Deduce the initial soul of that body
-    next_context = workers_context_[worker_id];
+    next_context = workers_context_[worker_id_];
     // When given that soul, the body will wait for the next scheduling round
   }
 
@@ -274,14 +271,12 @@ void ParallelUContext::suspend()
 /** Run one particular simulated process on the current thread. */
 void ParallelUContext::resume()
 {
-  // What is my containing body?
-  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  // Store the number of my containing body in os-thread-specific area :
-  xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
+  // What is my containing body? Store its number in os-thread-specific area :
+  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
   // Get my current soul:
   ParallelUContext* worker_context = static_cast<ParallelUContext*>(SIMIX_context_self());
   // Write down that this soul is hosted in that body (for now)
-  workers_context_[worker_id] = worker_context;
+  workers_context_[worker_id_] = worker_context;
   // Write in simix that I switched my soul
   SIMIX_context_set_current(this);
   // Actually do that using the relevant library call:

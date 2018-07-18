@@ -328,7 +328,7 @@ void SerialRawContext::run_all()
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelRawContext::parmap_;
 std::atomic<uintptr_t> ParallelRawContext::threads_working_; /* number of threads that have started their work */
-xbt_os_thread_key_t ParallelRawContext::worker_id_key_; /* thread-specific storage for the thread id */
+uintptr_t thread_local ParallelRawContext::worker_id_;       /* thread-specific storage for the thread id */
 std::vector<ParallelRawContext*> ParallelRawContext::workers_context_; /* space to save the worker context
                                                                           in each thread */
 
@@ -337,7 +337,6 @@ void ParallelRawContext::initialize()
   parmap_ = nullptr;
   workers_context_.clear();
   workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-  xbt_os_thread_key_create(&worker_id_key_);
 }
 
 void ParallelRawContext::finalize()
@@ -345,7 +344,6 @@ void ParallelRawContext::finalize()
   delete parmap_;
   parmap_ = nullptr;
   workers_context_.clear();
-  xbt_os_thread_key_destroy(worker_id_key_);
 }
 
 void ParallelRawContext::run_all()
@@ -373,9 +371,8 @@ void ParallelRawContext::suspend()
   } else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
-    uintptr_t worker_id = reinterpret_cast<uintptr_t>(xbt_os_thread_get_specific(worker_id_key_));
-    next_context        = workers_context_[worker_id];
-    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)", worker_id, threads_working_.load());
+    next_context = workers_context_[worker_id_];
+    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)", worker_id_, threads_working_.load());
   }
 
   SIMIX_context_set_current(next_context);
@@ -384,11 +381,10 @@ void ParallelRawContext::suspend()
 
 void ParallelRawContext::resume()
 {
-  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
+  worker_id_                         = threads_working_.fetch_add(1, std::memory_order_relaxed);
   ParallelRawContext* worker_context = static_cast<ParallelRawContext*>(SIMIX_context_self());
-  workers_context_[worker_id]        = worker_context;
-  XBT_DEBUG("Saving worker stack %zu", worker_id);
+  workers_context_[worker_id_]       = worker_context;
+  XBT_DEBUG("Saving worker stack %zu", worker_id_);
   SIMIX_context_set_current(this);
   RawContext::swap(worker_context, this);
 }

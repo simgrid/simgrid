@@ -191,7 +191,7 @@ void SerialBoostContext::run_all()
 
 simgrid::xbt::Parmap<smx_actor_t>* ParallelBoostContext::parmap_;
 std::atomic<uintptr_t> ParallelBoostContext::threads_working_;
-xbt_os_thread_key_t ParallelBoostContext::worker_id_key_;
+thread_local uintptr_t ParallelBoostContext::worker_id_;
 std::vector<ParallelBoostContext*> ParallelBoostContext::workers_context_;
 
 void ParallelBoostContext::initialize()
@@ -199,7 +199,6 @@ void ParallelBoostContext::initialize()
   parmap_ = nullptr;
   workers_context_.clear();
   workers_context_.resize(SIMIX_context_get_nthreads(), nullptr);
-  xbt_os_thread_key_create(&worker_id_key_);
 }
 
 void ParallelBoostContext::finalize()
@@ -207,7 +206,6 @@ void ParallelBoostContext::finalize()
   delete parmap_;
   parmap_ = nullptr;
   workers_context_.clear();
-  xbt_os_thread_key_destroy(worker_id_key_);
 }
 
 void ParallelBoostContext::run_all()
@@ -232,8 +230,7 @@ void ParallelBoostContext::suspend()
     next_context = static_cast<ParallelBoostContext*>(next_work.get()->context_);
   } else {
     XBT_DEBUG("No more processes to run");
-    uintptr_t worker_id = reinterpret_cast<uintptr_t>(xbt_os_thread_get_specific(worker_id_key_));
-    next_context        = workers_context_[worker_id];
+    next_context = workers_context_[worker_id_];
   }
 
   SIMIX_context_set_current(next_context);
@@ -242,11 +239,10 @@ void ParallelBoostContext::suspend()
 
 void ParallelBoostContext::resume()
 {
-  uintptr_t worker_id = threads_working_.fetch_add(1, std::memory_order_relaxed);
-  xbt_os_thread_set_specific(worker_id_key_, reinterpret_cast<void*>(worker_id));
+  worker_id_ = threads_working_.fetch_add(1, std::memory_order_relaxed);
 
   ParallelBoostContext* worker_context = static_cast<ParallelBoostContext*>(SIMIX_context_self());
-  workers_context_[worker_id]          = worker_context;
+  workers_context_[worker_id_]         = worker_context;
 
   SIMIX_context_set_current(this);
   BoostContext::swap(worker_context, this);
