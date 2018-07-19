@@ -351,7 +351,7 @@ void HostEnergy::init_watts_range_list()
         current_power_values.push_back(current_power_values.at(1));
       } else { // size == 3
         current_power_values[2] = current_power_values.at(1);
-        static thread_local bool displayed_warning = false; 
+        static bool displayed_warning = false;
         if (not displayed_warning) { // Otherwise we get in the worst case no_pstate*no_hosts warnings
           XBT_WARN("Host %s is a single-core machine and part of the power profile is '%s'"
                    ", which is in the 'Idle:OneCore:AllCores' format."
