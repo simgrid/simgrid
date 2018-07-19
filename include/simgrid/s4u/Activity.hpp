@@ -98,7 +98,7 @@ public:
 private:
   simgrid::kernel::activity::ActivityImplPtr pimpl_ = nullptr;
   Activity::State state_                            = Activity::State::INITED;
-  double remains_ = 0;
+  double remains_                                   = 0;
   void* user_data_                                  = nullptr;
 }; // class
 
