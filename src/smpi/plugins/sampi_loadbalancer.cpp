@@ -47,12 +47,17 @@ public:
   explicit MigrateAction() : ReplayAction("Migrate") {}
   void kernel(simgrid::xbt::ReplayAction& action)
   {
-    static std::map<simgrid::s4u::ActorPtr, int> migration_counter;
+    static std::map<simgrid::s4u::ActorPtr, int> migration_call_counter;
     static simgrid::s4u::Barrier smpilb_bar(smpi_process_count());
     simgrid::s4u::Host* cur_host = simgrid::s4u::this_actor::get_host();
     simgrid::s4u::Host* migrate_to_host;
 
     TRACE_migration_call(my_proc_id, NULL);
+
+    migration_call_counter[simgrid::s4u::Actor::self()]++;
+    if ((migration_call_counter[simgrid::s4u::Actor::self()] % simgrid::config::get_value<int>(cfg_migration_frequency.get_name())) != 0) {
+      return;
+    }
 
     // TODO cheinrich: Why do we need this barrier?
     smpilb_bar.wait();
@@ -69,13 +74,8 @@ public:
     // This barrier is required to ensure that the mapping has been computed and is available
     smpilb_bar.wait();
     was_executed = false; // Must stay behind this barrier so that all processes have passed the if clause
-    migration_counter[simgrid::s4u::Actor::self()]++;
-    if ((migration_counter[simgrid::s4u::Actor::self()] % simgrid::config::get_value<int>(cfg_migration_frequency.get_name())) != 0) {
-      return;
-    }
 
     migrate_to_host = lb.get_mapping();
-
     if (cur_host != migrate_to_host) { // Origin and dest are not the same -> migrate
       sg_host_t migration_hosts[2] = {cur_host, migrate_to_host};
       // Changing this to double[2] ... will cause trouble with parallel_execute, because that fct is trying to call free().
