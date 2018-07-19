@@ -70,9 +70,9 @@ double simgrid::kernel::activity::ExecImpl::get_remaining_ratio()
 {
   if (host_ ==
       nullptr) // parallel task: their remain is already between 0 and 1 (see comment in ExecImpl::get_remaining())
-    return surf_action_->get_remains();
+    return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains();
   else // Actually compute the ratio for sequential tasks
-    return surf_action_->get_remains() / surf_action_->get_cost();
+    return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();
 }
 
 void simgrid::kernel::activity::ExecImpl::set_bound(double bound)
