@@ -1737,6 +1737,18 @@ characteristics (lookup: time to resolve a route):
 @li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
     not be used.
 
+@subsection pf_loopback I want to specify the characteristics of the loopback link!
+
+Each routing model automatically adds a loopback link for each declared host, i.e.,
+a network route from the host to itself, if no such route is declared in the XML
+file. This default link has a bandwidth of 498 Mb/s, a latency of 15 microseconds, 
+and is <b>not</b> shared among network flows. 
+
+If you want to specify the characteristics of the loopback link for a given host, you
+just have to specify a route from this host to itself with the desired characteristics 
+in the XML file. This will prevent the routing model to add and use the default 
+loopback link.
+
 @subsection pf_switch I want to describe a switch but there is no switch tag!
 
 Actually we did not include switch tag. But when you're trying to
