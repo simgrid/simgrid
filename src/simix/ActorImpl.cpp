@@ -111,7 +111,7 @@ void SIMIX_process_cleanup(smx_actor_t process)
 #endif
     simix_global->process_to_destroy.push_back(*process);
   }
-  process->context_->iwannadie = 0;
+  process->context_->iwannadie = false;
 
   simix_global->mutex.unlock();
 }
@@ -192,7 +192,7 @@ smx_activity_t ActorImpl::suspend(ActorImpl* issuer)
     return nullptr;
   }
 
-  suspended_ = 1;
+  suspended_ = true;
 
   /* If we are suspending another actor that is waiting on a sync, suspend its synchronization. */
   if (this != issuer) {
@@ -217,7 +217,7 @@ void ActorImpl::resume()
 
   if (not suspended_)
     return;
-  suspended_ = 0;
+  suspended_ = false;
 
   /* resume the synchronization that was blocking the resumed actor. */
   if (waiting_synchro)
@@ -443,9 +443,9 @@ void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer) {
             (issuer->host_ == nullptr ? "(null)" : issuer->host_->get_cname()), process->get_cname(),
             process->host_->get_cname());
 
-  process->context_->iwannadie = 1;
-  process->blocked_           = 0;
-  process->suspended_         = 0;
+  process->context_->iwannadie = true;
+  process->blocked_            = false;
+  process->suspended_          = false;
   process->exception = nullptr;
 
   /* destroy the blocking synchro if any */
@@ -709,7 +709,7 @@ void SIMIX_process_yield(smx_actor_t self)
   if (self->suspended_) {
     XBT_DEBUG("Hey! I'm suspended.");
     xbt_assert(self->exception != nullptr, "Gasp! This exception may be lost by subsequent calls.");
-    self->suspended_ = 0;
+    self->suspended_ = false;
     self->suspend(self);
   }
 
