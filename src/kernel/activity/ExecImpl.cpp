@@ -102,6 +102,8 @@ void simgrid::kernel::activity::ExecImpl::post()
     state_ = SIMIX_DONE;
   }
 
+  on_completion(this);
+
   if (surf_action_) {
     surf_action_->unref();
     surf_action_ = nullptr;
@@ -111,7 +113,6 @@ void simgrid::kernel::activity::ExecImpl::post()
     timeout_detector_ = nullptr;
   }
 
-  on_completion(this);
   /* If there are simcalls associated with the synchro, then answer them */
   if (not simcalls_.empty())
     SIMIX_execution_finish(this);
