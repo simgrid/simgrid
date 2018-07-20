@@ -15,7 +15,7 @@ namespace s4u {
 
 Activity* Exec::start()
 {
-  pimpl_ = simcall_execution_start("", flops_amount_, 1. / priority_, bound_, host_);
+  pimpl_ = simcall_execution_start(name_, flops_amount_, 1. / priority_, bound_, host_);
   state_ = State::STARTED;
   return this;
 }
@@ -86,6 +86,13 @@ ExecPtr Exec::set_host(Host* host)
   if (state_ == State::STARTED)
     boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->migrate(host);
   host_ = host;
+  return this;
+}
+
+ExecPtr Exec::set_name(std::string name)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
+  name_ = name;
   return this;
 }
 

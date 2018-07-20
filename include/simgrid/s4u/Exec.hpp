@@ -31,6 +31,7 @@ public:
   ExecPtr set_priority(double priority);
   ExecPtr set_bound(double bound);
   ExecPtr set_host(Host* host);
+  ExecPtr set_name(std::string name);
   Host* get_host();
 
   double get_remaining() override;
@@ -59,6 +60,7 @@ private:
   double flops_amount_ = 0.0;
   double priority_     = 1.0;
   double bound_        = 0.0;
+  std::string name_    = "";
   std::atomic_int_fast32_t refcount_{0};
 }; // class
 }
