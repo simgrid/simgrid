@@ -285,12 +285,12 @@ XBT_PUBLIC void sleep_until(double timeout)
 
 void execute(double flops)
 {
-  get_host()->execute(flops);
+  execute(flops, 1.0 /* priority */);
 }
 
 void execute(double flops, double priority)
 {
-  get_host()->execute(flops, priority);
+  exec_init(flops)->set_priority(priority)->start()->wait();
 }
 
 void parallel_execute(int host_nb, s4u::Host** host_list, double* flops_amount, double* bytes_amount, double timeout)

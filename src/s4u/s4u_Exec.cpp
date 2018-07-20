@@ -15,8 +15,7 @@ namespace s4u {
 
 Activity* Exec::start()
 {
-  pimpl_ = simcall_execution_start("", flops_amount_, 1. / priority_, 0., host_);
-  boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_bound(bound_);
+  pimpl_ = simcall_execution_start("", flops_amount_, 1. / priority_, bound_, host_);
   state_ = State::STARTED;
   return this;
 }
