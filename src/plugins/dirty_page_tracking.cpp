@@ -94,8 +94,7 @@ static void on_exec_completion(simgrid::kernel::activity::ExecImplPtr exec)
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
   if (vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->is_tracking()) {
-    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(exec) -
-                   exec->get_remaining();
+    double delta = vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->get_stored_remains(exec);
     vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->update_dirty_page_count(delta);
   }
   vm->get_impl()->extension<simgrid::vm::DirtyPageTrackingExt>()->untrack(exec);
