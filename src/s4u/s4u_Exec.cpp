@@ -96,6 +96,18 @@ ExecPtr Exec::set_name(std::string name)
   return this;
 }
 
+ExecPtr Exec::set_tracing_category(std::string category)
+{
+  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
+  if (category.empty())
+    return this;
+
+  simgrid::simix::simcall([this, category] {
+    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_category(category);
+  });
+  return this;
+}
+
 /** @brief Retrieve the host on which this activity takes place. */
 Host* Exec::get_host()
 {

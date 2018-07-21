@@ -27,6 +27,7 @@ public:
   double get_remaining_ratio();
   void set_bound(double bound);
   void set_priority(double priority);
+  void set_category(std::string category);
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   /* The host where the execution takes place. nullptr means this is a parallel exec (and only surf knows the hosts) */

@@ -32,6 +32,7 @@ public:
   ExecPtr set_bound(double bound);
   ExecPtr set_host(Host* host);
   ExecPtr set_name(std::string name);
+  ExecPtr set_tracing_category(std::string category);
   Host* get_host();
 
   double get_remaining() override;

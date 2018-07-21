@@ -86,6 +86,12 @@ void simgrid::kernel::activity::ExecImpl::set_priority(double priority)
     surf_action_->set_priority(priority);
 }
 
+void simgrid::kernel::activity::ExecImpl::set_category(std::string category)
+{
+  if (surf_action_)
+    surf_action_->set_category(category);
+}
+
 void simgrid::kernel::activity::ExecImpl::post()
 {
   if (host_ && host_->is_off()) { /* FIXME: handle resource failure for parallel tasks too */
