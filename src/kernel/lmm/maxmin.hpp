@@ -175,7 +175,8 @@ public:
   double consumption_weight;
 };
 
-struct ConstraintLight {
+class ConstraintLight {
+public:
   double remaining_over_usage;
   Constraint* cnst;
 };
