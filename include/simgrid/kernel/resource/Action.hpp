@@ -178,9 +178,9 @@ public:
   virtual void set_max_duration(double duration);
 
   /** @brief Get the tracing category associated to the current action */
-  char* get_category() const { return category_; }
+  std::string get_category() const { return category_; }
   /** @brief Set the tracing category of the current Action */
-  void set_category(const char* category);
+  void set_category(std::string category) { category_ = category; }
 
   /** @brief Get the priority of the current Action */
   double get_priority() const { return sharing_priority_; };
@@ -203,7 +203,7 @@ private:
   double remains_;           /**< How much of that cost remains to be done in the currently running task */
   double start_time_;        /**< start time  */
   double finish_time_ = -1;  /**< finish time (may fluctuate until the task is completed) */
-  char* category_     = nullptr; /**< tracing category for categorized resource utilization monitoring */
+  std::string category_;     /**< tracing category for categorized resource utilization monitoring */
 
   double cost_;
   simgrid::kernel::resource::Model* model_;
