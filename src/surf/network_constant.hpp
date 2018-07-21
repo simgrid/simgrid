@@ -14,16 +14,6 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-/***********
- * Classes *
- ***********/
-
-class XBT_PRIVATE NetworkConstantModel;
-class XBT_PRIVATE NetworkConstantAction;
-
-/*********
- * Model *
- *********/
 class NetworkConstantModel : public NetworkModel {
 public:
   NetworkConstantModel();
@@ -34,17 +24,15 @@ public:
   LinkImpl* create_link(const std::string& name, double bw, double lat, s4u::Link::SharingPolicy policy) override;
 };
 
-/**********
- * Action *
- **********/
 class NetworkConstantAction : public NetworkAction {
 public:
   NetworkConstantAction(NetworkConstantModel* model_, double size, double latency);
   ~NetworkConstantAction();
-  double initialLatency_;
+  double initial_latency_;
   void update_remains_lazy(double now) override;
 };
-}
+
+} // namespace resource
 } // namespace kernel
 } // namespace simgrid
 

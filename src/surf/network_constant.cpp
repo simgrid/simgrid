@@ -59,7 +59,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
         action.latency_ = 0.0;
       }
     }
-    action.update_remains(action.get_cost() * delta / action.initialLatency_);
+    action.update_remains(action.get_cost() * delta / action.initial_latency_);
     if (action.get_max_duration() != NO_MAX_DURATION)
       action.update_max_duration(delta);
 
@@ -82,7 +82,7 @@ kernel::resource::Action* NetworkConstantModel::communicate(s4u::Host* src, s4u:
  * Action *
  **********/
 NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, double size, double latency)
-    : NetworkAction(model_, size, false), initialLatency_(latency)
+    : NetworkAction(model_, size, false), initial_latency_(latency)
 {
   latency_ = latency;
   if (latency_ <= 0.0)
