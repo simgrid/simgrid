@@ -12,6 +12,7 @@
 
 #include <boost/heap/pairing_heap.hpp>
 #include <boost/optional.hpp>
+#include <string>
 
 static constexpr int NO_MAX_DURATION = -1.0;
 
