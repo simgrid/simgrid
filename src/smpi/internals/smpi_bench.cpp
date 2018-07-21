@@ -3,15 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "getopt.h"
 #include "private.hpp"
 #include "simgrid/host.h"
 #include "simgrid/modelchecker.h"
+#include "simgrid/s4u/Exec.hpp"
 #include "smpi_comm.hpp"
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "xbt/config.hpp"
-#include "getopt.h"
 
 #include "src/smpi/include/smpi_actor.hpp"
 #include <unordered_map>
@@ -48,9 +49,8 @@ void smpi_execute_(double *duration)
 void smpi_execute_flops(double flops) {
   xbt_assert(flops >= 0, "You're trying to execute a negative amount of flops (%f)!", flops);
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  smx_activity_t action = simcall_execution_start("computation", flops, 1, 0, smpi_process()->get_actor()->get_host());
-  simcall_set_category (action, TRACE_internal_smpi_get_category());
-  simcall_execution_wait(action);
+  simgrid::s4u::this_actor::exec_init(flops)->set_name("computation")->start()->wait();
+  // FIXME adding this break smpi/tracing example... ->set_tracing_category(TRACE_internal_smpi_get_category())
   smpi_switch_data_segment(simgrid::s4u::Actor::self());
 }
 

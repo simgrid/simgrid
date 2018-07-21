@@ -15,16 +15,16 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:
 > [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
 > [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
 > [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
-> [ 737.001374] (0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [ 737.001374] (0_1@Fafard) Simulation time 737.001374
 > [ 737.001374] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
 > [ 737.001374] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
 > [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
 > [1000.000000] (job_job1@Ginette) Executing job 1 (smpi_app 'job1')
 > [1000.000000] (1_0@Ginette) Replaying rank 0 of job 1 (smpi_app 'job1')
 > [1000.000000] (1_1@Jupiter) Replaying rank 1 of job 1 (smpi_app 'job1')
-> [1806.923160] (1_0@Ginette) Simulation time 806.923160
 > [1806.923160] (1_0@Ginette) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1806.923160] (1_1@Jupiter) Simulation time 806.923160
 > [1806.923160] (1_1@Jupiter) Finished replaying rank 1 of job 1 (smpi_app 'job1')
 > [1806.923160] (job_job1@Ginette) Finished job 1 (smpi_app 'job1')
 > [1806.923160] (maestro@) Simulation finished! Final time: 1806.92
@@ -41,16 +41,16 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:
 > [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
 > [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
 > [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
-> [ 737.001374] (0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [ 737.001374] (0_1@Fafard) Simulation time 737.001374
 > [ 737.001374] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
 > [ 737.001374] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
 > [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
 > [1000.000000] (job_job1@Ginette) Executing job 1 (smpi_app 'job1')
 > [1000.000000] (1_0@Ginette) Replaying rank 0 of job 1 (smpi_app 'job1')
 > [1000.000000] (1_1@Jupiter) Replaying rank 1 of job 1 (smpi_app 'job1')
-> [1806.923160] (1_0@Ginette) Simulation time 806.923160
 > [1806.923160] (1_0@Ginette) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1806.923160] (1_1@Jupiter) Simulation time 806.923160
 > [1806.923160] (1_1@Jupiter) Finished replaying rank 1 of job 1 (smpi_app 'job1')
 > [1806.923160] (job_job1@Ginette) Finished job 1 (smpi_app 'job1')
 > [1806.923160] (maestro@) Simulation finished! Final time: 1806.92
@@ -75,16 +75,16 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:
 > [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
 > [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
 > [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
-> [ 737.001374] (0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [ 737.001374] (0_1@Fafard) Simulation time 737.001374
 > [ 737.001374] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
 > [ 737.001374] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
 > [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
 > [1000.000000] (job_job1@Bourassa) Executing job 1 (smpi_app 'job1')
 > [1000.000000] (1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
 > [1000.000000] (1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
-> [1737.001374] (1_0@Bourassa) Simulation time 737.001374
 > [1737.001374] (1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1737.001374] (1_1@Fafard) Simulation time 737.001374
 > [1737.001374] (1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
 > [1737.001374] (job_job1@Bourassa) Finished job 1 (smpi_app 'job1')
 > [1737.001374] (maestro@) Simulation finished! Final time: 1737
@@ -101,16 +101,16 @@ $ ./replay_multiple_manual ${platfdir}/small_platform_with_routers.xml ${srcdir:
 > [   0.000000] (workload_executor@Bourassa) Sleeping 1000 seconds (waiting for job 1000, app 'job1')
 > [   0.000000] (0_0@Bourassa) Replaying rank 0 of job 0 (smpi_app 'job0')
 > [   0.000000] (0_1@Fafard) Replaying rank 1 of job 0 (smpi_app 'job0')
-> [ 737.001374] (0_0@Bourassa) Simulation time 737.001374
 > [ 737.001374] (0_0@Bourassa) Finished replaying rank 0 of job 0 (smpi_app 'job0')
+> [ 737.001374] (0_1@Fafard) Simulation time 737.001374
 > [ 737.001374] (0_1@Fafard) Finished replaying rank 1 of job 0 (smpi_app 'job0')
 > [ 737.001374] (job_job0@Bourassa) Finished job 0 (smpi_app 'job0')
 > [1000.000000] (workload_executor@Bourassa) Launching the job executor of job 1 (app 'job1')
 > [1000.000000] (job_job1@Bourassa) Executing job 1 (smpi_app 'job1')
 > [1000.000000] (1_0@Bourassa) Replaying rank 0 of job 1 (smpi_app 'job1')
 > [1000.000000] (1_1@Fafard) Replaying rank 1 of job 1 (smpi_app 'job1')
-> [1737.001374] (1_0@Bourassa) Simulation time 737.001374
 > [1737.001374] (1_0@Bourassa) Finished replaying rank 0 of job 1 (smpi_app 'job1')
+> [1737.001374] (1_1@Fafard) Simulation time 737.001374
 > [1737.001374] (1_1@Fafard) Finished replaying rank 1 of job 1 (smpi_app 'job1')
 > [1737.001374] (job_job1@Bourassa) Finished job 1 (smpi_app 'job1')
 > [1737.001374] (maestro@) Simulation finished! Final time: 1737

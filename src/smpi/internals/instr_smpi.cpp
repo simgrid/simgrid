@@ -151,10 +151,10 @@ void TRACE_internal_smpi_set_category (const char *category)
 const char *TRACE_internal_smpi_get_category ()
 {
   if (not TRACE_smpi_is_enabled())
-    return nullptr;
+    return "";
 
   auto it = process_category.find(SIMIX_process_self());
-  return (it == process_category.end()) ? nullptr : it->second.c_str();
+  return (it == process_category.end()) ? "" : it->second.c_str();
 }
 
 void TRACE_smpi_setup_container(int rank, sg_host_t host)
