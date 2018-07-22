@@ -38,7 +38,7 @@ std::vector<std::string> IPV4addr;
  * Crude globals *
  *****************/
 
-extern std::map<std::string, SgFlow*> flowFromSock;
+extern std::map<std::string, SgFlow*> flow_from_sock;
 
 static ns3::InternetStackHelper stack;
 static ns3::NodeContainer nodes;
@@ -54,9 +54,9 @@ simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPoin
 
 NetPointNs3::NetPointNs3()
 {
-  ns3Node_ = ns3::CreateObject<ns3::Node>(0);
-  stack.Install(ns3Node_);
-  nodes.Add(ns3Node_);
+  ns3_node_ = ns3::CreateObject<ns3::Node>(0);
+  stack.Install(ns3_node_);
+  nodes.Add(ns3_node_);
   node_num = number_of_nodes++;
 }
 
@@ -219,16 +219,16 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     return;
   }
 
-  std::string ns3Socket;
-  for (auto elm : flowFromSock) {
-    ns3Socket                 = elm.first;
+  std::string ns3_socket;
+  for (auto elm : flow_from_sock) {
+    ns3_socket                = elm.first;
     SgFlow* sgFlow            = elm.second;
     NetworkNS3Action * action = sgFlow->action_;
     XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
-    action->set_remains(action->get_cost() - sgFlow->sentBytes_);
+    action->set_remains(action->get_cost() - sgFlow->sent_bytes_);
 
     if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::STARTED) {
-      double data_delta_sent = sgFlow->sentBytes_ - action->lastSent_;
+      double data_delta_sent = sgFlow->sent_bytes_ - action->last_sent_;
 
       std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
 
@@ -237,28 +237,28 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
         TRACE_surf_resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
                                             (data_delta_sent) / delta, now - delta, delta);
 
-      action->lastSent_ = sgFlow->sentBytes_;
+      action->last_sent_ = sgFlow->sent_bytes_;
     }
 
     if(sgFlow->finished_){
-      socket_to_destroy.push_back(ns3Socket);
-      XBT_DEBUG("Destroy socket %p of action %p", ns3Socket.c_str(), action);
+      socket_to_destroy.push_back(ns3_socket);
+      XBT_DEBUG("Destroy socket %p of action %p", ns3_socket.c_str(), action);
       action->finish(kernel::resource::Action::State::FINISHED);
     } else {
-      XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3Socket.c_str(), sgFlow->sentBytes_,
-                sgFlow->totalBytes_, sgFlow->remaining_);
+      XBT_DEBUG("Socket %p sent %u bytes out of %u (%u remaining)", ns3_socket.c_str(), sgFlow->sent_bytes_,
+                sgFlow->total_bytes_, sgFlow->remaining_);
     }
   }
 
   while (not socket_to_destroy.empty()) {
-    ns3Socket = socket_to_destroy.back();
+    ns3_socket = socket_to_destroy.back();
     socket_to_destroy.pop_back();
-    SgFlow* flow = flowFromSock.at(ns3Socket);
+    SgFlow* flow = flow_from_sock.at(ns3_socket);
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
-      XBT_DEBUG("Removing socket %p of action %p", ns3Socket.c_str(), flow->action_);
+      XBT_DEBUG("Removing socket %p of action %p", ns3_socket.c_str(), flow->action_);
     }
     delete flow;
-    flowFromSock.erase(ns3Socket);
+    flow_from_sock.erase(ns3_socket);
   }
 }
 
@@ -304,8 +304,8 @@ NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalB
   unsigned int node1 = src->pimpl_netpoint->extension<NetPointNs3>()->node_num;
   unsigned int node2 = dst->pimpl_netpoint->extension<NetPointNs3>()->node_num;
 
-  ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
-  ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3Node_;
+  ns3::Ptr<ns3::Node> src_node = src->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
+  ns3::Ptr<ns3::Node> dst_node = dst->pimpl_netpoint->extension<NetPointNs3>()->ns3_node_;
 
   xbt_assert(node2 < IPV4addr.size(), "Element %s is unknown to NS3. Is it connected to any one-hop link?",
              dst->pimpl_netpoint->get_cname());
@@ -319,11 +319,11 @@ NetworkNS3Action::NetworkNS3Action(kernel::resource::Model* model, double totalB
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket(src_node, ns3::TcpSocketFactory::GetTypeId());
 
-  flowFromSock.insert({transformSocketPtr(sock), new SgFlow(totalBytes, this)});
+  flow_from_sock.insert({transform_socket_ptr(sock), new SgFlow(totalBytes, this)});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
 
-  ns3::Simulator::ScheduleNow(&StartFlow, sock, addr.c_str(), port_number);
+  ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);
 
   port_number++;
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
@@ -443,8 +443,8 @@ void ns3_add_link(NetPointNs3* src, NetPointNs3* dst, double bw, double lat) {
   int srcNum = src->node_num;
   int dstNum = dst->node_num;
 
-  ns3::Ptr<ns3::Node> a = src->ns3Node_;
-  ns3::Ptr<ns3::Node> b = dst->ns3Node_;
+  ns3::Ptr<ns3::Node> a = src->ns3_node_;
+  ns3::Ptr<ns3::Node> b = dst->ns3_node_;
 
   XBT_DEBUG("\tAdd PTP from %d to %d bw:'%f Bps' lat:'%fs'", srcNum, dstNum, bw, lat);
   pointToPoint.SetDeviceAttribute("DataRate",

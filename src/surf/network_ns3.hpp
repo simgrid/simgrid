@@ -54,7 +54,7 @@ public:
   void update_remains_lazy(double now) override;
 
   // private:
-  double lastSent_ = 0;
+  double last_sent_ = 0;
   s4u::Host* src_;
   s4u::Host* dst_;
 };
