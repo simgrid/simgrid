@@ -32,7 +32,6 @@ public:
       , current_speed_(host_->get_speed())
       , current_flops_(host_->pimpl_cpu->get_constraint()->get_usage())
       , theor_max_flops_(0)
-      , was_prev_idle_(current_flops_ == 0)
   {
   }
   ~HostLoad() = default;
@@ -65,7 +64,6 @@ private:
   double idle_time_         = 0;
   double total_idle_time_   = 0; /* This gets never reset */
   double theor_max_flops_   = 0;
-  bool was_prev_idle_       = true; /* A host is idle at the beginning */
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostLoad> HostLoad::EXTENSION_ID;
@@ -81,7 +79,7 @@ void HostLoad::update()
   /* flops == pstate_speed * cores_being_currently_used */
   computed_flops_ += (now - last_updated_) * current_flops_;
 
-  if (was_prev_idle_) {
+  if (current_flops_ == 0) {
     idle_time_ += (now - last_updated_);
     total_idle_time_ += (now - last_updated_);
   }
@@ -89,7 +87,6 @@ void HostLoad::update()
   theor_max_flops_ += current_speed_ * host_->get_core_count() * (now - last_updated_);
   current_speed_ = host_->get_speed();
   last_updated_  = now;
-  was_prev_idle_ = (current_flops_ == 0);
 }
 
 /**
@@ -119,7 +116,6 @@ void HostLoad::reset()
   theor_max_flops_ = 0;
   current_flops_   = host_->pimpl_cpu->get_constraint()->get_usage();
   current_speed_   = host_->get_speed();
-  was_prev_idle_   = (current_flops_ == 0);
 }
 } // namespace plugin
 } // namespace simgrid
