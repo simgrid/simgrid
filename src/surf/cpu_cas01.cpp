@@ -170,7 +170,7 @@ CpuAction* CpuCas01::execution_start(double size, int requested_cores)
   return new CpuCas01Action(get_model(), size, is_off(), speed_.scale * speed_.peak, get_constraint(), requested_cores);
 }
 
-CpuAction *CpuCas01::sleep(double duration)
+CpuAction* CpuCas01::sleep(double duration)
 {
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);
