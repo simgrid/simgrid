@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     int errs = 0;
     MPI_Comm newcomm;
     double startTime;
-    int nLoop = 100000;
+    int nLoop = 10000;
 
     MTest_Init(&argc, &argv);
 
