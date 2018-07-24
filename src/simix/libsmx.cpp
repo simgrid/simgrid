@@ -362,9 +362,9 @@ void simcall_comm_wait(smx_activity_t comm, double timeout)
  * @param synchro The execution synchro
  * @param category The tracing category
  */
-void simcall_set_category(smx_activity_t synchro, const char *category)
+void simcall_set_category(smx_activity_t synchro, std::string category)
 {
-  if (category == nullptr) {
+  if (category.empty()) {
     return;
   }
   simgrid::simix::simcall([synchro, category] { SIMIX_set_category(synchro, category); });

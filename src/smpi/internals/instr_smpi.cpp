@@ -136,19 +136,19 @@ static std::string TRACE_smpi_get_key(int src, int dst, int tag, int send)
 
 static std::unordered_map<smx_actor_t, std::string> process_category;
 
-void TRACE_internal_smpi_set_category (const char *category)
+void TRACE_internal_smpi_set_category(std::string category)
 {
   if (not TRACE_smpi_is_enabled())
     return;
 
   //declare category
-  TRACE_category (category);
+  TRACE_category(category.c_str());
 
-  if (category != nullptr)
+  if (not category.empty())
     process_category[SIMIX_process_self()] = category;
 }
 
-const char *TRACE_internal_smpi_get_category ()
+std::string TRACE_internal_smpi_get_category()
 {
   if (not TRACE_smpi_is_enabled())
     return "";

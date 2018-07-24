@@ -15,7 +15,7 @@ XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 
 XBT_PRIVATE void SIMIX_execution_finish(smx_activity_t synchro);
 
-XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char* category);
+XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, std::string category);
 
 XBT_PRIVATE boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
 SIMIX_execution_start(std::string name, double flops_amount, double priority, double bound, sg_host_t host);

@@ -49,8 +49,10 @@ void smpi_execute_(double *duration)
 void smpi_execute_flops(double flops) {
   xbt_assert(flops >= 0, "You're trying to execute a negative amount of flops (%f)!", flops);
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  simgrid::s4u::this_actor::exec_init(flops)->set_name("computation")->start()->wait();
-  // FIXME adding this break smpi/tracing example... ->set_tracing_category(TRACE_internal_smpi_get_category())
+  simgrid::s4u::ExecPtr e = simgrid::s4u::this_actor::exec_init(flops)->set_name("computation");
+  e->start();
+  e->set_tracing_category(TRACE_internal_smpi_get_category());
+  e->wait();
   smpi_switch_data_segment(simgrid::s4u::Actor::self());
 }
 

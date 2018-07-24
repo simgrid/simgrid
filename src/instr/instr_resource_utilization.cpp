@@ -24,7 +24,7 @@ void TRACE_surf_resource_set_utilization(const char* type, const char* name, con
   }
 
   // trace categorized resource utilization
-  if (TRACE_categorized() && !category.empty()) {
+  if (TRACE_categorized() && not category.empty()) {
     std::string category_type = name[0] + category;
     XBT_DEBUG("CAT %s [%f - %f] %s %s %f", type, now, now + delta, resource, category_type.c_str(), value);
     container->get_variable(name)->instr_event(now, delta, resource, value);

@@ -14,8 +14,8 @@
 XBT_PRIVATE container_t smpi_container(int rank);
 XBT_PRIVATE void TRACE_smpi_setup_container(int rank, sg_host_t host);
 
-XBT_PRIVATE void TRACE_internal_smpi_set_category(const char* category);
-XBT_PRIVATE const char* TRACE_internal_smpi_get_category();
+XBT_PRIVATE void TRACE_internal_smpi_set_category(std::string category);
+XBT_PRIVATE std::string TRACE_internal_smpi_get_category();
 XBT_PRIVATE void TRACE_smpi_computing_init(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_out(int rank);
 XBT_PRIVATE void TRACE_smpi_computing_in(int rank, double amount);

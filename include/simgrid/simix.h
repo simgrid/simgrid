@@ -12,6 +12,7 @@
 #include <xbt/parmap.h>
 #ifdef __cplusplus
 #include <functional>
+#include <string>
 #include <unordered_map>
 #endif
 
@@ -263,7 +264,9 @@ XBT_PUBLIC int simcall_comm_test(smx_activity_t comm);
 XBT_PUBLIC int simcall_comm_testany(smx_activity_t* comms, size_t count);
 
 /************************** Tracing handling **********************************/
-XBT_PUBLIC void simcall_set_category(smx_activity_t synchro, const char* category);
+#ifdef __cplusplus
+XBT_PUBLIC void simcall_set_category(smx_activity_t synchro, std::string category);
+#endif
 
 /************************** Synchro simcalls **********************************/
 SG_BEGIN_DECL()

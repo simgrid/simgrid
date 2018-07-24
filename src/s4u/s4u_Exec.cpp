@@ -98,7 +98,6 @@ ExecPtr Exec::set_name(std::string name)
 
 ExecPtr Exec::set_tracing_category(std::string category)
 {
-  xbt_assert(state_ == State::INITED, "Cannot change the name of an exec after its start");
   if (category.empty())
     return this;
 

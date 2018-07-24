@@ -19,7 +19,8 @@ void TRACE_smpi_set_category(const char *category)
 {
   //need to end bench otherwise categories for execution tasks are wrong
   smpi_bench_end();
-  TRACE_internal_smpi_set_category (category);
+  if (category != nullptr)
+    TRACE_internal_smpi_set_category(category);
   //begin bench after changing process's category
   smpi_bench_begin();
 }

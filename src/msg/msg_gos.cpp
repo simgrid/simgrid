@@ -70,7 +70,8 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
           simcall_execution_start(task->name ?: "", simdata->flops_amount, simdata->priority, simdata->bound,
                                   MSG_process_get_host(MSG_process_self())));
     }
-    simcall_set_category(simdata->compute, task->category);
+    if (task->category != nullptr)
+      simcall_set_category(simdata->compute, task->category);
     comp_state = simcall_execution_wait(simdata->compute);
 
     simdata->setNotUsed();
@@ -792,7 +793,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
     smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
     comm = simcall_comm_isend(SIMIX_process_self(), mailbox->get_impl(), t_simdata->bytes_amount, t_simdata->rate, task,
                               sizeof(void*), nullptr, nullptr, nullptr, nullptr, 0);
-    if (TRACE_is_enabled())
+    if (TRACE_is_enabled() && task->category != nullptr)
       simcall_set_category(comm, task->category);
     t_simdata->comm = boost::static_pointer_cast<simgrid::kernel::activity::CommImpl>(comm);
     simcall_comm_wait(comm, timeout);

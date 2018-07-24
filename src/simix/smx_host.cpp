@@ -189,7 +189,7 @@ void SIMIX_execution_finish(smx_activity_t synchro)
   }
 }
 
-void SIMIX_set_category(smx_activity_t synchro, const char *category)
+void SIMIX_set_category(smx_activity_t synchro, std::string category)
 {
   if (synchro->state_ != SIMIX_RUNNING)
     return;
