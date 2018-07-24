@@ -31,12 +31,11 @@ int PMPI_Init(int *argc, char ***argv)
 {
   xbt_assert(simgrid::s4u::Engine::is_initialized(),
              "Your MPI program was not properly initialized. The easiest is to use smpirun to start it.");
-  // PMPI_Init is called only once per SMPI process
-  int already_init;
-  MPI_Initialized(&already_init);
-  if(already_init == 0){
+  // Init is called only once per SMPI process
+  if (not smpi_process()->initializing()){
     simgrid::smpi::ActorExt::init(argc, argv);
-    smpi_process()->mark_as_initialized();
+  }
+  if (not smpi_process()->initialized()){
     int rank = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_init(rank);
     TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::NoOpTIData("init"));
@@ -44,6 +43,7 @@ int PMPI_Init(int *argc, char ***argv)
     TRACE_smpi_computing_init(rank);
     TRACE_smpi_sleeping_init(rank);
     smpi_bench_begin();
+    smpi_process()->mark_as_initialized();
   }
 
   smpi_mpi_init();

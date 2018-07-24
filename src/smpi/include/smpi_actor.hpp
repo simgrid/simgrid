@@ -46,6 +46,7 @@ public:
   void set_data(int* argc, char*** argv);
   void finalize();
   int finalized();
+  int initializing();
   int initialized();
   void mark_as_initialized();
   void set_replaying(bool value);

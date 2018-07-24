@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   int rank;
   int32_t data=11;
 
-  MPI_Init(&argc, &argv);
+  MPI_Init(NULL, NULL);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Request r;
   if (rank==1) {

@@ -704,7 +704,9 @@ static std::unordered_map<aid_t, simgrid::smpi::replay::RequestStorage> storage;
 /** @brief Only initialize the replay, don't do it for real */
 void smpi_replay_init(int* argc, char*** argv)
 {
-  simgrid::smpi::ActorExt::init(argc, argv);
+  if (not smpi_process()->initializing()){
+    simgrid::smpi::ActorExt::init(argc, argv);
+  }
   smpi_process()->mark_as_initialized();
   smpi_process()->set_replaying(true);
 

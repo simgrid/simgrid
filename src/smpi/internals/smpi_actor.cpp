@@ -101,6 +101,12 @@ int ActorExt::finalized()
   return (state_ == SmpiProcessState::FINALIZED);
 }
 
+/** @brief Check if a process is partially initialized already */
+int ActorExt::initializing()
+{
+  return (state_ == SmpiProcessState::INITIALIZING);
+}
+
 /** @brief Check if a process is initialized */
 int ActorExt::initialized()
 {
@@ -239,7 +245,15 @@ void ActorExt::init(int* argc, char*** argv)
   if (argc != nullptr && argv != nullptr) {
     simgrid::s4u::ActorPtr proc = simgrid::s4u::Actor::self();
     proc->get_impl()->context_->set_cleanup(&SIMIX_process_cleanup);
-
+    // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
+    // this up here so that I can set the privatized region before the switch.
+    ActorExt* process = smpi_process_remote(proc);
+    //if we are in MPI_Init and argc handling has already been done.
+    if (process->initialized())
+      return;
+      
+    process->state_ = SmpiProcessState::INITIALIZING;
+    
     char* instance_id = (*argv)[1];
     try {
       int rank = std::stoi(std::string((*argv)[2]));
@@ -248,9 +262,6 @@ void ActorExt::init(int* argc, char*** argv)
       throw std::invalid_argument(std::string("Invalid rank: ") + (*argv)[2]);
     }
 
-    // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
-    // this up here so that I can set the privatized region before the switch.
-    ActorExt* process = smpi_process_remote(proc);
     if (smpi_privatize_global_variables == SmpiPrivStrategies::MMAP) {
       /* Now using the segment index of this process  */
       process->set_privatized_region(smpi_init_global_memory_segment_process());
@@ -259,10 +270,7 @@ void ActorExt::init(int* argc, char*** argv)
     }
 
     process->set_data(argc, argv);
-  }
-  xbt_assert(smpi_process(), "smpi_process() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "
-                             "Although it's required by MPI-2, this is currently not supported by SMPI. "
-                             "Please use MPI_Init(&argc, &argv) as usual instead.");
+  } 
 }
 
 int ActorExt::get_optind()

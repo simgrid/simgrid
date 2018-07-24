@@ -417,13 +417,16 @@ typedef void (*smpi_fortran_entry_point_type)();
 static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<std::string> args)
 {
   char noarg[]   = {'\0'};
-  const int argc = args.size();
+  int argc = args.size();
   std::unique_ptr<char*[]> argv(new char*[argc + 1]);
   for (int i = 0; i != argc; ++i)
     argv[i] = args[i].empty() ? noarg : &args[i].front();
   argv[argc] = nullptr;
+  char ** argvptr=argv.get();
 
-  int res = entry_point(argc, argv.get());
+  simgrid::smpi::ActorExt::init(&argc, &argvptr);
+
+  int res = entry_point(argc, argvptr);
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
     if (smpi_exit_status == 0)
@@ -439,7 +442,6 @@ static smpi_entry_point_type smpi_resolve_function(void* handle)
   smpi_fortran_entry_point_type entry_point_fortran = (smpi_fortran_entry_point_type)dlsym(handle, "user_main_");
   if (entry_point_fortran != nullptr) {
     return [entry_point_fortran](int argc, char** argv) {
-      smpi_process_init(&argc, &argv);
       entry_point_fortran();
       return 0;
     };
