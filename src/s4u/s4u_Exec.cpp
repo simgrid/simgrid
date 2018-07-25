@@ -15,7 +15,7 @@ namespace s4u {
 
 Activity* Exec::start()
 {
-  pimpl_ = simcall_execution_start(name_, flops_amount_, 1. / priority_, bound_, host_);
+  pimpl_ = simcall_execution_start(name_, tracing_category_, flops_amount_, 1. / priority_, bound_, host_);
   state_ = State::STARTED;
   return this;
 }
@@ -98,12 +98,8 @@ ExecPtr Exec::set_name(std::string name)
 
 ExecPtr Exec::set_tracing_category(std::string category)
 {
-  if (category.empty())
-    return this;
-
-  simgrid::simix::simcall([this, category] {
-    boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(pimpl_)->set_category(category);
-  });
+  xbt_assert(state_ == State::INITED, "Cannot change the tracing category of an exec after its start");
+  tracing_category_ = category;
   return this;
 }
 

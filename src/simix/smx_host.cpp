@@ -60,8 +60,9 @@ void SIMIX_host_autorestart(sg_host_t host)
   process_list.clear();
 }
 
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-SIMIX_execution_start(std::string name, double flops_amount, double priority, double bound, sg_host_t host)
+boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> SIMIX_execution_start(std::string name, std::string category,
+                                                                                double flops_amount, double priority,
+                                                                                double bound, sg_host_t host)
 {
   /* set surf's action */
   simgrid::kernel::resource::Action* surf_action = nullptr;
@@ -75,6 +76,7 @@ SIMIX_execution_start(std::string name, double flops_amount, double priority, do
   simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
       new simgrid::kernel::activity::ExecImpl(name, surf_action, /*timeout_detector*/ nullptr, host));
 
+  exec->set_category(name);
   XBT_DEBUG("Create execute synchro %p: %s", exec.get(), exec->name_.c_str());
   simgrid::kernel::activity::ExecImpl::on_creation(exec);
 

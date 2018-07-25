@@ -65,13 +65,14 @@ msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeo
               task->name ?: "", simdata->host_nb, simdata->host_list, simdata->flops_parallel_amount,
               simdata->bytes_parallel_amount, -1.0, timeout));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute.get());
+      if (task->category != nullptr)
+        simcall_set_category(simdata->compute, task->category);
     } else {
       simdata->compute = boost::static_pointer_cast<simgrid::kernel::activity::ExecImpl>(
-          simcall_execution_start(task->name ?: "", simdata->flops_amount, simdata->priority, simdata->bound,
-                                  MSG_process_get_host(MSG_process_self())));
+          simcall_execution_start(task->name ?: "", task->category ?: "", simdata->flops_amount, simdata->priority,
+                                  simdata->bound, MSG_process_get_host(MSG_process_self())));
     }
-    if (task->category != nullptr)
-      simcall_set_category(simdata->compute, task->category);
+
     comp_state = simcall_execution_wait(simdata->compute);
 
     simdata->setNotUsed();

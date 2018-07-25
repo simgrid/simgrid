@@ -38,15 +38,15 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
  * @param host host where the synchro will be executed
  * @return A new SIMIX execution synchronization
  */
-smx_activity_t simcall_execution_start(std::string name, double flops_amount, double priority, double bound,
-                                       simgrid::s4u::Host* host)
+smx_activity_t simcall_execution_start(std::string name, std::string category, double flops_amount, double priority,
+                                       double bound, simgrid::s4u::Host* host)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(std::isfinite(priority), "priority is not finite!");
 
-  return simgrid::simix::simcall([name, flops_amount, priority, bound, host] {
-    return SIMIX_execution_start(name, flops_amount, priority, bound, host);
+  return simgrid::simix::simcall([name, category, flops_amount, priority, bound, host] {
+    return SIMIX_execution_start(name, category, flops_amount, priority, bound, host);
   });
 }
 

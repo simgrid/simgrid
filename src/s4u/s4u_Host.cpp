@@ -289,7 +289,7 @@ void Host::execute(double flops)
 }
 void Host::execute(double flops, double priority)
 {
-  smx_activity_t s = simcall_execution_start("", flops, 1 / priority /*priority*/, 0. /*bound*/, this);
+  smx_activity_t s = simcall_execution_start("", "", flops, 1 / priority /*priority*/, 0. /*bound*/, this);
   simcall_execution_wait(s);
 }
 
