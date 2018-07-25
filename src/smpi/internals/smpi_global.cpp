@@ -42,12 +42,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp> /* trim_right / trim_left */
 
-#if defined(__INTEL_COMPILER) || defined(__ICC)
+#if SMPI_IFORT
   extern "C" void for_rtl_init_ (int *, char **);
-#elif defined(__FLANG)
+#elif SMPI_FLANG
   extern "C" void __io_set_argc(int);
   extern "C" void __io_set_argv(char **);
-#elif defined(__GNUC__)
+#elif SMPI_GFORTRAN
   extern "C" void _gfortran_set_args(int, char **);
 #endif
 
@@ -433,12 +433,12 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   argv[argc] = nullptr;
   char ** argvptr=argv.get();
   simgrid::smpi::ActorExt::init(&argc, &argvptr);
-#if defined(__INTEL_COMPILER) || defined(__ICC)
+#if SMPI_IFORT
   for_rtl_init_ (&argc, argvptr);
-#elif defined(__FLANG)
+#elif SMPI_FLANG
   __io_set_argc(argc);
   __io_set_argv(argvptr);
-#elif defined(__GNUC__)
+#elif SMPI_GFORTRAN
   _gfortran_set_args(argc, argvptr);
 #endif 
   int res = entry_point(argc, argvptr);
