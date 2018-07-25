@@ -42,13 +42,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp> /* trim_right / trim_left */
 
-#if defined(__GNUC__)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+  extern "C" void for_rtl_init_ (int *, char **);
+#elif defined(__GNUC__)
   extern "C" void _gfortran_set_args(int, char **);
 #elif defined(__FLANG)
   extern "C" void __io_set_argc(int);
   extern "C" void __io_set_argv(char **);
-#elif defined(__INTEL_COMPILER) || defined(__ICC)
-  extern "C" void for_rtl_init_ (int *, char **);
 #endif
 
 #ifndef RTLD_DEEPBIND
