@@ -4,8 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "src/simix/smx_host_private.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <string>
@@ -289,8 +290,7 @@ void Host::execute(double flops)
 }
 void Host::execute(double flops, double priority)
 {
-  smx_activity_t s = simcall_execution_start("", "", flops, 1 / priority /*priority*/, 0. /*bound*/, this);
-  simcall_execution_wait(s);
+  this_actor::exec_init(flops)->set_host(this)->set_priority(1 / priority)->start()->wait();
 }
 
 } // namespace s4u
