@@ -60,9 +60,9 @@ void SIMIX_host_autorestart(sg_host_t host)
   process_list.clear();
 }
 
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> SIMIX_execution_start(std::string name, std::string category,
-                                                                                double flops_amount, double priority,
-                                                                                double bound, sg_host_t host)
+simgrid::kernel::activity::ExecImplPtr SIMIX_execution_start(std::string name, std::string category,
+                                                             double flops_amount, double priority, double bound,
+                                                             sg_host_t host)
 {
   /* set surf's action */
   simgrid::kernel::resource::Action* surf_action = nullptr;
@@ -70,7 +70,7 @@ boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> SIMIX_execution_start(
     surf_action = host->pimpl_cpu->execution_start(flops_amount);
     surf_action->set_priority(priority);
     if (bound > 0)
-      static_cast<simgrid::surf::CpuAction*>(surf_action)->set_bound(bound);
+      surf_action->set_bound(bound);
   }
 
   simgrid::kernel::activity::ExecImplPtr exec = simgrid::kernel::activity::ExecImplPtr(
@@ -83,9 +83,9 @@ boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl> SIMIX_execution_start(
   return exec;
 }
 
-boost::intrusive_ptr<simgrid::kernel::activity::ExecImpl>
-SIMIX_execution_parallel_start(std::string name, int host_nb, sg_host_t* host_list, double* flops_amount,
-                               double* bytes_amount, double rate, double timeout)
+simgrid::kernel::activity::ExecImplPtr SIMIX_execution_parallel_start(std::string name, int host_nb,
+                                                                      sg_host_t* host_list, double* flops_amount,
+                                                                      double* bytes_amount, double rate, double timeout)
 {
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
