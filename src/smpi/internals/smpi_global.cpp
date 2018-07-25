@@ -433,13 +433,13 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
   argv[argc] = nullptr;
   char ** argvptr=argv.get();
   simgrid::smpi::ActorExt::init(&argc, &argvptr);
-#if defined(__GNUC__)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+  for_rtl_init_ (&argc, argvptr);
+#elif defined(__GNUC__)
   _gfortran_set_args(argc, argvptr);
 #elif defined(__FLANG)
   __io_set_argc(argc);
   __io_set_argv(argvptr);
-#elif defined(__INTEL_COMPILER) || defined(__ICC)
-  for_rtl_init_ (&argc, argvptr);
 #endif 
   int res = entry_point(argc, argvptr);
   if (res != 0){
