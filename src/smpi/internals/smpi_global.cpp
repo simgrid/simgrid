@@ -445,11 +445,12 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
 
 #if SMPI_IFORT
   for_rtl_finish_ ();
-#endif
-
+#else
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
+#endif
+
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
     if (smpi_exit_status == 0)
