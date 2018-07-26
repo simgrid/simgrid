@@ -206,7 +206,33 @@ void sg_host_load_plugin_init()
     host.extension_set(new HostLoad(&host));
   });
 
-  simgrid::surf::CpuAction::on_state_change.connect(&on_action_state_change);
+  simgrid::kernel::activity::ExecImpl::on_creation.connect([](simgrid::kernel::activity::ExecImplPtr activity){
+    if (activity->host_ != nullptr) { // We only run on one host
+      simgrid::s4u::Host* host = activity->host_;
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_))
+        host = dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_)->get_pm();
+
+      host->extension<HostLoad>()->add_activity(activity);
+      host->extension<HostLoad>()->update(); // If the system was idle until now, we need to update *before*
+                                             // this computation starts running so we can keep track of the
+                                             // idle time. (Communication operations don't trigger this hook!)
+    }
+    else { // This runs on multiple hosts
+      XBT_DEBUG("HostLoad plugin currently does not support executions on several hosts");
+    }
+  });
+  simgrid::kernel::activity::ExecImpl::on_completion.connect([](simgrid::kernel::activity::ExecImplPtr activity){
+    if (activity->host_ != nullptr) { // We only run on one host
+      simgrid::s4u::Host* host = activity->host_;
+      if (dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_))
+        host = dynamic_cast<simgrid::s4u::VirtualMachine*>(activity->host_)->get_pm();
+
+      host->extension<HostLoad>()->update();
+    }
+    else { // This runs on multiple hosts
+      XBT_DEBUG("HostLoad plugin currently does not support executions on several hosts");
+    }
+  });
   simgrid::s4u::Host::on_state_change.connect(&on_host_change);
   simgrid::s4u::Host::on_speed_change.connect(&on_host_change);
 }
