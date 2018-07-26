@@ -44,6 +44,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 
 #if SMPI_IFORT
   extern "C" void for_rtl_init_ (int *, char **);
+  extern "C" void for_rtl_finish_ ();
 #elif SMPI_FLANG
   extern "C" void __io_set_argc(int);
   extern "C" void __io_set_argv(char **);
@@ -427,21 +428,28 @@ static int smpi_run_entry_point(smpi_entry_point_type entry_point, std::vector<s
 {
   char noarg[]   = {'\0'};
   int argc = args.size();
-  std::unique_ptr<char*[]> argv(new char*[argc + 1]);
+  char** argv = new char*[argc + 1];
   for (int i = 0; i != argc; ++i)
-    argv[i] = args[i].empty() ? noarg : &args[i].front();
+    argv[i] = args[i].empty() ? noarg : xbt_strdup(&args[i].front());
   argv[argc] = nullptr;
-  char ** argvptr=argv.get();
-  simgrid::smpi::ActorExt::init(&argc, &argvptr);
+  simgrid::smpi::ActorExt::init(&argc, &argv);
 #if SMPI_IFORT
-  for_rtl_init_ (&argc, argvptr);
+  for_rtl_init_ (&argc, argv);
 #elif SMPI_FLANG
   __io_set_argc(argc);
   __io_set_argv(argvptr);
 #elif SMPI_GFORTRAN
-  _gfortran_set_args(argc, argvptr);
+  _gfortran_set_args(argc, argv);
 #endif 
-  int res = entry_point(argc, argvptr);
+  int res = entry_point(argc, argv);
+
+#if SMPI_IFORT
+  for_rtl_finish_ ();
+#endif
+
+  for (int i = 0; i != argc; ++i)
+    xbt_free(argv[i]);
+  xbt_free(argv);
   if (res != 0){
     XBT_WARN("SMPI process did not return 0. Return value : %d", res);
     if (smpi_exit_status == 0)
