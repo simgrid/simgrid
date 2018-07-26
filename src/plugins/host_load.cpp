@@ -84,12 +84,28 @@ void HostLoad::update()
 {
   double now = surf_get_clock();
 
+  // This loop updates the flops that the host executed for the ongoing computations
+  for (auto& pair : current_activities) {
+    auto& activity                         = pair.first;  // Just an alias
+    auto& remaining_cost_after_last_update = pair.second; // Just an alias
+
+    if (activity->surf_action_->get_finish_time() != now && activity->state_ == e_smx_state_t::SIMIX_RUNNING) {
+      if (remaining_cost_after_last_update == activity_uninitialized_remaining_cost) {
+        remaining_cost_after_last_update = activity->surf_action_->get_cost();
+      }
+      double computed_flops_since_last_update = remaining_cost_after_last_update - /*remaining now*/activity->get_remaining();
+      computed_flops_                        += computed_flops_since_last_update;
+      remaining_cost_after_last_update        = activity->get_remaining();
+    }
+    else if (activity->state_ == e_smx_state_t::SIMIX_DONE) {
+      computed_flops_ += remaining_cost_after_last_update;
+      current_activities.erase(activity);
+    }
+  }
+
   /* Current flop per second computed by the cpu; current_flops = k * pstate_speed_in_flops, k @in {0, 1, ..., cores-1}
    * designates number of active cores; will be 0 if CPU is currently idle */
   current_flops_ = host_->pimpl_cpu->get_constraint()->get_usage();
-
-  /* flops == pstate_speed * cores_being_currently_used */
-  computed_flops_ += (now - last_updated_) * current_flops_;
 
   if (current_flops_ == 0) {
     idle_time_ += (now - last_updated_);
